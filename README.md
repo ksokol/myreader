@@ -1,7 +1,8 @@
 MyReader [![Build Status](https://api.travis-ci.org/ksokol/myreader.png?branch=master)](https://travis-ci.org/ksokol/myreader/) [![Coverage Status](https://coveralls.io/repos/ksokol/myreader/badge.png?branch=master)](https://coveralls.io/r/ksokol/myreader?branch=master)
 =====
 
-MyReader is a rss reader written in Java. It comes with a web interface for mobile and desktop browsers. Additionally,
+MyReader is a rss reader written in Java. It comes with a web interface for mobile and desktop browsers via
+[MyReader Web](https://github.com/ksokol/myreader-web)  Additionally,
 a REST like API allows to write custom clients like [MyReader Android](https://github.com/ksokol/myreader-android).
 
 Initially, MyReader was written with Google Reader in mind.
