@@ -1,0 +1,19 @@
+language: java
+jdk:
+  - oraclejdk6
+#disabled until travis supports a script hook which is performed only once
+#  - openjdk6
+
+env:
+  global:
+     - secure: "YyiHfr7a+XCUfCh6Q1zWGpqh1GnD7fKdfd7qjy0PMpFSRBE46dQ8pSnSQLJVE84qh6i8y8/DQNF15+lrIEgKqkKuH/sD8qw+g1vmgKCjUDgQOqCWB9b22AERRuEmWR7e2FIHL+cha71APkjW3Dj7XArZ8Sgs3uolyqQ4kJIK/6M="
+     - secure: "JtnyHbSxUQhkcS4qZFjsKyr2PzstpEDoQ9ILxLR0SeAhfznGluliGhcqpN6BzvaFHz0aY1C5KU/U/nXPdK9xtz+uS4yXtxmkZ6YTi7KhNfgzQpuxlZsFEbPDDSxmtLZGpD6LpitH/A0anYiqQDOz4m7vqgh3314MEChV6ybC4LE="
+
+branches:
+  only:
+    - master
+
+script: mvn test package
+after_success: 
+ - mvn cobertura:cobertura coveralls:cobertura
+ - curl -X PUT -T myreader/target/myreader.war -u travis:$PW --insecure "https://$DEPLOY_HOST/manager/deploy?update=true&path=/myreader"
