@@ -1,8 +1,8 @@
 language: java
 jdk:
-  - oraclejdk6
+#  - oraclejdk6
 #disabled until travis supports a script hook which is performed only once
-#  - openjdk6
+  - openjdk6
 
 env:
   global:
