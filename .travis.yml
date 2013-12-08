@@ -16,4 +16,4 @@ branches:
 script: mvn test package
 after_success: 
  - mvn cobertura:cobertura coveralls:cobertura
- - curl -X PUT -T myreader/target/myreader.war -u travis:$PW --insecure "https://$DEPLOY_HOST/manager/deploy?update=true&path=/myreader"
+ - curl -X PUT -T target/myreader.war -u travis:$PW --insecure "https://$DEPLOY_HOST/manager/deploy?update=true&path=/myreader"
