@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import myreader.fetcher.impl.FetchResult;
-import myreader.fetcher.impl.HttpConnector;
-import myreader.fetcher.impl.HttpObject;
-import myreader.fetcher.impl.StringDecoder;
+import myreader.fetcher.impl.*;
 import myreader.fetcher.persistence.FetcherEntry;
 
 import org.slf4j.Logger;
@@ -21,6 +18,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
+//TODO introduce an interface
 @Service("parser")
 public class FeedParser {
 
@@ -58,7 +56,7 @@ public class FeedParser {
                 dto.setGuid(e.getUri());
                 dto.setTitle(StringDecoder.escapeSimpleHtml(e.getTitle()));
 
-                dto.setUrl(e.getLink());
+                dto.setUrl(EntryLinkSanitizer.sanitize(e.getLink(), feed.getLink()));
                 SyndContent con = e.getDescription();
 
                 if (con != null) {

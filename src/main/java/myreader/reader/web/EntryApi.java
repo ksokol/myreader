@@ -17,6 +17,7 @@ import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionEntryQuery;
 import myreader.entity.User;
+import myreader.fetcher.impl.EntryLinkSanitizer;
 import myreader.reader.persistence.UserEntryQuery;
 import myreader.reader.persistence.UserEntryQuery.IconDto;
 
@@ -90,7 +91,7 @@ public class EntryApi {
             dto.setTag(e.getTag());
             dto.setTitle(e.getFeedEntry().getTitle());
             dto.setUnseen(!e.isSeen());
-            dto.setUrl(e.getFeedEntry().getUrl());
+            dto.setUrl(url(e.getFeedEntry().getUrl(), e.getSubscription().getUrl()));
 
             if ("icon".equals(fl)) {
                 FeedIcon icon = e.getSubscription().getFeed().getIcon();
@@ -119,7 +120,7 @@ public class EntryApi {
         dto.setTag(subscriptionEntry.getTag());
         dto.setTitle(subscriptionEntry.getFeedEntry().getTitle());
         dto.setUnseen(!subscriptionEntry.isSeen());
-        dto.setUrl(subscriptionEntry.getFeedEntry().getUrl());
+        dto.setUrl(url(subscriptionEntry.getFeedEntry().getUrl(), subscriptionEntry.getSubscription().getUrl()));
 
         if (headingsOnly) {
             dto.setContent(null);
@@ -204,5 +205,14 @@ public class EntryApi {
                 }
             }
         }
+    }
+
+    /*
+     * This method exists only due to backwards compatibility with broken links in
+     * existing installations. This method should be removed entirely in the future.
+     */
+    @Deprecated
+    private String url(String entryUrl, String feedUrl) {
+        return EntryLinkSanitizer.sanitize(entryUrl, feedUrl);
     }
 }
