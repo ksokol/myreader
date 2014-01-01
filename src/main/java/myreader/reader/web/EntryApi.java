@@ -207,6 +207,10 @@ public class EntryApi {
         }
     }
 
+    /*
+     * This method exists only due to backwards compatibility with broken links in
+     * existing installations. This method should be removed entirely in the future.
+     */
     @Deprecated
     private String url(String entryUrl, String feedUrl) {
         return EntryLinkSanitizer.sanitize(entryUrl, feedUrl);
