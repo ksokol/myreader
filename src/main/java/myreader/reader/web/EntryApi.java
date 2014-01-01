@@ -91,7 +91,7 @@ public class EntryApi {
             dto.setTag(e.getTag());
             dto.setTitle(e.getFeedEntry().getTitle());
             dto.setUnseen(!e.isSeen());
-            dto.setUrl(url(e.getFeedEntry().getUrl(), e.getSubscription().getUrl()));
+            dto.setUrl(e.getFeedEntry().getUrl());
 
             if ("icon".equals(fl)) {
                 FeedIcon icon = e.getSubscription().getFeed().getIcon();
@@ -120,7 +120,7 @@ public class EntryApi {
         dto.setTag(subscriptionEntry.getTag());
         dto.setTitle(subscriptionEntry.getFeedEntry().getTitle());
         dto.setUnseen(!subscriptionEntry.isSeen());
-        dto.setUrl(url(subscriptionEntry.getFeedEntry().getUrl(), subscriptionEntry.getSubscription().getUrl()));
+        dto.setUrl(subscriptionEntry.getFeedEntry().getUrl());
 
         if (headingsOnly) {
             dto.setContent(null);
@@ -205,14 +205,5 @@ public class EntryApi {
                 }
             }
         }
-    }
-
-    /*
-     * This method exists only due to backwards compatibility with broken links in
-     * existing installations. This method should be removed entirely in the future.
-     */
-    @Deprecated
-    private String url(String entryUrl, String feedUrl) {
-        return EntryLinkSanitizer.sanitize(entryUrl, feedUrl);
     }
 }
