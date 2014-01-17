@@ -44,7 +44,7 @@ public class FetchStatistics {
     @Column(nullable = false)
     private Type type;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @org.hibernate.annotations.Type(type="text")
     private String message;
 
     public Long getId() {
