@@ -17,7 +17,7 @@
 	<tx:annotation-driven mode="aspectj"/>
 
     <beans profile="default,myreader.prod">
-        <util:map id="map">
+        <util:map id="hibernatePropertiesMap">
             <entry key="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect" />
             <entry key="hibernate.show_sql" value="true" />
             <entry key="hibernate.format_sql" value="true" />
@@ -39,7 +39,7 @@
         <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
             <property name="dataSource" ref="dataSource"/>
             <property name="packagesToScan" value="myreader.entity" />
-            <property name="hibernateProperties" ref="map" />
+            <property name="hibernateProperties" ref="hibernatePropertiesMap" />
         </bean>
 
         <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -55,7 +55,7 @@
             <property name="jndiName" value="java:comp/env/jdbc/collector"/>
         </bean>
 
-        <util:map id="map">
+        <util:map id="hibernatePropertiesMap">
             <entry key="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
             <entry key="hibernate.show_sql" value="false" />
             <entry key="hibernate.format_sql" value="false" />
