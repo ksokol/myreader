@@ -22,7 +22,9 @@ It is a sandbox for different technologies that are worth to play with. So don't
 
 **Installation & Requirements**
 
-- JNDI resource *jdbc/collector*:
+- add `spring.profiles.active=myreader.prod` to your container's environment variables otherwise an in-memory transient database will be used
+- put [MySQL JDBC Driver](https://dev.mysql.com/downloads/connector/j) into your servlet container's classpath
+- add a JNDI resource namend `jdbc/collector`:
 
 <pre>
        &lt;Resource name="jdbc/collector"
