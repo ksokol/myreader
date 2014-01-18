@@ -17,6 +17,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 
@@ -45,7 +46,8 @@ public class FeedEntry {
     private String url;
 
     @Field
-    @Column(name = "entry_content", columnDefinition = "LONGTEXT")
+    @Column(name = "entry_content")
+    @Type(type="text")
     private String content;
 
     @ContainedIn

@@ -259,5 +259,10 @@
 			<artifactId>image4j</artifactId>
 			<version>0.7</version>
 		</dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>2.3.1</version>
+        </dependency>
 	</dependencies>
 </project>
