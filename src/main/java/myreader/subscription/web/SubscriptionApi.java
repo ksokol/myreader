@@ -1,12 +1,7 @@
 package myreader.subscription.web;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,17 +70,7 @@ class SubscriptionApi {
                 dto.setTitle(s.getTitle());
                 dto.setUnseen(s.getUnseen());
                 dto.setUrl(s.getUrl());
-
-                List<ExclusionPatternDto> expDtos = new ArrayList<ExclusionPatternDto>();
-
-                for (ExclusionPattern ep : s.getExclusions()) {
-                    ExclusionPatternDto expDto = new ExclusionPatternDto();
-                    expDto.setPattern(ep.getPattern());
-                    expDto.setHitCount(ep.getHitCount());
-                    expDtos.add(expDto);
-                }
-
-                dto.setExclusions(expDtos);
+                dto.setExclusions(Collections.EMPTY_LIST);
 
                 ld.add(dto);
             }

@@ -1,9 +1,12 @@
 package myreader.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import myreader.entity.Subscription;
 
+import myreader.solr.IndexService;
+import myreader.solr.SearchService;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,12 @@ public class SubscriptionDao {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    private IndexService indexService;
+
+    @Autowired
+    private SearchService searchService;
 
     //@PostFilter("hasPermission(filterObject, 'read') or hasPermission(filterObject, 'admin')")
 
@@ -34,7 +43,18 @@ public class SubscriptionDao {
         //session.enableFilter("user").setParameter("user", username);
         // return session.createQuery("from Subscription s join fetch s.feed").list();
 
-        return this.sessionFactory.getCurrentSession().createQuery("from Subscription where user.email = ?").setString(0, username).list();
+        List<Subscription> subscriptions = sessionFactory.getCurrentSession().createQuery("from Subscription where user.email = ?").setString(0, username).list();
+        Map<Long,Long> counts = searchService.countUnseenSubscriptionEntries(username);
+
+        for(Subscription s : subscriptions) {
+            Long count = counts.get(s.getId());
+
+            if(count != null) {
+                s.setUnseen(count);
+            }
+        }
+
+        return subscriptions;
     }
 
     //@PreAuthorize("")
@@ -50,6 +70,8 @@ public class SubscriptionDao {
             ObjectNotFoundException e = new ObjectNotFoundException(id, Subscription.class.getName());
             throw e;
         } else {
+            long l = searchService.countUnseenSubscriptionEntries(s.getId());
+            s.setUnseen(l);
             return s;
         }
     }
@@ -74,7 +96,8 @@ public class SubscriptionDao {
     }
 
     public void saveOrUpdate(Subscription subscription) {
-        this.sessionFactory.getCurrentSession().persist(subscription);
+        sessionFactory.getCurrentSession().persist(subscription);
+        indexService.save(subscription);
     }
 
 }

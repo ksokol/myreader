@@ -13,7 +13,7 @@ public class SubscriptionDto {
     private String url;
     private String tag;
     private int sum;
-    private int unseen;
+    private long unseen;
 
     private List<ExclusionPatternDto> exclusions;
     private Date createdAt;
@@ -58,11 +58,11 @@ public class SubscriptionDto {
         this.sum = sum;
     }
 
-    public int getUnseen() {
+    public long getUnseen() {
         return unseen;
     }
 
-    public void setUnseen(int unseen) {
+    public void setUnseen(long unseen) {
         this.unseen = unseen;
     }
 

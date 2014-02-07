@@ -8,8 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.search.annotations.ContainedIn;
-
 @Entity
 @Table(name = "user")
 public class User {
@@ -24,7 +22,7 @@ public class User {
     @Column(name = "user_role")
     private String role;
 
-    @ContainedIn
+    //@ContainedIn
     @OneToMany(mappedBy = "user")
     private Set<Subscription> subscriptions;
 
