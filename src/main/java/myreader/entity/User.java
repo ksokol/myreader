@@ -22,7 +22,6 @@ public class User {
     @Column(name = "user_role")
     private String role;
 
-    //@ContainedIn
     @OneToMany(mappedBy = "user")
     private Set<Subscription> subscriptions;
 

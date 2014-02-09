@@ -17,7 +17,6 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-//@Indexed
 @Entity
 @Table(name = "user_feed_entry")
 public class SubscriptionEntry {
@@ -28,27 +27,21 @@ public class SubscriptionEntry {
     @Column(name = "user_feed_entry_id")
     private Long id;
 
-   // @Field
     @Column(name = "user_feed_entry_is_read")
     private boolean seen;
 
-   // @Field
     @Column(name = "user_feed_entry_tag")
     private String tag;
 
-   // @IndexedEmbedded
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_feed_entry_user_feed_id")
     @Fetch(value = FetchMode.SELECT)
     private Subscription subscription;
 
-   // @IndexedEmbedded
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_feed_entry_entry_id")
     private FeedEntry feedEntry;
 
-   // @Field(analyze = Analyze.NO)
-   // @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "user_feed_entry_created_at")
     private Date createdAt;

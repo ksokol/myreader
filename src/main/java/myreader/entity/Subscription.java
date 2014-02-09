@@ -20,28 +20,22 @@ public class Subscription {
     @Column(name = "user_feed_id")
     private Long id;
 
-    //@Field(analyze = Analyze.NO)
     @Column(name = "user_feed_title")
     private String title;
 
     @Formula("(select f.feed_url from feed f where f.feed_id = user_feed_feed_id)")
     private String url;
 
-    //@Field(analyze = Analyze.NO)
     @Column(name = "user_feed_tag")
     private String tag;
 
-    //@IndexedEmbedded
     @JoinColumn(name = "user_feed_user_id")
-    // @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @ManyToOne(optional = false)
-    //@Fetch(value = FetchMode.SELECT)
     private User user;
 
     @Column(name = "user_feed_sum")
     private int sum;
 
-    //@Formula("(select count(ufe.user_feed_entry_id) from user_feed_entry ufe where ufe.user_feed_entry_user_feed_id = user_feed_id and ufe.user_feed_entry_is_read = 0)")
     @Transient
     private long unseen;
 
@@ -51,10 +45,8 @@ public class Subscription {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
-    //@Fetch(value = FetchMode.SELECT)
     private Feed feed;
 
-    //@ContainedIn
     @OneToMany(mappedBy = "subscription")
     private Set<SubscriptionEntry> subscriptionEntries;
 
@@ -105,7 +97,6 @@ public class Subscription {
         this.sum = sum;
     }
 
-    // @Formula("select select count(ufe.user_feed_entry_id) from user_feed_entry ufe where ufe.user_feed_entry_user_feed_id = id and ufe.user_feed_entry_is_read = 0")
     public long getUnseen() {
         return unseen;
     }

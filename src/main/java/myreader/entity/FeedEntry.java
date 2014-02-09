@@ -33,7 +33,6 @@ public class FeedEntry {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Feed feed;
 
-    //@Field
     @Column(name = "entry_title")
     private String title;
 
@@ -43,12 +42,10 @@ public class FeedEntry {
     @Column(name = "entry_url")
     private String url;
 
-    // @Field
     @Column(name = "entry_content")
     @Type(type="text")
     private String content;
 
-    // @ContainedIn
     @OneToMany(mappedBy = "feedEntry")
     private List<SubscriptionEntry> subscriptionEntries;
 
