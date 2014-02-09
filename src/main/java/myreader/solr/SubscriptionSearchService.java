@@ -3,14 +3,15 @@ package myreader.solr;
 /**
  * @author dev@sokol-web.de <Kamill Sokol>
  */
-
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.params.MapSolrParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static myreader.solr.SolrSubscriptionFields.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,14 +23,13 @@ public class SubscriptionSearchService {
     private SolrServer solrServer;
 
     public long countUnseenEntriesById(Long subscriptionId) {
-        Map<String, String> map = new HashMap<String, String>();
-
-        map.put("fq", "feed_id:" + subscriptionId);
-        map.put("q", "entry_seen:false");
-        map.put("rows", "0");
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.addFilterQuery(feedId(subscriptionId));
+        solrQuery.setQuery(seen(false));
+        solrQuery.setRows(0);
 
         try {
-            QueryResponse query = solrServer.query(new MapSolrParams(map));
+            QueryResponse query = solrServer.query(solrQuery);
             return query.getResults().getNumFound();
         } catch (SolrServerException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -41,25 +41,23 @@ public class SubscriptionSearchService {
     }
 
     public Map<Long, Long> countUnseenEntriesByUser(String username) {
-        Map<String, String> map = new HashMap<String, String>();
         Map<Long, Long> results = new HashMap<Long, Long>();
+        SolrQuery solrQuery = new SolrQuery();
 
-        map.put("q", "entry_seen:false");
-        map.put("rows", "0");
-        map.put("facet.field", "feed_id");
-        map.put("facet.limit", String.valueOf(Integer.MAX_VALUE));
+        solrQuery.setQuery(seen(false));
+        solrQuery.setRows(0);
+        solrQuery.setFacetLimit(Integer.MAX_VALUE);
+        solrQuery.addFacetField(FEED_ID);
 
         if(username != null) {
-            map.put("fq", "owner:"+username);
+            solrQuery.addFilterQuery(owner(username));
         }
 
         try {
-            QueryResponse query = solrServer.query(new MapSolrParams(map));
-
-            for(FacetField.Count value : query.getFacetField("feed_id").getValues()) {
+            QueryResponse query = solrServer.query(solrQuery);
+            for(FacetField.Count value : query.getFacetField(FEED_ID).getValues()) {
                 results.put(Long.valueOf(value.getName()), value.getCount());
             }
-
             return results;
         } catch (SolrServerException e) {
             throw new RuntimeException(e.getMessage(), e);
