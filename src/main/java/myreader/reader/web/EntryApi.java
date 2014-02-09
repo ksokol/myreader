@@ -16,10 +16,7 @@ import myreader.entity.FeedIcon;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionEntryQuery;
-import myreader.entity.User;
-import myreader.fetcher.impl.EntryLinkSanitizer;
-import myreader.reader.persistence.UserEntryQuery;
-import myreader.reader.persistence.UserEntryQuery.IconDto;
+import myreader.reader.web.UserEntryQuery.IconDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,14 +39,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class EntryApi {
 
     @Autowired
-    SubscriptionDao subscriptionDao;
+    private SubscriptionDao subscriptionDao;
 
     @Autowired
-    SubscriptionEntryDao subscriptionEntryDao;
-
-    // TODO
-    @Autowired
-    UserDao userDao;
+    private SubscriptionEntryDao subscriptionEntryDao;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -65,17 +58,13 @@ public class EntryApi {
         // TODO
         if (feedTag != null) {
             query.addFilter("subscription.tag", feedTag);
-            query.addFilter("subscription.title", feedTag);
         }
         // TODO
         if (tag != null) {
             query.addFilter("tag", tag);
         }
 
-        // TODO
-        User user = userDao.findByEmail(auth.getName());
-        List<SubscriptionEntry> query2 = subscriptionEntryDao.query(query, user.getId());
-
+        List<SubscriptionEntry> query2 = subscriptionEntryDao.query(query, auth.getName());
         List<UserEntryQuery> dtoList = new ArrayList<UserEntryQuery>();
 
         for (SubscriptionEntry e : query2) {

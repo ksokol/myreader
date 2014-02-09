@@ -9,7 +9,7 @@ import myreader.entity.SubscriptionEntry;
 
 import java.util.List;
 
-import myreader.solr.EntityConverter;
+import myreader.solr.SubscriptionEntryConverter;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
@@ -33,7 +33,7 @@ public class SearchIndexRebuildListener implements ApplicationListener<ReindexAp
     private SessionFactory sessionFactory;
 
     @Autowired
-    private EntityConverter userEntrySolrUpdate;
+    private SubscriptionEntryConverter userEntrySolrUpdate;
 
     @Autowired
     private SolrServer solrServer;

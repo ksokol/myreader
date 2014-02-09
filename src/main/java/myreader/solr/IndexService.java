@@ -2,13 +2,11 @@ package myreader.solr;
 
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.params.MultiMapSolrParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.logging.Logger;
+
+import static myreader.solr.FieldHelper.*;
+import static myreader.solr.SolrSubscriptionFields.*;
 
 /**
  * @author dev@sokol-web.de <Kamill Sokol>
@@ -32,14 +33,14 @@ public class IndexService {
     private SolrServer solrServer;
 
     @Autowired
-    private EntityConverter converter;
+    private SubscriptionEntryConverter converter;
 
     @Autowired
     private Executor executor;
 
     public void save(Object object) {
         if(object instanceof SubscriptionEntry) {
-            saveSubscriptionEntry(object);
+            saveSubscriptionEntry((SubscriptionEntry) object);
         } else if(object instanceof Subscription) {
             saveSubscription(object);
         } else {
@@ -47,23 +48,30 @@ public class IndexService {
         }
     }
 
+    public void deleteSubscription(Long id) {
+        try {
+            solrServer.deleteByQuery(feedId(id));
+            solrServer.commit();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
     private void saveSubscription(Object object) {
         Subscription subscription = (Subscription) object;
         final Long userId = subscription.getUser().getId();
-        final Long id = subscription.getId();
+        final Long feedId = subscription.getId();
         final String title = subscription.getTitle();
 
         executor.execute(new Runnable() {
             @Override
             public void run() {
             try {
-                Map<String, String[]> map = new HashMap<String, String[]>();
+                SolrQuery solrQuery = new SolrQuery();
+                solrQuery.addFilterQuery(feedId(feedId), ownerId(userId));
+                solrQuery.setRows(Integer.MAX_VALUE);
 
-                map.put("fq", new String[] {"feed_id:" + id, "owner_id:" + userId});
-                map.put("q", new String[] {"*:*"});
-                map.put("rows", new String[] {String.valueOf(Integer.MAX_VALUE)});
-
-                QueryResponse query = solrServer.query(new MultiMapSolrParams(map));
+                QueryResponse query = solrServer.query(solrQuery);
                 List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>();
 
                 logger.info("processing " + query.getResults().size());
@@ -73,8 +81,8 @@ public class IndexService {
 
                 for(SolrDocument doc : query.getResults()) {
                     SolrInputDocument solrInputFields = new SolrInputDocument();
-                    solrInputFields.addField("id", doc.get("id"));
-                    solrInputFields.addField("feed_title", set);
+                    solrInputFields.addField(ID, doc.get(ID));
+                    solrInputFields.addField(FEED_TITLE, set);
                     docs.add(solrInputFields);
                 }
 
@@ -89,8 +97,8 @@ public class IndexService {
         });
     }
 
-    private void saveSubscriptionEntry(Object object) {
-        SolrInputDocument doc = converter.toSolrInputDocument(object);
+    private void saveSubscriptionEntry(SubscriptionEntry subscriptionEntry) {
+        SolrInputDocument doc = converter.toSolrInputDocument(subscriptionEntry);
 
         try {
             solrServer.add(doc);

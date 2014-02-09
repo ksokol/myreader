@@ -1,4 +1,4 @@
-package myreader.reader.persistence;
+package myreader.reader.web;
 
 import java.util.Date;
 

@@ -1,5 +1,6 @@
 package myreader.entity;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ public class SubscriptionEntryQuery {
     private boolean showAll = false; //default
     private String q;
     private Long lastId;
+    private Date offset;
 
     //TODO
     private Map<String, String> filter = new HashMap<String, String>();
@@ -51,6 +53,14 @@ public class SubscriptionEntryQuery {
 
     public void setLastId(Long lastId) {
         this.lastId = lastId;
+    }
+
+    public Date getOffset() {
+        return offset;
+    }
+
+    public void setOffset(Date offset) {
+        this.offset = offset;
     }
 
     public String getOrderBy() {

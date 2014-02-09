@@ -24,8 +24,7 @@ public class Subscription {
     @Column(name = "user_feed_title")
     private String title;
 
-    //@Formula("(select f.feed_url from feed f where f.feed_id = user_feed_feed_id)")
-    @Transient
+    @Formula("(select f.feed_url from feed f where f.feed_id = user_feed_feed_id)")
     private String url;
 
     //@Field(analyze = Analyze.NO)
