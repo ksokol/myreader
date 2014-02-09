@@ -2,7 +2,6 @@ package myreader.solr;
 
 import myreader.API;
 import org.apache.solr.common.SolrException;
-import org.apache.solr.common.cloud.*;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
@@ -10,8 +9,6 @@ import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.ContentStreamBase;
 import org.apache.solr.common.util.NamedList;
 import org.apache.solr.common.util.SimpleOrderedMap;
-import org.apache.solr.common.util.StrUtils;
-import org.apache.solr.core.Config;
 import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.SolrConfig;
 import org.apache.solr.core.SolrCore;
@@ -24,16 +21,16 @@ import org.apache.solr.servlet.ResponseUtils;
 import org.apache.solr.servlet.SolrRequestParsers;
 import org.apache.solr.servlet.cache.HttpCacheHeaderUtil;
 import org.apache.solr.servlet.cache.Method;
-import org.apache.solr.update.processor.DistributedUpdateProcessor;
-import org.apache.solr.update.processor.DistributingUpdateProcessorFactory;
 import org.apache.solr.util.FastWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.xml.sax.InputSource;
+
+import static myreader.solr.SolrSubscriptionFields.*;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -48,157 +45,87 @@ import java.util.*;
 public class SolrController {
 
     private static final Charset UTF8 = Charset.forName("UTF-8");
-
     private final Logger log = LoggerFactory.getLogger(SolrController.class);
 
-    private String abortErrorMessage = null;
-    private String pathPrefix = "/api/1/solr"; // strip this from the beginning of a path
     private final Map<SolrConfig, SolrRequestParsers> parsers = new WeakHashMap<SolrConfig, SolrRequestParsers>();
-    private final SolrRequestParsers adminRequestParser;
-
     private CoreContainer cores;
 
     @Autowired
     public SolrController(CoreContainer cores) {
         this.cores = cores;
-
-        try {
-            adminRequestParser = new SolrRequestParsers(new Config(null,"solr",new InputSource(new ByteArrayInputStream("<root/>".getBytes("UTF-8"))),"") );
-        } catch (Exception e) {
-            //unlikely
-            throw new SolrException(SolrException.ErrorCode.SERVER_ERROR,e);
-        }
     }
 
-    @RequestMapping("**")
-    public void select(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException {
-        CoreContainer cores = this.cores;
-        SolrCore core = null;
+    @RequestMapping("{core}/{handler}")
+    public void select(@PathVariable String core, @PathVariable String handler, HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException {
+        SolrCore solrCore = null;
         SolrQueryRequest solrReq = null;
+        SolrRequestHandler coreHandler;
 
-        SolrRequestHandler handler = null;
-        String corename = "";
-        String origCorename = null;
         try {
             // put the core container in request attribute
             req.setAttribute("org.apache.solr.CoreContainer", cores);
-            String path = req.getServletPath();
-            if( req.getPathInfo() != null ) {
-                // this lets you handle /update/commit when /update is a servlet
-                path += req.getPathInfo();
-            }
-            if( pathPrefix != null && path.startsWith( pathPrefix ) ) {
-                path = path.substring( pathPrefix.length() );
-            }
-            // check for management path
-            String alternate = cores.getManagementPath();
-            if (alternate != null && path.startsWith(alternate)) {
-                path = path.substring(0, alternate.length());
-            }
-            // unused feature ?
-            int idx = path.indexOf( ':' );
-            if( idx > 0 ) {
-                // save the portion after the ':' for a 'handler' path parameter
-                path = path.substring( 0, idx );
-            }
-            List<String> collectionsList = null;
 
+            solrCore = cores.getCore(core);
 
-                //otherwise, we should find a core from the path
-                idx = path.indexOf( "/", 1 );
-                if( idx > 1 ) {
-                    // try to get the corename as a request parameter first
-                    corename = path.substring( 1, idx );
+            if(solrCore == null) {
+                throw new SolrException( SolrException.ErrorCode.BAD_REQUEST, String.format("core %s not found", core));
+            }
 
-                    core = cores.getCore(corename);
+            final SolrConfig config = solrCore.getSolrConfig();
+            // get or create/cache the parser for the core
+            SolrRequestParsers parser = null;
+            parser = parsers.get(config);
+            if( parser == null ) {
+                parser = new SolrRequestParsers(config);
+                parsers.put(config, parser);
+            }
 
-                    if (core != null) {
-                        path = path.substring( idx );
+            coreHandler = solrCore.getRequestHandler( "/"+handler );
+            // no handler yet but allowed to handle select; let's check
+            if( coreHandler == null && parser.isHandleSelect() ) {
+                if( "select".equals( handler ) || "select/".equals( handler ) ) {
+                    solrReq = parser.parse( solrCore, "/"+handler, req );
+                    String qt = solrReq.getParams().get( CommonParams.QT );
+                    coreHandler = solrCore.getRequestHandler( qt );
+                    if( coreHandler == null ) {
+                        throw new SolrException( SolrException.ErrorCode.BAD_REQUEST, "unknown handler: "+qt);
+                    }
+                    if( qt != null && qt.startsWith("/") && (coreHandler instanceof ContentStreamHandlerBase)) {
+                        //For security reasons it's a bad idea to allow a leading '/', ex: /select?qt=/update see SOLR-3161
+                        //There was no restriction from Solr 1.4 thru 3.5 and it's not supported for update handlers.
+                        throw new SolrException( SolrException.ErrorCode.BAD_REQUEST, "Invalid Request Handler ('qt').  Do not use /select to access: "+qt);
                     }
                 }
-                if (core == null) {
-
-                        core = cores.getCore("");
-
-                }
-
-
-            // With a valid core...
-            if( core != null ) {
-                final SolrConfig config = core.getSolrConfig();
-                // get or create/cache the parser for the core
-                SolrRequestParsers parser = null;
-                parser = parsers.get(config);
-                if( parser == null ) {
-                    parser = new SolrRequestParsers(config);
-                    parsers.put(config, parser );
-                }
-
-                // Determine the handler from the url path if not set
-                // (we might already have selected the cores handler)
-                if( handler == null && path.length() > 1 ) { // don't match "" or "/" as valid path
-                    handler = core.getRequestHandler( path );
-                    // no handler yet but allowed to handle select; let's check
-                    if( handler == null && parser.isHandleSelect() ) {
-                        if( "/select".equals( path ) || "/select/".equals( path ) ) {
-                            solrReq = parser.parse( core, path, req );
-                            String qt = solrReq.getParams().get( CommonParams.QT );
-                            handler = core.getRequestHandler( qt );
-                            if( handler == null ) {
-                                throw new SolrException( SolrException.ErrorCode.BAD_REQUEST, "unknown handler: "+qt);
-                            }
-                            if( qt != null && qt.startsWith("/") && (handler instanceof ContentStreamHandlerBase)) {
-                                //For security reasons it's a bad idea to allow a leading '/', ex: /select?qt=/update see SOLR-3161
-                                //There was no restriction from Solr 1.4 thru 3.5 and it's not supported for update handlers.
-                                throw new SolrException( SolrException.ErrorCode.BAD_REQUEST, "Invalid Request Handler ('qt').  Do not use /select to access: "+qt);
-                            }
-                        }
-                    }
-                }
-
-                // With a valid handler and a valid core...
-                if( handler != null ) {
-                    // if not a /select, create the request
-                    if( solrReq == null ) {
-                        solrReq = parser.parse( core, path, req );
-                    }
-
-
-                    final Method reqMethod = Method.getMethod(req.getMethod());
-                    HttpCacheHeaderUtil.setCacheControlHeader(config, resp, reqMethod);
-                    // unless we have been explicitly told not to, do cache validation
-                    // if we fail cache validation, execute the query
-                    if (config.getHttpCachingConfig().isNever304() ||
-                            !HttpCacheHeaderUtil.doCacheHeaderValidation(solrReq, req, reqMethod, resp)) {
-                        SolrQueryResponse solrRsp = new SolrQueryResponse();
-            /* even for HEAD requests, we need to execute the handler to
-             * ensure we don't get an error (and to make sure the correct
-             * QueryResponseWriter is selected and we get the correct
-             * Content-Type)
-             */
-                        SolrRequestInfo.setRequestInfo(new SolrRequestInfo(solrReq, solrRsp));
-                        this.execute( req, handler, solrReq, solrRsp, authentication );
-                        HttpCacheHeaderUtil.checkHttpCachingVeto(solrRsp, resp, reqMethod);
-                        // add info to http headers
-                        //TODO: See SOLR-232 and SOLR-267.
-            /*try {
-              NamedList solrRspHeader = solrRsp.getResponseHeader();
-             for (int i=0; i<solrRspHeader.size(); i++) {
-               ((javax.servlet.http.HttpServletResponse) response).addHeader(("Solr-" + solrRspHeader.getName(i)), String.valueOf(solrRspHeader.getVal(i)));
-             }
-            } catch (ClassCastException cce) {
-              log.log(Level.WARNING, "exception adding response header log information", cce);
-            }*/
-                        QueryResponseWriter responseWriter = core.getQueryResponseWriter(solrReq);
-                        writeResponse(solrRsp, resp, responseWriter, solrReq, reqMethod);
-                    }
-                    return; // we are done with a valid handler
-                }
             }
-            log.debug("no handler or core retrieved for " + path + ", follow through...");
+
+            if(coreHandler == null) {
+                throw new SolrException( SolrException.ErrorCode.BAD_REQUEST, String.format("unknown handler: %s", handler));
+            }
+
+            // if not a /select, create the request
+            if( solrReq == null ) {
+                solrReq = parser.parse( solrCore, handler, req );
+            }
+
+            final Method reqMethod = Method.getMethod(req.getMethod());
+            HttpCacheHeaderUtil.setCacheControlHeader(config, resp, reqMethod);
+            // unless we have been explicitly told not to, do cache validation
+            // if we fail cache validation, execute the query
+            if (config.getHttpCachingConfig().isNever304() ||
+                    !HttpCacheHeaderUtil.doCacheHeaderValidation(solrReq, req, reqMethod, resp)) {
+                SolrQueryResponse solrRsp = new SolrQueryResponse();
+                SolrRequestInfo.setRequestInfo(new SolrRequestInfo(solrReq, solrRsp));
+                this.execute( req, coreHandler, solrReq, solrRsp, authentication );
+                HttpCacheHeaderUtil.checkHttpCachingVeto(solrRsp, resp, reqMethod);
+                // add info to http headers
+
+                QueryResponseWriter responseWriter = solrCore.getQueryResponseWriter(solrReq);
+                writeResponse(solrRsp, resp, responseWriter, solrReq, reqMethod);
+            }
+            return; // we are done with a valid handler
         }
         catch (Throwable ex) {
-            sendError( core, solrReq, req, resp, ex );
+            sendError( solrCore, solrReq, req, resp, ex );
             return;
         }
         finally {
@@ -206,22 +133,11 @@ public class SolrController {
                 log.debug("Closing out SolrRequest: {}", solrReq);
                 solrReq.close();
             }
-            if (core != null) {
-                core.close();
+            if (solrCore != null) {
+                solrCore.close();
             }
             SolrRequestInfo.clearRequestInfo();
         }
-    }
-
-    private SolrCore checkProps(CoreContainer cores, String path,
-                                ZkNodeProps zkProps) {
-        String corename;
-        SolrCore core = null;
-        if (cores.getZkController().getNodeName().equals(zkProps.getStr(ZkStateReader.NODE_NAME_PROP))) {
-            corename = zkProps.getStr(ZkStateReader.CORE_NAME_PROP);
-            core = cores.getCore(corename);
-        }
-        return core;
     }
 
     private void writeResponse(SolrQueryResponse solrRsp, ServletResponse response,
@@ -262,7 +178,7 @@ public class SolrController {
         // for example: sreq.getContext().put( "HttpServletRequest", req );
         // used for logging query stats in SolrCore.execute()
         ModifiableSolrParams mapSolrParams = new ModifiableSolrParams(sreq.getParams());
-        //  mapSolrParams.add("fq", String.format("owner:%s", authentication.getName()));
+        mapSolrParams.add("fq", owner(authentication.getName()));
 
         sreq.setParams(mapSolrParams);
 
