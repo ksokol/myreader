@@ -3,7 +3,7 @@
 <config>
   <luceneMatchVersion>4.6</luceneMatchVersion>
 
-  <dataDir>${solr.data.dir:}</dataDir>
+  <dataDir>${myreader.data.dir:}</dataDir>
 
   <directoryFactory name="DirectoryFactory"
                     class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
