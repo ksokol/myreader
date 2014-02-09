@@ -27,7 +27,7 @@ public class SolrSubscriptionFields {
     public static final String SEEN = "seen";
     public static final String OWNER = "owner";
     public static final String OWNER_ID = "owner_id";
-    public static final String CREATED_AT = "createdAt";
+    public static final String CREATED_AT = "created_at";
     public static final String GUID = "guid";
 
     public static String feedTag(String tag) {

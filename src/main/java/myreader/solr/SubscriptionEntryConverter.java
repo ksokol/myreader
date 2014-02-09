@@ -69,19 +69,7 @@ public class SubscriptionEntryConverter {
         subscription.setFeed(feed);
 
         se.setSubscription(subscription);
-        Collection<Object> entry_tag = doc.getFieldValues(TAGS);
-        if(entry_tag != null) {
-            StringBuilder sb = new StringBuilder();
-
-            for(Object o : entry_tag) {
-                sb.append(o);
-                sb.append(",");
-            }
-
-            if(sb.length() > 1) {
-                se.setTag(sb.substring(0, sb.length() -1).toString());
-            }
-        }
+        se.setTag((String) doc.getFieldValue(TAGS));
 
         return se;
     }

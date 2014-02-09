@@ -85,8 +85,8 @@
          <str name="facet.limit">32000</str>
          <str name="q.op">AND</str>
          <float name="tie">0.01</float>
-         <str name="qf">ft_content^1.0 ft_title^0.5</str>
-         <str name="sort">createdAt desc</str>
+         <str name="qf">ft_content^1.0 ft_title^0.5 ft_tags^0.5</str>
+         <str name="sort">created_at desc</str>
       </lst>
   </requestHandler>
 
