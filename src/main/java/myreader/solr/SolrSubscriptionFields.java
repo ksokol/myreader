@@ -4,7 +4,11 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
+
+import static java.net.URLEncoder.encode;
 
 /**
  * @author dev@sokol-web.de <Kamill Sokol>
@@ -31,34 +35,45 @@ public class SolrSubscriptionFields {
     public static final String GUID = "guid";
 
     public static String feedTag(String tag) {
-        return String.format("%s:%s", FEED_TAG,tag);
+        return format(FEED_TAG,tag);
     }
 
     public static String feedTitle(String title) {
-        return String.format("%s:%s", FEED_TITLE,title);
+        return format(FEED_TITLE,title);
     }
 
     public static String tags(String tags) {
-        return String.format("%s:%s", TAGS,tags);
+        return format(TAGS,tags);
     }
 
     public static String seen(boolean seen) {
-        return String.format("%s:%s", SEEN, seen);
+        return format(SEEN, seen);
     }
 
     public static String owner(String owner) {
-        return String.format("%s:%s", OWNER, owner);
+        return format(OWNER, owner);
     }
 
     public static String ownerId(Long ownerId) {
-        return String.format("%s:%s", OWNER_ID, Long.valueOf(ownerId));
+        return format(OWNER_ID, Long.valueOf(ownerId));
     }
 
     public static String createdAt(Date createdAt) {
-        return String.format("%s:%s", CREATED_AT, new DateTime(createdAt).toString(fmt));
+        return format(CREATED_AT, new DateTime(createdAt).toString(fmt));
     }
 
     public static String feedId(Long feedId) {
-        return String.format("%s:%s", FEED_ID, String.valueOf(feedId));
+        return format(FEED_ID, String.valueOf(feedId));
+    }
+
+    private static final String FMT = "%s:%s";
+
+    private static String format(String key, Object value) {
+        try {
+            String encoded = encode(String.valueOf(value), "UTF8");
+            return String.format(FMT, key, encoded);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 }
