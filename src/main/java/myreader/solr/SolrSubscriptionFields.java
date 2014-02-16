@@ -5,7 +5,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Date;
 
 import static java.net.URLEncoder.encode;
@@ -51,7 +50,7 @@ public class SolrSubscriptionFields {
     }
 
     public static String owner(String owner) {
-        return format(OWNER, owner);
+        return String.format(FMT, OWNER, owner);
     }
 
     public static String ownerId(Long ownerId) {
