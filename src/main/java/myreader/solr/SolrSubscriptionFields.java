@@ -34,6 +34,10 @@ public class SolrSubscriptionFields {
         return String.format("%s:%s", FEED_TAG,tag);
     }
 
+    public static String feedTitle(String title) {
+        return String.format("%s:%s", FEED_TITLE,title);
+    }
+
     public static String tags(String tags) {
         return String.format("%s:%s", TAGS,tags);
     }

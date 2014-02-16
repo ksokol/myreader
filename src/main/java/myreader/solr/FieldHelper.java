@@ -17,6 +17,10 @@ public class FieldHelper {
         return wildcard;
     }
 
+    public static String or(String op1, String op2) {
+        return String.format("(%s OR %s)", op1, op2);
+    }
+
     public static class Wildcard {
         public static final String VALUE = "*";
         private Wildcard() {}

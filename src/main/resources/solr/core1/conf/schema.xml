@@ -20,7 +20,7 @@
      <field name="feed_tag" type="string"  indexed="true"  stored="true" multiValued="true" />
      <field name="feed_icon" type="string"  indexed="false"  stored="true" multiValued="false" />
      <field name="feed_icon_mime" type="string"  indexed="false"  stored="true" multiValued="false" />
-     <field name="feed_title" type="string"  indexed="false"  stored="true" multiValued="false"/>
+     <field name="feed_title" type="string"  indexed="true"  stored="true" multiValued="false"/>
 
      <field name="_version_" type="long" indexed="true" stored="true"/>
 
