@@ -4,10 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
-
-import static java.net.URLEncoder.encode;
 
 /**
  * @author dev@sokol-web.de <Kamill Sokol>
@@ -50,7 +47,7 @@ public class SolrSubscriptionFields {
     }
 
     public static String owner(String owner) {
-        return String.format(FMT, OWNER, owner);
+        return format(OWNER, owner);
     }
 
     public static String ownerId(Long ownerId) {
@@ -65,14 +62,7 @@ public class SolrSubscriptionFields {
         return format(FEED_ID, String.valueOf(feedId));
     }
 
-    private static final String FMT = "%s:%s";
-
     private static String format(String key, Object value) {
-        try {
-            String encoded = encode(String.valueOf(value), "UTF8");
-            return String.format(FMT, key, encoded);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        return String.format("%s:%s", key, value);
     }
 }

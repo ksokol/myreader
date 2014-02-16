@@ -17,10 +17,10 @@
 
      <field name="feed_id" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
      <field name="feed_url" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
-     <field name="feed_tag" type="string"  indexed="true"  stored="true" multiValued="true" />
+     <field name="feed_tag" type="keyword"  indexed="true"  stored="true" multiValued="true" />
      <field name="feed_icon" type="string"  indexed="false"  stored="true" multiValued="false" />
      <field name="feed_icon_mime" type="string"  indexed="false"  stored="true" multiValued="false" />
-     <field name="feed_title" type="string"  indexed="true"  stored="true" multiValued="false"/>
+     <field name="feed_title" type="keyword"  indexed="true"  stored="true" multiValued="false"/>
 
      <field name="_version_" type="long" indexed="true" stored="true"/>
 
@@ -67,6 +67,15 @@
           <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" splitOnNumerics="0" splitOnCaseChange="0" />
           <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
+    </fieldType>
+
+    <fieldType name="keyword" class="solr.TextField">
+        <analyzer type="index">
+            <tokenizer class="solr.KeywordTokenizerFactory" />
+        </analyzer>
+        <analyzer type="query">
+            <tokenizer class="solr.KeywordTokenizerFactory" />
+        </analyzer>
     </fieldType>
  </types>
 </schema>

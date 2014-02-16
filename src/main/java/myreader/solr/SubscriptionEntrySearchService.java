@@ -35,7 +35,7 @@ public class SubscriptionEntrySearchService {
             String s = myQuery.getFilter().get(k);
 
             if("subscription.tag".equals(k)) {
-                query.addFilterQuery(or(feedTag(s), feedTitle(s)));
+                query.addFilterQuery(or(feedTag(phrase(s)), feedTitle(phrase(s))));
             } else if("tag".equals(k)) {
                 query.addFilterQuery(tags(s));
             }

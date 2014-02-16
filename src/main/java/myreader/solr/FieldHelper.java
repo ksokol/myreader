@@ -4,7 +4,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-
 /**
  * @author dev@sokol-web.de <Kamill Sokol>
  */
@@ -15,6 +14,10 @@ public class FieldHelper {
 
     public static Wildcard wildcard() {
         return wildcard;
+    }
+
+    public static String phrase(String value) {
+        return String.format("\"%s\"", value);
     }
 
     public static String or(String op1, String op2) {

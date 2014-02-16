@@ -11,7 +11,6 @@ import java.util.TreeSet;
 import myreader.API;
 import myreader.dao.SubscriptionDao;
 import myreader.dao.SubscriptionEntryDao;
-import myreader.dao.UserDao;
 import myreader.entity.FeedIcon;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
@@ -23,8 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,11 +40,6 @@ public class EntryApi {
 
     @Autowired
     private SubscriptionEntryDao subscriptionEntryDao;
-
-    @InitBinder
-    protected void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new StringURLDecoderEditor());
-    }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
