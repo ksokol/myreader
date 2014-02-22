@@ -11,23 +11,17 @@ import java.util.TreeSet;
 import myreader.API;
 import myreader.dao.SubscriptionDao;
 import myreader.dao.SubscriptionEntryDao;
-import myreader.dao.UserDao;
 import myreader.entity.FeedIcon;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionEntryQuery;
-import myreader.entity.User;
-import myreader.fetcher.impl.EntryLinkSanitizer;
-import myreader.reader.persistence.UserEntryQuery;
-import myreader.reader.persistence.UserEntryQuery.IconDto;
+import myreader.reader.web.UserEntryQuery.IconDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,19 +36,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class EntryApi {
 
     @Autowired
-    SubscriptionDao subscriptionDao;
+    private SubscriptionDao subscriptionDao;
 
     @Autowired
-    SubscriptionEntryDao subscriptionEntryDao;
-
-    // TODO
-    @Autowired
-    UserDao userDao;
-
-    @InitBinder
-    protected void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new StringURLDecoderEditor());
-    }
+    private SubscriptionEntryDao subscriptionEntryDao;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
@@ -65,17 +50,13 @@ public class EntryApi {
         // TODO
         if (feedTag != null) {
             query.addFilter("subscription.tag", feedTag);
-            query.addFilter("subscription.title", feedTag);
         }
         // TODO
         if (tag != null) {
             query.addFilter("tag", tag);
         }
 
-        // TODO
-        User user = userDao.findByEmail(auth.getName());
-        List<SubscriptionEntry> query2 = subscriptionEntryDao.query(query, user.getId());
-
+        List<SubscriptionEntry> query2 = subscriptionEntryDao.query(query, auth.getName());
         List<UserEntryQuery> dtoList = new ArrayList<UserEntryQuery>();
 
         for (SubscriptionEntry e : query2) {

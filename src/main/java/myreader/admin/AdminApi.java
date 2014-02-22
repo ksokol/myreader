@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 
 import myreader.API;
-import myreader.bootstrap.SearchIndexCheck;
+import myreader.bootstrap.SearchIndexRebuildListener;
 import myreader.dao.FeedDao;
 import myreader.dto.FeedQueryDto;
 import myreader.dto.FeedQueryDto.UserQueryDto;
@@ -67,20 +67,6 @@ class AdminApi {
             dto.setTitle(feed.getTitle());
             dto.setUrl(feed.getUrl());
 
-            List<UserQueryDto> userDtoList = new ArrayList<UserQueryDto>();
-            for (Subscription subscription : feed.getSubscriptions()) {
-                UserQueryDto userDto = new UserQueryDto();
-
-                userDto.setCreatedAt(subscription.getCreatedAt());
-                userDto.setEmail(subscription.getUser().getEmail());
-                userDto.setSum(subscription.getSum());
-                userDto.setTag(subscription.getTag());
-                userDto.setUnseen((long) subscription.getUnseen());
-
-                userDtoList.add(userDto);
-            }
-            dto.setUsers(userDtoList);
-
             dtoList.add(dto);
         }
 
@@ -91,7 +77,7 @@ class AdminApi {
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "searchIndex", method = RequestMethod.POST)
     public void searchIndex() {
-        publisher.publishEvent(new SearchIndexCheck.ReindexApplicationEvent(this));
+        publisher.publishEvent(new SearchIndexRebuildListener.ReindexApplicationEvent(this));
     }
 
     @ResponseStatus(value = HttpStatus.OK)
