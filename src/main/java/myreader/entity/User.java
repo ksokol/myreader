@@ -22,6 +22,9 @@ public class User {
     @Column(name = "user_role")
     private String role;
 
+    @Column(name = "user_password")
+    private String password;
+
     @OneToMany(mappedBy = "user")
     private Set<Subscription> subscriptions;
 
@@ -43,6 +46,14 @@ public class User {
 
     public String getRole() {
         return role;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setRole(String role) {

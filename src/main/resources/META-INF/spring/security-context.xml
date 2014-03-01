@@ -8,11 +8,7 @@
         http://www.springframework.org/schema/security
 		http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
-    <bean id="userDetailsService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
-    	<property name="dataSource" ref="dataSource"/>
-  		<property name="usersByUsernameQuery" value="select user_email,user_password,1 as enabled from user where user_email = ?"/>
-  		<property name="authoritiesByUsernameQuery" value="select user_email,user_role from user where user_email = ?"/> 
-	</bean>   
+    <bean id="userDetailsService" class="spring.security.CustomUserDetailsService" autowire="constructor" />
     
     <security:authentication-manager alias="authenticationManager">
        <security:authentication-provider user-service-ref='userDetailsService'>
