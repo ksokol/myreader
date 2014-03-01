@@ -14,7 +14,7 @@
 		http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
-	<tx:annotation-driven mode="aspectj"/>
+	<tx:annotation-driven />
     <context:annotation-config />
     <context:component-scan base-package="myreader.config, myreader.dao, myreader.solr" />
 
@@ -22,10 +22,6 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="packagesToScan" value="myreader.entity" />
      <!--   <property name="hibernateProperties" ref="hibernatePropertiesMap" /> -->
-    </bean>
-
-    <bean class="org.springframework.transaction.aspectj.AnnotationTransactionAspect" factory-method="aspectOf">
-        <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
     <task:scheduler id="myScheduler" pool-size="10"/>
