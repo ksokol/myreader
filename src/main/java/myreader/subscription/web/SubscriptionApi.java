@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import myreader.API;
-import myreader.dao.SubscriptionDao;
 import myreader.dto.ExclusionPatternDto;
 import myreader.dto.SubscriptionDto;
 import myreader.entity.ExclusionPattern;
@@ -17,6 +16,7 @@ import myreader.fetcher.icon.IconUpdateRequestEvent;
 
 import myreader.repository.FeedRepository;
 import myreader.repository.UserRepository;
+import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.orm.hibernate4.HibernateObjectRetrievalFailureException;
@@ -42,21 +42,21 @@ class SubscriptionApi {
     static Pattern patternUrl = Pattern.compile(pattern);
 
     @Autowired
-    SubscriptionDao subscriptionDao;
-
-    @Autowired
     private FeedRepository feedRepository;
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
+    private SubscriptionService subscriptionService;
+
+    @Autowired
     ApplicationEventPublisher publisher;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
-    public List<SubscriptionDto> test(boolean showAll, Authentication user) {
-        List<Subscription> l = subscriptionDao.findAll(user.getName());
+    public List<SubscriptionDto> test(boolean showAll) {
+        List<Subscription> l = subscriptionService.findAll();
         List<SubscriptionDto> ld = new ArrayList<SubscriptionDto>();
 
         for (Subscription s : l) {
@@ -81,8 +81,8 @@ class SubscriptionApi {
 
     @RequestMapping(value = "", method = RequestMethod.GET, params = "distinct")
     @ResponseBody
-    public Collection<String> distinct(@RequestParam String distinct, Authentication user) {
-        List<Subscription> subscriptionList = subscriptionDao.findAll(user.getName());
+    public Collection<String> distinct(@RequestParam String distinct) {
+        List<Subscription> subscriptionList = subscriptionService.findAll();
         Set<String> distinction = new TreeSet<String>();
 
         for (Subscription s : subscriptionList) {
@@ -99,8 +99,8 @@ class SubscriptionApi {
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     @ResponseBody
-    public SubscriptionDto findById(@PathVariable Long id, Authentication user) {
-        Subscription s = subscriptionDao.findById(id, user.getName());
+    public SubscriptionDto findById(@PathVariable Long id) {
+        Subscription s = subscriptionService.findById(id);
 
         SubscriptionDto dto = new SubscriptionDto();
         dto.setCreatedAt(s.getCreatedAt());
@@ -127,15 +127,15 @@ class SubscriptionApi {
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseBody
-    public void delete(@PathVariable Long id, Authentication user) {
-        subscriptionDao.deleteById(id, user.getName());
+    public void delete(@PathVariable Long id) {
+        subscriptionService.delete(id);
     }
 
     @SuppressWarnings("rawtypes")
     @RequestMapping(value = { "{id}" }, method = RequestMethod.PUT, consumes = "application/json")
     @ResponseBody
-    public void editPost(@PathVariable Long id, @RequestBody Map<String, Object> map, Authentication authentication) {
-        Subscription subscription = subscriptionDao.findById(id, authentication.getName()); // read(Long.valueOf(id));
+    public void editPost(@PathVariable Long id, @RequestBody Map<String, Object> map) {
+        Subscription subscription = subscriptionService.findById(id);
 
         if (map.containsKey("tag")) {
             String valueOf = String.valueOf(map.get("tag"));
@@ -180,7 +180,7 @@ class SubscriptionApi {
             subscription.setExclusions(newSet);
         }
 
-        subscriptionDao.saveOrUpdate(subscription);
+        subscriptionService.save(subscription);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
@@ -230,7 +230,7 @@ class SubscriptionApi {
         Subscription userFeed = null;
 
         try {
-            userFeed = subscriptionDao.findByUrl(String.valueOf(map.get("url")), authentication.getName()); // dao.findUserFeedByUrl(map.get("url"));
+            userFeed = subscriptionService.findByUrl(String.valueOf(map.get("url")));
         } catch (HibernateObjectRetrievalFailureException e) {
 
             userFeed = new Subscription();
@@ -271,7 +271,7 @@ class SubscriptionApi {
 
         userFeed.setUser(user);
 
-        subscriptionDao.saveOrUpdate(userFeed);
+        subscriptionService.save(userFeed);
         // TODO: copy entries for user if feed exists already
 
     }

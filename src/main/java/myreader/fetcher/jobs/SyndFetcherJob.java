@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import myreader.dao.SubscriptionDao;
 import myreader.dao.SubscriptionEntryDao;
 import myreader.entity.ExclusionPattern;
 import myreader.entity.Feed;
@@ -21,6 +20,8 @@ import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
 import myreader.repository.FetchStatisticRepository;
+import myreader.service.feed.FeedService;
+import myreader.service.subscription.SubscriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanNameAware;
@@ -52,7 +53,10 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
     SubscriptionEntryDao subscriptionEntryDao;
 
     @Autowired
-    SubscriptionDao subscriptionDao;
+    private SubscriptionService subscriptionService;
+
+    @Autowired
+    private FeedService feedService;
 
     @Autowired
     private FetchStatisticRepository fetchStatisticRepository;
@@ -155,7 +159,7 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
 
                 count++;
 
-                List<Subscription> subscriptionList = subscriptionDao.findByUrl(feed.getUrl());
+                List<Subscription> subscriptionList = feedService.findAllSubscriptionsByUrl(feed.getUrl());
 
                 for (Subscription subscription : subscriptionList) {
                     boolean excluded = false;
@@ -180,7 +184,7 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
                         subscriptionEntryDao.saveOrUpdate(subscriptionEntry);
                     }
 
-                    subscriptionDao.saveOrUpdate(subscription);
+                    subscriptionService.save(subscription);
                 }
             }
         }

@@ -13,8 +13,8 @@ import java.util.Date;
  */
 public interface FeedEntryRepository extends PagingAndSortingRepository<FeedEntry, Long> {
 
-    @Query("select count(*) from FeedEntry where title = :title or guid = :guid or url = :url")
-    int countByTitleOrGuidOrUrl(@Param("title") String title,@Param("guid") String guid,@Param("url") String url);
+    @Query("select count(*) from FeedEntry where title = ?0 or guid = ?1 or url = ?2")
+    int countByTitleOrGuidOrUrl(String title, String guid, String url);
 
     @Query("from FeedEntry where feed = ?0 and createdAt < ?1")
     Iterable<FeedEntry> findByFeedAfterCreatedAt(Feed feed, Date createdAt);

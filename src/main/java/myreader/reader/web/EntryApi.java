@@ -9,7 +9,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import myreader.API;
-import myreader.dao.SubscriptionDao;
 import myreader.dao.SubscriptionEntryDao;
 import myreader.entity.FeedIcon;
 import myreader.entity.Subscription;
@@ -17,6 +16,9 @@ import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionEntryQuery;
 import myreader.reader.web.UserEntryQuery.IconDto;
 
+import myreader.repository.FeedRepository;
+import myreader.repository.UserRepository;
+import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -36,10 +38,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class EntryApi {
 
     @Autowired
-    private SubscriptionDao subscriptionDao;
+    private SubscriptionEntryDao subscriptionEntryDao;
 
     @Autowired
-    private SubscriptionEntryDao subscriptionEntryDao;
+    private SubscriptionService subscriptionService;
+
+    @Autowired
+    private FeedRepository feedRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
@@ -119,7 +127,7 @@ public class EntryApi {
         if ("tag".equals(distinct)) {
             return subscriptionEntryDao.findByDistinctTag(authentication.getName());
         } else if ("feed.tag".equals(distinct)) {
-            List<Subscription> findAll = subscriptionDao.findAll(authentication.getName());
+            List<Subscription> findAll = subscriptionService.findAll();
             SortedSet<String> set = new TreeSet<String>();
 
             for (Subscription s : findAll) {

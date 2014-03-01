@@ -11,6 +11,6 @@ public interface FeedRepository extends PagingAndSortingRepository<Feed, Long> {
 
     Feed findByUrl(String url);
 
-    @Query("select count(f) from Feed f join f.entries fe where f.id = :id")
+    @Query("select count(f) from Feed f join f.entries fe where f.id = ?0")
     Long countByFeedEntry(Long id);
 }
