@@ -4,7 +4,7 @@ import myreader.API;
 import myreader.dto.UserDto;
 import myreader.entity.User;
 
-import myreader.service.user.UserService;
+import myreader.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class UserApi {
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     @RequestMapping(value = "{email:.+}", method = RequestMethod.GET)
     @ResponseBody
     public UserDto user(@PathVariable String email, Authentication auth) {
-        User user = userService.findByEmail(email);
+        User user = userRepository.findByEmail(email);
 
         if (!user.getEmail().equals(auth.getName())) {
             throw new AccessDeniedException(null);
