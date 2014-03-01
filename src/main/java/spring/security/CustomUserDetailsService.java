@@ -1,6 +1,6 @@
 package spring.security;
 
-import myreader.dao.UserDao;
+import myreader.service.user.UserService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,15 +17,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private static final Logger logger = Logger.getLogger(CustomUserDetailsService.class.getName());
 
-    private UserDao userDao;
+    private UserService userService;
 
-    public CustomUserDetailsService(UserDao userDao) {
-        this.userDao = userDao;
+    public CustomUserDetailsService(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        myreader.entity.User user = userDao.findByEmail(username);
+        myreader.entity.User user = userService.findByEmail(username);
 
         if (user == null) {
             logger.info(String.format("Query returned no results for user '%s'", username));
