@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 import myreader.API;
 import myreader.dao.FeedDao;
 import myreader.dao.SubscriptionDao;
-import myreader.dao.UserDao;
 import myreader.dto.ExclusionPatternDto;
 import myreader.dto.SubscriptionDto;
 import myreader.entity.ExclusionPattern;
@@ -17,6 +16,7 @@ import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.fetcher.icon.IconUpdateRequestEvent;
 
+import myreader.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.orm.hibernate4.HibernateObjectRetrievalFailureException;
@@ -48,7 +48,7 @@ class SubscriptionApi {
     FeedDao feedDao;
 
     @Autowired
-    UserDao userDao;
+    private UserRepository userRepository;
 
     @Autowired
     ApplicationEventPublisher publisher;
@@ -267,7 +267,7 @@ class SubscriptionApi {
             userFeed.setExclusions(newSet);
         }
 
-        User user = userDao.findByEmail(authentication.getName());
+        User user = userRepository.findByEmail(authentication.getName());
 
         userFeed.setUser(user);
 
