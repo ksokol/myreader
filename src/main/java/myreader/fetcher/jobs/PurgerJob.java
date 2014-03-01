@@ -4,13 +4,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import myreader.dao.FeedDao;
 import myreader.dao.FeedEntryRepository;
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.FeedEntryQuery;
 import myreader.entity.SubscriptionEntry;
 
+import myreader.repository.FeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ class PurgerJob implements Runnable {
     static Long AMOUNT = 10L;
 
     @Autowired
-    FeedDao feedDao;
+    private FeedRepository feedRepository;
 
     @Autowired
     FeedEntryRepository feedEntryRepository;
@@ -48,7 +48,7 @@ class PurgerJob implements Runnable {
         logger.debug("start");
         logger.info("threshold for deletion: {}", threshold);
 
-        List<Feed> feedList = feedDao.findAll();
+        Iterable<Feed> feedList = feedRepository.findAll();
 
         timer.start();
 
@@ -65,7 +65,7 @@ class PurgerJob implements Runnable {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void doInTransaction(final Feed feed, final Date threshold) {
         if (feed.getSubscriptions().size() == 0) {
-            feedDao.delete(feed.getId());
+            feedRepository.delete(feed.getId());
             logger.info("subscriptions {}, id: {} - deleting.", feed.getSubscriptions().size(), feed.getId());
         } else {
             FeedEntryQuery query = new FeedEntryQuery();
@@ -73,7 +73,7 @@ class PurgerJob implements Runnable {
             query.setFeedIdFilter(feed.getId());
 
             List<FeedEntry> deprecatedEntries = feedEntryRepository.query(query);
-            Long entryCount = feedDao.countByFeedEntry(feed.getId());
+            Long entryCount = feedRepository.countByFeedEntry(feed.getId());
             int deleted = 0;
             long maxToDelete = Math.min(Math.max(entryCount - AMOUNT, 0), deprecatedEntries.size());
 

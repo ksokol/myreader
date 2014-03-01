@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import myreader.dao.FeedDao;
 import myreader.dao.FeedEntryRepository;
-import myreader.dao.FetchStatisticRepository;
 import myreader.dao.SubscriptionDao;
 import myreader.dao.SubscriptionEntryDao;
 import myreader.entity.ExclusionPattern;
@@ -21,6 +19,8 @@ import myreader.fetcher.FeedQueue;
 import myreader.fetcher.impl.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 
+import myreader.repository.FeedRepository;
+import myreader.repository.FetchStatisticRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanNameAware;
@@ -43,7 +43,7 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
     FeedQueue feedQueue;
 
     @Autowired
-    FeedDao feedRepository;
+    private FeedRepository feedRepository;
 
     @Autowired
     FeedEntryRepository feedEntryRepository;
@@ -55,7 +55,7 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
     SubscriptionDao subscriptionDao;
 
     @Autowired
-    FetchStatisticRepository fetchStatisticRepository;
+    private FetchStatisticRepository fetchStatisticRepository;
 
     @Autowired
     private ExclusionChecker exclusionChecker;
@@ -106,7 +106,7 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
                 feed.setLastModified(fetchResult.getLastModified());
                 feed.setFetched(feed.getFetched() + fetchCount);
 
-                feedRepository.saveOrUpdate(feed);
+                feedRepository.save(feed);
 
                 fetchStatistics.setFetchCount(Long.valueOf(fetchCount));
             }
@@ -124,7 +124,7 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
             throw e;
         } finally {
             fetchStatistics.setStoppedAt(new Date());
-            fetchStatisticRepository.saveOrUpdate(fetchStatistics);
+            fetchStatisticRepository.save(fetchStatistics);
         }
     }
 

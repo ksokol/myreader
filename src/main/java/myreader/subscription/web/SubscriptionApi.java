@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import myreader.API;
-import myreader.dao.FeedDao;
 import myreader.dao.SubscriptionDao;
 import myreader.dto.ExclusionPatternDto;
 import myreader.dto.SubscriptionDto;
@@ -16,6 +15,7 @@ import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.fetcher.icon.IconUpdateRequestEvent;
 
+import myreader.repository.FeedRepository;
 import myreader.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -45,7 +45,7 @@ class SubscriptionApi {
     SubscriptionDao subscriptionDao;
 
     @Autowired
-    FeedDao feedDao;
+    private FeedRepository feedRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -203,7 +203,7 @@ class SubscriptionApi {
         Feed feed = null;
 
         try {
-            feed = feedDao.findByUrl(String.valueOf(map.get("url")));
+            feed = feedRepository.findByUrl(String.valueOf(map.get("url")));
         } catch (HibernateObjectRetrievalFailureException e) {
             String feedTitle = null;
 
@@ -220,7 +220,7 @@ class SubscriptionApi {
             feed.setUrl(String.valueOf(map.get("url")));
             feed.setTitle(feedTitle);
 
-            feedDao.saveOrUpdate(feed);
+            feedRepository.save(feed);
 
             IconUpdateRequestEvent iconUpdateRequestEvent = new IconUpdateRequestEvent(this);
             iconUpdateRequestEvent.setUrl(feed.getUrl());

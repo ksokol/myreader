@@ -1,12 +1,13 @@
 package myreader.fetcher.jobs;
 
+import java.util.Iterator;
 import java.util.List;
 
-import myreader.dao.FeedDao;
 import myreader.entity.Feed;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.impl.HttpCallDecisionMaker;
 
+import myreader.repository.FeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -25,7 +26,7 @@ class FeedListFetcher implements Runnable, DisposableBean {
     FeedQueue feedQueue;
 
     @Autowired
-    FeedDao feedRepository;
+    private FeedRepository feedRepository;
 
     private volatile boolean alive = true;
 
@@ -39,11 +40,13 @@ class FeedListFetcher implements Runnable, DisposableBean {
             return;
         }
 
-        List<Feed> feeds = feedRepository.findAll();
-        logger.info("checking {} feeds", feeds.size());
+        Iterable<Feed> feeds = feedRepository.findAll();
+        Iterator<Feed> iterator = feeds.iterator();
+        logger.info("checking {} feeds", feedRepository.count());
 
-        for (int i = 0; i < feeds.size() && alive; i++) {
-            Feed f = feeds.get(i);
+       // for (int i = 0; i < feeds.size() && alive; i++) {
+        while(iterator.hasNext() && alive) {
+            Feed f = iterator.next();
             boolean result = httpCallDecisionMaker.decide(f.getUrl(), f.getLastModified());
             logger.debug("calling: {}, lastModified: {}, url: {}",
                     new Object[] { result, f.getLastModified(), f.getUrl() });
