@@ -2,18 +2,18 @@ package myreader.fetcher.jobs;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.Iterator;
 
-import myreader.dao.FeedEntryRepository;
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
-import myreader.entity.FeedEntryQuery;
 import myreader.entity.SubscriptionEntry;
 
+import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +31,7 @@ class PurgerJob implements Runnable {
     private FeedRepository feedRepository;
 
     @Autowired
-    FeedEntryRepository feedEntryRepository;
+    private FeedEntryRepository feedEntryRepository;
 
     @Transactional
     @Override
@@ -68,22 +68,20 @@ class PurgerJob implements Runnable {
             feedRepository.delete(feed.getId());
             logger.info("subscriptions {}, id: {} - deleting.", feed.getSubscriptions().size(), feed.getId());
         } else {
-            FeedEntryQuery query = new FeedEntryQuery();
-            query.setCreatedAtFilter(threshold);
-            query.setFeedIdFilter(feed.getId());
-
-            List<FeedEntry> deprecatedEntries = feedEntryRepository.query(query);
+            int count = feedEntryRepository.countByFeedAfterCreatedAt(feed, threshold);
+            Iterable<FeedEntry> deprecatedEntries = feedEntryRepository.findByFeedAfterCreatedAt(feed, threshold);
             Long entryCount = feedRepository.countByFeedEntry(feed.getId());
             int deleted = 0;
-            long maxToDelete = Math.min(Math.max(entryCount - AMOUNT, 0), deprecatedEntries.size());
+            long maxToDelete = Math.min(Math.max(entryCount - AMOUNT, 0), count);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("id: {}, entryCount {}, maxToDelete {}, deprecatedEntries {}", new Object[] { feed.getId(), entryCount, maxToDelete,
-                        deprecatedEntries.size() });
+                        count });
             }
 
-            for (int i = 0; i < maxToDelete; i++) {
-                FeedEntry deprecatedEntry = deprecatedEntries.get(i);
+            Iterator<FeedEntry> iterator = deprecatedEntries.iterator();
+            for (int i = 0; i < maxToDelete && iterator.hasNext(); i++) {
+                FeedEntry deprecatedEntry = iterator.next();
                 boolean doDelete = true;
 
                 for (SubscriptionEntry e : deprecatedEntry.getSubscriptionEntries()) {

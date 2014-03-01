@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import myreader.dao.FeedEntryRepository;
 import myreader.dao.SubscriptionDao;
 import myreader.dao.SubscriptionEntryDao;
 import myreader.entity.ExclusionPattern;
@@ -19,6 +18,7 @@ import myreader.fetcher.FeedQueue;
 import myreader.fetcher.impl.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 
+import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
 import myreader.repository.FetchStatisticRepository;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
     private FeedRepository feedRepository;
 
     @Autowired
-    FeedEntryRepository feedEntryRepository;
+    private FeedEntryRepository feedEntryRepository;
 
     @Autowired
     SubscriptionEntryDao subscriptionEntryDao;
@@ -151,7 +151,7 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
                 feedEntry.setTitle(dto.getTitle());
                 feedEntry.setUrl(dto.getUrl());
 
-                feedEntryRepository.saveOrUpdate(feedEntry);
+                feedEntryRepository.save(feedEntry);
 
                 count++;
 
