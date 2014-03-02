@@ -8,6 +8,7 @@ import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.AccessDeniedException;
+import myreader.service.EntityNotFoundException;
 import myreader.service.user.UserService;
 import myreader.solr.IndexService;
 import myreader.solr.SubscriptionSearchService;
@@ -66,6 +67,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public Subscription findById(Long id) {
         User currentUser = userService.getCurrentUser();
         Subscription subscription = subscriptionRepository.findByIdAndUsername(id, currentUser.getEmail());
+
+        if(subscription == null) {
+            throw new EntityNotFoundException();
+        }
 
         long l = searchService.countUnseenEntriesById(subscription.getId());
         subscription.setUnseen(l);

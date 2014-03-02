@@ -57,4 +57,6 @@
     	<bean class="spring.CacheControlInterceptor" />
 	</mvc:interceptors>
 
+    <bean id="handlerExceptionResolver" class="myreader.RestExceptionResolver" />
+
 </beans>
