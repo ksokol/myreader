@@ -10,4 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 public interface FetchStatisticRepository extends JpaRepository<FetchStatistics, Long> {
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    FetchStatistics save(FetchStatistics fetchStatistics);
 }

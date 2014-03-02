@@ -5,6 +5,7 @@ import myreader.repository.SubscriptionRepository;
 import myreader.solr.SubscriptionSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
 /**
  * @author Kamill Sokol dev@sokol-web.de
  */
+@Transactional
 @Service
 public class FeedServiceImpl implements FeedService {
 

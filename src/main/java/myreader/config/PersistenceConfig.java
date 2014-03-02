@@ -87,7 +87,7 @@ public class PersistenceConfig {
 
                 setDatabasePlatform(hibernateDialect);
                 setGenerateDdl(jpaGenerateDdl);
-                setShowSql(true);
+               // setShowSql(true);
             }
         };
 
@@ -100,12 +100,9 @@ public class PersistenceConfig {
 
     @Bean
     public PlatformTransactionManager transactionManager() {
-
         JpaTransactionManager txManager = new JpaTransactionManager();
         txManager.setEntityManagerFactory(entityManagerFactory().getObject());
+        txManager.setDataSource(dataSource());
         return txManager;
     }
-
-
-
 }

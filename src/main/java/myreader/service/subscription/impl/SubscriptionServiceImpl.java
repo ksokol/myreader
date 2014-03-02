@@ -1,4 +1,4 @@
-package myreader.service.subscription;
+package myreader.service.subscription.impl;
 
 /**
  * @author Kamill Sokol dev@sokol-web.de
@@ -8,6 +8,7 @@ import myreader.entity.User;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.AccessDeniedException;
 import myreader.service.EntityNotFoundException;
+import myreader.service.subscription.SubscriptionService;
 import myreader.service.user.UserService;
 import myreader.solr.IndexService;
 import myreader.solr.SubscriptionSearchService;

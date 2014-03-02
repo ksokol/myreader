@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 
+@Transactional
 @Component("purgerJob")
 class PurgerJob implements Runnable {
 
@@ -33,7 +34,6 @@ class PurgerJob implements Runnable {
     @Autowired
     private FeedEntryRepository feedEntryRepository;
 
-    @Transactional
     @Override
     public void run() {
         StopWatch timer = new StopWatch();

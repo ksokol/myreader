@@ -1,19 +1,23 @@
-package myreader.service.subscriptionentry;
+package myreader.service.subscriptionentry.impl;
 
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.User;
 import myreader.repository.SubscriptionEntryRepository;
+import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
+import myreader.service.subscriptionentry.SubscriptionEntryService;
 import myreader.service.user.UserService;
 import myreader.solr.IndexService;
 import myreader.solr.SubscriptionEntrySearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
  * @author Kamill Sokol dev@sokol-web.de
  */
+@Transactional
 @Service
 public class SubscriptionEntryServiceImpl implements SubscriptionEntryService {
 
