@@ -36,8 +36,6 @@
      	<task:scheduled ref="iconUpdateJob" method="run" cron="0 0 2 * * SUN"/>     	
 	</task:scheduled-tasks>
 
-	<task:scheduler id="myScheduler" pool-size="10"/>
-	
 	<mvc:annotation-driven>
     	<mvc:argument-resolvers>
         	<bean class="org.springframework.mobile.device.DeviceWebArgumentResolver" />
