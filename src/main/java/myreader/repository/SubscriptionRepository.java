@@ -11,15 +11,15 @@ import java.util.List;
  */
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
-    @Query("from Subscription where feed.url = ?0")
+    @Query("from Subscription where feed.url = ?1")
     List<Subscription> findByUrl(String url);
 
-    @Query("from Subscription where user.email = ?1")
+    @Query("from Subscription where user.email = ?2")
     List<Subscription> findByUsername(String username);
 
-    @Query("from Subscription where id = ?0 and user.email = ?1")
+    @Query("from Subscription where id = ?1 and user.email = ?2")
     Subscription findByIdAndUsername(Long id, String username);
 
-    @Query("from Subscription where user.email = ?0 and feed.url = ?1")
+    @Query("from Subscription where user.email = ?1 and feed.url = ?2")
     Subscription findByUsernameAndFeedUrl(String username, String url);
 }
