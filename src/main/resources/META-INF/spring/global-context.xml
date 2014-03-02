@@ -16,13 +16,7 @@
 
 	<tx:annotation-driven />
     <context:annotation-config />
-    <context:component-scan base-package="myreader.config, myreader.dao, myreader.solr, myreader.service" />
-
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="packagesToScan" value="myreader.entity" />
-     <!--   <property name="hibernateProperties" ref="hibernatePropertiesMap" /> -->
-    </bean>
+    <context:component-scan base-package="myreader.config, myreader.solr, myreader.service" />
 
     <task:scheduler id="myScheduler" pool-size="10"/>
 

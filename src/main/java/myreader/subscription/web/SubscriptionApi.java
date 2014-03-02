@@ -69,7 +69,7 @@ class SubscriptionApi {
                 dto.setTag(s.getTag());
                 dto.setTitle(s.getTitle());
                 dto.setUnseen(s.getUnseen());
-                dto.setUrl(s.getUrl());
+                dto.setUrl(s.getFeed().getUrl());
                 dto.setExclusions(Collections.EMPTY_LIST);
 
                 ld.add(dto);
@@ -108,7 +108,7 @@ class SubscriptionApi {
         dto.setSum(s.getSum());
         dto.setTag(s.getTag());
         dto.setTitle(s.getTitle());
-        dto.setUrl(s.getUrl());
+        dto.setUrl(s.getFeed().getUrl());
         dto.setUnseen(s.getUnseen());
 
         List<ExclusionPatternDto> expDtos = new ArrayList<ExclusionPatternDto>();

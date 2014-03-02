@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import myreader.subscription.web.ValidationException;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.hibernate.ObjectNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.HibernateObjectRetrievalFailureException;
@@ -33,11 +32,15 @@ public class RestExceptionResolver implements HandlerExceptionResolver {
         if (exception instanceof ValidationException) {
             status = 400;
             msg = ((ValidationException) exception).getMessages();
-        } else if (exception instanceof ObjectNotFoundException) {
-            status = 404;
-        } else if (exception instanceof HibernateObjectRetrievalFailureException && exception.getCause() instanceof ObjectNotFoundException) {
-            status = 404;
-        } else if (exception instanceof AccessDeniedException) {
+        }
+//        else if (exception instanceof ObjectNotFoundException) {
+//            status = 404;
+//        } else if (exception instanceof HibernateObjectRetrievalFailureException && exception.getCause() instanceof ObjectNotFoundException) {
+//            status = 404;
+//        }
+        else if (exception instanceof AccessDeniedException) {
+            status = 403;
+        } else if (exception instanceof myreader.service.AccessDeniedException) {
             status = 403;
         } else if (exception != null) {
             msg = exception.getMessage();

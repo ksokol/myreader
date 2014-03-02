@@ -48,7 +48,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public List<Subscription> findAll() {
         User currentUser = userService.getCurrentUser();
-        List<Subscription> subscriptions =  subscriptionRepository.findByUsername(currentUser.getEmail());
+        List<Subscription> subscriptions =  subscriptionRepository.findByUser(currentUser.getId());
         Map<Long,Long> counts = searchService.countUnseenEntriesByUser(currentUser.getEmail());
 
         for(Subscription s : subscriptions) {
