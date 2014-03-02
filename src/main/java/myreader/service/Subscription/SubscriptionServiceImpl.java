@@ -3,7 +3,6 @@ package myreader.service.subscription;
 /**
  * @author Kamill Sokol dev@sokol-web.de
  */
-
 import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.repository.SubscriptionRepository;
@@ -38,6 +37,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void delete(Long id) {
         User currentUser = userService.getCurrentUser();
         Subscription subscription = subscriptionRepository.findOne(id);
+
+        if(subscription == null) {
+            throw new EntityNotFoundException();
+        }
 
         if(subscription.getUser().equals(currentUser)) {
             subscriptionRepository.delete(subscription.getId());
@@ -82,6 +85,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public Subscription findByUrl(String url) {
         User currentUser = userService.getCurrentUser();
         Subscription subscription = subscriptionRepository.findByUsernameAndFeedUrl(currentUser.getEmail(), currentUser.getEmail());
+
+        if(subscription == null) {
+            throw new EntityNotFoundException();
+        }
 
         long l = searchService.countUnseenEntriesById(subscription.getId());
         subscription.setUnseen(l);
