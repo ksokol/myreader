@@ -9,19 +9,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import myreader.API;
-import myreader.dao.SubscriptionEntryDao;
 import myreader.entity.FeedIcon;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-import myreader.entity.SubscriptionEntryQuery;
+import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
 import myreader.reader.web.UserEntryQuery.IconDto;
 
 import myreader.repository.FeedRepository;
 import myreader.repository.UserRepository;
 import myreader.service.subscription.SubscriptionService;
+import myreader.service.subscriptionentry.SubscriptionEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,9 +37,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class EntryApi {
 
     @Autowired
-    private SubscriptionEntryDao subscriptionEntryDao;
-
-    @Autowired
     private SubscriptionService subscriptionService;
 
     @Autowired
@@ -49,11 +45,14 @@ public class EntryApi {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SubscriptionEntryService subscriptionEntryService;
+
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     public List<UserEntryQuery> feed(@RequestParam(value = "feed.tag", required = false) String feedTag,
             @RequestParam(value = "tag", required = false) String tag, boolean headingsOnly,
-            SubscriptionEntryQuery query, @RequestParam(required = false) String fl, Authentication auth) {
+            SubscriptionEntrySearchQuery query, @RequestParam(required = false) String fl) {
 
         // TODO
         if (feedTag != null) {
@@ -64,7 +63,7 @@ public class EntryApi {
             query.addFilter("tag", tag);
         }
 
-        List<SubscriptionEntry> query2 = subscriptionEntryDao.query(query, auth.getName());
+        List<SubscriptionEntry> query2 = subscriptionEntryService.search(query);
         List<UserEntryQuery> dtoList = new ArrayList<UserEntryQuery>();
 
         for (SubscriptionEntry e : query2) {
@@ -99,8 +98,8 @@ public class EntryApi {
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     @ResponseBody
-    public UserEntryQuery feed(@PathVariable Long id, boolean headingsOnly, Authentication user) {
-        SubscriptionEntry subscriptionEntry = subscriptionEntryDao.findById(id, user.getName());
+    public UserEntryQuery feed(@PathVariable Long id, boolean headingsOnly) {
+        SubscriptionEntry subscriptionEntry = subscriptionEntryService.findById(id);
         UserEntryQuery dto = new UserEntryQuery();
 
         dto.setCreatedAt(subscriptionEntry.getCreatedAt());
@@ -122,10 +121,10 @@ public class EntryApi {
 
     @RequestMapping(value = "", method = RequestMethod.GET, params = "distinct")
     @ResponseBody
-    public Collection<String> distinct(@RequestParam String distinct, Authentication authentication) {
+    public Collection<String> distinct(@RequestParam String distinct) {
         // TODO
         if ("tag".equals(distinct)) {
-            return subscriptionEntryDao.findByDistinctTag(authentication.getName());
+            return subscriptionEntryService.findDistinctTags();
         } else if ("feed.tag".equals(distinct)) {
             List<Subscription> findAll = subscriptionService.findAll();
             SortedSet<String> set = new TreeSet<String>();
@@ -144,8 +143,8 @@ public class EntryApi {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     @RequestMapping(value = "{id}", method = RequestMethod.POST)
-    public void editPostXhr(@RequestBody Map<String, String> map, @PathVariable Long id, Authentication authentication) {
-        SubscriptionEntry subscriptionEntry = subscriptionEntryDao.findById(id, authentication.getName());
+    public void editPostXhr(@RequestBody Map<String, String> map, @PathVariable Long id) {
+        SubscriptionEntry subscriptionEntry = subscriptionEntryService.findById(id);
 
         if (map.containsKey("unseen")) {
             boolean unseen = Boolean.valueOf(map.get("unseen"));
@@ -163,17 +162,17 @@ public class EntryApi {
             }
         }
 
-        subscriptionEntryDao.saveOrUpdate(subscriptionEntry);
+        subscriptionEntryService.save(subscriptionEntry);
     }
 
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "", method = RequestMethod.PUT)
     @ResponseBody
-    public void batchUpdateEntry(@RequestBody Map<String, Object>[] map, Authentication authentication) {
+    public void batchUpdateEntry(@RequestBody Map<String, Object>[] map) {
         for (Map<String, Object> m : map) {
             if (m.containsKey("id")) {
                 Long id = Long.valueOf(m.get("id").toString());
-                SubscriptionEntry userEntry = subscriptionEntryDao.findById(id, authentication.getName());
+                SubscriptionEntry userEntry = subscriptionEntryService.findById(id);
 
                 if (userEntry != null) {
                     if (m.containsKey("unseen")) {
@@ -190,7 +189,7 @@ public class EntryApi {
                         }
                     }
 
-                    subscriptionEntryDao.saveOrUpdate(userEntry);
+                    subscriptionEntryService.save(userEntry);
                 }
             }
         }

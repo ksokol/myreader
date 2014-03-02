@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import myreader.dao.SubscriptionEntryDao;
 import myreader.entity.ExclusionPattern;
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
@@ -22,6 +21,7 @@ import myreader.repository.FeedRepository;
 import myreader.repository.FetchStatisticRepository;
 import myreader.service.feed.FeedService;
 import myreader.service.subscription.SubscriptionService;
+import myreader.service.subscriptionentry.SubscriptionEntryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanNameAware;
@@ -50,9 +50,6 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
     private FeedEntryRepository feedEntryRepository;
 
     @Autowired
-    SubscriptionEntryDao subscriptionEntryDao;
-
-    @Autowired
     private SubscriptionService subscriptionService;
 
     @Autowired
@@ -60,6 +57,9 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
 
     @Autowired
     private FetchStatisticRepository fetchStatisticRepository;
+
+    @Autowired
+    private SubscriptionEntryService subscriptionEntryService;
 
     @Autowired
     private ExclusionChecker exclusionChecker;
@@ -181,7 +181,7 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
 
                         subscription.setSum(subscription.getSum() + 1);
 
-                        subscriptionEntryDao.saveOrUpdate(subscriptionEntry);
+                        subscriptionEntryService.save(subscriptionEntry);
                     }
 
                     subscriptionService.save(subscription);

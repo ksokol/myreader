@@ -1,10 +1,10 @@
-package myreader.entity;
+package myreader.service.subscriptionentry;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubscriptionEntryQuery {
+public class SubscriptionEntrySearchQuery {
 
     private int rows = 10; //default
     private boolean showAll = false; //default

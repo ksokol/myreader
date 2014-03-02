@@ -1,6 +1,7 @@
 package myreader.solr;
 
 import myreader.entity.*;
+import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -27,7 +28,7 @@ public class SubscriptionEntrySearchService {
     @Autowired
     private SubscriptionEntryConverter converter;
 
-    public List<SubscriptionEntry> findByQueryAndUser(SubscriptionEntryQuery myQuery, String username) {
+    public List<SubscriptionEntry> findByQueryAndUser(SubscriptionEntrySearchQuery myQuery, String username) {
         List<SubscriptionEntry> results = new ArrayList<SubscriptionEntry>();
         SolrQuery query = new SolrQuery();
 
