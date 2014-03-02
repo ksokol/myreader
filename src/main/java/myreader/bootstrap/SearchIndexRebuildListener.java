@@ -54,51 +54,18 @@ public class SearchIndexRebuildListener implements ApplicationListener<ReindexAp
 
                 emptyIndex();
 
-                List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>(BATCH_SIZE);
-                PageRequest pageRequest = new PageRequest(1, BATCH_SIZE);
+                int pageNumber = 0;
+                PageRequest pageRequest = new PageRequest(0, BATCH_SIZE);
                 Page<SubscriptionEntry> page = subscriptionEntryRepository.findAll(pageRequest);
 
-                //Scrollable results will avoid loading too many objects in memory
-//                ScrollableResults results = sessionFactory.getCurrentSession()
-//                        .createCriteria(SubscriptionEntry.class)
-//                        .setReadOnly(true)
-//                        .setFetchSize(BATCH_SIZE)
-//                        .scroll(ScrollMode.FORWARD_ONLY);
-
-
-                while(page.hasContent()) {
-                    System.out.println("current next page: " + page);
-
-                    List<SubscriptionEntry> entries = page.getContent();
-
-                    for(SubscriptionEntry se : entries) {
-                        docs.add(userEntrySolrUpdate.toSolrInputDocument(se));
-                    }
-
-                    add(docs);
-                    docs.clear();
-
-
-                    page = subscriptionEntryRepository.findAll(page.nextPageable());
+                while(page.hasNextPage()) {
+                    processPage(page);
+                    page = subscriptionEntryRepository.findAll(new PageRequest(++pageNumber, BATCH_SIZE));
                 }
 
-//                int index = 0;
-//                while (results.next()) {
-//                    SubscriptionEntry se = (SubscriptionEntry) results.get(0);
-//                    docs.add(userEntrySolrUpdate.toSolrInputDocument(se));
-//
-//                    if (index % BATCH_SIZE == 0) {
-//                        add(docs);
-//                        docs.clear();
-//                    }
-//
-//                    index++;
-//                }
-
-//                add(docs);
+                processPage(page);
                 optimize();
-
-                logger.info("rebuild index done");
+                logger.info("rebuild index done.");
             }
         };
 
@@ -111,6 +78,15 @@ public class SearchIndexRebuildListener implements ApplicationListener<ReindexAp
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    private void processPage(Page<SubscriptionEntry> page) {
+        List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>(BATCH_SIZE);
+        for(SubscriptionEntry se : page) {
+            docs.add(userEntrySolrUpdate.toSolrInputDocument(se));
+        }
+        add(docs);
+        docs.clear();
     }
 
     private void add(List<SolrInputDocument> docs) {

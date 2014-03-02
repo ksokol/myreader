@@ -2,6 +2,7 @@ package myreader.entity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,7 +45,7 @@ public class FeedEntry {
     private String content;
 
     @OneToMany(mappedBy = "feedEntry")
-    private List<SubscriptionEntry> subscriptionEntries;
+    private Set<SubscriptionEntry> subscriptionEntries;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "entry_created_at")
@@ -102,11 +103,11 @@ public class FeedEntry {
         this.content = content;
     }
 
-    public List<SubscriptionEntry> getSubscriptionEntries() {
+    public Set<SubscriptionEntry> getSubscriptionEntries() {
         return subscriptionEntries;
     }
 
-    public void setSubscriptionEntries(List<SubscriptionEntry> subscriptionEntries) {
+    public void setSubscriptionEntries(Set<SubscriptionEntry> subscriptionEntries) {
         this.subscriptionEntries = subscriptionEntries;
     }
 
