@@ -17,8 +17,6 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.Type;
-
 @Entity
 @Table(name = "entry")
 public class FeedEntry {
@@ -42,8 +40,7 @@ public class FeedEntry {
     @Column(name = "entry_url")
     private String url;
 
-    @Column(name = "entry_content")
-    @Type(type="text")
+    @Column(name = "entry_content", columnDefinition = "text")
     private String content;
 
     @OneToMany(mappedBy = "feedEntry")

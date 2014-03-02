@@ -5,12 +5,6 @@ import java.util.Set;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Formula;
-
-//@FilterDef(name = "user", parameters = { @ParamDef(name = "user", type = "string") })
-//@Filter(name = "user", condition = "{u}.email = :user", aliases = @SqlFragmentAlias(alias = "u", entity = User.class))
 @Entity
 @Table(name = "user_feed")
 public class Subscription {
@@ -22,9 +16,6 @@ public class Subscription {
 
     @Column(name = "user_feed_title")
     private String title;
-
-    @Formula("(select f.feed_url from feed f where f.feed_id = user_feed_feed_id)")
-    private String url;
 
     @Column(name = "user_feed_tag")
     private String tag;
@@ -43,7 +34,7 @@ public class Subscription {
     @Column(name = "user_feed_created_at")
     private Date createdAt;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
     private Feed feed;
 
@@ -71,14 +62,6 @@ public class Subscription {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public String getTag() {
