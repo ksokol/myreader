@@ -74,6 +74,8 @@ public class PersistenceConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setDataSource(dataSource());
+
+        //TODO
         factoryBean.setPackagesToScan(new String[]{"myreader.entity"});
 
         final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter() {
