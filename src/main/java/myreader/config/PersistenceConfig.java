@@ -4,11 +4,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
-import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jndi.JndiObjectFactoryBean;
-import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -71,10 +69,6 @@ public class PersistenceConfig {
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
         return new PersistenceExceptionTranslationPostProcessor();
     }
-    //@Bean
-    public PersistenceExceptionTranslator hibernateExceptionTranslator() {
-        return new HibernateExceptionTranslator();
-    }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -84,7 +78,6 @@ public class PersistenceConfig {
 
         final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter() {
             {
-
                 setDatabasePlatform(hibernateDialect);
                 setGenerateDdl(jpaGenerateDdl);
                // setShowSql(true);
@@ -92,7 +85,6 @@ public class PersistenceConfig {
         };
 
         factoryBean.setJpaVendorAdapter(vendorAdapter);
-
         //factoryBean.setJpaProperties(additionlProperties());
 
         return factoryBean;
