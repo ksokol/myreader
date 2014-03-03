@@ -32,10 +32,10 @@ public class PersistenceConfig {
     @Value("${dialect:org.hibernate.dialect.MySQL5InnoDBDialect}")
     private String hibernateDialect;
 
-    @Value("${db.user}")
+  //  @Value("${db.user}")
     private String username;
 
-    @Value("${db.password}")
+    //@Value("${db.password}")
     private String password;
 
     @Value("${hibernateHbm2ddlAuto:false}")
