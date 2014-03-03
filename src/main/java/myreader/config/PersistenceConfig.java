@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -50,9 +51,9 @@ public class PersistenceConfig {
         String host = System.getProperty("db.host");
 
         if(user == null|| password == null|| host== null) {
-            JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
-            jndiObjectFactoryBean.setJndiName("java:comp/env/jdbc/collector");
-            dataSource = (DataSource) jndiObjectFactoryBean.getObject();
+            JndiDataSourceLookup lookup = new JndiDataSourceLookup();
+            lookup.setResourceRef(true);
+            dataSource = lookup.getDataSource("jdbc/collector");
         } else {
             DriverManagerDataSource dataSource1 = new DriverManagerDataSource();
             dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
