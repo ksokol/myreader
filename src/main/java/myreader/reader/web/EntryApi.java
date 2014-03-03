@@ -130,8 +130,9 @@ public class EntryApi {
             SortedSet<String> set = new TreeSet<String>();
 
             for (Subscription s : findAll) {
-                if (s.getTag() != null)
+                if (s.getTag() != null && !s.getTag().isEmpty()) {
                     set.add(s.getTag());
+                }
             }
 
             return set;

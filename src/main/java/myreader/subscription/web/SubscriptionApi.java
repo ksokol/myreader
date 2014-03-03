@@ -88,7 +88,9 @@ class SubscriptionApi {
         for (Subscription s : subscriptionList) {
             // TODO
             if ("tag".equals(distinct)) {
-                if (s.getTag() != null) distinction.add(s.getTag());
+                if (s.getTag() != null && !s.getTag().isEmpty()) {
+                    distinction.add(s.getTag());
+                }
             } else {
                 break;
             }
