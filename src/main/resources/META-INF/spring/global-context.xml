@@ -27,7 +27,8 @@
         <task:scheduled ref="feedListFetcher" method="run" fixed-rate="300000"/>
         <task:scheduled ref="syndFetcher-1" method="run" fixed-rate="300000"/>
         <task:scheduled ref="syndFetcher-2" method="run" fixed-rate="300000"/>
-        <task:scheduled ref="purgerJob" method="run" cron="0 0 3 * * *"/>
+        <!-- TODO deactivated until this job has a unittest -->
+        <!-- <task:scheduled ref="purgerJob" method="run" cron="0 0 3 * * *"/> -->
         <task:scheduled ref="iconUpdateJob" method="run" cron="0 0 2 * * SUN"/>
     </task:scheduled-tasks>
 
