@@ -12,8 +12,9 @@ import org.springframework.util.StopWatch;
 
 class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
 
-    private static final Logger logger = LoggerFactory.getLogger(SyndFetcherJob.class);
+    private static final Logger log = LoggerFactory.getLogger(SyndFetcherJob.class);
     private String jobName;
+    private String swap;
 
     @Autowired
     private FeedQueue feedQueue;
@@ -25,10 +26,9 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
 
     @Override
     public void run() {
-        logger.debug("start");
+        log.debug("start");
 
-        String origThreadName = Thread.currentThread().getName();
-        Thread.currentThread().setName(this.jobName);
+        toggleCurrentThreadName();
         StopWatch timer = new StopWatch();
 
         try {
@@ -36,24 +36,59 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
             String feedUrl = null;
 
             while ((feedUrl = feedQueue.poll()) != null && alive) {
-                subscriptionBatchService.updateUserSubscriptions(feedUrl);
+                try {
+                    subscriptionBatchService.updateUserSubscriptions(feedUrl);
+                } catch(Exception e) {
+                    log.error("error during subscription update for {}", feedUrl, e);
+                }
             }
         } finally {
             timer.stop();
-            logger.debug("stop");
-            logger.info("total time {} sec", timer.getTotalTimeSeconds());
-            Thread.currentThread().setName(origThreadName);
+            log.debug("stop");
+            log.info("total time {} sec", timer.getTotalTimeSeconds());
+            toggleCurrentThreadName();
         }
     }
 
     @Override
     public void destroy() throws Exception {
-        logger.info("stop");
+        log.info("stop");
         this.alive = false;
     }
 
     @Override
     public void setBeanName(String name) {
         this.jobName = name;
+    }
+
+    private void toggleCurrentThreadName() {
+        if(jobName == null ) {
+            return;
+        }
+        Thread thread = Thread.currentThread();
+
+        if(swap == null) {
+            swap = Thread.currentThread().getName();
+            thread.setName(jobName);
+        } else {
+            thread.setName(swap);
+            swap = null;
+        }
+    }
+
+    public FeedQueue getFeedQueue() {
+        return feedQueue;
+    }
+
+    public void setFeedQueue(FeedQueue feedQueue) {
+        this.feedQueue = feedQueue;
+    }
+
+    public SubscriptionBatchService getSubscriptionBatchService() {
+        return subscriptionBatchService;
+    }
+
+    public void setSubscriptionBatchService(SubscriptionBatchService subscriptionBatchService) {
+        this.subscriptionBatchService = subscriptionBatchService;
     }
 }
