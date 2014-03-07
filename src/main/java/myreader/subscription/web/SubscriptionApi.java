@@ -16,6 +16,7 @@ import myreader.fetcher.icon.IconUpdateRequestEvent;
 
 import myreader.repository.FeedRepository;
 import myreader.repository.UserRepository;
+import myreader.service.EntityNotFoundException;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -188,7 +189,7 @@ class SubscriptionApi {
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public void post(@RequestBody Map<String, Object> map, Authentication authentication) throws Exception {
-        // TODO: alles
+        // TODO: everything
 
         if (map.containsKey("url")) {
             Matcher m = patternUrl.matcher(String.valueOf(map.get("url")));
@@ -202,11 +203,9 @@ class SubscriptionApi {
             throw new ValidationException("url", "empty");
         }
 
-        Feed feed = null;
+        Feed feed = feedRepository.findByUrl(String.valueOf(map.get("url")));
 
-        try {
-            feed = feedRepository.findByUrl(String.valueOf(map.get("url")));
-        } catch (HibernateObjectRetrievalFailureException e) {
+        if(feed == null) {
             String feedTitle = null;
 
             try {
@@ -233,10 +232,8 @@ class SubscriptionApi {
 
         try {
             userFeed = subscriptionService.findByUrl(String.valueOf(map.get("url")));
-        } catch (HibernateObjectRetrievalFailureException e) {
-
+        } catch (EntityNotFoundException e) {
             userFeed = new Subscription();
-
         }
 
         userFeed.setFeed(feed);
