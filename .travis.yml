@@ -12,4 +12,4 @@ env:
 script: mvn test
 after_success: 
  - mvn cobertura:cobertura coveralls:cobertura
- - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn package; curl -X PUT -T target/myreader.war -u travis:$PW --insecure "https://$DEPLOY_HOST/manager/deploy?update=true&path=/myreader"; fi
+ - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn package; curl -X PUT -T target/myreader.war -u travis:$PW --insecure "https://$DEPLOY_HOST/manager/deploy?update=true&path=/myreader"; fi
