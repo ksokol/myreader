@@ -7,14 +7,13 @@ import java.util.concurrent.Executor;
 
 import myreader.API;
 import myreader.bootstrap.SearchIndexRebuildListener;
-import myreader.dao.FeedDao;
 import myreader.dto.FeedQueryDto;
-import myreader.dto.FeedQueryDto.UserQueryDto;
 import myreader.entity.Feed;
-import myreader.entity.Subscription;
+
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.icon.IconUpdateRequestEvent;
 
+import myreader.repository.FeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,7 @@ class AdminApi {
     private ApplicationEventPublisher publisher;
 
     @Autowired
-    private FeedDao feedDao;
+    private FeedRepository feedRepository;
 
     @Autowired
     private Executor executor;
@@ -53,7 +52,7 @@ class AdminApi {
     @RequestMapping(value = "feeds", method = RequestMethod.GET)
     @ResponseBody
     public List<FeedQueryDto> feeds() {
-        List<Feed> feedList = feedDao.findAll();
+        Iterable<Feed> feedList = feedRepository.findAll();
         List<FeedQueryDto> dtoList = new ArrayList<FeedQueryDto>();
 
         for (Feed feed : feedList) {

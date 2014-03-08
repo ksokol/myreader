@@ -8,13 +8,13 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import myreader.dao.FeedDao;
 import myreader.entity.Feed;
 import myreader.entity.FeedIcon;
 import myreader.fetcher.icon.IconResult;
 import myreader.fetcher.icon.IconService;
 import myreader.fetcher.icon.IconUpdateRequestEvent;
 
+import myreader.repository.FeedRepository;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class IconUpdater implements ApplicationListener<IconUpdateRequestEvent> 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private FeedDao feedDao;
+    private FeedRepository feedRepository;
 
     @Autowired
     private IconService iconService;
@@ -67,11 +67,11 @@ public class IconUpdater implements ApplicationListener<IconUpdateRequestEvent> 
 
     @Transactional
     private void save(String url, FeedIcon icon) {
-        Feed feed = feedDao.findByUrl(url);
+        Feed feed = feedRepository.findByUrl(url);
 
         if (feed != null) {
             feed.setIcon(icon);
-            feedDao.saveOrUpdate(feed);
+            feedRepository.save(feed);
         }
     }
 
@@ -103,7 +103,7 @@ public class IconUpdater implements ApplicationListener<IconUpdateRequestEvent> 
 
     @Transactional
     private List<String> getFeedUrls() {
-        List<Feed> feedList = feedDao.findAll();
+        Iterable<Feed> feedList = feedRepository.findAll();
         List<String> stringList = new ArrayList<String>();
 
         for (Feed feed : feedList) {

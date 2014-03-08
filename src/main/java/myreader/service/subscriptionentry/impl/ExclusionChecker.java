@@ -1,11 +1,8 @@
-package myreader.fetcher.jobs;
+package myreader.service.subscriptionentry.impl;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.stereotype.Component;
-
-@Component
 class ExclusionChecker {
 
     public boolean isExcluded(String exclusion, String... matchAgainst) {

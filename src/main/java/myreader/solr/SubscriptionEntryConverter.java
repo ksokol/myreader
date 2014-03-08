@@ -24,7 +24,7 @@ public class SubscriptionEntryConverter {
         input.addField(OWNER_ID, userEntry.getSubscription().getUser().getId());
         input.addField(FEED_TITLE, userEntry.getSubscription().getTitle());
         input.addField(FEED_ID, userEntry.getSubscription().getId());
-        input.addField(FEED_URL, userEntry.getSubscription().getUrl());
+        input.addField(FEED_URL, userEntry.getSubscription().getFeed().getUrl());
         input.addField(FEED_TAG, userEntry.getSubscription().getTag());
         input.addField(TITLE, userEntry.getFeedEntry().getTitle());
         input.addField(CONTENT, userEntry.getFeedEntry().getContent());

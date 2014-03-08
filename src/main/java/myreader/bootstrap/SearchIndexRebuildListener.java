@@ -9,16 +9,18 @@ import myreader.entity.SubscriptionEntry;
 
 import java.util.List;
 
+import myreader.repository.SubscriptionEntryRepository;
 import myreader.solr.SubscriptionEntryConverter;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
-import org.hibernate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +32,10 @@ public class SearchIndexRebuildListener implements ApplicationListener<ReindexAp
     private static final int BATCH_SIZE = 1000;
 
     @Autowired
-    private SessionFactory sessionFactory;
+    private SubscriptionEntryConverter userEntrySolrUpdate;
 
     @Autowired
-    private SubscriptionEntryConverter userEntrySolrUpdate;
+    private SubscriptionEntryRepository subscriptionEntryRepository;
 
     @Autowired
     private SolrServer solrServer;
@@ -52,32 +54,18 @@ public class SearchIndexRebuildListener implements ApplicationListener<ReindexAp
 
                 emptyIndex();
 
-                List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>(BATCH_SIZE);
+                int pageNumber = 0;
+                PageRequest pageRequest = new PageRequest(0, BATCH_SIZE);
+                Page<SubscriptionEntry> page = subscriptionEntryRepository.findAll(pageRequest);
 
-                //Scrollable results will avoid loading too many objects in memory
-                ScrollableResults results = sessionFactory.getCurrentSession()
-                        .createCriteria(SubscriptionEntry.class)
-                        .setReadOnly(true)
-                        .setFetchSize(BATCH_SIZE)
-                        .scroll(ScrollMode.FORWARD_ONLY);
-
-                int index = 0;
-                while (results.next()) {
-                    SubscriptionEntry se = (SubscriptionEntry) results.get(0);
-                    docs.add(userEntrySolrUpdate.toSolrInputDocument(se));
-
-                    if (index % BATCH_SIZE == 0) {
-                        add(docs);
-                        docs.clear();
-                    }
-
-                    index++;
+                while(page.hasNextPage()) {
+                    processPage(page);
+                    page = subscriptionEntryRepository.findAll(new PageRequest(++pageNumber, BATCH_SIZE));
                 }
 
-                add(docs);
+                processPage(page);
                 optimize();
-
-                logger.info("rebuild index done");
+                logger.info("rebuild index done.");
             }
         };
 
@@ -90,6 +78,15 @@ public class SearchIndexRebuildListener implements ApplicationListener<ReindexAp
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    private void processPage(Page<SubscriptionEntry> page) {
+        List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>(BATCH_SIZE);
+        for(SubscriptionEntry se : page) {
+            docs.add(userEntrySolrUpdate.toSolrInputDocument(se));
+        }
+        add(docs);
+        docs.clear();
     }
 
     private void add(List<SolrInputDocument> docs) {

@@ -1,4 +1,4 @@
-package myreader.fetcher.jobs;
+package myreader.service.subscriptionentry.impl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class ExclusionCheckerTest {
 
-    private static ExclusionChecker exclusionChecker = new ExclusionChecker();
+    private ExclusionChecker exclusionChecker = new ExclusionChecker();
 
     @Test
     public void testPHPShouldBeExcludedDueToOccurenceInParam1() {
