@@ -65,6 +65,7 @@ public class SubscriptionBatchServiceImpl implements SubscriptionBatchService {
                 feedRepository.save(feed);
 
                 fetchStatistics.setFetchCount(Long.valueOf(fetchCount));
+                fetchStatistics.setResult(FetchStatistics.Result.SUCCESS);
             }
 
             fetchStatistics.setResult(FetchStatistics.Result.SUCCESS);
