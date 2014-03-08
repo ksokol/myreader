@@ -18,6 +18,7 @@ import myreader.repository.FeedRepository;
 import myreader.repository.UserRepository;
 import myreader.service.EntityNotFoundException;
 import myreader.service.subscription.SubscriptionService;
+import myreader.solr.SubscriptionSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.orm.hibernate4.HibernateObjectRetrievalFailureException;
@@ -52,32 +53,43 @@ class SubscriptionApi {
     private SubscriptionService subscriptionService;
 
     @Autowired
+    private SubscriptionSearchService subscriptionSearchService;
+
+    @Autowired
     ApplicationEventPublisher publisher;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
-    public List<SubscriptionDto> test(boolean showAll) {
+    public List<SubscriptionDto> test(boolean showAll, Authentication authentication) {
         List<Subscription> l = subscriptionService.findAll();
-        List<SubscriptionDto> ld = new ArrayList<SubscriptionDto>();
+        Map<Long, Long> unseenCount = subscriptionSearchService.countUnseenEntriesByUser(authentication.getName());
+        List<SubscriptionDto> dtos = new ArrayList<SubscriptionDto>();
 
         for (Subscription s : l) {
-            if (showAll || s.getUnseen() > 0) {
-                SubscriptionDto dto = new SubscriptionDto();
+            Long count = unseenCount.get(s.getId());
 
-                dto.setCreatedAt(s.getCreatedAt());
-                dto.setId(s.getId());
-                dto.setSum(s.getSum());
-                dto.setTag(s.getTag());
-                dto.setTitle(s.getTitle());
-                dto.setUnseen(s.getUnseen());
-                dto.setUrl(s.getFeed().getUrl());
-                dto.setExclusions(Collections.EMPTY_LIST);
-
-                ld.add(dto);
+            if(!showAll && (count == null || count == 0)) {
+                continue;
             }
+
+            SubscriptionDto dto = new SubscriptionDto();
+
+            dto.setCreatedAt(s.getCreatedAt());
+            dto.setId(s.getId());
+            dto.setSum(s.getSum());
+            dto.setTag(s.getTag());
+            dto.setTitle(s.getTitle());
+            dto.setUrl(s.getFeed().getUrl());
+            dto.setExclusions(Collections.EMPTY_LIST);
+
+            if(count != null) {
+                dto.setUnseen(count);
+            }
+
+            dtos.add(dto);
         }
 
-        return ld;
+        return dtos;
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET, params = "distinct")
@@ -112,7 +124,9 @@ class SubscriptionApi {
         dto.setTag(s.getTag());
         dto.setTitle(s.getTitle());
         dto.setUrl(s.getFeed().getUrl());
-        dto.setUnseen(s.getUnseen());
+
+        long l = subscriptionSearchService.countUnseenEntriesById(s.getId());
+        dto.setUnseen(l);
 
         List<ExclusionPatternDto> expDtos = new ArrayList<ExclusionPatternDto>();
 

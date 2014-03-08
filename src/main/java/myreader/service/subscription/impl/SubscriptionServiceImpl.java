@@ -24,14 +24,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserService userService;
     private final IndexService indexService;
-    private final SubscriptionSearchService searchService;
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, IndexService indexService, SubscriptionSearchService searchService) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, IndexService indexService) {
         this.subscriptionRepository = subscriptionRepository;
         this.userService = userService;
         this.indexService = indexService;
-        this.searchService = searchService;
     }
 
     @Override
@@ -54,15 +52,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public List<Subscription> findAll() {
         User currentUser = userService.getCurrentUser();
         List<Subscription> subscriptions =  subscriptionRepository.findByUser(currentUser.getId());
-        Map<Long,Long> counts = searchService.countUnseenEntriesByUser(currentUser.getEmail());
-
-        for(Subscription s : subscriptions) {
-            Long count = counts.get(s.getId());
-
-            if(count != null) {
-                s.setUnseen(count);
-            }
-        }
 
         return subscriptions;
     }
@@ -76,9 +65,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new EntityNotFoundException();
         }
 
-        long l = searchService.countUnseenEntriesById(subscription.getId());
-        subscription.setUnseen(l);
-
         return subscription;
     }
 
@@ -90,9 +76,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if(subscription == null) {
             throw new EntityNotFoundException();
         }
-
-        long l = searchService.countUnseenEntriesById(subscription.getId());
-        subscription.setUnseen(l);
 
         return subscription;
     }
