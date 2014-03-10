@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import static myreader.solr.SolrSubscriptionFields.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,6 +61,17 @@ public class SubscriptionSearchService {
             }
             return results;
         } catch (SolrServerException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public void delete(Long id) {
+        try {
+            solrServer.deleteByQuery(feedId(id));
+            solrServer.commit();
+        } catch (SolrServerException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }

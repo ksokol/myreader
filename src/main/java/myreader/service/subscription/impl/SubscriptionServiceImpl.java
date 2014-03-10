@@ -24,12 +24,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserService userService;
     private final IndexService indexService;
+    private final SubscriptionSearchService subscriptionSearchService;
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, IndexService indexService) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, IndexService indexService, SubscriptionSearchService subscriptionSearchService) {
         this.subscriptionRepository = subscriptionRepository;
         this.userService = userService;
         this.indexService = indexService;
+        this.subscriptionSearchService = subscriptionSearchService;
     }
 
     @Override
@@ -43,6 +45,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         if(subscription.getUser().equals(currentUser)) {
             subscriptionRepository.delete(subscription.getId());
+            subscriptionSearchService.delete(subscription.getId());
         } else {
             throw new AccessDeniedException();
         }
