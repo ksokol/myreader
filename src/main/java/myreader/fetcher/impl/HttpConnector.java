@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.net.ssl.HttpsURLConnection;
+
 @Component("httpConnector")
 public class HttpConnector {
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -17,10 +19,6 @@ public class HttpConnector {
     private int connectTimeout = 5000;
     private int readTimeout = 5000;
 
-    public HttpConnector() {
-        new XTrustProvider().install();
-    }
-
     public void connect(HttpObject httpObject) {
         HttpURLConnection urlc = null;
 
@@ -29,7 +27,16 @@ public class HttpConnector {
 
         try {
             URL feedUrl = new URL(httpObject.getUrl());
-            urlc = (HttpURLConnection) feedUrl.openConnection();
+
+            if(httpObject.getUrl().startsWith("https")) {
+                EasySSLSocketFactory easySSLSocketFactory = new EasySSLSocketFactory(readTimeout, connectTimeout);
+                HttpsURLConnection ssl = (HttpsURLConnection) feedUrl.openConnection();
+                ssl.setSSLSocketFactory(easySSLSocketFactory);
+                urlc = ssl;
+            } else {
+                urlc = (HttpURLConnection) feedUrl.openConnection();
+            }
+
             urlc.setReadTimeout(readTimeout);
             urlc.setConnectTimeout(connectTimeout);
             urlc.setRequestMethod(httpObject.getMethod());
@@ -42,6 +49,7 @@ public class HttpConnector {
             httpObject.setLastModified(urlc.getHeaderField("Last-Modified"));
             httpObject.setReturnCode(urlc.getResponseCode());
             httpObject.setResponseBody(urlc.getInputStream());
+
         } catch (Exception e) {
             logger.warn("url: {}, message: {}", httpObject.getUrl(), e.getMessage());
             if (urlc != null) {
