@@ -14,19 +14,18 @@
     <context:annotation-config />
 
     <context:component-scan base-package="myreader.config, myreader.service, myreader.fetcher" />
-    <task:scheduler id="myScheduler" pool-size="10"/>
+    <task:scheduler id="myScheduler" pool-size="10" />
     <context:property-placeholder location="classpath:webapp.properties" />
 
     <bean id="syndFetcher-1" class="myreader.fetcher.jobs.SyndFetcherJob" />
     <bean id="syndFetcher-2" class="myreader.fetcher.jobs.SyndFetcherJob" />
 
-    <task:annotation-driven  />
     <task:scheduled-tasks scheduler="myScheduler">
         <task:scheduled ref="feedListFetcher" method="run" fixed-rate="300000"/>
         <task:scheduled ref="syndFetcher-1" method="run" fixed-rate="300000"/>
         <task:scheduled ref="syndFetcher-2" method="run" fixed-rate="300000"/>
-
-
+        <!-- TODO deactivated until this job has a unittest -->
+        <!-- <task:scheduled ref="purgerJob" method="run" cron="0 0 3 * * *"/> -->
         <task:scheduled ref="iconUpdateJob" method="run" cron="0 0 2 * * SUN"/>
     </task:scheduled-tasks>
 
