@@ -23,6 +23,7 @@ public class SearchConfig {
     private static final Logger log = Logger.getLogger(SearchConfig.class.getName());
 
     private CoreContainer cores;
+    private SolrServer solrServer;
 
     public SearchConfig() throws IOException {
         File home = new ClassPathResource(SOLR_XML).getFile();
@@ -40,6 +41,13 @@ public class SearchConfig {
 
     @Bean
     public SolrServer solrServer() {
-        return new EmbeddedSolrServer(cores, "");
+        solrServer = new EmbeddedSolrServer(cores, "");
+        return solrServer;
+    }
+
+    public void destroy() {
+        if(solrServer != null) {
+            solrServer.shutdown();
+        }
     }
 }
