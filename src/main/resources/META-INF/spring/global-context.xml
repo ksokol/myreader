@@ -17,9 +17,6 @@
     <task:scheduler id="myScheduler" pool-size="10" />
     <context:property-placeholder location="classpath:webapp.properties" />
 
-    <bean id="syndFetcher-1" class="myreader.fetcher.jobs.SyndFetcherJob" />
-    <bean id="syndFetcher-2" class="myreader.fetcher.jobs.SyndFetcherJob" />
-
     <task:scheduled-tasks scheduler="myScheduler">
         <task:scheduled ref="feedListFetcher" method="run" fixed-rate="300000"/>
         <task:scheduled ref="syndFetcher-1" method="run" fixed-rate="300000"/>
