@@ -10,13 +10,12 @@ import myreader.service.AccessDeniedException;
 import myreader.service.EntityNotFoundException;
 import myreader.service.subscription.SubscriptionService;
 import myreader.service.user.UserService;
-import myreader.solr.IndexService;
-import myreader.solr.SubscriptionSearchService;
+import myreader.service.search.IndexService;
+import myreader.service.search.SubscriptionSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {

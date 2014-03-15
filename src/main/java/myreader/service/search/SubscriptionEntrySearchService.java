@@ -1,4 +1,4 @@
-package myreader.solr;
+package myreader.service.search;
 
 import myreader.entity.*;
 import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
@@ -11,8 +11,8 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static myreader.solr.SolrSubscriptionFields.*;
-import static myreader.solr.FieldHelper.*;
+import static myreader.service.search.SolrSubscriptionFields.*;
+import static myreader.service.search.FieldHelper.*;
 
 import java.util.*;
 

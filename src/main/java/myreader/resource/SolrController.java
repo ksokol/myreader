@@ -1,4 +1,4 @@
-package myreader.solr;
+package myreader.resource;
 
 import myreader.API;
 import org.apache.solr.common.SolrException;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static myreader.solr.SolrSubscriptionFields.*;
+import static myreader.service.search.SolrSubscriptionFields.*;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;

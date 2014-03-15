@@ -1,13 +1,13 @@
-package myreader.solr;
+package myreader.service.search;
 
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
+import myreader.resource.SolrController;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.MultiMapSolrParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,9 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.logging.Logger;
-
-import static myreader.solr.FieldHelper.*;
-import static myreader.solr.SolrSubscriptionFields.*;
 
 /**
  * @author dev@sokol-web.de <Kamill Sokol>
@@ -50,7 +47,7 @@ public class IndexService {
 
     public void deleteSubscription(Long id) {
         try {
-            solrServer.deleteByQuery(feedId(id));
+            solrServer.deleteByQuery(SolrSubscriptionFields.feedId(id));
             solrServer.commit();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -68,7 +65,7 @@ public class IndexService {
             public void run() {
             try {
                 SolrQuery solrQuery = new SolrQuery();
-                solrQuery.addFilterQuery(feedId(feedId), ownerId(userId));
+                solrQuery.addFilterQuery(SolrSubscriptionFields.feedId(feedId), SolrSubscriptionFields.ownerId(userId));
                 solrQuery.setRows(Integer.MAX_VALUE);
 
                 QueryResponse query = solrServer.query(solrQuery);
@@ -81,8 +78,8 @@ public class IndexService {
 
                 for(SolrDocument doc : query.getResults()) {
                     SolrInputDocument solrInputFields = new SolrInputDocument();
-                    solrInputFields.addField(ID, doc.get(ID));
-                    solrInputFields.addField(FEED_TITLE, set);
+                    solrInputFields.addField(SolrSubscriptionFields.ID, doc.get(SolrSubscriptionFields.ID));
+                    solrInputFields.addField(SolrSubscriptionFields.FEED_TITLE, set);
                     docs.add(solrInputFields);
                 }
 

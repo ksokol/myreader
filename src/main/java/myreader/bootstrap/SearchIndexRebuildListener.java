@@ -10,7 +10,7 @@ import myreader.entity.SubscriptionEntry;
 import java.util.List;
 
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.solr.SubscriptionEntryConverter;
+import myreader.service.search.SubscriptionEntryConverter;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;

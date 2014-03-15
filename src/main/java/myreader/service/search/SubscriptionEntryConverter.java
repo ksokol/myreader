@@ -1,13 +1,12 @@
-package myreader.solr;
+package myreader.service.search;
 
 import myreader.entity.*;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Component;
 
-import static myreader.solr.SolrSubscriptionFields.*;
+import static myreader.service.search.SolrSubscriptionFields.*;
 
-import java.util.Collection;
 import java.util.Date;
 
 /**
