@@ -6,23 +6,14 @@
   <dataDir>${myreader.data.dir:}</dataDir>
 
   <directoryFactory name="DirectoryFactory"
-                    class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
+                    class="${solr.directoryFactory:solr.NIOFSDirectoryFactory}"/>
 
   <updateHandler class="solr.DirectUpdateHandler2">
    <autoCommit>
      <maxTime>15000</maxTime>
      <openSearcher>false</openSearcher>
    </autoCommit>
-     <updateLog>
-         <str name="dir">${solr.core1.data.dir:}</str>
-     </updateLog>
   </updateHandler>
-
-  <requestHandler name="/get" class="solr.RealTimeGetHandler">
-      <lst name="defaults">
-          <str name="omitHeader">true</str>
-      </lst>
-  </requestHandler>
 
   <query>
     <maxBooleanClauses>1024</maxBooleanClauses>
