@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -62,12 +61,12 @@ public class EasySSLSocketFactory extends SSLSocketFactory {
         return this.sslcontext;
     }
 
-    public Socket connectSocket(Socket sock, String host, int port, InetAddress localAddress, int localPort) throws IOException {
+    public Socket connectSocket(String host, int port, InetAddress localAddress, int localPort) throws IOException {
         int connTimeout = 0;
         int soTimeout = 0;
 
         InetSocketAddress remoteAddress = new InetSocketAddress(host, port);
-        SSLSocket sslsock = (SSLSocket) ((sock != null) ? sock : createSocket());
+        SSLSocket sslsock = (SSLSocket) createSocket();
 
         if ((localAddress != null) || (localPort > 0)) {
             // we need to bind explicitly
@@ -81,17 +80,16 @@ public class EasySSLSocketFactory extends SSLSocketFactory {
         sslsock.connect(remoteAddress, connTimeout);
         sslsock.setSoTimeout(soTimeout);
         return sslsock;
-
     }
 
     @Override
     public Socket createSocket(String s, int i) throws IOException {
-        return connectSocket(null, s,i,null,-1);
+        return connectSocket( s,i,null,-1);
     }
 
     @Override
     public Socket createSocket(String s, int i, InetAddress inetAddress, int i2) throws IOException {
-        return connectSocket(null, s,i,null,-1);
+        return connectSocket(s,i,inetAddress,i2);
     }
 
     @Override
@@ -101,14 +99,7 @@ public class EasySSLSocketFactory extends SSLSocketFactory {
 
     @Override
     public Socket createSocket(InetAddress inetAddress, int i, InetAddress inetAddress2, int i2) throws IOException {
-        return getSSLContext().getSocketFactory().createSocket(inetAddress, i);
-    }
-
-    /**
-     * @see org.apache.http.conn.scheme.SocketFactory#isSecure(java.net.Socket)
-     */
-    public boolean isSecure(Socket socket) throws IllegalArgumentException {
-        return true;
+        return getSSLContext().getSocketFactory().createSocket(inetAddress, i, inetAddress2, i2);
     }
 
     @Override
@@ -121,11 +112,7 @@ public class EasySSLSocketFactory extends SSLSocketFactory {
         return new String[0];
     }
 
-    /**
-     * @see org.apache.http.conn.scheme.LayeredSocketFactory#createSocket(java.net.Socket, java.lang.String, int,
-     *      boolean)
-     */
-    public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
+    public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
         return getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
     }
 }
