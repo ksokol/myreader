@@ -10,10 +10,10 @@ import myreader.service.AccessDeniedException;
 import myreader.service.EntityNotFoundException;
 import myreader.service.subscription.SubscriptionService;
 import myreader.service.user.UserService;
-import myreader.service.search.IndexService;
 import myreader.service.search.SubscriptionSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.List;
 
@@ -22,14 +22,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final UserService userService;
-    private final IndexService indexService;
     private final SubscriptionSearchService subscriptionSearchService;
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, IndexService indexService, SubscriptionSearchService subscriptionSearchService) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, SubscriptionSearchService subscriptionSearchService) {
         this.subscriptionRepository = subscriptionRepository;
         this.userService = userService;
-        this.indexService = indexService;
         this.subscriptionSearchService = subscriptionSearchService;
     }
 
@@ -71,6 +69,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    public List<Subscription> findByTag(String tag) {
+        Assert.notNull(tag);
+        User currentUser = userService.getCurrentUser();
+        return subscriptionRepository.findByTagAndUsername(tag, currentUser.getEmail());
+    }
+
+    @Override
     public Subscription findByUrl(String url) {
         User currentUser = userService.getCurrentUser();
         Subscription subscription = subscriptionRepository.findByUsernameAndFeedUrl(currentUser.getEmail(), url);
@@ -85,7 +90,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public void save(Subscription subscription) {
         subscriptionRepository.save(subscription);
-        indexService.save(subscription);
     }
 
 }

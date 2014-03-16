@@ -15,6 +15,8 @@ public interface SubscriptionService {
 
     Subscription findById(Long id);
 
+    List<Subscription> findByTag(String tag);
+
     Subscription findByUrl(String url);
 
     void save(Subscription subscription);

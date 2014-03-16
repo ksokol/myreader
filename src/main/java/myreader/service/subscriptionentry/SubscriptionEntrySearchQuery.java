@@ -1,8 +1,7 @@
 package myreader.service.subscriptionentry;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class SubscriptionEntrySearchQuery {
 
@@ -10,18 +9,8 @@ public class SubscriptionEntrySearchQuery {
     private boolean showAll = false; //default
     private String q;
     private Long lastId;
-    private Date offset;
-
-    //TODO
-    private Map<String, String> filter = new HashMap<String, String>();
-
-    private String orderBy = "createdAt"; //default
-    private String sortMode = "desc"; //default
-
-    public void addFilter(String k, String v) {
-        if (k == null || v == null) throw new IllegalArgumentException();
-        this.filter.put(k, v);
-    }
+    private List<Long> feedId;
+    private String tag;
 
     public int getRows() {
         return rows;
@@ -55,32 +44,19 @@ public class SubscriptionEntrySearchQuery {
         this.lastId = lastId;
     }
 
-    public Date getOffset() {
-        return offset;
+    public List<Long> getFeedId() {
+        return feedId;
     }
 
-    public void setOffset(Date offset) {
-        this.offset = offset;
+    public void setFeedId(List<Long> feedId) {
+        this.feedId = feedId;
     }
 
-    public String getOrderBy() {
-        return orderBy;
+    public String getTag() {
+        return tag;
     }
 
-    public void setOrderBy(String orderBy) {
-        this.orderBy = orderBy;
+    public void setTag(String tag) {
+        this.tag = tag;
     }
-
-    public String getSortMode() {
-        return sortMode;
-    }
-
-    public void setSortMode(String sortMode) {
-        this.sortMode = sortMode;
-    }
-
-    public Map<String, String> getFilter() {
-        return filter;
-    }
-
 }

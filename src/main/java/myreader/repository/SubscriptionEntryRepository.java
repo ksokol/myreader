@@ -23,4 +23,8 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
     @Override
     Page<SubscriptionEntry> findAll(Pageable pageable);
 
+    @Query(value="from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription join fetch se.subscription.feed where se.id in (?1) order by se.id desc")
+    @Override
+    List<SubscriptionEntry> findAll(Iterable<Long> ids);
+
 }

@@ -1,6 +1,7 @@
 package myreader.service.subscriptionentry;
 
 import myreader.entity.Feed;
+import myreader.entity.SubscriptionEntry;
 import myreader.fetcher.persistence.FetcherEntry;
 
 import java.util.List;
@@ -11,5 +12,5 @@ import java.util.List;
 public interface SubscriptionEntryBatchService {
 
     @Deprecated
-    int updateUserSubscriptionEntries(Feed feed, List<FetcherEntry> fetchedEntries);
+    List<SubscriptionEntry> updateUserSubscriptionEntries(Feed feed, List<FetcherEntry> fetchedEntries);
 }

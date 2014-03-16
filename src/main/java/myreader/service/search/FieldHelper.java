@@ -4,12 +4,14 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.List;
+
 /**
  * @author dev@sokol-web.de <Kamill Sokol>
  */
-public class FieldHelper {
+class FieldHelper {
 
-    private static DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.sss'Z'").withZoneUTC();
+    private static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.sss'Z'").withZoneUTC();
     private static final Wildcard wildcard = new Wildcard();
 
     public static Wildcard wildcard() {
@@ -22,6 +24,27 @@ public class FieldHelper {
 
     public static String or(String op1, String op2) {
         return String.format("(%s OR %s)", op1, op2);
+    }
+
+    public static String or(List<? extends Object> ops) {
+        if(ops == null || ops.isEmpty()) {
+            return "\"\"";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+
+        for(int i=0;i< ops.size();i++) {
+            Object o = ops.get(i);
+            sb.append(o);
+
+            if(i < ops.size() - 1) {
+                sb.append(" OR ");
+            }
+        }
+
+        sb.append(")");
+        return sb.toString();
     }
 
     public static class Wildcard {
@@ -55,8 +78,11 @@ public class FieldHelper {
 
         public Range3 from(DateTime date) {
             DateTime offset = date.toDateTimeISO();
-            System.out.println("offset "+ offset.toString(fmt));
             return new Range3(field, offset.toString(fmt));
+        }
+
+        public Range3 from(Object o) {
+            return new Range3(field, o.toString());
         }
     }
     public static class Range3 {
@@ -76,8 +102,11 @@ public class FieldHelper {
 
         public String to(DateTime to) {
             DateTime offset = to.toDateTimeISO();
-            System.out.println("offset "+ offset.toString(fmt));
             return String.format("%s:[%s TO %s]", field, from, offset.toString(fmt));
+        }
+
+        public String to(Object to) {
+            return String.format("%s:[%s TO %s]", field, from, to);
         }
     }
 }

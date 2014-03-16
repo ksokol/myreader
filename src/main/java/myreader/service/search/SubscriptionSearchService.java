@@ -69,9 +69,7 @@ public class SubscriptionSearchService {
         try {
             solrServer.deleteByQuery(feedId(id));
             solrServer.commit();
-        } catch (SolrServerException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
