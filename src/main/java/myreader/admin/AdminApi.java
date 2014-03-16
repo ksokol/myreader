@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import myreader.API;
-import myreader.bootstrap.SearchIndexRebuildListener;
 import myreader.dto.FeedQueryDto;
 import myreader.entity.Feed;
 
@@ -13,6 +12,7 @@ import myreader.fetcher.FeedQueue;
 import myreader.fetcher.icon.IconUpdateRequestEvent;
 
 import myreader.repository.FeedRepository;
+import myreader.service.IndexSyncEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -71,7 +71,7 @@ class AdminApi {
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "searchIndex", method = RequestMethod.POST)
     public void searchIndex() {
-        publisher.publishEvent(new SearchIndexRebuildListener.ReindexApplicationEvent());
+        publisher.publishEvent(new IndexSyncEvent());
     }
 
     @ResponseStatus(value = HttpStatus.OK)
