@@ -1,6 +1,8 @@
 package myreader.config;
 
 import myreader.fetcher.FeedQueue;
+import myreader.fetcher.icon.impl.IconUpdater;
+import myreader.fetcher.icon.jobs.IconUpdateJob;
 import myreader.fetcher.impl.HttpCallDecisionMaker;
 import myreader.fetcher.jobs.FeedListFetcher;
 import myreader.fetcher.jobs.SyndFetcherJob;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ApplicationEventMulticaster;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 /**
@@ -32,8 +36,18 @@ public class TaskConfig implements InitializingBean {
     private SubscriptionBatchService subscriptionBatchService;
 
     @Autowired
+    private IconUpdater iconUpdater;
+
+    @Autowired
     @Qualifier("myScheduler")
     private ThreadPoolTaskScheduler myScheduler;
+
+    @Bean
+    public ApplicationEventMulticaster applicationEventMulticaster() {
+        SimpleApplicationEventMulticaster simpleApplicationEventMulticaster = new SimpleApplicationEventMulticaster();
+        simpleApplicationEventMulticaster.setTaskExecutor(myScheduler);
+        return simpleApplicationEventMulticaster;
+    }
 
     @Bean
     public FeedListFetcher feedListFetcher() {
@@ -48,6 +62,11 @@ public class TaskConfig implements InitializingBean {
     @Bean(name="syndFetcher-2")
     public SyndFetcherJob syndFetcherJob2() {
         return newSyndFetcherJob();
+    }
+
+    @Bean
+    public IconUpdateJob iconUpdateJob() {
+        return new IconUpdateJob(iconUpdater, feedRepository);
     }
 
     @Override

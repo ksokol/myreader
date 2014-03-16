@@ -236,8 +236,7 @@ class SubscriptionApi {
 
             feedRepository.save(feed);
 
-            IconUpdateRequestEvent iconUpdateRequestEvent = new IconUpdateRequestEvent(this);
-            iconUpdateRequestEvent.setUrl(feed.getUrl());
+            IconUpdateRequestEvent iconUpdateRequestEvent = new IconUpdateRequestEvent(feed.getUrl());
             publisher.publishEvent(iconUpdateRequestEvent);
         }
 

@@ -2,7 +2,6 @@ package myreader.bootstrap;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.Executor;
 
 import myreader.bootstrap.SearchIndexRebuildListener.ReindexApplicationEvent;
 import myreader.entity.SubscriptionEntry;
@@ -22,7 +21,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 //TODO
 @Component
@@ -32,7 +30,7 @@ public class SearchIndexRebuildListener implements ApplicationListener<ReindexAp
     private static final int BATCH_SIZE = 1000;
 
     @Autowired
-    private SubscriptionEntryConverter userEntrySolrUpdate;
+    private SubscriptionEntryConverter converter;
 
     @Autowired
     private SubscriptionEntryRepository subscriptionEntryRepository;
@@ -40,36 +38,24 @@ public class SearchIndexRebuildListener implements ApplicationListener<ReindexAp
     @Autowired
     private SolrServer solrServer;
 
-    @Autowired
-    private Executor executor;
-
     @Override
     public void onApplicationEvent(ReindexApplicationEvent event) {
-        Runnable runnable = new Runnable() {
+        logger.info("rebuild index");
 
-            @Transactional
-            @Override
-            public void run() {
-                logger.info("rebuild index");
+        emptyIndex();
 
-                emptyIndex();
+        int pageNumber = 0;
+        PageRequest pageRequest = new PageRequest(0, BATCH_SIZE);
+        Page<SubscriptionEntry> page = subscriptionEntryRepository.findAll(pageRequest);
 
-                int pageNumber = 0;
-                PageRequest pageRequest = new PageRequest(0, BATCH_SIZE);
-                Page<SubscriptionEntry> page = subscriptionEntryRepository.findAll(pageRequest);
+        while(page.hasNextPage()) {
+            processPage(page);
+            page = subscriptionEntryRepository.findAll(new PageRequest(++pageNumber, BATCH_SIZE));
+        }
 
-                while(page.hasNextPage()) {
-                    processPage(page);
-                    page = subscriptionEntryRepository.findAll(new PageRequest(++pageNumber, BATCH_SIZE));
-                }
-
-                processPage(page);
-                optimize();
-                logger.info("rebuild index done.");
-            }
-        };
-
-        executor.execute(runnable);
+        processPage(page);
+        optimize();
+        logger.info("rebuild index done.");
     }
 
     private void emptyIndex() {
@@ -83,7 +69,7 @@ public class SearchIndexRebuildListener implements ApplicationListener<ReindexAp
     private void processPage(Page<SubscriptionEntry> page) {
         List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>(BATCH_SIZE);
         for(SubscriptionEntry se : page) {
-            docs.add(userEntrySolrUpdate.toSolrInputDocument(se));
+            docs.add(converter.toSolrInputDocument(se));
         }
         add(docs);
         docs.clear();
@@ -111,8 +97,8 @@ public class SearchIndexRebuildListener implements ApplicationListener<ReindexAp
 
     public static class ReindexApplicationEvent extends ApplicationEvent {
 
-        public ReindexApplicationEvent(Object source) {
-            super(source);
+        public ReindexApplicationEvent() {
+            super(new Object());
         }
 
         private static final long serialVersionUID = 1L;

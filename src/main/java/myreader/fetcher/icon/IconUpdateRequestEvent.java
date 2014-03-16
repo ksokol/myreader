@@ -8,8 +8,13 @@ public class IconUpdateRequestEvent extends ApplicationEvent {
 
     private String url;
 
-    public IconUpdateRequestEvent(Object source) {
-        super(source);
+    public IconUpdateRequestEvent(String url) {
+        super(url);
+        this.url = url;
+    }
+
+    public IconUpdateRequestEvent() {
+        super(new Object());
     }
 
     public String getUrl() {

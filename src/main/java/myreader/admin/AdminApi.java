@@ -3,7 +3,6 @@ package myreader.admin;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import myreader.API;
 import myreader.bootstrap.SearchIndexRebuildListener;
@@ -35,9 +34,6 @@ class AdminApi {
 
     @Autowired
     private FeedRepository feedRepository;
-
-    @Autowired
-    private Executor executor;
 
     @Autowired
     FeedQueue feedQueue;
@@ -72,24 +68,15 @@ class AdminApi {
         return dtoList;
     }
 
-    @Transactional
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "searchIndex", method = RequestMethod.POST)
     public void searchIndex() {
-        publisher.publishEvent(new SearchIndexRebuildListener.ReindexApplicationEvent(this));
+        publisher.publishEvent(new SearchIndexRebuildListener.ReindexApplicationEvent());
     }
 
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "iconUpdate", method = RequestMethod.POST)
     public void iconUpdate() {
-        Runnable runnable = new Runnable() {
-
-            @Override
-            public void run() {
-                publisher.publishEvent(new IconUpdateRequestEvent(this));
-            }
-        };
-
-        executor.execute(runnable);
+        publisher.publishEvent(new IconUpdateRequestEvent());
     }
 }
