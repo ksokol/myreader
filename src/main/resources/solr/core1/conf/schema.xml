@@ -10,8 +10,8 @@
      <field name="url" type="string"  indexed="true"  stored="true" multiValued="false" />
      <field name="guid" type="string"  indexed="true"  stored="true" multiValued="false" />
      <field name="title" type="string"  indexed="true"  stored="true" multiValued="false" />
-     <field name="created_at" type="tdate"  indexed="true"  stored="true" multiValued="false" required="true"/>
-     <field name="updated_at" type="tdate"  indexed="true"  stored="true" multiValued="false" />
+     <field name="created_at" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
+     <field name="updated_at" type="string"  indexed="true"  stored="true" multiValued="false" />
      <field name="tags" type="commaDelimited" />
      <field name="content" type="string" indexed="false"  stored="true" multiValued="false" />
 
@@ -39,7 +39,6 @@
   <types>
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
-    <fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
     <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
     <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
 
