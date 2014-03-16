@@ -94,6 +94,10 @@ public class PersistenceConfig {
         return factoryBean;
     }
 
+    /*
+     * don't call entityManagerFactory() otherwise you have a memory leak
+     * see https://jira.spring.io/browse/SPR-9274
+     */
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory factory) {
         JpaTransactionManager txManager = new JpaTransactionManager();
