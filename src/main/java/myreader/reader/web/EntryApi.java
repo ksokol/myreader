@@ -56,11 +56,19 @@ public class EntryApi {
 
         // TODO
         if (feedTag != null) {
-            query.addFilter("subscription.tag", feedTag);
+            List<Subscription> subscriptionList = subscriptionService.findByTag(feedTag);
+            ArrayList<Long> ids = new ArrayList<Long>();
+
+            for(Subscription s :subscriptionList) {
+                ids.add(s.getId());
+            }
+
+            query.setFeedId(ids);
         }
+
         // TODO
         if (tag != null) {
-            query.addFilter("tag", tag);
+            query.setTag(tag);
         }
 
         List<SubscriptionEntry> query2 = subscriptionEntryService.search(query);

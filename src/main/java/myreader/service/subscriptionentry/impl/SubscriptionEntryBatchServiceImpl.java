@@ -3,12 +3,13 @@ package myreader.service.subscriptionentry.impl;
 import myreader.entity.*;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedEntryRepository;
+import myreader.repository.SubscriptionEntryRepository;
+import myreader.repository.SubscriptionRepository;
 import myreader.service.feed.FeedService;
-import myreader.service.subscription.SubscriptionService;
 import myreader.service.subscriptionentry.SubscriptionEntryBatchService;
-import myreader.service.subscriptionentry.SubscriptionEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -22,23 +23,24 @@ import java.util.List;
 public class SubscriptionEntryBatchServiceImpl implements SubscriptionEntryBatchService {
 
     private final FeedEntryRepository feedEntryRepository;
-    private final SubscriptionService subscriptionService;
     private final FeedService feedService;
-    private final SubscriptionEntryService subscriptionEntryService;
+    private final SubscriptionRepository subscriptionRepository;
+    private final SubscriptionEntryRepository subscriptionEntryRepository;
     private ExclusionChecker exclusionChecker = new ExclusionChecker();
 
     @Autowired
-    public SubscriptionEntryBatchServiceImpl(FeedEntryRepository feedEntryRepository, SubscriptionService subscriptionService, FeedService feedService, SubscriptionEntryService subscriptionEntryService) {
+    public SubscriptionEntryBatchServiceImpl(FeedEntryRepository feedEntryRepository, FeedService feedService, SubscriptionRepository subscriptionRepository, SubscriptionEntryRepository subscriptionEntryRepository) {
         this.feedEntryRepository = feedEntryRepository;
-        this.subscriptionService = subscriptionService;
         this.feedService = feedService;
-        this.subscriptionEntryService = subscriptionEntryService;
+        this.subscriptionRepository = subscriptionRepository;
+        this.subscriptionEntryRepository = subscriptionEntryRepository;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public int updateUserSubscriptionEntries(Feed feed, List<FetcherEntry> fetchedEntries) {
+    public List<SubscriptionEntry> updateUserSubscriptionEntries(Feed feed, List<FetcherEntry> fetchedEntries) {
         List<FetcherEntry> newEntries = new ArrayList<FetcherEntry>();
-        int count = 0;
+        List<SubscriptionEntry> toIndex = new ArrayList<SubscriptionEntry>();
 
         for (FetcherEntry dto : fetchedEntries) {
             int result = feedEntryRepository.countByTitleOrGuidOrUrl(dto.getTitle(), dto.getGuid(), dto.getUrl());
@@ -49,7 +51,7 @@ public class SubscriptionEntryBatchServiceImpl implements SubscriptionEntryBatch
         }
 
         if (newEntries.isEmpty()) {
-            return count;
+            return toIndex;
         }
 
         for (FetcherEntry dto : newEntries) {
@@ -62,14 +64,10 @@ public class SubscriptionEntryBatchServiceImpl implements SubscriptionEntryBatch
             feedEntry.setUrl(dto.getUrl());
 
             feedEntryRepository.save(feedEntry);
-
-            count++;
-
             List<Subscription> subscriptionList = feedService.findAllSubscriptionsByUrl(feed.getUrl());
 
             for (Subscription subscription : subscriptionList) {
                 boolean excluded = false;
-                List<SubscriptionEntry> toSave = new ArrayList<SubscriptionEntry>();
 
                 for (ExclusionPattern ep : subscription.getExclusions()) {
                     excluded = exclusionChecker.isExcluded(ep.getPattern(), feedEntry.getTitle(),
@@ -85,18 +83,17 @@ public class SubscriptionEntryBatchServiceImpl implements SubscriptionEntryBatch
                     SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
                     subscriptionEntry.setFeedEntry(feedEntry);
                     subscriptionEntry.setSubscription(subscription);
-
                     subscription.setSum(subscription.getSum() + 1);
 
-                    subscriptionEntryService.save(subscriptionEntry);
+                    subscriptionEntryRepository.save(subscriptionEntry);
+                    toIndex.add(subscriptionEntry);
                 }
 
-
-                subscriptionService.save(subscription);
+                subscriptionRepository.save(subscription);
             }
         }
 
-        return count;
+        return toIndex;
     }
 
     public ExclusionChecker getExclusionChecker() {

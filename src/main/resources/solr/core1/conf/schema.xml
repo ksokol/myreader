@@ -3,26 +3,15 @@
 <schema name="solr" version="1.1">
 
   <fields>
-     <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+     <field name="id" type="long" indexed="true" stored="true" required="true" multiValued="false" />
      <field name="owner" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
      <field name="owner_id" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
      <field name="seen" type="boolean"  indexed="true"  stored="true" multiValued="false" required="true"/>
-     <field name="url" type="string"  indexed="true"  stored="true" multiValued="false" />
-     <field name="guid" type="string"  indexed="true"  stored="true" multiValued="false" />
      <field name="title" type="string"  indexed="true"  stored="true" multiValued="false" />
-     <field name="created_at" type="tdate"  indexed="true"  stored="true" multiValued="false" required="true"/>
-     <field name="updated_at" type="tdate"  indexed="true"  stored="true" multiValued="false" />
      <field name="tags" type="commaDelimited" />
      <field name="content" type="string" indexed="false"  stored="true" multiValued="false" />
 
      <field name="feed_id" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
-     <field name="feed_url" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
-     <field name="feed_tag" type="keyword"  indexed="true"  stored="true" multiValued="true" />
-     <field name="feed_icon" type="string"  indexed="false"  stored="true" multiValued="false" />
-     <field name="feed_icon_mime" type="string"  indexed="false"  stored="true" multiValued="false" />
-     <field name="feed_title" type="keyword"  indexed="true"  stored="true" multiValued="false"/>
-
-     <field name="_version_" type="long" indexed="true" stored="true"/>
 
      <copyField source="content" dest="ft_content"/>
      <copyField source="title" dest="ft_title"/>
@@ -31,7 +20,7 @@
      <field name="ft_title" type="text" />
      <field name="ft_tags" type="text" />
 
-     <dynamicField name="*" type="string" indexed="false"  stored="true" multiValued="true" />
+     <dynamicField name="*" type="string" indexed="false"  stored="false" multiValued="true" />
   </fields>
 
   <uniqueKey>id</uniqueKey>
@@ -39,11 +28,10 @@
   <types>
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
-    <fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
     <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
     <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
 
-    <fieldType name="text" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true" indexed="true" stored="true">
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true" indexed="true" stored="false">
         <analyzer type="index">
             <tokenizer class="solr.StandardTokenizerFactory"/>
             <charFilter class="org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory"/>

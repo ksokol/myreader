@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
  */
 public class SyndFetcherJobTest {
 
-    private SyndFetcherJob uut = new SyndFetcherJob();
+    private SyndFetcherJob uut;
     private FeedQueue queueMock;
     private SubscriptionBatchService serviceMock;
 
@@ -22,9 +22,7 @@ public class SyndFetcherJobTest {
     public void setUp() throws Exception {
         queueMock = mock(FeedQueue.class);
         serviceMock = mock(SubscriptionBatchService.class);
-
-        uut.setFeedQueue(queueMock);
-        uut.setSubscriptionBatchService(serviceMock);
+        uut = new SyndFetcherJob(queueMock, serviceMock);
     }
 
     @Test

@@ -6,12 +6,12 @@ import myreader.repository.SubscriptionEntryRepository;
 import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
 import myreader.service.subscriptionentry.SubscriptionEntryService;
 import myreader.service.user.UserService;
-import myreader.solr.IndexService;
-import myreader.solr.SubscriptionEntrySearchService;
+import myreader.service.search.SubscriptionEntrySearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,14 +23,12 @@ public class SubscriptionEntryServiceImpl implements SubscriptionEntryService {
 
     private final UserService userService;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
-    private final IndexService indexService;
     private final SubscriptionEntrySearchService searchService;
 
     @Autowired
-    public SubscriptionEntryServiceImpl(UserService userService, SubscriptionEntryRepository subscriptionEntryRepository, IndexService indexService, SubscriptionEntrySearchService searchService) {
+    public SubscriptionEntryServiceImpl(UserService userService, SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchService searchService) {
         this.userService = userService;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
-        this.indexService = indexService;
         this.searchService = searchService;
     }
 
@@ -50,17 +48,19 @@ public class SubscriptionEntryServiceImpl implements SubscriptionEntryService {
 
     @Override
     public List<SubscriptionEntry> search(SubscriptionEntrySearchQuery search) {
-        if (search.getLastId() != null) {
-            SubscriptionEntry findById = findById(search.getLastId());
-            search.setOffset(findById.getCreatedAt());
-        }
         User currentUser = userService.getCurrentUser();
-        return searchService.findByQueryAndUser(search, currentUser.getEmail());
+        List<Long> ids = searchService.findByQueryAndUser(search, currentUser.getEmail());
+
+        if(ids.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        } else {
+            return subscriptionEntryRepository.findAll(ids);
+        }
     }
 
     @Override
     public void save(SubscriptionEntry subscriptionEntry) {
         subscriptionEntryRepository.save(subscriptionEntry);
-        indexService.save(subscriptionEntry);
+        searchService.save(subscriptionEntry);
     }
 }

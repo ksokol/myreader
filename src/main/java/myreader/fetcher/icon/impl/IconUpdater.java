@@ -21,10 +21,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+//TODO refactore me
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 @Component
-public class IconUpdater implements ApplicationListener<IconUpdateRequestEvent> {
+public class IconUpdater {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -34,25 +37,15 @@ public class IconUpdater implements ApplicationListener<IconUpdateRequestEvent> 
     @Autowired
     private IconService iconService;
 
-    @Override
-    public void onApplicationEvent(IconUpdateRequestEvent event) {
-        if (event.getUrl() == null) {
-            start();
-        } else {
-            updateIcon(event.getUrl());
-        }
-    }
-
-    public void start() {
-        List<String> feedUrls = getFeedUrls();
-
-        for (String url : feedUrls) {
-            updateIcon(url);
-        }
-    }
-
     public void updateIcon(String url) {
         logger.info("start IconUpdateJob for {}", url);
+
+        Feed feed = feedRepository.findByUrl(url);
+
+        if (feed == null) {
+            logger.info("no feed for url found {} - skipping", url);
+            return;
+        }
 
         IconResult result = iconService.findByUrl(url);
         BufferedImage converted = scale(result.getIcon());
@@ -61,18 +54,17 @@ public class IconUpdater implements ApplicationListener<IconUpdateRequestEvent> 
         fi.setMimeType(result.getMimeType());
         fi.setIcon(toBase64(converted, result.getMimeType()));
 
-        save(url, fi);
-        logger.info("end IconUpdateJob for {}", url);
-    }
+        feed = feedRepository.findByUrl(url);
 
-    @Transactional
-    private void save(String url, FeedIcon icon) {
-        Feed feed = feedRepository.findByUrl(url);
-
-        if (feed != null) {
-            feed.setIcon(icon);
-            feedRepository.save(feed);
+        if (feed == null) {
+            logger.info("no feed for url found {} - skipping", url);
+            return;
         }
+
+        feed.setIcon(fi);
+        feedRepository.save(feed);
+
+        logger.info("end IconUpdateJob for {}", url);
     }
 
     private BufferedImage scale(BufferedImage bi) {
@@ -99,17 +91,5 @@ public class IconUpdater implements ApplicationListener<IconUpdateRequestEvent> 
         }
 
         return encoded;
-    }
-
-    @Transactional
-    private List<String> getFeedUrls() {
-        Iterable<Feed> feedList = feedRepository.findAll();
-        List<String> stringList = new ArrayList<String>();
-
-        for (Feed feed : feedList) {
-            stringList.add(feed.getUrl());
-        }
-
-        return stringList;
     }
 }

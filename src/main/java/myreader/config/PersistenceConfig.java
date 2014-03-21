@@ -15,6 +15,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 /**
@@ -93,11 +94,14 @@ public class PersistenceConfig {
         return factoryBean;
     }
 
+    /*
+     * don't call entityManagerFactory() otherwise you have a memory leak
+     * see https://jira.spring.io/browse/SPR-9274
+     */
     @Bean
-    public PlatformTransactionManager transactionManager() {
+    public PlatformTransactionManager transactionManager(EntityManagerFactory factory) {
         JpaTransactionManager txManager = new JpaTransactionManager();
-        txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-        txManager.setDataSource(dataSource());
+        txManager.setEntityManagerFactory(factory);
         return txManager;
     }
 }

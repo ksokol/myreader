@@ -1,4 +1,4 @@
-package myreader.solr;
+package myreader.service.search;
 
 /**
  * @author dev@sokol-web.de <Kamill Sokol>
@@ -11,8 +11,9 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static myreader.solr.SolrSubscriptionFields.*;
+import static myreader.service.search.SolrSubscriptionFields.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,6 +61,15 @@ public class SubscriptionSearchService {
             }
             return results;
         } catch (SolrServerException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public void delete(Long id) {
+        try {
+            solrServer.deleteByQuery(feedId(id));
+            solrServer.commit();
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }

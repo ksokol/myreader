@@ -11,7 +11,7 @@ It is a sandbox for different technologies that are worth to play with. So don't
 
 **Prerequisite**
 
-- Oracle JDK 6 or OpenJDK 6 or newer
+- Oracle JDK 6, OpenJDK 6 or newer
 - Apache Maven 2.x or newer
 - MySQL 5.1.x (tested on 5.1.17, should run on 5.x too)
 - Servlet Container 2.5 or newer
@@ -20,26 +20,42 @@ It is a sandbox for different technologies that are worth to play with. So don't
 
 - run *mvn package*
 
-**Installation & Requirements**
+**Installation**
+
+***JDBC driver and JDNI resource***
 
 - add `spring.profiles.active=myreader.prod` to your container's environment variables otherwise an in-memory transient database will be used
 - put [MySQL JDBC Driver](https://dev.mysql.com/downloads/connector/j) into your servlet container's classpath
-- add a JNDI resource namend `jdbc/collector`:
+- add a JNDI resource named `jdbc/collector`:
 
 <pre>
-       &lt;Resource name="jdbc/collector"
-           auth="Container"
-           type="javax.sql.DataSource"
-           username="<username>"
-           password="<password>"
-           driverClassName="com.mysql.jdbc.Driver" <!-- only MySQL is supported -->
-           url="jdbc:mysql://<host:port>/<dbname>"
-           maxActive="8"
-           maxIdle="4"
-       /&gt;
+&lt;Resource name="jdbc/collector"
+   auth="Container"
+   type="javax.sql.DataSource"
+   username="<username>"
+   password="<password>"
+   driverClassName="com.mysql.jdbc.Driver" <!-- only MySQL is supported -->
+   url="jdbc:mysql://<host:port>/<dbname>"
+   maxActive="8"
+   maxIdle="4"
+/&gt;
 </pre>
 
 - deploy war artefact into servlet container
 
+***Memory leaks due to MySQL's 'Abandonded connection cleanup thread'***
+
+This thread starts with the first request and holds a reference to the webapp's classloader. The least invasive workaround is to force initialisation of the MySQL JDBC driver from code outside of the webapp's classloader.
+In `tomcat/conf/server.xml`, modify (inside the Server element):
+
+<pre>
+&lt;Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" /&gt;
+</pre>
+to
+<pre>
+&lt;Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" classesToInitialize="com.mysql.jdbc.NonRegisteringDriver" /&gt;
+</pre>
+
 **TODO**
+
 - add initial admin user

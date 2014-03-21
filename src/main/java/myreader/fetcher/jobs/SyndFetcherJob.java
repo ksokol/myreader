@@ -6,23 +6,23 @@ import myreader.service.subscription.SubscriptionBatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.util.StopWatch;
 
-class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
-
+public class SyndFetcherJob implements Runnable, BeanNameAware, ApplicationListener<ContextClosedEvent> {
     private static final Logger log = LoggerFactory.getLogger(SyndFetcherJob.class);
+
     private String jobName;
     private String swap;
-
-    @Autowired
-    private FeedQueue feedQueue;
-
-    @Autowired
-    private SubscriptionBatchService subscriptionBatchService;
-
+    private final FeedQueue feedQueue;
+    private final SubscriptionBatchService subscriptionBatchService;
     private volatile boolean alive = true;
+
+    public SyndFetcherJob(FeedQueue feedQueue, SubscriptionBatchService subscriptionBatchService) {
+        this.feedQueue = feedQueue;
+        this.subscriptionBatchService = subscriptionBatchService;
+    }
 
     @Override
     public void run() {
@@ -44,16 +44,16 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
             }
         } finally {
             timer.stop();
-            log.debug("stop");
             log.info("total time {} sec", timer.getTotalTimeSeconds());
             toggleCurrentThreadName();
+            log.debug("stop");
         }
     }
 
     @Override
-    public void destroy() throws Exception {
-        log.info("stop");
-        this.alive = false;
+    public void onApplicationEvent(ContextClosedEvent event) {
+        log.info("got stop signal");
+        alive = false;
     }
 
     @Override
@@ -74,21 +74,5 @@ class SyndFetcherJob implements Runnable, DisposableBean, BeanNameAware {
             thread.setName(swap);
             swap = null;
         }
-    }
-
-    public FeedQueue getFeedQueue() {
-        return feedQueue;
-    }
-
-    public void setFeedQueue(FeedQueue feedQueue) {
-        this.feedQueue = feedQueue;
-    }
-
-    public SubscriptionBatchService getSubscriptionBatchService() {
-        return subscriptionBatchService;
-    }
-
-    public void setSubscriptionBatchService(SubscriptionBatchService subscriptionBatchService) {
-        this.subscriptionBatchService = subscriptionBatchService;
     }
 }

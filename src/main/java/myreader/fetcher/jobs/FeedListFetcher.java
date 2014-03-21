@@ -10,58 +10,60 @@ import myreader.fetcher.impl.HttpCallDecisionMaker;
 import myreader.repository.FeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 
-@Component("feedListFetcher")
-class FeedListFetcher implements Runnable, DisposableBean {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+public class FeedListFetcher implements Runnable, ApplicationListener<ContextClosedEvent> {
+    private static final Logger log = LoggerFactory.getLogger(FeedListFetcher.class);
 
-    @Autowired
-    HttpCallDecisionMaker httpCallDecisionMaker;
-
-    @Autowired
-    FeedQueue feedQueue;
-
-    @Autowired
-    private FeedRepository feedRepository;
-
+    private final HttpCallDecisionMaker httpCallDecisionMaker;
+    private final FeedQueue feedQueue;
+    private final FeedRepository feedRepository;
     private volatile boolean alive = true;
 
-    @Transactional
+    public FeedListFetcher(HttpCallDecisionMaker httpCallDecisionMaker, FeedQueue feedQueue, FeedRepository feedRepository) {
+        this.httpCallDecisionMaker = httpCallDecisionMaker;
+        this.feedQueue = feedQueue;
+        this.feedRepository = feedRepository;
+    }
+
     @Override
     public void run() {
-        logger.debug("start");
+        log.debug("start");
 
         if (feedQueue.getSize() > 0) {
-            logger.info("queue has {} feeds. exiting", feedQueue.getSize());
+            log.info("queue has {} feeds. aborting", feedQueue.getSize());
             return;
         }
 
-        Iterable<Feed> feeds = feedRepository.findAll();
+        List<Feed> feeds = feedRepository.findAll();
         Iterator<Feed> iterator = feeds.iterator();
-        logger.info("checking {} feeds", feedRepository.count());
+        int count = 0;
+        int size = feeds.size();
+        log.info("checking {} feeds", size);
 
-       // for (int i = 0; i < feeds.size() && alive; i++) {
-        while(iterator.hasNext() && alive) {
+        for(int i=0;i<size && alive;i++) {
             Feed f = iterator.next();
             boolean result = httpCallDecisionMaker.decide(f.getUrl(), f.getLastModified());
-            logger.debug("calling: {}, lastModified: {}, url: {}",
-                    new Object[] { result, f.getLastModified(), f.getUrl() });
+            log.debug("{}/{} call: {}, lastModified: {}, url: {}", new Object[]{i+1, size, result, f.getLastModified(), f.getUrl()});
 
             if (result) {
+                count++;
                 feedQueue.add(f.getUrl());
             }
         }
 
-        logger.info("{} new elements in queue", feedQueue.getSize());
+        if(alive) {
+            log.info("{} new elements in queue", count);
+        } else {
+            log.info("{} feeds left for check but got stop signal", size - count);
+        }
+        log.debug("end");
     }
 
     @Override
-    public void destroy() throws Exception {
-        logger.info("stop");
-        this.alive = false;
+    public void onApplicationEvent(ContextClosedEvent event) {
+        log.info("got stop signal");
+        alive = false;
     }
 }
