@@ -1,4 +1,4 @@
-package myreader.resource;
+package myreader.reader.web;
 
 import myreader.API;
 import org.apache.solr.common.SolrException;

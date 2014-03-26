@@ -18,7 +18,7 @@
 		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
        
     <security:global-method-security pre-post-annotations="enabled"/>
-    <context:component-scan base-package="myreader.admin, myreader.bootstrap,myreader.reader,myreader.subscription,myreader.user,myreader.resource,spring"/>
+    <context:component-scan base-package="myreader.admin, myreader.bootstrap,myreader.reader,myreader.subscription,myreader.user,spring"/>
     <tx:annotation-driven />
 
 	<mvc:annotation-driven>
