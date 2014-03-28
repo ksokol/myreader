@@ -27,4 +27,6 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
     @Override
     List<SubscriptionEntry> findAll(Iterable<Long> ids);
 
+    @Query(value="from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1",countQuery = "select count(*) from SubscriptionEntry where subscription.id = ?2 and subscription.user.id = ?1")
+    Page<SubscriptionEntry> findBySubscriptionAndUser(Long userId, Long subscriptionId, Pageable pageable);
 }

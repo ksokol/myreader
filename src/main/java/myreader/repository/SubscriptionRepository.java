@@ -1,6 +1,8 @@
 package myreader.repository;
 
 import myreader.entity.Subscription;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -19,6 +21,9 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     @Query("from Subscription s join fetch s.feed where s.user.id = ?1")
     List<Subscription> findByUser(Long id);
+
+    @Query(value="from Subscription s join fetch s.feed where s.user.id = ?1", countQuery = "select count(*) from Subscription s where s.user.id = ?1")
+    Page<Subscription> findByUser(Long id, Pageable pageable);
 
     @Query("from Subscription where id = ?1 and user.email = ?2")
     Subscription findByIdAndUsername(Long id, String username);
