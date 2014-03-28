@@ -1,0 +1,26 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/users{?page,size,sort}"
+        }
+    ],
+    "content": [
+        {
+            "links": [
+                {
+                    "rel": "subscriptions",
+                    "href": "http://localhost/users/1/subscriptions"
+                }
+            ],
+            "email": "user1@localhost",
+            "role": "ROLE_USER"
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 1,
+        "totalPages": 1,
+        "number": 0
+    }
+}

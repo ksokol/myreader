@@ -1,76 +1,50 @@
 package myreader.resource.user;
 
-import myreader.config.PersistenceConfig;
-import myreader.config.SecurityConfig;
-import myreader.resource.ResourceConfig;
 import myreader.service.subscriptionentry.SubscriptionEntryService;
-import myreader.test.TestConfig;
-import myreader.test.TestDataSourceConfig;
-import org.junit.After;
-import org.junit.Before;
+import myreader.test.IntegrationTestSupport;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
-
-import javax.servlet.Filter;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static net.javacrumbs.jsonunit.JsonAssert.*;
 
 /**
  * @author Kamill Sokol dev@sokol-web.de
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, SecurityConfig.class})
-@WebAppConfiguration
-public class UserCollectionResourceTest {
-
-    private MockMvc mockMvc;
-
-    @Autowired
-    private WebApplicationContext wac;
+public class UserCollectionResourceTest extends IntegrationTestSupport {
 
     @Autowired
     private SubscriptionEntryService mock;
 
-    @Autowired
-    private Filter springSecurityFilterChain;
-
-    @Before
-    public void setUp() throws Exception {
-
-        this.mockMvc = webAppContextSetup(this.wac)
-                .addFilter(springSecurityFilterChain)
-                .build();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
-    }
-
     @Test
-    public void testFindBySubscription() throws Exception {
-        mockMvc.perform(getAsAdmin("/users"))
-                .andExpect(status().isOk()).andDo(print())
+    public void givenAdminIsAuthenticated_whenCallsCollectionResource_thenAllThreeUsersShouldBeReturned() throws Exception {
+       mockMvc.perform(getAsAdmin("/users"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements", is(3)));
-
     }
 
     @Test
-    public void testFindBySubscription2() throws Exception {
+    public void givenUser1IsAuthenticated_whenCallsCollectionResource_thenOnlyUser1ShouldBeReturned() throws Exception {
         mockMvc.perform(getAsUser1("/users"))
-                .andExpect(status().isOk()).andDo(print())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements", is(1)));
+    }
 
+    @Test
+    public void testCollectionResourceJsonStructureEquality() throws Exception {
+        MvcResult result = mockMvc.perform(getAsUser1("/users"))
+                .andReturn();
+        assertJsonStructureEquals(jsonFromFile("user/users.json"), result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void testCollectionResourceJsonEquality() throws Exception {
+        MvcResult result = mockMvc.perform(getAsUser1("/users"))
+                .andReturn();
+        assertJsonEquals(jsonFromFile("user/users.json"), result.getResponse().getContentAsString());
     }
 }
