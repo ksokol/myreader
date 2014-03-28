@@ -17,9 +17,6 @@ import static net.javacrumbs.jsonunit.JsonAssert.*;
  */
 public class UserCollectionResourceTest extends IntegrationTestSupport {
 
-    @Autowired
-    private SubscriptionEntryService mock;
-
     @Test
     public void givenAdminIsAuthenticated_whenCallsCollectionResource_thenAllThreeUsersShouldBeReturned() throws Exception {
        mockMvc.perform(getAsAdmin("/users"))
