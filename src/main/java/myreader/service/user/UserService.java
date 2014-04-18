@@ -7,5 +7,9 @@ import myreader.entity.User;
  */
 public interface UserService {
 
+    User findOne(Long id);
+
     User getCurrentUser();
+
+    void setPassword(Long id, String newPassword);
 }
