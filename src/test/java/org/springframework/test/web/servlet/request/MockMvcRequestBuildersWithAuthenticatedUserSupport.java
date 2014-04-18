@@ -19,26 +19,38 @@ public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcR
         final String password;
     }
 
+    public static MockHttpServletRequestBuilder getAsUser(String username, String password, String urlTemplate, Object... urlVariables) {
+        return actionAsUserX(HttpMethod.GET, username, password, urlTemplate, urlVariables);
+    }
+
     public static MockHttpServletRequestBuilder getAsAdmin(String urlTemplate, Object... urlVariables) {
-        return getAsUserX(KnownUser.ADMIN, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.GET, KnownUser.ADMIN.username, KnownUser.ADMIN.password, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilder getAsUser1(String urlTemplate, Object... urlVariables) {
-        return getAsUserX(KnownUser.USER1, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.GET, KnownUser.USER1.username, KnownUser.USER1.password, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilder getAsUser2(String urlTemplate, Object... urlVariables) {
-        return getAsUserX(KnownUser.USER2, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.GET, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
     }
 
-    private static MockHttpServletRequestBuilder getAsUserX( KnownUser user, String urlTemplate, Object... urlVariables) {
-        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = new MockHttpServletRequestBuilder(HttpMethod.GET, urlTemplate, urlVariables);
-        addAuthentication(mockHttpServletRequestBuilder, user);
+    public static MockHttpServletRequestBuilder patchAsUser1(String urlTemplate, Object... urlVariables) {
+        return actionAsUserX(HttpMethod.PATCH, KnownUser.USER1.username, KnownUser.USER1.password, urlTemplate, urlVariables);
+    }
+
+    public static MockHttpServletRequestBuilder patchAsUser2(String urlTemplate, Object... urlVariables) {
+        return actionAsUserX(HttpMethod.PATCH, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
+    }
+
+    private static MockHttpServletRequestBuilder actionAsUserX(HttpMethod method, String username, String password, String urlTemplate, Object... urlVariables) {
+        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = new MockHttpServletRequestBuilder(method, urlTemplate, urlVariables);
+        addAuthentication(mockHttpServletRequestBuilder, username, password);
         return  mockHttpServletRequestBuilder;
     }
 
-    private static void addAuthentication(MockHttpServletRequestBuilder mockHttpServletRequestBuilder, KnownUser user) {
-        String basicDigestHeaderValue = "Basic " + new String(Base64.encodeBase64((String.format("%s:%s", user.username, user.password)).getBytes()));
+    private static void addAuthentication(MockHttpServletRequestBuilder mockHttpServletRequestBuilder, String username, String password) {
+        String basicDigestHeaderValue = "Basic " + new String(Base64.encodeBase64((String.format("%s:%s", username, password)).getBytes()));
         mockHttpServletRequestBuilder.header("Authorization", basicDigestHeaderValue);
     }
 }

@@ -2,6 +2,7 @@ package myreader.resource.user.assembler;
 
 import myreader.entity.User;
 import myreader.resource.user.UserCollectionResource;
+import myreader.resource.user.UserEntityResource;
 import myreader.resource.user.beans.UserGetResponse;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
@@ -32,13 +33,12 @@ public class UserGetResponseAssembler extends ResourceAssemblerSupport<User, Use
     }
 
     private void addLinks(User source, UserGetResponse target) {
-
         if(source.getSubscriptions() != null) {
             Link subscriptions = linkTo(methodOn(UserCollectionResource.class).test(source.getId())).withRel("subscriptions");
             target.add(subscriptions);
         }
 
-       // Link self = linkTo(SubscriptionEntryResource.class).slash(source.getId()).withSelfRel();
-       //  target.add(self);
+        Link self = linkTo(UserEntityResource.class).slash(source.getId()).withSelfRel();
+        target.add(self);
     }
 }

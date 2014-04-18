@@ -1,0 +1,14 @@
+{
+    "links": [
+        {
+            "rel": "subscriptions",
+            "href": "http://localhost/users/13/subscriptions"
+        },
+        {
+            "rel": "self",
+            "href": "http://localhost/users/12"
+        }
+    ],
+    "email": "altered-user1@localhost",
+    "role": "ALTERED_ROLE_USER"
+}
