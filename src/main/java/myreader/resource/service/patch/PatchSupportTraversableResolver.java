@@ -11,7 +11,7 @@ import java.lang.annotation.ElementType;
  * @author Kamill Sokol dev@sokol-web.de
  */
 @Component
-public class PatchSupportTraversableResolver implements TraversableResolver {
+class PatchSupportTraversableResolver implements TraversableResolver {
 
     private TraversableResolver delegate;
 

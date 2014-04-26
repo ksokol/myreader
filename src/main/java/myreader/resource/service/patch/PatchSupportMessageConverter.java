@@ -19,7 +19,7 @@ import static java.util.Map.Entry;
 /**
  * @author Kamill Sokol dev@sokol-web.de
  */
-public class PatchSupportMessageConverter extends MappingJacksonHttpMessageConverter {
+class PatchSupportMessageConverter extends MappingJacksonHttpMessageConverter {
 
     @Override
     public boolean canRead(Type type, Class<?> contextClass, MediaType mediaType) {
