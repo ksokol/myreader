@@ -1,4 +1,4 @@
-package myreader.resource.exception;
+package myreader.resource.exception.handler;
 
 import myreader.service.AccessDeniedException;
 import org.springframework.http.HttpStatus;
@@ -8,14 +8,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 @ControllerAdvice
-public class ExceptionControllerAdvice {
+class AccessDeniedExceptionHandler {
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ResponseBody
     @ExceptionHandler(AccessDeniedException.class)
     public void exception(Exception e) {
     }
+
 }
