@@ -1,0 +1,8 @@
+{
+    "fieldErrors": [
+        {
+            "field": "url",
+            "message": "may not be null"
+        }
+    ]
+}

@@ -1,0 +1,124 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptions{?page,size,sort}"
+        }
+    ],
+    "content": [
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptions/6/entries"
+                }
+            ],
+            "title": "user2_subscription1",
+            "url": "http://www.obix-labs.com/blogs/highOctaneJava/feed/entries/atom",
+            "tag": "tag1",
+            "sum": 15,
+            "unseen": 0,
+            "createdAt": 1302895246000
+        },
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptions/7/entries"
+                }
+            ],
+            "title": "user2_subscription2",
+            "url": "http://www.javaspecialists.eu/archive/tjsn.rss",
+            "tag": "tag1",
+            "sum": 10,
+            "unseen": 0,
+            "createdAt": 1302895246000
+        },
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptions/8/entries"
+                }
+            ],
+            "title": "user2_subscription3",
+            "url": "http://www.tomcatexpert.com/blog/feed",
+            "tag": null,
+            "sum": 125,
+            "unseen": 0,
+            "createdAt": 1302895246000
+        },
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptions/9/entries"
+                }
+            ],
+            "title": "user2_subscription4",
+            "url": "http://martinfowler.com/feed.atom",
+            "tag": "tag1",
+            "sum": 25,
+            "unseen": 0,
+            "createdAt": 1302895246000
+        },
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptions/10/entries"
+                }
+            ],
+            "title": "user2_subscription5",
+            "url": "http://feeds.feedburner.com/SpringSourceTeamBlog",
+            "tag": null,
+            "sum": 5,
+            "unseen": 0,
+            "createdAt": 1302895246000
+        },
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptions/11/entries"
+                }
+            ],
+            "title": "user2_subscription6",
+            "url": "https://jira.springsource.org/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?&jqlQuery=project+%3D+SPR+AND+resolution+%3D+Unresolved+ORDER+BY+due+ASC%2C+priority+DESC%2C+created+ASC&tempMax=100&reset=true&decorator=none",
+            "tag": "tag2",
+            "sum": 1,
+            "unseen": 0,
+            "createdAt": 1302895246000
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 6,
+        "totalPages": 1,
+        "number": 0
+    }
+}

@@ -43,6 +43,10 @@ public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcR
         return actionAsUserX(HttpMethod.PATCH, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
     }
 
+    public static MockHttpServletRequestBuilder postAsUser2(String urlTemplate, Object... urlVariables) {
+        return actionAsUserX(HttpMethod.POST, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
+    }
+
     private static MockHttpServletRequestBuilder actionAsUserX(HttpMethod method, String username, String password, String urlTemplate, Object... urlVariables) {
         MockHttpServletRequestBuilder mockHttpServletRequestBuilder = new MockHttpServletRequestBuilder(method, urlTemplate, urlVariables);
         addAuthentication(mockHttpServletRequestBuilder, username, password);

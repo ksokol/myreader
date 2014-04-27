@@ -1,0 +1,8 @@
+{
+    "fieldErrors": [
+        {
+            "field": "url",
+            "message": "must begin with http(s)://"
+        }
+    ]
+}
