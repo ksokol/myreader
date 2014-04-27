@@ -11,5 +11,5 @@ public interface UserService {
 
     User getCurrentUser();
 
-    void setPassword(Long id, String newPassword);
+    void setPassword(User user, String newPassword);
 }

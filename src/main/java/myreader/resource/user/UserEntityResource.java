@@ -16,7 +16,7 @@ import spring.security.MyReaderUser;
 import javax.validation.Valid;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 @Controller
 @RequestMapping(value= "/users", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -49,14 +49,10 @@ public class UserEntityResource {
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public UserGetResponse patch(@Valid @RequestBody UserPatchRequest request, User user) {
-
-        //TODO
         if(request.isFieldPatched("password")) {
-            userService.setPassword(user.getId(), request.getPassword());
+            userService.setPassword(user, request.getPassword());
         }
-
         return get(user);
     }
-
 
 }

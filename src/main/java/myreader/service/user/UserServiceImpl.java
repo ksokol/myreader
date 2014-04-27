@@ -7,6 +7,7 @@ import myreader.service.session.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 /**
  * @author Kamill Sokol dev@sokol-web.de
@@ -41,8 +42,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setPassword(Long id, String newPassword) {
-        User user = findOne(id);
+    public void setPassword(User user, String newPassword) {
+        Assert.notNull(user);
 
         //TODO salt me, hash me
         String hashed = passwordEncoder.encodePassword(newPassword, null);
