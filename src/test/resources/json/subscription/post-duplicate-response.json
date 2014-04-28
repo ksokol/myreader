@@ -1,0 +1,8 @@
+{
+    "fieldErrors": [
+        {
+            "field": "url",
+            "message": "subscription exists"
+        }
+    ]
+}

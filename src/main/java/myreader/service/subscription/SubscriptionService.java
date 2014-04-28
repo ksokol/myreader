@@ -1,6 +1,8 @@
 package myreader.service.subscription;
 
 import myreader.entity.Subscription;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -13,6 +15,8 @@ public interface SubscriptionService {
 
     List<Subscription> findAll();
 
+    Page<Subscription> findAll(Pageable pageable);
+
     Subscription findById(Long id);
 
     List<Subscription> findByTag(String tag);
@@ -20,4 +24,6 @@ public interface SubscriptionService {
     Subscription findByUrl(String url);
 
     void save(Subscription subscription);
+
+    Subscription subscribe(String url);
 }

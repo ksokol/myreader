@@ -3,7 +3,7 @@ package myreader.resource.subscription;
 import myreader.entity.Subscription;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPostRequest;
-import myreader.resource.subscription.converter.SubscriptionGetResponseConverter;
+import myreader.resource.subscription.converter.SubscriptionGetResponseAssembler;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ import java.util.List;
 public class SubscriptionCollectionResource {
 
     private final SubscriptionService subscriptionService;
-    private final SubscriptionGetResponseConverter subscriptionConverter = new SubscriptionGetResponseConverter();
+    private final SubscriptionGetResponseAssembler subscriptionAssembler = new SubscriptionGetResponseAssembler();
     private final SubscriptionEntryCollectionResource subscriptionEntryResourceController;
     private final PagedResourcesAssembler pagedResourcesAssembler;
 
@@ -41,10 +41,11 @@ public class SubscriptionCollectionResource {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void post(@Valid @RequestBody SubscriptionPostRequest bean) {
-
-        subscriptionService.subscribe(bean.getUrl());
-
+    @ResponseBody
+    public SubscriptionGetResponse post(@Valid @RequestBody SubscriptionPostRequest bean) {
+        Subscription subscription = subscriptionService.subscribe(bean.getUrl());
+        SubscriptionGetResponse subscriptionGetResponse = subscriptionAssembler.toDto(subscription);
+        return subscriptionGetResponse;
     }
 
 // @CurrentUser MyReaderUser user,
@@ -60,7 +61,7 @@ public class SubscriptionCollectionResource {
     public PagedResources get(Pageable pageable) {
         Page<Subscription> subscriptionPage = subscriptionService.findAll(pageable);
 
-        List<SubscriptionGetResponse> dtos = subscriptionConverter.toDto(subscriptionPage.getContent());
+        List<SubscriptionGetResponse> dtos = subscriptionAssembler.toDto(subscriptionPage.getContent());
         Page<SubscriptionGetResponse> pagedDtos = new PageImpl<SubscriptionGetResponse>(dtos, pageable, subscriptionPage.getTotalElements());
 
         PagedResources pagedResources = pagedResourcesAssembler.toResource(pagedDtos);
