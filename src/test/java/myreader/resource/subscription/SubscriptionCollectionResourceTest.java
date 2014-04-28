@@ -17,45 +17,38 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
     public void testEntityResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptions"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/subscriptions.json"))
-                .andReturn();
+                .andExpect(content().isJsonEqual("subscription/subscriptions.json"));
     }
 
     @Test
     public void testFieldErrorWhenUrlIsEmpty() throws Exception {
         mockMvc.perform(postAsUser2("/subscriptions")
-                .content("{}"))
+                .json("{}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().isJsonEqual("subscription/post-empty-url.json"))
-                .andReturn();
+                .andExpect(content().isJsonEqual("subscription/post-empty-url.json"));
     }
 
     @Test
     public void testFieldErrorWhenUrlHasInvalidPattern() throws Exception {
         mockMvc.perform(postAsUser2("/subscriptions")
-                .content("{\"url\":\"invalid\"}"))
+                .json("{'url':'invalid url'}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().isJsonEqual("subscription/post-invalid-url.json"))
-                .andReturn();
+                .andExpect(content().isJsonEqual("subscription/post-invalid-url.json"));
     }
 
     @Test
     public void testFieldErrorWhenPostingExistentSubscription() throws Exception {
         mockMvc.perform(postAsUser2("/subscriptions")
-                .content(jsonFromFile("subscription/post-duplicate-request.json")))
+                .json("subscription/post-duplicate-request.json"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().isJsonEqual("subscription/post-duplicate-response.json"))
-                .andReturn();
+                .andExpect(content().isJsonEqual("subscription/post-duplicate-response.json"));
     }
 
     @Test
     public void testSuccessWhenPostingNewSubscription() throws Exception {
         mockMvc.perform(postAsUser2("/subscriptions")
-                .content(jsonFromFile("subscription/post-new-request.json")))
+                .json("subscription/post-new-request.json"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/post-new-response.json"))
-                .andReturn();
+                .andExpect(content().isJsonEqual("subscription/post-new-response.json"));
     }
-
-
 }

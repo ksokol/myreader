@@ -35,22 +35,22 @@ public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcR
         return actionAsUserX(HttpMethod.GET, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
     }
 
-    public static MockHttpServletRequestBuilder patchAsUser1(String urlTemplate, Object... urlVariables) {
+    public static MockHttpServletRequestBuilderWithJsonSupport patchAsUser1(String urlTemplate, Object... urlVariables) {
         return actionAsUserX(HttpMethod.PATCH, KnownUser.USER1.username, KnownUser.USER1.password, urlTemplate, urlVariables);
     }
 
-    public static MockHttpServletRequestBuilder patchAsUser2(String urlTemplate, Object... urlVariables) {
+    public static MockHttpServletRequestBuilderWithJsonSupport patchAsUser2(String urlTemplate, Object... urlVariables) {
         return actionAsUserX(HttpMethod.PATCH, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
     }
 
-    public static MockHttpServletRequestBuilder postAsUser2(String urlTemplate, Object... urlVariables) {
+    public static MockHttpServletRequestBuilderWithJsonSupport postAsUser2(String urlTemplate, Object... urlVariables) {
         return actionAsUserX(HttpMethod.POST, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
     }
 
-    private static MockHttpServletRequestBuilder actionAsUserX(HttpMethod method, String username, String password, String urlTemplate, Object... urlVariables) {
-        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = new MockHttpServletRequestBuilder(method, urlTemplate, urlVariables);
+    private static MockHttpServletRequestBuilderWithJsonSupport actionAsUserX(HttpMethod method, String username, String password, String urlTemplate, Object... urlVariables) {
+        MockHttpServletRequestBuilderWithJsonSupport mockHttpServletRequestBuilder = new MockHttpServletRequestBuilderWithJsonSupport(method, urlTemplate, urlVariables);
         addAuthentication(mockHttpServletRequestBuilder, username, password);
-        return  mockHttpServletRequestBuilder;
+        return mockHttpServletRequestBuilder;
     }
 
     private static void addAuthentication(MockHttpServletRequestBuilder mockHttpServletRequestBuilder, String username, String password) {
