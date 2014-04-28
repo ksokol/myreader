@@ -51,6 +51,7 @@ public class IntegrationTestSupport {
                 .build();
     }
 
+    @Deprecated
     protected String jsonFromFile(String file) {
         ClassPathResource classPathResource = new ClassPathResource("/json/"+file);
         try {
