@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -20,6 +21,8 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.Filter;
 import java.io.IOException;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
@@ -43,6 +46,8 @@ public class IntegrationTestSupport {
     public void setUp() throws Exception {
         this.mockMvc = webAppContextSetup(this.wac)
                 .addFilter(springSecurityFilterChain)
+                .defaultRequest(get("/").contentType(MediaType.APPLICATION_JSON))
+                .alwaysExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .build();
     }
 
