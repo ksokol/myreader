@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public class UserCollectionResourceTest extends IntegrationTestSupport {
 

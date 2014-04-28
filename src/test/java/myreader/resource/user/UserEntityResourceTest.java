@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public class UserEntityResourceTest extends IntegrationTestSupport {
 
@@ -35,12 +35,14 @@ public class UserEntityResourceTest extends IntegrationTestSupport {
     @Test
     public void testEntityResourceJsonStructureEquality() throws Exception {
        mockMvc.perform(getAsUser1("/users/1"))
-                .andExpect(content().isJsonEqual("user/user#1.json"));
+               .andExpect(status().isOk())
+               .andExpect(content().isJsonEqual("user/user#1.json"));
     }
 
     @Test
     public void testEntityResourceJsonEquality() throws Exception {
         mockMvc.perform(getAsUser1("/users/1"))
+                .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("user/user#1.json"));
     }
 
@@ -50,6 +52,7 @@ public class UserEntityResourceTest extends IntegrationTestSupport {
         String passwordToSet = "test";
 
         mockMvc.perform(getAsUser1("/users/1"))
+                .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("user/user#1.json"));
 
         mockMvc.perform(patchAsUser1("/users/1")
@@ -73,6 +76,7 @@ public class UserEntityResourceTest extends IntegrationTestSupport {
     @Test
     public void testNothingToUpdate() throws Exception {
         mockMvc.perform(getAsUser1("/users/1"))
+                .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("user/user#1.json"));
 
         mockMvc.perform(patchAsUser1("/users/1")
