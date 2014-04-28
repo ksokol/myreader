@@ -2,15 +2,13 @@ package myreader.resource.user;
 
 import myreader.test.IntegrationTestSupport;
 import org.junit.Test;
-import org.springframework.test.web.servlet.MvcResult;
 
-import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
-import static net.javacrumbs.jsonunit.JsonAssert.assertJsonStructureEquals;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsAdmin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
 /**
  * @author Kamill Sokol dev@sokol-web.de
@@ -33,15 +31,15 @@ public class UserCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testCollectionResourceJsonStructureEquality() throws Exception {
-        MvcResult result = mockMvc.perform(getAsUser1("/users"))
-                .andReturn();
-        assertJsonStructureEquals(jsonFromFile("user/users.json"), result.getResponse().getContentAsString());
+       mockMvc.perform(getAsUser1("/users"))
+               .andExpect(status().isOk())
+               .andExpect(content().isJsonEqual("user/users.json"));
     }
 
     @Test
     public void testCollectionResourceJsonEquality() throws Exception {
-        MvcResult result = mockMvc.perform(getAsUser1("/users"))
-                .andReturn();
-        assertJsonEquals(jsonFromFile("user/users.json"), result.getResponse().getContentAsString());
+        mockMvc.perform(getAsUser1("/users"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("user/users.json"));
     }
 }
