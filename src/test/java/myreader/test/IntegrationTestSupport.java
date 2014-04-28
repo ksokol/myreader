@@ -22,7 +22,6 @@ import javax.servlet.Filter;
 import java.io.IOException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
@@ -47,7 +46,7 @@ public class IntegrationTestSupport {
         this.mockMvc = webAppContextSetup(this.wac)
                 .addFilter(springSecurityFilterChain)
                 .defaultRequest(get("/").contentType(MediaType.APPLICATION_JSON))
-                .alwaysExpect(content().contentType(MediaType.APPLICATION_JSON))
+               // .alwaysExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .build();
     }
 
