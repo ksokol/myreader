@@ -2,14 +2,14 @@ package myreader.service.user.impl;
 
 import myreader.service.EntityNotFoundException;
 import myreader.service.user.UserServiceImpl;
-import myreader.test.UnitTestSupport;
+import myreader.test.UnittestSupport;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Kamill Sokol
  */
-public class UserServiceImplTest extends UnitTestSupport {
+public class UserServiceImplTest extends UnittestSupport {
 
     @Autowired
     private UserServiceImpl uut;
