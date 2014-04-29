@@ -1,4 +1,4 @@
-package myreader.resource.subscription.converter;
+package myreader.resource.subscription.assembler;
 
 import myreader.entity.Subscription;
 import myreader.resource.subscription.SubscriptionCollectionResource;
@@ -42,7 +42,7 @@ public class SubscriptionGetResponseAssembler {
 
         target.setUrl(source.getFeed().getUrl());
 
-        Link subscriptionEntries = linkTo(methodOn(SubscriptionCollectionResource.class).getSubscriptionEntries(source.getId(), null)).withRel("entries");
+        Link subscriptionEntries = linkTo(methodOn(SubscriptionCollectionResource.class).getSubscriptionEntries(source.getId(), null, null)).withRel("entries");
         Link self = linkTo(SubscriptionCollectionResource.class).slash(target.getId()).withSelfRel();
 
         target.getLinks().add(self);

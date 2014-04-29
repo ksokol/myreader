@@ -1,9 +1,9 @@
 package myreader.resource.subscription;
 
 import myreader.entity.Subscription;
+import myreader.resource.subscription.assembler.SubscriptionGetResponseAssembler;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPostRequest;
-import myreader.resource.subscription.converter.SubscriptionGetResponseAssembler;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,10 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.MediaType;
+import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import spring.security.MyReaderUser;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -30,13 +32,13 @@ public class SubscriptionCollectionResource {
 
     private final SubscriptionService subscriptionService;
     private final SubscriptionGetResponseAssembler subscriptionAssembler = new SubscriptionGetResponseAssembler();
-    private final SubscriptionEntryCollectionResource subscriptionEntryResourceController;
+    private final SubscriptionEntryCollectionResource subscriptionEntryCollectionResource;
     private final PagedResourcesAssembler pagedResourcesAssembler;
 
     @Autowired
-    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionEntryCollectionResource subscriptionEntryResourceController, PagedResourcesAssembler pagedResourcesAssembler) {
+    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionEntryCollectionResource subscriptionEntryCollectionResource, PagedResourcesAssembler pagedResourcesAssembler) {
         this.subscriptionService = subscriptionService;
-        this.subscriptionEntryResourceController = subscriptionEntryResourceController;
+        this.subscriptionEntryCollectionResource = subscriptionEntryCollectionResource;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
@@ -51,9 +53,9 @@ public class SubscriptionCollectionResource {
 // @CurrentUser MyReaderUser user,
     @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
     @ResponseBody
-    public PagedResources getSubscriptionEntries(@PathVariable("id") Long id,  Pageable pageable) {
-        //Page<SubscriptionEntryResourceBean>
-        return subscriptionEntryResourceController.findBySubscription(id, pageable);
+    public PagedResources getSubscriptionEntries(@PathVariable("id") Long id,  Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+        //Page<SubscriptionEntryGetResponse>
+        return subscriptionEntryCollectionResource.findBySubscription(id, pageable, user);
     }
 
     @ResponseBody
