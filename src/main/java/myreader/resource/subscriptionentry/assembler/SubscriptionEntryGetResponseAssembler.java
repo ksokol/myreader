@@ -1,7 +1,7 @@
 package myreader.resource.subscriptionentry.assembler;
 
 import myreader.entity.SubscriptionEntry;
-import myreader.resource.subscription.EntityController;
+import myreader.resource.subscription.SubscriptionResource;
 import myreader.resource.subscriptionentry.SubscriptionEntryResource;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import org.springframework.hateoas.Link;
@@ -35,7 +35,7 @@ public class SubscriptionEntryGetResponseAssembler extends ResourceAssemblerSupp
 
     private void addLinks(SubscriptionEntry source, SubscriptionEntryGetResponse target) {
         if(source.getSubscription() != null) {
-            Link subscription = linkTo(EntityController.class).slash(source.getSubscription().getId()).withRel("subscription");
+            Link subscription = linkTo(SubscriptionResource.class).slash(source.getSubscription().getId()).withRel("subscription");
             target.add(subscription);
         }
 

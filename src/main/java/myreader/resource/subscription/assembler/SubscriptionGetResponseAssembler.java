@@ -4,9 +4,7 @@ import myreader.entity.Subscription;
 import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import org.springframework.hateoas.Link;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -14,23 +12,14 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionGetResponseAssembler {
+public class SubscriptionGetResponseAssembler extends ResourceAssemblerSupport<Subscription, SubscriptionGetResponse> {
 
-    public List<SubscriptionGetResponse> toDto(List<Subscription> source) {
-        ArrayList<SubscriptionGetResponse> target = new ArrayList<SubscriptionGetResponse>();
-
-        if(source == null) {
-            return target;
-        }
-
-        for (Subscription subscription : source) {
-            target.add(toDto(subscription));
-        }
-
-        return target;
+    public SubscriptionGetResponseAssembler(Class<?> controllerClass) {
+        super(controllerClass, SubscriptionGetResponse.class);
     }
 
-    public SubscriptionGetResponse toDto(Subscription source) {
+    @Override
+    public SubscriptionGetResponse toResource(Subscription source) {
         SubscriptionGetResponse target = new SubscriptionGetResponse();
 
         target.setId(source.getId());

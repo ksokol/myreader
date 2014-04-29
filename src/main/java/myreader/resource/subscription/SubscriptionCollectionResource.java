@@ -31,7 +31,7 @@ import java.util.List;
 public class SubscriptionCollectionResource {
 
     private final SubscriptionService subscriptionService;
-    private final SubscriptionGetResponseAssembler subscriptionAssembler = new SubscriptionGetResponseAssembler();
+    private final SubscriptionGetResponseAssembler subscriptionAssembler = new SubscriptionGetResponseAssembler(SubscriptionCollectionResource.class);
     private final SubscriptionEntryCollectionResource subscriptionEntryCollectionResource;
     private final PagedResourcesAssembler pagedResourcesAssembler;
 
@@ -46,11 +46,10 @@ public class SubscriptionCollectionResource {
     @ResponseBody
     public SubscriptionGetResponse post(@Valid @RequestBody SubscriptionPostRequest bean) {
         Subscription subscription = subscriptionService.subscribe(bean.getUrl());
-        SubscriptionGetResponse subscriptionGetResponse = subscriptionAssembler.toDto(subscription);
+        SubscriptionGetResponse subscriptionGetResponse = subscriptionAssembler.toResource(subscription);
         return subscriptionGetResponse;
     }
 
-// @CurrentUser MyReaderUser user,
     @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
     @ResponseBody
     public PagedResources getSubscriptionEntries(@PathVariable("id") Long id,  Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
@@ -63,7 +62,7 @@ public class SubscriptionCollectionResource {
     public PagedResources get(Pageable pageable) {
         Page<Subscription> subscriptionPage = subscriptionService.findAll(pageable);
 
-        List<SubscriptionGetResponse> dtos = subscriptionAssembler.toDto(subscriptionPage.getContent());
+        List<SubscriptionGetResponse> dtos = subscriptionAssembler.toResources(subscriptionPage.getContent());
         Page<SubscriptionGetResponse> pagedDtos = new PageImpl<SubscriptionGetResponse>(dtos, pageable, subscriptionPage.getTotalElements());
 
         PagedResources pagedResources = pagedResourcesAssembler.toResource(pagedDtos);
