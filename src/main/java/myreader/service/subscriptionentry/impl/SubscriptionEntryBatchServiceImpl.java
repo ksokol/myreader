@@ -64,7 +64,7 @@ public class SubscriptionEntryBatchServiceImpl implements SubscriptionEntryBatch
             feedEntry.setUrl(dto.getUrl());
 
             feedEntryRepository.save(feedEntry);
-            List<Subscription> subscriptionList = feedService.findAllSubscriptionsByUrl(feed.getUrl());
+            List<Subscription> subscriptionList = subscriptionRepository.findByUrl(feed.getUrl());
 
             for (Subscription subscription : subscriptionList) {
                 boolean excluded = false;
