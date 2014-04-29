@@ -22,7 +22,7 @@
             "tag": "tag1",
             "sum": 15,
             "unseen": 0,
-            "createdAt": 1302895246000
+            "createdAt": "${json-unit.ignore}"
         },
         {
             "links": [
@@ -40,7 +40,7 @@
             "tag": "tag1",
             "sum": 10,
             "unseen": 0,
-            "createdAt": 1302895246000
+            "createdAt": "${json-unit.ignore}"
         },
         {
             "links": [
@@ -58,7 +58,7 @@
             "tag": null,
             "sum": 125,
             "unseen": 0,
-            "createdAt": 1302895246000
+            "createdAt": "${json-unit.ignore}"
         },
         {
             "links": [
@@ -76,7 +76,7 @@
             "tag": "tag1",
             "sum": 25,
             "unseen": 0,
-            "createdAt": 1302895246000
+            "createdAt": "${json-unit.ignore}"
         },
         {
             "links": [
@@ -94,7 +94,7 @@
             "tag": null,
             "sum": 5,
             "unseen": 0,
-            "createdAt": 1302895246000
+            "createdAt": "${json-unit.ignore}"
         },
         {
             "links": [
@@ -112,7 +112,7 @@
             "tag": "tag2",
             "sum": 1,
             "unseen": 0,
-            "createdAt": 1302895246000
+            "createdAt": "${json-unit.ignore}"
         }
     ],
     "page": {
