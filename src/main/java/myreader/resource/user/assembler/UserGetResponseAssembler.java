@@ -11,12 +11,12 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public class UserGetResponseAssembler extends ResourceAssemblerSupport<User, UserGetResponse> {
 
-    public UserGetResponseAssembler(Class<?> controllerClass, Class<UserGetResponse> resourceType) {
-        super(controllerClass, resourceType);
+    public UserGetResponseAssembler(Class<?> controllerClass) {
+        super(controllerClass, UserGetResponse.class);
     }
 
     @Override

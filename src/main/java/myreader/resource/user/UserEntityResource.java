@@ -22,7 +22,7 @@ import javax.validation.Valid;
 @RequestMapping(value= "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserEntityResource {
 
-    private final UserGetResponseAssembler assembler = new UserGetResponseAssembler(UserCollectionResource.class, UserGetResponse.class);
+    private final UserGetResponseAssembler assembler = new UserGetResponseAssembler(UserCollectionResource.class);
     private final UserService userService;
 
     @Autowired
