@@ -7,8 +7,8 @@ public abstract class MockMvcResultMatchersWithJsonAssertSupport {
 
     private MockMvcResultMatchersWithJsonAssertSupport() {}
 
-    public static ContentResultMatchersWithJsonAssertSupport content() {
-        return new ContentResultMatchersWithJsonAssertSupport();
+    public static ContentResultMatchersJsonAssertSupport content() {
+        return new ContentResultMatchersJsonAssertSupport();
     }
 
 }

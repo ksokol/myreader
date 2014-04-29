@@ -11,7 +11,7 @@ import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 /**
  * @author Kamill Sokol
  */
-public class ContentResultMatchersWithjsonAssertSupport {
+public class ContentResultMatchersJsonAssertSupport {
 
     public static ResultMatcher isJsonEqual(final String pathToJsonFile) {
         return new ResultMatcher() {
@@ -22,5 +22,4 @@ public class ContentResultMatchersWithjsonAssertSupport {
             }
         };
     }
-
 }
