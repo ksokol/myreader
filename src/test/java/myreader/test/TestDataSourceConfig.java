@@ -8,10 +8,9 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
-import java.util.UUID;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 @Configuration
 public class TestDataSourceConfig implements DataSourceConfig {
@@ -21,8 +20,7 @@ public class TestDataSourceConfig implements DataSourceConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.h2.Driver");
-        //http://forum.spring.io/forum/spring-projects/data/71251-embedded-datasources-are-not-dropped-when-context-is-destroyed
-        dataSource.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1", UUID.randomUUID().toString()));
+        dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
         dataSource.setUsername("");
         dataSource.setPassword("");
         return dataSource;
