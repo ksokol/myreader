@@ -24,9 +24,16 @@ public class SubscriptionEntryGetResponseAssembler extends ResourceAssemblerSupp
 
         target.setId(source.getId());
         target.setTag(source.getTag());
+        target.setCreatedAt(source.getCreatedAt());
 
         if(source.getFeedEntry() != null) {
             target.setTitle(source.getFeedEntry().getTitle());
+            target.setUrl(source.getFeedEntry().getUrl());
+            target.setContent(source.getFeedEntry().getContent());
+        }
+
+        if(source.getSubscription() != null) {
+            target.setFeedTitle(source.getSubscription().getTitle());
         }
 
         addLinks(source, target);

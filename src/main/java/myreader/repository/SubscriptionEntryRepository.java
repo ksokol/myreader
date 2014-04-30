@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionEntry, Long> {
 
@@ -29,4 +29,7 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
 
     @Query(value="from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1",countQuery = "select count(*) from SubscriptionEntry where subscription.id = ?2 and subscription.user.id = ?1")
     Page<SubscriptionEntry> findBySubscriptionAndUser(Long userId, Long subscriptionId, Pageable pageable);
+
+    @Query(value="from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.user.id = ?1",countQuery = "select count(*) from SubscriptionEntry se join se.subscription where se.subscription.user.id = ?1")
+    Page<SubscriptionEntry> findAllByUser(Pageable pageable, Long id);
 }

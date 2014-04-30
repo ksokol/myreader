@@ -13,13 +13,15 @@ import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import spring.security.MyReaderUser;
 
 /**
  * @author Kamill Sokol
  */
 @Controller
-@RequestMapping("subscriptionEntries")
+@RequestMapping(value = "subscriptionEntries", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SubscriptionEntryCollectionResource {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;
@@ -32,11 +34,18 @@ public class SubscriptionEntryCollectionResource {
         this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
-    @RequestMapping(value = "search/findBySubscription/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PagedResources findBySubscription(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    @ResponseBody
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public PagedResources<Page<SubscriptionEntry>> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+        Page<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findAllByUser(pageable, user.getId());
+        return pagedResourcesAssembler.toResource(pagedEntries, preAssembler);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "search/findBySubscription/{id}", method = RequestMethod.GET)
+    public PagedResources<Page<SubscriptionEntry>> findBySubscription(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<SubscriptionEntry> page = subscriptionEntryRepository.findBySubscriptionAndUser(user.getId(), id, pageable);
-        PagedResources pagedResources = pagedResourcesAssembler.toResource(page, preAssembler);
-        return pagedResources;
+        return pagedResourcesAssembler.toResource(page, preAssembler);
     }
 
 }
