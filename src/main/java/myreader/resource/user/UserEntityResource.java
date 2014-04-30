@@ -35,9 +35,8 @@ public class UserEntityResource {
         if(id.compareTo(user.getId()) != 0) {
             //don't differentiate between not found and access denied
             throw new ResourceNotFoundException();
-        } else {
-            return userService.findOne(user.getId());
         }
+        return userService.findOne(user.getId());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
