@@ -46,8 +46,8 @@ public class SubscriptionCollectionResource {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseBody
-    public SubscriptionGetResponse post(@Valid @RequestBody SubscriptionPostRequest bean) {
-        Subscription subscription = subscriptionService.subscribe(bean.getUrl());
+    public SubscriptionGetResponse post(@Valid @RequestBody SubscriptionPostRequest bean, @AuthenticationPrincipal MyReaderUser user) {
+        Subscription subscription = subscriptionService.subscribe(user.getId(), bean.getUrl());
         SubscriptionGetResponse subscriptionGetResponse = subscriptionAssembler.toResource(subscription);
         return subscriptionGetResponse;
     }

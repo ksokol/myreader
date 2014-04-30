@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
@@ -30,4 +30,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     @Query("from Subscription where user.email = ?1 and feed.url = ?2")
     Subscription findByUsernameAndFeedUrl(String username, String url);
+
+    @Query("from Subscription where user.id = ?1 and feed.url = ?2")
+    Subscription findByUserIdAndFeedUrl(Long id, String url);
 }

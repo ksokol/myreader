@@ -1,15 +1,8 @@
 package myreader.service.subscription.impl;
 
-/**
- * @author Kamill Sokol dev@sokol-web.de
- */
-
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
-import myreader.fetcher.FeedParser;
-import myreader.fetcher.impl.FetchResult;
-import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.AccessDeniedException;
 import myreader.service.EntityNotFoundException;
@@ -22,10 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
 
+/**
+ * @author Kamill Sokol
+ */
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
 
@@ -34,19 +31,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionSearchService subscriptionSearchService;
     private final FeedService feedService;
 
-    private final FeedParser parser;
-
-
-    private final FeedRepository feedRepository;
-
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, SubscriptionSearchService subscriptionSearchService, FeedService feedService, FeedParser parser, FeedRepository feedRepository) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, SubscriptionSearchService subscriptionSearchService, FeedService feedService) {
         this.subscriptionRepository = subscriptionRepository;
         this.userService = userService;
         this.subscriptionSearchService = subscriptionSearchService;
         this.feedService = feedService;
-        this.parser = parser;
-        this.feedRepository = feedRepository;
     }
 
     @Override
@@ -118,25 +108,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionRepository.save(subscription);
     }
 
+    @Transactional
     @Override
-    public Subscription subscribe(String url) {
-        User user = userService.getCurrentUser();
-        Subscription check = subscriptionRepository.findByUsernameAndFeedUrl(user.getEmail(), url);
+    public Subscription subscribe(Long userId, String url) {
+        Subscription check = subscriptionRepository.findByUserIdAndFeedUrl(userId, url);
 
         if(check != null) {
             throw new SubscriptionExistException();
         }
 
-        Feed feed = feedRepository.findByUrl(url);
-
-        if(feed == null) {
-            FetchResult parseResult = parser.parse(url);
-
-            feed = new Feed();
-            feed.setUrl(url);
-            feed.setTitle(parseResult.getTitle());
-            feed = feedRepository.save(feed);
-        }
+        Feed feed = feedService.findByUrl(url);
+        User user = userService.findOne(userId);
 
         Subscription subscription = new Subscription();
         subscription.setTitle(feed.getTitle());

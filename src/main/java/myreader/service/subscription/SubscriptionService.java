@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public interface SubscriptionService {
 
@@ -25,5 +25,5 @@ public interface SubscriptionService {
 
     void save(Subscription subscription);
 
-    Subscription subscribe(String url);
+    Subscription subscribe(Long userId, String url);
 }

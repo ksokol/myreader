@@ -1,7 +1,9 @@
 package myreader.service.feed;
 
 import myreader.entity.Feed;
-import myreader.repository.SubscriptionRepository;
+import myreader.fetcher.FeedParser;
+import myreader.fetcher.impl.FetchResult;
+import myreader.repository.FeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.feed.AtomFeedHttpMessageConverter;
@@ -13,17 +15,19 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 @Transactional
 @Service
 public class FeedServiceImpl implements FeedService {
 
-    private final SubscriptionRepository subscriptionRepository;
+    private final FeedRepository feedRepository;
+    private final FeedParser feedParser;
 
     @Autowired
-    public FeedServiceImpl(SubscriptionRepository subscriptionRepository) {
-        this.subscriptionRepository = subscriptionRepository;
+    public FeedServiceImpl(FeedRepository feedRepository, FeedParser feedParser) {
+        this.feedRepository = feedRepository;
+        this.feedParser = feedParser;
     }
 
     @Override
@@ -49,5 +53,21 @@ public class FeedServiceImpl implements FeedService {
         System.out.println("------------------------ the title: " + title);
 
         return null;
+    }
+
+    @Override
+    public Feed findByUrl(String url) {
+        Feed feed = feedRepository.findByUrl(url);
+
+        if(feed == null) {
+            FetchResult parseResult = feedParser.parse(url);
+
+            feed = new Feed();
+            feed.setUrl(url);
+            feed.setTitle(parseResult.getTitle());
+            feed = feedRepository.save(feed);
+        }
+
+        return feed;
     }
 }
