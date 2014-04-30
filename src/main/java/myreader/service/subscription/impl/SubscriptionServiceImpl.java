@@ -10,6 +10,7 @@ import myreader.service.feed.FeedService;
 import myreader.service.search.SubscriptionSearchService;
 import myreader.service.subscription.SubscriptionExistException;
 import myreader.service.subscription.SubscriptionService;
+import myreader.service.time.TimeService;
 import myreader.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,13 +31,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final UserService userService;
     private final SubscriptionSearchService subscriptionSearchService;
     private final FeedService feedService;
+    private final TimeService timeService;
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, SubscriptionSearchService subscriptionSearchService, FeedService feedService) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, SubscriptionSearchService subscriptionSearchService, FeedService feedService, TimeService timeService) {
         this.subscriptionRepository = subscriptionRepository;
         this.userService = userService;
         this.subscriptionSearchService = subscriptionSearchService;
         this.feedService = feedService;
+        this.timeService = timeService;
     }
 
     @Override
@@ -124,6 +127,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription.setTitle(feed.getTitle());
         subscription.setFeed(feed);
         subscription.setUser(user);
+        subscription.setCreatedAt(timeService.getCurrentTime());
         subscriptionRepository.save(subscription);
 
         return subscription;

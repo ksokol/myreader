@@ -1,6 +1,9 @@
 package myreader.resource;
 
 import myreader.resource.service.patch.PatchSupportConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.util.ISO8601DateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +23,7 @@ import javax.validation.TraversableResolver;
 import java.util.List;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 @EnableWebMvc
 @EnableEntityLinks
@@ -46,7 +49,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(patchSupportHttpMessageConverter);
-        converters.add(new MappingJacksonHttpMessageConverter());
+        converters.add(configuredMappingJacksonHttpMessageConverter());
     }
 
     @Override
@@ -54,5 +57,17 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
         LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
         localValidatorFactoryBean.setTraversableResolver(patchSupportTraversableResolver);
         return localValidatorFactoryBean;
+    }
+
+    private MappingJacksonHttpMessageConverter configuredMappingJacksonHttpMessageConverter() {
+        MappingJacksonHttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJacksonHttpMessageConverter();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.setDateFormat(new ISO8601DateFormat());
+
+        mappingJacksonHttpMessageConverter.setObjectMapper(objectMapper);
+
+        return mappingJacksonHttpMessageConverter;
     }
 }

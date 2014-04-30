@@ -1,6 +1,7 @@
 package myreader.test;
 
 import myreader.fetcher.FeedParser;
+import myreader.service.time.TimeService;
 import org.springframework.context.annotation.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -35,6 +36,12 @@ public class TestConfig  {
     @Bean
     public FeedParser feedParser() {
         return mock(FeedParser.class);
+    }
+
+    @Primary
+    @Bean
+    public TimeService timeService() {
+        return mock(TimeService.class);
     }
 
 }

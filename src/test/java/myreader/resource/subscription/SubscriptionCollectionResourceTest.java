@@ -1,8 +1,14 @@
 package myreader.resource.subscription;
 
+import myreader.service.time.TimeService;
 import myreader.test.IntegrationTestSupport;
+import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,6 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchersW
  * @author Kamill Sokol
  */
 public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
+
+    @Autowired
+    private TimeService timeServiceMock;
 
     @Test
     public void testCollectionResourceJsonStructureEquality() throws Exception {
@@ -46,6 +55,10 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testSuccessWhenPostingNewSubscription() throws Exception {
+        Date now = ISODateTimeFormat.dateTimeNoMillis().parseDateTime("2014-04-30T12:43:46Z").toDate();
+
+        when(timeServiceMock.getCurrentTime()).thenReturn(now);
+
         mockMvc.perform(postAsUser2("/subscriptions")
                 .json("subscription/post-new-request.json"))
                 .andExpect(status().isOk())

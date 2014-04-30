@@ -1,9 +1,8 @@
 package myreader.entity;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "user_feed")
@@ -42,6 +41,7 @@ public class Subscription {
     private Set<ExclusionPattern> exclusions;
 
     public Subscription() {
+        //TODO remove me
         this.createdAt = new Date();
     }
 

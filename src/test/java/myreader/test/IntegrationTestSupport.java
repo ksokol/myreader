@@ -5,6 +5,7 @@ import myreader.config.SearchConfig;
 import myreader.config.SecurityConfig;
 import myreader.config.TaskConfig;
 import myreader.resource.ResourceConfig;
+import myreader.service.time.TimeService;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.Filter;
 
+import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.get;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -34,12 +36,15 @@ public class IntegrationTestSupport {
 
     @Autowired
     protected WebApplicationContext wac;
-
     @Autowired
     private Filter springSecurityFilterChain;
+    @Autowired
+    private TimeService timeService;
 
     @Before
-    public void setUp() throws Exception {
+    public void before() throws Exception {
+        reset(timeService);
+
         this.mockMvc = webAppContextSetup(this.wac)
                 .addFilter(springSecurityFilterChain)
                 .defaultRequest(get("/").contentType(MediaType.APPLICATION_JSON))

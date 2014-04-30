@@ -14,5 +14,5 @@
     "tag": "tag1",
     "sum": 15,
     "unseen": 0,
-    "createdAt": "${json-unit.ignore}"
+    "createdAt": "2011-04-15T19:20:46Z"
 }
