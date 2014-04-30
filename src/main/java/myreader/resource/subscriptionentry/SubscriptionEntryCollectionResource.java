@@ -3,6 +3,7 @@ package myreader.resource.subscriptionentry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.resource.subscriptionentry.assembler.SubscriptionEntryGetResponseAssembler;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,7 +44,7 @@ public class SubscriptionEntryCollectionResource {
 
     @ResponseBody
     @RequestMapping(value = "search/findBySubscription/{id}", method = RequestMethod.GET)
-    public PagedResources<Page<SubscriptionEntry>> findBySubscription(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    public PagedResources<Page<SubscriptionEntryGetResponse>> findBySubscription(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<SubscriptionEntry> page = subscriptionEntryRepository.findBySubscriptionAndUser(user.getId(), id, pageable);
         return pagedResourcesAssembler.toResource(page, preAssembler);
     }
