@@ -1,5 +1,6 @@
 package myreader.resource.exception.handler;
 
+import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
 /**
  * Kudos http://www.petrikainulainen.net/programming/spring-framework/spring-from-the-trenches-adding-validation-to-a-rest-api/
@@ -36,6 +39,7 @@ class MethodArgumentNotValidExceptionHandler {
         return dto;
     }
 
+    @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
     class ValidationErrorResponse {
 
         private List<FieldError> fieldErrors = new ArrayList<FieldError>();
@@ -44,16 +48,9 @@ class MethodArgumentNotValidExceptionHandler {
             FieldError error = new FieldError(path, message);
             fieldErrors.add(error);
         }
-
-        public List<FieldError> getFieldErrors() {
-            return fieldErrors;
-        }
-
-        public void setFieldErrors(List<FieldError> fieldErrors) {
-            this.fieldErrors = fieldErrors;
-        }
     }
 
+    @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
     class FieldError {
 
         private String field;
@@ -64,20 +61,5 @@ class MethodArgumentNotValidExceptionHandler {
             this.message = message;
         }
 
-        public String getField() {
-            return field;
-        }
-
-        public void setField(String field) {
-            this.field = field;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
     }
 }
