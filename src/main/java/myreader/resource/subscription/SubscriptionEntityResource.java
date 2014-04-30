@@ -18,13 +18,13 @@ import spring.security.MyReaderUser;
 @ExposesResourceFor(SubscriptionGetResponse.class)
 @Controller
 @RequestMapping("subscriptions")
-public class SubscriptionResource {
+public class SubscriptionEntityResource {
 
     private final SubscriptionRepository subscriptionRepository;
-    private final SubscriptionGetResponseAssembler subscriptionAssembler = new SubscriptionGetResponseAssembler(SubscriptionResource.class);
+    private final SubscriptionGetResponseAssembler subscriptionAssembler = new SubscriptionGetResponseAssembler(SubscriptionEntityResource.class);
 
     @Autowired
-    public SubscriptionResource(SubscriptionRepository subscriptionService) {
+    public SubscriptionEntityResource(SubscriptionRepository subscriptionService) {
         this.subscriptionRepository = subscriptionService;
     }
 
