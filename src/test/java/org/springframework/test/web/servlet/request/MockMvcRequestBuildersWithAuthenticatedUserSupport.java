@@ -47,6 +47,10 @@ public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcR
         return actionAsUserX(HttpMethod.POST, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
     }
 
+    public static MockHttpServletRequestBuilderWithJsonSupport deleteAsUser1(String urlTemplate, Object... urlVariables) {
+        return actionAsUserX(HttpMethod.DELETE, KnownUser.USER1.username, KnownUser.USER1.password, urlTemplate, urlVariables);
+    }
+
     private static MockHttpServletRequestBuilderWithJsonSupport actionAsUserX(HttpMethod method, String username, String password, String urlTemplate, Object... urlVariables) {
         MockHttpServletRequestBuilderWithJsonSupport mockHttpServletRequestBuilder = new MockHttpServletRequestBuilderWithJsonSupport(method, urlTemplate, urlVariables);
         addAuthentication(mockHttpServletRequestBuilder, username, password);

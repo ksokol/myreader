@@ -7,6 +7,7 @@ import myreader.resource.subscription.assembler.SubscriptionGetResponseAssembler
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,7 @@ public class SubscriptionEntityResource {
         return subscriptionAssembler.toResource(s);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public void delete(Subscription s) {

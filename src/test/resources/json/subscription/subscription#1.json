@@ -1,0 +1,18 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptions"
+        },
+        {
+            "rel": "entries",
+            "href": "http://localhost/subscriptions/1/entries"
+        }
+    ],
+    "title": "user1_subscription1",
+    "url": "http://feeds.feedburner.com/javaposse",
+    "tag": "tag1",
+    "sum": 15,
+    "unseen": 0,
+    "createdAt": "${json-unit.ignore}"
+}
