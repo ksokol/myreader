@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchersW
 public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
-    public void testEntityResourceJsonStructureEquality() throws Exception {
+    public void testCollectionResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptions"))
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscription/subscriptions.json"));
