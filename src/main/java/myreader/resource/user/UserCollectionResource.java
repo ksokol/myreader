@@ -2,8 +2,11 @@ package myreader.resource.user;
 
 import myreader.entity.User;
 import myreader.repository.UserRepository;
+import myreader.resource.subscription.SubscriptionCollectionResource;
+import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.user.assembler.UserGetResponseAssembler;
 import myreader.resource.user.beans.UserGetResponse;
+import myreader.service.AccessDeniedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,11 +31,13 @@ public class UserCollectionResource {
     private final UserGetResponseAssembler preAssembler = new UserGetResponseAssembler(UserCollectionResource.class);
     private final UserRepository userRepository;
     private final PagedResourcesAssembler pagedResourcesAssembler;
+    private final SubscriptionCollectionResource subscriptionCollectionResource;
 
     @Autowired
-    public UserCollectionResource(UserRepository userRepository, PagedResourcesAssembler pagedResourcesAssembler) {
+    public UserCollectionResource(UserRepository userRepository, PagedResourcesAssembler pagedResourcesAssembler, SubscriptionCollectionResource subscriptionCollectionResource) {
         this.userRepository = userRepository;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.subscriptionCollectionResource = subscriptionCollectionResource;
     }
 
     @ResponseBody
@@ -49,9 +54,13 @@ public class UserCollectionResource {
         return pagedResourcesAssembler.toResource(page, preAssembler);
     }
 
+    @ResponseBody
     @RequestMapping("/{id}/subscriptions")
-    public Object test(@PathVariable("id") Long id) {
-        //TODO
-        return null;
+    public PagedResources<Page<SubscriptionGetResponse>> test(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+        if(user.getId().compareTo(id) != 0) {
+            throw new AccessDeniedException();
+        }
+
+        return subscriptionCollectionResource.get(pageable, user);
     }
 }

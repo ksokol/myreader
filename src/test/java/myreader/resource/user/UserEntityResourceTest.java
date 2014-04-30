@@ -89,4 +89,16 @@ public class UserEntityResourceTest extends IntegrationTestSupport {
                 .andExpect(content().isJsonEqual("user/user#1.json"));
     }
 
+    @Test
+    public void testUser2Subscriptions() throws Exception {
+        mockMvc.perform(getAsUser2("/users/2/subscriptions"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("user/user#2#subscriptions.json"));
+    }
+
+    @Test
+    public void testUser1SubscriptionsForbidden() throws Exception {
+        mockMvc.perform(getAsUser2("/users/1/subscriptions"))
+                .andExpect(status().isForbidden());
+    }
 }

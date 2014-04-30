@@ -77,7 +77,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public Page<Subscription> findAll(Pageable pageable) {
         User currentUser = userService.getCurrentUser();
-        Page<Subscription> subscriptions =  subscriptionRepository.findByUser(currentUser.getId(), pageable);
+        Page<Subscription> subscriptions =  subscriptionRepository.findAllByUser(currentUser.getId(), pageable);
 
         return subscriptions;
     }
