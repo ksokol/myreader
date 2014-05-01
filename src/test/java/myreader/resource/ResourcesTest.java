@@ -4,7 +4,8 @@ import myreader.test.IntegrationTestSupport;
 import org.junit.Test;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
 /**
  * @author Kamill Sokol
@@ -12,8 +13,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 public class ResourcesTest extends IntegrationTestSupport {
 
     @Test
-    public void test() throws Exception {
+    public void testResources() throws Exception {
         mockMvc.perform(getAsUser1("/"))
-                .andDo(print());
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("resources.json"));
     }
+
 }

@@ -1,0 +1,16 @@
+{
+    "links": [
+        {
+            "rel": "users",
+            "href": "http://localhost/users{?page,size,sort}"
+        },
+        {
+            "rel": "subscriptions",
+            "href": "http://localhost/subscriptions{?page,size,sort}"
+        },
+        {
+            "rel": "subscriptionEntries",
+            "href": "http://localhost/subscriptionEntries{?page,size,sort}"
+        }
+    ]
+}
