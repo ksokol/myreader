@@ -11,7 +11,7 @@ It is a sandbox for different technologies that are worth to play with. So don't
 
 **Prerequisite**
 
-- Oracle JDK 6, OpenJDK 6 or newer
+- Oracle JDK 7, OpenJDK 7 or newer
 - Apache Maven 2.x or newer
 - MySQL 5.1.x (tested on 5.1.17, should run on 5.x too)
 - Servlet Container 2.5 or newer
