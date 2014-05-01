@@ -97,8 +97,8 @@ public class UserEntityResourceTest extends IntegrationTestSupport {
     }
 
     @Test
-    public void testUser1SubscriptionsForbidden() throws Exception {
+    public void testNotFoundWhenGetNotOwnSubscription() throws Exception {
         mockMvc.perform(getAsUser2("/users/1/subscriptions"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isNotFound());
     }
 }

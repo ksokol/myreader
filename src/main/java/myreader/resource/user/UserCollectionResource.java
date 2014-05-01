@@ -2,11 +2,11 @@ package myreader.resource.user;
 
 import myreader.entity.User;
 import myreader.repository.UserRepository;
+import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.user.assembler.UserGetResponseAssembler;
 import myreader.resource.user.beans.UserGetResponse;
-import myreader.service.AccessDeniedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +58,7 @@ public class UserCollectionResource {
     @RequestMapping("/{id}/subscriptions")
     public PagedResources<Page<SubscriptionGetResponse>> userSubscriptions(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         if(user.getId().compareTo(id) != 0) {
-            throw new AccessDeniedException();
+            throw new ResourceNotFoundException();
         }
         return subscriptionCollectionResource.get(pageable, user);
     }
