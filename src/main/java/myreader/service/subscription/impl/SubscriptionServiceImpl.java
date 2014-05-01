@@ -4,6 +4,7 @@ import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.repository.SubscriptionRepository;
+import myreader.repository.UserRepository;
 import myreader.service.AccessDeniedException;
 import myreader.service.EntityNotFoundException;
 import myreader.service.feed.FeedService;
@@ -29,14 +30,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final SubscriptionSearchService subscriptionSearchService;
     private final FeedService feedService;
     private final TimeService timeService;
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, SubscriptionSearchService subscriptionSearchService, FeedService feedService, TimeService timeService) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, UserRepository userRepository, SubscriptionSearchService subscriptionSearchService, FeedService feedService, TimeService timeService) {
         this.subscriptionRepository = subscriptionRepository;
         this.userService = userService;
+        this.userRepository = userRepository;
         this.subscriptionSearchService = subscriptionSearchService;
         this.feedService = feedService;
         this.timeService = timeService;
@@ -121,7 +124,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
 
         Feed feed = feedService.findByUrl(url);
-        User user = userService.findOne(userId);
+        User user = userRepository.findOne(userId);
+
+        if(user == null) {
+            throw new IllegalArgumentException();
+        }
 
         Subscription subscription = new Subscription();
         subscription.setTitle(feed.getTitle());

@@ -1,6 +1,7 @@
 package myreader.resource.user;
 
 import myreader.entity.User;
+import myreader.repository.UserRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.user.assembler.UserGetResponseAssembler;
 import myreader.resource.user.beans.UserGetResponse;
@@ -24,10 +25,12 @@ public class UserEntityResource {
 
     private final UserGetResponseAssembler assembler = new UserGetResponseAssembler(UserCollectionResource.class);
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserEntityResource(UserService userService) {
+    public UserEntityResource(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @ModelAttribute
@@ -36,7 +39,7 @@ public class UserEntityResource {
             //don't differentiate between not found and access denied
             throw new ResourceNotFoundException();
         }
-        return userService.findOne(user.getId());
+        return userRepository.findOne(user.getId());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

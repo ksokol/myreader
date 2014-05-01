@@ -3,11 +3,9 @@ package myreader.service.user;
 import myreader.entity.User;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public interface UserService {
-
-    User findOne(Long id);
 
     User getCurrentUser();
 
