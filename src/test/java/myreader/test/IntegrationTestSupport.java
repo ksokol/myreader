@@ -4,7 +4,7 @@ import myreader.config.PersistenceConfig;
 import myreader.config.SearchConfig;
 import myreader.config.SecurityConfig;
 import myreader.config.TaskConfig;
-import myreader.resource.ResourceConfig;
+import myreader.resource.config.ResourceConfig;
 import myreader.service.time.TimeService;
 import org.junit.Before;
 import org.junit.runner.RunWith;

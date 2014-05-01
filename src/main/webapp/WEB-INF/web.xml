@@ -26,7 +26,7 @@
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>
-                myreader.resource.ResourceConfig
+                myreader.resource.config.ResourceConfig
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>

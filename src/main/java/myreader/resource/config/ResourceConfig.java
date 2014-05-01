@@ -1,4 +1,4 @@
-package myreader.resource;
+package myreader.resource.config;
 
 import myreader.resource.service.patch.PatchSupportConfig;
 import org.codehaus.jackson.map.ObjectMapper;
