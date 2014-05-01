@@ -1,0 +1,19 @@
+{
+    "links": [
+        {
+            "rel": "subscription",
+            "href": "http://localhost/subscriptions/7"
+        },
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionEntries/4"
+        }
+    ],
+    "title": "MySQL is to SQL like ??? to NoSQL",
+    "url": "http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql",
+    "feedTitle": "user2_subscription2",
+    "tag": "tag3",
+    "content": "content",
+    "unseen": false,
+    "createdAt": "2011-04-15T19:20:46Z"
+}
