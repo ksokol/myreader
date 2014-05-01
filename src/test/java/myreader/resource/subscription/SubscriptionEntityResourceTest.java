@@ -6,8 +6,7 @@ import org.junit.Test;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.deleteAsUser1;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
@@ -25,7 +24,7 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
     }
 
     @Test
-    public void testNotFoundWhenAccessingNotOwnSubscription() throws Exception {
+    public void testNotFoundWhenGetNotOwnSubscription() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/6"))
                 .andExpect(status().isNotFound());
     }
@@ -44,5 +43,44 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements", is(4)))
                 .andExpect(jsonPath("$.content..url", not(hasItem("http://feeds.feedburner.com/javaposse"))));
+    }
+
+    @Test
+    public void testNotFoundWhenPatchNotOwnSubscription() throws Exception {
+        mockMvc.perform(patchAsUser2("/subscriptions/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testPatchableProperties() throws Exception {
+        mockMvc.perform(patchAsUser1("/subscriptions/1")
+                .json("subscription/patchable-properties1-subscription#1.json"))
+                .andExpect(content().isJsonEqual("subscription/patchable-properties2-subscription#1.json"));
+    }
+
+    @Test
+    public void testPatch() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptions/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscription/subscription#1.json"));
+
+        mockMvc.perform(patchAsUser1("/subscriptions/1")
+                .json("{'tag':'test1'}"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscription/patch1-subscription#1.json"));
+
+        mockMvc.perform(patchAsUser1("/subscriptions/1")
+                .json("{'title':null}"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscription/patch2-subscription#1.json"));
+
+        mockMvc.perform(patchAsUser1("/subscriptions/1")
+                .json("{'title':'test2','tag':'test2'}"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscription/patch3-subscription#1.json"));
+
+        mockMvc.perform(getAsUser1("/subscriptions/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscription/patch3-subscription#1.json"));
     }
 }

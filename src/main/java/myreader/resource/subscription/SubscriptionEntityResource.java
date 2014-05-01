@@ -3,11 +3,13 @@ package myreader.resource.subscription;
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
 import myreader.resource.exception.ResourceNotFoundException;
+import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscription.assembler.SubscriptionGetResponseAssembler;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
+import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -16,17 +18,18 @@ import spring.security.MyReaderUser;
 /**
  * @author Kamill Sokol
  */
-@ExposesResourceFor(SubscriptionGetResponse.class)
 @Controller
-@RequestMapping("subscriptions")
+@RequestMapping(value = "subscriptions", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SubscriptionEntityResource {
 
-    private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionGetResponseAssembler subscriptionAssembler = new SubscriptionGetResponseAssembler(SubscriptionEntityResource.class);
+    private final SubscriptionRepository subscriptionRepository;
+    private final PatchService patchService;
 
     @Autowired
-    public SubscriptionEntityResource(SubscriptionRepository subscriptionService) {
+    public SubscriptionEntityResource(SubscriptionRepository subscriptionService, PatchService patchService) {
         this.subscriptionRepository = subscriptionService;
+        this.patchService = patchService;
     }
 
     @ModelAttribute
@@ -51,13 +54,11 @@ public class SubscriptionEntityResource {
         subscriptionRepository.delete(s.getId());
     }
 
-//    @RequestMapping(value = "{id}", method = RequestMethod.PATCH)
-//    public void patch(@RequestBody SubscriptionGetResponse bean,  Subscription s) {
-//
-//        s.setTag(bean.getTag());
-//        s.setTitle(bean.getTitle());
-//
-//        subscriptionRepository.save(s);
-//
-//    }
+    @RequestMapping(value = "{id}", method = RequestMethod.PATCH)
+    @ResponseBody
+    public SubscriptionGetResponse patch(@RequestBody SubscriptionPatchRequest request, Subscription subscription) {
+        Subscription patchedSubscription = patchService.patch(request, subscription);
+        subscriptionRepository.save(patchedSubscription);
+        return get(patchedSubscription);
+    }
 }

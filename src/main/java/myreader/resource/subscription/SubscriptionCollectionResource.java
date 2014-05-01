@@ -3,8 +3,8 @@ package myreader.resource.subscription;
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
 import myreader.resource.subscription.assembler.SubscriptionGetResponseAssembler;
+import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import myreader.resource.subscription.beans.SubscriptionPostRequest;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.service.subscription.SubscriptionService;
@@ -46,8 +46,8 @@ public class SubscriptionCollectionResource {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseBody
-    public SubscriptionGetResponse post(@Valid @RequestBody SubscriptionPostRequest bean, @AuthenticationPrincipal MyReaderUser user) {
-        Subscription subscription = subscriptionService.subscribe(user.getId(), bean.getUrl());
+    public SubscriptionGetResponse post(@Valid @RequestBody SubscribePostRequest request, @AuthenticationPrincipal MyReaderUser user) {
+        Subscription subscription = subscriptionService.subscribe(user.getId(), request.getUrl());
         SubscriptionGetResponse subscriptionGetResponse = subscriptionAssembler.toResource(subscription);
         return subscriptionGetResponse;
     }

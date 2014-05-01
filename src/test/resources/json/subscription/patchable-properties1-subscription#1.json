@@ -1,0 +1,18 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptions/patch"
+        },
+        {
+            "rel": "entries",
+            "href": "http://localhost/subscriptions/1/entries/patch"
+        }
+    ],
+    "title": "patch",
+    "url": "patch",
+    "tag": "patch",
+    "sum": 42,
+    "unseen": 10,
+    "createdAt": "2010-04-15T19:20:46Z"
+}
