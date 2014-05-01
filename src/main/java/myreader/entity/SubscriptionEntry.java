@@ -1,8 +1,7 @@
 package myreader.entity;
 
-import java.util.Date;
-
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "user_feed_entry")
@@ -33,6 +32,7 @@ public class SubscriptionEntry {
     private Date createdAt;
 
     public SubscriptionEntry() {
+        //TODO remove
         this.createdAt = new Date();
     }
 
