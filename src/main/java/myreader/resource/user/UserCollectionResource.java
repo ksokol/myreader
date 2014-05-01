@@ -56,11 +56,10 @@ public class UserCollectionResource {
 
     @ResponseBody
     @RequestMapping("/{id}/subscriptions")
-    public PagedResources<Page<SubscriptionGetResponse>> test(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    public PagedResources<Page<SubscriptionGetResponse>> userSubscriptions(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         if(user.getId().compareTo(id) != 0) {
             throw new AccessDeniedException();
         }
-
         return subscriptionCollectionResource.get(pageable, user);
     }
 }

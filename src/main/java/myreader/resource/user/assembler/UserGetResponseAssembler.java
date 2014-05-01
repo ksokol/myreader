@@ -34,7 +34,7 @@ public class UserGetResponseAssembler extends ResourceAssemblerSupport<User, Use
 
     private void addLinks(User source, UserGetResponse target) {
         if(source.getSubscriptions() != null) {
-            Link subscriptions = linkTo(methodOn(UserCollectionResource.class).test(source.getId(), null, null)).withRel("subscriptions");
+            Link subscriptions = linkTo(methodOn(UserCollectionResource.class).userSubscriptions(source.getId(), null, null)).withRel("subscriptions");
             target.add(subscriptions);
         }
 
