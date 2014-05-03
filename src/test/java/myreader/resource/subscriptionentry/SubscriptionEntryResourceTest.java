@@ -14,7 +14,7 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testEntityResourceJsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser2("/subscriptionEntries/4"))
+        mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscriptionentry/subscriptionEntries#4.json"));
 
@@ -22,7 +22,7 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testEntityNotFound() throws Exception {
-        mockMvc.perform(getAsUser2("/subscriptionEntries/1"))
+        mockMvc.perform(getAsUser2("/subscriptionEntries/1001"))
                 .andExpect(status().isNotFound());
 
     }

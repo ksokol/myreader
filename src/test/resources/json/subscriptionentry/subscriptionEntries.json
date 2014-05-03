@@ -10,16 +10,16 @@
             "links": [
                 {
                     "rel": "subscription",
-                    "href": "http://localhost/subscriptions/2"
+                    "href": "http://localhost/subscriptions/3"
                 },
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptionEntries/1"
+                    "href": "http://localhost/subscriptionEntries/1001"
                 }
             ],
             "title": "Party time",
             "url": "http://Use-The-Index-Luke.com/blog/2013-03/Party-Time",
-            "feedTitle": "user1_subscription2",
+            "feedTitle": "user1_subscription3",
             "tag": "tag1",
             "content": "content",
             "unseen": false,
@@ -29,16 +29,16 @@
             "links": [
                 {
                     "rel": "subscription",
-                    "href": "http://localhost/subscriptions/2"
+                    "href": "http://localhost/subscriptions/3"
                 },
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptionEntries/2"
+                    "href": "http://localhost/subscriptionEntries/1002"
                 }
             ],
             "title": "MySQL is to SQL like ??? to NoSQL",
             "url": "http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql",
-            "feedTitle": "user1_subscription2",
+            "feedTitle": "user1_subscription3",
             "tag": "tag1",
             "content": "content",
             "unseen": false,

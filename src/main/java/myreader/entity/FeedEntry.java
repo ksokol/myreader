@@ -37,11 +37,6 @@ public class FeedEntry {
     @Column(name = "entry_created_at")
     private Date createdAt;
 
-    public FeedEntry() {
-        //TODO remove
-        this.createdAt = new Date();
-    }
-
     public Long getId() {
         return id;
     }

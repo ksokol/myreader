@@ -31,11 +31,6 @@ public class SubscriptionEntry {
     @Column(name = "user_feed_entry_created_at")
     private Date createdAt;
 
-    public SubscriptionEntry() {
-        //TODO remove
-        this.createdAt = new Date();
-    }
-
     public Long getId() {
         return id;
     }

@@ -26,6 +26,9 @@ public class Subscription {
     @Column(name = "user_feed_sum")
     private int sum;
 
+    @Column(name = "user_feed_unseen")
+    private int unseen;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "user_feed_created_at")
     private Date createdAt;
@@ -75,6 +78,14 @@ public class Subscription {
 
     public void setSum(int sum) {
         this.sum = sum;
+    }
+
+    public int getUnseen() {
+        return unseen;
+    }
+
+    public void setUnseen(int unseen) {
+        this.unseen = unseen;
     }
 
     public Date getCreatedAt() {

@@ -2,14 +2,17 @@ package myreader.repository;
 
 import myreader.entity.Feed;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
+
+import javax.persistence.LockModeType;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public interface FeedRepository extends JpaRepository<Feed, Long> {
 
+    @Lock(LockModeType.PESSIMISTIC_READ)
     Feed findByUrl(String url);
 
     @Query("select count(f) from Feed f join f.entries fe where f.id = ?1")

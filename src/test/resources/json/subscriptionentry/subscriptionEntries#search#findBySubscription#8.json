@@ -14,7 +14,7 @@
                 },
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptionEntries/6"
+                    "href": "http://localhost/subscriptionEntries/1006"
                 }
             ],
             "title": "photostream 53",
@@ -33,7 +33,7 @@
                 },
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptionEntries/7"
+                    "href": "http://localhost/subscriptionEntries/1007"
                 }
             ],
             "title": "Keynote from Goto Amsterdam",
@@ -52,7 +52,7 @@
                 },
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptionEntries/8"
+                    "href": "http://localhost/subscriptionEntries/1008"
                 }
             ],
             "title": "Bliki: TellDontAsk",

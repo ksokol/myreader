@@ -3,7 +3,10 @@ package myreader.test;
 import myreader.config.datasource.DataSourceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
@@ -35,5 +38,14 @@ public class TestDataSourceConfig implements DataSourceConfig {
                 setShowSql(true);
             }
         };
+    }
+
+    @Bean
+    @DependsOn("entityManagerFactory")
+    public ResourceDatabasePopulator initDatabase(DataSource dataSource) throws Exception {
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(new ClassPathResource("test-data.sql"));
+        populator.populate(dataSource.getConnection());
+        return populator;
     }
 }

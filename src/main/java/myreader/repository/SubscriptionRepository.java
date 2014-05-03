@@ -4,8 +4,10 @@ import myreader.entity.Subscription;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.persistence.LockModeType;
 import java.util.List;
 
 /**
@@ -13,6 +15,7 @@ import java.util.List;
  */
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("from Subscription where feed.url = ?1")
     List<Subscription> findByUrl(String url);
 
