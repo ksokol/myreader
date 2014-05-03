@@ -13,6 +13,10 @@ import javax.persistence.LockModeType;
 public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_READ)
+    @Override
+    Feed findOne(Long aLong);
+
+    @Lock(LockModeType.PESSIMISTIC_READ)
     Feed findByUrl(String url);
 
     @Query("select count(f) from Feed f join f.entries fe where f.id = ?1")

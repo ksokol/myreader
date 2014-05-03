@@ -15,6 +15,10 @@ import java.util.List;
  */
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
+    @Lock(LockModeType.PESSIMISTIC_READ)
+    @Override
+    Subscription findOne(Long aLong);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("from Subscription where feed.url = ?1")
     List<Subscription> findByUrl(String url);
