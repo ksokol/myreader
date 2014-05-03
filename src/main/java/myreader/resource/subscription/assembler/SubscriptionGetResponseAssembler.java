@@ -27,8 +27,7 @@ public class SubscriptionGetResponseAssembler extends ResourceAssemblerSupport<S
         target.setCreatedAt(source.getCreatedAt());
         target.setSum(source.getSum());
         target.setTitle(source.getTitle());
-
-
+        target.setUnseen(source.getUnseen());
         target.setUrl(source.getFeed().getUrl());
 
         Link subscriptionEntries = linkTo(methodOn(SubscriptionCollectionResource.class).getSubscriptionEntries(source.getId(), null, null)).withRel("entries");
