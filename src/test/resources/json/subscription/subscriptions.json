@@ -39,7 +39,7 @@
             "url": "http://www.javaspecialists.eu/archive/tjsn.rss",
             "tag": "tag1",
             "sum": 10,
-            "unseen": 0,
+            "unseen": 1,
             "createdAt": "2011-04-15T19:20:46Z"
         },
         {
@@ -57,7 +57,7 @@
             "url": "http://www.tomcatexpert.com/blog/feed",
             "tag": null,
             "sum": 125,
-            "unseen": 0,
+            "unseen": 3,
             "createdAt": "2011-04-15T19:20:46Z"
         },
         {

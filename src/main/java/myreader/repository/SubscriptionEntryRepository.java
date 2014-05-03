@@ -1,5 +1,6 @@
 package myreader.repository;
 
+import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,4 +33,7 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
 
     @Query(value="from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.user.id = ?1",countQuery = "select count(*) from SubscriptionEntry se join se.subscription where se.subscription.user.id = ?1")
     Page<SubscriptionEntry> findAllByUser(Pageable pageable, Long id);
+
+    @Query("select count(se) from SubscriptionEntry se where subscription = ?1 and seen = ?2")
+    int countBySeen(Subscription subscription, boolean flag);
 }

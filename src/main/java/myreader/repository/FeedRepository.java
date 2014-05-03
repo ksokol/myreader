@@ -14,7 +14,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_READ)
     @Override
-    Feed findOne(Long aLong);
+    Feed findOne(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_READ)
     Feed findByUrl(String url);

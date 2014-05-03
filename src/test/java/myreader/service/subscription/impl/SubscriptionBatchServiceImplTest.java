@@ -56,7 +56,7 @@ public class SubscriptionBatchServiceImplTest {
         reset(subscriptionBatchServiceMock);
         reset(searchServiceMock);
 
-        uut = new SubscriptionBatchServiceImpl(feedParserMock, feedRepository, fetchStatisticRepository, subscriptionBatchServiceMock, searchServiceMock);
+        uut = new SubscriptionBatchServiceImpl(feedParserMock, feedRepository, null, null, fetchStatisticRepository, subscriptionBatchServiceMock, searchServiceMock);
     }
 
     @Test

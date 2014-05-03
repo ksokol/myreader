@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.LockModeType;
@@ -17,7 +18,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     @Lock(LockModeType.PESSIMISTIC_READ)
     @Override
-    Subscription findOne(Long aLong);
+    Subscription findOne(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("from Subscription where feed.url = ?1")
@@ -40,4 +41,9 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     @Query("from Subscription where user.id = ?1 and feed.url = ?2")
     Subscription findByUserIdAndFeedUrl(Long id, String url);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Modifying
+    @Query("update Subscription set unseen = ?1 where id = ?2")
+    void updateUnseen(int count, Long id);
 }
