@@ -40,7 +40,7 @@ public class PersistenceConfig {
         final JpaVendorAdapter vendorAdapter = dataSourceConfig.jpaVendorAdapter();
 
         factoryBean.setJpaVendorAdapter(vendorAdapter);
-        //factoryBean.setJpaProperties(additionlProperties());
+        factoryBean.setJpaProperties(dataSourceConfig.jpaProperties());
 
         return factoryBean;
     }

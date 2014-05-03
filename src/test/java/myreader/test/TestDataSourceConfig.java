@@ -11,6 +11,7 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * @author Kamill Sokol
@@ -38,6 +39,13 @@ public class TestDataSourceConfig implements DataSourceConfig {
                 setShowSql(true);
             }
         };
+    }
+
+    @Override
+    public Properties jpaProperties() {
+        Properties properties = new Properties();
+        properties.put("hibernate.hbm2ddl.auto","create-drop");
+        return properties;
     }
 
     @Bean

@@ -8,6 +8,7 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * @author Kamill Sokol dev@sokol-web.de
@@ -66,5 +67,10 @@ class MySQLDataSourceConfig implements DataSourceConfig {
                 setShowSql(true);
             }
         };
+    }
+
+    @Override
+    public Properties jpaProperties() {
+        return new Properties();
     }
 }
