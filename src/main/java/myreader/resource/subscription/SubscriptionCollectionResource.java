@@ -7,6 +7,7 @@ import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionResource;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,13 +36,15 @@ public class SubscriptionCollectionResource {
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryCollectionResource subscriptionEntryCollectionResource;
     private final PagedResourcesAssembler pagedResourcesAssembler;
+    private final SubscriptionTagGroupCollectionResource subscriptionTagGroupCollectionResource;
 
     @Autowired
-    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionRepository subscriptionRepository, SubscriptionEntryCollectionResource subscriptionEntryCollectionResource, PagedResourcesAssembler pagedResourcesAssembler) {
+    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionRepository subscriptionRepository, SubscriptionEntryCollectionResource subscriptionEntryCollectionResource, PagedResourcesAssembler pagedResourcesAssembler, SubscriptionTagGroupCollectionResource subscriptionTagGroupCollectionResource) {
         this.subscriptionService = subscriptionService;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryCollectionResource = subscriptionEntryCollectionResource;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.subscriptionTagGroupCollectionResource = subscriptionTagGroupCollectionResource;
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
@@ -62,6 +65,13 @@ public class SubscriptionCollectionResource {
     @RequestMapping(value="", method = RequestMethod.GET)
     public PagedResources<Page<SubscriptionGetResponse>> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<Subscription> subscriptionPage = subscriptionRepository.findAllByUser(user.getId(), pageable);
+        return pagedResourcesAssembler.toResource(subscriptionPage, subscriptionAssembler);
+    }
+
+    @RequestMapping(value = "/tagGroup/{tagGroup}", method = RequestMethod.GET)
+    @ResponseBody
+    public PagedResources tagGroup(@PathVariable("tagGroup") String tagGroup, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+        Page<Subscription> subscriptionPage = subscriptionRepository.findByTagAndUser(tagGroup, user.getId(), pageable);
         return pagedResourcesAssembler.toResource(subscriptionPage, subscriptionAssembler);
     }
 }

@@ -15,6 +15,10 @@
                 {
                     "rel": "entries",
                     "href": "http://localhost/subscriptions/6/entries"
+                },
+                {
+                    "rel": "subscriptionTagGroup",
+                    "href": "http://localhost/subscriptions/tagGroup/tag1"
                 }
             ],
             "title": "user2_subscription1",
@@ -33,6 +37,10 @@
                 {
                     "rel": "entries",
                     "href": "http://localhost/subscriptions/7/entries"
+                },
+                {
+                    "rel": "subscriptionTagGroup",
+                    "href": "http://localhost/subscriptions/tagGroup/tag1"
                 }
             ],
             "title": "user2_subscription2",
@@ -69,6 +77,10 @@
                 {
                     "rel": "entries",
                     "href": "http://localhost/subscriptions/9/entries"
+                },
+                {
+                    "rel": "subscriptionTagGroup",
+                    "href": "http://localhost/subscriptions/tagGroup/tag1"
                 }
             ],
             "title": "user2_subscription4",
@@ -105,6 +117,10 @@
                 {
                     "rel": "entries",
                     "href": "http://localhost/subscriptions/11/entries"
+                },
+                {
+                    "rel": "subscriptionTagGroup",
+                    "href": "http://localhost/subscriptions/tagGroup/tag2"
                 }
             ],
             "title": "user2_subscription6",

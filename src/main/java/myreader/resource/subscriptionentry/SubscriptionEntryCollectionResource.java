@@ -22,7 +22,7 @@ import spring.security.MyReaderUser;
  * @author Kamill Sokol
  */
 @Controller
-@RequestMapping(value = "subscriptionEntries", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/subscriptionEntries", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SubscriptionEntryCollectionResource {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;

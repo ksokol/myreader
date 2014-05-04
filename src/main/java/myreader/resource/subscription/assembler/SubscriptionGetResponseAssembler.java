@@ -5,6 +5,7 @@ import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.util.StringUtils;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -35,6 +36,11 @@ public class SubscriptionGetResponseAssembler extends ResourceAssemblerSupport<S
 
         target.getLinks().add(self);
         target.getLinks().add(subscriptionEntries);
+
+        if(StringUtils.hasText(source.getTag())) {
+            Link subscriptionTagGroup = linkTo(methodOn(SubscriptionCollectionResource.class).tagGroup(source.getTag(), null, null)).withRel("subscriptionTagGroup");
+            target.getLinks().add(subscriptionTagGroup);
+        }
 
         return target;
     }

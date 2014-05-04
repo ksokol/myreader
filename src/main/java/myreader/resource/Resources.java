@@ -2,6 +2,7 @@ package myreader.resource;
 
 import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
+import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionResource;
 import myreader.resource.user.UserCollectionResource;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,9 @@ public class Resources {
     public Links get() {
         Link users = withPaginationParameterTemplates(linkTo(methodOn(UserCollectionResource.class).get(null, null)).withRel("users"));
         Link subscriptions = withPaginationParameterTemplates(linkTo(methodOn(SubscriptionCollectionResource.class).get(null, null)).withRel("subscriptions"));
+        Link subscriptionTagGroups = withPaginationParameterTemplates(linkTo(methodOn(SubscriptionTagGroupCollectionResource.class).get(null, null)).withRel("subscriptionTagGroups"));
         Link subscriptionEntries = withPaginationParameterTemplates(linkTo(methodOn(SubscriptionEntryCollectionResource.class).get(null, null)).withRel("subscriptionEntries"));
-        return new Links(users, subscriptions, subscriptionEntries);
+        return new Links(users, subscriptions, subscriptionTagGroups, subscriptionEntries);
     }
 
     private Link withPaginationParameterTemplates(Link link) {

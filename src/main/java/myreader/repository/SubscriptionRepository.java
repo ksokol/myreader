@@ -1,6 +1,7 @@
 package myreader.repository;
 
 import myreader.entity.Subscription;
+import myreader.entity.TagGroup;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,8 +23,12 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query("from Subscription where feed.url = ?1")
     List<Subscription> findByUrl(String url);
 
+    @Deprecated
     @Query("from Subscription s join fetch s.feed where s.tag = ?1 and s.user.email = ?2")
     List<Subscription> findByTagAndUsername(String tag, String username);
+
+    @Query(value = "from Subscription s join fetch s.feed where s.tag = ?1 and s.user.id = ?2", countQuery = "select count(*) from Subscription where tag = ?1 and user.id = ?2")
+    Page<Subscription> findByTagAndUser(String tag, Long userId, Pageable pageable);
 
     @Query("from Subscription s join fetch s.feed where s.user.id = ?1")
     List<Subscription> findByUser(Long id);
@@ -44,4 +49,10 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Modifying
     @Query("update Subscription set unseen = ?1 where id = ?2")
     void updateUnseen(int count, Long id);
+
+    @Query(value = "select new myreader.entity.TagGroup(tag, sum(unseen)) from Subscription where user.id = ?1 and tag is not null group by tag", countQuery = "select count(*) from Subscription where user.id = ?1 and tag is not null group by tag")
+    Page<TagGroup> findByUserGroupByTag(Long userId, Pageable pageable);
+
+    @Query(value = "select new myreader.entity.TagGroup(tag, sum(unseen)) from Subscription where user.id = ?2 and tag = ?1 group by tag")
+    TagGroup findTagGroupByTagAndUser(String tag, Long userId);
 }

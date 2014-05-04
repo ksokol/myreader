@@ -9,6 +9,10 @@
             "href": "http://localhost/subscriptions{?page,size,sort}"
         },
         {
+            "rel": "subscriptionTagGroups",
+            "href": "http://localhost/subscriptionTagGroups{?page,size,sort}"
+        },
+        {
             "rel": "subscriptionEntries",
             "href": "http://localhost/subscriptionEntries{?page,size,sort}"
         }

@@ -7,6 +7,10 @@
         {
             "rel": "entries",
             "href": "http://localhost/subscriptions/1/entries"
+        },
+        {
+            "rel": "subscriptionTagGroup",
+            "href": "http://localhost/subscriptions/tagGroup/test1"
         }
     ],
     "title": null,
