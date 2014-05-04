@@ -5,12 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 /**
  * @author Kamill Sokol
  */
+@Profile("myreader.prod")
 @Component
 public class RefreshSubscriptionAggregatesOnContextRefreshedEvent implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -38,7 +40,7 @@ public class RefreshSubscriptionAggregatesOnContextRefreshedEvent implements App
                 subscriptionbatchService.calculateUnseenAggregate();
             } catch(Exception e) {
                 log.error("caught exception", e);
-            } finally{
+            } finally {
                 done = true;
             }
         }
