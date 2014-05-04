@@ -109,7 +109,7 @@ public class SubscriptionBatchServiceImpl implements SubscriptionBatchService {
         for (Subscription subscription : subscriptions) {
             int count = subscriptionEntryRepository.countBySeen(subscription, false);
 
-            if(subscription.getUnseen() == null || subscription.getUnseen() != count) {
+            if(subscription.getUnseen() != count) {
                 logger.info("adjusting unseen aggregate for {} [{}->{}]", new Object[] {subscription.getId(), subscription.getUnseen(), count});
                 subscriptionRepository.updateUnseen(count, subscription.getId());
             }
