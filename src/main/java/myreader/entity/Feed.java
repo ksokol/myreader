@@ -1,9 +1,8 @@
 package myreader.entity;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "feed")
@@ -39,7 +38,12 @@ public class Feed {
     @OneToMany(mappedBy = "feed")
     private Set<FeedEntry> entries;
 
+    @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
+    @Version
+    private long version;
+
     public Feed() {
+        //TODO
         this.createdAt = new Date();
     }
 
@@ -119,5 +123,13 @@ public class Feed {
     @PrePersist
     public void onCreate() {
         this.createdAt = new Date();
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 }

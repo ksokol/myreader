@@ -8,7 +8,6 @@ import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.subscriptionentry.SubscriptionEntryBatchService;
 import myreader.test.UnittestSupport;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,7 +33,6 @@ public class SubscriptionEntryBatchServiceImplTest extends UnittestSupport {
     @PersistenceContext
     private EntityManager em;
 
-    @Ignore("until whole process is split up into maintainable function blocks")
     @Test
     public void testUpdateUserSubscriptionEntries() {
         Feed beforeFeed = feedRepository.findOne(2L);

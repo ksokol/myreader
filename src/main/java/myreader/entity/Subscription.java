@@ -43,10 +43,9 @@ public class Subscription {
     @OneToMany(cascade = CascadeType.ALL)
     private Set<ExclusionPattern> exclusions;
 
-    public Subscription() {
-        //TODO remove me
-        this.createdAt = new Date();
-    }
+    @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
+    @Version
+    private long version;
 
     public Long getId() {
         return id;
@@ -128,4 +127,11 @@ public class Subscription {
         this.subscriptionEntries = subscriptionEntries;
     }
 
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
 }
