@@ -10,7 +10,7 @@
             "links": [
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptions"
+                    "href": "http://localhost/subscriptions/6"
                 },
                 {
                     "rel": "entries",
@@ -28,7 +28,7 @@
             "links": [
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptions"
+                    "href": "http://localhost/subscriptions/7"
                 },
                 {
                     "rel": "entries",
@@ -46,7 +46,7 @@
             "links": [
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptions"
+                    "href": "http://localhost/subscriptions/8"
                 },
                 {
                     "rel": "entries",
@@ -64,7 +64,7 @@
             "links": [
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptions"
+                    "href": "http://localhost/subscriptions/9"
                 },
                 {
                     "rel": "entries",
@@ -82,7 +82,7 @@
             "links": [
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptions"
+                    "href": "http://localhost/subscriptions/10"
                 },
                 {
                     "rel": "entries",
@@ -100,7 +100,7 @@
             "links": [
                 {
                     "rel": "self",
-                    "href": "http://localhost/subscriptions"
+                    "href": "http://localhost/subscriptions/11"
                 },
                 {
                     "rel": "entries",

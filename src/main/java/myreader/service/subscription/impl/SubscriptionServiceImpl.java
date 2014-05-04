@@ -135,9 +135,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription.setFeed(feed);
         subscription.setUser(user);
         subscription.setCreatedAt(timeService.getCurrentTime());
-        subscriptionRepository.save(subscription);
-
-        return subscription;
+        return subscriptionRepository.save(subscription);
     }
 
 }
