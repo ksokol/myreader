@@ -1,0 +1,60 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptions/tagGroup/tag1{?page,size,sort}"
+        }
+    ],
+    "content": [
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptions/1"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptions/1/entries"
+                },
+                {
+                    "rel": "subscriptionTagGroup",
+                    "href": "http://localhost/subscriptions/tagGroup/tag1"
+                }
+            ],
+            "title": "user1_subscription1",
+            "url": "http://feeds.feedburner.com/javaposse",
+            "tag": "tag1",
+            "sum": 15,
+            "unseen": 1,
+            "createdAt": "2011-04-15T19:20:46Z"
+        },
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptions/2"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptions/2/entries"
+                },
+                {
+                    "rel": "subscriptionTagGroup",
+                    "href": "http://localhost/subscriptions/tagGroup/tag1"
+                }
+            ],
+            "title": "user1_subscription2",
+            "url": "http://feeds.dzone.com/dzone/frontpage",
+            "tag": "tag1",
+            "sum": 10,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z"
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 2,
+        "totalPages": 1,
+        "number": 0
+    }
+}

@@ -7,7 +7,6 @@ import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionResource;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,15 +35,13 @@ public class SubscriptionCollectionResource {
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryCollectionResource subscriptionEntryCollectionResource;
     private final PagedResourcesAssembler pagedResourcesAssembler;
-    private final SubscriptionTagGroupCollectionResource subscriptionTagGroupCollectionResource;
 
     @Autowired
-    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionRepository subscriptionRepository, SubscriptionEntryCollectionResource subscriptionEntryCollectionResource, PagedResourcesAssembler pagedResourcesAssembler, SubscriptionTagGroupCollectionResource subscriptionTagGroupCollectionResource) {
+    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionRepository subscriptionRepository, SubscriptionEntryCollectionResource subscriptionEntryCollectionResource, PagedResourcesAssembler pagedResourcesAssembler) {
         this.subscriptionService = subscriptionService;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryCollectionResource = subscriptionEntryCollectionResource;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
-        this.subscriptionTagGroupCollectionResource = subscriptionTagGroupCollectionResource;
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)

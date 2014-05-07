@@ -2,6 +2,7 @@ package myreader.resource.subscriptiontaggroup.assembler;
 
 import myreader.entity.TagGroup;
 import myreader.resource.subscription.SubscriptionCollectionResource;
+import myreader.resource.subscription.SubscriptionEntityResource;
 import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupEntityResource;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
 import org.springframework.hateoas.Link;
@@ -23,13 +24,21 @@ public class SubscriptionTagGroupGetResponseAssembler extends ResourceAssemblerS
     public SubscriptionTagGroupGetResponse toResource(TagGroup source) {
         SubscriptionTagGroupGetResponse target = new SubscriptionTagGroupGetResponse();
         target.setUnseen(source.getUnseen());
-        target.setTag(source.getTag());
+        target.setTag(source.getName());
 
-        Link self = linkTo(methodOn(SubscriptionTagGroupEntityResource.class).get(source.getTag(), null)).withSelfRel();
-        Link subscriptions = linkTo(methodOn(SubscriptionCollectionResource.class).tagGroup(source.getTag(), null, null)).withRel("subscriptions");
-
+        Link self = linkTo(methodOn(SubscriptionTagGroupEntityResource.class).get(source.getName(), null)).withSelfRel();
         target.add(self);
-        target.add(subscriptions);
+
+        switch(source.getType()) {
+            case AGGREGATE:
+                Link subscriptions = linkTo(methodOn(SubscriptionCollectionResource.class).tagGroup(source.getName(), null, null)).withRel("subscriptions");
+                target.add(subscriptions);
+                break;
+            case SUBSCRIPTION:
+                Link subscription = linkTo(methodOn(SubscriptionEntityResource.class).get(source.getId(), null)).withRel("subscription");
+                target.add(subscription);
+                break;
+        }
 
         return target;
     }

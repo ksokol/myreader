@@ -14,26 +14,26 @@ import java.util.List;
  */
 public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionEntry, Long> {
 
-    @Query("from SubscriptionEntry se join fetch se.feedEntry where se.id = ?1 and se.subscription.user.email = ?2")
+    @Query("select se from SubscriptionEntry se join fetch se.feedEntry where se.id = ?1 and se.subscription.user.email = ?2")
     SubscriptionEntry findByIdAndUsername(Long id, String username);
 
-    @Query("select distinct tag from SubscriptionEntry where tag is not null and subscription.user.email = ?1 order by tag asc")
+    @Query("select distinct se.tag from SubscriptionEntry se where se.tag is not null and se.subscription.user.email = ?1 order by se.tag asc")
     List<String> findDistinctTagsByUsername(String username);
 
-    @Query(value="from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription",countQuery = "select count(*) from SubscriptionEntry")
+    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription",countQuery = "select count(se) from SubscriptionEntry se")
     @Override
     Page<SubscriptionEntry> findAll(Pageable pageable);
 
-    @Query(value="from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription join fetch se.subscription.feed where se.id in (?1) order by se.id desc")
+    @Query(value="select se, se.feedEntry, se.subscription, se.subscription.feed from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription join fetch se.subscription.feed where se.id in (?1) order by se.id desc")
     @Override
     List<SubscriptionEntry> findAll(Iterable<Long> ids);
 
-    @Query(value="from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1",countQuery = "select count(*) from SubscriptionEntry where subscription.id = ?2 and subscription.user.id = ?1")
+    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1",countQuery = "select count(se) from SubscriptionEntry se where se.subscription.id = ?2 and se.subscription.user.id = ?1")
     Page<SubscriptionEntry> findBySubscriptionAndUser(Long userId, Long subscriptionId, Pageable pageable);
 
-    @Query(value="from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.user.id = ?1",countQuery = "select count(*) from SubscriptionEntry se join se.subscription where se.subscription.user.id = ?1")
+    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.user.id = ?1",countQuery = "select count(se) from SubscriptionEntry se join se.subscription where se.subscription.user.id = ?1")
     Page<SubscriptionEntry> findAllByUser(Pageable pageable, Long id);
 
-    @Query("select count(se) from SubscriptionEntry se where subscription = ?1 and seen = ?2")
+    @Query("select count(se) from SubscriptionEntry se where se.subscription = ?1 and se.seen = ?2")
     int countBySeen(Subscription subscription, boolean flag);
 }

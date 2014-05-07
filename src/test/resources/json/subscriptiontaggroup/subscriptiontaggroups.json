@@ -1,0 +1,72 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionTagGroups{?page,size,sort}"
+        }
+    ],
+    "content": [
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptionTagGroups/tag3"
+                },
+                {
+                    "rel": "subscriptions",
+                    "href": "http://localhost/subscriptions/tagGroup/tag3"
+                }
+            ],
+            "tag": "tag3",
+            "unseen": 0
+        },
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptionTagGroups/user1_subscription4"
+                },
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/4"
+                }
+            ],
+            "tag": "user1_subscription4",
+            "unseen": 0
+        },
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptionTagGroups/tag1"
+                },
+                {
+                    "rel": "subscriptions",
+                    "href": "http://localhost/subscriptions/tagGroup/tag1"
+                }
+            ],
+            "tag": "tag1",
+            "unseen": 1
+        },
+        {
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptionTagGroups/tag2"
+                },
+                {
+                    "rel": "subscriptions",
+                    "href": "http://localhost/subscriptions/tagGroup/tag2"
+                }
+            ],
+            "tag": "tag2",
+            "unseen": 0
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 4,
+        "totalPages": 1,
+        "number": 0
+    }
+}

@@ -41,9 +41,9 @@ public class SubscriptionEntityResource {
         return subscription;
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public SubscriptionGetResponse get(Subscription s) {
+    public SubscriptionGetResponse get(@PathVariable("id") Long id, Subscription s) {
         return subscriptionAssembler.toResource(s);
     }
 
@@ -59,6 +59,6 @@ public class SubscriptionEntityResource {
     public SubscriptionGetResponse patch(@RequestBody SubscriptionPatchRequest request, Subscription subscription) {
         Subscription patchedSubscription = patchService.patch(request, subscription);
         subscriptionRepository.save(patchedSubscription);
-        return get(patchedSubscription);
+        return get(patchedSubscription.getId(), patchedSubscription);
     }
 }
