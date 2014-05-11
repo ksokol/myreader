@@ -65,16 +65,4 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
                 .andExpect(content().isJsonEqual("subscription/post-new-response.json"));
     }
 
-    @Test
-    public void testSubscriptionTagGroup() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions/tagGroup/tag1"))
-                .andExpect(content().isJsonEqual("subscription/subscription#tagGroup#tag1.json"));
-    }
-
-    @Ignore
-    @Test
-    public void testSubscriptionTagGroupWithDot() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions/tagGroup/tag1"))
-                .andExpect(content().isJsonEqual("subscription/subscription#tagGroup#tag.with.dot.json"));
-    }
 }

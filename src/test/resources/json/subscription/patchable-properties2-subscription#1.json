@@ -14,7 +14,7 @@
         },
         {
             "rel": "subscriptionTagGroup",
-            "href": "http://localhost/subscriptions/tagGroup/patch"
+            "href": "http://localhost/subscriptionTagGroups/patch"
         }
     ],
     "title": "patch",

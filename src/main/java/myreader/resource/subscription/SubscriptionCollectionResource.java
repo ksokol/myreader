@@ -64,11 +64,4 @@ public class SubscriptionCollectionResource {
         Page<Subscription> subscriptionPage = subscriptionRepository.findAllByUser(user.getId(), pageable);
         return pagedResourcesAssembler.toResource(subscriptionPage, subscriptionAssembler);
     }
-
-    @RequestMapping(value = "/tagGroup/{tagGroup}", method = RequestMethod.GET)
-    @ResponseBody
-    public PagedResources tagGroup(@PathVariable("tagGroup") String tagGroup, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
-        Page<Subscription> subscriptionPage = subscriptionRepository.findByTagAndUser(tagGroup, user.getId(), pageable);
-        return pagedResourcesAssembler.toResource(subscriptionPage, subscriptionAssembler);
-    }
 }
