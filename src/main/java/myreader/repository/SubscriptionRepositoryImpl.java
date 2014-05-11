@@ -73,7 +73,7 @@ class SubscriptionRepositoryImpl implements SubscriptionRepositoryCustom {
                 id = (Number) objects[2];
                 type = TagGroup.Type.SUBSCRIPTION;
             }
-            tagGroups.add(new TagGroup(id.intValue(), name, sum.intValue(), type));
+            tagGroups.add(new TagGroup(id.longValue(), name, sum.intValue(), type));
         }
         return tagGroups;
     }

@@ -19,7 +19,7 @@ import spring.security.MyReaderUser;
  * @author Kamill Sokol
  */
 @Controller
-@RequestMapping(value = "subscriptions", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/subscriptions", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SubscriptionEntityResource {
 
     private final SubscriptionGetResponseAssembler subscriptionAssembler = new SubscriptionGetResponseAssembler(SubscriptionEntityResource.class);
