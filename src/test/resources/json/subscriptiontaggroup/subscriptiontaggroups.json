@@ -29,6 +29,10 @@
                 {
                     "rel": "subscription",
                     "href": "http://localhost/subscriptions/4"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptions/4/entries"
                 }
             ],
             "tag": "user1_subscription4",

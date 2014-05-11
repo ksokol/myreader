@@ -1,6 +1,7 @@
 package myreader.resource.subscriptiontaggroup.assembler;
 
 import myreader.entity.TagGroup;
+import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.SubscriptionEntityResource;
 import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionResource;
 import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupEntityResource;
@@ -37,6 +38,8 @@ public class SubscriptionTagGroupGetResponseAssembler extends ResourceAssemblerS
             case SUBSCRIPTION:
                 Link subscription = linkTo(methodOn(SubscriptionEntityResource.class).get(source.getId(), null)).withRel("subscription");
                 target.add(subscription);
+                Link subscriptionEntries = linkTo(methodOn(SubscriptionCollectionResource.class).getSubscriptionEntries(source.getId(), null, null)).withRel("entries");
+                target.add(subscriptionEntries);
                 break;
         }
 
