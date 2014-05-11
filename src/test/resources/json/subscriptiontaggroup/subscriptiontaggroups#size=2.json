@@ -19,6 +19,10 @@
                 {
                     "rel": "subscriptions",
                     "href": "http://localhost/subscriptionTagGroups/tag3/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionTagGroups/tag3/entries"
                 }
             ],
             "tag": "tag3",

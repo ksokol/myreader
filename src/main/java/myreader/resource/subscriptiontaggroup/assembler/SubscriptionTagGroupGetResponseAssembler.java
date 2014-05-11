@@ -32,8 +32,10 @@ public class SubscriptionTagGroupGetResponseAssembler extends ResourceAssemblerS
 
         switch(source.getType()) {
             case AGGREGATE:
-                Link subscriptions = linkTo(methodOn(SubscriptionTagGroupCollectionResource.class).getSubscriptionsByTag(source.getName(), null, null)).withRel("subscriptions");
-                target.add(subscriptions);
+                Link subscriptionsByTag = linkTo(methodOn(SubscriptionTagGroupCollectionResource.class).getSubscriptionsByTag(source.getName(), null, null)).withRel("subscriptions");
+                target.add(subscriptionsByTag);
+                Link subscriptionEntriesByTag = linkTo(methodOn(SubscriptionTagGroupCollectionResource.class).getSubscriptionEntriesByTag(source.getName(), null, null)).withRel("entries");
+                target.add(subscriptionEntriesByTag);
                 break;
             case SUBSCRIPTION:
                 Link subscription = linkTo(methodOn(SubscriptionEntityResource.class).get(source.getId(), null)).withRel("subscription");

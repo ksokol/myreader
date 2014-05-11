@@ -15,6 +15,10 @@
                 {
                     "rel": "subscriptions",
                     "href": "http://localhost/subscriptionTagGroups/tag3/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionTagGroups/tag3/entries"
                 }
             ],
             "tag": "tag3",
@@ -47,6 +51,10 @@
                 {
                     "rel": "subscriptions",
                     "href": "http://localhost/subscriptionTagGroups/tag1/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionTagGroups/tag1/entries"
                 }
             ],
             "tag": "tag1",
@@ -61,6 +69,10 @@
                 {
                     "rel": "subscriptions",
                     "href": "http://localhost/subscriptionTagGroups/tag2/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionTagGroups/tag2/entries"
                 }
             ],
             "tag": "tag2",

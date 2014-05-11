@@ -36,4 +36,8 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
 
     @Query("select count(se) from SubscriptionEntry se where se.subscription = ?1 and se.seen = ?2")
     int countBySeen(Subscription subscription, boolean flag);
+
+    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.tag = ?1 and se.subscription.user.id = ?2",countQuery = "select count(se) from SubscriptionEntry se where se.subscription.tag = ?1 and se.subscription.user.id = ?2")
+    Page<SubscriptionEntry> findBySubscriptionTagAndUser(String tag, Long userId, Pageable pageable);
+
 }
