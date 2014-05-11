@@ -13,6 +13,10 @@
                     "href": "http://localhost/subscriptions/1"
                 },
                 {
+                    "rel": "origin",
+                    "href": "http://feeds.feedburner.com/javaposse"
+                },
+                {
                     "rel": "entries",
                     "href": "http://localhost/subscriptions/1/entries"
                 },
@@ -22,7 +26,6 @@
                 }
             ],
             "title": "user1_subscription1",
-            "url": "http://feeds.feedburner.com/javaposse",
             "tag": "tag1",
             "sum": 15,
             "unseen": 1,
@@ -35,6 +38,10 @@
                     "href": "http://localhost/subscriptions/2"
                 },
                 {
+                    "rel": "origin",
+                    "href": "http://feeds.dzone.com/dzone/frontpage"
+                },
+                {
                     "rel": "entries",
                     "href": "http://localhost/subscriptions/2/entries"
                 },
@@ -44,7 +51,6 @@
                 }
             ],
             "title": "user1_subscription2",
-            "url": "http://feeds.dzone.com/dzone/frontpage",
             "tag": "tag1",
             "sum": 10,
             "unseen": 0,

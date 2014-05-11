@@ -23,23 +23,26 @@ public class SubscriptionGetResponseAssembler extends ResourceAssemblerSupport<S
     public SubscriptionGetResponse toResource(Subscription source) {
         SubscriptionGetResponse target = new SubscriptionGetResponse();
 
-        target.setId(source.getId());
         target.setTag(source.getTag());
         target.setCreatedAt(source.getCreatedAt());
         target.setSum(source.getSum());
         target.setTitle(source.getTitle());
         target.setUnseen(source.getUnseen());
-        target.setUrl(source.getFeed().getUrl());
+
+        Link self = linkTo(SubscriptionCollectionResource.class).slash(source.getId()).withSelfRel();
+        target.add(self);
+
+        if(source.getFeed() != null) {
+            Link origin = new Link(source.getFeed().getUrl(), "origin");
+            target.add(origin);
+        }
 
         Link subscriptionEntries = linkTo(methodOn(SubscriptionCollectionResource.class).getSubscriptionEntries(source.getId(), null, null)).withRel("entries");
-        Link self = linkTo(SubscriptionCollectionResource.class).slash(source.getId()).withSelfRel();
-
-        target.getLinks().add(self);
-        target.getLinks().add(subscriptionEntries);
+        target.add(subscriptionEntries);
 
         if(StringUtils.hasText(source.getTag())) {
             Link subscriptionTagGroup = linkTo(methodOn(SubscriptionCollectionResource.class).tagGroup(source.getTag(), null, null)).withRel("subscriptionTagGroup");
-            target.getLinks().add(subscriptionTagGroup);
+            target.add(subscriptionTagGroup);
         }
 
         return target;

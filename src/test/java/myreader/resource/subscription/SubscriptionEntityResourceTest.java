@@ -34,7 +34,7 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
         mockMvc.perform(getAsUser1("/subscriptions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements", is(5)))
-                .andExpect(jsonPath("$.content..url", hasItem("http://feeds.feedburner.com/javaposse")));
+                .andExpect(jsonPath("$.content..links[?(@.rel=='origin')].href", hasItem("http://feeds.feedburner.com/javaposse")));
 
         mockMvc.perform(deleteAsUser1("/subscriptions/1"))
                 .andExpect(status().isNoContent());
@@ -42,7 +42,7 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
         mockMvc.perform(getAsUser1("/subscriptions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements", is(4)))
-                .andExpect(jsonPath("$.content..url", not(hasItem("http://feeds.feedburner.com/javaposse"))));
+                .andExpect(jsonPath("$.content..links[?(@.rel=='origin')].href", not(hasItem("http://feeds.feedburner.com/javaposse"))));
     }
 
     @Test

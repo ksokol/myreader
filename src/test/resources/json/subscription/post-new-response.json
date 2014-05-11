@@ -5,12 +5,15 @@
             "href": "http://localhost/subscriptions/12"
         },
         {
+            "rel": "origin",
+            "href": "http://use-the-index-luke.com/blog/feed"
+        },
+        {
             "rel": "entries",
             "href": "http://localhost/subscriptions/12/entries"
         }
     ],
     "title": "Use The Index, Luke! blogs",
-    "url": "http://use-the-index-luke.com/blog/feed",
     "tag": null,
     "sum": 0,
     "unseen": 0,
