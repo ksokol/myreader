@@ -1,0 +1,73 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionTagGroups/tag1/entries{?page,size,sort}"
+        }
+    ],
+    "content": [
+        {
+            "links": [
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/7"
+                },
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptionEntries/1003"
+                }
+            ],
+            "title": "Party time",
+            "url": "http://Use-The-Index-Luke.com/blog/2013-03/Party-Time",
+            "feedTitle": "user2_subscription2",
+            "tag": "tag3",
+            "content": "content",
+            "unseen": false,
+            "createdAt": "2011-04-15T19:20:46Z"
+        },
+        {
+            "links": [
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/7"
+                },
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptionEntries/1004"
+                }
+            ],
+            "title": "MySQL is to SQL like ??? to NoSQL",
+            "url": "http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql",
+            "feedTitle": "user2_subscription2",
+            "tag": "tag3",
+            "content": "content",
+            "unseen": false,
+            "createdAt": "2011-04-15T19:20:46Z"
+        },
+        {
+            "links": [
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/7"
+                },
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptionEntries/1005"
+                }
+            ],
+            "title": "I need your help!",
+            "url": "http://Use-The-Index-Luke.com/blog/2013-04/i-need-your-help",
+            "feedTitle": "user2_subscription2",
+            "tag": "tag3",
+            "content": "content",
+            "unseen": false,
+            "createdAt": "2011-04-15T19:20:46Z"
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 3,
+        "totalPages": 1,
+        "number": 0
+    }
+}

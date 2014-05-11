@@ -2,9 +2,9 @@ package myreader.resource.subscriptiontaggroup;
 
 import myreader.entity.TagGroup;
 import myreader.repository.SubscriptionRepository;
+import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.subscriptiontaggroup.assembler.SubscriptionTagGroupGetResponseAssembler;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
-import myreader.service.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
@@ -31,7 +31,7 @@ public class SubscriptionTagGroupEntityResource {
     public TagGroup find(@PathVariable("id") String id, @AuthenticationPrincipal MyReaderUser user) {
         TagGroup tagGroup = subscriptionRepository.findTagGroupByTagAndUser(id, user.getId());
         if(tagGroup == null) {
-            throw new EntityNotFoundException();
+            throw new ResourceNotFoundException();
         }
         return tagGroup;
     }
