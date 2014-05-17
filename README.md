@@ -9,6 +9,9 @@ Caution
 This RRS reader transitioned from Java to Python to PL/SQL to Java with plain servlets to Java with Spring Framework.
 It is a sandbox for different technologies that are worth to play with. So don't expect a fully working software or even clean code.
 
+Installation
+------------
+
 **Prerequisite**
 
 - Oracle JDK 7, OpenJDK 7 or newer
@@ -19,8 +22,6 @@ It is a sandbox for different technologies that are worth to play with. So don't
 **Build and package**
 
 - run *mvn package*
-
-**Installation**
 
 ***JDBC driver and JDNI resource***
 
