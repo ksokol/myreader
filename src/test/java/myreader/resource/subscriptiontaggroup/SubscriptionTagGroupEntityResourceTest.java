@@ -1,11 +1,9 @@
 package myreader.resource.subscriptiontaggroup;
 
 import myreader.test.IntegrationTestSupport;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
@@ -38,10 +36,10 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
                 .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#entries.json"));
     }
 
-    @Ignore
     @Test
     public void testSubscriptionTagGroupWithDot() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptionTagGroups/tag.with.dot/subscriptions"))
+        mockMvc.perform(getAsUser3("/subscriptionTagGroups/tag.with.dots"))
+
                 .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag.with.dot.json"));
     }
 }

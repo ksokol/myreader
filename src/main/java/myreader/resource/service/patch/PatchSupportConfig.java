@@ -2,6 +2,7 @@ package myreader.resource.service.patch;
 
 import org.hibernate.validator.internal.engine.resolver.DefaultTraversableResolver;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 
 import javax.validation.TraversableResolver;
@@ -9,6 +10,7 @@ import javax.validation.TraversableResolver;
 /**
  * @author Kamill Sokol
  */
+@Configuration
 public class PatchSupportConfig {
 
     @Bean

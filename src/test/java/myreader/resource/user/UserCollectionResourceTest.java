@@ -19,7 +19,7 @@ public class UserCollectionResourceTest extends IntegrationTestSupport {
     public void givenAdminIsAuthenticated_whenCallsCollectionResource_thenAllThreeUsersShouldBeReturned() throws Exception {
        mockMvc.perform(getAsAdmin("/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page.totalElements", is(3)));
+                .andExpect(jsonPath("$.page.totalElements", is(4)));
     }
 
     @Test

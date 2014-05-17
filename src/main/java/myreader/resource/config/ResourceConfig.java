@@ -16,7 +16,6 @@ import org.springframework.security.web.bind.support.AuthenticationPrincipalArgu
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.validation.TraversableResolver;
@@ -25,12 +24,11 @@ import java.util.List;
 /**
  * @author Kamill Sokol
  */
-@EnableWebMvc
 @EnableEntityLinks
 //@EnableWebMvcSecurity
 @ComponentScan(basePackages = {"myreader.resource"})
 @Configuration
-@Import(PatchSupportConfig.class)
+@Import({PatchSupportConfig.class, CustomDelegatingWebMvcConfiguration.class})
 @EnableSpringDataWebSupport
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
@@ -58,6 +56,11 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
         localValidatorFactoryBean.setTraversableResolver(patchSupportTraversableResolver);
         return localValidatorFactoryBean;
     }
+
+//    @Override
+//    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+//        configurer.defaultContentType(MediaType.APPLICATION_JSON);
+//    }
 
     private MappingJacksonHttpMessageConverter configuredMappingJacksonHttpMessageConverter() {
         MappingJacksonHttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJacksonHttpMessageConverter();

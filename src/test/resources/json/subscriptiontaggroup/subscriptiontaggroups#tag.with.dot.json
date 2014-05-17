@@ -1,0 +1,18 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionTagGroups/tag.with.dots"
+        },
+        {
+            "rel": "subscriptions",
+            "href": "http://localhost/subscriptionTagGroups/tag.with.dots/subscriptions"
+        },
+        {
+            "rel": "entries",
+            "href": "http://localhost/subscriptionTagGroups/tag.with.dots/entries"
+        }
+    ],
+    "tag": "tag.with.dots",
+    "unseen": 0
+}

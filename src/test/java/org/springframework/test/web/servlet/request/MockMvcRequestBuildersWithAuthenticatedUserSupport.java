@@ -8,7 +8,10 @@ import org.springframework.http.HttpMethod;
 public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcRequestBuilders {
 
     private enum KnownUser {
-        ADMIN("user0@localhost","0"), USER1("user1@localhost","1"), USER2("user2@localhost","2");
+        ADMIN("user0@localhost","0"),
+        USER1("user1@localhost","1"),
+        USER2("user2@localhost","2"),
+        USER3("user3@localhost","3");
 
         KnownUser(String username, String password) {
             this.username = username;
@@ -33,6 +36,10 @@ public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcR
 
     public static MockHttpServletRequestBuilder getAsUser2(String urlTemplate, Object... urlVariables) {
         return actionAsUserX(HttpMethod.GET, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
+    }
+
+    public static MockHttpServletRequestBuilder getAsUser3(String urlTemplate, Object... urlVariables) {
+        return actionAsUserX(HttpMethod.GET, KnownUser.USER3.username, KnownUser.USER3.password, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilderWithJsonSupport patchAsUser1(String urlTemplate, Object... urlVariables) {
