@@ -2,7 +2,7 @@
     "links": [
         {
             "rel": "self",
-            "href": "http://localhost/subscriptions/13"
+            "href": "http://localhost/subscriptions/14"
         },
         {
             "rel": "origin",
@@ -10,7 +10,7 @@
         },
         {
             "rel": "entries",
-            "href": "http://localhost/subscriptions/13/entries"
+            "href": "http://localhost/subscriptions/14/entries"
         }
     ],
     "title": "Use The Index, Luke! blogs",

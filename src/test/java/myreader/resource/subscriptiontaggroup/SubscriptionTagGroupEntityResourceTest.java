@@ -39,7 +39,14 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
     @Test
     public void testSubscriptionTagGroupWithDot() throws Exception {
         mockMvc.perform(getAsUser3("/subscriptionTagGroups/tag.with.dots"))
-
                 .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag.with.dot.json"));
     }
+
+    @Test
+    public void testSubscriptionTagGroupWithSlashForward() throws Exception {
+        mockMvc.perform(getAsUser3("/subscriptionTagGroups/tagWith%2FForward"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tagWithSlashForward.json"));
+    }
+
 }

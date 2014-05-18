@@ -45,6 +45,7 @@ INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_t
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (10,0,'user2_subscription5',null,2,5,'2011-04-15T19:20:46Z',9);
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (11,0,'user2_subscription6','tag2',2,1,'2011-04-15T19:20:46Z',10);
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (12,0,'user3_subscription1','tag.with.dots',3,15,'2011-04-15T19:20:46Z',0);
+INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (13,0,'user3_subscription2','tagWith/Forward',3,15,'2011-04-15T19:20:46Z',1);
 
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1001,0,'tag1',3,1001,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1002,1,'tag1',3,1002,'2011-04-15T19:20:46Z');
