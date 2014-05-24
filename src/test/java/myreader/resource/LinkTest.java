@@ -30,7 +30,7 @@ public class LinkTest {
     public void linksToMethodWithPathVariableWithBlank() {
         Link link = linkTo(methodOn(Controller.class).get("with blank")).withSelfRel();
         assertThat(link.getRel(), is(Link.REL_SELF));
-        assertThat(link.getHref(), endsWith("/before/with%2520blank/after"));
+        assertThat(link.getHref(), endsWith("/before/with%20blank/after"));
     }
 
     @Test
