@@ -3,14 +3,15 @@ package myreader.resource.subscription;
 import myreader.service.time.TimeService;
 import myreader.test.IntegrationTestSupport;
 import org.joda.time.format.ISODateTimeFormat;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 
+import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
@@ -65,4 +66,10 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
                 .andExpect(content().isJsonEqual("subscription/post-new-response.json"));
     }
 
+	@Test
+	public void testDoubleEncodingInSubscriptionSubscriptionTagGroup() throws Exception {
+		mockMvc.perform(getAsUser3("/subscriptions"))
+				.andExpect(jsonPath("$.content[?(@.title=='user3_subscription2')].links[?(@.rel=='subscriptionTagGroup')].href[0]", endsWith("/tagWith%252FForward")));
+
+	}
 }

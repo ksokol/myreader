@@ -4,6 +4,7 @@ import myreader.entity.Subscription;
 import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupEntityResource;
+import myreader.resource.utils.EncodeUtils;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.util.StringUtils;
@@ -42,7 +43,7 @@ public class SubscriptionGetResponseAssembler extends ResourceAssemblerSupport<S
         target.add(subscriptionEntries);
 
         if(StringUtils.hasText(source.getTag())) {
-            Link subscriptionTagGroup = linkTo(methodOn(SubscriptionTagGroupEntityResource.class).get(source.getTag(), null)).withRel("subscriptionTagGroup");
+            Link subscriptionTagGroup = linkTo(methodOn(SubscriptionTagGroupEntityResource.class).get(EncodeUtils.encodeAsUTF8(source.getTag()), null)).withRel("subscriptionTagGroup");
             target.add(subscriptionTagGroup);
         }
 

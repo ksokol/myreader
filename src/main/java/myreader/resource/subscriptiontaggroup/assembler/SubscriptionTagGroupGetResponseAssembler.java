@@ -6,6 +6,7 @@ import myreader.resource.subscription.SubscriptionEntityResource;
 import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionResource;
 import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupEntityResource;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
+import myreader.resource.utils.EncodeUtils;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 
@@ -26,15 +27,16 @@ public class SubscriptionTagGroupGetResponseAssembler extends ResourceAssemblerS
         SubscriptionTagGroupGetResponse target = new SubscriptionTagGroupGetResponse();
         target.setUnseen(source.getUnseen());
         target.setTag(source.getName());
+		String encodeName = EncodeUtils.encodeAsUTF8(source.getName());
 
-        Link self = linkTo(methodOn(SubscriptionTagGroupEntityResource.class).get(source.getName(), null)).withSelfRel();
+		Link self = linkTo(methodOn(SubscriptionTagGroupEntityResource.class).get(encodeName, null)).withSelfRel();
         target.add(self);
 
         switch(source.getType()) {
             case AGGREGATE:
-                Link subscriptionsByTag = linkTo(methodOn(SubscriptionTagGroupCollectionResource.class).getSubscriptionsByTag(source.getName(), null, null)).withRel("subscriptions");
+                Link subscriptionsByTag = linkTo(methodOn(SubscriptionTagGroupCollectionResource.class).getSubscriptionsByTag(encodeName, null, null)).withRel("subscriptions");
                 target.add(subscriptionsByTag);
-                Link subscriptionEntriesByTag = linkTo(methodOn(SubscriptionTagGroupCollectionResource.class).getSubscriptionEntriesByTag(source.getName(), null, null)).withRel("entries");
+                Link subscriptionEntriesByTag = linkTo(methodOn(SubscriptionTagGroupCollectionResource.class).getSubscriptionEntriesByTag(encodeName, null, null)).withRel("entries");
                 target.add(subscriptionEntriesByTag);
                 break;
             case SUBSCRIPTION:
@@ -47,4 +49,5 @@ public class SubscriptionTagGroupGetResponseAssembler extends ResourceAssemblerS
 
         return target;
     }
+
 }
