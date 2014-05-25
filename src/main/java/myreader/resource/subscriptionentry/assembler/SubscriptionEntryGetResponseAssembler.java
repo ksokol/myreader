@@ -22,13 +22,11 @@ public class SubscriptionEntryGetResponseAssembler extends ResourceAssemblerSupp
     public SubscriptionEntryGetResponse toResource(SubscriptionEntry source) {
         SubscriptionEntryGetResponse target = new SubscriptionEntryGetResponse();
 
-        target.setId(source.getId());
         target.setTag(source.getTag());
         target.setCreatedAt(source.getCreatedAt());
 
         if(source.getFeedEntry() != null) {
             target.setTitle(source.getFeedEntry().getTitle());
-            target.setUrl(source.getFeedEntry().getUrl());
             target.setContent(source.getFeedEntry().getContent());
         }
 
@@ -41,13 +39,16 @@ public class SubscriptionEntryGetResponseAssembler extends ResourceAssemblerSupp
     }
 
     private void addLinks(SubscriptionEntry source, SubscriptionEntryGetResponse target) {
-        if(source.getSubscription() != null) {
-            Link subscription = linkTo(SubscriptionEntityResource.class).slash(source.getSubscription().getId()).withRel("subscription");
-            target.add(subscription);
-        }
-
         Link self = linkTo(SubscriptionEntryResource.class).slash(source.getId()).withSelfRel();
-
         target.add(self);
+
+		if(source.getSubscription() != null) {
+			Link subscription = linkTo(SubscriptionEntityResource.class).slash(source.getSubscription().getId()).withRel("subscription");
+			target.add(subscription);
+		}
+
+		if(source.getFeedEntry() != null) {
+			target.add(new Link(source.getFeedEntry().getUrl(), "origin"));
+		}
     }
 }
