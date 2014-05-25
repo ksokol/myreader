@@ -1,10 +1,10 @@
 package myreader.resource;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
 import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionResource;
 import myreader.resource.user.UserCollectionResource;
-import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;

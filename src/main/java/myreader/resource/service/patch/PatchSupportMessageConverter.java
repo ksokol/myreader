@@ -7,7 +7,7 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.ClassUtils;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ import static java.util.Map.Entry;
 /**
  * @author Kamill Sokol dev@sokol-web.de
  */
-class PatchSupportMessageConverter extends MappingJacksonHttpMessageConverter {
+class PatchSupportMessageConverter extends MappingJackson2HttpMessageConverter {
 
     @Override
     public boolean canRead(Type type, Class<?> contextClass, MediaType mediaType) {
