@@ -5,9 +5,11 @@ import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
+import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.subscriptionentry.SubscriptionEntryBatchService;
 import myreader.test.UnittestSupport;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,10 +30,22 @@ public class SubscriptionEntryBatchServiceImplTest extends UnittestSupport {
     private SubscriptionEntryBatchService uut;
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+	@Autowired
+	private SubscriptionEntryRepository subscriptionEntryRepository;
     @Autowired
     private FeedRepository feedRepository;
     @PersistenceContext
     private EntityManager em;
+
+	//TODO this is needed as long as SubscriptionEntryBatchService#updateUserSubscriptionEntries requires a new transaction
+	private Long entityToRevert;
+
+	@After
+	public void after() {
+		if(entityToRevert != null) {
+			subscriptionEntryRepository.delete(entityToRevert);
+		}
+	}
 
     @Test
     public void testUpdateUserSubscriptionEntries() {
@@ -46,6 +60,8 @@ public class SubscriptionEntryBatchServiceImplTest extends UnittestSupport {
 
         List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeFeed, Arrays.asList(fetcherEntry(2L)));
         assertThat(subscriptionEntries.size(), is(1));
+
+		entityToRevert = subscriptionEntries.get(0).getId();
 
         Feed afterFeed = feedRepository.findOne(2L);
         Subscription afterSubscription = subscriptionRepository.findOne(3L);
