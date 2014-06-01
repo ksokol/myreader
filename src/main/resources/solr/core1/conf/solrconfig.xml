@@ -15,6 +15,10 @@
    </autoCommit>
   </updateHandler>
 
+  <indexConfig>
+      <lockType>${solr.lockType:native}</lockType>
+  </indexConfig>
+
   <query>
     <maxBooleanClauses>1024</maxBooleanClauses>
 

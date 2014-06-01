@@ -1,8 +1,9 @@
 package myreader.service.search;
 
 /**
- * @author dev@sokol-web.de <Kamill Sokol>
+ * @author Kamill Sokol
  */
+
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -11,18 +12,19 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static myreader.service.search.SolrSubscriptionFields.*;
-
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static myreader.service.search.SolrSubscriptionFields.*;
+
+@Deprecated
 @Component
 public class SubscriptionSearchService {
 
     @Autowired
     private SolrServer solrServer;
 
+	@Deprecated
     public long countUnseenEntriesById(Long subscriptionId) {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.addFilterQuery(feedId(subscriptionId));
@@ -37,10 +39,12 @@ public class SubscriptionSearchService {
         }
     }
 
+	@Deprecated
     public Map<Long, Long> countUnseenEntries() {
         return countUnseenEntriesByUser(null);
     }
 
+	@Deprecated
     public Map<Long, Long> countUnseenEntriesByUser(String username) {
         Map<Long, Long> results = new HashMap<Long, Long>();
         SolrQuery solrQuery = new SolrQuery();
@@ -65,6 +69,7 @@ public class SubscriptionSearchService {
         }
     }
 
+	@Deprecated
     public void delete(Long id) {
         try {
             solrServer.deleteByQuery(feedId(id));

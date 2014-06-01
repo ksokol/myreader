@@ -9,6 +9,9 @@ import myreader.service.time.TimeService;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -25,13 +28,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, SecurityConfig.class, SearchConfig.class, TaskConfig.class})
 @WebAppConfiguration
 @Transactional
 public class IntegrationTestSupport {
+
+	static {
+		System.setProperty("solr.directoryFactory","org.apache.solr.core.RAMDirectoryFactory");
+		System.setProperty("solr.lockType","single");
+	}
 
     protected MockMvc mockMvc;
 
@@ -41,17 +49,28 @@ public class IntegrationTestSupport {
     private Filter springSecurityFilterChain;
     @Autowired
     private TimeService timeService;
+	@Autowired
+	private SolrTemplate solrTemplate;
 
     @Before
-    public void before() throws Exception {
+    public final void before() throws Exception {
         reset(timeService);
+		clearSearchIndex();
 
         this.mockMvc = webAppContextSetup(this.wac)
                 .addFilter(springSecurityFilterChain)
                 .defaultRequest(get("/").contentType(MediaType.APPLICATION_JSON))
                 .alwaysDo(print())
-               // .alwaysExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .build();
+
+		beforeTest();
     }
+
+	protected void beforeTest() throws Exception {}
+
+	private void clearSearchIndex() {
+		solrTemplate.delete(new SimpleFilterQuery(new Criteria(Criteria.WILDCARD).expression(Criteria.WILDCARD)));
+		solrTemplate.commit();
+	}
 
 }

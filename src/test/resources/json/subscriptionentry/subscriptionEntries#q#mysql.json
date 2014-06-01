@@ -1,0 +1,38 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionEntries?q=mysql{&page,size,sort}"
+        }
+    ],
+    "content": [
+        {
+            "title": "MySQL is to SQL like ??? to NoSQL",
+            "feedTitle": "user1_subscription3",
+            "tag": "tag1",
+            "content": "content",
+            "unseen": false,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/subscriptionEntries/1002"
+                },
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/3"
+                },
+                {
+                    "rel": "origin",
+                    "href": "http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql"
+                }
+            ]
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 1,
+        "totalPages": 1,
+        "number": 0
+    }
+}

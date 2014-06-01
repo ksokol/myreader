@@ -20,7 +20,7 @@
      <field name="ft_title" type="text" />
      <field name="ft_tags" type="text" />
 
-     <dynamicField name="*" type="string" indexed="false"  stored="false" multiValued="true" />
+     <dynamicField name="*" type="string" indexed="false"  stored="true" />
   </fields>
 
   <uniqueKey>id</uniqueKey>

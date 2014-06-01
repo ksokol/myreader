@@ -11,14 +11,16 @@ import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static myreader.service.search.SolrSubscriptionFields.*;
-import static myreader.service.search.FieldHelper.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.*;
+import static myreader.service.search.FieldHelper.*;
+import static myreader.service.search.SolrSubscriptionFields.*;
 
 /**
- * @author dev@sokol-web.de <Kamill Sokol>
+ * @author Kamill Sokol
  */
+@Deprecated
 @Component
 public class SubscriptionEntrySearchService {
 
@@ -26,8 +28,9 @@ public class SubscriptionEntrySearchService {
     private SolrServer solrServer;
 
     @Autowired
-    private SubscriptionEntryConverter converter;
+    private SubscriptionEntryToSolrInputDocumentConverter converter;
 
+	@Deprecated
     public List<Long> findByQueryAndUser(SubscriptionEntrySearchQuery myQuery, String username) {
         List<Long> results = new ArrayList<Long>();
         SolrQuery query = new SolrQuery();
@@ -70,8 +73,9 @@ public class SubscriptionEntrySearchService {
         }
     }
 
+	@Deprecated
     public void save(SubscriptionEntry subscriptionEntry) {
-        SolrInputDocument doc = converter.toSolrInputDocument(subscriptionEntry);
+        SolrInputDocument doc = converter.convert(subscriptionEntry);
 
         try {
             solrServer.add(doc);
@@ -81,6 +85,7 @@ public class SubscriptionEntrySearchService {
         }
     }
 
+	@Deprecated
     public void save(List<SubscriptionEntry> subscriptionEntries) {
         if(subscriptionEntries == null || subscriptionEntries.isEmpty()) {
             return;
@@ -89,7 +94,7 @@ public class SubscriptionEntrySearchService {
         List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>();
 
         for (SubscriptionEntry subscriptionEntry : subscriptionEntries) {
-            docs.add(converter.toSolrInputDocument(subscriptionEntry));
+            docs.add(converter.convert(subscriptionEntry));
         }
 
         try {

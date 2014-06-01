@@ -1,94 +1,84 @@
 package myreader.service.search.jobs;
 
+import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.service.search.SubscriptionEntryConverter;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.common.SolrInputDocument;
+import myreader.service.search.SubscriptionEntrySearchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.util.Assert;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * TODO IndexSyncJob and SyndFetcherJob should be running exclusively. this prevents duplicate entries in index
- * @author Kamill Sokol dev@sokol-web.de
+ *
+ * @author Kamill Sokol
  */
 public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosedEvent> {
     private static final Logger log = LoggerFactory.getLogger(IndexSyncJob.class);
 
-    private static final int BATCH_SIZE = 1000;
-    private final SubscriptionEntryConverter converter;
+    private int pageSize = 1000;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
-    private final SolrServer solrServer;
+	private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
+	private final ConversionService conversionService;
+
     private volatile boolean alive = true;
 
-    public IndexSyncJob(SubscriptionEntryConverter converter, SubscriptionEntryRepository subscriptionEntryRepository, SolrServer solrServer) {
-        this.converter = converter;
+    public IndexSyncJob(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, ConversionService conversionService) {
         this.subscriptionEntryRepository = subscriptionEntryRepository;
-        this.solrServer = solrServer;
-    }
+		this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
+		this.conversionService = conversionService;
+	}
 
-    @Override
-    public void run() {
+	@Override
+	public void run() {
+		try {
+			runInternal();
+		} catch (Exception e) {
+			log.error("error during index sync", e);
+		}
+	}
+
+    private void runInternal() {
         log.info("start");
 
-        try {
-            emptyIndex();
+		subscriptionEntrySearchRepository.deleteAll();
 
-            int pageNumber = 0;
-            PageRequest pageRequest = new PageRequest(0, BATCH_SIZE);
-            Page<SubscriptionEntry> page = subscriptionEntryRepository.findAll(pageRequest);
+		int pageNumber = 0;
+		Page<SubscriptionEntry> page;
+		List<SearchableSubscriptionEntry> converted;
 
-            while(page.hasNextPage() && alive) {
-                processPage(page);
-                page = subscriptionEntryRepository.findAll(new PageRequest(++pageNumber, BATCH_SIZE));
-            }
+		do {
+			page = subscriptionEntryRepository.findAll(new PageRequest(pageNumber++, pageSize));
+			converted = convert(page.getContent());
+			subscriptionEntrySearchRepository.save(converted);
+		} while(page.hasNextPage() && alive);
 
-            processPage(page);
-            optimize();
-        } catch (Exception e) {
-            log.error("error during index sync", e);
-        }
-
-        if(alive) {
-            log.info("search index sync done");
-        } else {
-            log.info("got stop signal. aborting search index sync");
-        }
-
+        log.info("search index sync done");
         log.info("end");
     }
 
-    private void emptyIndex() throws IOException, SolrServerException {
-        solrServer.deleteByQuery("*:*");
-    }
+	public int getPageSize() {
+		return pageSize;
+	}
 
-    private void processPage(Page<SubscriptionEntry> page) throws IOException, SolrServerException {
-        List<SolrInputDocument> docs = new ArrayList<SolrInputDocument>(BATCH_SIZE);
-        for(SubscriptionEntry se : page) {
-            docs.add(converter.toSolrInputDocument(se));
-        }
-        add(docs);
-        docs.clear();
-    }
+	public void setPageSize(int pageSize) {
+		Assert.isTrue(pageSize > 0);
+		this.pageSize = pageSize;
+	}
 
-    private void add(List<SolrInputDocument> docs) throws IOException, SolrServerException {
-        if(!docs.isEmpty()) {
-            solrServer.add(docs);
-        }
-    }
-
-    private void optimize() throws IOException, SolrServerException {
-        solrServer.optimize();
-    }
+	private List<SearchableSubscriptionEntry> convert(List<SubscriptionEntry> source) {
+		TypeDescriptor sourceType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(SubscriptionEntry.class));
+		TypeDescriptor targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(SearchableSubscriptionEntry.class));
+		return (List<SearchableSubscriptionEntry>) conversionService.convert(source, sourceType, targetType);
+	}
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {

@@ -1,8 +1,8 @@
 package myreader.service.subscriptionentry;
 
-import java.util.Date;
 import java.util.List;
 
+@Deprecated
 public class SubscriptionEntrySearchQuery {
 
     private int rows = 10; //default
@@ -12,50 +12,62 @@ public class SubscriptionEntrySearchQuery {
     private List<Long> feedId;
     private String tag;
 
+	@Deprecated
     public int getRows() {
         return rows;
     }
 
+	@Deprecated
     public void setRows(int rows) {
         this.rows = rows;
     }
 
+	@Deprecated
     public boolean isShowAll() {
         return showAll;
     }
 
+	@Deprecated
     public void setShowAll(boolean showAll) {
         this.showAll = showAll;
     }
 
+	@Deprecated
     public String getQ() {
         return q;
     }
 
+	@Deprecated
     public void setQ(String q) {
         this.q = q;
     }
 
+	@Deprecated
     public Long getLastId() {
         return lastId;
     }
 
+	@Deprecated
     public void setLastId(Long lastId) {
         this.lastId = lastId;
     }
 
+	@Deprecated
     public List<Long> getFeedId() {
         return feedId;
     }
 
+	@Deprecated
     public void setFeedId(List<Long> feedId) {
         this.feedId = feedId;
     }
 
+	@Deprecated
     public String getTag() {
         return tag;
     }
 
+	@Deprecated
     public void setTag(String tag) {
         this.tag = tag;
     }

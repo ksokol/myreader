@@ -1,12 +1,15 @@
 package myreader.resource.subscription;
 
+import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
 import myreader.resource.subscription.assembler.SubscriptionGetResponseAssembler;
 import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
+import myreader.resource.subscriptionentry.assembler.SearchableSubscriptionEntryGetResponseAssembler;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import myreader.service.search.SubscriptionEntrySearchRepository;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,18 +34,22 @@ import javax.validation.Valid;
 public class SubscriptionCollectionResource {
 
     private final SubscriptionGetResponseAssembler subscriptionAssembler = new SubscriptionGetResponseAssembler(SubscriptionCollectionResource.class);
-    private final SubscriptionService subscriptionService;
+	private final SearchableSubscriptionEntryGetResponseAssembler searchableSubscriptionEntryAssembler = new SearchableSubscriptionEntryGetResponseAssembler(SubscriptionEntityResource.class);
+
+	private final SubscriptionService subscriptionService;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryCollectionResource subscriptionEntryCollectionResource;
-    private final PagedResourcesAssembler pagedResourcesAssembler;
+	private final PagedResourcesAssembler pagedResourcesAssembler;
+	private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
 
     @Autowired
-    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionRepository subscriptionRepository, SubscriptionEntryCollectionResource subscriptionEntryCollectionResource, PagedResourcesAssembler pagedResourcesAssembler) {
+    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionRepository subscriptionRepository, SubscriptionEntryCollectionResource subscriptionEntryCollectionResource, PagedResourcesAssembler pagedResourcesAssembler, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository) {
         this.subscriptionService = subscriptionService;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryCollectionResource = subscriptionEntryCollectionResource;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
-    }
+		this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
+	}
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseBody
@@ -64,4 +71,11 @@ public class SubscriptionCollectionResource {
         Page<Subscription> subscriptionPage = subscriptionRepository.findAllByUser(user.getId(), pageable);
         return pagedResourcesAssembler.toResource(subscriptionPage, subscriptionAssembler);
     }
+
+	@ResponseBody
+	@RequestMapping(value = "/{id}/entries", params = "q", method = RequestMethod.GET)
+	public PagedResources<Page<SubscriptionEntryGetResponse>> searchAndFilterBySubscription(@RequestParam("q") String q, @PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+		Page<SearchableSubscriptionEntry> page = subscriptionEntrySearchRepository.searchAndFilterByUserAndSubscription(q, id, user.getId(), pageable);
+		return pagedResourcesAssembler.toResource(page, searchableSubscriptionEntryAssembler);
+	}
 }

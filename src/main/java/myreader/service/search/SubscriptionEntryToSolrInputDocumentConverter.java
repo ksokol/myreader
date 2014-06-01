@@ -2,6 +2,7 @@ package myreader.service.search;
 
 import myreader.entity.SubscriptionEntry;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import static myreader.service.search.SolrSubscriptionFields.*;
@@ -11,9 +12,11 @@ import static myreader.service.search.SolrSubscriptionFields.*;
  */
 @Deprecated
 @Component
-public class SubscriptionEntryConverter {
+public class SubscriptionEntryToSolrInputDocumentConverter implements Converter<SubscriptionEntry, SolrInputDocument> {
 
-    public SolrInputDocument toSolrInputDocument(SubscriptionEntry userEntry) {
+	@Deprecated
+	@Override
+    public SolrInputDocument convert(SubscriptionEntry userEntry) {
         SolrInputDocument input = new SolrInputDocument();
 
         input.addField(ID, userEntry.getId());
@@ -27,5 +30,4 @@ public class SubscriptionEntryConverter {
 
         return input;
     }
-
 }
