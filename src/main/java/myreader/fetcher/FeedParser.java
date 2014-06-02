@@ -1,22 +1,20 @@
 package myreader.fetcher;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import myreader.fetcher.impl.*;
-import myreader.fetcher.persistence.FetcherEntry;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+import myreader.fetcher.impl.*;
+import myreader.fetcher.persistence.FetcherEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 //TODO introduce an interface
 @Service("parser")
@@ -56,7 +54,7 @@ public class FeedParser {
                 dto.setGuid(e.getUri());
                 dto.setTitle(StringDecoder.escapeSimpleHtml(e.getTitle()));
 
-                dto.setUrl(EntryLinkSanitizer.sanitize(e.getLink(), feed.getLink()));
+                dto.setUrl(EntryLinkSanitizer.sanitize(e.getLink(), feed.getLink(), feedUrl));
                 SyndContent con = e.getDescription();
 
                 if (con != null) {
