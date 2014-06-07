@@ -6,9 +6,12 @@ jdk:
 
 env:
   global:
-     - secure: "YyiHfr7a+XCUfCh6Q1zWGpqh1GnD7fKdfd7qjy0PMpFSRBE46dQ8pSnSQLJVE84qh6i8y8/DQNF15+lrIEgKqkKuH/sD8qw+g1vmgKCjUDgQOqCWB9b22AERRuEmWR7e2FIHL+cha71APkjW3Dj7XArZ8Sgs3uolyqQ4kJIK/6M="
-     - secure: "JtnyHbSxUQhkcS4qZFjsKyr2PzstpEDoQ9ILxLR0SeAhfznGluliGhcqpN6BzvaFHz0aY1C5KU/U/nXPdK9xtz+uS4yXtxmkZ6YTi7KhNfgzQpuxlZsFEbPDDSxmtLZGpD6LpitH/A0anYiqQDOz4m7vqgh3314MEChV6ybC4LE="
+    #DEPLOY_HOST
+     - secure: "TyKXDFs08GBy8CxDn360iEvmNBlhNum8/MuO0aePzF8to1TtSZhI944jqTNb+dTSwF/G8Bhxf2hb4y3v2v8fa0pE/4DO2RBf2pP+GBgdpz6FWm4eIy2whwcuR5xc8xbiVaLIFo+eF0owpk8W9qQvWmft8C9FMvDruwtPV11SEhY="
+    #PW
+     - secure: "kJxt54H7lCCoRhWEeuCdU9XqWdCrWm1i6uAw1/FW65C2ppaKsbzAAGq1NQDCKvVvPrj9xIxoBmajVtsFe19zCvUe4/tOnUYY6iLfC6J7B+XxZHR67darX3xKP/YH8Tze0JduSPOC+Uz7vl6n9rWUlfaTE3UydIIt+iPCrq5Pth0="
 
-script: mvn cobertura:cobertura coveralls:cobertura
-after_success:
- - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn package -DskipTests; curl -X PUT -T target/myreader.war -u travis:$PW --insecure "https://$DEPLOY_HOST/manager/deploy?update=true&path=/myreader"; fi
+script: mvn test
+after_success: 
+ - if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn cobertura:cobertura coveralls:cobertura; fi
+ - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn package -DskipTests;  echo "deploying artefact"; curl -X PUT -T target/myreader.war -u travis:$PW --cacert cacert-root.crt "https://$DEPLOY_HOST/manager/deploy?update=true&path=/myreader"; echo "deploy result $?"; fi

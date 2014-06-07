@@ -54,7 +54,7 @@ public class FeedParser {
                 dto.setGuid(e.getUri());
                 dto.setTitle(StringDecoder.escapeSimpleHtml(e.getTitle()));
 
-                dto.setUrl(EntryLinkSanitizer.sanitize(e.getLink(), feed.getLink()));
+                dto.setUrl(EntryLinkSanitizer.sanitize(e.getLink(), feed.getLink(), feedUrl));
                 SyndContent con = e.getDescription();
 
                 if (con != null) {

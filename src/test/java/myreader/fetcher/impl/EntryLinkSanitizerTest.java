@@ -36,4 +36,5 @@ public class EntryLinkSanitizerTest {
         String sanitized = EntryLinkSanitizer.sanitize(HTTPS_URL + "/test", HTTPS_URL);
         assertThat(sanitized, is(HTTPS_URL + "/test"));
     }
+
 }
