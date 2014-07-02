@@ -1,8 +1,11 @@
 package myreader.entity;
 
+import myreader.entity.listener.SubscriptionEntryListener;
+
 import javax.persistence.*;
 import java.util.Date;
 
+@EntityListeners(SubscriptionEntryListener.class)
 @Entity
 @Table(name = "user_feed_entry")
 public class SubscriptionEntry {
