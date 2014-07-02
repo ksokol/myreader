@@ -1,4 +1,4 @@
-package collector.utils;
+package myreader.fetcher.impl;
 
 import static org.junit.Assert.assertTrue;
 
