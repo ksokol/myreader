@@ -9,6 +9,7 @@ import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
+import myreader.test.IntegrationTestSupport;
 import myreader.test.UnittestSupport;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionServiceImplTest extends UnittestSupport {
+public class SubscriptionServiceImplTest extends IntegrationTestSupport {
 
     @Autowired
     private SubscriptionService uut;

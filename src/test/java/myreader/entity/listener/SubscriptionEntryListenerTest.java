@@ -4,6 +4,7 @@ import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.service.search.SubscriptionEntrySearchRepository;
+import myreader.test.IntegrationTestSupport;
 import myreader.test.UnittestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionEntryListenerTest extends UnittestSupport {
+public class SubscriptionEntryListenerTest extends IntegrationTestSupport {
 
 	@Autowired
 	private SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;

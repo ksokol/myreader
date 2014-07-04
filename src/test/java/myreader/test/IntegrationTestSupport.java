@@ -4,6 +4,7 @@ import myreader.config.PersistenceConfig;
 import myreader.config.SearchConfig;
 import myreader.config.SecurityConfig;
 import myreader.config.TaskConfig;
+import myreader.fetcher.FeedParser;
 import myreader.resource.config.ResourceConfig;
 import myreader.service.time.TimeService;
 import org.junit.Before;
@@ -31,7 +32,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  * @author Kamill Sokol
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, SecurityConfig.class, SearchConfig.class, TaskConfig.class})
+@ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, SearchConfig.class, SecurityConfig.class, TestConfig.class, TaskConfig.class})
 @WebAppConfiguration
 @Transactional
 public class IntegrationTestSupport {
@@ -51,10 +52,13 @@ public class IntegrationTestSupport {
     private TimeService timeService;
 	@Autowired
 	private SolrTemplate solrTemplate;
+    @Autowired
+    private FeedParser feedParserMock;
 
     @Before
     public final void before() throws Exception {
         reset(timeService);
+        reset(feedParserMock);
 		clearSearchIndex();
 
         this.mockMvc = webAppContextSetup(this.wac)

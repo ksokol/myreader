@@ -8,6 +8,7 @@ import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.subscriptionentry.SubscriptionEntryBatchService;
+import myreader.test.IntegrationTestSupport;
 import myreader.test.UnittestSupport;
 import org.junit.After;
 import org.junit.Test;
@@ -24,7 +25,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionEntryBatchServiceImplTest extends UnittestSupport {
+public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSupport {
 
     @Autowired
     private SubscriptionEntryBatchService uut;
