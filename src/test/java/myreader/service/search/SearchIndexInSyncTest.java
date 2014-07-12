@@ -1,10 +1,8 @@
-package myreader.entity.listener;
+package myreader.service.search;
 
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.service.search.SubscriptionEntrySearchRepository;
-import myreader.test.IntegrationTestSupport;
 import myreader.test.UnittestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +21,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionEntryListenerTest extends IntegrationTestSupport {
+public class SearchIndexInSyncTest extends UnittestSupport {
 
 	@Autowired
 	private SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
@@ -48,7 +46,7 @@ public class SubscriptionEntryListenerTest extends IntegrationTestSupport {
 
 		subscriptionEntryRepository.save(subscriptionEntry);
 		em.flush();
-		solrTemplate.commit();
+        solrTemplate.commit();
 
 		Page<SearchableSubscriptionEntry> p1 = (Page) subscriptionEntrySearchRepository.findAll();
 		assertThat(p1.getTotalElements(), is(1L));
@@ -69,6 +67,8 @@ public class SubscriptionEntryListenerTest extends IntegrationTestSupport {
         assertThat(p1.getContent().get(0).isSeen(), is(true));
 
         subscriptionEntry.setSeen(false);
+
+        subscriptionEntryRepository.save(subscriptionEntry);
         em.flush();
         solrTemplate.commit();
 

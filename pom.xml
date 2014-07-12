@@ -31,6 +31,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.17</version>
+                <configuration>
+                    <reuseForks>true</reuseForks>
+                </configuration>
             </plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
@@ -148,11 +151,6 @@
 			<version>1.6.1</version>
 		</dependency>
 		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
-			<version>2.2.2</version>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.1</version>
@@ -192,12 +190,6 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
 			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.9.0</version>
-			<scope>test</scope>
 		</dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -296,12 +288,12 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>1.5.0.RELEASE</version>
+            <version>1.6.1.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-solr</artifactId>
-            <version>1.1.2.RELEASE</version>
+            <version>1.2.1.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
