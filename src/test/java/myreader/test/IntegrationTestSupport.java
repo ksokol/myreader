@@ -1,7 +1,7 @@
 package myreader.test;
 
 import myreader.config.PersistenceConfig;
-import myreader.config.SearchConfig;
+
 import myreader.config.SecurityConfig;
 import myreader.config.TaskConfig;
 import myreader.fetcher.FeedParser;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  * @author Kamill Sokol
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, SearchConfig.class, SecurityConfig.class, TestConfig.class, TaskConfig.class})
+@ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, SecurityConfig.class, TestConfig.class, TaskConfig.class})
 @WebAppConfiguration
 @Transactional
 public class IntegrationTestSupport {

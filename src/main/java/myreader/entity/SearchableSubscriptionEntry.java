@@ -15,7 +15,6 @@ public class SearchableSubscriptionEntry {
 	@Field("owner_id")
 	private Long ownerId;
 
-	@Deprecated
 	@Field
 	private String owner;
 
