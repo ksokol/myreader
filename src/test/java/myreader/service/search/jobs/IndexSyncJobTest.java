@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +22,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kamill Sokol
  */
+@DirtiesContext
 public class IndexSyncJobTest extends IntegrationTestSupport {
 
 	@Autowired

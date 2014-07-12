@@ -12,6 +12,7 @@ import myreader.test.IntegrationTestSupport;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,6 +25,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kamill Sokol
  */
+@DirtiesContext
 public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSupport {
 
     @Autowired

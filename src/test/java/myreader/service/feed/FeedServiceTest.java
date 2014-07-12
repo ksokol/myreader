@@ -8,6 +8,7 @@ import myreader.repository.FeedRepository;
 import myreader.test.IntegrationTestSupport;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Collections;
 
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Kamill Sokol
  */
+@DirtiesContext
 public class FeedServiceTest extends IntegrationTestSupport {
 
     @Autowired

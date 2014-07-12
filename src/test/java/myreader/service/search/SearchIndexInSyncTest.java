@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleFilterQuery;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +22,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Kamill Sokol
  */
+@DirtiesContext
 public class SearchIndexInSyncTest extends IntegrationTestSupport {
 
 	@Autowired
