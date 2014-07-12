@@ -9,7 +9,6 @@ import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.subscriptionentry.SubscriptionEntryBatchService;
 import myreader.test.IntegrationTestSupport;
-import myreader.test.UnittestSupport;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

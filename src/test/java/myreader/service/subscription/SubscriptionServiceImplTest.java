@@ -10,7 +10,6 @@ import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
 import myreader.test.IntegrationTestSupport;
-import myreader.test.UnittestSupport;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -6,7 +6,6 @@ import myreader.fetcher.impl.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
 import myreader.test.IntegrationTestSupport;
-import myreader.test.UnittestSupport;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
