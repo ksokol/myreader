@@ -3,7 +3,7 @@ package myreader.service.search;
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.test.UnittestSupport;
+import myreader.test.IntegrationTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Kamill Sokol
  */
-public class SearchIndexInSyncTest extends UnittestSupport {
+public class SearchIndexInSyncTest extends IntegrationTestSupport {
 
 	@Autowired
 	private SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;

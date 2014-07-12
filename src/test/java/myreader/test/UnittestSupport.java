@@ -16,10 +16,14 @@ import static org.mockito.Mockito.reset;
 
 /**
  * @author Kamill Sokol
+ *
+ * use {@link myreader.test.IntegrationTestSupport} instead
+ *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {PersistenceConfig.class, TestDataSourceConfig.class, SecurityConfig.class, TestConfig.class, TaskConfig.class})
 @Transactional
+@Deprecated
 public class UnittestSupport {
 
     @Autowired
