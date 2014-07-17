@@ -44,7 +44,7 @@ public class SubscriptionEntryGetResponseAssembler extends AbstractResourceAssem
         target.add(self);
 
 		if(source.getSubscription() != null) {
-			Link subscription = entityLinks.linkFor(SubscriptionGetResponse.class).slash(source.getSubscription().getId()).withRel("subscription");
+			Link subscription = entityLinks.linkFor(SubscriptionGetResponse.class, source.getSubscription().getId()).withRel("subscription");
 			target.add(subscription);
 		}
 
