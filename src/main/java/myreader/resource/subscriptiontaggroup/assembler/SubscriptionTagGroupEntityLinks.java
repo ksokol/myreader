@@ -1,20 +1,15 @@
 package myreader.resource.subscriptiontaggroup.assembler;
 
 import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionResource;
-import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupEntityResource;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
-import myreader.resource.utils.EncodeUtils;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkBuilder;
-import org.springframework.hateoas.TemplateVariable;
-import org.springframework.hateoas.TemplateVariables;
-import org.springframework.hateoas.UriTemplate;
+import org.springframework.hateoas.*;
 import org.springframework.hateoas.core.AbstractEntityLinks;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * @author Kamill Sokol
@@ -29,18 +24,17 @@ public class SubscriptionTagGroupEntityLinks extends AbstractEntityLinks {
 
     @Override
     public LinkBuilder linkFor(Class<?> type) {
-        return linkTo(methodOn(SubscriptionTagGroupCollectionResource.class).get(null, null));
+        return linkTo(SubscriptionTagGroupCollectionResource.class);
     }
 
     @Override
     public LinkBuilder linkFor(Class<?> type, Object... parameters) {
-        String encoded = EncodeUtils.encodeAsUTF8((String) parameters[0]);
-        return linkTo(methodOn(SubscriptionTagGroupEntityResource.class).get(encoded, null));
+        return linkFor(type).slash(encodeAsUTF8(parameters[0]));
     }
 
     @Override
     public Link linkToCollectionResource(Class<?> type) {
-        Link link = ControllerLinkBuilder.linkTo(methodOn(SubscriptionTagGroupCollectionResource.class).get(null, null)).withRel("subscriptionTagGroups");
+        Link link = linkFor(type).withRel("subscriptionTagGroups");
         Link linkParam = pagedResourcesAssembler.appendPaginationParameterTemplates(link);
 
         String uri = linkParam.getHref();
@@ -54,12 +48,19 @@ public class SubscriptionTagGroupEntityLinks extends AbstractEntityLinks {
 
     @Override
     public Link linkToSingleResource(Class<?> type, Object id) {
-        String encoded = EncodeUtils.encodeAsUTF8((String) id);
-        return linkTo(methodOn(SubscriptionTagGroupEntityResource.class).get(encoded, null)).withSelfRel();
+        return linkFor(type, id).withSelfRel();
     }
 
     @Override
     public boolean supports(Class<?> delimiter) {
         return SubscriptionTagGroupGetResponse.class.isAssignableFrom(delimiter);
+    }
+
+    private static String encodeAsUTF8(Object toEncode) {
+        try {
+            return URLEncoder.encode(String.valueOf(toEncode), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 }

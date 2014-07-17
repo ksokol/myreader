@@ -26,7 +26,7 @@ public class UserGetResponseAssembler extends AbstractResourceAssembler<User,Use
         target.setRole(source.getRole());
 
         if(source.getSubscriptions() != null) {
-            Link subscriptions = entityLinks.linkFor(getOutputClass(), source.getId()).withRel("subscriptions");
+            Link subscriptions = entityLinks.linkFor(getOutputClass(), source.getId()).slash("subscriptions").withRel("subscriptions");
             target.add(subscriptions);
         }
 
