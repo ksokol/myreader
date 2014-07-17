@@ -1,21 +1,22 @@
 package myreader.resource.subscriptionentry.assembler;
 
 import myreader.entity.SubscriptionEntry;
-import myreader.resource.subscription.SubscriptionEntityResource;
-import myreader.resource.subscriptionentry.SubscriptionEntryResource;
+import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import spring.data.AbstractResourceAssembler;
 
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionEntryGetResponseAssembler extends ResourceAssemblerSupport<SubscriptionEntry, SubscriptionEntryGetResponse> {
+public class SubscriptionEntryGetResponseAssembler extends AbstractResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> {
 
-    public SubscriptionEntryGetResponseAssembler(Class<?> controllerClass) {
-        super(controllerClass, SubscriptionEntryGetResponse.class);
+    private final EntityLinks entityLinks;
+
+    public SubscriptionEntryGetResponseAssembler(EntityLinks entityLinks) {
+        super(SubscriptionEntry.class, SubscriptionEntryGetResponse.class);
+        this.entityLinks = entityLinks;
     }
 
     @Override
@@ -39,11 +40,11 @@ public class SubscriptionEntryGetResponseAssembler extends ResourceAssemblerSupp
     }
 
     private void addLinks(SubscriptionEntry source, SubscriptionEntryGetResponse target) {
-        Link self = linkTo(SubscriptionEntryResource.class).slash(source.getId()).withSelfRel();
+        Link self = entityLinks.linkToSingleResource(getOutputClass(), source.getId());
         target.add(self);
 
 		if(source.getSubscription() != null) {
-			Link subscription = linkTo(SubscriptionEntityResource.class).slash(source.getSubscription().getId()).withRel("subscription");
+			Link subscription = entityLinks.linkFor(SubscriptionGetResponse.class).slash(source.getSubscription().getId()).withRel("subscription");
 			target.add(subscription);
 		}
 
@@ -51,4 +52,5 @@ public class SubscriptionEntryGetResponseAssembler extends ResourceAssemblerSupp
 			target.add(new Link(source.getFeedEntry().getUrl(), "origin"));
 		}
     }
+
 }

@@ -3,32 +3,35 @@ package myreader.resource.subscriptiontaggroup;
 import myreader.entity.TagGroup;
 import myreader.repository.SubscriptionRepository;
 import myreader.resource.exception.ResourceNotFoundException;
-import myreader.resource.subscriptiontaggroup.assembler.SubscriptionTagGroupGetResponseAssembler;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import spring.data.ResourceAssemblers;
 import spring.security.MyReaderUser;
 
 /**
  * @author Kamill Sokol
  */
-@RequestMapping(value = "/subscriptionTagGroups", produces = MediaType.APPLICATION_JSON_VALUE)
-@Controller
+@RestController
+@RequestMapping(value = "/subscriptionTagGroups")
 public class SubscriptionTagGroupEntityResource {
 
-    private final SubscriptionTagGroupGetResponseAssembler preAssembler = new SubscriptionTagGroupGetResponseAssembler(SubscriptionTagGroupEntityResource.class);
     private final SubscriptionRepository subscriptionRepository;
+    private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
-    public SubscriptionTagGroupEntityResource(SubscriptionRepository subscriptionRepository) {
+    public SubscriptionTagGroupEntityResource(SubscriptionRepository subscriptionRepository, ResourceAssemblers resourceAssemblers) {
         this.subscriptionRepository = subscriptionRepository;
+        this.resourceAssemblers = resourceAssemblers;
     }
 
     @ModelAttribute
-    public TagGroup find(@PathVariable("id") String id, @AuthenticationPrincipal MyReaderUser user) {
+    TagGroup find(@PathVariable("id") String id, @AuthenticationPrincipal MyReaderUser user) {
         TagGroup tagGroup = subscriptionRepository.findTagGroupByTagAndUser(id, user.getId());
         if(tagGroup == null) {
             throw new ResourceNotFoundException();
@@ -37,8 +40,7 @@ public class SubscriptionTagGroupEntityResource {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
     public SubscriptionTagGroupGetResponse get(@PathVariable("id") String tag, TagGroup tagGroup) {
-        return preAssembler.toResource(tagGroup);
+        return resourceAssemblers.toResource(tagGroup, SubscriptionTagGroupGetResponse.class);
     }
 }

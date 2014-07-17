@@ -3,24 +3,24 @@ package myreader.resource.subscription;
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
-import myreader.resource.subscription.assembler.SubscriptionGetResponseAssembler;
+import spring.data.ResourceAssemblers;
 import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
-import myreader.resource.subscriptionentry.assembler.SearchableSubscriptionEntryGetResponseAssembler;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.service.search.SubscriptionEntrySearchRepository;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.hateoas.PagedResources;
-import org.springframework.http.MediaType;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import spring.security.MyReaderUser;
 
 import javax.validation.Valid;
@@ -28,54 +28,45 @@ import javax.validation.Valid;
 /**
  * @author Kamill Sokol
  */
-@ExposesResourceFor(SubscriptionGetResponse.class)
-@Controller
-@RequestMapping(value = "/subscriptions", produces = MediaType.APPLICATION_JSON_VALUE)
+@RestController
+@RequestMapping(value = "/subscriptions")
 public class SubscriptionCollectionResource {
-
-    private final SubscriptionGetResponseAssembler subscriptionAssembler = new SubscriptionGetResponseAssembler(SubscriptionCollectionResource.class);
-	private final SearchableSubscriptionEntryGetResponseAssembler searchableSubscriptionEntryAssembler = new SearchableSubscriptionEntryGetResponseAssembler(SubscriptionEntityResource.class);
 
 	private final SubscriptionService subscriptionService;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryCollectionResource subscriptionEntryCollectionResource;
-	private final PagedResourcesAssembler pagedResourcesAssembler;
 	private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
+    private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
-    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionRepository subscriptionRepository, SubscriptionEntryCollectionResource subscriptionEntryCollectionResource, PagedResourcesAssembler pagedResourcesAssembler, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository) {
+    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionRepository subscriptionRepository, SubscriptionEntryCollectionResource subscriptionEntryCollectionResource, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, ResourceAssemblers resourceAssemblers) {
         this.subscriptionService = subscriptionService;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryCollectionResource = subscriptionEntryCollectionResource;
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
 		this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
-	}
+        this.resourceAssemblers = resourceAssemblers;
+    }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    @ResponseBody
     public SubscriptionGetResponse post(@Valid @RequestBody SubscribePostRequest request, @AuthenticationPrincipal MyReaderUser user) {
         Subscription subscription = subscriptionService.subscribe(user.getId(), request.getUrl());
-        SubscriptionGetResponse subscriptionGetResponse = subscriptionAssembler.toResource(subscription);
-        return subscriptionGetResponse;
+        return resourceAssemblers.toResource(subscription, SubscriptionGetResponse.class);
     }
 
     @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
-    @ResponseBody
     public PagedResources<Page<SubscriptionEntryGetResponse>> getSubscriptionEntries(@PathVariable("id") Long id,  Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         return subscriptionEntryCollectionResource.findBySubscription(id, pageable, user);
     }
 
-    @ResponseBody
     @RequestMapping(value="", method = RequestMethod.GET)
     public PagedResources<Page<SubscriptionGetResponse>> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<Subscription> subscriptionPage = subscriptionRepository.findAllByUser(user.getId(), pageable);
-        return pagedResourcesAssembler.toResource(subscriptionPage, subscriptionAssembler);
+        return resourceAssemblers.toPagedResource(subscriptionPage, SubscriptionGetResponse.class);
     }
 
-	@ResponseBody
 	@RequestMapping(value = "/{id}/entries", params = "q", method = RequestMethod.GET)
 	public PagedResources<Page<SubscriptionEntryGetResponse>> searchAndFilterBySubscription(@RequestParam("q") String q, @PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
 		Page<SearchableSubscriptionEntry> page = subscriptionEntrySearchRepository.searchAndFilterByUserAndSubscription(q, id, user.getId(), pageable);
-		return pagedResourcesAssembler.toResource(page, searchableSubscriptionEntryAssembler);
+		return resourceAssemblers.toPagedResource(page, SubscriptionEntryGetResponse.class);
 	}
 }

@@ -10,11 +10,11 @@
         },
         {
             "rel": "subscriptionTagGroups",
-            "href": "http://localhost/subscriptionTagGroups{?page,size,sort}"
+            "href": "http://localhost/subscriptionTagGroups{?page,size,sort,q}"
         },
         {
             "rel": "subscriptionEntries",
-            "href": "http://localhost/subscriptionEntries{?page,size,sort}"
+            "href": "http://localhost/subscriptionEntries{?page,size,sort,q}"
         }
     ]
 }

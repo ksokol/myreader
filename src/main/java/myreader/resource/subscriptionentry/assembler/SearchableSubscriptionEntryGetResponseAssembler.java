@@ -1,11 +1,11 @@
 package myreader.resource.subscriptionentry.assembler;
 
 import myreader.entity.SearchableSubscriptionEntry;
+import spring.data.AbstractResourceAssembler;
 import myreader.resource.subscription.SubscriptionEntityResource;
 import myreader.resource.subscriptionentry.SubscriptionEntryResource;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.util.StringUtils;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -13,10 +13,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 /**
  * @author Kamill Sokol
  */
-public class SearchableSubscriptionEntryGetResponseAssembler extends ResourceAssemblerSupport<SearchableSubscriptionEntry, SubscriptionEntryGetResponse> {
+public class SearchableSubscriptionEntryGetResponseAssembler extends AbstractResourceAssembler<SearchableSubscriptionEntry, SubscriptionEntryGetResponse> {
 
-	public SearchableSubscriptionEntryGetResponseAssembler(Class<?> controllerClass) {
-		super(controllerClass, SubscriptionEntryGetResponse.class);
+	public SearchableSubscriptionEntryGetResponseAssembler() {
+		super(SearchableSubscriptionEntry.class, SubscriptionEntryGetResponse.class);
 	}
 
 	@Override

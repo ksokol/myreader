@@ -5,42 +5,37 @@ import myreader.repository.UserRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import myreader.resource.user.assembler.UserGetResponseAssembler;
 import myreader.resource.user.beans.UserGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import spring.data.ResourceAssemblers;
 import spring.security.MyReaderUser;
 
 /**
  * @author Kamill Sokol
  */
-@Controller
-@RequestMapping(value= "/users", produces= MediaType.APPLICATION_JSON_VALUE)
+@RestController
+@RequestMapping(value= "/users")
 public class UserCollectionResource {
 
-    private final UserGetResponseAssembler preAssembler = new UserGetResponseAssembler(UserCollectionResource.class);
     private final UserRepository userRepository;
-    private final PagedResourcesAssembler pagedResourcesAssembler;
     private final SubscriptionCollectionResource subscriptionCollectionResource;
+    private ResourceAssemblers resourceAssemblers;
 
     @Autowired
-    public UserCollectionResource(UserRepository userRepository, PagedResourcesAssembler pagedResourcesAssembler, SubscriptionCollectionResource subscriptionCollectionResource) {
+    public UserCollectionResource(UserRepository userRepository, SubscriptionCollectionResource subscriptionCollectionResource, ResourceAssemblers resourceAssemblers) {
         this.userRepository = userRepository;
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.subscriptionCollectionResource = subscriptionCollectionResource;
+        this.resourceAssemblers = resourceAssemblers;
     }
 
-    @ResponseBody
     @RequestMapping("")
     public PagedResources<Page<UserGetResponse>> get(@AuthenticationPrincipal MyReaderUser user, Pageable pageable) {
         Page<User> page;
@@ -51,10 +46,9 @@ public class UserCollectionResource {
             page = userRepository.findById(user.getId(), pageable);
         }
 
-        return pagedResourcesAssembler.toResource(page, preAssembler);
+        return resourceAssemblers.toPagedResource(page, UserGetResponse.class);
     }
 
-    @ResponseBody
     @RequestMapping("/{id}/subscriptions")
     public PagedResources<Page<SubscriptionGetResponse>> userSubscriptions(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         if(user.getId().compareTo(id) != 0) {

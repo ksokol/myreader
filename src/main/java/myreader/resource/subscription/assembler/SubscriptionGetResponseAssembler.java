@@ -1,24 +1,23 @@
 package myreader.resource.subscription.assembler;
 
 import myreader.entity.Subscription;
-import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupEntityResource;
-import myreader.resource.utils.EncodeUtils;
+import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
+import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.util.StringUtils;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import spring.data.AbstractResourceAssembler;
 
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionGetResponseAssembler extends ResourceAssemblerSupport<Subscription, SubscriptionGetResponse> {
+public class SubscriptionGetResponseAssembler extends AbstractResourceAssembler<Subscription,SubscriptionGetResponse> {
 
-    public SubscriptionGetResponseAssembler(Class<?> controllerClass) {
-        super(controllerClass, SubscriptionGetResponse.class);
+    private final EntityLinks entityLinks;
+
+    public SubscriptionGetResponseAssembler(EntityLinks entityLinks) {
+        super(Subscription.class, SubscriptionGetResponse.class);
+        this.entityLinks = entityLinks;
     }
 
     @Override
@@ -31,7 +30,7 @@ public class SubscriptionGetResponseAssembler extends ResourceAssemblerSupport<S
         target.setTitle(source.getTitle());
         target.setUnseen(source.getUnseen());
 
-        Link self = linkTo(SubscriptionCollectionResource.class).slash(source.getId()).withSelfRel();
+        Link self = entityLinks.linkToSingleResource(getOutputClass(), source.getId());
         target.add(self);
 
         if(source.getFeed() != null) {
@@ -39,14 +38,15 @@ public class SubscriptionGetResponseAssembler extends ResourceAssemblerSupport<S
             target.add(origin);
         }
 
-        Link subscriptionEntries = linkTo(methodOn(SubscriptionCollectionResource.class).getSubscriptionEntries(source.getId(), null, null)).withRel("entries");
+        Link subscriptionEntries = entityLinks.linkFor(getOutputClass(), source.getId()).slash("entries").withRel("entries");
         target.add(subscriptionEntries);
 
         if(StringUtils.hasText(source.getTag())) {
-            Link subscriptionTagGroup = linkTo(methodOn(SubscriptionTagGroupEntityResource.class).get(EncodeUtils.encodeAsUTF8(source.getTag()), null)).withRel("subscriptionTagGroup");
+            Link subscriptionTagGroup = entityLinks.linkFor(SubscriptionTagGroupGetResponse.class, source.getTag()).withRel("subscriptionTagGroup");
             target.add(subscriptionTagGroup);
         }
 
         return target;
     }
+
 }

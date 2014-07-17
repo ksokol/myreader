@@ -17,14 +17,12 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscriptionentry/subscriptionEntries#4.json"));
-
     }
 
     @Test
     public void testEntityNotFound() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionEntries/1001"))
                 .andExpect(status().isNotFound());
-
     }
 
 }

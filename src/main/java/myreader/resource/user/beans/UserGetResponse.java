@@ -3,17 +3,12 @@ package myreader.resource.user.beans;
 import org.springframework.hateoas.ResourceSupport;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public class UserGetResponse extends ResourceSupport {
 
-    private Long id;
     private String email;
     private String role;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getEmail() {
         return email;
