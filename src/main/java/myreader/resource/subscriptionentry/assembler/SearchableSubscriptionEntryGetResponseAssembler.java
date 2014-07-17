@@ -1,23 +1,24 @@
 package myreader.resource.subscriptionentry.assembler;
 
 import myreader.entity.SearchableSubscriptionEntry;
-import spring.data.AbstractResourceAssembler;
-import myreader.resource.subscription.SubscriptionEntityResource;
-import myreader.resource.subscriptionentry.SubscriptionEntryResource;
+import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.util.StringUtils;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import spring.data.AbstractResourceAssembler;
 
 /**
  * @author Kamill Sokol
  */
 public class SearchableSubscriptionEntryGetResponseAssembler extends AbstractResourceAssembler<SearchableSubscriptionEntry, SubscriptionEntryGetResponse> {
 
-	public SearchableSubscriptionEntryGetResponseAssembler() {
+    private final EntityLinks entityLinks;
+
+	public SearchableSubscriptionEntryGetResponseAssembler(EntityLinks entityLinks) {
 		super(SearchableSubscriptionEntry.class, SubscriptionEntryGetResponse.class);
-	}
+        this.entityLinks = entityLinks;
+    }
 
 	@Override
 	public SubscriptionEntryGetResponse toResource(SearchableSubscriptionEntry source) {
@@ -34,11 +35,11 @@ public class SearchableSubscriptionEntryGetResponseAssembler extends AbstractRes
 	}
 
 	private void addLinks(SearchableSubscriptionEntry source, SubscriptionEntryGetResponse target) {
-		Link self = linkTo(SubscriptionEntryResource.class).slash(source.getId()).withSelfRel();
+		Link self = entityLinks.linkToSingleResource(getOutputClass(), source.getId()).withSelfRel();
 		target.add(self);
 
 		if(source.getSubscriptionId() != null) {
-			Link subscription = linkTo(SubscriptionEntityResource.class).slash(source.getSubscriptionId()).withRel("subscription");
+			Link subscription = entityLinks.linkToSingleResource(SubscriptionGetResponse.class, source.getSubscriptionId()).withRel("subscription");
 			target.add(subscription);
 		}
 

@@ -120,7 +120,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
         assembler.add(new SubscriptionTagGroupGetResponseAssembler(entityLinks));
         assembler.add(new SubscriptionGetResponseAssembler(entityLinks));
         assembler.add(new UserGetResponseAssembler(entityLinks));
-        assembler.add(new SearchableSubscriptionEntryGetResponseAssembler());
+        assembler.add(new SearchableSubscriptionEntryGetResponseAssembler(entityLinks));
 
         ResourceAssemblers resourceAssemblers = new DelegatingResourceAssemblers(assembler, pagedResourcesAssembler);
         return resourceAssemblers;
