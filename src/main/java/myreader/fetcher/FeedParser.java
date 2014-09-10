@@ -17,10 +17,13 @@ import java.util.Collections;
 import java.util.List;
 
 //TODO introduce an interface
+/**
+ * @author Kamill Sokol
+ */
 @Service("parser")
 public class FeedParser {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     private HttpConnector httpConnector;
 
@@ -29,20 +32,19 @@ public class FeedParser {
         this.httpConnector = httpConnector;
     }
 
-    @SuppressWarnings("unchecked")
     public FetchResult parse(String feedUrl) {
         try {
             HttpObject httpObject = new HttpObject(feedUrl);
             httpConnector.connect(httpObject);
 
             SyndFeedInput input = new SyndFeedInput();
-            SyndFeed feed = null;
+            SyndFeed feed;
             List<FetcherEntry> entries = new ArrayList<FetcherEntry>();
-            String lastModified = null;
+            String lastModified;
 
             lastModified = httpObject.getLastModified();
             XmlReader xml = new XmlReader(httpObject.getResponseBody());
-            feed = input.build(xml); // java.lang.IllegalStateException
+            feed = input.build(xml);
 
             List<SyndEntry> lfe = feed.getEntries();
             int i = 0;
@@ -56,10 +58,17 @@ public class FeedParser {
 
                 dto.setUrl(EntryLinkSanitizer.sanitize(e.getLink(), feed.getLink(), feedUrl));
                 SyndContent con = e.getDescription();
+                String content = con == null ? null : con.getValue();
 
-                if (con != null) {
-                    dto.setContent(StringDecoder.escapeHtmlContent(con.getValue(), feedUrl));
+                if (content == null || content.isEmpty()) {
+                    List contents = e.getContents();
+                    if(!contents.isEmpty()) {
+                        SyndContent syndContent = (SyndContent) contents.get(0);
+                        content = syndContent.getValue();
+                    }
                 }
+
+                dto.setContent(StringDecoder.escapeHtmlContent(content, feedUrl));
 
                 entries.add(dto);
                 if (i == 10)
@@ -69,7 +78,7 @@ public class FeedParser {
             Collections.reverse(entries);
             return new FetchResult(entries, lastModified);
         } catch (Exception e) {
-            logger.warn("url: {}, message: {}", feedUrl, e.getMessage());
+            log.warn("url: {}, message: {}", feedUrl, e.getMessage());
             throw new FeedParseException(e.getMessage(), e);
         }
     }
