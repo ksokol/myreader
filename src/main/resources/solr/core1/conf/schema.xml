@@ -8,9 +8,9 @@
      <field name="owner_id" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
      <field name="seen" type="boolean"  indexed="true"  stored="true" multiValued="false" required="true"/>
      <field name="title" type="string"  indexed="true"  stored="true" multiValued="false" />
+     <field name="feed_title" type="string"  indexed="true"  stored="true" multiValued="false" />
      <field name="tags" type="commaDelimited" />
      <field name="content" type="string" indexed="false"  stored="true" multiValued="false" />
-
      <field name="feed_id" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
 
      <copyField source="content" dest="ft_content"/>

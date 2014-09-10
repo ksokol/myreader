@@ -17,7 +17,7 @@ import static myreader.service.search.FieldHelper.*;
 import java.util.*;
 
 /**
- * @author dev@sokol-web.de <Kamill Sokol>
+ * @author Kamill Sokol
  */
 @Component
 public class SubscriptionEntrySearchService {
@@ -38,6 +38,10 @@ public class SubscriptionEntrySearchService {
 
         if(myQuery.getFeedId() != null) {
             query.addFilterQuery(feedId(or(myQuery.getFeedId())));
+        }
+
+        if(myQuery.getFeedTitle() != null) {
+            query.addFilterQuery(feedTitle(phrase(myQuery.getFeedTitle())));
         }
 
         if (!myQuery.isShowAll()) {

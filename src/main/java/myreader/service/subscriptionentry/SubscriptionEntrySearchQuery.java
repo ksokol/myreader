@@ -1,8 +1,10 @@
 package myreader.service.subscriptionentry;
 
-import java.util.Date;
 import java.util.List;
 
+/**
+ * @author Kamill Sokol
+ */
 public class SubscriptionEntrySearchQuery {
 
     private int rows = 10; //default
@@ -11,6 +13,7 @@ public class SubscriptionEntrySearchQuery {
     private Long lastId;
     private List<Long> feedId;
     private String tag;
+    private String feedTitle;
 
     public int getRows() {
         return rows;
@@ -58,5 +61,13 @@ public class SubscriptionEntrySearchQuery {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public String getFeedTitle() {
+        return feedTitle;
+    }
+
+    public void setFeedTitle(String feedTitle) {
+        this.feedTitle = feedTitle;
     }
 }
