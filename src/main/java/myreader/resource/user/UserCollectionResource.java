@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +39,7 @@ public class UserCollectionResource {
     public PagedResources<Page<UserGetResponse>> get(@AuthenticationPrincipal MyReaderUser user, Pageable pageable) {
         Page<User> page;
 
-        if(user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+        if(user.isAdmin()) {
             page = userRepository.findAll(pageable);
         } else {
             page = userRepository.findById(user.getId(), pageable);
