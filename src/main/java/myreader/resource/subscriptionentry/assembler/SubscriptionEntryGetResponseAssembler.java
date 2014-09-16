@@ -25,6 +25,7 @@ public class SubscriptionEntryGetResponseAssembler extends AbstractResourceAssem
 
         target.setTag(source.getTag());
         target.setCreatedAt(source.getCreatedAt());
+        target.setSeen(source.isSeen());
 
         if(source.getFeedEntry() != null) {
             target.setTitle(source.getFeedEntry().getTitle());

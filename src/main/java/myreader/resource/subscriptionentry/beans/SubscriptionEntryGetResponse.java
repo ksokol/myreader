@@ -13,7 +13,7 @@ public class SubscriptionEntryGetResponse extends ResourceSupport {
     private String feedTitle;
     private String tag;
     private String content;
-    private boolean unseen;
+    private boolean seen;
     private Date createdAt;
 
     public String getTitle() {
@@ -48,12 +48,12 @@ public class SubscriptionEntryGetResponse extends ResourceSupport {
         this.content = content;
     }
 
-    public boolean isUnseen() {
-        return unseen;
+    public boolean isSeen() {
+        return seen;
     }
 
-    public void setUnseen(boolean unseen) {
-        this.unseen = unseen;
+    public void setSeen(boolean unseen) {
+        this.seen = unseen;
     }
 
     public Date getCreatedAt() {

@@ -11,7 +11,7 @@
             "feedTitle": "user1_subscription3",
             "tag": "tag1",
             "content": "content",
-            "unseen": false,
+            "seen": false,
             "createdAt": "2011-04-15T19:20:46Z",
             "links": [
                 {
@@ -33,7 +33,7 @@
             "feedTitle": "user1_subscription3",
             "tag": "tag1",
             "content": "content",
-            "unseen": false,
+            "seen": true,
             "createdAt": "2011-04-15T19:20:46Z",
             "links": [
                 {

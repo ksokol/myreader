@@ -29,6 +29,7 @@ public class SearchableSubscriptionEntryGetResponseAssembler extends AbstractRes
 		target.setTitle(source.getTitle());
 		target.setContent(source.getContent());
 		target.setFeedTitle(source.getSubscriptionTitle());
+        target.setSeen(source.isSeen());
 
 		addLinks(source, target);
 		return target;
