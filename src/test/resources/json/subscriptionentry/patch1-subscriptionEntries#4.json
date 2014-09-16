@@ -3,7 +3,7 @@
     "feedTitle": "user2_subscription2",
     "tag": "tag3",
     "content": "content",
-    "seen": true,
+    "seen": false,
     "createdAt": "2011-04-15T19:20:46Z",
     "links": [
         {

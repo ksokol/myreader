@@ -45,15 +45,14 @@ public class SubscriptionEntryResource {
     }
 
     @RequestMapping(value= "{id}", method = RequestMethod.GET)
-    public SubscriptionEntryGetResponse get(@PathVariable("id") Long id, SubscriptionEntry subscriptionEntry) {
+    public SubscriptionEntryGetResponse get(SubscriptionEntry subscriptionEntry) {
         return resourceAssemblers.toResource(subscriptionEntry, SubscriptionEntryGetResponse.class);
     }
 
     @RequestMapping(value= "{id}", method = RequestMethod.PATCH)
-    public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @RequestBody SubscriptionEntryPatchRequest request, SubscriptionEntry subscriptionEntry) {
+    public SubscriptionEntryGetResponse patch(@RequestBody SubscriptionEntryPatchRequest request, SubscriptionEntry subscriptionEntry) {
         SubscriptionEntry patched = patchService.patch(request, subscriptionEntry);
-        subscriptionEntryRepository.save(patched);
-        return resourceAssemblers.toResource(patched, SubscriptionEntryGetResponse.class);
+        SubscriptionEntry saved = subscriptionEntryRepository.save(patched);
+        return resourceAssemblers.toResource(saved, SubscriptionEntryGetResponse.class);
     }
-
 }

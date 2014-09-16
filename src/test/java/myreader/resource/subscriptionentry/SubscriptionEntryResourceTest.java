@@ -1,8 +1,18 @@
 package myreader.resource.subscriptionentry;
 
+import myreader.entity.SearchableSubscriptionEntry;
+import myreader.service.search.jobs.IndexSyncJob;
 import myreader.test.IntegrationTestSupport;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.SimpleQuery;
+import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.Map;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
@@ -14,7 +24,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchersW
 /**
  * @author Kamill Sokol
  */
+@DirtiesContext
 public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
+
+    @Autowired
+    private IndexSyncJob indexSyncJob;
+    @Autowired
+    private SolrTemplate solrTemplate;
 
     @Test
     public void testEntityResourceJsonStructureEquality() throws Exception {
@@ -31,23 +47,43 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testPatchSeen() throws Exception {
+        indexSyncJob.run();
+        solrTemplate.commit();
+
+        SearchableSubscriptionEntry before = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
+        assertThat(before.isSeen(), is(true));
+
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().isJsonEqual("subscriptionentry/subscriptionEntries#4.json"));
 
         mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")
-                .json("{'seen':true}"))
+                .json("{'seen':false}"))
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscriptionentry/patch1-subscriptionEntries#4.json"));
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscriptionentry/patch1-subscriptionEntries#4.json"));
+
+        mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscriptionentry/patch1-subscriptionEntries#4.json"));
+
+        solrTemplate.commit();
+        SearchableSubscriptionEntry after = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
+        assertThat(after.isSeen(), is(false));
     }
 
     @Test
     public void testPatchTag() throws Exception {
+        indexSyncJob.run();
+        solrTemplate.commit();
+
+        SearchableSubscriptionEntry before = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
+        assertThat(before.getTag(), is("tag3"));
+
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscriptionentry/subscriptionEntries#4.json"));
@@ -59,6 +95,9 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscriptionentry/patch2-subscriptionEntries#4.json"));
-    }
 
+        solrTemplate.commit();
+        SearchableSubscriptionEntry after = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
+        assertThat(after.getTag(), is("tag-patched"));
+    }
 }
