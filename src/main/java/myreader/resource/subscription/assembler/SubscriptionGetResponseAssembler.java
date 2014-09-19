@@ -3,18 +3,22 @@ package myreader.resource.subscription.assembler;
 import myreader.entity.Subscription;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import spring.data.AbstractResourceAssembler;
 
 /**
  * @author Kamill Sokol
  */
+@Component
 public class SubscriptionGetResponseAssembler extends AbstractResourceAssembler<Subscription,SubscriptionGetResponse> {
 
     private final EntityLinks entityLinks;
 
+    @Autowired
     public SubscriptionGetResponseAssembler(EntityLinks entityLinks) {
         super(Subscription.class, SubscriptionGetResponse.class);
         this.entityLinks = entityLinks;

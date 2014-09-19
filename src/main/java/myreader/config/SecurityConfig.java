@@ -21,7 +21,7 @@ import spring.security.UserRepositoryUserDetailsService;
  */
 @Configuration
 @EnableWebSecurity
-@ComponentScan(basePackages = {"spring"})
+@ComponentScan(basePackages = {"spring.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired

@@ -2,9 +2,11 @@ package myreader.resource.subscriptiontaggroup.assembler;
 
 import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionResource;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.core.AbstractEntityLinks;
+import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -14,10 +16,12 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 /**
  * @author Kamill Sokol
  */
+@Component
 public class SubscriptionTagGroupEntityLinks extends AbstractEntityLinks {
 
     private final PagedResourcesAssembler pagedResourcesAssembler;
 
+    @Autowired
     public SubscriptionTagGroupEntityLinks(PagedResourcesAssembler pagedResourcesAssembler) {
         this.pagedResourcesAssembler = pagedResourcesAssembler;
     }

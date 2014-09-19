@@ -1,10 +1,12 @@
 package spring.data;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -13,11 +15,13 @@ import java.util.List;
 /**
  * @author Kamill Sokol
  */
+@Component
 public class DelegatingResourceAssemblers implements ResourceAssemblers {
 
     private final List<AbstractResourceAssembler> delegates;
     private final PagedResourcesAssembler pagedResourcesAssembler;
 
+    @Autowired
     public DelegatingResourceAssemblers(List<AbstractResourceAssembler> delegates, PagedResourcesAssembler pagedResourcesAssembler) {
         this.delegates = delegates;
         this.pagedResourcesAssembler = pagedResourcesAssembler;

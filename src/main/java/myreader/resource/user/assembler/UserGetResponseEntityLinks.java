@@ -2,20 +2,24 @@ package myreader.resource.user.assembler;
 
 import myreader.resource.user.UserEntityResource;
 import myreader.resource.user.beans.UserGetResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkBuilder;
 import org.springframework.hateoas.core.AbstractEntityLinks;
+import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
  * @author Kamill Sokol
  */
+@Component
 public class UserGetResponseEntityLinks extends AbstractEntityLinks {
 
     private final PagedResourcesAssembler pagedResourcesAssembler;
 
+    @Autowired
     public UserGetResponseEntityLinks(PagedResourcesAssembler pagedResourcesAssembler) {
         this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
