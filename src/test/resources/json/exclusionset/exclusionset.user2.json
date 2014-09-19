@@ -1,0 +1,124 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/exclusions{?page,size,sort}"
+        }
+    ],
+    "content": [
+        {
+            "patternCount": 0,
+            "overallPatternHits": 0,
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/exclusions/9"
+                },
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/9"
+                },
+                {
+                    "rel": "pattern",
+                    "href": "http://localhost/exclusions/9/pattern"
+                }
+            ]
+        },
+        {
+            "patternCount": 0,
+            "overallPatternHits": 0,
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/exclusions/10"
+                },
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/10"
+                },
+                {
+                    "rel": "pattern",
+                    "href": "http://localhost/exclusions/10/pattern"
+                }
+            ]
+        },
+        {
+            "patternCount": 0,
+            "overallPatternHits": 0,
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/exclusions/11"
+                },
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/11"
+                },
+                {
+                    "rel": "pattern",
+                    "href": "http://localhost/exclusions/11/pattern"
+                }
+            ]
+        },
+        {
+            "patternCount": 1,
+            "overallPatternHits": 1,
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/exclusions/6"
+                },
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/6"
+                },
+                {
+                    "rel": "pattern",
+                    "href": "http://localhost/exclusions/6/pattern"
+                }
+            ]
+        },
+        {
+            "patternCount": 0,
+            "overallPatternHits": 0,
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/exclusions/7"
+                },
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/7"
+                },
+                {
+                    "rel": "pattern",
+                    "href": "http://localhost/exclusions/7/pattern"
+                }
+            ]
+        },
+        {
+            "patternCount": 0,
+            "overallPatternHits": 0,
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/exclusions/8"
+                },
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/8"
+                },
+                {
+                    "rel": "pattern",
+                    "href": "http://localhost/exclusions/8/pattern"
+                }
+            ]
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 6,
+        "totalPages": 1,
+        "number": 0
+    }
+}

@@ -56,3 +56,11 @@ INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_fee
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1007,0,null,8,1008,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1008,0,null,8,1009,'2011-04-15T19:20:46Z');
 
+INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (0,'user1_subscription1_pattern1',1,1);
+INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (1,'user1_subscription1_pattern2',1,1);
+
+INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (2,'user1_subscription2_pattern1',1,2);
+
+INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (3,'user1_subscription2_pattern2',0,2);
+
+INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (4,'user2_subscription1_pattern1',1,6);

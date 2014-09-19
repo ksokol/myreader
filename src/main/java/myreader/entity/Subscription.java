@@ -37,10 +37,10 @@ public class Subscription {
     @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
     private Feed feed;
 
-    @OneToMany(mappedBy = "subscription")
+    @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
     private Set<SubscriptionEntry> subscriptionEntries;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
     private Set<ExclusionPattern> exclusions;
 
     @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
