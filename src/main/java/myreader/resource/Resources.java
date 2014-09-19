@@ -1,6 +1,7 @@
 package myreader.resource;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
@@ -33,8 +34,9 @@ public class Resources {
         Link subscriptions = entityLinks.linkToCollectionResource(SubscriptionGetResponse.class);
         Link subscriptionTagGroups = entityLinks.linkToCollectionResource(SubscriptionTagGroupGetResponse.class);
         Link subscriptionEntries = entityLinks.linkToCollectionResource(SubscriptionEntryGetResponse.class);
+        Link exclusionPattern = entityLinks.linkToCollectionResource(ExclusionSetGetResponse.class);
 
-        return new Links(users, subscriptions, subscriptionTagGroups,  subscriptionEntries);
+        return new Links(users, subscriptions, subscriptionTagGroups,  subscriptionEntries, exclusionPattern);
     }
 
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
