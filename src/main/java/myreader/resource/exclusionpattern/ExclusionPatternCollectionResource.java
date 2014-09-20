@@ -7,6 +7,7 @@ import myreader.repository.SubscriptionRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 
+import myreader.resource.exclusionpattern.beans.ExclusionPatternPostRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,12 +15,15 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import spring.data.ResourceAssemblers;
 import spring.security.MyReaderUser;
+
+import javax.validation.Valid;
 
 /**
  * @author Kamill Sokol
@@ -52,5 +56,17 @@ public class ExclusionPatternCollectionResource {
     public PagedResources<Page<ExclusionPatternGetResponse>> get(@ModelAttribute("subscription") Subscription subscription, Pageable pageable) {
         Page<ExclusionPattern> exclusionPatternPage = exclusionRepository.findBySubscriptionId(subscription.getId(), pageable);
         return resourceAssemblers.toPagedResource(exclusionPatternPage, ExclusionPatternGetResponse.class);
+    }
+
+    @RequestMapping(value="", method = RequestMethod.POST)
+    public ExclusionPatternGetResponse post(@ModelAttribute("subscription") Subscription subscription, @Valid @RequestBody ExclusionPatternPostRequest
+            request) {
+
+        ExclusionPattern exclusionPattern = new ExclusionPattern();
+        exclusionPattern.setPattern(request.getPattern());
+        exclusionPattern.setSubscription(subscription);
+
+        ExclusionPattern saved = exclusionRepository.save(exclusionPattern);
+        return resourceAssemblers.toResource(saved, ExclusionPatternGetResponse.class);
     }
 }

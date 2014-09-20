@@ -1,0 +1,8 @@
+{
+    "fieldErrors": [
+        {
+            "field": "pattern",
+            "message": "invalid regular expression"
+        }
+    ]
+}

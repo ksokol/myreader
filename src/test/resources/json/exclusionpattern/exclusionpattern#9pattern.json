@@ -1,0 +1,30 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/exclusions/9/pattern{?page,size,sort}"
+        }
+    ],
+    "content": [
+        {
+            "hitCount": 0,
+            "pattern": "test",
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/exclusions/9/pattern/5"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/9"
+                }
+            ]
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 1,
+        "totalPages": 1,
+        "number": 0
+    }
+}
