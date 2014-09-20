@@ -20,7 +20,7 @@ public class Subscription {
     private String tag;
 
     @JoinColumn(name = "user_feed_user_id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
 
     @Column(name = "user_feed_sum")
@@ -33,7 +33,7 @@ public class Subscription {
     @Column(name = "user_feed_created_at")
     private Date createdAt;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
     private Feed feed;
 

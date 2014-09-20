@@ -71,11 +71,15 @@ public abstract class EntityLinksSupport extends AbstractEntityLinks {
         return new WithLinkBuilder(linkFor(type).withRel(getRel()));
     }
 
+    protected Class<?> getResourceClass() {
+        return resourceClass;
+    }
+
     protected String getRel() {
         return rel;
     }
 
-    private static String encodeAsUTF8(Object toEncode) {
+    protected static String encodeAsUTF8(Object toEncode) {
         try {
             return URLEncoder.encode(String.valueOf(toEncode), "UTF-8");
         } catch (UnsupportedEncodingException e) {
