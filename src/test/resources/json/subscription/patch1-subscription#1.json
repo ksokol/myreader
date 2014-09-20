@@ -1,4 +1,9 @@
 {
+    "title": "user1_subscription1",
+    "tag": "test1",
+    "sum": 15,
+    "unseen": 1,
+    "createdAt": "2011-04-15T19:20:46Z",
     "links": [
         {
             "rel": "self",
@@ -15,11 +20,10 @@
         {
             "rel": "subscriptionTagGroup",
             "href": "http://localhost/subscriptionTagGroups/test1"
+        },
+        {
+            "rel": "exclusion",
+            "href": "http://localhost/exclusions/1"
         }
-    ],
-    "title": "user1_subscription1",
-    "tag": "test1",
-    "sum": 15,
-    "unseen": 1,
-    "createdAt": "2011-04-15T19:20:46Z"
+    ]
 }

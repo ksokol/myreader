@@ -7,6 +7,11 @@
     ],
     "content": [
         {
+            "title": "user2_subscription1",
+            "tag": "tag1",
+            "sum": 15,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
             "links": [
                 {
                     "rel": "self",
@@ -23,15 +28,19 @@
                 {
                     "rel": "subscriptionTagGroup",
                     "href": "http://localhost/subscriptionTagGroups/tag1"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/6"
                 }
-            ],
-            "title": "user2_subscription1",
-            "tag": "tag1",
-            "sum": 15,
-            "unseen": 0,
-            "createdAt": "2011-04-15T19:20:46Z"
+            ]
         },
         {
+            "title": "user2_subscription2",
+            "tag": "tag1",
+            "sum": 10,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
             "links": [
                 {
                     "rel": "self",
@@ -48,15 +57,19 @@
                 {
                     "rel": "subscriptionTagGroup",
                     "href": "http://localhost/subscriptionTagGroups/tag1"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/7"
                 }
-            ],
-            "title": "user2_subscription2",
-            "tag": "tag1",
-            "sum": 10,
-            "unseen": 0,
-            "createdAt": "2011-04-15T19:20:46Z"
+            ]
         },
         {
+            "title": "user2_subscription3",
+            "tag": null,
+            "sum": 125,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
             "links": [
                 {
                     "rel": "self",
@@ -69,15 +82,19 @@
                 {
                     "rel": "entries",
                     "href": "http://localhost/subscriptions/8/entries"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/8"
                 }
-            ],
-            "title": "user2_subscription3",
-            "tag": null,
-            "sum": 125,
-            "unseen": 0,
-            "createdAt": "2011-04-15T19:20:46Z"
+            ]
         },
         {
+            "title": "user2_subscription4",
+            "tag": "tag1",
+            "sum": 25,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
             "links": [
                 {
                     "rel": "self",
@@ -94,15 +111,19 @@
                 {
                     "rel": "subscriptionTagGroup",
                     "href": "http://localhost/subscriptionTagGroups/tag1"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/9"
                 }
-            ],
-            "title": "user2_subscription4",
-            "tag": "tag1",
-            "sum": 25,
-            "unseen": 0,
-            "createdAt": "2011-04-15T19:20:46Z"
+            ]
         },
         {
+            "title": "user2_subscription5",
+            "tag": null,
+            "sum": 5,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
             "links": [
                 {
                     "rel": "self",
@@ -115,15 +136,19 @@
                 {
                     "rel": "entries",
                     "href": "http://localhost/subscriptions/10/entries"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/10"
                 }
-            ],
-            "title": "user2_subscription5",
-            "tag": null,
-            "sum": 5,
-            "unseen": 0,
-            "createdAt": "2011-04-15T19:20:46Z"
+            ]
         },
         {
+            "title": "user2_subscription6",
+            "tag": "tag2",
+            "sum": 1,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
             "links": [
                 {
                     "rel": "self",
@@ -140,13 +165,12 @@
                 {
                     "rel": "subscriptionTagGroup",
                     "href": "http://localhost/subscriptionTagGroups/tag2"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/11"
                 }
-            ],
-            "title": "user2_subscription6",
-            "tag": "tag2",
-            "sum": 1,
-            "unseen": 0,
-            "createdAt": "2011-04-15T19:20:46Z"
+            ]
         }
     ],
     "page": {

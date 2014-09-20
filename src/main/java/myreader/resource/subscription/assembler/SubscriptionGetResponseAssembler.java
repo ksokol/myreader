@@ -1,6 +1,8 @@
 package myreader.resource.subscription.assembler;
 
+import myreader.entity.ExclusionSet;
 import myreader.entity.Subscription;
+import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,9 @@ public class SubscriptionGetResponseAssembler extends AbstractResourceAssembler<
             Link subscriptionTagGroup = entityLinks.linkFor(SubscriptionTagGroupGetResponse.class, source.getTag()).withRel("subscriptionTagGroup");
             target.add(subscriptionTagGroup);
         }
+
+        Link exclusion = entityLinks.linkForSingleResource(ExclusionSetGetResponse.class, source.getId()).withRel("exclusion");
+        target.add(exclusion);
 
         return target;
     }

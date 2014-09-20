@@ -7,6 +7,11 @@
     ],
     "content": [
         {
+            "title": "user1_subscription1",
+            "tag": "tag1",
+            "sum": 15,
+            "unseen": 1,
+            "createdAt": "2011-04-15T19:20:46Z",
             "links": [
                 {
                     "rel": "self",
@@ -23,15 +28,19 @@
                 {
                     "rel": "subscriptionTagGroup",
                     "href": "http://localhost/subscriptionTagGroups/tag1"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/1"
                 }
-            ],
-            "title": "user1_subscription1",
-            "tag": "tag1",
-            "sum": 15,
-            "unseen": 1,
-            "createdAt": "2011-04-15T19:20:46Z"
+            ]
         },
         {
+            "title": "user1_subscription2",
+            "tag": "tag1",
+            "sum": 10,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
             "links": [
                 {
                     "rel": "self",
@@ -48,13 +57,12 @@
                 {
                     "rel": "subscriptionTagGroup",
                     "href": "http://localhost/subscriptionTagGroups/tag1"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/2"
                 }
-            ],
-            "title": "user1_subscription2",
-            "tag": "tag1",
-            "sum": 10,
-            "unseen": 0,
-            "createdAt": "2011-04-15T19:20:46Z"
+            ]
         }
     ],
     "page": {
