@@ -1,12 +1,14 @@
 package myreader.resource.subscriptionentry.beans;
 
 import org.springframework.hateoas.ResourceSupport;
+import spring.data.annotation.Rel;
 
 import java.util.Date;
 
 /**
  * @author Kamill Sokol
  */
+@Rel("subscriptionEntries")
 public class SubscriptionEntryGetResponse extends ResourceSupport {
 
     private String title;

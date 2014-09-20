@@ -1,10 +1,12 @@
 package myreader.resource.subscriptiontaggroup.beans;
 
 import org.springframework.hateoas.ResourceSupport;
+import spring.data.annotation.Rel;
 
 /**
  * @author Kamill Sokol
  */
+@Rel("subscriptionTagGroups")
 public class SubscriptionTagGroupGetResponse extends ResourceSupport {
 
     private String tag;

@@ -1,10 +1,12 @@
 package myreader.resource.user.beans;
 
 import org.springframework.hateoas.ResourceSupport;
+import spring.data.annotation.Rel;
 
 /**
  * @author Kamill Sokol
  */
+@Rel("users")
 public class UserGetResponse extends ResourceSupport {
 
     private String email;
