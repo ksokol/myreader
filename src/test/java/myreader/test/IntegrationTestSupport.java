@@ -14,13 +14,9 @@ import myreader.fetcher.FeedParser;
 import myreader.resource.config.ResourceConfig;
 import myreader.service.time.TimeService;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.solr.core.SolrTemplate;
-import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -51,15 +47,13 @@ public class IntegrationTestSupport {
     private Filter springSecurityFilterChain;
     @Autowired
     private TimeService timeService;
-	@Autowired
-	private SolrTemplate solrTemplate;
     @Autowired
     private FeedParser feedParserMock;
 
     @Before
     public final void before() throws Exception {
-
-		clearSearchIndex();
+        reset(timeService);
+        reset(feedParserMock);
 
         this.mockMvc = webAppContextSetup(this.wac)
                 .addFilter(springSecurityFilterChain)
@@ -70,17 +64,6 @@ public class IntegrationTestSupport {
 		beforeTest();
     }
 
-    @After
-    public void after() {
-        reset(timeService);
-        reset(feedParserMock);
-    }
-
 	protected void beforeTest() throws Exception {}
-
-	private void clearSearchIndex() {
-		solrTemplate.delete(new SimpleFilterQuery(new Criteria(Criteria.WILDCARD).expression(Criteria.WILDCARD)));
-		solrTemplate.commit();
-	}
 
 }
