@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionEntry, Long> {
 
-    @Query("select se from SubscriptionEntry se join fetch se.feedEntry where se.id = ?1 and se.subscription.user.email = ?2")
+    @Query("select se from SubscriptionEntry se join fetch se.subscription join fetch se.feedEntry where se.id = ?1 and se.subscription.user.email = ?2")
     SubscriptionEntry findByIdAndUsername(Long id, String username);
 
     @Query("select distinct se.tag from SubscriptionEntry se where se.tag is not null and se.subscription.user.email = ?1 order by se.tag asc")
