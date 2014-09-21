@@ -35,8 +35,6 @@ public class TestDataSourceConfig implements DataSourceConfig {
         return  new HibernateJpaVendorAdapter() {
             {
                 setDatabasePlatform("org.hibernate.dialect.H2Dialect");
-                setGenerateDdl(true);
-                setShowSql(true);
             }
         };
     }
@@ -44,7 +42,7 @@ public class TestDataSourceConfig implements DataSourceConfig {
     @Override
     public Properties jpaProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.hbm2ddl.auto","create-drop");
+        properties.put("hibernate.hbm2ddl.auto","create");
         return properties;
     }
 

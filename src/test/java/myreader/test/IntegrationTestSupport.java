@@ -2,7 +2,6 @@ package myreader.test;
 
 import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import javax.servlet.Filter;
@@ -58,7 +57,6 @@ public class IntegrationTestSupport {
         this.mockMvc = webAppContextSetup(this.wac)
                 .addFilter(springSecurityFilterChain)
                 .defaultRequest(get("/").contentType(MediaType.APPLICATION_JSON))
-                .alwaysDo(print())
                 .build();
 
 		beforeTest();
