@@ -43,7 +43,6 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
     @Test
     public void testPatchSeen() throws Exception {
         indexSyncJob.run();
-        solrTemplate.commit();
 
         SearchableSubscriptionEntry before = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(before.isSeen(), is(true));
@@ -66,7 +65,6 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscriptionentry/patch1-subscriptionEntries#4.json"));
 
-        solrTemplate.commit();
         SearchableSubscriptionEntry after = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(after.isSeen(), is(false));
     }
@@ -74,7 +72,6 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
     @Test
     public void testPatchTag() throws Exception {
         indexSyncJob.run();
-        solrTemplate.commit();
 
         SearchableSubscriptionEntry before = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(before.getTag(), is("tag3"));
@@ -91,7 +88,6 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscriptionentry/patch2-subscriptionEntries#4.json"));
 
-        solrTemplate.commit();
         SearchableSubscriptionEntry after = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(after.getTag(), is("tag-patched"));
     }

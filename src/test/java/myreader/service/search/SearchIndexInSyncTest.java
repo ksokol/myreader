@@ -12,9 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.solr.core.SolrTemplate;
-import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.SimpleFilterQuery;
 
 /**
  * @author Kamill Sokol
@@ -25,13 +22,9 @@ public class SearchIndexInSyncTest extends IntegrationTestSupport {
 	private SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
 	@Autowired
 	private SubscriptionEntryRepository subscriptionEntryRepository;
-	@Autowired
-	private SolrTemplate solrTemplate;
 
     @Before
     public void setUp() {
-        solrTemplate.delete(new SimpleFilterQuery(new Criteria(Criteria.WILDCARD).expression(Criteria.WILDCARD)));
-        solrTemplate.commit();
         Page p = (Page) subscriptionEntrySearchRepository.findAll();
         assertThat(p.getTotalElements(), is(0L));
     }
@@ -41,7 +34,6 @@ public class SearchIndexInSyncTest extends IntegrationTestSupport {
 		SubscriptionEntry subscriptionEntry = newSubscriptionEntry();
 
 		subscriptionEntryRepository.save(subscriptionEntry);
-        solrTemplate.commit();
 
 		Page<SearchableSubscriptionEntry> p1 = (Page) subscriptionEntrySearchRepository.findAll();
 		assertThat(p1.getTotalElements(), is(1L));
@@ -54,7 +46,6 @@ public class SearchIndexInSyncTest extends IntegrationTestSupport {
         subscriptionEntry.setSeen(true);
 
         subscriptionEntryRepository.save(subscriptionEntry);
-        solrTemplate.commit();
 
         Page<SearchableSubscriptionEntry> p1 = (Page) subscriptionEntrySearchRepository.findAll();
         assertThat(p1.getTotalElements(), is(1L));
@@ -63,7 +54,6 @@ public class SearchIndexInSyncTest extends IntegrationTestSupport {
         subscriptionEntry.setSeen(false);
 
         subscriptionEntryRepository.save(subscriptionEntry);
-        solrTemplate.commit();
 
         Page<SearchableSubscriptionEntry> p2 = (Page) subscriptionEntrySearchRepository.findAll();
         assertThat(p2.getTotalElements(), is(1L));
@@ -75,13 +65,11 @@ public class SearchIndexInSyncTest extends IntegrationTestSupport {
         SubscriptionEntry subscriptionEntry = newSubscriptionEntry();
 
         subscriptionEntryRepository.save(subscriptionEntry);
-        solrTemplate.commit();
 
         Page<SearchableSubscriptionEntry> p1 = (Page) subscriptionEntrySearchRepository.findAll();
         assertThat(p1.getTotalElements(), is(1L));
 
         subscriptionEntryRepository.delete(subscriptionEntry.getId());
-        solrTemplate.commit();
 
         Page<SearchableSubscriptionEntry> p2 = (Page) subscriptionEntrySearchRepository.findAll();
         assertThat(p2.getTotalElements(), is(0L));
