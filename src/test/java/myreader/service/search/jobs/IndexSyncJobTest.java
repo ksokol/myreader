@@ -1,28 +1,25 @@
 package myreader.service.search.jobs;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
+
+import java.util.List;
+
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.service.search.SubscriptionEntrySearchRepository;
 import myreader.test.IntegrationTestSupport;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.solr.core.SolrTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author Kamill Sokol
  */
-@DirtiesContext
 public class IndexSyncJobTest extends IntegrationTestSupport {
 
 	@Autowired
@@ -31,8 +28,6 @@ public class IndexSyncJobTest extends IntegrationTestSupport {
 	private SubscriptionEntryRepository subscriptionEntryRepository;
 	@Autowired
 	private SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
-	@PersistenceContext
-	private EntityManager em;
 	@Autowired
 	private SolrTemplate solrTemplate;
 
@@ -100,6 +95,5 @@ public class IndexSyncJobTest extends IntegrationTestSupport {
 		subscriptionEntry.setFeedEntry(one.getFeedEntry());
 		subscriptionEntry.setSubscription(one.getSubscription());
 		subscriptionEntryRepository.save(subscriptionEntry);
-		em.flush();
 	}
 }

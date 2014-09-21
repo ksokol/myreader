@@ -19,11 +19,11 @@ public class SubscriptionEntry {
     @Column(name = "user_feed_entry_tag")
     private String tag;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_feed_entry_user_feed_id")
     private Subscription subscription;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false,fetch = FetchType.LAZY)
     @JoinColumn(name = "user_feed_entry_entry_id")
     private FeedEntry feedEntry;
 

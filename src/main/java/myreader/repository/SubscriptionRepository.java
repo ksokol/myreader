@@ -17,6 +17,7 @@ import java.util.List;
  */
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long>, SubscriptionRepositoryCustom {
 
+    @Query("select s from Subscription s join fetch s.feed where s.id = ?1")
     @Override
     Subscription findOne(Long id);
 

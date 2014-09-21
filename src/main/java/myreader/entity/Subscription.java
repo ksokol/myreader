@@ -20,7 +20,7 @@ public class Subscription {
     private String tag;
 
     @JoinColumn(name = "user_feed_user_id")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     private User user;
 
     @Column(name = "user_feed_sum")
@@ -37,10 +37,10 @@ public class Subscription {
     @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
     private Feed feed;
 
-    @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
     private Set<SubscriptionEntry> subscriptionEntries;
 
-    @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
     private Set<ExclusionPattern> exclusions;
 
     @Column(columnDefinition = "INT DEFAULT 0", precision = 0)

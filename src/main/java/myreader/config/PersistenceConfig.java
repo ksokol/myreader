@@ -34,9 +34,11 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.transaction.TransactionManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -123,8 +125,10 @@ public class PersistenceConfig {
     }
 
     @Bean
-    public IndexSyncJob indexSyncJob(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, ConversionService conversionService) {
-        return new IndexSyncJob(subscriptionEntryRepository, subscriptionEntrySearchRepository, conversionService);
+    public IndexSyncJob indexSyncJob(SubscriptionEntryRepository subscriptionEntryRepository,
+                                     SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, ConversionService conversionService,
+                                     PlatformTransactionManager transactionManager) {
+        return new IndexSyncJob(subscriptionEntryRepository, subscriptionEntrySearchRepository, conversionService, new TransactionTemplate(transactionManager));
     }
 
     @Bean

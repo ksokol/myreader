@@ -1,15 +1,19 @@
 package myreader.resource.subscription;
 
-import myreader.test.IntegrationTestSupport;
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.deleteAsUser1;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser2;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
+
+import myreader.test.IntegrationTestSupport;
+
+import org.junit.Test;
 
 /**
  * @author Kamill Sokol
@@ -47,7 +51,8 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testNotFoundWhenPatchNotOwnSubscription() throws Exception {
-        mockMvc.perform(patchAsUser2("/subscriptions/1"))
+        mockMvc.perform(patchAsUser2("/subscriptions/1")
+                .json("subscription/patchable-properties1-subscription#1.json"))
                 .andExpect(status().isNotFound());
     }
 

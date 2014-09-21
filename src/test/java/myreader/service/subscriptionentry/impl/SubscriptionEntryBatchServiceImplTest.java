@@ -1,9 +1,11 @@
 package myreader.service.subscriptionentry.impl;
 
 import myreader.entity.Feed;
+import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.fetcher.persistence.FetcherEntry;
+import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
@@ -12,6 +14,8 @@ import myreader.test.IntegrationTestSupport;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import javax.persistence.EntityManager;
@@ -25,7 +29,6 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kamill Sokol
  */
-@DirtiesContext
 public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSupport {
 
     @Autowired
@@ -36,49 +39,36 @@ public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSuppor
 	private SubscriptionEntryRepository subscriptionEntryRepository;
     @Autowired
     private FeedRepository feedRepository;
-    @PersistenceContext
-    private EntityManager em;
-
-	//TODO this is needed as long as SubscriptionEntryBatchService#updateUserSubscriptionEntries requires a new transaction
-	private Long entityToRevert;
-
-	@After
-	public void after() {
-		if(entityToRevert != null) {
-			subscriptionEntryRepository.delete(entityToRevert);
-		}
-	}
+    @Autowired
+    private FeedEntryRepository feedEntryRepository;
 
     @Test
     public void testUpdateUserSubscriptionEntries() {
         Feed beforeFeed = feedRepository.findOne(2L);
         Subscription beforeSubscription = subscriptionRepository.findOne(3L);
 
+        Page<FeedEntry> beforeFeedEntries = feedEntryRepository.findByFeedId(beforeFeed.getId(), new PageRequest(1,10));
+        Page<SubscriptionEntry> beforeSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
+                beforeSubscription.getId(), new PageRequest(1, 10));
+
         assertThat(beforeFeed.getUrl(), is(beforeSubscription.getFeed().getUrl()));
-        assertThat(beforeFeed.getEntries().size(), is(3));
-        assertThat(beforeSubscription.getSubscriptionEntries().size(), is(2));
+        assertThat(beforeFeedEntries.getTotalElements(), is(3L));
+        assertThat(beforeSubscriptionEntries.getTotalElements(), is(2L));
+        assertThat(beforeFeed.getUrl(), is(beforeSubscription.getFeed().getUrl()));
         assertThat(beforeSubscription.getUnseen(), is(0));
         assertThat(beforeSubscription.getSum(), is(25));
 
         List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeFeed, Arrays.asList(fetcherEntry(2L)));
         assertThat(subscriptionEntries.size(), is(1));
 
-		entityToRevert = subscriptionEntries.get(0).getId();
+        Page<FeedEntry> afterFeedEntries = feedEntryRepository.findByFeedId(2L, new PageRequest(1,10));
+        assertThat(afterFeedEntries.getTotalElements(), is(4L));
 
-        Feed afterFeed = feedRepository.findOne(2L);
-        Subscription afterSubscription = subscriptionRepository.findOne(3L);
+        Page<SubscriptionEntry> afterSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
+                beforeSubscription.getId(), new PageRequest(1, 10));
 
-        assertThat(afterFeed.getUrl(), is(beforeSubscription.getFeed().getUrl()));
-        assertThat(afterFeed.getEntries().size(), is(3));
-        assertThat(afterSubscription.getSubscriptionEntries().size(), is(2));
-        assertThat(afterSubscription.getUnseen(), is(0));
-        assertThat(afterSubscription.getSum(), is(25));
-
-        em.clear();
-
-        assertThat(feedRepository.findOne(2L).getEntries().size(), is(4));
         Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(3L);
-        assertThat(afterSubscriptionClearedEm.getSubscriptionEntries().size(), is(3));
+        assertThat(afterSubscriptionEntries.getTotalElements(), is(3L));
         assertThat(afterSubscriptionClearedEm.getUnseen(), is(1));
         assertThat(afterSubscriptionClearedEm.getSum(), is(26));
     }

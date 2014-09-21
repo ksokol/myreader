@@ -1,26 +1,27 @@
 package myreader.service.feed;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+
 import myreader.entity.Feed;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.impl.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
 import myreader.test.IntegrationTestSupport;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.Collections;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Kamill Sokol
  */
-@DirtiesContext
 public class FeedServiceTest extends IntegrationTestSupport {
 
     @Autowired
@@ -41,7 +42,8 @@ public class FeedServiceTest extends IntegrationTestSupport {
 
         Feed findByUrl2 = feedRepository.findByUrl(url);
         assertThat(findByUrl2, notNullValue());
-        assertThat(byUrl, is(findByUrl2));
+        assertThat(byUrl.getId(), is(findByUrl2.getId()));
+        assertThat(byUrl.getUrl(), is(findByUrl2.getUrl()));
     }
 
     @Test
@@ -57,7 +59,8 @@ public class FeedServiceTest extends IntegrationTestSupport {
         Feed newFeed = uut.findByUrl(feedUrl);
 
         Feed findByUrl1 = feedRepository.findByUrl(feedUrl);
-        assertThat(newFeed, is(findByUrl1));
+        assertThat(newFeed.getId(), is(findByUrl1.getId()));
+        assertThat(newFeed.getUrl(), is(findByUrl1.getUrl()));
 
         assertThat(newFeed, hasProperty("url", is(feedUrl)));
         assertThat(newFeed, hasProperty("title", is(feedTitle)));

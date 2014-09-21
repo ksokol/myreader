@@ -12,6 +12,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -28,14 +32,16 @@ public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosed
     private final SubscriptionEntryRepository subscriptionEntryRepository;
 	private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
 	private final ConversionService conversionService;
+    private final TransactionTemplate transactionTemplate;
 
     private volatile boolean alive = true;
 
-    public IndexSyncJob(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, ConversionService conversionService) {
+    public IndexSyncJob(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, ConversionService conversionService, TransactionTemplate transactionTemplate) {
         this.subscriptionEntryRepository = subscriptionEntryRepository;
 		this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
 		this.conversionService = conversionService;
-	}
+        this.transactionTemplate = transactionTemplate;
+    }
 
 	@Override
 	public void run() {
@@ -47,22 +53,27 @@ public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosed
 	}
 
     private void runInternal() {
-        log.info("start");
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                log.info("start");
+                subscriptionEntrySearchRepository.deleteAll();
 
-		subscriptionEntrySearchRepository.deleteAll();
+                int pageNumber = 0;
+                Page<SubscriptionEntry> page;
+                List<SearchableSubscriptionEntry> converted;
 
-		int pageNumber = 0;
-		Page<SubscriptionEntry> page;
-		List<SearchableSubscriptionEntry> converted;
+                do {
+                    page = subscriptionEntryRepository.findAll(new PageRequest(pageNumber++, pageSize));
+                    converted = convert(page.getContent());
+                    subscriptionEntrySearchRepository.save(converted);
+                } while(page.hasNextPage() && alive);
 
-		do {
-			page = subscriptionEntryRepository.findAll(new PageRequest(pageNumber++, pageSize));
-			converted = convert(page.getContent());
-			subscriptionEntrySearchRepository.save(converted);
-		} while(page.hasNextPage() && alive);
 
-        log.info("search index sync done");
-        log.info("end");
+                log.info("search index sync done");
+                log.info("end");
+            }
+        });
     }
 
 	public int getPageSize() {

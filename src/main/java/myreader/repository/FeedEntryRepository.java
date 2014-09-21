@@ -2,6 +2,8 @@ package myreader.repository;
 
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -20,4 +22,7 @@ public interface FeedEntryRepository extends PagingAndSortingRepository<FeedEntr
 
     @Query("select count(fe) from FeedEntry fe where fe.feed = ?1 and fe.createdAt < ?2")
     int countByFeedAfterCreatedAt(Feed feed, Date createdAt);
+
+    @Query("select fe from FeedEntry fe where fe.feed.id = ?1")
+    Page<FeedEntry> findByFeedId(Long id, Pageable pageable);
 }

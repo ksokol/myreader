@@ -1,30 +1,25 @@
 package myreader.resource.subscriptionentry;
 
-import myreader.entity.SearchableSubscriptionEntry;
-import myreader.service.search.jobs.IndexSyncJob;
-import myreader.test.IntegrationTestSupport;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.solr.core.SolrTemplate;
-import org.springframework.data.solr.core.query.SimpleQuery;
-import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.Map;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser2;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
+import myreader.entity.SearchableSubscriptionEntry;
+import myreader.service.search.jobs.IndexSyncJob;
+import myreader.test.IntegrationTestSupport;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.SimpleQuery;
+
 /**
  * @author Kamill Sokol
  */
-@DirtiesContext
 public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
 
     @Autowired

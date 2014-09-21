@@ -8,6 +8,7 @@ import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import spring.security.MyReaderUser;
 /**
  * @author Kamill Sokol
  */
+@Transactional
 @RestController
 @RequestMapping("subscriptionEntries")
 public class SubscriptionEntryResource {
@@ -35,24 +37,24 @@ public class SubscriptionEntryResource {
         this.patchService = patchService;
     }
 
-    @ModelAttribute
-    SubscriptionEntry find(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
-        SubscriptionEntry entry = subscriptionEntryRepository.findByIdAndUsername(id, user.getUsername());
+    @RequestMapping(value= "{id}", method = RequestMethod.GET)
+    public SubscriptionEntryGetResponse get(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
+        return resourceAssemblers.toResource(findOrThrowException(id, user.getUsername()), SubscriptionEntryGetResponse.class);
+    }
+
+    @RequestMapping(value= "{id}", method = RequestMethod.PATCH)
+    public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user,
+                                              @RequestBody SubscriptionEntryPatchRequest request) {
+        SubscriptionEntry patched = patchService.patch(request, findOrThrowException(id, user.getUsername()));
+        SubscriptionEntry saved = subscriptionEntryRepository.save(patched);
+        return resourceAssemblers.toResource(saved, SubscriptionEntryGetResponse.class);
+    }
+
+    public SubscriptionEntry findOrThrowException(Long id, String username) {
+        SubscriptionEntry entry = subscriptionEntryRepository.findByIdAndUsername(id, username);
         if(entry == null) {
             throw new ResourceNotFoundException();
         }
         return entry;
-    }
-
-    @RequestMapping(value= "{id}", method = RequestMethod.GET)
-    public SubscriptionEntryGetResponse get(SubscriptionEntry subscriptionEntry) {
-        return resourceAssemblers.toResource(subscriptionEntry, SubscriptionEntryGetResponse.class);
-    }
-
-    @RequestMapping(value= "{id}", method = RequestMethod.PATCH)
-    public SubscriptionEntryGetResponse patch(@RequestBody SubscriptionEntryPatchRequest request, SubscriptionEntry subscriptionEntry) {
-        SubscriptionEntry patched = patchService.patch(request, subscriptionEntry);
-        SubscriptionEntry saved = subscriptionEntryRepository.save(patched);
-        return resourceAssemblers.toResource(saved, SubscriptionEntryGetResponse.class);
     }
 }

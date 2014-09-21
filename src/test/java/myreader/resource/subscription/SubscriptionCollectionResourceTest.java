@@ -1,19 +1,22 @@
 package myreader.resource.subscription;
 
-import myreader.service.time.TimeService;
-import myreader.test.IntegrationTestSupport;
-import org.joda.time.format.ISODateTimeFormat;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Date;
-
 import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser3;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
+
+import java.util.Date;
+
+import myreader.service.time.TimeService;
+import myreader.test.IntegrationTestSupport;
+
+import org.joda.time.format.ISODateTimeFormat;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Kamill Sokol

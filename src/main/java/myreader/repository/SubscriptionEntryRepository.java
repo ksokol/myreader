@@ -40,4 +40,7 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
     @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.tag = ?1 and se.subscription.user.id = ?2",countQuery = "select count(se) from SubscriptionEntry se where se.subscription.tag = ?1 and se.subscription.user.id = ?2")
     Page<SubscriptionEntry> findBySubscriptionTagAndUser(String tag, Long userId, Pageable pageable);
 
+    @Query("select se from SubscriptionEntry se join fetch se.subscription join fetch se.feedEntry where se.id = ?1")
+    @Override
+    SubscriptionEntry findOne(Long id);
 }
