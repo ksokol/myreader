@@ -62,11 +62,15 @@ public class ExclusionPatternCollectionResource {
     public ExclusionPatternGetResponse post(@ModelAttribute("subscription") Subscription subscription, @Valid @RequestBody ExclusionPatternPostRequest
             request) {
 
-        ExclusionPattern exclusionPattern = new ExclusionPattern();
-        exclusionPattern.setPattern(request.getPattern());
-        exclusionPattern.setSubscription(subscription);
+        ExclusionPattern exclusionPattern = exclusionRepository.findBySubscriptionIdAndPattern(subscription.getId(), request.getPattern());
 
-        ExclusionPattern saved = exclusionRepository.save(exclusionPattern);
-        return resourceAssemblers.toResource(saved, ExclusionPatternGetResponse.class);
+        if (exclusionPattern == null) {
+            exclusionPattern = new ExclusionPattern();
+            exclusionPattern.setPattern(request.getPattern());
+            exclusionPattern.setSubscription(subscription);
+            exclusionPattern = exclusionRepository.save(exclusionPattern);
+        }
+
+        return resourceAssemblers.toResource(exclusionPattern, ExclusionPatternGetResponse.class);
     }
 }

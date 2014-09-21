@@ -65,4 +65,18 @@ public class ExclusionPatternCollectionResourceTest extends IntegrationTestSuppo
                 .andExpect(content().isJsonEqual("exclusionpattern/post-invalid-exclusionpattern.json"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void testPostDuplicate() throws Exception {
+        mockMvc.perform(getAsUser2("/exclusions/6/pattern"))
+                .andExpect(content().isJsonEqual("exclusionpattern/exclusionpattern#6pattern.json"));
+
+        mockMvc.perform(postAsUser2("/exclusions/6/pattern")
+                .json("{'pattern':'user2_subscription1_pattern1'}"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("exclusionpattern/post-exclusionpattern#6pattern-response.json"));
+
+        mockMvc.perform(getAsUser2("/exclusions/6/pattern"))
+                .andExpect(content().isJsonEqual("exclusionpattern/exclusionpattern#6pattern.json"));
+    }
 }

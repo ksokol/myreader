@@ -23,4 +23,7 @@ public interface ExclusionRepository extends PagingAndSortingRepository<Exclusio
 
     @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.id = ?1 and ep.subscription.id = ?2 and ep.subscription.user.id = ?3")
     ExclusionPattern findByIdAndSubscriptionIdAndUserId(Long id, Long subscriptionId, Long userId);
+
+    @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.subscription.id = ?1 and ep.pattern = ?2")
+    ExclusionPattern findBySubscriptionIdAndPattern(Long subscriptionId, String pattern);
 }
