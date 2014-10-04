@@ -236,7 +236,7 @@
             <version>4.1.8.Final</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>org.jboss.logging</artifactId>
+                    <artifactId>jboss-logging</artifactId>
                     <groupId>org.jboss.logging</groupId>
                 </exclusion>
             </exclusions>
