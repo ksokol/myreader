@@ -3,6 +3,7 @@ package myreader.resource.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import spring.data.mvc.TemplateLinkBuilderHandlerMethodArgumentResolver;
 import myreader.resource.service.patch.PatchSupportConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -44,6 +45,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new AuthenticationPrincipalArgumentResolver());
+        argumentResolvers.add(new TemplateLinkBuilderHandlerMethodArgumentResolver());
     }
 
     @Override

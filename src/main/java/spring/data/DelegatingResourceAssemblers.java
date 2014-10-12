@@ -1,16 +1,17 @@
 package spring.data;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -38,12 +39,22 @@ public class DelegatingResourceAssemblers implements ResourceAssemblers {
 
     @Override
     public <D> PagedResources<Page<D>> toPagedResource(Page<?> page, Class<D> outputClass) {
+        return toPagedResource(page, outputClass, null);
+    }
+
+    @Override
+    public <D> PagedResources<Page<D>> toPagedResource(Page<?> page, Class<D> outputClass, Link selfLink) {
         if(page == null || CollectionUtils.isEmpty(page.getContent())) {
-            return pagedResourcesAssembler.toResource(new PageImpl(Collections.emptyList()));
+            return pagedResourcesAssembler.toResource(new PageImpl(Collections.emptyList()), selfLink);
         }
+
         Class<?> inputClass = page.getContent().get(0).getClass();
         ResourceAssembler resourceAssembler = getResourceAssemblerFor(inputClass, outputClass);
-        return pagedResourcesAssembler.toResource(page, resourceAssembler);
+
+        if(selfLink == null) {
+            return pagedResourcesAssembler.toResource(page, resourceAssembler);
+        }
+        return pagedResourcesAssembler.toResource(page, resourceAssembler, selfLink);
     }
 
     private AbstractResourceAssembler getResourceAssemblerFor(Class<?> inputClass, Class<?> outputClass) {
