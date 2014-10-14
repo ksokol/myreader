@@ -3,7 +3,6 @@ package myreader.resource.subscriptiontaggroup;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser3;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
@@ -58,7 +57,6 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
         indexSyncJob.run();
 
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries?q=mysql"))
-                .andDo(print())
                 .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#mysql.json"));
     }
 

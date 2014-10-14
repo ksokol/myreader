@@ -2,7 +2,7 @@
     "links": [
         {
             "rel": "self",
-            "href": "http://localhost/subscriptionTagGroups{?page,size,sort}"
+            "href": "http://localhost/subscriptionTagGroups"
         }
     ],
     "content": [

@@ -2,7 +2,7 @@
     "links": [
         {
             "rel": "self",
-            "href": "http://localhost/users{?page,size,sort}"
+            "href": "http://localhost/users"
         }
     ],
     "content": [

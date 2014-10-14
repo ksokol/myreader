@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser2;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
@@ -49,7 +48,6 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andDo(print())
                 .andExpect(content().isJsonEqual("subscriptionentry/subscriptionEntries#4.json"));
 
         mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")

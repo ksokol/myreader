@@ -1,5 +1,7 @@
 package myreader.resource.subscriptiontaggroup;
 
+import static myreader.Constants.SEARCH_PARAM;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -29,10 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import spring.data.ResourceAssemblers;
-import spring.data.TemplateLinkBuilder;
 import spring.security.MyReaderUser;
-
-import static myreader.Constants.SEARCH_PARAM;
 
 /**
  * @author Kamill Sokol
@@ -68,29 +67,27 @@ public class SubscriptionTagGroupCollectionResource {
 
     @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
     public PagedResources<Page<SubscriptionEntryGetResponse>> getSubscriptionEntriesByTag(@PathVariable("id") String tagGroup, Pageable pageable,
-                                                                                          @AuthenticationPrincipal MyReaderUser user,
-                                                                                          TemplateLinkBuilder templatedLinkBuilder) {
+                                                                                          @AuthenticationPrincipal MyReaderUser user) {
 
         Page<SubscriptionEntry> subscriptionEtriesPage = subscriptionEntryRepository.findBySubscriptionTagAndUser(tagGroup, user.getId(), pageable);
-        return resourceAssemblers.toPagedResource(subscriptionEtriesPage, SubscriptionEntryGetResponse.class, templatedLinkBuilder.requestParam(SEARCH_PARAM).link());
+        return resourceAssemblers.toPagedResource(subscriptionEtriesPage, SubscriptionEntryGetResponse.class);
     }
 
     @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET, params = SEARCH_PARAM)
     public PagedResources<Page<SubscriptionEntryGetResponse>> findSubscriptionEntriesByTag(@PathVariable("id") String tagGroup,
                                                                                            @RequestParam(SEARCH_PARAM) String q,
                                                                                            Pageable pageable,
-                                                                                           @AuthenticationPrincipal MyReaderUser user,
-                                                                                           TemplateLinkBuilder templatedLinkBuilder) {
-        Link selfLink = templatedLinkBuilder.requestParam(SEARCH_PARAM).link();
+                                                                                           @AuthenticationPrincipal MyReaderUser user) {
+
         List<Long> subscriptionIds = subscriptionRepository.findByTagAndUser(tagGroup, user.getId());
 
         if(CollectionUtils.isEmpty(subscriptionIds)) {
-            return resourceAssemblers.toPagedResource(new PageImpl(Collections.emptyList(), pageable, 0), SubscriptionEntryGetResponse.class, selfLink);
+            return resourceAssemblers.toPagedResource(new PageImpl(Collections.emptyList(), pageable, 0), SubscriptionEntryGetResponse.class);
         }
 
         Page<SearchableSubscriptionEntry> searchableSubscriptionEntries = subscriptionEntrySearchRepository.searchAndFilterByUserAndSubscriptions(q,
                 subscriptionIds, user.getId(), pageable);
-        return resourceAssemblers.toPagedResource(searchableSubscriptionEntries, SubscriptionEntryGetResponse.class, selfLink);
+        return resourceAssemblers.toPagedResource(searchableSubscriptionEntries, SubscriptionEntryGetResponse.class);
     }
 
 }

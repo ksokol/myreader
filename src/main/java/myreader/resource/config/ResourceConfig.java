@@ -1,10 +1,11 @@
 package myreader.resource.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import spring.data.mvc.TemplateLinkBuilderHandlerMethodArgumentResolver;
+import java.util.List;
+
+import javax.validation.TraversableResolver;
+
 import myreader.resource.service.patch.PatchSupportConfig;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +22,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import javax.validation.TraversableResolver;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 /**
  * @author Kamill Sokol
@@ -45,7 +47,6 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new AuthenticationPrincipalArgumentResolver());
-        argumentResolvers.add(new TemplateLinkBuilderHandlerMethodArgumentResolver());
     }
 
     @Override

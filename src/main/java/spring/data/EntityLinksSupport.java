@@ -5,7 +5,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkBuilder;
 import org.springframework.hateoas.core.AbstractEntityLinks;
@@ -23,10 +22,7 @@ public abstract class EntityLinksSupport extends AbstractEntityLinks {
     private final Class<?> resourceClass;
     private final String rel;
 
-    private final PagedResourcesAssembler pagedResourcesAssembler;
-
-    public EntityLinksSupport(Class<?> entityClass, Class<?> resourceClass, PagedResourcesAssembler pagedResourcesAssembler) {
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
+    public EntityLinksSupport(Class<?> entityClass, Class<?> resourceClass) {
         Assert.notNull(entityClass, "entity class is null");
         Assert.notNull(resourceClass, "resource class is null");
 
@@ -50,8 +46,7 @@ public abstract class EntityLinksSupport extends AbstractEntityLinks {
 
     @Override
     public Link linkToCollectionResource(Class<?> type) {
-        Link link = linkFor(type).withRel(rel);
-        return pagedResourcesAssembler.appendPaginationParameterTemplates(link);
+        return linkFor(type).withRel(rel);
     }
 
     @Override
@@ -62,10 +57,6 @@ public abstract class EntityLinksSupport extends AbstractEntityLinks {
     @Override
     public boolean supports(Class<?> delimiter) {
         return ClassUtils.isAssignable(entityClass, delimiter);
-    }
-
-    protected TemplateLinkBuilder with(Class<?> type) {
-        return new TemplateLinkBuilder(linkFor(type).withRel(getRel()));
     }
 
     protected Class<?> getResourceClass() {

@@ -2,23 +2,23 @@
     "links": [
         {
             "rel": "users",
-            "href": "http://localhost/users{?page,size,sort}"
+            "href": "http://localhost/users"
         },
         {
             "rel": "subscriptions",
-            "href": "http://localhost/subscriptions{?page,size,sort}"
+            "href": "http://localhost/subscriptions"
         },
         {
             "rel": "subscriptionTagGroups",
-            "href": "http://localhost/subscriptionTagGroups{?page,size,sort,q}"
+            "href": "http://localhost/subscriptionTagGroups"
         },
         {
             "rel": "subscriptionEntries",
-            "href": "http://localhost/subscriptionEntries{?page,size,sort,q}"
+            "href": "http://localhost/subscriptionEntries"
         },
         {
             "rel": "exclusions",
-            "href": "http://localhost/exclusions{?page,size,sort}"
+            "href": "http://localhost/exclusions"
         }
     ]
 }

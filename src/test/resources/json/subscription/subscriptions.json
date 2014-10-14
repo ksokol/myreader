@@ -2,7 +2,7 @@
     "links": [
         {
             "rel": "self",
-            "href": "http://localhost/subscriptions{?page,size,sort}"
+            "href": "http://localhost/subscriptions"
         }
     ],
     "content": [

@@ -6,7 +6,7 @@
         },
         {
             "rel": "self",
-            "href": "http://localhost/subscriptionTagGroups?size=2{&page,sort}"
+            "href": "http://localhost/subscriptionTagGroups?size=2"
         }
     ],
     "content": [

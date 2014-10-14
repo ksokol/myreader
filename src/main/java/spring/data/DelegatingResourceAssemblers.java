@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
@@ -39,22 +37,13 @@ public class DelegatingResourceAssemblers implements ResourceAssemblers {
 
     @Override
     public <D> PagedResources<Page<D>> toPagedResource(Page<?> page, Class<D> outputClass) {
-        return toPagedResource(page, outputClass, null);
-    }
-
-    @Override
-    public <D> PagedResources<Page<D>> toPagedResource(Page<?> page, Class<D> outputClass, Link selfLink) {
         if(page == null || CollectionUtils.isEmpty(page.getContent())) {
-            return pagedResourcesAssembler.toResource(new PageImpl(Collections.emptyList()), selfLink);
+            return pagedResourcesAssembler.toResource(new PageImpl(Collections.emptyList()));
         }
 
         Class<?> inputClass = page.getContent().get(0).getClass();
         ResourceAssembler resourceAssembler = getResourceAssemblerFor(inputClass, outputClass);
-
-        if(selfLink == null) {
-            return pagedResourcesAssembler.toResource(page, resourceAssembler);
-        }
-        return pagedResourcesAssembler.toResource(page, resourceAssembler, selfLink);
+        return pagedResourcesAssembler.toResource(page, resourceAssembler);
     }
 
     private AbstractResourceAssembler getResourceAssemblerFor(Class<?> inputClass, Class<?> outputClass) {
