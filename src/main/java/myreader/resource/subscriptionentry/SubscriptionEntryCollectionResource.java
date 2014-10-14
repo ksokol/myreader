@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,12 +41,6 @@ public class SubscriptionEntryCollectionResource {
     public PagedResources<SubscriptionEntryGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findAllByUser(pageable, user.getId());
         return resourceAssemblers.toPagedResource(pagedEntries, SubscriptionEntryGetResponse.class);
-    }
-
-    @RequestMapping(value = "search/findBySubscription/{id}", method = RequestMethod.GET)
-    public PagedResources<SubscriptionEntryGetResponse> findBySubscription(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
-        Page<SubscriptionEntry> page = subscriptionEntryRepository.findBySubscriptionAndUser(user.getId(), id, pageable);
-        return resourceAssemblers.toPagedResource(page, SubscriptionEntryGetResponse.class);
     }
 
 	@RequestMapping(value = "", params = "q", method = RequestMethod.GET)
