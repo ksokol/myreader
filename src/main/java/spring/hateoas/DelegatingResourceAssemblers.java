@@ -36,7 +36,7 @@ public class DelegatingResourceAssemblers implements ResourceAssemblers {
     }
 
     @Override
-    public <D> PagedResources<Page<D>> toPagedResource(Page<?> page, Class<D> outputClass) {
+    public <D> PagedResources<D> toPagedResource(Page<?> page, Class<D> outputClass) {
         if(page == null || CollectionUtils.isEmpty(page.getContent())) {
             return pagedResourcesAssembler.toResource(new PageImpl(Collections.emptyList()));
         }

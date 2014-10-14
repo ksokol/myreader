@@ -33,7 +33,7 @@ public class ExclusionSetCollectionResource {
     }
 
     @RequestMapping(value="", method = RequestMethod.GET)
-    public PagedResources<Page<ExclusionSetGetResponse>> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    public PagedResources<ExclusionSetGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<ExclusionSet> exclusionPatternPage = exclusionRepository.findAllSetsByUser(user.getId(), pageable);
         return resourceAssemblers.toPagedResource(exclusionPatternPage, ExclusionSetGetResponse.class);
     }

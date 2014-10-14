@@ -38,7 +38,7 @@ public class UserCollectionResource {
     }
 
     @RequestMapping("")
-    public PagedResources<Page<UserGetResponse>> get(@AuthenticationPrincipal MyReaderUser user, Pageable pageable) {
+    public PagedResources<UserGetResponse> get(@AuthenticationPrincipal MyReaderUser user, Pageable pageable) {
         Page<User> page;
 
         if(user.isAdmin()) {
@@ -51,7 +51,7 @@ public class UserCollectionResource {
     }
 
     @RequestMapping("/{id}/subscriptions")
-    public PagedResources<Page<SubscriptionGetResponse>> userSubscriptions(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    public PagedResources<SubscriptionGetResponse> userSubscriptions(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         if(user.getId().compareTo(id) != 0) {
             throw new ResourceNotFoundException();
         }

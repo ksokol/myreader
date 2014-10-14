@@ -56,18 +56,18 @@ public class SubscriptionCollectionResource {
     }
 
     @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
-    public PagedResources<Page<SubscriptionEntryGetResponse>> getSubscriptionEntries(@PathVariable("id") Long id,  Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    public PagedResources<SubscriptionEntryGetResponse> getSubscriptionEntries(@PathVariable("id") Long id,  Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         return subscriptionEntryCollectionResource.findBySubscription(id, pageable, user);
     }
 
     @RequestMapping(value="", method = RequestMethod.GET)
-    public PagedResources<Page<SubscriptionGetResponse>> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    public PagedResources<SubscriptionGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<Subscription> subscriptionPage = subscriptionRepository.findAllByUser(user.getId(), pageable);
         return resourceAssemblers.toPagedResource(subscriptionPage, SubscriptionGetResponse.class);
     }
 
 	@RequestMapping(value = "/{id}/entries", params = "q", method = RequestMethod.GET)
-	public PagedResources<Page<SubscriptionEntryGetResponse>> searchAndFilterBySubscription(@RequestParam("q") String q, @PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+	public PagedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam("q") String q, @PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
 		Page<SearchableSubscriptionEntry> page = subscriptionEntrySearchRepository.searchAndFilterByUserAndSubscription(q, id, user.getId(), pageable);
 		return resourceAssemblers.toPagedResource(page, SubscriptionEntryGetResponse.class);
 	}

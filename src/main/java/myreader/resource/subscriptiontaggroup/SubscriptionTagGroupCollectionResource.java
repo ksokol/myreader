@@ -53,19 +53,19 @@ public class SubscriptionTagGroupCollectionResource {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public PagedResources<Page<SubscriptionTagGroupGetResponse>> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    public PagedResources<SubscriptionTagGroupGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<TagGroup> tagGroupPage = subscriptionRepository.findByUserGroupByTag(user.getId(), pageable);
         return resourceAssemblers.toPagedResource(tagGroupPage, SubscriptionTagGroupGetResponse.class);
     }
 
     @RequestMapping(value = "/{id}/subscriptions", method = RequestMethod.GET)
-    public PagedResources<Page<SubscriptionGetResponse>> getSubscriptionsByTag(@PathVariable("id") String tagGroup, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    public PagedResources<SubscriptionGetResponse> getSubscriptionsByTag(@PathVariable("id") String tagGroup, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<Subscription> subscriptionPage = subscriptionRepository.findByTagAndUser(tagGroup, user.getId(), pageable);
         return resourceAssemblers.toPagedResource(subscriptionPage, SubscriptionGetResponse.class);
     }
 
     @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
-    public PagedResources<Page<SubscriptionEntryGetResponse>> getSubscriptionEntriesByTag(@PathVariable("id") String tagGroup, Pageable pageable,
+    public PagedResources<SubscriptionEntryGetResponse> getSubscriptionEntriesByTag(@PathVariable("id") String tagGroup, Pageable pageable,
                                                                                           @AuthenticationPrincipal MyReaderUser user) {
 
         Page<SubscriptionEntry> subscriptionEtriesPage = subscriptionEntryRepository.findBySubscriptionTagAndUser(tagGroup, user.getId(), pageable);
@@ -73,7 +73,7 @@ public class SubscriptionTagGroupCollectionResource {
     }
 
     @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET, params = SEARCH_PARAM)
-    public PagedResources<Page<SubscriptionEntryGetResponse>> findSubscriptionEntriesByTag(@PathVariable("id") String tagGroup,
+    public PagedResources<SubscriptionEntryGetResponse> findSubscriptionEntriesByTag(@PathVariable("id") String tagGroup,
                                                                                            @RequestParam(SEARCH_PARAM) String q,
                                                                                            Pageable pageable,
                                                                                            @AuthenticationPrincipal MyReaderUser user) {

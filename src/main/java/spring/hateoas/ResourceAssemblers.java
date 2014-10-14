@@ -9,5 +9,5 @@ import org.springframework.hateoas.PagedResources;
 public interface ResourceAssemblers {
     <D> D toResource(Object page, Class<D> output);
 
-    <D> PagedResources<Page<D>> toPagedResource(Page<?> page, Class<D> clazz);
+    <D> PagedResources<D> toPagedResource(Page<?> page, Class<D> clazz);
 }
