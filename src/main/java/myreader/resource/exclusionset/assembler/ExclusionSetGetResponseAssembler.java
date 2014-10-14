@@ -3,11 +3,13 @@ package myreader.resource.exclusionset.assembler;
 import myreader.entity.ExclusionSet;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
-import spring.data.AbstractResourceAssembler;
+
+import spring.hateoas.AbstractResourceAssembler;
 
 /**
  * @author Kamill Sokol

@@ -9,7 +9,7 @@ import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
-import spring.data.AbstractResourceAssembler;
+import spring.hateoas.AbstractResourceAssembler;
 
 /**
  * @author Kamill Sokol

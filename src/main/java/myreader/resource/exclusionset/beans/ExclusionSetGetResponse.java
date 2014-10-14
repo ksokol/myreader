@@ -1,7 +1,8 @@
 package myreader.resource.exclusionset.beans;
 
 import org.springframework.hateoas.ResourceSupport;
-import spring.data.annotation.Rel;
+
+import spring.hateoas.annotation.Rel;
 
 /**
  * @author Kamill Sokol

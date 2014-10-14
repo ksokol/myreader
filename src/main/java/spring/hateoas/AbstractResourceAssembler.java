@@ -1,4 +1,4 @@
-package spring.data;
+package spring.hateoas;
 
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.ResourceSupport;

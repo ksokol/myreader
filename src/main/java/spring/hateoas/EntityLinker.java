@@ -11,7 +11,7 @@ import org.springframework.hateoas.core.AbstractEntityLinks;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-import spring.data.annotation.Rel;
+import spring.hateoas.annotation.Rel;
 
 /**
  * @author Kamill Sokol

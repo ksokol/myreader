@@ -1,11 +1,14 @@
 package myreader.resource.user;
 
+import javax.validation.Valid;
+
 import myreader.entity.User;
 import myreader.repository.UserRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.user.beans.UserGetResponse;
 import myreader.resource.user.beans.UserPatchRequest;
 import myreader.service.user.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -14,10 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import spring.data.ResourceAssemblers;
-import spring.security.MyReaderUser;
 
-import javax.validation.Valid;
+import spring.hateoas.ResourceAssemblers;
+import spring.security.MyReaderUser;
 
 /**
  * @author Kamill Sokol

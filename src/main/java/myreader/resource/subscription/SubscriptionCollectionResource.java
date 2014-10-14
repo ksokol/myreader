@@ -1,15 +1,17 @@
 package myreader.resource.subscription;
 
+import javax.validation.Valid;
+
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
-import spring.data.ResourceAssemblers;
 import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.service.search.SubscriptionEntrySearchRepository;
 import myreader.service.subscription.SubscriptionService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import spring.security.MyReaderUser;
 
-import javax.validation.Valid;
+import spring.hateoas.ResourceAssemblers;
+import spring.security.MyReaderUser;
 
 /**
  * @author Kamill Sokol

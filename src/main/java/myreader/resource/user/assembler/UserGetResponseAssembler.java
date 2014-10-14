@@ -2,11 +2,13 @@ package myreader.resource.user.assembler;
 
 import myreader.entity.User;
 import myreader.resource.user.beans.UserGetResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
-import spring.data.AbstractResourceAssembler;
+
+import spring.hateoas.AbstractResourceAssembler;
 
 /**
  * @author Kamill Sokol

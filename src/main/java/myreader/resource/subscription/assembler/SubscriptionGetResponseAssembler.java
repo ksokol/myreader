@@ -1,16 +1,17 @@
 package myreader.resource.subscription.assembler;
 
-import myreader.entity.ExclusionSet;
 import myreader.entity.Subscription;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import spring.data.AbstractResourceAssembler;
+
+import spring.hateoas.AbstractResourceAssembler;
 
 /**
  * @author Kamill Sokol

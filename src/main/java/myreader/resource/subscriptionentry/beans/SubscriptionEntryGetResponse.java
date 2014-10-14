@@ -1,9 +1,10 @@
 package myreader.resource.subscriptionentry.beans;
 
-import org.springframework.hateoas.ResourceSupport;
-import spring.data.annotation.Rel;
-
 import java.util.Date;
+
+import org.springframework.hateoas.ResourceSupport;
+
+import spring.hateoas.annotation.Rel;
 
 /**
  * @author Kamill Sokol

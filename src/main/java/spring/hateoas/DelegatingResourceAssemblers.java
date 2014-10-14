@@ -1,4 +1,4 @@
-package spring.data;
+package spring.hateoas;
 
 import java.util.Collections;
 import java.util.List;

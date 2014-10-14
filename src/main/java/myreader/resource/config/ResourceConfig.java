@@ -35,8 +35,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import spring.hateoas.EntityLinker;
 import spring.hateoas.DelegatingEntityLinks;
+import spring.hateoas.EntityLinker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -46,7 +46,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
  * @author Kamill Sokol
  */
 //@EnableWebMvcSecurity
-@ComponentScan(basePackages = {"myreader.resource", "spring.data"})
+@ComponentScan(basePackages = {"myreader.resource", "spring.hateoas"})
 @Configuration
 @Import({PatchSupportConfig.class, CustomDelegatingWebMvcConfiguration.class})
 @EnableSpringDataWebSupport
