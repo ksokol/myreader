@@ -1,4 +1,4 @@
-package spring.data;
+package spring.hateoas;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -16,13 +16,13 @@ import spring.data.annotation.Rel;
 /**
  * @author Kamill Sokol
  */
-public abstract class EntityLinksSupport extends AbstractEntityLinks {
+public class EntityLinker extends AbstractEntityLinks {
 
     private final Class<?> entityClass;
     private final Class<?> resourceClass;
     private final String rel;
 
-    public EntityLinksSupport(Class<?> entityClass, Class<?> resourceClass) {
+    public EntityLinker(Class<?> entityClass, Class<?> resourceClass) {
         Assert.notNull(entityClass, "entity class is null");
         Assert.notNull(resourceClass, "resource class is null");
 
@@ -30,8 +30,11 @@ public abstract class EntityLinksSupport extends AbstractEntityLinks {
         this.resourceClass = resourceClass;
         Rel relAnnotation = entityClass.getAnnotation(Rel.class);
 
-        Assert.notNull(relAnnotation);
-        this.rel = relAnnotation.value();
+        if(relAnnotation != null) {
+            this.rel = relAnnotation.value();
+        } else {
+            this.rel = entityClass.getSimpleName().toLowerCase();
+        }
     }
 
     @Override

@@ -6,15 +6,13 @@ import myreader.resource.exclusionpattern.ExclusionPatternEntityResource;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 
 import org.springframework.hateoas.LinkBuilder;
-import org.springframework.stereotype.Component;
 
-import spring.data.EntityLinksSupport;
+import spring.hateoas.EntityLinker;
 
 /**
  * @author Kamill Sokol
  */
-@Component
-public class ExclusionPatternEntityLinks extends EntityLinksSupport {
+public class ExclusionPatternEntityLinks extends EntityLinker {
 
     public ExclusionPatternEntityLinks() {
         super(ExclusionPatternGetResponse.class, ExclusionPatternEntityResource.class);
