@@ -1,5 +1,7 @@
 package myreader.resource.subscriptionentry;
 
+import static myreader.Constants.SEARCH_PARAM;
+
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
@@ -43,8 +45,8 @@ public class SubscriptionEntryCollectionResource {
         return resourceAssemblers.toPagedResource(pagedEntries, SubscriptionEntryGetResponse.class);
     }
 
-	@RequestMapping(value = "", params = "q", method = RequestMethod.GET)
-	public PagedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam("q") String q, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+	@RequestMapping(value = "", params = SEARCH_PARAM, method = RequestMethod.GET)
+	public PagedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam(SEARCH_PARAM) String q, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
 		Page<SearchableSubscriptionEntry> page = subscriptionEntrySearchRepository.searchAndFilterByUser(q, user.getId(), pageable);
         return resourceAssemblers.toPagedResource(page, SubscriptionEntryGetResponse.class);
 	}

@@ -82,7 +82,7 @@ public class SubscriptionEntityResource {
     }
 
     @RequestMapping(value = "/entries", params = SEARCH_PARAM, method = RequestMethod.GET)
-    public PagedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam("q") String q, @PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    public PagedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam(SEARCH_PARAM) String q, @PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<SearchableSubscriptionEntry> page = subscriptionEntrySearchRepository.searchAndFilterByUserAndSubscription(q, id, user.getId(), pageable);
         return resourceAssemblers.toPagedResource(page, SubscriptionEntryGetResponse.class);
     }
