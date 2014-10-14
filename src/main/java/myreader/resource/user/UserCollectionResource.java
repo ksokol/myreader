@@ -47,7 +47,7 @@ public class UserCollectionResource {
             page = userRepository.findById(user.getId(), pageable);
         }
 
-        return resourceAssemblers.toPagedResource(page, UserGetResponse.class);
+        return resourceAssemblers.toResource(page, UserGetResponse.class);
     }
 
     @RequestMapping("/{id}/subscriptions")

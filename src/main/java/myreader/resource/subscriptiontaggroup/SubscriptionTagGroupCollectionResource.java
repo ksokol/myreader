@@ -19,8 +19,9 @@ import myreader.service.search.SubscriptionEntrySearchRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import spring.hateoas.ResourceAssemblers;
+import spring.hateoas.SlicedResources;
 import spring.security.MyReaderUser;
 
 /**
@@ -55,38 +57,37 @@ public class SubscriptionTagGroupCollectionResource {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public PagedResources<SubscriptionTagGroupGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<TagGroup> tagGroupPage = subscriptionRepository.findByUserGroupByTag(user.getId(), pageable);
-        return resourceAssemblers.toPagedResource(tagGroupPage, SubscriptionTagGroupGetResponse.class);
+        return resourceAssemblers.toResource(tagGroupPage, SubscriptionTagGroupGetResponse.class);
     }
 
     @RequestMapping(value = "/{id}/subscriptions", method = RequestMethod.GET)
     public PagedResources<SubscriptionGetResponse> getSubscriptionsByTag(@PathVariable("id") String tagGroup, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<Subscription> subscriptionPage = subscriptionRepository.findByTagAndUser(tagGroup, user.getId(), pageable);
-        return resourceAssemblers.toPagedResource(subscriptionPage, SubscriptionGetResponse.class);
+        return resourceAssemblers.toResource(subscriptionPage, SubscriptionGetResponse.class);
     }
 
     @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
-    public PagedResources<SubscriptionEntryGetResponse> getSubscriptionEntriesByTag(@PathVariable("id") String tagGroup, Pageable pageable,
+    public SlicedResources<SubscriptionEntryGetResponse> getSubscriptionEntriesByTag(@PathVariable("id") String tagGroup, Pageable pageable,
                                                                                           @AuthenticationPrincipal MyReaderUser user) {
 
-        Page<SubscriptionEntry> subscriptionEtriesPage = subscriptionEntryRepository.findBySubscriptionTagAndUser(tagGroup, user.getId(), pageable);
-        return resourceAssemblers.toPagedResource(subscriptionEtriesPage, SubscriptionEntryGetResponse.class);
+        Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBySubscriptionTagAndUser(tagGroup, user.getId(), pageable);
+        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
     }
 
     @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET, params = SEARCH_PARAM)
-    public PagedResources<SubscriptionEntryGetResponse> findSubscriptionEntriesByTag(@PathVariable("id") String tagGroup,
+    public SlicedResources<SubscriptionEntryGetResponse> findSubscriptionEntriesByTag(@PathVariable("id") String tagGroup,
                                                                                            @RequestParam(SEARCH_PARAM) String q,
                                                                                            Pageable pageable,
                                                                                            @AuthenticationPrincipal MyReaderUser user) {
-
         List<Long> subscriptionIds = subscriptionRepository.findByTagAndUser(tagGroup, user.getId());
 
         if(CollectionUtils.isEmpty(subscriptionIds)) {
-            return resourceAssemblers.toPagedResource(new PageImpl(Collections.emptyList(), pageable, 0), SubscriptionEntryGetResponse.class);
+            return resourceAssemblers.toResource(new SliceImpl(Collections.emptyList()), SubscriptionEntryGetResponse.class);
         }
 
-        Page<SearchableSubscriptionEntry> searchableSubscriptionEntries = subscriptionEntrySearchRepository.searchAndFilterByUserAndSubscriptions(q,
+        Slice<SearchableSubscriptionEntry> searchableSubscriptionEntries = subscriptionEntrySearchRepository.searchAndFilterByUserAndSubscriptions(q,
                 subscriptionIds, user.getId(), pageable);
-        return resourceAssemblers.toPagedResource(searchableSubscriptionEntries, SubscriptionEntryGetResponse.class);
+        return resourceAssemblers.toResource(searchableSubscriptionEntries, SubscriptionEntryGetResponse.class);
     }
 
 }

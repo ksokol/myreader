@@ -44,13 +44,13 @@ public class DelegatingResourceAssemblersTest {
 
     @Test
     public void testToPagedResourceNextLink() throws Exception {
-        PagedResources<Object> pages = uut.toPagedResource(page(0), Object.class);
+        PagedResources<Object> pages = uut.toResource(page(0), Object.class);
         assertThat(pages.getNextLink(), is(new Link("http://localhost?page=1&size=1", Link.REL_NEXT)));
     }
 
     @Test
     public void testToPagedResourceBeforeLink() throws Exception {
-        PagedResources<Object> pages = uut.toPagedResource(page(1), Object.class);
+        PagedResources<Object> pages = uut.toResource(page(1), Object.class);
         assertThat(pages.getPreviousLink(), is(new Link("http://localhost?page=0&size=1", Link.REL_PREVIOUS)));
     }
 

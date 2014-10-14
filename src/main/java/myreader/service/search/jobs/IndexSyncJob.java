@@ -1,9 +1,12 @@
 package myreader.service.search.jobs;
 
+import java.util.List;
+
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.service.search.SubscriptionEntrySearchRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
@@ -13,12 +16,9 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
-
-import java.util.List;
 
 /**
  * TODO IndexSyncJob and SyndFetcherJob should be running exclusively. this prevents duplicate entries in index
@@ -67,7 +67,7 @@ public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosed
                     page = subscriptionEntryRepository.findAll(new PageRequest(pageNumber++, pageSize));
                     converted = convert(page.getContent());
                     subscriptionEntrySearchRepository.save(converted);
-                } while(page.hasNextPage() && alive);
+                } while(page.hasNext() && alive);
 
 
                 log.info("search index sync done");

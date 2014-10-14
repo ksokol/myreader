@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
@@ -36,7 +38,7 @@ public class DelegatingResourceAssemblers implements ResourceAssemblers {
     }
 
     @Override
-    public <D> PagedResources<D> toPagedResource(Page<?> page, Class<D> outputClass) {
+    public <D> PagedResources<D> toResource(Page<?> page, Class<D> outputClass) {
         if(page == null || CollectionUtils.isEmpty(page.getContent())) {
             return pagedResourcesAssembler.toResource(new PageImpl(Collections.emptyList()));
         }
@@ -44,6 +46,17 @@ public class DelegatingResourceAssemblers implements ResourceAssemblers {
         Class<?> inputClass = page.getContent().get(0).getClass();
         ResourceAssembler resourceAssembler = getResourceAssemblerFor(inputClass, outputClass);
         return pagedResourcesAssembler.toResource(page, resourceAssembler);
+    }
+
+    @Override
+    public <D> SlicedResources<D> toResource(Slice<?> slice, Class<D> outputClass) {
+        if(slice == null || CollectionUtils.isEmpty(slice.getContent())) {
+            return pagedResourcesAssembler.toResource(new SliceImpl(Collections.emptyList()));
+        }
+
+        Class<?> inputClass = slice.getContent().get(0).getClass();
+        ResourceAssembler resourceAssembler = getResourceAssemblerFor(inputClass, outputClass);
+        return pagedResourcesAssembler.toResource(slice, resourceAssembler);
     }
 
     private AbstractResourceAssembler getResourceAssemblerFor(Class<?> inputClass, Class<?> outputClass) {

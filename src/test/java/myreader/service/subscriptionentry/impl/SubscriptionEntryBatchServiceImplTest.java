@@ -1,5 +1,12 @@
 package myreader.service.subscriptionentry.impl;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
+
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
@@ -11,20 +18,12 @@ import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.subscriptionentry.SubscriptionEntryBatchService;
 import myreader.test.IntegrationTestSupport;
-import org.junit.After;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.annotation.DirtiesContext;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import org.springframework.data.domain.Slice;
 
 /**
  * @author Kamill Sokol
@@ -48,12 +47,12 @@ public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSuppor
         Subscription beforeSubscription = subscriptionRepository.findOne(3L);
 
         Page<FeedEntry> beforeFeedEntries = feedEntryRepository.findByFeedId(beforeFeed.getId(), new PageRequest(1,10));
-        Page<SubscriptionEntry> beforeSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
-                beforeSubscription.getId(), new PageRequest(1, 10));
+        Slice<SubscriptionEntry> beforeSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
+                beforeSubscription.getId(), new PageRequest(0, 10));
 
         assertThat(beforeFeed.getUrl(), is(beforeSubscription.getFeed().getUrl()));
         assertThat(beforeFeedEntries.getTotalElements(), is(3L));
-        assertThat(beforeSubscriptionEntries.getTotalElements(), is(2L));
+        assertThat(beforeSubscriptionEntries.getContent(), hasSize(2));
         assertThat(beforeFeed.getUrl(), is(beforeSubscription.getFeed().getUrl()));
         assertThat(beforeSubscription.getUnseen(), is(0));
         assertThat(beforeSubscription.getSum(), is(25));
@@ -61,14 +60,14 @@ public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSuppor
         List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeFeed, Arrays.asList(fetcherEntry(2L)));
         assertThat(subscriptionEntries.size(), is(1));
 
-        Page<FeedEntry> afterFeedEntries = feedEntryRepository.findByFeedId(2L, new PageRequest(1,10));
+        Page<FeedEntry> afterFeedEntries = feedEntryRepository.findByFeedId(2L, new PageRequest(0,10));
         assertThat(afterFeedEntries.getTotalElements(), is(4L));
 
-        Page<SubscriptionEntry> afterSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
-                beforeSubscription.getId(), new PageRequest(1, 10));
+        Slice<SubscriptionEntry> afterSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
+                beforeSubscription.getId(), new PageRequest(0, 10));
 
         Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(3L);
-        assertThat(afterSubscriptionEntries.getTotalElements(), is(3L));
+        assertThat(afterSubscriptionEntries.getContent(), hasSize(3));
         assertThat(afterSubscriptionClearedEm.getUnseen(), is(1));
         assertThat(afterSubscriptionClearedEm.getSum(), is(26));
     }

@@ -48,7 +48,7 @@ public class SubscriptionCollectionResource {
     @RequestMapping(value="", method = RequestMethod.GET)
     public PagedResources<SubscriptionGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<Subscription> subscriptionPage = subscriptionRepository.findAllByUser(user.getId(), pageable);
-        return resourceAssemblers.toPagedResource(subscriptionPage, SubscriptionGetResponse.class);
+        return resourceAssemblers.toResource(subscriptionPage, SubscriptionGetResponse.class);
     }
 
 }

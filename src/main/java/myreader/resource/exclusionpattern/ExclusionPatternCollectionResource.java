@@ -55,7 +55,7 @@ public class ExclusionPatternCollectionResource {
     @RequestMapping(value="", method = RequestMethod.GET)
     public PagedResources<ExclusionPatternGetResponse> get(@ModelAttribute("subscription") Subscription subscription, Pageable pageable) {
         Page<ExclusionPattern> exclusionPatternPage = exclusionRepository.findBySubscriptionId(subscription.getId(), pageable);
-        return resourceAssemblers.toPagedResource(exclusionPatternPage, ExclusionPatternGetResponse.class);
+        return resourceAssemblers.toResource(exclusionPatternPage, ExclusionPatternGetResponse.class);
     }
 
     @RequestMapping(value="", method = RequestMethod.POST)

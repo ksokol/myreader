@@ -17,6 +17,7 @@ import myreader.service.search.SubscriptionEntrySearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import spring.hateoas.ResourceAssemblers;
+import spring.hateoas.SlicedResources;
 import spring.security.MyReaderUser;
 
 /**
@@ -76,15 +78,17 @@ public class SubscriptionEntityResource {
     }
 
     @RequestMapping(value = "/entries", method = RequestMethod.GET)
-    public PagedResources<SubscriptionEntryGetResponse> getSubscriptionEntries(@PathVariable("id") Long id,  Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
-        Page<SubscriptionEntry> page = subscriptionEntryRepository.findBySubscriptionAndUser(user.getId(), id, pageable);
-        return resourceAssemblers.toPagedResource(page, SubscriptionEntryGetResponse.class);
+    public SlicedResources<SubscriptionEntryGetResponse> getSubscriptionEntries(@PathVariable("id") Long id,  Pageable pageable,
+                                                                                @AuthenticationPrincipal MyReaderUser user ) {
+        Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBySubscriptionAndUser(user.getId(), id, pageable);
+        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
     }
 
     @RequestMapping(value = "/entries", params = SEARCH_PARAM, method = RequestMethod.GET)
-    public PagedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam(SEARCH_PARAM) String q, @PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    public PagedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam(SEARCH_PARAM) String q, @PathVariable("id") Long id,
+                                                                                      Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<SearchableSubscriptionEntry> page = subscriptionEntrySearchRepository.searchAndFilterByUserAndSubscription(q, id, user.getId(), pageable);
-        return resourceAssemblers.toPagedResource(page, SubscriptionEntryGetResponse.class);
+        return resourceAssemblers.toResource(page, SubscriptionEntryGetResponse.class);
     }
 
     public Subscription findOrThrowException(Long id, String username) {

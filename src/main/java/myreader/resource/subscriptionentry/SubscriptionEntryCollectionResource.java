@@ -9,9 +9,8 @@ import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.service.search.SubscriptionEntrySearchRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.PagedResources;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import spring.hateoas.ResourceAssemblers;
+import spring.hateoas.SlicedResources;
 import spring.security.MyReaderUser;
 
 /**
@@ -40,15 +40,16 @@ public class SubscriptionEntryCollectionResource {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public PagedResources<SubscriptionEntryGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
-        Page<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findAllByUser(pageable, user.getId());
-        return resourceAssemblers.toPagedResource(pagedEntries, SubscriptionEntryGetResponse.class);
+    public SlicedResources<SubscriptionEntryGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findAllByUser(pageable, user.getId());
+        return resourceAssemblers.toResource(pagedEntries, SubscriptionEntryGetResponse.class);
     }
 
 	@RequestMapping(value = "", params = SEARCH_PARAM, method = RequestMethod.GET)
-	public PagedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam(SEARCH_PARAM) String q, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
-		Page<SearchableSubscriptionEntry> page = subscriptionEntrySearchRepository.searchAndFilterByUser(q, user.getId(), pageable);
-        return resourceAssemblers.toPagedResource(page, SubscriptionEntryGetResponse.class);
+	public SlicedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam(SEARCH_PARAM) String q, Pageable pageable,
+                                                                                       @AuthenticationPrincipal MyReaderUser user) {
+		Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.searchAndFilterByUser(q, user.getId(), pageable);
+        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
 	}
 
 }
