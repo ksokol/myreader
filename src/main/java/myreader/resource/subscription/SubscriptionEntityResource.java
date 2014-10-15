@@ -77,8 +77,15 @@ public class SubscriptionEntityResource {
         return get(id, user);
     }
 
+    @RequestMapping(value = "/entries/new", method = RequestMethod.GET)
+    public SlicedResources<SubscriptionEntryGetResponse> getSubscriptionEntriesNew(@PathVariable("id") Long id, Pageable pageable,
+                                                                                   @AuthenticationPrincipal MyReaderUser user ) {
+        Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findNewBySubscriptionAndUser(user.getId(), id, pageable);
+        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+    }
+
     @RequestMapping(value = "/entries", method = RequestMethod.GET)
-    public SlicedResources<SubscriptionEntryGetResponse> getSubscriptionEntries(@PathVariable("id") Long id,  Pageable pageable,
+    public SlicedResources<SubscriptionEntryGetResponse> getSubscriptionEntries(@PathVariable("id") Long id, Pageable pageable,
                                                                                 @AuthenticationPrincipal MyReaderUser user ) {
         Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBySubscriptionAndUser(user.getId(), id, pageable);
         return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);

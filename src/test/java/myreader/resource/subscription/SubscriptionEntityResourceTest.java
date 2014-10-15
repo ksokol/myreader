@@ -24,7 +24,7 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
     public void testEntityResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/subscription#1.json"));
+                .andExpect(content().isJsonEqual("subscription/structure-subscription#1.json"));
     }
 
     @Test

@@ -48,6 +48,9 @@ public class SubscriptionGetResponseAssembler extends AbstractResourceAssembler<
         Link subscriptionEntries = entityLinks.linkFor(getOutputClass(), source.getId()).slash("entries").withRel("entries");
         target.add(subscriptionEntries);
 
+        Link subscriptionEntriesNew = entityLinks.linkFor(getOutputClass(), source.getId()).slash("entries").slash("new").withRel("entries(seen=true)");
+        target.add(subscriptionEntriesNew);
+
         if(StringUtils.hasText(source.getTag())) {
             Link subscriptionTagGroup = entityLinks.linkFor(SubscriptionTagGroupGetResponse.class, source.getTag()).withRel("subscriptionTagGroup");
             target.add(subscriptionTagGroup);

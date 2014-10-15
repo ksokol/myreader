@@ -4,22 +4,5 @@
     "sum": 0,
     "unseen": 0,
     "createdAt": "2014-04-30T12:43:46Z",
-    "links": [
-        {
-            "rel": "self",
-            "href": "http://localhost/subscriptions/14"
-        },
-        {
-            "rel": "origin",
-            "href": "http://use-the-index-luke.com/blog/feed"
-        },
-        {
-            "rel": "entries",
-            "href": "http://localhost/subscriptions/14/entries"
-        },
-        {
-            "rel": "exclusion",
-            "href": "http://localhost/exclusions/14"
-        }
-    ]
+    "links": "${json-unit.ignore}"
 }

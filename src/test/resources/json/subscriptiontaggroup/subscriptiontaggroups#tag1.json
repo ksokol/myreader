@@ -1,18 +1,5 @@
 {
-    "links": [
-        {
-            "rel": "self",
-            "href": "http://localhost/subscriptionTagGroups/tag1"
-        },
-        {
-            "rel": "subscriptions",
-            "href": "http://localhost/subscriptionTagGroups/tag1/subscriptions"
-        },
-        {
-            "rel": "entries",
-            "href": "http://localhost/subscriptionTagGroups/tag1/entries"
-        }
-    ],
+    "links": "${json-unit.ignore}",
     "tag": "tag1",
     "unseen": 1
 }

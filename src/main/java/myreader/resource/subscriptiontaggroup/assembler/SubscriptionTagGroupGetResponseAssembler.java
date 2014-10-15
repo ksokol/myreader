@@ -41,6 +41,9 @@ public class SubscriptionTagGroupGetResponseAssembler extends AbstractResourceAs
                 target.add(subscriptionsByTag);
                 Link subscriptionEntriesByTag = entityLinks.linkFor(getOutputClass(), source.getName()).slash("entries").withRel("entries");
                 target.add(subscriptionEntriesByTag);
+                Link newSubscriptionEntriesByTag = entityLinks.linkFor(getOutputClass(), source.getName()).slash("entries").slash("new").withRel
+                        ("entries(seen=true)");
+                target.add(newSubscriptionEntriesByTag);
                 break;
             case SUBSCRIPTION:
                 Link subscription = entityLinks.linkFor(SubscriptionGetResponse.class, source.getId()).withRel("subscription");

@@ -1,8 +1,11 @@
 package myreader.resource.subscriptiontaggroup;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser3;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
@@ -19,6 +22,12 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
 
     @Autowired
     private IndexSyncJob indexSyncJob;
+
+    @Test
+    public void testSubscriptionTagGroupjsonStructure() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptionTagGroups/tag1"))
+                .andExpect(content().isJsonEqual("subscriptiontaggroup/structure-subscriptiontaggroups#tag1.json"));
+    }
 
     @Test
     public void testSubscriptionTagGroup() throws Exception {
@@ -63,14 +72,18 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
     @Test
     public void testSubscriptionTagGroupWithDot() throws Exception {
         mockMvc.perform(getAsUser3("/subscriptionTagGroups/tag.with.dots"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag.with.dot.json"));
+                .andExpect(jsonPath("$.links[?(@.rel=='subscriptions')].href",
+                        hasItem("http://localhost/subscriptionTagGroups/tag.with.dots/subscriptions")))
+                .andExpect(jsonPath("$.tag", is("tag.with.dots")));
     }
 
     @Test
     public void testSubscriptionTagGroupWithSlashForward() throws Exception {
         mockMvc.perform(getAsUser3("/subscriptionTagGroups/tagWith%2FForward"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tagWithSlashForward.json"));
+                .andExpect(jsonPath("$.links[?(@.rel=='subscriptions')].href",
+                        hasItem("http://localhost/subscriptionTagGroups/tagWith%252FForward/subscriptions")))
+                .andExpect(jsonPath("$.tag", is("tagWith/Forward")));
     }
 
 }

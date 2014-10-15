@@ -4,26 +4,5 @@
     "sum": 15,
     "unseen": 1,
     "createdAt": "2011-04-15T19:20:46Z",
-    "links": [
-        {
-            "rel": "self",
-            "href": "http://localhost/subscriptions/1"
-        },
-        {
-            "rel": "origin",
-            "href": "http://feeds.feedburner.com/javaposse"
-        },
-        {
-            "rel": "entries",
-            "href": "http://localhost/subscriptions/1/entries"
-        },
-        {
-            "rel": "subscriptionTagGroup",
-            "href": "http://localhost/subscriptionTagGroups/patch"
-        },
-        {
-            "rel": "exclusion",
-            "href": "http://localhost/exclusions/1"
-        }
-    ]
+    "links": "${json-unit.ignore}"
 }
