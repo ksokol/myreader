@@ -1,0 +1,13 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionTagGroups/tag3/entries/new?q=unknown"
+        }
+    ],
+    "content": [],
+    "page": {
+        "size": 0,
+        "number": 0
+    }
+}

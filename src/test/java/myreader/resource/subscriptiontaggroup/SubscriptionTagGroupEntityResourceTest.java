@@ -1,11 +1,9 @@
 package myreader.resource.subscriptiontaggroup;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser3;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
@@ -22,18 +20,6 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
 
     @Autowired
     private IndexSyncJob indexSyncJob;
-
-    @Test
-    public void testSubscriptionTagGroupjsonStructure() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptionTagGroups/tag1"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/structure-subscriptiontaggroups#tag1.json"));
-    }
-
-    @Test
-    public void testSubscriptionTagGroup() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptionTagGroups/tag1"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1.json"));
-    }
 
     @Test
     public void testNotFoundException() throws Exception {
@@ -54,6 +40,12 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
     }
 
     @Test
+    public void testNewSubscriptionTagGroupEntries() throws Exception {
+        mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries/new"))
+                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#entries#new.json"));
+    }
+
+    @Test
     public void testSubscriptionTagGroupEntriesSearchEmptyResult() throws Exception {
         indexSyncJob.run();
 
@@ -70,20 +62,32 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
     }
 
     @Test
+    public void testNewSubscriptionTagGroupEntriesSearchEmptyResult() throws Exception {
+        indexSyncJob.run();
+
+        mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag3/entries/new?q=unknown"))
+                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag3#new#q=unknown.json"));
+    }
+
+    @Test
+    public void testNewSubscriptionTagGroupEntriesSearch() throws Exception {
+        indexSyncJob.run();
+
+        mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries/new?q=party"))
+                .andDo(print())
+                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#new#q=party.json"));
+    }
+
+    @Test
     public void testSubscriptionTagGroupWithDot() throws Exception {
-        mockMvc.perform(getAsUser3("/subscriptionTagGroups/tag.with.dots"))
-                .andExpect(jsonPath("$.links[?(@.rel=='subscriptions')].href",
-                        hasItem("http://localhost/subscriptionTagGroups/tag.with.dots/subscriptions")))
-                .andExpect(jsonPath("$.tag", is("tag.with.dots")));
+        mockMvc.perform(getAsUser3("/subscriptionTagGroups/tag.with.dots/subscriptions"))
+                .andExpect(status().isOk());
     }
 
     @Test
     public void testSubscriptionTagGroupWithSlashForward() throws Exception {
-        mockMvc.perform(getAsUser3("/subscriptionTagGroups/tagWith%2FForward"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.links[?(@.rel=='subscriptions')].href",
-                        hasItem("http://localhost/subscriptionTagGroups/tagWith%252FForward/subscriptions")))
-                .andExpect(jsonPath("$.tag", is("tagWith/Forward")));
+        mockMvc.perform(getAsUser3("/subscriptionTagGroups/tagWith%2FForward/subscriptions"))
+                .andExpect(status().isOk());
     }
 
 }

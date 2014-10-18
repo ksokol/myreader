@@ -20,7 +20,7 @@ import spring.security.MyReaderUser;
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping(value = "/subscriptionTagGroups")
+@RequestMapping(value = "/subscriptionTagGroups", method = RequestMethod.GET)
 public class SubscriptionTagGroupCollectionResource {
 
     private final SubscriptionRepository subscriptionRepository;
@@ -32,9 +32,15 @@ public class SubscriptionTagGroupCollectionResource {
         this.resourceAssemblers = resourceAssemblers;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping("")
     public PagedResources<SubscriptionTagGroupGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Page<TagGroup> tagGroupPage = subscriptionRepository.findByUserGroupByTag(user.getId(), pageable);
+        return resourceAssemblers.toResource(tagGroupPage, SubscriptionTagGroupGetResponse.class);
+    }
+
+    @RequestMapping("new")
+    public PagedResources<SubscriptionTagGroupGetResponse> getNew(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+        Page<TagGroup> tagGroupPage = subscriptionRepository.findNewByUserGroupByTag(user.getId(), pageable);
         return resourceAssemblers.toResource(tagGroupPage, SubscriptionTagGroupGetResponse.class);
     }
 }

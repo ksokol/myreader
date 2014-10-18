@@ -9,10 +9,6 @@
         {
             "links": [
                 {
-                    "rel": "self",
-                    "href": "http://localhost/subscriptionTagGroups/tag3"
-                },
-                {
                     "rel": "subscriptions",
                     "href": "http://localhost/subscriptionTagGroups/tag3/subscriptions"
                 },
@@ -31,10 +27,6 @@
         {
             "links": [
                 {
-                    "rel": "self",
-                    "href": "http://localhost/subscriptionTagGroups/user1_subscription4"
-                },
-                {
                     "rel": "subscription",
                     "href": "http://localhost/subscriptions/4"
                 },
@@ -48,10 +40,6 @@
         },
         {
             "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/subscriptionTagGroups/tag1"
-                },
                 {
                     "rel": "subscriptions",
                     "href": "http://localhost/subscriptionTagGroups/tag1/subscriptions"
@@ -70,10 +58,6 @@
         },
         {
             "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/subscriptionTagGroups/tag2"
-                },
                 {
                     "rel": "subscriptions",
                     "href": "http://localhost/subscriptionTagGroups/tag2/subscriptions"

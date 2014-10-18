@@ -11,20 +11,57 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
+import myreader.service.search.jobs.IndexSyncJob;
 import myreader.test.IntegrationTestSupport;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Kamill Sokol
  */
 public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
 
+    @Autowired
+    private IndexSyncJob indexSyncJob;
+
     @Test
     public void testEntityResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscription/structure-subscription#1.json"));
+    }
+
+    @Test
+    public void testEntityResourceSubscriptionEntries() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptions/3/entries"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscription/subscriptions#3#entries.json"));
+    }
+
+    @Test
+    public void testEntityResourceSubscriptionEntriesSearch() throws Exception {
+        indexSyncJob.run();
+
+        mockMvc.perform(getAsUser1("/subscriptions/3/entries?q=party"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscription/subscriptions#3#entries#q=party.json"));
+    }
+
+    @Test
+    public void testEntityResourceNewSubscriptionEntries() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptions/3/entries/new"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscription/subscriptions#3#entries#new.json"));
+    }
+
+    @Test
+    public void testEntityResourceSubscriptionNewEntriesSearch() throws Exception {
+        indexSyncJob.run();
+
+        mockMvc.perform(getAsUser1("/subscriptions/3/entries/new?q=party"))
+                .andExpect(status().isOk())
+                .andExpect(content().isJsonEqual("subscription/subscriptions#3#entries#new#q=party.json"));
     }
 
     @Test

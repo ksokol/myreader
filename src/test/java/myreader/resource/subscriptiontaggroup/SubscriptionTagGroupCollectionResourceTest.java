@@ -19,15 +19,15 @@ public class SubscriptionTagGroupCollectionResourceTest extends IntegrationTestS
     }
 
     @Test
-    public void testSubscriptionTagGroups() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptionTagGroups"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups.json"));
-    }
-
-    @Test
     public void testSubscriptionTagGroupsWithPageSize2() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionTagGroups?size=2"))
                 .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#size=2.json"));
+    }
+
+    @Test
+    public void testNewSubscriptionTagGroups() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptionTagGroups/new"))
+                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#new.json"));
     }
 
 }
