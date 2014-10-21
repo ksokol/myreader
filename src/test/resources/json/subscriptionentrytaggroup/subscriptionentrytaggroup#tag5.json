@@ -1,0 +1,23 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionEntryTagGroups/tag5"
+        }
+    ],
+    "content": [
+        {
+            "title": "I need your help!",
+            "feedTitle": "user4_subscription1",
+            "tag": "tag4 tag5",
+            "content": "content",
+            "seen": false,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        }
+    ],
+    "page": {
+        "size": 20,
+        "number": 0
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionEntryTagGroups/tag7"
+        }
+    ],
+    "content": [
+        {
+            "title": "Throwing Exceptions from Fields",
+            "feedTitle": "user4_subscription1",
+            "tag": "tag6,tag7",
+            "content": "content",
+            "seen": false,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        }
+    ],
+    "page": {
+        "size": 20,
+        "number": 0
+    }
+}

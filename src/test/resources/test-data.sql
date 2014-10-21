@@ -47,14 +47,8 @@ INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_t
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (11,0,'user2_subscription6','tag2',2,1,'2011-04-15T19:20:46Z',10);
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (12,0,'user3_subscription1','tag.with.dots',3,15,'2011-04-15T19:20:46Z',0);
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (13,0,'user3_subscription2','tagWith/Forward',3,15,'2011-04-15T19:20:46Z',1);
-
-INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,
-user_feed_feed_id) VALUES (14,0,'user4_subscription1',null,4,15,'2011-04-15T19:20:46Z',2);
-
-INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,
-user_feed_feed_id) VALUES (15,0,'user4_subscription2',null,4,15,'2011-04-15T19:20:46Z',6);
-
-
+INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (14,0,'user4_subscription1',null,4,15,'2011-04-15T19:20:46Z',2);
+INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (15,0,'user4_subscription2',null,4,15,'2011-04-15T19:20:46Z',6);
 
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1001,0,'tag1',3,1001,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1002,1,'tag1',3,1002,'2011-04-15T19:20:46Z');
@@ -64,19 +58,11 @@ INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_fee
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1006,0,null,8,1007,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1007,0,null,8,1008,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1008,0,null,8,1009,'2011-04-15T19:20:46Z');
-
-INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,
-user_feed_entry_created_at) values (1009,0,'tag1',14,1001,'2011-04-15T19:20:46Z');
-INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,
-user_feed_entry_created_at) values (1010,0,'tag2-tag3',14,1002,'2011-04-15T19:20:46Z');
-INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,
-user_feed_entry_created_at) values (1011,0,'tag4 tag5',14,1003,'2011-04-15T19:20:46Z');
-
-INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,
-user_feed_entry_created_at) values (1012,0,'tag6,tag7',14,1004,'2011-04-15T19:20:46Z');
-
-INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,
-user_feed_entry_created_at) values (1013,0,'tag8Tag9',14,1005,'2011-04-15T19:20:46Z');
+INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1009,0,'tag1',14,1001,'2011-04-15T19:20:46Z');
+INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1010,0,'tag2-tag3',14,1002,'2011-04-15T19:20:46Z');
+INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1011,0,'tag4 tag5',14,1003,'2011-04-15T19:20:46Z');
+INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1012,0,'tag6,tag7',14,1004,'2011-04-15T19:20:46Z');
+INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1013,0,'tag8Tag9',14,1005,'2011-04-15T19:20:46Z');
 
 INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (0,'user1_subscription1_pattern1',1,1);
 INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (1,'user1_subscription1_pattern2',1,1);
