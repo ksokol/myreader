@@ -13,7 +13,7 @@ import org.junit.Test;
 public class SubscriptionEntryTagGroupCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
-    public void test() throws Exception {
+    public void testSubscriptionEntrytagGroupgResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntryTagGroups"))
                 .andExpect(content().isJsonEqual("subscriptionentrytaggroup/structure-subscriptionentrytaggroup.json"));
     }
