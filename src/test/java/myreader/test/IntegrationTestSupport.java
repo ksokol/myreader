@@ -11,11 +11,14 @@ import myreader.config.SecurityConfig;
 import myreader.config.TaskConfig;
 import myreader.fetcher.FeedParser;
 import myreader.resource.config.ResourceConfig;
+import myreader.service.search.jobs.IndexSyncJob;
 import myreader.service.time.TimeService;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.solr.core.SolrOperations;
+import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,6 +51,10 @@ public class IntegrationTestSupport {
     private TimeService timeService;
     @Autowired
     private FeedParser feedParserMock;
+    @Autowired
+    private IndexSyncJob indexSyncJob;
+    @Autowired
+    private SolrOperations solrOperations;
 
     @Before
     public final void before() throws Exception {
@@ -59,6 +66,9 @@ public class IntegrationTestSupport {
                 .defaultRequest(get("/").contentType(MediaType.APPLICATION_JSON))
                 .build();
 
+        solrOperations.delete(new SimpleQuery("*:*"));
+        solrOperations.commit();
+        indexSyncJob.run();
 		beforeTest();
     }
 

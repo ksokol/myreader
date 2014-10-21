@@ -2,6 +2,7 @@ insert into user(user_id,user_email,user_password,user_role) values (0,'user0@lo
 insert into user(user_id,user_email,user_password,user_role) values (1,'user1@localhost','c4ca4238a0b923820dcc509a6f75849b','ROLE_USER');
 insert into user(user_id,user_email,user_password,user_role) values (2,'user2@localhost','c81e728d9d4c2f636f067f89cc14862c','ROLE_USER');
 insert into user(user_id,user_email,user_password,user_role) values (3,'user3@localhost','eccbc87e4b5ce2fe28308fd9f2a7baf3','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (4,'user4@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
 
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at,feed_icon,feed_icon_mimetype) VALUES (0,'The Java Posse','http://feeds.feedburner.com/javaposse','Thu, 27 Mar 2014 13:23:32 GMT',282,'2011-04-15T22:20:46Z','iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8_9hAAABU0lEQVR42mNgwAHuCxgIMJALnnAbGDzj1V9PtgHPeHX3gzBZmp_z6sU_49X7D8Igl5Bhu959mAFPefXnk-F3iGYIhnjjOY-uPShMCAbscx69emQDYC6AGECEiyCBp_f_tbUG2ACQRoi4_vqXqtoQMWAY4TXgrbv6_3fBqhBX8OhNgBn6Y5n0_-eSuv_xRi9I8cds5f_fZsn-R_YKyMA_J8X_f4hX-Y87eguOO7Sb5l4HGQBS_Klc8T_I2e9CVP__3isBFgPJLdeIuA1Uq4Cm-VgAQ97x_zJJW-C2YcOgsLEMW_ifIe_Ee5CFCANyj-8HGQDC_UYZ_7_2yWFoBjkfJAdTx5B7Aiks8o7HwyT4Mvb93y3vDXYJyMkgDLIZRTMYn_BH9UbuMXuYS0CGhHn1_W-0KPxfbFf9XytmNarNILU4QdoZfrCCvOP1CHwiHywGkkMDAG2mEs1clvCvAAAAAElFTkSuQmCC','image/png');
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at,feed_icon,feed_icon_mimetype) VALUES (1,'dzone.com: latest front page','http://feeds.dzone.com/dzone/frontpage','Thu, 27 Mar 2014 14:11:00 GMT',30167,'2011-04-15T22:20:46Z','iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8_9hAAAA60lEQVR42mP4____X0owA80MWHjs81-N2sdgTJYBk_d9HGoG7Ln27W_A1BdwTU69z-DsR59f_w3a2YEVgw1Yd-4LXDE2fPTF9b-SixIxcO2pZX8Znrz_DVeYvfTNXxAfhJFd8_HnV7AhIAzSBNKsvjwLLM6AHF0gjfjCAKQBpBFkwIo7RyBhgCuwsIn3XNgA1uy8uQ4RiMj-B7kGlwGggIT5_crbhwgDPn3_-9e09Slccdu292CMLAZSCApxmN8xYuHkvR8oGkAYmY8rFkAYng5ALgF5AeR0kLdAfJDB15__AjsfFgvomOLcCAAtp2LyMPuHHQAAAABJRU5ErkJggg','image/png');
@@ -47,6 +48,14 @@ INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_t
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (12,0,'user3_subscription1','tag.with.dots',3,15,'2011-04-15T19:20:46Z',0);
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (13,0,'user3_subscription2','tagWith/Forward',3,15,'2011-04-15T19:20:46Z',1);
 
+INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,
+user_feed_feed_id) VALUES (14,0,'user4_subscription1',null,4,15,'2011-04-15T19:20:46Z',2);
+
+INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,
+user_feed_feed_id) VALUES (15,0,'user4_subscription2',null,4,15,'2011-04-15T19:20:46Z',6);
+
+
+
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1001,0,'tag1',3,1001,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1002,1,'tag1',3,1002,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1003,0,'tag3',7,1001,'2011-04-15T19:20:46Z');
@@ -55,6 +64,19 @@ INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_fee
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1006,0,null,8,1007,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1007,0,null,8,1008,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1008,0,null,8,1009,'2011-04-15T19:20:46Z');
+
+INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,
+user_feed_entry_created_at) values (1009,0,'tag1',14,1001,'2011-04-15T19:20:46Z');
+INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,
+user_feed_entry_created_at) values (1010,0,'tag2-tag3',14,1002,'2011-04-15T19:20:46Z');
+INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,
+user_feed_entry_created_at) values (1011,0,'tag4 tag5',14,1003,'2011-04-15T19:20:46Z');
+
+INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,
+user_feed_entry_created_at) values (1012,0,'tag6,tag7',14,1004,'2011-04-15T19:20:46Z');
+
+INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,
+user_feed_entry_created_at) values (1013,0,'tag8Tag9',14,1005,'2011-04-15T19:20:46Z');
 
 INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (0,'user1_subscription1_pattern1',1,1);
 INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (1,'user1_subscription1_pattern2',1,1);

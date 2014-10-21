@@ -8,12 +8,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
 import myreader.entity.SearchableSubscriptionEntry;
-import myreader.service.search.jobs.IndexSyncJob;
 import myreader.test.IntegrationTestSupport;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.SolrOperations;
 import org.springframework.data.solr.core.query.SimpleQuery;
 
 /**
@@ -22,9 +21,7 @@ import org.springframework.data.solr.core.query.SimpleQuery;
 public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
 
     @Autowired
-    private IndexSyncJob indexSyncJob;
-    @Autowired
-    private SolrTemplate solrTemplate;
+    private SolrOperations solrOperations;
 
     @Test
     public void testEntityResourceJsonStructureEquality() throws Exception {
@@ -41,9 +38,7 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testPatchSeen() throws Exception {
-        indexSyncJob.run();
-
-        SearchableSubscriptionEntry before = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
+        SearchableSubscriptionEntry before = solrOperations.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(before.isSeen(), is(true));
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
@@ -63,15 +58,13 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscriptionentry/patch1-subscriptionEntries#4.json"));
 
-        SearchableSubscriptionEntry after = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
+        SearchableSubscriptionEntry after = solrOperations.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(after.isSeen(), is(false));
     }
 
     @Test
     public void testPatchTag() throws Exception {
-        indexSyncJob.run();
-
-        SearchableSubscriptionEntry before = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
+        SearchableSubscriptionEntry before = solrOperations.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(before.getTag(), is("tag3"));
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
@@ -86,7 +79,7 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscriptionentry/patch2-subscriptionEntries#4.json"));
 
-        SearchableSubscriptionEntry after = solrTemplate.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
+        SearchableSubscriptionEntry after = solrOperations.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(after.getTag(), is("tag-patched"));
     }
 }

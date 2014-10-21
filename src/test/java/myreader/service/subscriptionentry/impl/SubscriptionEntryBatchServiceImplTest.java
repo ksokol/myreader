@@ -58,7 +58,7 @@ public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSuppor
         assertThat(beforeSubscription.getSum(), is(25));
 
         List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeFeed, Arrays.asList(fetcherEntry(2L)));
-        assertThat(subscriptionEntries.size(), is(1));
+        assertThat(subscriptionEntries.size(), is(2));
 
         Page<FeedEntry> afterFeedEntries = feedEntryRepository.findByFeedId(2L, new PageRequest(0,10));
         assertThat(afterFeedEntries.getTotalElements(), is(4L));

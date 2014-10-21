@@ -11,19 +11,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
-import myreader.service.search.jobs.IndexSyncJob;
 import myreader.test.IntegrationTestSupport;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Kamill Sokol
  */
 public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
-
-    @Autowired
-    private IndexSyncJob indexSyncJob;
 
     @Test
     public void testEntityResourceJsonStructureEquality() throws Exception {
@@ -41,8 +36,6 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testEntityResourceSubscriptionEntriesSearch() throws Exception {
-        indexSyncJob.run();
-
         mockMvc.perform(getAsUser1("/subscriptions/3/entries?q=party"))
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscription/subscriptions#3#entries#q=party.json"));
@@ -57,8 +50,6 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testEntityResourceSubscriptionNewEntriesSearch() throws Exception {
-        indexSyncJob.run();
-
         mockMvc.perform(getAsUser1("/subscriptions/3/entries/new?q=party"))
                 .andExpect(status().isOk())
                 .andExpect(content().isJsonEqual("subscription/subscriptions#3#entries#new#q=party.json"));

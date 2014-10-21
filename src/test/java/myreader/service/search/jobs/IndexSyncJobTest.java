@@ -15,7 +15,8 @@ import myreader.test.IntegrationTestSupport;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.SolrOperations;
+import org.springframework.data.solr.core.query.SimpleQuery;
 
 /**
  * @author Kamill Sokol
@@ -29,17 +30,17 @@ public class IndexSyncJobTest extends IntegrationTestSupport {
 	@Autowired
 	private SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
 	@Autowired
-	private SolrTemplate solrTemplate;
+	private SolrOperations solrOperations;
 
 	public void beforeTest() {
+        solrOperations.delete(new SimpleQuery("*:*"));
+        solrOperations.commit();
 		assertThat(allSearchEntries().getNumberOfElements(), is(0));
+        indexSyncJob.run();
 	}
 
 	@Test
 	public void testReindexAllSubscriptionEntries() {
-		indexSyncJob.run();
-		solrTemplate.commit();
-
 		Page<SearchableSubscriptionEntry> searchEntries = allSearchEntries();
 		assertThat(searchEntries.getContent().size(), is(not(0)));
 
@@ -49,10 +50,7 @@ public class IndexSyncJobTest extends IntegrationTestSupport {
 
 	@Test
 	public void testReindexAllSubscriptionEntriesDifferentPageSize() {
-		indexSyncJob.run();
-		solrTemplate.commit();
-
-		assertThat(allSearchEntries().getContent().size(), is(8));
+		assertThat(allSearchEntries().getContent().size(), is(13));
 
 		addSubscriptionEntry();
 		addSubscriptionEntry();
@@ -60,16 +58,13 @@ public class IndexSyncJobTest extends IntegrationTestSupport {
 
 		indexSyncJob.setPageSize(5);
 		indexSyncJob.run();
-		solrTemplate.commit();
+		solrOperations.commit();
 
-		assertThat(allSearchEntries().getContent().size(), is(11));
+		assertThat(allSearchEntries().getContent().size(), is(16));
 	}
 
 	@Test
 	public void testAllSubscriptionEntryPropertiesSet() {
-		indexSyncJob.run();
-		solrTemplate.commit();
-
 		SearchableSubscriptionEntry searchEntry = subscriptionEntrySearchRepository.findOne(1001L);
 		SubscriptionEntry entry = subscriptionEntryRepository.findOne(1001L);
 

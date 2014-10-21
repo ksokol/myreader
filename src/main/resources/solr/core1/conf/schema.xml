@@ -2,68 +2,54 @@
 
 <schema name="solr" version="1.1">
 
-  <fields>
-     <field name="id" type="long" indexed="true" stored="true" required="true" multiValued="false" />
-     <field name="owner" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
-     <field name="owner_id" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
-     <field name="seen" type="boolean"  indexed="true"  stored="true" multiValued="false" required="true"/>
-     <field name="title" type="string"  indexed="true"  stored="true" multiValued="false" />
-     <field name="tags" type="commaDelimited" />
-     <field name="content" type="string" indexed="false"  stored="true" multiValued="false" />
+    <fields>
+        <field name="id" type="long" indexed="true" stored="true" required="true" multiValued="false" />
+        <field name="owner" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
+        <field name="owner_id" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
+        <field name="seen" type="boolean"  indexed="true"  stored="true" multiValued="false" required="true"/>
+        <field name="title" type="text"  indexed="true"  stored="true" multiValued="false" />
+        <field name="tag" type="string" indexed="true"  stored="true" multiValued="false" />
+        <field name="tags" type="commaAndWhitespaceDelimited" />
+        <field name="content" type="text" indexed="false"  stored="true" multiValued="false" />
+        <field name="feed_id" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
+        <field name="ft_tags" type="text" />
 
-     <field name="feed_id" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
+        <copyField source="tag" dest="ft_tags"/>
+        <copyField source="tag" dest="tags"/>
 
-     <copyField source="content" dest="ft_content"/>
-     <copyField source="title" dest="ft_title"/>
+        <dynamicField name="*" type="string" indexed="false"  stored="true" />
+    </fields>
 
-     <field name="ft_content" type="text" />
-     <field name="ft_title" type="text" />
-     <field name="ft_tags" type="text" />
+    <uniqueKey>id</uniqueKey>
 
-     <dynamicField name="*" type="string" indexed="false"  stored="true" />
-  </fields>
+    <types>
+        <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+        <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+        <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+        <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
 
-  <uniqueKey>id</uniqueKey>
- 
-  <types>
-    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
-    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
-    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
-    <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
+        <fieldType name="text" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true" indexed="true" stored="false">
+            <analyzer type="index">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <charFilter class="org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <charFilter class="org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
 
-    <fieldType name="text" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true" indexed="true" stored="false">
-        <analyzer type="index">
-            <tokenizer class="solr.StandardTokenizerFactory"/>
-            <charFilter class="org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory"/>
-            <filter class="solr.LowerCaseFilterFactory"/>
-        </analyzer>
-        <analyzer type="query">
-             <tokenizer class="solr.StandardTokenizerFactory"/>
-             <charFilter class="org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory"/>
-             <filter class="solr.LowerCaseFilterFactory"/>
-        </analyzer>
-    </fieldType>
-
-    <fieldType name="commaDelimited" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true" indexed="true" stored="true" multiValued="false">
-      <analyzer type="index">
-          <tokenizer class="solr.WhitespaceTokenizerFactory" />
-          <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" splitOnNumerics="0" splitOnCaseChange="0" />
-          <filter class="solr.LowerCaseFilterFactory"/>
-      </analyzer>
-      <analyzer type="query">
-          <tokenizer class="solr.WhitespaceTokenizerFactory" />
-          <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" splitOnNumerics="0" splitOnCaseChange="0" />
-          <filter class="solr.LowerCaseFilterFactory"/>
-      </analyzer>
-    </fieldType>
-
-    <fieldType name="keyword" class="solr.TextField">
-        <analyzer type="index">
-            <tokenizer class="solr.KeywordTokenizerFactory" />
-        </analyzer>
-        <analyzer type="query">
-            <tokenizer class="solr.KeywordTokenizerFactory" />
-        </analyzer>
-    </fieldType>
- </types>
+        <fieldType name="commaAndWhitespaceDelimited" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true" indexed="true" stored="true"
+                   multiValued="true">
+            <analyzer type="index">
+                <tokenizer class="solr.PatternTokenizerFactory" pattern="[\s,]" />
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.PatternTokenizerFactory" pattern="[\s,]" />
+                <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" splitOnNumerics="0" splitOnCaseChange="0" />
+            </analyzer>
+        </fieldType>
+    </types>
 </schema>

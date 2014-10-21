@@ -2,6 +2,7 @@ package org.springframework.test.web.servlet.request;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpMethod;
+
 /**
  * @author Kamill Sokol dev@sokol-web.de
  */
@@ -11,7 +12,8 @@ public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcR
         ADMIN("user0@localhost","0"),
         USER1("user1@localhost","1"),
         USER2("user2@localhost","2"),
-        USER3("user3@localhost","3");
+        USER3("user3@localhost","3"),
+        USER4("user4@localhost","4");
 
         KnownUser(String username, String password) {
             this.username = username;
@@ -40,6 +42,10 @@ public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcR
 
     public static MockHttpServletRequestBuilder getAsUser3(String urlTemplate, Object... urlVariables) {
         return actionAsUserX(HttpMethod.GET, KnownUser.USER3.username, KnownUser.USER3.password, urlTemplate, urlVariables);
+    }
+
+    public static MockHttpServletRequestBuilder getAsUser4(String urlTemplate, Object... urlVariables) {
+        return actionAsUserX(HttpMethod.GET, KnownUser.USER4.username, KnownUser.USER4.password, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilderWithJsonSupport patchAsUser1(String urlTemplate, Object... urlVariables) {

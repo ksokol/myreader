@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.solr.core.SolrOperations;
+import org.springframework.data.solr.core.query.SimpleQuery;
 
 /**
  * @author Kamill Sokol
@@ -22,9 +24,13 @@ public class SearchIndexInSyncTest extends IntegrationTestSupport {
 	private SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
 	@Autowired
 	private SubscriptionEntryRepository subscriptionEntryRepository;
+    @Autowired
+    private SolrOperations solrOperations;
 
     @Before
     public void setUp() {
+        solrOperations.delete(new SimpleQuery("*:*"));
+        solrOperations.commit();
         Page p = (Page) subscriptionEntrySearchRepository.findAll();
         assertThat(p.getTotalElements(), is(0L));
     }

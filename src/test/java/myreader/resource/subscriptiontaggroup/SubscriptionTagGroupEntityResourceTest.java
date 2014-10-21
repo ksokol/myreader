@@ -3,23 +3,17 @@ package myreader.resource.subscriptiontaggroup;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser3;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
-import myreader.service.search.jobs.IndexSyncJob;
 import myreader.test.IntegrationTestSupport;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Kamill Sokol
  */
 public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSupport {
-
-    @Autowired
-    private IndexSyncJob indexSyncJob;
 
     @Test
     public void testNotFoundException() throws Exception {
@@ -47,34 +41,25 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
 
     @Test
     public void testSubscriptionTagGroupEntriesSearchEmptyResult() throws Exception {
-        indexSyncJob.run();
-
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag3/entries?q=unknown"))
                 .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag3#unknown.json"));
     }
 
     @Test
     public void testSubscriptionTagGroupEntriesSearch() throws Exception {
-        indexSyncJob.run();
-
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries?q=mysql"))
                 .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#mysql.json"));
     }
 
     @Test
     public void testNewSubscriptionTagGroupEntriesSearchEmptyResult() throws Exception {
-        indexSyncJob.run();
-
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag3/entries/new?q=unknown"))
                 .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag3#new#q=unknown.json"));
     }
 
     @Test
     public void testNewSubscriptionTagGroupEntriesSearch() throws Exception {
-        indexSyncJob.run();
-
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries/new?q=party"))
-                .andDo(print())
                 .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#new#q=party.json"));
     }
 

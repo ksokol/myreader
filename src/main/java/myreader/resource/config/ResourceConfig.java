@@ -13,6 +13,8 @@ import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import myreader.resource.subscriptionentrytaggroup.SubscriptionEntryTagGroupCollectionResource;
+import myreader.resource.subscriptionentrytaggroup.beans.SubscriptionEntryTagGroupGetResponse;
 import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionResource;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
 import myreader.resource.user.UserEntityResource;
@@ -92,6 +94,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
         el.add(new EntityLinker(UserGetResponse.class, UserEntityResource.class));
         el.add(new EntityLinker(ExclusionSetGetResponse.class, ExclusionSetCollectionResource.class));
         el.add(new ExclusionPatternEntityLinks());
+        el.add(new EntityLinker(SubscriptionEntryTagGroupGetResponse.class, SubscriptionEntryTagGroupCollectionResource.class));
 
         return new DelegatingEntityLinks(el);
     }

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Kamill Sokol
  */
 @Repository
-public interface SubscriptionEntrySearchRepository extends SolrCrudRepository<SearchableSubscriptionEntry, Long> {
+public interface SubscriptionEntrySearchRepository extends SolrCrudRepository<SearchableSubscriptionEntry, Long>, SubscriptionEntrySearchRepositoryCustom {
 
 	@Query(value = "?0", filters = "owner_id:?1", defaultOperator = OR)
 	Slice<SearchableSubscriptionEntry> searchAndFilterByUser(String q, Long userId, Pageable pageable);
