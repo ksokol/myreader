@@ -1,5 +1,14 @@
 package myreader.resource.service.patch;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayInputStream;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -10,17 +19,8 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
-import java.io.ByteArrayInputStream;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public class PatchSupportMessageConverterTest {
 
@@ -102,6 +102,12 @@ public class PatchSupportMessageConverterTest {
         assertThat(uut.canRead(Object.class, MediaType.APPLICATION_JSON), is(false));
         assertThat(uut.canRead(PatchSupport.class, MediaType.APPLICATION_JSON), is(true));
         assertThat(uut.canRead(PatchSupportTestBean.class, MediaType.APPLICATION_JSON), is(true));
+        assertThat(uut.canRead(PatchSupportTestBean.class, MediaType.ALL), is(false));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testCanWrite() {
+        uut.canWrite(MediaType.ALL);
     }
 
     static class PatchSupportTestBean extends PatchSupport {

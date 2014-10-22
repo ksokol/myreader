@@ -32,7 +32,13 @@ public class SubscriptionTagGroupGetResponseAssembler extends AbstractResourceAs
         target.setUnseen(source.getUnseen());
         target.setTag(source.getName());
 
-        switch(source.getType()) {
+        TagGroup.Type type = source.getType();
+
+        if(type == null) {
+            return target;
+        }
+
+        switch(type) {
             case AGGREGATE:
                 Link subscriptionsByTag = entityLinks.linkFor(getOutputClass(), source.getName()).slash("subscriptions").withRel("subscriptions");
                 target.add(subscriptionsByTag);
@@ -47,6 +53,8 @@ public class SubscriptionTagGroupGetResponseAssembler extends AbstractResourceAs
                 target.add(subscription);
                 Link subscriptionEntries = entityLinks.linkFor(SubscriptionGetResponse.class, source.getId()).slash("entries").withRel("entries");
                 target.add(subscriptionEntries);
+                break;
+            default:
                 break;
         }
 

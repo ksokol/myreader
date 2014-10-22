@@ -1,5 +1,11 @@
 package myreader.resource.service.patch;
 
+import static java.util.Map.Entry;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Map;
+
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.http.HttpInputMessage;
@@ -8,17 +14,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Map;
-
-import static java.util.Map.Entry;
-
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
+@Component
 class PatchSupportMessageConverter extends MappingJackson2HttpMessageConverter {
 
     @Override
@@ -61,7 +63,7 @@ class PatchSupportMessageConverter extends MappingJackson2HttpMessageConverter {
 
     @Override
     protected boolean canWrite(MediaType mediaType) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override

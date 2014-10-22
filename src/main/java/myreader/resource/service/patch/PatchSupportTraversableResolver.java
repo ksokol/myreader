@@ -1,42 +1,27 @@
 package myreader.resource.service.patch;
 
-import org.springframework.stereotype.Component;
-import org.springframework.util.ClassUtils;
+import java.lang.annotation.ElementType;
 
 import javax.validation.Path;
 import javax.validation.TraversableResolver;
-import java.lang.annotation.ElementType;
+
+import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
-@Component
+@Component("patchSupportTraversableResolver")
 class PatchSupportTraversableResolver implements TraversableResolver {
-
-    private TraversableResolver delegate;
 
     @Override
     public boolean isReachable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
-        boolean isReachable = true;
-        if(delegate != null) {
-            isReachable = delegate.isReachable(traversableObject, traversableProperty, rootBeanType, pathToTraversableObject, elementType);
-        }
-        if(isReachable) {
-            isReachable = maybeFilled(traversableObject, traversableProperty);
-        }
-        return isReachable;
+        return maybeFilled(traversableObject, traversableProperty);
     }
 
     @Override
     public boolean isCascadable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
-        boolean isCascadable = true;
-        if(delegate != null) {
-            isCascadable = delegate.isCascadable(traversableObject, traversableProperty, rootBeanType, pathToTraversableObject, elementType);
-        }
-        if(isCascadable) {
-            isCascadable = maybeFilled(traversableObject, traversableProperty);
-        }
-        return isCascadable;
+        throw new UnsupportedOperationException();
     }
 
     private boolean maybeFilled(Object traversableObject, Path.Node traversableProperty) {
@@ -48,11 +33,4 @@ class PatchSupportTraversableResolver implements TraversableResolver {
         return true;
     }
 
-    public TraversableResolver getDelegate() {
-        return delegate;
-    }
-
-    public void setDelegate(TraversableResolver delegate) {
-        this.delegate = delegate;
-    }
 }

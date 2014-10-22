@@ -1,14 +1,16 @@
 package myreader.resource.service.patch;
 
+import java.beans.PropertyDescriptor;
+
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-
-import java.beans.PropertyDescriptor;
 
 /**
  * @author Kamill Sokol
  */
+@Component
 class PatchServiceImpl implements PatchService {
 
     @Override

@@ -1,11 +1,12 @@
 package myreader.service.subscription.impl;
 
+import java.util.List;
+
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
-import myreader.service.AccessDeniedException;
 import myreader.service.EntityNotFoundException;
 import myreader.service.feed.FeedService;
 import myreader.service.search.SubscriptionSearchService;
@@ -13,14 +14,13 @@ import myreader.service.subscription.SubscriptionExistException;
 import myreader.service.subscription.SubscriptionService;
 import myreader.service.time.TimeService;
 import myreader.service.user.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -48,18 +48,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public void delete(Long id) {
         User currentUser = userService.getCurrentUser();
-        Subscription subscription = subscriptionRepository.findOne(id);
+        Subscription subscription = subscriptionRepository.findByIdAndUsername(id, currentUser.getEmail());
 
         if(subscription == null) {
             throw new EntityNotFoundException();
         }
 
-        if(subscription.getUser().equals(currentUser)) {
-            subscriptionRepository.delete(subscription.getId());
-            subscriptionSearchService.delete(subscription.getId());
-        } else {
-            throw new AccessDeniedException();
-        }
+        subscriptionRepository.delete(subscription.getId());
+        subscriptionSearchService.delete(subscription.getId());
     }
 
     @Override

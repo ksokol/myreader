@@ -1,11 +1,7 @@
 package myreader.resource.subscription.assembler;
 
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import myreader.entity.Subscription;
 import myreader.resource.config.ResourceConfig;
-import myreader.resource.subscription.beans.SubscriptionGetResponse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +26,6 @@ public class SubscriptionGetResponseAssemblerTest {
     @Test
     public void testNpe() throws Exception {
         Subscription subscription = new Subscription();
-        SubscriptionGetResponse response = uut.toResource(subscription);
-        assertThat(response.getLink("origin"), nullValue());
+        uut.toResource(subscription);
     }
 }

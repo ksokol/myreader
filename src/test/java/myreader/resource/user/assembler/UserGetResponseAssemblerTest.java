@@ -1,11 +1,7 @@
 package myreader.resource.user.assembler;
 
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import myreader.entity.User;
 import myreader.resource.config.ResourceConfig;
-import myreader.resource.user.beans.UserGetResponse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +26,6 @@ public class UserGetResponseAssemblerTest {
     @Test
     public void testNpe() throws Exception {
         User user = new User();
-        UserGetResponse response = uut.toResource(user);
-        assertThat(response.getLink("subscriptions"), nullValue());
+        uut.toResource(user);
     }
 }

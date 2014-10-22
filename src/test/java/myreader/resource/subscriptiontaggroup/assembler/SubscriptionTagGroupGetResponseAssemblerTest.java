@@ -1,6 +1,6 @@
-package myreader.resource.subscriptionentry.assembler;
+package myreader.resource.subscriptiontaggroup.assembler;
 
-import myreader.entity.SearchableSubscriptionEntry;
+import myreader.entity.TagGroup;
 import myreader.resource.config.ResourceConfig;
 
 import org.junit.Before;
@@ -12,20 +12,20 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 /**
  * @author Kamill Sokol
  */
-public class SearchableSubscriptionEntryGetResponseAssemblerTest {
+public class SubscriptionTagGroupGetResponseAssemblerTest {
 
-    private SearchableSubscriptionEntryGetResponseAssembler uut;
+    private SubscriptionTagGroupGetResponseAssembler uut;
 
     @Before
     public void setUp() throws Exception {
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockHttpServletRequest));
-        uut = new SearchableSubscriptionEntryGetResponseAssembler(new ResourceConfig().entityLinks());
+        uut = new SubscriptionTagGroupGetResponseAssembler(new ResourceConfig().entityLinks());
     }
 
     @Test
     public void testNpe() throws Exception {
-        SearchableSubscriptionEntry searchableSubscriptionEntry = new SearchableSubscriptionEntry();
-        uut.toResource(searchableSubscriptionEntry);
+        TagGroup subscription = new TagGroup(0, null, 0, null);
+        uut.toResource(subscription);
     }
 }

@@ -8,7 +8,6 @@ import javax.validation.TraversableResolver;
 import myreader.resource.exclusionpattern.assembler.ExclusionPatternEntityLinks;
 import myreader.resource.exclusionset.ExclusionSetCollectionResource;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
-import myreader.resource.service.patch.PatchSupportConfig;
 import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
@@ -21,6 +20,7 @@ import myreader.resource.user.UserEntityResource;
 import myreader.resource.user.beans.UserGetResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +50,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 //@EnableWebMvcSecurity
 @ComponentScan(basePackages = {"myreader.resource", "spring.hateoas"})
 @Configuration
-@Import({PatchSupportConfig.class, CustomDelegatingWebMvcConfiguration.class})
+@Import(CustomDelegatingWebMvcConfiguration.class)
 @EnableSpringDataWebSupport
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
@@ -58,7 +58,8 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     private HttpMessageConverter patchSupportHttpMessageConverter;
 
     @Autowired
-    private TraversableResolver patchSupportTraversableResolver;
+    @Qualifier("patchSupportTraversableResolver")
+    private TraversableResolver traversableResolver;
 
     //TODO should be added automatically when @EnableWebMvcSecurity is enabled
     @Override
@@ -75,7 +76,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     @Override
     public Validator getValidator() {
         LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-        localValidatorFactoryBean.setTraversableResolver(patchSupportTraversableResolver);
+        localValidatorFactoryBean.setTraversableResolver(traversableResolver);
         return localValidatorFactoryBean;
     }
 
