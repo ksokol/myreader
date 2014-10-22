@@ -1,5 +1,6 @@
 package myreader.resource.subscriptionentrytaggroup;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
@@ -52,5 +53,11 @@ public class SubscriptionEntryTagGroupEntityResourceTest extends IntegrationTest
     public void testTag8tag9() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntryTagGroups/tag8Tag9"))
                 .andExpect(content().isJsonEqual("subscriptionentrytaggroup/subscriptionentrytaggroup#tag8Tag9.json"));
+    }
+
+    @Test
+    public void testSearch() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptionEntryTagGroups/tag1?q=time"))
+                .andExpect(content().isJsonEqual("subscriptionentrytaggroup/subscriptionentrytaggroup#tag1?q=time.json"));
     }
 }

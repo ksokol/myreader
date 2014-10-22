@@ -1,5 +1,7 @@
 package myreader.resource.subscriptionentrytaggroup;
 
+import static myreader.Constants.SEARCH_PARAM;
+
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.service.search.SubscriptionEntrySearchRepository;
@@ -11,6 +13,7 @@ import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import spring.hateoas.ResourceAssemblers;
@@ -39,5 +42,13 @@ public class SubscriptionEntryTagGroupEntityResource {
         Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.findByTagAndUser(id, user.getId(), pageable);
         return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
     }
+
+    @RequestMapping(value = "", params = SEARCH_PARAM)
+    public SlicedResources<SubscriptionEntryGetResponse> search(@PathVariable("id") String id, @RequestParam(SEARCH_PARAM) String q, Pageable pageable,
+                                                                @AuthenticationPrincipal MyReaderUser user) {
+        Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.searchByTagAndUser(q, id, user.getId(), pageable);
+        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+    }
+
 
 }
