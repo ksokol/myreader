@@ -85,7 +85,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public EntityLinks EntityLinks() {
+    public EntityLinks entityLinks() {
         List<EntityLinks> el = new ArrayList<>();
 
         el.add(new EntityLinker(SubscriptionTagGroupGetResponse.class, SubscriptionTagGroupCollectionResource.class));

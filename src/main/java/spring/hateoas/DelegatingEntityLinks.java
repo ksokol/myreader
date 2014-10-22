@@ -51,6 +51,6 @@ public class DelegatingEntityLinks extends AbstractEntityLinks {
                 return delegate;
             }
         }
-        throw new IllegalArgumentException("Cannot determine link for "+type.getName()+". No EntityLinks instance found supporting the domain type!");
+        throw new IllegalArgumentException("Cannot determine link for "+type.getName()+". No entityLinks instance found supporting the domain type!");
     }
 }
