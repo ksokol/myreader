@@ -11,6 +11,7 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -24,6 +25,8 @@ public class DelegatingResourceAssemblers implements ResourceAssemblers {
 
     @Autowired
     public DelegatingResourceAssemblers(List<AbstractResourceAssembler> delegates, PagedResourcesAssembler pagedResourcesAssembler) {
+        Assert.notNull(delegates, "delegates is null");
+        Assert.notNull(pagedResourcesAssembler, "pagedResourcesAssembler is null");
         this.delegates = delegates;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
