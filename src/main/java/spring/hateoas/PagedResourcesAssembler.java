@@ -104,7 +104,7 @@ public class PagedResourcesAssembler<T> {
         return new SlicedResources.PageMetadata(slice.getSize(), slice.getNumber());
     }
 
-    private static class SimpleResourceAssembler<T> implements ResourceAssembler<T, Resource<T>> {
+    static class SimpleResourceAssembler<T> implements ResourceAssembler<T, Resource<T>> {
         @Override
         public Resource<T> toResource(T entity) {
             return new Resource<T>(entity);
