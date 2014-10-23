@@ -5,11 +5,11 @@ import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
 import spring.hateoas.AbstractResourceAssembler;
+import spring.hateoas.EntityLinks;
 
 /**
  * @author Kamill Sokol

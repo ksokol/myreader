@@ -11,10 +11,11 @@ import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetRespo
 import myreader.resource.user.beans.UserGetResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import spring.hateoas.EntityLinks;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 

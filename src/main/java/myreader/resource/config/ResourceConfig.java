@@ -26,7 +26,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
-import org.springframework.hateoas.EntityLinks;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -39,6 +38,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import spring.hateoas.DelegatingEntityLinks;
 import spring.hateoas.EntityLinker;
+import spring.hateoas.EntityLinks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -87,7 +87,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
 
     @Bean
     public EntityLinks entityLinks() {
-        List<EntityLinks> el = new ArrayList<>();
+        List<EntityLinker> el = new ArrayList<>();
 
         el.add(new EntityLinker(SubscriptionTagGroupGetResponse.class, SubscriptionTagGroupCollectionResource.class));
         el.add(new EntityLinker(SubscriptionEntryGetResponse.class, SubscriptionEntryCollectionResource.class));

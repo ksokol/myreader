@@ -5,11 +5,11 @@ import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
 import spring.hateoas.AbstractResourceAssembler;
+import spring.hateoas.EntityLinks;
 
 /**
  * @author Kamill Sokol

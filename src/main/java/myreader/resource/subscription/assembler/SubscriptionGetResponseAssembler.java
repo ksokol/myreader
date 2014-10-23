@@ -6,12 +6,12 @@ import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import spring.hateoas.AbstractResourceAssembler;
+import spring.hateoas.EntityLinks;
 
 /**
  * @author Kamill Sokol

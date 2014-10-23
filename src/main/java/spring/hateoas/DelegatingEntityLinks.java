@@ -2,20 +2,18 @@ package spring.hateoas;
 
 import java.util.List;
 
-import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkBuilder;
-import org.springframework.hateoas.core.AbstractEntityLinks;
 import org.springframework.util.Assert;
 
 /**
  * @author Kamill Sokol
  */
-public class DelegatingEntityLinks extends AbstractEntityLinks {
+public class DelegatingEntityLinks implements EntityLinks {
 
-    private final List<EntityLinks> delegates;
+    private final List<EntityLinker> delegates;
 
-    public DelegatingEntityLinks(List<EntityLinks> delegates) {
+    public DelegatingEntityLinks(List<EntityLinker> delegates) {
         Assert.notNull(delegates, "delegates must not be null!");
         this.delegates = delegates;
     }
@@ -41,16 +39,29 @@ public class DelegatingEntityLinks extends AbstractEntityLinks {
     }
 
     @Override
-    public boolean supports(Class<?> delimiter) {
-        return getDelegateFor(delimiter) != null;
+    public Link linkForSingleResource(Class<?> type, Object id) {
+        return getDelegateFor(type).linkToSingleResource(type, id);
     }
 
-    private EntityLinks getDelegateFor(Class<?> type) {
-        for (EntityLinks delegate : delegates) {
+    protected boolean supports(Class<?> delimiter) {
+        return getDelegateForInternal(delimiter) != null;
+    }
+
+
+    protected EntityLinker getDelegateFor(Class<?> type) {
+        EntityLinker delegate = getDelegateForInternal(type);
+        if(delegate != null) {
+            return delegate;
+        }
+        throw new IllegalArgumentException("Cannot determine link for "+type.getName()+". No entityLinks instance found supporting the domain type!");
+    }
+
+    protected EntityLinker getDelegateForInternal(Class<?> type) {
+        for (EntityLinker delegate : delegates) {
             if(delegate.supports(type)) {
                 return delegate;
             }
         }
-        throw new IllegalArgumentException("Cannot determine link for "+type.getName()+". No entityLinks instance found supporting the domain type!");
+        return null;
     }
 }
