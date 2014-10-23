@@ -15,7 +15,6 @@ import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetRespo
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.hateoas.EntityLinks;
 
 /**
  * @author Kamill Sokol

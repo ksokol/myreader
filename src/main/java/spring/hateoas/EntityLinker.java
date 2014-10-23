@@ -7,7 +7,6 @@ import java.net.URLEncoder;
 
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkBuilder;
-import org.springframework.hateoas.core.AbstractEntityLinks;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -16,18 +15,25 @@ import spring.hateoas.annotation.Rel;
 /**
  * @author Kamill Sokol
  */
-public class EntityLinker extends AbstractEntityLinks {
+public class EntityLinker implements EntityLinks {
 
     private final Class<?> entityClass;
     private final Class<?> resourceClass;
     private final String rel;
+    private final String encoding;
 
     public EntityLinker(Class<?> entityClass, Class<?> resourceClass) {
+        this(entityClass, resourceClass, "UTF-8");
+    }
+
+    public EntityLinker(Class<?> entityClass, Class<?> resourceClass, String encoding) {
         Assert.notNull(entityClass, "entity class is null");
         Assert.notNull(resourceClass, "resource class is null");
+        Assert.notNull(encoding, "encoding is null");
 
         this.entityClass = entityClass;
         this.resourceClass = resourceClass;
+        this.encoding = encoding;
         Rel relAnnotation = entityClass.getAnnotation(Rel.class);
 
         if(relAnnotation != null) {
@@ -58,7 +64,12 @@ public class EntityLinker extends AbstractEntityLinks {
     }
 
     @Override
-    public boolean supports(Class<?> delimiter) {
+    public Link linkForSingleResource(Class<?> type, Object id) {
+        Assert.notNull(type, "type is null");
+        return linkToSingleResource(type.getClass(), id);
+    }
+
+    protected boolean supports(Class<?> delimiter) {
         return ClassUtils.isAssignable(entityClass, delimiter);
     }
 
@@ -70,11 +81,11 @@ public class EntityLinker extends AbstractEntityLinks {
         return rel;
     }
 
-    private static String encodeAsUTF8(Object toEncode) {
+    private String encodeAsUTF8(Object toEncode) {
         try {
-            return URLEncoder.encode(String.valueOf(toEncode), "UTF-8");
+            return URLEncoder.encode(String.valueOf(toEncode), encoding);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RuntimeException("encoding [" + encoding + "] not supported");
         }
     }
 }
