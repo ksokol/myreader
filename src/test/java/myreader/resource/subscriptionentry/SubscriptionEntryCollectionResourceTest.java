@@ -35,4 +35,11 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("content", hasSize(2)));
     }
+
+    @Test
+    public void testSearchSubscriptionEntryByTag() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptionEntries?q=tag1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("content", hasSize(2)));
+    }
 }
