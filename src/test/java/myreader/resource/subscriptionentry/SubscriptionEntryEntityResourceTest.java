@@ -20,7 +20,7 @@ import org.springframework.data.solr.core.query.SimpleQuery;
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
+public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport {
 
     @Autowired
     private SolrOperations solrOperations;

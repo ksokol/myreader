@@ -25,14 +25,14 @@ import spring.security.MyReaderUser;
 @Transactional
 @RestController
 @RequestMapping("subscriptionEntries")
-public class SubscriptionEntryResource {
+public class SubscriptionEntryEntityResource {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final ResourceAssemblers resourceAssemblers;
     private final PatchService patchService;
 
     @Autowired
-    public SubscriptionEntryResource(SubscriptionEntryRepository subscriptionEntryRepository, ResourceAssemblers resourceAssemblers, PatchService patchService) {
+    public SubscriptionEntryEntityResource(SubscriptionEntryRepository subscriptionEntryRepository, ResourceAssemblers resourceAssemblers, PatchService patchService) {
         this.subscriptionEntryRepository = subscriptionEntryRepository;
         this.resourceAssemblers = resourceAssemblers;
         this.patchService = patchService;
