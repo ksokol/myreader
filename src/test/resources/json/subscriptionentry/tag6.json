@@ -2,7 +2,7 @@
     "links": [
         {
             "rel": "self",
-            "href": "http://localhost/subscriptionEntryTagGroups/tag6"
+            "href": "http://localhost/subscriptionEntries/tag/tag6"
         }
     ],
     "content": [

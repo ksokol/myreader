@@ -11,8 +11,8 @@
             "count": 1,
             "links": [
                 {
-                    "rel": "entries(tag==~ /.+/)",
-                    "href": "http://localhost/subscriptionEntryTagGroups/tag1/entries"
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag1"
                 }
             ]
         },
@@ -21,8 +21,8 @@
             "count": 1,
             "links": [
                 {
-                    "rel": "entries(tag==~ /.+/)",
-                    "href": "http://localhost/subscriptionEntryTagGroups/tag2-tag3/entries"
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag2-tag3"
                 }
             ]
         },
@@ -31,8 +31,8 @@
             "count": 1,
             "links": [
                 {
-                    "rel": "entries(tag==~ /.+/)",
-                    "href": "http://localhost/subscriptionEntryTagGroups/tag4/entries"
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag4"
                 }
             ]
         },
@@ -41,8 +41,8 @@
             "count": 1,
             "links": [
                 {
-                    "rel": "entries(tag==~ /.+/)",
-                    "href": "http://localhost/subscriptionEntryTagGroups/tag5/entries"
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag5"
                 }
             ]
         },
@@ -51,8 +51,8 @@
             "count": 1,
             "links": [
                 {
-                    "rel": "entries(tag==~ /.+/)",
-                    "href": "http://localhost/subscriptionEntryTagGroups/tag6/entries"
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag6"
                 }
             ]
         },
@@ -61,8 +61,8 @@
             "count": 1,
             "links": [
                 {
-                    "rel": "entries(tag==~ /.+/)",
-                    "href": "http://localhost/subscriptionEntryTagGroups/tag7/entries"
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag7"
                 }
             ]
         },
@@ -71,8 +71,8 @@
             "count": 1,
             "links": [
                 {
-                    "rel": "entries(tag==~ /.+/)",
-                    "href": "http://localhost/subscriptionEntryTagGroups/tag8Tag9/entries"
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag8Tag9"
                 }
             ]
         }

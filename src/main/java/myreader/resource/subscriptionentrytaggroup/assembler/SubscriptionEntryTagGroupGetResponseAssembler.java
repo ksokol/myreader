@@ -1,6 +1,7 @@
 package myreader.resource.subscriptionentrytaggroup.assembler;
 
 import myreader.entity.SubscriptionEntryTagGroup;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentrytaggroup.beans.SubscriptionEntryTagGroupGetResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class SubscriptionEntryTagGroupGetResponseAssembler extends AbstractResou
         target.setTag(source.getTag());
         target.setCount(source.getCount());
 
-        Link entries = entityLinks.linkFor(getOutputClass(), source.getTag()).slash("entries").withRel("entries(tag==~ /.+/)");
+        Link entries = entityLinks.linkFor(SubscriptionEntryGetResponse.class).slash("tag").slash(source.getTag()).withRel("entries");
         target.add(entries);
 
         return target;

@@ -2,14 +2,14 @@
     "links": [
         {
             "rel": "self",
-            "href": "http://localhost/subscriptionEntryTagGroups/tag1?q=time"
+            "href": "http://localhost/subscriptionEntries/tag/tag7"
         }
     ],
     "content": [
         {
-            "title": "Party time",
-            "feedTitle": "user1_subscription3",
-            "tag": "tag1",
+            "title": "Throwing Exceptions from Fields",
+            "feedTitle": "user4_subscription1",
+            "tag": "tag6,tag7",
             "content": "content",
             "seen": false,
             "createdAt": "2011-04-15T19:20:46Z",

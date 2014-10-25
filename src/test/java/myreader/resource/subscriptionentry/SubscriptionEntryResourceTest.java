@@ -2,7 +2,9 @@ package myreader.resource.subscriptionentry;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser2;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
@@ -81,5 +83,53 @@ public class SubscriptionEntryResourceTest extends IntegrationTestSupport {
 
         SearchableSubscriptionEntry after = solrOperations.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(after.getTag(), is("tag-patched"));
+    }
+
+    @Test
+    public void testTag1() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag1"))
+                .andExpect(content().isJsonEqual("subscriptionentry/tag1.json"));
+    }
+
+    @Test
+    public void testTag2tag3() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag2-tag3"))
+                .andExpect(content().isJsonEqual("subscriptionentry/tag2-tag3.json"));
+    }
+
+    @Test
+    public void testTag4() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag4"))
+                .andExpect(content().isJsonEqual("subscriptionentry/tag4.json"));
+    }
+
+    @Test
+    public void testTag5() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag5"))
+                .andExpect(content().isJsonEqual("subscriptionentry/tag5.json"));
+    }
+
+    @Test
+    public void testTag6() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag6"))
+                .andExpect(content().isJsonEqual("subscriptionentry/tag6.json"));
+    }
+
+    @Test
+    public void testTag7() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag7"))
+                .andExpect(content().isJsonEqual("subscriptionentry/tag7.json"));
+    }
+
+    @Test
+    public void testTag8tag9() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag8Tag9"))
+                .andExpect(content().isJsonEqual("subscriptionentry/tag8Tag9.json"));
+    }
+
+    @Test
+    public void testSearch() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptionEntries/tag/tag1?q=time"))
+                .andExpect(content().isJsonEqual("subscriptionentry/tag1?q=time.json"));
     }
 }

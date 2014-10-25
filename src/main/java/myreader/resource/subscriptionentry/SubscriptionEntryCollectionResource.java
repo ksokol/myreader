@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,5 +52,18 @@ public class SubscriptionEntryCollectionResource {
 		Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.searchAndFilterByUser(q, user.getId(), pageable);
         return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
 	}
+
+    @RequestMapping(value = "tag/{id}", method = RequestMethod.GET)
+    public SlicedResources<SubscriptionEntryGetResponse> getByTag(@PathVariable("id") String id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+        Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.findByTagAndUser(id, user.getId(), pageable);
+        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+    }
+
+    @RequestMapping(value = "tag/{id}", params = SEARCH_PARAM)
+    public SlicedResources<SubscriptionEntryGetResponse> searchByTag(@PathVariable("id") String id, @RequestParam(SEARCH_PARAM) String q, Pageable pageable,
+                                                                @AuthenticationPrincipal MyReaderUser user) {
+        Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.searchByTagAndUser(q, id, user.getId(), pageable);
+        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+    }
 
 }
