@@ -10,7 +10,7 @@
         <field name="title" type="text"  indexed="true"  stored="true" multiValued="false" />
         <field name="tag" type="string" indexed="true"  stored="true" multiValued="false" />
         <field name="tags" type="commaAndWhitespaceDelimited" />
-        <field name="content" type="text" indexed="false"  stored="true" multiValued="false" />
+        <field name="content" type="text" indexed="true"  stored="true" multiValued="false" />
         <field name="feed_id" type="string"  indexed="true"  stored="true" multiValued="false" required="true"/>
         <field name="ft_tags" type="text" />
 
