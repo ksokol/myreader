@@ -1,6 +1,8 @@
 package myreader.resource.subscriptionentry;
 
+import static myreader.Constants.ID;
 import static myreader.Constants.SEARCH_PARAM;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
@@ -14,7 +16,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ import spring.security.MyReaderUser;
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping(value = "/subscriptionEntries")
+@RequestMapping(value = "/subscriptionEntries", method = GET)
 public class SubscriptionEntryCollectionResource {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;
@@ -40,27 +41,39 @@ public class SubscriptionEntryCollectionResource {
         this.resourceAssemblers = resourceAssemblers;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping
     public SlicedResources<SubscriptionEntryGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findAllByUser(pageable, user.getId());
         return resourceAssemblers.toResource(pagedEntries, SubscriptionEntryGetResponse.class);
     }
 
-	@RequestMapping(value = "", params = SEARCH_PARAM, method = RequestMethod.GET)
+	@RequestMapping(params = SEARCH_PARAM)
 	public SlicedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam(SEARCH_PARAM) String q, Pageable pageable,
                                                                                        @AuthenticationPrincipal MyReaderUser user) {
 		Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.searchAndFilterByUser(q, user.getId(), pageable);
         return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
 	}
 
-    @RequestMapping(value = "tag/{id}", method = RequestMethod.GET)
-    public SlicedResources<SubscriptionEntryGetResponse> getByTag(@PathVariable("id") String id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+    @RequestMapping(value = "tag")
+    public SlicedResources<SubscriptionEntryGetResponse> getTags(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+        Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.findAllTagsAndUser(user.getId(), pageable);
+        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+    }
+
+    @RequestMapping(value = "tag", params = SEARCH_PARAM)
+    public SlicedResources<SubscriptionEntryGetResponse> searchOverTag(@RequestParam(SEARCH_PARAM) String q, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
+        Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.searchAllTagsAndUser(q, user.getId(), pageable);
+        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+    }
+
+    @RequestMapping(value = "tag/{" + ID +"}")
+    public SlicedResources<SubscriptionEntryGetResponse> getByTag(@PathVariable(ID) String id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
         Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.findByTagAndUser(id, user.getId(), pageable);
         return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
     }
 
-    @RequestMapping(value = "tag/{id}", params = SEARCH_PARAM)
-    public SlicedResources<SubscriptionEntryGetResponse> searchByTag(@PathVariable("id") String id, @RequestParam(SEARCH_PARAM) String q, Pageable pageable,
+    @RequestMapping(value = "tag/{" + ID + "}", params = SEARCH_PARAM)
+    public SlicedResources<SubscriptionEntryGetResponse> searchByTag(@PathVariable(ID) String id, @RequestParam(SEARCH_PARAM) String q, Pageable pageable,
                                                                 @AuthenticationPrincipal MyReaderUser user) {
         Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.searchByTagAndUser(q, id, user.getId(), pageable);
         return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
