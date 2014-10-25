@@ -1,5 +1,9 @@
 package myreader.resource.subscriptionentry;
 
+import static myreader.Constants.ID;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
+
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.resource.exception.ResourceNotFoundException;
@@ -13,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import spring.hateoas.ResourceAssemblers;
@@ -24,7 +27,7 @@ import spring.security.MyReaderUser;
  */
 @Transactional
 @RestController
-@RequestMapping("subscriptionEntries")
+@RequestMapping("subscriptionEntries/{" + ID + "}")
 public class SubscriptionEntryEntityResource {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;
@@ -38,13 +41,13 @@ public class SubscriptionEntryEntityResource {
         this.patchService = patchService;
     }
 
-    @RequestMapping(value= "{id}", method = RequestMethod.GET)
-    public SubscriptionEntryGetResponse get(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
+    @RequestMapping(method = GET)
+    public SubscriptionEntryGetResponse get(@PathVariable(ID) Long id, @AuthenticationPrincipal MyReaderUser user) {
         return resourceAssemblers.toResource(findOrThrowException(id, user.getUsername()), SubscriptionEntryGetResponse.class);
     }
 
-    @RequestMapping(value= "{id}", method = RequestMethod.PATCH)
-    public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user,
+    @RequestMapping(method = PATCH)
+    public SubscriptionEntryGetResponse patch(@PathVariable(ID) Long id, @AuthenticationPrincipal MyReaderUser user,
                                               @RequestBody SubscriptionEntryPatchRequest request) {
         SubscriptionEntry patched = patchService.patch(request, findOrThrowException(id, user.getUsername()));
         SubscriptionEntry saved = subscriptionEntryRepository.save(patched);
