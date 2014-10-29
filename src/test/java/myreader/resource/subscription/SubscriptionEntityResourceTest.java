@@ -7,9 +7,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser2;
+import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
 import myreader.test.IntegrationTestSupport;
 
@@ -24,35 +24,35 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
     public void testEntityResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/structure-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/structure-subscription#1.json"));
     }
 
     @Test
     public void testEntityResourceSubscriptionEntries() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/3/entries"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/subscriptions#3#entries.json"));
+                .andExpect(jsonEquals("subscription/subscriptions#3#entries.json"));
     }
 
     @Test
     public void testEntityResourceSubscriptionEntriesSearch() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/3/entries?q=party"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/subscriptions#3#entries#q=party.json"));
+                .andExpect(jsonEquals("subscription/subscriptions#3#entries#q=party.json"));
     }
 
     @Test
     public void testEntityResourceNewSubscriptionEntries() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/3/entries/new"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/subscriptions#3#entries#new.json"));
+                .andExpect(jsonEquals("subscription/subscriptions#3#entries#new.json"));
     }
 
     @Test
     public void testEntityResourceSubscriptionNewEntriesSearch() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/3/entries/new?q=party"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/subscriptions#3#entries#new#q=party.json"));
+                .andExpect(jsonEquals("subscription/subscriptions#3#entries#new#q=party.json"));
     }
 
     @Test
@@ -88,32 +88,32 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
     public void testPatchableProperties() throws Exception {
         mockMvc.perform(patchAsUser1("/subscriptions/1")
                 .json("subscription/patchable-properties1-subscription#1.json"))
-                .andExpect(content().isJsonEqual("subscription/patchable-properties2-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/patchable-properties2-subscription#1.json"));
     }
 
     @Test
     public void testPatch() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/subscription#1.json"));
+                .andExpect(jsonEquals("subscription/subscription#1.json"));
 
         mockMvc.perform(patchAsUser1("/subscriptions/1")
                 .json("{'tag':'test1'}"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/patch1-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/patch1-subscription#1.json"));
 
         mockMvc.perform(patchAsUser1("/subscriptions/1")
                 .json("{'title':null}"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/patch2-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/patch2-subscription#1.json"));
 
         mockMvc.perform(patchAsUser1("/subscriptions/1")
                 .json("{'title':'test2','tag':'test2'}"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/patch3-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/patch3-subscription#1.json"));
 
         mockMvc.perform(getAsUser1("/subscriptions/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/patch3-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/patch3-subscription#1.json"));
     }
 }

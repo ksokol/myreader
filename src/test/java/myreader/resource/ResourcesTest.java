@@ -1,7 +1,7 @@
 package myreader.resource;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
+import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 
 import myreader.test.IntegrationTestSupport;
 
@@ -15,7 +15,7 @@ public class ResourcesTest extends IntegrationTestSupport {
     @Test
     public void testResources() throws Exception {
         mockMvc.perform(getAsUser1("/"))
-                .andExpect(content().isJsonEqual("resources.json"));
+                .andExpect(jsonEquals("resources.json"));
     }
 
 }

@@ -2,8 +2,8 @@ package myreader.resource.exclusionpattern;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
+import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
 import myreader.test.IntegrationTestSupport;
 
@@ -18,7 +18,7 @@ public class ExclusionPatternEntityResourceTest extends IntegrationTestSupport {
     public void testEntityResourceForUser1JsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser1("/exclusions/1/pattern/0"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("exclusionpattern/exclusionpattern#1pattern#0.json"));
+                .andExpect(jsonEquals("exclusionpattern/exclusionpattern#1pattern#0.json"));
     }
 
     @Test

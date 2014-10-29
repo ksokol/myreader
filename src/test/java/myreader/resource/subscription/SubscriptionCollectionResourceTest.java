@@ -5,9 +5,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser3;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
+import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
 import java.util.Date;
 
@@ -30,7 +30,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
     public void testCollectionResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptions"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/subscriptions.json"));
+                .andExpect(jsonEquals("subscription/subscriptions.json"));
     }
 
     @Test
@@ -38,7 +38,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         mockMvc.perform(postAsUser2("/subscriptions")
                 .json("{}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().isJsonEqual("subscription/post-empty-url.json"));
+                .andExpect(jsonEquals("subscription/post-empty-url.json"));
     }
 
     @Test
@@ -46,7 +46,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         mockMvc.perform(postAsUser2("/subscriptions")
                 .json("{'url':'invalid url'}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().isJsonEqual("subscription/post-invalid-url.json"));
+                .andExpect(jsonEquals("subscription/post-invalid-url.json"));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         mockMvc.perform(postAsUser2("/subscriptions")
                 .json("subscription/post-duplicate-request.json"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().isJsonEqual("subscription/post-duplicate-response.json"));
+                .andExpect(jsonEquals("subscription/post-duplicate-response.json"));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         mockMvc.perform(postAsUser2("/subscriptions")
                 .json("subscription/post-new-request.json"))
                 .andExpect(status().isOk())
-                .andExpect(content().isJsonEqual("subscription/post-new-response.json"));
+                .andExpect(jsonEquals("subscription/post-new-response.json"));
     }
 
 	@Test

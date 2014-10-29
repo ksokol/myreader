@@ -3,8 +3,8 @@ package myreader.resource.subscriptiontaggroup;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser3;
+import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
 
 import myreader.test.IntegrationTestSupport;
 
@@ -24,43 +24,43 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
     @Test
     public void testSubscriptionTagGroupSubscriptions() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionTagGroups/tag1/subscriptions"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#subscriptions.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#tag1#subscriptions.json"));
     }
 
     @Test
     public void testSubscriptionTagGroupEntries() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#entries.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#tag1#entries.json"));
     }
 
     @Test
     public void testNewSubscriptionTagGroupEntries() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries/new"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#entries#new.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#tag1#entries#new.json"));
     }
 
     @Test
     public void testSubscriptionTagGroupEntriesSearchEmptyResult() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag3/entries?q=unknown"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag3#unknown.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#tag3#unknown.json"));
     }
 
     @Test
     public void testSubscriptionTagGroupEntriesSearch() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries?q=mysql"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#mysql.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#tag1#mysql.json"));
     }
 
     @Test
     public void testNewSubscriptionTagGroupEntriesSearchEmptyResult() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag3/entries/new?q=unknown"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag3#new#q=unknown.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#tag3#new#q=unknown.json"));
     }
 
     @Test
     public void testNewSubscriptionTagGroupEntriesSearch() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries/new?q=party"))
-                .andExpect(content().isJsonEqual("subscriptiontaggroup/subscriptiontaggroups#tag1#new#q=party.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#tag1#new#q=party.json"));
     }
 
     @Test
