@@ -123,6 +123,23 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <!--
+            <plugin>
+                <groupId>com.qulice</groupId>
+                <artifactId>qulice-maven-plugin</artifactId>
+                <version>0.10</version>
+                <configuration>
+                    <license>file:${basedir}/LICENSE.txt</license>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
 		</plugins>
 	</build>
 	<dependencies>
