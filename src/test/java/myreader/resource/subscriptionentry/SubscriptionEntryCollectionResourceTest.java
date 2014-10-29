@@ -2,6 +2,7 @@ package myreader.resource.subscriptionentry;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchersWithJsonAssertSupport.content;
@@ -41,5 +42,18 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
         mockMvc.perform(getAsUser1("/subscriptionEntries?q=tag1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("content", hasSize(2)));
+    }
+
+    @Test
+    public void testSubscriptionEntryTag() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries/tag"))
+                .andExpect(content().isJsonEqual("subscriptionentry/tag.json"));
+    }
+
+    @Test
+    public void searchSubscriptionEntryTag() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries/tag?q=help"))
+                .andExpect(content().isJsonEqual("subscriptionentry/tag?q=help.json"));
+
     }
 }

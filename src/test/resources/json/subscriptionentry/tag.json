@@ -1,0 +1,59 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionEntries/tag"
+        }
+    ],
+    "content": [
+        {
+            "title": "Livelocks from wait/notify",
+            "feedTitle": "user4_subscription1",
+            "tag": "tag8Tag9",
+            "content": "content",
+            "seen": false,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        },
+        {
+            "title": "Throwing Exceptions from Fields",
+            "feedTitle": "user4_subscription1",
+            "tag": "tag6,tag7",
+            "content": "content",
+            "seen": false,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        },
+        {
+            "title": "I need your help!",
+            "feedTitle": "user4_subscription1",
+            "tag": "tag4 tag5",
+            "content": "content",
+            "seen": false,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        },
+        {
+            "title": "MySQL is to SQL like ??? to NoSQL",
+            "feedTitle": "user4_subscription1",
+            "tag": "tag2-tag3",
+            "content": "content",
+            "seen": false,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        },
+        {
+            "title": "Party time",
+            "feedTitle": "user4_subscription1",
+            "tag": "tag1",
+            "content": "content",
+            "seen": false,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        }
+    ],
+    "page": {
+        "size": 20,
+        "number": 0
+    }
+}
