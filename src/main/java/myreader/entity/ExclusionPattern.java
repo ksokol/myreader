@@ -1,5 +1,7 @@
 package myreader.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,14 +11,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.Date;
 
 /**
  * @author Kamill Sokol
  */
 @Entity
 @Table(name = "exclusion_pattern")
-public class ExclusionPattern implements Comparable<ExclusionPattern> {
+public class ExclusionPattern implements Comparable<ExclusionPattern>, Identifiable {
 
     @Id
     @GeneratedValue
@@ -43,10 +44,12 @@ public class ExclusionPattern implements Comparable<ExclusionPattern> {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

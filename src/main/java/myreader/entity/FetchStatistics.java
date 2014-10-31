@@ -2,11 +2,19 @@ package myreader.entity;
 
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "fetch_statistics")
-public class FetchStatistics {
+public class FetchStatistics implements Identifiable {
 
     @Id
     @GeneratedValue
@@ -39,10 +47,12 @@ public class FetchStatistics {
     @Column(columnDefinition="text")
     private String message;
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

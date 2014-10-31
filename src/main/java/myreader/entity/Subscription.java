@@ -1,12 +1,25 @@
 package myreader.entity;
 
-import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
+
 @Entity
 @Table(name = "user_feed")
-public class Subscription {
+public class Subscription implements Identifiable {
 
     @Id
     @GeneratedValue
@@ -47,10 +60,12 @@ public class Subscription {
     @Version
     private long version;
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

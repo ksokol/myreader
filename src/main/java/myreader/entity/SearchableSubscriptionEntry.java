@@ -1,13 +1,13 @@
 package myreader.entity;
 
-import org.apache.solr.client.solrj.beans.Field;
-
 import java.util.Date;
+
+import org.apache.solr.client.solrj.beans.Field;
 
 /**
  * @author Kamill Sokol
  */
-public class SearchableSubscriptionEntry {
+public class SearchableSubscriptionEntry implements Identifiable {
 
 	@Field
 	private Long id;
@@ -42,10 +42,12 @@ public class SearchableSubscriptionEntry {
 	@Field("created_at")
 	private Date createdAt;
 
+    @Override
 	public Long getId() {
 		return id;
 	}
 
+    @Override
 	public void setId(Long id) {
 		this.id = id;
 	}

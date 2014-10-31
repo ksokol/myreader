@@ -20,7 +20,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     public void testCollectionResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionEntries"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/subscriptionEntries.json"));
+                .andExpect(jsonEquals("subscriptionentry/structure.json"));
     }
 
     @Test
