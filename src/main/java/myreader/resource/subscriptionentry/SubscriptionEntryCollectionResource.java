@@ -58,9 +58,9 @@ public class SubscriptionEntryCollectionResource {
 	}
 
     @RequestMapping(value = "tag")
-    public SlicedResources<SubscriptionEntryGetResponse> getTags(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
-        Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.findAllTagsAndUser(user.getId(), pageable);
-        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+    public SequencedResources<SubscriptionEntryGetResponse> getTags(Sequenceable sequenceable, @AuthenticationPrincipal MyReaderUser user) {
+        Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.findAllTagsAndUser(user.getId(), sequenceable.getNext() ,sequenceable.toPageable());
+        return resourceAssemblers.toResource(toSequence(sequenceable, slice.getContent()), SubscriptionEntryGetResponse.class);
     }
 
     @RequestMapping(value = "tag", params = SEARCH_PARAM)

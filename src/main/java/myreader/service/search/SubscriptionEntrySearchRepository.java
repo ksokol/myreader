@@ -42,6 +42,6 @@ public interface SubscriptionEntrySearchRepository extends SolrCrudRepository<Se
     @Query(value = "?0", filters = {"ft_tags:?1", "owner_id:?2"}, defaultOperator = OR)
     Slice<SearchableSubscriptionEntry> searchByTagAndUser(String q, String tag, long userId, Pageable pageable);
 
-    @Query(value = "*", filters = {"ft_tags:*", "owner_id:?0"})
-    Slice<SearchableSubscriptionEntry> findAllTagsAndUser(Long id, Pageable pageable);
+    @Query(value = "*", filters = {"ft_tags:*", "owner_id:?0", "id:[* TO ?1]"})
+    Slice<SearchableSubscriptionEntry> findAllTagsAndUser(Long id, Long nextId, Pageable pageable);
 }
