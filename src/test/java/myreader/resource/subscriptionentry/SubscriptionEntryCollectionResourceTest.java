@@ -30,7 +30,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     public void testSearchSubscriptionEntryByTitle() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionEntries?q=mysql"))
                 .andExpect(status().isOk())
-				.andExpect(jsonEquals("subscriptionentry/subscriptionEntries#q#mysql.json"));
+				.andExpect(jsonEquals("subscriptionentry/q#mysql.json"));
     }
 
     @Test
@@ -81,6 +81,30 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("links[?(@.rel=='next')]", emptyIterable()))
                 .andExpect(jsonPath("content[0].links[?(@.rel=='self')].href", contains(endsWith("/1009"))));
+    }
+
+    @Test
+    public void testSearchPagingStart() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries?size=1&q=l*"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=l*&next=1010&size=1"))))
+                .andExpect(jsonPath("content[0].links[?(@.rel=='self')].href", contains(endsWith("/1013"))));
+    }
+
+    @Test
+    public void testSearchPagingMiddle() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries?q=*&size=1&next=1012"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=*&next=1011&size=1"))))
+                .andExpect(jsonPath("content[0].links[?(@.rel=='self')].href", contains(endsWith("/1012"))));
+    }
+
+    @Test
+    public void testSearchPagingEnd() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries?q=l*&size=1&next=1010"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", emptyIterable()))
+                .andExpect(jsonPath("content[0].links[?(@.rel=='self')].href", contains(endsWith("/1010"))));
     }
 
 }

@@ -18,8 +18,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SubscriptionEntrySearchRepository extends SolrCrudRepository<SearchableSubscriptionEntry, Long>, SubscriptionEntrySearchRepositoryCustom {
 
-	@Query(value = "?0", filters = "owner_id:?1", defaultOperator = OR)
-	Slice<SearchableSubscriptionEntry> searchAndFilterByUser(String q, Long userId, Pageable pageable);
+	@Query(value = "?0", filters = {"owner_id:?1", "id:[* TO ?2]"}, defaultOperator = OR)
+	Slice<SearchableSubscriptionEntry> searchAndFilterByUser(String q, Long userId, Long nextId, Pageable pageable);
 
 	@Query(value = "?0", filters = {"feed_id:?1", "owner_id:?2"}, defaultOperator = OR)
     Slice<SearchableSubscriptionEntry> searchAndFilterByUserAndSubscription(String q, Long id, Long userId, Pageable pageable);
