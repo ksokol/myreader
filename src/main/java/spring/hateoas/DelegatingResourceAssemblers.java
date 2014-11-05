@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import spring.data.domain.Sequence;
+import spring.data.domain.SequenceImpl;
+
 /**
  * @author Kamill Sokol
  */
@@ -60,6 +63,17 @@ public class DelegatingResourceAssemblers implements ResourceAssemblers {
         Class<?> inputClass = slice.getContent().get(0).getClass();
         ResourceAssembler resourceAssembler = getResourceAssemblerFor(inputClass, outputClass);
         return pagedResourcesAssembler.toResource(slice, resourceAssembler);
+    }
+
+    @Override
+    public <D> SequencedResources<D> toResource(final Sequence<?> sequence, final Class<D> outputClass) {
+        if(sequence == null || CollectionUtils.isEmpty(sequence.getContent())) {
+            return pagedResourcesAssembler.toResource(new SequenceImpl());
+        }
+
+        Class<?> inputClass = sequence.getContent().get(0).getClass();
+        ResourceAssembler resourceAssembler = getResourceAssemblerFor(inputClass, outputClass);
+        return pagedResourcesAssembler.toResource(sequence, resourceAssembler);
     }
 
     private AbstractResourceAssembler getResourceAssemblerFor(Class<?> inputClass, Class<?> outputClass) {

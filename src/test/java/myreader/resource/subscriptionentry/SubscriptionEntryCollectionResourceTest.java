@@ -1,5 +1,8 @@
 package myreader.resource.subscriptionentry;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
@@ -54,6 +57,30 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     public void searchSubscriptionEntryTag() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/tag?q=help"))
                 .andExpect(jsonEquals("subscriptionentry/tag?q=help.json"));
-
     }
+
+    @Test
+    public void testPagingStart() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries?size=1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?next=1012&size=1"))))
+                .andExpect(jsonPath("content[0].links[?(@.rel=='self')].href", contains(endsWith("/1013"))));
+    }
+
+    @Test
+    public void testPagingMiddle() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries?size=1&next=1012"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?next=1011&size=1"))))
+                .andExpect(jsonPath("content[0].links[?(@.rel=='self')].href", contains(endsWith("/1012"))));
+    }
+
+    @Test
+    public void testPagingEnd() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries?size=1&next=1009"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("links[?(@.rel=='next')]", emptyIterable()))
+                .andExpect(jsonPath("content[0].links[?(@.rel=='self')].href", contains(endsWith("/1009"))));
+    }
+
 }

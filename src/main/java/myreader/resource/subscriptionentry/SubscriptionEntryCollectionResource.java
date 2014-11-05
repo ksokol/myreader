@@ -3,6 +3,7 @@ package myreader.resource.subscriptionentry;
 import static myreader.Constants.ID;
 import static myreader.Constants.SEARCH_PARAM;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static spring.data.domain.SequenceUtil.toSequence;
 
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
@@ -19,7 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import spring.data.domain.Sequence;
+import spring.data.domain.Sequenceable;
 import spring.hateoas.ResourceAssemblers;
+import spring.hateoas.SequencedResources;
 import spring.hateoas.SlicedResources;
 import spring.security.MyReaderUser;
 
@@ -42,9 +46,10 @@ public class SubscriptionEntryCollectionResource {
     }
 
     @RequestMapping
-    public SlicedResources<SubscriptionEntryGetResponse> get(Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
-        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findAllByUser(pageable, user.getId());
-        return resourceAssemblers.toResource(pagedEntries, SubscriptionEntryGetResponse.class);
+    public SequencedResources<SubscriptionEntryGetResponse> get(Sequenceable sequenceable, @AuthenticationPrincipal MyReaderUser user) {
+        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findAllByUser(sequenceable.toPageable(), user.getId(), sequenceable.getNext());
+        Sequence<SubscriptionEntry> sequence = toSequence(sequenceable, pagedEntries.getContent());
+        return resourceAssemblers.toResource(sequence, SubscriptionEntryGetResponse.class);
     }
 
 	@RequestMapping(params = SEARCH_PARAM)

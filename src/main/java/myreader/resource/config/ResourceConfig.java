@@ -36,6 +36,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import spring.data.web.SequenceableHandlerMethodArgumentResolver;
 import spring.hateoas.DelegatingEntityLinks;
 import spring.hateoas.EntityLinker;
 import spring.hateoas.EntityLinks;
@@ -65,6 +66,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new AuthenticationPrincipalArgumentResolver());
+        argumentResolvers.add(new SequenceableHandlerMethodArgumentResolver());
     }
 
     @Override
