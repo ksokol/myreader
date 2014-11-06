@@ -44,7 +44,7 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
     public void testEntityResourceNewSubscriptionEntries() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/3/entries/new"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscription/subscriptions#3#entries#new.json"));
+                .andExpect(jsonEquals("subscription/3#entries#new.json"));
     }
 
     @Test
