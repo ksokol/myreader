@@ -12,7 +12,6 @@ import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.service.search.SubscriptionEntrySearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 import spring.data.domain.Sequenceable;
 import spring.hateoas.ResourceAssemblers;
 import spring.hateoas.SequencedResources;
-import spring.hateoas.SlicedResources;
 import spring.security.MyReaderUser;
 
 import static myreader.Constants.SEARCH_PARAM;
@@ -98,10 +96,10 @@ public class SubscriptionEntityResource {
     }
 
     @RequestMapping(value = "/entries", params = SEARCH_PARAM, method = RequestMethod.GET)
-    public SlicedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam(SEARCH_PARAM) String q, @PathVariable("id") Long id,
-                                                                                      Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
-        Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.searchAndFilterByUserAndSubscription(q, id, user.getId(), pageable);
-        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+    public SequencedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam(SEARCH_PARAM) String q, @PathVariable("id") Long id,
+                                                                                          Sequenceable sequenceable, @AuthenticationPrincipal MyReaderUser user) {
+        Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.searchAndFilterByUserAndSubscription(q, id, user.getId(), sequenceable.getNext(), sequenceable.toPageable());
+        return resourceAssemblers.toResource(toSequence(sequenceable, slice.getContent()), SubscriptionEntryGetResponse.class);
     }
 
     public Subscription findOrThrowException(Long id, String username) {
