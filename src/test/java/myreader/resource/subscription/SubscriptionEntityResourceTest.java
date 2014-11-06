@@ -1,5 +1,8 @@
 package myreader.resource.subscription;
 
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
@@ -10,10 +13,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import myreader.test.IntegrationTestSupport;
-
-import org.junit.Test;
 
 /**
  * @author Kamill Sokol
@@ -52,7 +51,7 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
     public void testEntityResourceSubscriptionNewEntriesSearch() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/3/entries/new?q=party"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscription/subscriptions#3#entries#new#q=party.json"));
+                .andExpect(jsonEquals("subscription/3#entries#new#q=party.json"));
     }
 
     @Test
