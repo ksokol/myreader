@@ -35,8 +35,8 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
     @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1 and se.seen = false and se.id <= ?3 order by se.id desc")
     Slice<SubscriptionEntry> findNewBySubscriptionAndUser(Long userId, Long subscriptionId, Long nextId, Pageable pageable);
 
-    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.tag = ?2 and se.subscription.user.id = ?1 and se.seen = false order by se.id desc")
-    Slice<SubscriptionEntry> findNewBySubscriptionTagAndUser(Long userId, String tag, Pageable pageable);
+    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.tag = ?2 and se.subscription.user.id = ?1 and se.seen = false and se.id <= ?3 order by se.id desc")
+    Slice<SubscriptionEntry> findNewBySubscriptionTagAndUser(Long userId, String tag, Long nextId, Pageable pageable);
 
     @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.user.id = ?1 and se.id <= ?2 order by se.id desc")
     Slice<SubscriptionEntry> findAllByUser(Pageable pageable, Long id, Long nextId);

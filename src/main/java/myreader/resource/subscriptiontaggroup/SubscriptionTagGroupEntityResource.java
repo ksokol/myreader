@@ -85,10 +85,10 @@ public class SubscriptionTagGroupEntityResource {
     }
 
     @RequestMapping(value = "/entries/new", method = RequestMethod.GET)
-    public SlicedResources<SubscriptionEntryGetResponse> getNewSubscriptionEntriesByTag(@PathVariable("id") String tagGroup, Pageable pageable,
-                                                                                     @AuthenticationPrincipal MyReaderUser user) {
-        Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findNewBySubscriptionTagAndUser(user.getId(), tagGroup, pageable);
-        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+    public SequencedResources<SubscriptionEntryGetResponse> getNewSubscriptionEntriesByTag(@PathVariable("id") String tagGroup, Sequenceable sequenceable,
+                                                                                           @AuthenticationPrincipal MyReaderUser user) {
+        Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findNewBySubscriptionTagAndUser(user.getId(), tagGroup, sequenceable.getNext(), sequenceable.toPageable());
+        return resourceAssemblers.toResource(toSequence(sequenceable, slice.getContent()), SubscriptionEntryGetResponse.class);
     }
 
     @RequestMapping(value = "/entries/new", method = RequestMethod.GET, params = SEARCH_PARAM)

@@ -35,7 +35,7 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
     @Test
     public void testNewSubscriptionTagGroupEntries() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries/new"))
-                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#tag1#entries#new.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/tag1#entries#new.json"));
     }
 
     @Test
