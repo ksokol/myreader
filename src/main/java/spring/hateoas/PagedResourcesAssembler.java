@@ -1,10 +1,5 @@
 package spring.hateoas;
 
-import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -19,9 +14,13 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import spring.data.domain.Sequence;
 import spring.data.web.SequenceableHandlerMethodArgumentResolver;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 /**
  * @author Oliver Gierke
@@ -34,10 +33,6 @@ public class PagedResourcesAssembler<T> {
     private final SequenceableHandlerMethodArgumentResolver sequenceableResolver = new SequenceableHandlerMethodArgumentResolver();
 
     public PagedResources<Resource<T>> toResource(Page<T> entity) {
-        return toResource(entity, new SimpleResourceAssembler<T>());
-    }
-
-    public SlicedResources<Resource<T>> toResource(Slice<T> entity) {
         return toResource(entity, new SimpleResourceAssembler<T>());
     }
 
@@ -57,23 +52,6 @@ public class PagedResourcesAssembler<T> {
 
         PagedResources<R> pagedResources = new PagedResources<>(resources, asPageMetadata(page));
         List<Link> links = addPaginationLinks(page, getDefaultUriString().toUriString());
-
-        pagedResources.add(links);
-        return pagedResources;
-    }
-
-    public <R extends ResourceSupport> SlicedResources<R> toResource(Slice<T> slice, ResourceAssembler<T, R> assembler) {
-        Assert.notNull(slice, "Slice must not be null!");
-        Assert.notNull(assembler, "ResourceAssembler must not be null!");
-
-        List<R> resources = new ArrayList<>(slice.getNumberOfElements());
-
-        for (T element : slice) {
-            resources.add(assembler.toResource(element));
-        }
-
-        SlicedResources<R> pagedResources = new SlicedResources<>(resources, asPageMetadata(slice));
-        List<Link> links = addPaginationLinks(slice, getDefaultUriString().toUriString());
 
         pagedResources.add(links);
         return pagedResources;
@@ -140,10 +118,6 @@ public class PagedResourcesAssembler<T> {
 
     private static <T> PagedResources.PageMetadata asPageMetadata(Page<T> page) {
         return new PagedResources.PageMetadata(page.getSize(), page.getNumber(), page.getTotalElements(), page.getTotalPages());
-    }
-
-    private static <T> SlicedResources.PageMetadata asPageMetadata(Slice<T> slice) {
-        return new SlicedResources.PageMetadata(slice.getSize(), slice.getNumber());
     }
 
     static class SimpleResourceAssembler<T> implements ResourceAssembler<T, Resource<T>> {

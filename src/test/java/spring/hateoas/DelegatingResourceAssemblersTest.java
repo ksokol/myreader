@@ -1,16 +1,5 @@
 package spring.hateoas;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -19,12 +8,23 @@ import org.junit.rules.ExpectedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import spring.data.domain.Sequence;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Kamill Sokol
@@ -62,28 +62,28 @@ public class DelegatingResourceAssemblersTest {
     }
 
     @Test
-    public void testObjectToRessourceNpe() {
+    public void testObjectToResourceNpe() {
         Object result = uut.toResource((Object) null, Object.class);
         assertThat(result, nullValue());
     }
 
     @Test
-    public void testPageToRessourceNpe() {
+    public void testPageToResourceNpe() {
         PagedResources<Object> result = uut.toResource((Page) null, Object.class);
         assertThat(result, instanceOf(PagedResources.class));
     }
 
     @Test
-    public void testPageToRessourceEmptyContent() {
+    public void testPageToResourceEmptyContent() {
         Page<Object> page = new PageImpl(Collections.emptyList());
         PagedResources<Object> result = uut.toResource(page, Object.class);
         assertThat(result, instanceOf(PagedResources.class));
     }
 
     @Test
-    public void testSliceToRessourceNpe() {
-        SlicedResources<Object> result = uut.toResource((Slice) null, Object.class);
-        assertThat(result, instanceOf(SlicedResources.class));
+    public void testSequenceToResourceNpe() {
+        SequencedResources<Object> result = uut.toResource((Sequence) null, Object.class);
+        assertThat(result, instanceOf(SequencedResources.class));
     }
 
     @Test
