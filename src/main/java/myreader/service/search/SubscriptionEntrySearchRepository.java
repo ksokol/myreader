@@ -1,16 +1,15 @@
 package myreader.service.search;
 
-import static org.springframework.data.solr.core.query.Query.Operator.OR;
-
-import java.util.List;
-
 import myreader.entity.SearchableSubscriptionEntry;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.solr.repository.Query;
 import org.springframework.data.solr.repository.SolrCrudRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+import static org.springframework.data.solr.core.query.Query.Operator.OR;
 
 /**
  * @author Kamill Sokol
@@ -36,11 +35,11 @@ public interface SubscriptionEntrySearchRepository extends SolrCrudRepository<Se
     @Query(value = "?0", filters = {"tag:*", "owner_id:?1", "id:[* TO ?2]"}, defaultOperator = OR)
     Slice<SearchableSubscriptionEntry> searchAllTagsAndUser(String q, long userId, Long nextId, Pageable pageable);
 
-    @Query(value = "*", filters = {"ft_tags:?0", "owner_id:?1"})
-    Slice<SearchableSubscriptionEntry> findByTagAndUser(String tag, long userId, Pageable pageable);
+    @Query(value = "*", filters = {"ft_tags:?0", "owner_id:?1", "id:[* TO ?2]"})
+    Slice<SearchableSubscriptionEntry> findByTagAndUser(String tag, long userId, Long nextId, Pageable pageable);
 
-    @Query(value = "?0", filters = {"ft_tags:?1", "owner_id:?2"}, defaultOperator = OR)
-    Slice<SearchableSubscriptionEntry> searchByTagAndUser(String q, String tag, long userId, Pageable pageable);
+    @Query(value = "?0", filters = {"ft_tags:?1", "owner_id:?2", "id:[* TO ?3]"}, defaultOperator = OR)
+    Slice<SearchableSubscriptionEntry> searchByTagAndUser(String q, String tag, long userId, Long nextId, Pageable pageable);
 
     @Query(value = "*", filters = {"ft_tags:*", "owner_id:?0", "id:[* TO ?1]"})
     Slice<SearchableSubscriptionEntry> findAllTagsAndUser(Long id, Long nextId, Pageable pageable);
