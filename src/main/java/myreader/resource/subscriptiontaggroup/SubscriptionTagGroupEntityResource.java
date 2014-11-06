@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +24,8 @@ import spring.data.domain.SequenceImpl;
 import spring.data.domain.Sequenceable;
 import spring.hateoas.ResourceAssemblers;
 import spring.hateoas.SequencedResources;
-import spring.hateoas.SlicedResources;
 import spring.security.MyReaderUser;
 
-import java.util.Collections;
 import java.util.List;
 
 import static myreader.Constants.SEARCH_PARAM;
@@ -92,18 +89,18 @@ public class SubscriptionTagGroupEntityResource {
     }
 
     @RequestMapping(value = "/entries/new", method = RequestMethod.GET, params = SEARCH_PARAM)
-    public SlicedResources<SubscriptionEntryGetResponse> searchNewSubscriptionEntriesByTag(@PathVariable("id") String tagGroup,
+    public SequencedResources<SubscriptionEntryGetResponse> searchNewSubscriptionEntriesByTag(@PathVariable("id") String tagGroup,
                                                                                            @RequestParam(SEARCH_PARAM) String q,
-                                                                                           Pageable pageable,
+                                                                                           Sequenceable sequenceable,
                                                                                            @AuthenticationPrincipal MyReaderUser user) {
         List<Long> subscriptionIds = subscriptionRepository.findByTagAndUser(tagGroup, user.getId());
 
         if(CollectionUtils.isEmpty(subscriptionIds)) {
-            return resourceAssemblers.toResource(new SliceImpl<>(Collections.emptyList()), SubscriptionEntryGetResponse.class);
+            return resourceAssemblers.toResource(new SequenceImpl<>(), SubscriptionEntryGetResponse.class);
         }
 
-        Slice<SearchableSubscriptionEntry> searchableSubscriptionEntries = subscriptionEntrySearchRepository.searchNewByAndFilterByUserAndSubscriptions(q,
-                subscriptionIds, user.getId(), pageable);
-        return resourceAssemblers.toResource(searchableSubscriptionEntries, SubscriptionEntryGetResponse.class);
+        Slice<SearchableSubscriptionEntry> slice = subscriptionEntrySearchRepository.searchNewByAndFilterByUserAndSubscriptions(q,
+                subscriptionIds, user.getId(), sequenceable.getNext(), sequenceable.toPageable());
+        return resourceAssemblers.toResource(toSequence(sequenceable, slice.getContent()), SubscriptionEntryGetResponse.class);
     }
 }
