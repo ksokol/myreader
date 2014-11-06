@@ -1,12 +1,5 @@
 package myreader.service.subscriptionentry.impl;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Arrays;
-import java.util.List;
-
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
@@ -18,12 +11,18 @@ import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.subscriptionentry.SubscriptionEntryBatchService;
 import myreader.test.IntegrationTestSupport;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Kamill Sokol
@@ -48,7 +47,7 @@ public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSuppor
 
         Page<FeedEntry> beforeFeedEntries = feedEntryRepository.findByFeedId(beforeFeed.getId(), new PageRequest(1,10));
         Slice<SubscriptionEntry> beforeSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
-                beforeSubscription.getId(), new PageRequest(0, 10));
+                beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
 
         assertThat(beforeFeed.getUrl(), is(beforeSubscription.getFeed().getUrl()));
         assertThat(beforeFeedEntries.getTotalElements(), is(3L));
@@ -64,7 +63,7 @@ public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSuppor
         assertThat(afterFeedEntries.getTotalElements(), is(4L));
 
         Slice<SubscriptionEntry> afterSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
-                beforeSubscription.getId(), new PageRequest(0, 10));
+                beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
 
         Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(3L);
         assertThat(afterSubscriptionEntries.getContent(), hasSize(3));

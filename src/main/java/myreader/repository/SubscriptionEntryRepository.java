@@ -1,15 +1,14 @@
 package myreader.repository;
 
-import java.util.List;
-
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -30,8 +29,8 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
     @Override
     List<SubscriptionEntry> findAll(Iterable<Long> ids);
 
-    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1 order by se.id desc")
-    Slice<SubscriptionEntry> findBySubscriptionAndUser(Long userId, Long subscriptionId, Pageable pageable);
+    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1 and se.id <= ?3 order by se.id desc")
+    Slice<SubscriptionEntry> findBySubscriptionAndUser(Long userId, Long subscriptionId, Long nextId, Pageable pageable);
 
     @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1 and se.seen = false order by se.id desc")
     Slice<SubscriptionEntry> findNewBySubscriptionAndUser(Long userId, Long subscriptionId, Pageable pageable);

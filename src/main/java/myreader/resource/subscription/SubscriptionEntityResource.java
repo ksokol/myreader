@@ -1,7 +1,5 @@
 package myreader.resource.subscription;
 
-import static myreader.Constants.SEARCH_PARAM;
-
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
@@ -13,7 +11,6 @@ import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.service.search.SubscriptionEntrySearchRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -27,10 +24,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
+import spring.data.domain.Sequenceable;
 import spring.hateoas.ResourceAssemblers;
+import spring.hateoas.SequencedResources;
 import spring.hateoas.SlicedResources;
 import spring.security.MyReaderUser;
+
+import static myreader.Constants.SEARCH_PARAM;
+import static spring.data.domain.SequenceUtil.toSequence;
 
 /**
  * @author Kamill Sokol
@@ -90,10 +91,10 @@ public class SubscriptionEntityResource {
     }
 
     @RequestMapping(value = "/entries", method = RequestMethod.GET)
-    public SlicedResources<SubscriptionEntryGetResponse> getSubscriptionEntries(@PathVariable("id") Long id, Pageable pageable,
+    public SequencedResources<SubscriptionEntryGetResponse> getSubscriptionEntries(@PathVariable("id") Long id, Sequenceable sequenceable,
                                                                                 @AuthenticationPrincipal MyReaderUser user ) {
-        Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBySubscriptionAndUser(user.getId(), id, pageable);
-        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+        Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBySubscriptionAndUser(user.getId(), id, sequenceable.getNext(), sequenceable.toPageable());
+        return resourceAssemblers.toResource(toSequence(sequenceable, slice.getContent()), SubscriptionEntryGetResponse.class);
     }
 
     @RequestMapping(value = "/entries", params = SEARCH_PARAM, method = RequestMethod.GET)
