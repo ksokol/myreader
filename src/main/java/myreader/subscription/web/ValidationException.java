@@ -3,6 +3,7 @@ package myreader.subscription.web;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class ValidationException extends RuntimeException {
 
     private static final long serialVersionUID = 8961579631797984194L;

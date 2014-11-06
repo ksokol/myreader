@@ -1,10 +1,7 @@
 package myreader.subscription.web;
 
-import java.net.URL;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
 import myreader.API;
 import myreader.dto.ExclusionPatternDto;
 import myreader.dto.SubscriptionDto;
@@ -13,12 +10,11 @@ import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.fetcher.icon.IconUpdateRequestEvent;
-
 import myreader.repository.FeedRepository;
 import myreader.repository.UserRepository;
 import myreader.service.EntityNotFoundException;
-import myreader.service.subscription.SubscriptionService;
 import myreader.service.search.SubscriptionSearchService;
+import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
@@ -31,9 +27,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@Deprecated
 @Transactional
 @Controller
 @RequestMapping(API.V1 + "subscription")
