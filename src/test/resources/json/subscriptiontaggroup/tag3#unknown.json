@@ -5,9 +5,5 @@
             "href": "http://localhost/subscriptionTagGroups/tag3/entries?q=unknown"
         }
     ],
-    "content": [],
-    "page": {
-        "size": 0,
-        "number": 0
-    }
+    "content": []
 }

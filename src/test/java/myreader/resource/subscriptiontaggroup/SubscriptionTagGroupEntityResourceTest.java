@@ -1,14 +1,13 @@
 package myreader.resource.subscriptiontaggroup;
 
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser3;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import myreader.test.IntegrationTestSupport;
-
-import org.junit.Test;
 
 /**
  * @author Kamill Sokol
@@ -42,13 +41,13 @@ public class SubscriptionTagGroupEntityResourceTest extends IntegrationTestSuppo
     @Test
     public void testSubscriptionTagGroupEntriesSearchEmptyResult() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag3/entries?q=unknown"))
-                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#tag3#unknown.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/tag3#unknown.json"));
     }
 
     @Test
     public void testSubscriptionTagGroupEntriesSearch() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionTagGroups/tag1/entries?q=mysql"))
-                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#tag1#mysql.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/tag1#mysql.json"));
     }
 
     @Test
