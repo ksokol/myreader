@@ -33,9 +33,5 @@
             "createdAt": "2011-04-15T19:20:46Z",
             "links": "${json-unit.ignore}"
         }
-    ],
-    "page": {
-        "size": 20,
-        "number": 0
-    }
+    ]
 }

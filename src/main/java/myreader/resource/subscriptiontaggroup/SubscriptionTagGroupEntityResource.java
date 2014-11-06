@@ -1,10 +1,5 @@
 package myreader.resource.subscriptiontaggroup;
 
-import static myreader.Constants.SEARCH_PARAM;
-
-import java.util.Collections;
-import java.util.List;
-
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
@@ -13,7 +8,6 @@ import myreader.repository.SubscriptionRepository;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.service.search.SubscriptionEntrySearchRepository;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,10 +21,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import spring.data.domain.Sequenceable;
 import spring.hateoas.ResourceAssemblers;
+import spring.hateoas.SequencedResources;
 import spring.hateoas.SlicedResources;
 import spring.security.MyReaderUser;
+
+import java.util.Collections;
+import java.util.List;
+
+import static myreader.Constants.SEARCH_PARAM;
+import static spring.data.domain.SequenceUtil.toSequence;
 
 /**
  * @author Kamill Sokol
@@ -61,11 +62,11 @@ public class SubscriptionTagGroupEntityResource {
     }
 
     @RequestMapping(value = "/entries", method = RequestMethod.GET)
-    public SlicedResources<SubscriptionEntryGetResponse> getSubscriptionEntriesByTag(@PathVariable("id") String tagGroup, Pageable pageable,
+    public SequencedResources<SubscriptionEntryGetResponse> getSubscriptionEntriesByTag(@PathVariable("id") String tagGroup, Sequenceable sequenceable,
                                                                                      @AuthenticationPrincipal MyReaderUser user) {
 
-        Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBySubscriptionTagAndUser(tagGroup, user.getId(), pageable);
-        return resourceAssemblers.toResource(slice, SubscriptionEntryGetResponse.class);
+        Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBySubscriptionTagAndUser(tagGroup, user.getId(), sequenceable.getNext(), sequenceable.toPageable());
+        return resourceAssemblers.toResource(toSequence(sequenceable, slice.getContent()), SubscriptionEntryGetResponse.class);
     }
 
     @RequestMapping(value = "/entries", method = RequestMethod.GET, params = SEARCH_PARAM)
