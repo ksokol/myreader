@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
+  <id>tag:github.com,2008:/ksokol.private</id>
+  <link type="text/html" rel="alternate" href="https://github.com/ksokol"/>
+  <link type="application/atom+xml" rel="self" href="https://github.com/ksokol.private.atom?token=4950282__eyJzY29wZSI6IkF0b206L2tzb2tvbC5wcml2YXRlLmF0b20iLCJleHBpcmVzIjoyOTg3MzkzMzIwfQ==--8df69f8d3e0685edfb9475a79e1d51e80611c89a"/>
+  <title>Private Feed for ksokol</title>
+  <updated>2014-09-08T01:57:19Z</updated>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/2275081415</id>
+    <published>2014-09-08T01:57:19Z</published>
+    <updated>2014-09-08T01:57:19Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/fraywing/textAngular/issues/127#issuecomment-54769609"/>
+    <title type="html">SimeonC commented on issue fraywing/textAngular#127</title>
+    <author>
+      <name>SimeonC</name>
+      <uri>https://github.com/SimeonC</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars0.githubusercontent.com/u/1085899?v=2&amp;s=30"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-octicon octicon-comment-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time datetime=&quot;2014-09-08T01:57:19Z&quot; is=&quot;relative-time&quot;&gt;September 08, 2014&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;https://github.com/SimeonC&quot;&gt;SimeonC&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/fraywing/textAngular/issues/127#issuecomment-54769609&quot; title=&quot;Full featured wysiwyg&quot;&gt;fraywing/textAngular#127&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;https://github.com/SimeonC&quot;&gt;&lt;img alt=&quot;SimeonC&quot; class=&quot;gravatar&quot; data-user=&quot;1085899&quot; height=&quot;30&quot; src=&quot;https://avatars1.githubusercontent.com/u/1085899?v=2&amp;amp;s=60&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;&lt;a href=&quot;https://github.com/irthos&quot; class=&quot;user-mention&quot;&gt;@irthos&lt;/a&gt; Have a look through &lt;a href=&quot;https://github.com/fraywing/textAngular/issues/54&quot; class=&quot;issue-link&quot; title=&quot;Custom Images/Links&quot;&gt;#54&lt;/a&gt; which has some more in depth information about how to do this and references to the wiki.&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+</feed>

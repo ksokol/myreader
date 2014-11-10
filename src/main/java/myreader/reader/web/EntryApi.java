@@ -63,7 +63,11 @@ public class EntryApi {
                 ids.add(s.getId());
             }
 
-            query.setFeedId(ids);
+            if(ids.isEmpty()) {
+                query.setFeedTitle(feedTag);
+            } else {
+                query.setFeedId(ids);
+            }
         }
 
         // TODO

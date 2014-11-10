@@ -23,12 +23,18 @@ public class SolrSubscriptionFields {
 	@Deprecated
 	public static final String OWNER_ID = "owner_id";
 
-	@Deprecated
+    @Deprecated
+    public static final String FEED_TITLE = "feed_title";
+
     public static String tags(String tags) {
         return format(TAGS,tags);
     }
 
-	@Deprecated
+    @Deprecated
+    public static String feedTitle(String feedTitle) {
+        return format(FEED_TITLE,feedTitle);
+    }
+
     public static String seen(boolean seen) {
         return format(SEEN, seen);
     }

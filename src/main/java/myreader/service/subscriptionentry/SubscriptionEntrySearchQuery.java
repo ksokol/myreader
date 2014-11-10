@@ -2,6 +2,9 @@ package myreader.service.subscriptionentry;
 
 import java.util.List;
 
+/**
+ * @author Kamill Sokol
+ */
 @Deprecated
 public class SubscriptionEntrySearchQuery {
 
@@ -11,6 +14,7 @@ public class SubscriptionEntrySearchQuery {
     private Long lastId;
     private List<Long> feedId;
     private String tag;
+    private String feedTitle;
 
 	@Deprecated
     public int getRows() {
@@ -70,5 +74,13 @@ public class SubscriptionEntrySearchQuery {
 	@Deprecated
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public String getFeedTitle() {
+        return feedTitle;
+    }
+
+    public void setFeedTitle(String feedTitle) {
+        this.feedTitle = feedTitle;
     }
 }

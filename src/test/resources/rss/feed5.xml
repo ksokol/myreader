@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+     xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+     xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+     xmlns:rawvoice="http://www.rawvoice.com/rawvoiceRssModule/"
+        >
+
+    <channel>
+        <title>neusprech.org</title>
+        <atom:link href="http://neusprech.org/feed/" rel="self" type="application/rss+xml" />
+        <link>http://neusprech.org</link>
+        <description>Sprache bringt es an den Tag</description>
+        <lastBuildDate>Fri, 05 Sep 2014 11:04:13 +0000</lastBuildDate>
+        <language>de-DE</language>
+        <sy:updatePeriod>hourly</sy:updatePeriod>
+        <sy:updateFrequency>1</sy:updateFrequency>
+        <generator>http://wordpress.org/?v=3.9.1</generator>
+        <!-- podcast_generator="Blubrry PowerPress/5.0.7" mode="advanced" -->
+        <itunes:summary>Sprache bringt es an den Tag</itunes:summary>
+        <itunes:author>Kai Biermann, Martin Haase, Constanze Kurz</itunes:author>
+        <itunes:explicit>clean</itunes:explicit>
+        <itunes:image href="http://neusprech.org/wp-content/uploads/powerpress/neusprech_bild_2.jpg" />
+        <itunes:owner>
+            <itunes:name>Kai Biermann, Martin Haase, Constanze Kurz</itunes:name>
+            <itunes:email>mail@martinhaase.de</itunes:email>
+        </itunes:owner>
+        <managingEditor>mail@martinhaase.de (Kai Biermann, Martin Haase, Constanze Kurz)</managingEditor>
+        <itunes:subtitle>Sprache bringt es an den Tag</itunes:subtitle>
+        <itunes:keywords>Neusprech, Politik, Sprache, Sprachwissenschaft, Linguistik</itunes:keywords>
+        <image>
+            <title>neusprech.org</title>
+            <url>http://neusprech.org/wp-content/uploads/powerpress/neusprech_bild_2.jpg</url>
+            <link>http://neusprech.org</link>
+        </image>
+        <itunes:category text="News &amp; Politics" />
+        <item>
+            <title>extralegal</title>
+            <link>http://neusprech.org/extralegal/</link>
+            <comments>http://neusprech.org/extralegal/#comments</comments>
+            <pubDate>Fri, 05 Sep 2014 10:57:51 +0000</pubDate>
+            <dc:creator><![CDATA[Informeller Mitarbeiter]]></dc:creator>
+            <category><![CDATA[Militär]]></category>
+            <category><![CDATA[Bundeswehr]]></category>
+            <category><![CDATA[Drohnen]]></category>
+            <category><![CDATA[illegal]]></category>
+            <category><![CDATA[Schutzlücke]]></category>
+            <category><![CDATA[Ursula von der Leyen]]></category>
+
+            <guid isPermaLink="false">http://neusprech.org/?p=3546</guid>
+            <description><![CDATA[Ein Gastbeitrag von Erik W. Ende Juni 2014 sagte Bundesverteidigungsministerin Ursula von der Leyen (CDU), dass sie für die Anschaffung bewaffnungsfähiger – natürlich nicht etwa bewaffneter – Drohnen sei. Die Bundeswehr soll nicht gleich schießen, sie soll nur schießen können. &#8230; <a href="http://neusprech.org/extralegal/">Weiterlesen <span class="meta-nav">&#8594;</span></a>]]></description>
+            <content:encoded><![CDATA[<p><em>Ein Gastbeitrag von Erik W.</em></p>
+<p>Ende Juni 2014 <a href="http://www.spiegel.de/politik/deutschland/von-der-leyen-spricht-sich-fuer-bewaffnungsfaehige-drohnen-aus-a-978628.html" target="_blank">sagte Bundesverteidigungsministerin Ursula von der Leyen</a> (CDU), dass sie für die Anschaffung <em>bewaffnungsfähiger</em> – natürlich nicht etwa bewaffneter – Drohnen sei. Die Bundeswehr soll nicht gleich schießen, sie soll nur schießen können. Bitte, das ist ein kleiner Unterschied, aber es ist ein Unterschied! Politik der kleinen Schritte, sozusagen. Man brauche diese Drohnen, sagte die Ministerin, um <a href="http://neusprech.org/schutzluecke/" target="_blank"><em>Schutzlücken</em></a> zu schließen. Eine interessante Begründung, heißt das doch, dass sich die Bundeswehr nicht genug schützen kann. Damit nun niemand auf die Idee kommt, mit den Dingern, äh Drohnen solle in fremden Ländern einfach so auf Menschen geschossen werden, <a href="http://www.welt.de/newsticker/dpa_nt/infoline_nt/brennpunkte_nt/article129687561/Von-der-Leyen-trifft-mit-Drohnen-Plaenen-auf-Widerstand.html" target="_blank">sagte von der Leyen</a>: Amerikanische Verhältnisse werde es mit ihr nicht geben: „Die Bundesregierung lehnt <em>e.-e</em> völkerrechtswidrige Tötungen kategorisch ab.“ Ebenfalls eine interessante Aussage, denn die Verteidigungsministerin lieferte damit ein Beispiel für ein sogenanntes überspezifisches Dementi; sie sagte mehr, als sie wollte. Durch die zwei Adjektive hatte sie den eigentlichen Ausdruck näher beschreiben wollen, doch wird er so vor allem betont. <em>E.-e</em>, und völkerrechtswidrige Tötungen mag die Bundesregierungen vielleicht ablehnen, <a href="http://neusprech.org/gezielte-toetung/" target="_blank"><em>Tötungen</em></a> aber lehnt sie nicht ab? Vielleicht sind sogar <em>e.-e</em> oder völkerrechtswidrige Tötungen ok, nur nicht beides zusammen? Bei so viel Sprachverdrehungen fällt der Begriff <em>e.</em> kaum noch auf. Dabei ist er seltsam. Die einzige Ableitung des Fremdwortes für rechtmäßig, <a href="http://www.duden.de/suchen/dudenonline/extralegal" target="_blank">die der Duden kennt</a>, ist <em>illegal</em>. Das von von der Leyen benutzte Wort ist eine Neuschöpfung. Das Präfix „extra“ hat nicht nur verschleiernden, sondern auch aufwertenden Charakter: <em>E.</em> klingt nicht danach, als wenn Gesetze missachtet würden, sondern so, als bekäme man noch was gratis dazu. Bekommt man auch: die Gesetzlosigkeit. Denn <em>e.</em> meint, dass es Menschen gibt, für die Menschenrechte und Gesetze nicht mehr gelten, die man also ungestraft töten kann. Dabei sind es die Tötenden, die sich außerhalb der Gesetze stellen und somit wie Gesetzlose handeln.</p>
+]]></content:encoded>
+            <wfw:commentRss>http://neusprech.org/extralegal/feed/</wfw:commentRss>
+            <slash:comments>6</slash:comments>
+        </item>
+    </channel>
+</rss>

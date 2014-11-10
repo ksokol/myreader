@@ -43,6 +43,10 @@ public class SubscriptionEntrySearchService {
             query.addFilterQuery(feedId(or(myQuery.getFeedId())));
         }
 
+        if(myQuery.getFeedTitle() != null) {
+            query.addFilterQuery(feedTitle(phrase(myQuery.getFeedTitle())));
+        }
+
         if (!myQuery.isShowAll()) {
             query.addFilterQuery(seen(false));
         }
