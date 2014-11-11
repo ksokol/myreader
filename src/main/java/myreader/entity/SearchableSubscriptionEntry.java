@@ -1,8 +1,8 @@
 package myreader.entity;
 
-import java.util.Date;
-
 import org.apache.solr.client.solrj.beans.Field;
+
+import java.util.Date;
 
 /**
  * @author Kamill Sokol
@@ -24,7 +24,7 @@ public class SearchableSubscriptionEntry implements Identifiable {
 	@Field("url")
 	private String url;
 
-	@Field("subscription_title")
+	@Field("feed_title")
 	private String subscriptionTitle;
 
 	@Field
