@@ -1,77 +1,75 @@
 package org.springframework.test.web.servlet.request;
 
-import org.apache.commons.codec.binary.Base64;
+import myreader.test.KnownUser;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import spring.security.MyReaderUser;
+
+import java.util.Collections;
+import java.util.Set;
+
+import static myreader.test.KnownUser.ADMIN;
+import static myreader.test.KnownUser.USER1;
+import static myreader.test.KnownUser.USER2;
+import static myreader.test.KnownUser.USER3;
+import static myreader.test.KnownUser.USER4;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcRequestBuilders {
 
-    private enum KnownUser {
-        ADMIN("user0@localhost","0"),
-        USER1("user1@localhost","1"),
-        USER2("user2@localhost","2"),
-        USER3("user3@localhost","3"),
-        USER4("user4@localhost","4");
-
-        KnownUser(String username, String password) {
-            this.username = username;
-            this.password = password;
-        }
-
-        final String username;
-        final String password;
-    }
-
-    public static MockHttpServletRequestBuilder getAsUser(String username, String password, String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.GET, username, password, urlTemplate, urlVariables);
-    }
-
     public static MockHttpServletRequestBuilder getAsAdmin(String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.GET, KnownUser.ADMIN.username, KnownUser.ADMIN.password, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.GET, ADMIN, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilder getAsUser1(String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.GET, KnownUser.USER1.username, KnownUser.USER1.password, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.GET, USER1, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilder getAsUser2(String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.GET, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.GET, USER2, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilder getAsUser3(String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.GET, KnownUser.USER3.username, KnownUser.USER3.password, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.GET, USER3, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilder getAsUser4(String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.GET, KnownUser.USER4.username, KnownUser.USER4.password, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.GET, USER4, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilderWithJsonSupport patchAsUser1(String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.PATCH, KnownUser.USER1.username, KnownUser.USER1.password, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.PATCH, USER1, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilderWithJsonSupport patchAsUser2(String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.PATCH, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.PATCH, USER2, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilderWithJsonSupport postAsUser2(String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.POST, KnownUser.USER2.username, KnownUser.USER2.password, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.POST, USER2, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilderWithJsonSupport deleteAsUser1(String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.DELETE, KnownUser.USER1.username, KnownUser.USER1.password, urlTemplate, urlVariables);
+        return actionAsUserX(HttpMethod.DELETE, USER1, urlTemplate, urlVariables);
     }
 
-    private static MockHttpServletRequestBuilderWithJsonSupport actionAsUserX(HttpMethod method, String username, String password, String urlTemplate, Object... urlVariables) {
+    private static MockHttpServletRequestBuilderWithJsonSupport actionAsUserX(HttpMethod method, KnownUser user, String urlTemplate, Object... urlVariables) {
         MockHttpServletRequestBuilderWithJsonSupport mockHttpServletRequestBuilder = new MockHttpServletRequestBuilderWithJsonSupport(method, urlTemplate, urlVariables);
-        addAuthentication(mockHttpServletRequestBuilder, username, password);
+        addAuthentication(user);
         return mockHttpServletRequestBuilder;
     }
 
-    private static void addAuthentication(MockHttpServletRequestBuilder mockHttpServletRequestBuilder, String username, String password) {
-        String basicDigestHeaderValue = "Basic " + new String(Base64.encodeBase64((String.format("%s:%s", username, password)).getBytes()));
-        mockHttpServletRequestBuilder.header("Authorization", basicDigestHeaderValue);
+    private static void addAuthentication(KnownUser user) {
+        String role = user.admin ? "ROLE_ADMIN" : "ROLE_USER";
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role);
+        Set<SimpleGrantedAuthority> singleton = Collections.singleton(simpleGrantedAuthority);
+        MyReaderUser myReaderUser = new MyReaderUser(user.id, user.username, user.password, true, true, true, true, singleton, user.admin);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(myReaderUser,null, singleton);
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
     }
+
 }

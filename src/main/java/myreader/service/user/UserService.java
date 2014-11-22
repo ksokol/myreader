@@ -9,5 +9,4 @@ public interface UserService {
 
     User getCurrentUser();
 
-    void setPassword(User user, String newPassword);
 }

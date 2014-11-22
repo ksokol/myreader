@@ -1,25 +1,19 @@
 package myreader.test;
 
-import static org.mockito.Mockito.reset;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.get;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
-import javax.servlet.Filter;
-
 import myreader.config.PersistenceConfig;
-import myreader.config.SecurityConfig;
 import myreader.config.TaskConfig;
 import myreader.fetcher.FeedParser;
 import myreader.resource.config.ResourceConfig;
 import myreader.service.search.jobs.IndexSyncJob;
 import myreader.service.time.TimeService;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.solr.core.SolrOperations;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,11 +21,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.mockito.Mockito.reset;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.get;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+
 /**
  * @author Kamill Sokol
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, SecurityConfig.class, TestConfig.class, TaskConfig.class})
+@ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, TaskConfig.class})
 @WebAppConfiguration
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class IntegrationTestSupport {
@@ -45,8 +43,6 @@ public class IntegrationTestSupport {
 
     @Autowired
     protected WebApplicationContext wac;
-    @Autowired
-    private Filter springSecurityFilterChain;
     @Autowired
     private TimeService timeService;
     @Autowired
@@ -62,7 +58,6 @@ public class IntegrationTestSupport {
         reset(feedParserMock);
 
         this.mockMvc = webAppContextSetup(this.wac)
-                .addFilter(springSecurityFilterChain)
                 .defaultRequest(get("/").contentType(MediaType.APPLICATION_JSON))
                 .build();
 
@@ -70,6 +65,11 @@ public class IntegrationTestSupport {
         solrOperations.commit();
         indexSyncJob.run();
 		beforeTest();
+    }
+
+    @After
+    public final void after() {
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
 	protected void beforeTest() throws Exception {}
