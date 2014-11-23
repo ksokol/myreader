@@ -3,11 +3,9 @@ package myreader.resource.exclusionpattern.assembler;
 import myreader.entity.ExclusionPattern;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
-
 import spring.hateoas.AbstractResourceAssembler;
 import spring.hateoas.EntityLinks;
 
@@ -29,6 +27,7 @@ public class ExclusionPatternGetResponseAssembler extends AbstractResourceAssemb
     public ExclusionPatternGetResponse toResource(ExclusionPattern source) {
         ExclusionPatternGetResponse target = new ExclusionPatternGetResponse();
 
+        target.setUuid(String.valueOf(source.getId()));
         target.setPattern(source.getPattern());
         target.setHitCount(source.getHitCount());
 

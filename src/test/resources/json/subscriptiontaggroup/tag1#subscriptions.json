@@ -7,6 +7,7 @@
     ],
     "content": [
         {
+            "uuid": "1",
             "title": "user1_subscription1",
             "tag": "tag1",
             "sum": 15,
@@ -15,6 +16,7 @@
             "links": "${json-unit.ignore}"
         },
         {
+            "uuid": "2",
             "title": "user1_subscription2",
             "tag": "tag1",
             "sum": 10,

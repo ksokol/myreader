@@ -3,12 +3,10 @@ package myreader.resource.subscriptionentry.assembler;
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
 import spring.hateoas.AbstractResourceAssembler;
 import spring.hateoas.EntityLinks;
 
@@ -30,6 +28,7 @@ public class SearchableSubscriptionEntryGetResponseAssembler extends AbstractRes
 	public SubscriptionEntryGetResponse toResource(SearchableSubscriptionEntry source) {
 		SubscriptionEntryGetResponse target = new SubscriptionEntryGetResponse();
 
+		target.setUuid(String.valueOf(source.getId()));
 		target.setTag(source.getTag());
 		target.setCreatedAt(source.getCreatedAt());
 		target.setTitle(source.getTitle());

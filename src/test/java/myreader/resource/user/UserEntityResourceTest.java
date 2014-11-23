@@ -28,21 +28,21 @@ public class UserEntityResourceTest extends IntegrationTestSupport {
     public void testEntityResourceJsonStructureEquality() throws Exception {
        mockMvc.perform(getAsUser1("/users/1"))
                .andExpect(status().isOk())
-               .andExpect(jsonEquals("user/user#1.json"));
+               .andExpect(jsonEquals("user/1.json"));
     }
 
     @Test
     public void testEntityResourceJsonEquality() throws Exception {
         mockMvc.perform(getAsUser1("/users/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("user/user#1.json"));
+                .andExpect(jsonEquals("user/1.json"));
     }
 
     @Test
     public void testUser2Subscriptions() throws Exception {
         mockMvc.perform(getAsUser2("/users/2/subscriptions"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("user/user#2#subscriptions.json"));
+                .andExpect(jsonEquals("user/2#subscriptions.json"));
     }
 
     @Test

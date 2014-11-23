@@ -7,6 +7,7 @@
     ],
     "content": [
         {
+            "uuid": "9",
             "patternCount": 0,
             "overallPatternHits": 0,
             "links": [
@@ -25,6 +26,7 @@
             ]
         },
         {
+            "uuid": "10",
             "patternCount": 0,
             "overallPatternHits": 0,
             "links": [
@@ -43,6 +45,7 @@
             ]
         },
         {
+            "uuid": "11",
             "patternCount": 0,
             "overallPatternHits": 0,
             "links": [
@@ -61,6 +64,7 @@
             ]
         },
         {
+            "uuid": "6",
             "patternCount": 1,
             "overallPatternHits": 1,
             "links": [
@@ -79,6 +83,7 @@
             ]
         },
         {
+            "uuid": "7",
             "patternCount": 0,
             "overallPatternHits": 0,
             "links": [
@@ -97,6 +102,7 @@
             ]
         },
         {
+            "uuid": "8",
             "patternCount": 0,
             "overallPatternHits": 0,
             "links": [

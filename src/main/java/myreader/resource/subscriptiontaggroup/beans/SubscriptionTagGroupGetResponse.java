@@ -1,14 +1,13 @@
 package myreader.resource.subscriptiontaggroup.beans;
 
-import org.springframework.hateoas.ResourceSupport;
-
+import spring.hateoas.UUIDResourceSupport;
 import spring.hateoas.annotation.Rel;
 
 /**
  * @author Kamill Sokol
  */
 @Rel("subscriptionTagGroups")
-public class SubscriptionTagGroupGetResponse extends ResourceSupport {
+public class SubscriptionTagGroupGetResponse extends UUIDResourceSupport {
 
     private String tag;
     private long unseen;

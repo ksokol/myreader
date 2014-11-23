@@ -17,6 +17,7 @@
                     "href": "http://localhost/users/1"
                 }
             ],
+            "uuid": "1",
             "email": "user1@localhost",
             "role": "ROLE_USER"
         }

@@ -1,11 +1,10 @@
 package myreader.resource.subscriptionentrytaggroup;
 
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
-
-import myreader.test.IntegrationTestSupport;
-
-import org.junit.Test;
 
 /**
  * @author Kamill Sokol
@@ -15,6 +14,6 @@ public class SubscriptionEntryTagGroupCollectionResourceTest extends Integration
     @Test
     public void testSubscriptionEntryTagGroupResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntryTagGroups"))
-                .andExpect(jsonEquals("subscriptionentrytaggroup/structure-subscriptionentrytaggroup.json"));
+                .andExpect(jsonEquals("subscriptionentrytaggroup/structure.json"));
     }
 }

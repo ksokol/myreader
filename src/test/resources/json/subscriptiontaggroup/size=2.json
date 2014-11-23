@@ -12,11 +12,13 @@
     "content": [
         {
             "links": "${json-unit.ignore}",
+            "uuid": "tag3",
             "tag": "tag3",
             "unseen": 0
         },
         {
             "links": "${json-unit.ignore}",
+            "uuid": "4",
             "tag": "user1_subscription4",
             "unseen": 0
         }

@@ -7,6 +7,7 @@
     ],
     "content": [
         {
+            "uuid": "1",
             "patternCount": 2,
             "overallPatternHits": 2,
             "links": [
@@ -25,6 +26,7 @@
             ]
         },
         {
+            "uuid": "2",
             "patternCount": 2,
             "overallPatternHits": 1,
             "links": [
@@ -43,6 +45,7 @@
             ]
         },
         {
+            "uuid": "3",
             "patternCount": 0,
             "overallPatternHits": 0,
             "links": [
@@ -61,6 +64,7 @@
             ]
         },
         {
+            "uuid": "4",
             "patternCount": 0,
             "overallPatternHits": 0,
             "links": [
@@ -79,6 +83,7 @@
             ]
         },
         {
+            "uuid": "5",
             "patternCount": 0,
             "overallPatternHits": 0,
             "links": [

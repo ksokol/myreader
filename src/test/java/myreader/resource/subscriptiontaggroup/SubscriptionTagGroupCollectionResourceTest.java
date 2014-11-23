@@ -1,11 +1,10 @@
 package myreader.resource.subscriptiontaggroup;
 
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
-
-import myreader.test.IntegrationTestSupport;
-
-import org.junit.Test;
 
 /**
  * @author Kamill Sokol
@@ -15,19 +14,19 @@ public class SubscriptionTagGroupCollectionResourceTest extends IntegrationTestS
     @Test
     public void testSubscriptionTagGroupsJsonStructure() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionTagGroups"))
-                .andExpect(jsonEquals("subscriptiontaggroup/structure-subscriptiontaggroups.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/structure.json"));
     }
 
     @Test
     public void testSubscriptionTagGroupsWithPageSize2() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionTagGroups?size=2"))
-                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#size=2.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/size=2.json"));
     }
 
     @Test
     public void testNewSubscriptionTagGroups() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionTagGroups/new"))
-                .andExpect(jsonEquals("subscriptiontaggroup/subscriptiontaggroups#new.json"));
+                .andExpect(jsonEquals("subscriptiontaggroup/new.json"));
     }
 
 }

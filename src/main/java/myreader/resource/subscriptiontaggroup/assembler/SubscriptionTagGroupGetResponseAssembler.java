@@ -3,11 +3,9 @@ package myreader.resource.subscriptiontaggroup.assembler;
 import myreader.entity.TagGroup;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
-
 import spring.hateoas.AbstractResourceAssembler;
 import spring.hateoas.EntityLinks;
 
@@ -40,6 +38,7 @@ public class SubscriptionTagGroupGetResponseAssembler extends AbstractResourceAs
 
         switch(type) {
             case AGGREGATE:
+                target.setUuid(source.getName());
                 Link subscriptionsByTag = entityLinks.linkFor(getOutputClass(), source.getName()).slash("subscriptions").withRel("subscriptions");
                 target.add(subscriptionsByTag);
                 Link subscriptionEntriesByTag = entityLinks.linkFor(getOutputClass(), source.getName()).slash("entries").withRel("entries");
@@ -49,6 +48,7 @@ public class SubscriptionTagGroupGetResponseAssembler extends AbstractResourceAs
                 target.add(newSubscriptionEntriesByTag);
                 break;
             case SUBSCRIPTION:
+                target.setUuid(String.valueOf(source.getId()));
                 Link subscription = entityLinks.linkFor(SubscriptionGetResponse.class, source.getId()).withRel("subscription");
                 target.add(subscription);
                 Link subscriptionEntries = entityLinks.linkFor(SubscriptionGetResponse.class, source.getId()).slash("entries").withRel("entries");

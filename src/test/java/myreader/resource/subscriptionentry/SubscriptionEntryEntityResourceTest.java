@@ -1,5 +1,12 @@
 package myreader.resource.subscriptionentry;
 
+import myreader.entity.SearchableSubscriptionEntry;
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.solr.core.SolrOperations;
+import org.springframework.data.solr.core.query.SimpleQuery;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
@@ -8,14 +15,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser2;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import myreader.entity.SearchableSubscriptionEntry;
-import myreader.test.IntegrationTestSupport;
-
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.solr.core.SolrOperations;
-import org.springframework.data.solr.core.query.SimpleQuery;
 
 /**
  * @author Kamill Sokol
@@ -29,7 +28,7 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
     public void testEntityResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/subscriptionEntries#4.json"));
+                .andExpect(jsonEquals("subscriptionentry/4.json"));
     }
 
     @Test
@@ -45,20 +44,20 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/subscriptionEntries#4.json"));
+                .andExpect(jsonEquals("subscriptionentry/4.json"));
 
         mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")
                 .json("{'seen':false}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/patch1-subscriptionEntries#4.json"));
+                .andExpect(jsonEquals("subscriptionentry/patch1#4.json"));
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/patch1-subscriptionEntries#4.json"));
+                .andExpect(jsonEquals("subscriptionentry/patch1#4.json"));
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/patch1-subscriptionEntries#4.json"));
+                .andExpect(jsonEquals("subscriptionentry/patch1#4.json"));
 
         SearchableSubscriptionEntry after = solrOperations.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(after.isSeen(), is(false));
@@ -71,15 +70,15 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/subscriptionEntries#4.json"));
+                .andExpect(jsonEquals("subscriptionentry/4.json"));
 
         mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")
                 .json("{'tag':'tag-patched'}"))
-                .andExpect(jsonEquals("subscriptionentry/patch2-subscriptionEntries#4.json"));
+                .andExpect(jsonEquals("subscriptionentry/patch2#4.json"));
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/patch2-subscriptionEntries#4.json"));
+                .andExpect(jsonEquals("subscriptionentry/patch2#4.json"));
 
         SearchableSubscriptionEntry after = solrOperations.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(after.getTag(), is("tag-patched"));

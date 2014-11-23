@@ -7,6 +7,7 @@
     ],
     "content": [
         {
+            "uuid": "1002",
             "title": "MySQL is to SQL like ??? to NoSQL",
             "feedTitle": "user1_subscription3",
             "tag": "tag1",
@@ -29,6 +30,7 @@
             ]
         },
         {
+            "uuid": "1001",
             "title": "Party time",
             "feedTitle": "user1_subscription3",
             "tag": "tag1",

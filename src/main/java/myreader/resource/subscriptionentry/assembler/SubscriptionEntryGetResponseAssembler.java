@@ -3,11 +3,9 @@ package myreader.resource.subscriptionentry.assembler;
 import myreader.entity.SubscriptionEntry;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
-
 import spring.hateoas.AbstractResourceAssembler;
 import spring.hateoas.EntityLinks;
 
@@ -29,6 +27,7 @@ public class SubscriptionEntryGetResponseAssembler extends AbstractResourceAssem
     public SubscriptionEntryGetResponse toResource(SubscriptionEntry source) {
         SubscriptionEntryGetResponse target = new SubscriptionEntryGetResponse();
 
+        target.setUuid(String.valueOf(source.getId()));
         target.setTag(source.getTag());
         target.setCreatedAt(source.getCreatedAt());
         target.setSeen(source.isSeen());

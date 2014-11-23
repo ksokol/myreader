@@ -23,7 +23,7 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
     public void testEntityResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscription/structure-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/structure-1.json"));
     }
 
     @Test
@@ -79,40 +79,40 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
     @Test
     public void testNotFoundWhenPatchNotOwnSubscription() throws Exception {
         mockMvc.perform(patchAsUser2("/subscriptions/1")
-                .json("subscription/patchable-properties1-subscription#1.json"))
+                .json("subscription/patchable-properties1-1.json"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void testPatchableProperties() throws Exception {
         mockMvc.perform(patchAsUser1("/subscriptions/1")
-                .json("subscription/patchable-properties1-subscription#1.json"))
-                .andExpect(jsonEquals("subscription/patchable-properties2-subscription#1.json"));
+                .json("subscription/patchable-properties1-1.json"))
+                .andExpect(jsonEquals("subscription/patchable-properties2-1.json"));
     }
 
     @Test
     public void testPatch() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscription/subscription#1.json"));
+                .andExpect(jsonEquals("subscription/1.json"));
 
         mockMvc.perform(patchAsUser1("/subscriptions/1")
                 .json("{'tag':'test1'}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscription/patch1-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/patch1-1.json"));
 
         mockMvc.perform(patchAsUser1("/subscriptions/1")
                 .json("{'title':null}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscription/patch2-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/patch2-1.json"));
 
         mockMvc.perform(patchAsUser1("/subscriptions/1")
                 .json("{'title':'test2','tag':'test2'}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscription/patch3-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/patch3-1.json"));
 
         mockMvc.perform(getAsUser1("/subscriptions/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscription/patch3-subscription#1.json"));
+                .andExpect(jsonEquals("subscription/patch3-1.json"));
     }
 }

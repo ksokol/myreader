@@ -3,6 +3,7 @@ package myreader.resource.subscriptionentry;
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
+import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.service.search.SubscriptionEntrySearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +32,14 @@ public class SubscriptionEntryCollectionResource {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;
 	private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
+    private final PatchService patchService;
     private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
-    public SubscriptionEntryCollectionResource(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, ResourceAssemblers resourceAssemblers) {
+    public SubscriptionEntryCollectionResource(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, final PatchService patchService, ResourceAssemblers resourceAssemblers) {
 		this.subscriptionEntryRepository = subscriptionEntryRepository;
 		this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
+        this.patchService = patchService;
         this.resourceAssemblers = resourceAssemblers;
     }
 
@@ -45,6 +48,31 @@ public class SubscriptionEntryCollectionResource {
         Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findAllByUser(sequenceable.toPageable(), user.getId(), sequenceable.getNext());
         return resourceAssemblers.toResource(toSequence(sequenceable, pagedEntries.getContent()), SubscriptionEntryGetResponse.class);
     }
+
+//    @RequestMapping(method = PATCH)
+//    public SequencedResources<SubscriptionEntryGetResponse> patch(List<SubscriptionPatchRequest> request, @AuthenticationPrincipal MyReaderUser user) {
+//
+//        List<SubscriptionEntryGetResponse> objects = new ArrayList<>();
+//
+//        for (final SubscriptionPatchRequest subscriptionPatch : request) {
+//            SubscriptionEntry byIdAndUsername = subscriptionEntryRepository.findByIdAndUsername(id, user.getUsername());
+//
+//            if(byIdAndUsername == null) {
+//                continue;
+//            }
+//
+//            SubscriptionEntry patched = patchService.patch(subscriptionPatch, byIdAndUsername);
+//            SubscriptionEntry saved = subscriptionEntryRepository.save(patched);
+//           // SubscriptionEntryGetResponse subscriptionEntryGetResponse = resourceAssemblers.toResource(saved, SubscriptionEntryGetResponse.class);
+//
+//            //  return resourceAssemblers.toResource(saved, SubscriptionEntryGetResponse.class);
+//        }
+//
+//        return null;
+//
+//        //Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findAllByUser(sequenceable.toPageable(), user.getId(), sequenceable.getNext());
+//       // return resourceAssemblers.toResource(toSequence(sequenceable, pagedEntries.getContent()), SubscriptionEntryGetResponse.class);
+//    }
 
 	@RequestMapping(params = SEARCH_PARAM)
 	public SequencedResources<SubscriptionEntryGetResponse> searchAndFilterBySubscription(@RequestParam(SEARCH_PARAM) String q, Sequenceable sequenceable,

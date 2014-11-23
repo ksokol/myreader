@@ -7,6 +7,7 @@
     ],
     "content": [
         {
+            "uuid": "0",
             "hitCount": 1,
             "pattern": "user1_subscription1_pattern1",
             "links": [
@@ -21,6 +22,7 @@
             ]
         },
         {
+            "uuid": "1",
             "hitCount": 1,
             "pattern": "user1_subscription1_pattern2",
             "links": [

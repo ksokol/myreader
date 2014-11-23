@@ -2,11 +2,9 @@ package myreader.resource.user.assembler;
 
 import myreader.entity.User;
 import myreader.resource.user.beans.UserGetResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
-
 import spring.hateoas.AbstractResourceAssembler;
 import spring.hateoas.EntityLinks;
 
@@ -28,6 +26,7 @@ public class UserGetResponseAssembler extends AbstractResourceAssembler<User,Use
     public UserGetResponse toResource(User source) {
         UserGetResponse target = new UserGetResponse();
 
+        target.setUuid(String.valueOf(source.getId()));
         target.setEmail(source.getEmail());
         target.setRole(source.getRole());
 

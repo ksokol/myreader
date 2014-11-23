@@ -4,12 +4,10 @@ import myreader.entity.Subscription;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
 import spring.hateoas.AbstractResourceAssembler;
 import spring.hateoas.EntityLinks;
 
@@ -31,6 +29,7 @@ public class SubscriptionGetResponseAssembler extends AbstractResourceAssembler<
     public SubscriptionGetResponse toResource(Subscription source) {
         SubscriptionGetResponse target = new SubscriptionGetResponse();
 
+        target.setUuid(String.valueOf(source.getId()));
         target.setTag(source.getTag());
         target.setCreatedAt(source.getCreatedAt());
         target.setSum(source.getSum());
