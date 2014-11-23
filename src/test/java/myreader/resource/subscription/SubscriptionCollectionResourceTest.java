@@ -29,7 +29,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
     public void testCollectionResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptions"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscription/structure.json"));
+                .andExpect(jsonEquals("json/subscription/structure.json"));
     }
 
     @Test
@@ -37,7 +37,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         mockMvc.perform(postAsUser2("/subscriptions")
                 .json("{}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonEquals("subscription/post-empty-url.json"));
+                .andExpect(jsonEquals("json/subscription/post-empty-url.json"));
     }
 
     @Test
@@ -45,15 +45,15 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         mockMvc.perform(postAsUser2("/subscriptions")
                 .json("{'url':'invalid url'}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonEquals("subscription/post-invalid-url.json"));
+                .andExpect(jsonEquals("json/subscription/post-invalid-url.json"));
     }
 
     @Test
     public void testFieldErrorWhenPostingExistentSubscription() throws Exception {
         mockMvc.perform(postAsUser2("/subscriptions")
-                .json("subscription/post-duplicate-request.json"))
+                .json("json/subscription/post-duplicate-request.json"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonEquals("subscription/post-duplicate-response.json"));
+                .andExpect(jsonEquals("json/subscription/post-duplicate-response.json"));
     }
 
     @Test
@@ -63,9 +63,9 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         when(timeServiceMock.getCurrentTime()).thenReturn(now);
 
         mockMvc.perform(postAsUser2("/subscriptions")
-                .json("subscription/post-new-request.json"))
+                .json("json/subscription/post-new-request.json"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscription/post-new-response.json"));
+                .andExpect(jsonEquals("json/subscription/post-new-response.json"));
     }
 
 	@Test

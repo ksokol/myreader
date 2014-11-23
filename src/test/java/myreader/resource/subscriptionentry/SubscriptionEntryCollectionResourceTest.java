@@ -1,5 +1,8 @@
 package myreader.resource.subscriptionentry;
 
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.endsWith;
@@ -10,10 +13,6 @@ import static org.springframework.test.web.servlet.result.ContentResultMatchersJ
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import myreader.test.IntegrationTestSupport;
-
-import org.junit.Test;
-
 /**
  * @author Kamill Sokol
  */
@@ -23,14 +22,14 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     public void testCollectionResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionEntries"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/structure.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/structure.json"));
     }
 
     @Test
     public void testSearchSubscriptionEntryByTitle() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionEntries?q=mysql"))
                 .andExpect(status().isOk())
-				.andExpect(jsonEquals("subscriptionentry/q#mysql.json"));
+				.andExpect(jsonEquals("json/subscriptionentry/q#mysql.json"));
     }
 
     @Test
@@ -50,13 +49,13 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     @Test
     public void testSubscriptionEntryTag() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/tag"))
-                .andExpect(jsonEquals("subscriptionentry/tag.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/tag.json"));
     }
 
     @Test
     public void searchSubscriptionEntryTag() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/tag?q=help"))
-                .andExpect(jsonEquals("subscriptionentry/tag?q=help.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/tag?q=help.json"));
     }
 
     @Test

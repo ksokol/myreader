@@ -17,7 +17,7 @@ public class ExclusionPatternEntityResourceTest extends IntegrationTestSupport {
     public void testEntityResourceForUser1JsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser1("/exclusions/1/pattern/0"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("exclusionpattern/1#pattern#0.json"));
+                .andExpect(jsonEquals("json/exclusionpattern/1#pattern#0.json"));
     }
 
     @Test

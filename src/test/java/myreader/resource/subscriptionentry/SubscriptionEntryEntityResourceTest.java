@@ -28,7 +28,7 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
     public void testEntityResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/4.json"));
     }
 
     @Test
@@ -44,20 +44,20 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/4.json"));
 
         mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")
                 .json("{'seen':false}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/patch1#4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/patch1#4.json"));
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/patch1#4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/patch1#4.json"));
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/patch1#4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/patch1#4.json"));
 
         SearchableSubscriptionEntry after = solrOperations.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(after.isSeen(), is(false));
@@ -70,15 +70,15 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/4.json"));
 
         mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")
                 .json("{'tag':'tag-patched'}"))
-                .andExpect(jsonEquals("subscriptionentry/patch2#4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/patch2#4.json"));
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("subscriptionentry/patch2#4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/patch2#4.json"));
 
         SearchableSubscriptionEntry after = solrOperations.queryForObject(new SimpleQuery("id:1004"), SearchableSubscriptionEntry.class);
         assertThat(after.getTag(), is("tag-patched"));
@@ -87,48 +87,48 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
     @Test
     public void testTag1() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag1"))
-                .andExpect(jsonEquals("subscriptionentry/tag1.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/tag1.json"));
     }
 
     @Test
     public void testTag2tag3() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag2-tag3"))
-                .andExpect(jsonEquals("subscriptionentry/tag2-tag3.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/tag2-tag3.json"));
     }
 
     @Test
     public void testTag4() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag4"))
-                .andExpect(jsonEquals("subscriptionentry/tag4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/tag4.json"));
     }
 
     @Test
     public void testTag5() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag5"))
-                .andExpect(jsonEquals("subscriptionentry/tag5.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/tag5.json"));
     }
 
     @Test
     public void testTag6() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag6"))
-                .andExpect(jsonEquals("subscriptionentry/tag6.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/tag6.json"));
     }
 
     @Test
     public void testTag7() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag7"))
-                .andExpect(jsonEquals("subscriptionentry/tag7.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/tag7.json"));
     }
 
     @Test
     public void testTag8tag9() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/tag/tag8Tag9"))
-                .andExpect(jsonEquals("subscriptionentry/tag8Tag9.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/tag8Tag9.json"));
     }
 
     @Test
     public void testSearch() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionEntries/tag/tag1?q=time"))
-                .andExpect(jsonEquals("subscriptionentry/tag1?q=time.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/tag1?q=time.json"));
     }
 }

@@ -11,7 +11,7 @@ import java.io.IOException;
 public class JsonUtils {
 
     public static String jsonFromFile(String file) {
-        ClassPathResource classPathResource = new ClassPathResource("/json/"+file);
+        ClassPathResource classPathResource = new ClassPathResource(file);
         try {
             return FileUtils.readFileToString(classPathResource.getFile());
         } catch (IOException e) {

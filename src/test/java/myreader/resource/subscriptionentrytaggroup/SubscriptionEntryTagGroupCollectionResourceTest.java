@@ -14,6 +14,6 @@ public class SubscriptionEntryTagGroupCollectionResourceTest extends Integration
     @Test
     public void testSubscriptionEntryTagGroupResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntryTagGroups"))
-                .andExpect(jsonEquals("subscriptionentrytaggroup/structure.json"));
+                .andExpect(jsonEquals("json/subscriptionentrytaggroup/structure.json"));
     }
 }
