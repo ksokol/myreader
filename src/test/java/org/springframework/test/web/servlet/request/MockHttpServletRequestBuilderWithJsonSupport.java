@@ -7,6 +7,7 @@ import org.springframework.test.web.servlet.JsonUtils;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,17 +31,24 @@ public class MockHttpServletRequestBuilderWithJsonSupport extends MockHttpServle
      */
     public MockHttpServletRequestBuilder json(String content) throws IOException {
         Assert.notNull(content);
-        if(content.startsWith("{") || content.startsWith("[")) {
-            super.content(singleQuotedToDoubleQuotedJson(content));
+        if(content.startsWith("{") ) {
+            super.content(singleQuotedToDoubleQuotedJsonMap(content));
+        } else if(content.startsWith("[")) {
+            super.content(singleQuotedToDoubleQuotedJsonList(content));
         } else {
             super.content(JsonUtils.jsonFromFile(content));
         }
         return this;
     }
 
-    private String singleQuotedToDoubleQuotedJson(String json) throws IOException {
+    private String singleQuotedToDoubleQuotedJsonMap(String json) throws IOException {
         Map map = om.readValue(json, Map.class);
         return om.writeValueAsString(map);
+    }
+
+    private String singleQuotedToDoubleQuotedJsonList(String json) throws IOException {
+        List list = om.readValue(json, List.class);
+        return om.writeValueAsString(list);
     }
 
 }

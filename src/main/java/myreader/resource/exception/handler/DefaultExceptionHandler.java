@@ -29,23 +29,4 @@ public class DefaultExceptionHandler {
         log.error(e.getMessage(), e);
         return new Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
     }
-
-    class Error {
-        private final int status;
-        private final String message;
-
-        Error(int status, String message) {
-            this.status = status;
-            this.message = message;
-        }
-
-        public int getStatus() {
-            return status;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
-
 }

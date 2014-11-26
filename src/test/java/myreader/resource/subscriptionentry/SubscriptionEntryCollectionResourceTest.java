@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -106,4 +107,35 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
                 .andExpect(jsonPath("content[0].links[?(@.rel=='self')].href", contains(endsWith("/1010"))));
     }
 
+    @Test
+    public void testBatchPatchEmptyRequestBody() throws Exception {
+        mockMvc.perform(patchAsUser1("/subscriptionEntries")
+                .json("{ 'content' : [] }"))
+                .andExpect(jsonPath("content", emptyIterable()));
+    }
+
+    @Test
+    public void testBatchPatch() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptionEntries"))
+                .andExpect(jsonEquals("json/subscriptionentry/structure.json"));
+
+        mockMvc.perform(patchAsUser1("/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1002', 'seen': false }, { 'uuid': '1001', 'tag': '1001tag' }]}"))
+                .andExpect(jsonEquals("json/subscriptionentry/patch-batch-response.json"));
+    }
+
+    @Test
+    public void testBatchPatchOwnedByDifferentUser() throws Exception {
+        mockMvc.perform(patchAsUser1("/subscriptionEntries")
+                .json("{ 'content': [{'uuid': '1003', 'seen': true}] }"))
+                .andExpect(jsonPath("content", emptyIterable()));
+    }
+
+    @Test
+    public void testBatchPatchValidation() throws Exception {
+        mockMvc.perform(patchAsUser1("/subscriptionEntries")
+                .json("{'content':[{'uuid': 'digits-only'}]}"))
+                .andExpect(jsonEquals("json/subscriptionentry/patch-batch-validation-response.json"))
+                .andExpect(status().isBadRequest());
+    }
 }

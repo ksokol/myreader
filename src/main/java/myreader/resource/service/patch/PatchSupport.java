@@ -10,7 +10,7 @@ public class PatchSupport {
 
     private final Set<String> patchedFields = new HashSet<String>();
 
-    void addPatchedField(String fieldName) {
+    protected void addPatchedField(String fieldName) {
         patchedFields.add(fieldName);
     }
 

@@ -1,10 +1,9 @@
 package myreader.resource.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.validation.TraversableResolver;
-
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import myreader.resource.exclusionpattern.assembler.ExclusionPatternEntityLinks;
 import myreader.resource.exclusionset.ExclusionSetCollectionResource;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
@@ -18,7 +17,6 @@ import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionReso
 import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
 import myreader.resource.user.UserEntityResource;
 import myreader.resource.user.beans.UserGetResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -35,15 +33,14 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
 import spring.data.web.SequenceableHandlerMethodArgumentResolver;
 import spring.hateoas.DelegatingEntityLinks;
 import spring.hateoas.EntityLinker;
 import spring.hateoas.EntityLinks;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import javax.validation.TraversableResolver;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -54,9 +51,6 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 @Import(CustomDelegatingWebMvcConfiguration.class)
 @EnableSpringDataWebSupport
 public class ResourceConfig extends WebMvcConfigurerAdapter {
-
-    @Autowired
-    private HttpMessageConverter patchSupportHttpMessageConverter;
 
     @Autowired
     @Qualifier("patchSupportTraversableResolver")
@@ -71,7 +65,6 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(patchSupportHttpMessageConverter);
         converters.add(configuredMappingJacksonHttpMessageConverter());
     }
 
@@ -108,6 +101,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
 
         objectMapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
         objectMapper.setDateFormat(new ISO8601DateFormat());
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         mappingJacksonHttpMessageConverter.setObjectMapper(objectMapper);
 

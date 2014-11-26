@@ -1,12 +1,11 @@
 package myreader.resource.service.patch;
 
-import java.lang.annotation.ElementType;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 
 import javax.validation.Path;
 import javax.validation.TraversableResolver;
-
-import org.springframework.stereotype.Component;
-import org.springframework.util.ClassUtils;
+import java.lang.annotation.ElementType;
 
 /**
  * @author Kamill Sokol
@@ -21,7 +20,7 @@ class PatchSupportTraversableResolver implements TraversableResolver {
 
     @Override
     public boolean isCascadable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
-        throw new UnsupportedOperationException();
+        return maybeFilled(traversableObject, traversableProperty);
     }
 
     private boolean maybeFilled(Object traversableObject, Path.Node traversableProperty) {

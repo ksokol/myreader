@@ -15,6 +15,7 @@ public class SubscriptionPatchRequest extends PatchSupport {
     }
 
     public void setTitle(String title) {
+        this.addPatchedField("title");
         this.title = title;
     }
 
@@ -23,6 +24,7 @@ public class SubscriptionPatchRequest extends PatchSupport {
     }
 
     public void setTag(String tag) {
+        this.addPatchedField("tag");
         this.tag = tag;
     }
 }

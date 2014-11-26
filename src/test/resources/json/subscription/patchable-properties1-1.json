@@ -1,18 +1,4 @@
 {
-    "links": [
-        {
-            "rel": "self",
-            "href": "http://localhost/subscriptions/patch"
-        },
-        {
-            "rel": "origin",
-            "href": "patch"
-        },
-        {
-            "rel": "entries",
-            "href": "http://localhost/subscriptions/1/entries/patch"
-        }
-    ],
     "title": "patch",
     "tag": "patch",
     "sum": 42,
