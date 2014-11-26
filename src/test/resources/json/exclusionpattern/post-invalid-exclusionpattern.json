@@ -1,4 +1,6 @@
 {
+    "status": 400,
+    "message": "validation error",
     "fieldErrors": [
         {
             "field": "pattern",
