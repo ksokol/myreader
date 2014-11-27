@@ -1,12 +1,12 @@
 package spring.data.domain;
 
+import org.springframework.util.Assert;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.springframework.util.Assert;
 
 /**
  * @author Kamill Sokol
@@ -45,10 +45,6 @@ public class SequenceImpl<T> implements Sequence<T >, Serializable {
 
     public int getSize() {
         return next == null ? 0 : next.getPageSize();
-    }
-
-    public boolean hasContent() {
-        return !content.isEmpty();
     }
 
     public List<T> getContent() {

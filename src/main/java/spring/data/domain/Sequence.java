@@ -13,8 +13,6 @@ public interface Sequence<T> extends Iterable<T> {
 
     List<T> getContent();
 
-    boolean hasContent();
-
     boolean hasNext();
 
     int getPageSize();

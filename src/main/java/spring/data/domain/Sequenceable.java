@@ -11,8 +11,6 @@ public interface Sequenceable {
 
     Long getNext();
 
-    Sequenceable next();
-
     Pageable toPageable();
 
 }

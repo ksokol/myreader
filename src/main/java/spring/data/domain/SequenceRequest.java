@@ -1,9 +1,9 @@
 package spring.data.domain;
 
-import java.io.Serializable;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import java.io.Serializable;
 
 /**
  * @author Kamill Sokol
@@ -28,11 +28,6 @@ public class SequenceRequest implements Sequenceable, Serializable {
     @Override
     public Long getNext() {
         return next;
-    }
-
-    @Override
-    public Sequenceable next() {
-        return new SequenceRequest(this.size, this.next);
     }
 
     @Override
