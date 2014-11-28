@@ -1,20 +1,17 @@
 package myreader.repository;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import myreader.entity.TagGroup;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -77,8 +74,7 @@ class SubscriptionRepositoryImpl implements SubscriptionRepositoryCustom {
     }
 
     private Page<TagGroup> toPage(List<Object[]> resultList, long total, Pageable pageable) {
-        List<TagGroup> content = total > pageable.getOffset() ? toTagGroup(resultList) : Collections.<TagGroup>emptyList();
-        return new PageImpl<>(content, pageable, total);
+        return new PageImpl<>(toTagGroup(resultList), pageable, total);
     }
 
     private List<TagGroup> toTagGroup(List<Object[]> resultList) {

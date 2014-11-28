@@ -27,36 +27,31 @@ public class SubscriptionEntryRepositoryImpl {
     }
 
     public SubscriptionEntry save(SubscriptionEntry subscriptionEntry) {
+        Assert.notNull(subscriptionEntry, "Cannot delete entity null");
 
         if(subscriptionEntry.getId() == null) {
             em.persist(subscriptionEntry);
         } else {
-
             subscriptionEntry = em.merge(subscriptionEntry);
         }
 
         SearchableSubscriptionEntry convert = conversionService.convert(subscriptionEntry, SearchableSubscriptionEntry.class);
         subscriptionEntrySearchRepository.save(convert);
-
         return subscriptionEntry;
     }
 
     public void delete(Long id) {
-
-        Assert.notNull(id, "Cannot delete entity with id 'null'.");
-
+        Assert.notNull(id, "Cannot delete entity null");
         SubscriptionEntry subscriptionEntry = em.find(SubscriptionEntry.class, id);
-
+        if(subscriptionEntry == null) {
+            return;
+        }
         em.remove(subscriptionEntry);
-
         subscriptionEntrySearchRepository.delete(id);
     }
 
     public void delete(SubscriptionEntry subscriptionEntry) {
-        Assert.notNull(subscriptionEntry, "Cannot delete entity with id 'null'.");
-
-        em.remove(em.contains(subscriptionEntry) ? subscriptionEntry : em.merge(subscriptionEntry));
-
-        subscriptionEntrySearchRepository.delete(subscriptionEntry.getId());
+        Assert.notNull(subscriptionEntry, "Cannot delete entity null");
+        delete(subscriptionEntry.getId());
     }
 }

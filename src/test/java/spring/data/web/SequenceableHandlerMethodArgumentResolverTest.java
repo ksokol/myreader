@@ -17,6 +17,9 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * @author Kamill Sokol
+ */
 public class SequenceableHandlerMethodArgumentResolverTest {
 
     private SequenceableHandlerMethodArgumentResolver uut = new SequenceableHandlerMethodArgumentResolver();
