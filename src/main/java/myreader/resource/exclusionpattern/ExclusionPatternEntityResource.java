@@ -2,9 +2,9 @@ package myreader.resource.exclusionpattern;
 
 import myreader.entity.ExclusionPattern;
 import myreader.repository.ExclusionRepository;
+import myreader.resource.RestControllerSupport;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
 
@@ -21,15 +20,14 @@ import spring.security.MyReaderUser;
  */
 @RestController
 @RequestMapping(value = "/exclusions/{subscriptionId}/pattern/{patternId}")
-public class ExclusionPatternEntityResource {
+public class ExclusionPatternEntityResource extends RestControllerSupport {
 
     private final ExclusionRepository exclusionRepository;
-    private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
     public ExclusionPatternEntityResource(ExclusionRepository exclusionRepository, ResourceAssemblers resourceAssemblers) {
+        super(resourceAssemblers);
         this.exclusionRepository = exclusionRepository;
-        this.resourceAssemblers = resourceAssemblers;
     }
 
     @ModelAttribute("pattern")

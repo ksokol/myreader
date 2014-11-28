@@ -3,6 +3,7 @@ package myreader.resource.subscriptionentry;
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
+import myreader.resource.RestControllerSupport;
 import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
@@ -30,26 +31,24 @@ import static myreader.Constants.ID;
 import static myreader.Constants.SEARCH_PARAM;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
-import static spring.data.domain.SequenceUtil.toSequence;
 
 /**
  * @author Kamill Sokol
  */
 @RestController
 @RequestMapping(value = "/subscriptionEntries")
-public class SubscriptionEntryCollectionResource {
+public class SubscriptionEntryCollectionResource extends RestControllerSupport {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;
 	private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
     private final PatchService patchService;
-    private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
     public SubscriptionEntryCollectionResource(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, final PatchService patchService, ResourceAssemblers resourceAssemblers) {
-		this.subscriptionEntryRepository = subscriptionEntryRepository;
+        super(resourceAssemblers);
+        this.subscriptionEntryRepository = subscriptionEntryRepository;
 		this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
         this.patchService = patchService;
-        this.resourceAssemblers = resourceAssemblers;
     }
 
     @RequestMapping(method = GET)

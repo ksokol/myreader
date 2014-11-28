@@ -2,6 +2,7 @@ package myreader.resource.user;
 
 import myreader.entity.User;
 import myreader.repository.UserRepository;
+import myreader.resource.RestControllerSupport;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.user.beans.UserGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +20,14 @@ import spring.security.MyReaderUser;
  */
 @RestController
 @RequestMapping(value= "/users")
-public class UserEntityResource {
+public class UserEntityResource extends RestControllerSupport {
 
     private final UserRepository userRepository;
-    private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
     public UserEntityResource(UserRepository userRepository, ResourceAssemblers resourceAssemblers) {
+        super(resourceAssemblers);
         this.userRepository = userRepository;
-        this.resourceAssemblers = resourceAssemblers;
     }
 
     @ModelAttribute

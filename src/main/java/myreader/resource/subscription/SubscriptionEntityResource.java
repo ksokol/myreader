@@ -5,6 +5,7 @@ import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
+import myreader.resource.RestControllerSupport;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
@@ -29,7 +30,6 @@ import spring.hateoas.SequencedResources;
 import spring.security.MyReaderUser;
 
 import static myreader.Constants.SEARCH_PARAM;
-import static spring.data.domain.SequenceUtil.toSequence;
 
 /**
  * @author Kamill Sokol
@@ -37,21 +37,20 @@ import static spring.data.domain.SequenceUtil.toSequence;
 @Transactional
 @RestController
 @RequestMapping(value = "/subscriptions/{id}")
-public class SubscriptionEntityResource {
+public class SubscriptionEntityResource extends RestControllerSupport {
 
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final PatchService patchService;
-    private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
     public SubscriptionEntityResource(SubscriptionRepository subscriptionService, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, SubscriptionEntryRepository subscriptionEntryRepository, PatchService patchService, ResourceAssemblers resourceAssemblers) {
+        super(resourceAssemblers);
         this.subscriptionRepository = subscriptionService;
         this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
         this.patchService = patchService;
-        this.resourceAssemblers = resourceAssemblers;
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)

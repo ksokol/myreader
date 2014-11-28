@@ -5,6 +5,7 @@ import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
+import myreader.resource.RestControllerSupport;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.service.search.SubscriptionEntrySearchRepository;
@@ -29,27 +30,25 @@ import spring.security.MyReaderUser;
 import java.util.List;
 
 import static myreader.Constants.SEARCH_PARAM;
-import static spring.data.domain.SequenceUtil.toSequence;
 
 /**
  * @author Kamill Sokol
  */
 @RestController
 @RequestMapping(value = "/subscriptionTagGroups/{id}")
-public class SubscriptionTagGroupEntityResource {
+public class SubscriptionTagGroupEntityResource extends RestControllerSupport {
 
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
-    private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
     public SubscriptionTagGroupEntityResource(SubscriptionRepository subscriptionRepository, SubscriptionEntryRepository subscriptionEntryRepository,
                                               SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, ResourceAssemblers resourceAssemblers) {
+        super(resourceAssemblers);
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
         this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
-        this.resourceAssemblers = resourceAssemblers;
     }
 
     @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)

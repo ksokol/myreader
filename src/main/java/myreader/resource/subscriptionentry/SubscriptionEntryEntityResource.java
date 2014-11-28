@@ -1,16 +1,12 @@
 package myreader.resource.subscriptionentry;
 
-import static myreader.Constants.ID;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
-
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
+import myreader.resource.RestControllerSupport;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +14,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
+
+import static myreader.Constants.ID;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
 /**
  * @author Kamill Sokol
@@ -28,16 +27,15 @@ import spring.security.MyReaderUser;
 @Transactional
 @RestController
 @RequestMapping("subscriptionEntries/{" + ID + "}")
-public class SubscriptionEntryEntityResource {
+public class SubscriptionEntryEntityResource extends RestControllerSupport {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;
-    private final ResourceAssemblers resourceAssemblers;
     private final PatchService patchService;
 
     @Autowired
     public SubscriptionEntryEntityResource(SubscriptionEntryRepository subscriptionEntryRepository, ResourceAssemblers resourceAssemblers, PatchService patchService) {
+        super(resourceAssemblers);
         this.subscriptionEntryRepository = subscriptionEntryRepository;
-        this.resourceAssemblers = resourceAssemblers;
         this.patchService = patchService;
     }
 

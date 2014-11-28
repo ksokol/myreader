@@ -1,15 +1,13 @@
 package myreader.resource.exclusionpattern;
 
-import javax.validation.Valid;
-
 import myreader.entity.ExclusionPattern;
 import myreader.entity.Subscription;
 import myreader.repository.ExclusionRepository;
 import myreader.repository.SubscriptionRepository;
+import myreader.resource.RestControllerSupport;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternPostRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,26 +19,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
+
+import javax.validation.Valid;
 
 /**
  * @author Kamill Sokol
  */
 @RestController
 @RequestMapping(value = "/exclusions/{id}/pattern")
-public class ExclusionPatternCollectionResource {
+public class ExclusionPatternCollectionResource extends RestControllerSupport {
 
     private final ExclusionRepository exclusionRepository;
     private final SubscriptionRepository subscriptionRepository;
-    private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
     public ExclusionPatternCollectionResource(ExclusionRepository exclusionRepository, SubscriptionRepository subscriptionRepository, ResourceAssemblers resourceAssemblers) {
+        super(resourceAssemblers);
         this.exclusionRepository = exclusionRepository;
         this.subscriptionRepository = subscriptionRepository;
-        this.resourceAssemblers = resourceAssemblers;
     }
 
     @ModelAttribute("subscription")
@@ -59,8 +57,7 @@ public class ExclusionPatternCollectionResource {
     }
 
     @RequestMapping(value="", method = RequestMethod.POST)
-    public ExclusionPatternGetResponse post(@ModelAttribute("subscription") Subscription subscription, @Valid @RequestBody ExclusionPatternPostRequest
-            request) {
+    public ExclusionPatternGetResponse post(@ModelAttribute("subscription") Subscription subscription, @Valid @RequestBody ExclusionPatternPostRequest request) {
 
         ExclusionPattern exclusionPattern = exclusionRepository.findBySubscriptionIdAndPattern(subscription.getId(), request.getPattern());
 

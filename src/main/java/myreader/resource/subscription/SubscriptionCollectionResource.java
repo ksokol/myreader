@@ -1,13 +1,11 @@
 package myreader.resource.subscription;
 
-import javax.validation.Valid;
-
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
+import myreader.resource.RestControllerSupport;
 import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.service.subscription.SubscriptionService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,26 +15,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
+
+import javax.validation.Valid;
 
 /**
  * @author Kamill Sokol
  */
 @RestController
 @RequestMapping(value = "/subscriptions")
-public class SubscriptionCollectionResource {
+public class SubscriptionCollectionResource extends RestControllerSupport {
 
 	private final SubscriptionService subscriptionService;
     private final SubscriptionRepository subscriptionRepository;
-    private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
     public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionRepository subscriptionRepository, ResourceAssemblers resourceAssemblers) {
+        super(resourceAssemblers);
         this.subscriptionService = subscriptionService;
         this.subscriptionRepository = subscriptionRepository;
-        this.resourceAssemblers = resourceAssemblers;
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)

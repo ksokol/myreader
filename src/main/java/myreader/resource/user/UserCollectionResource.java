@@ -2,11 +2,11 @@ package myreader.resource.user;
 
 import myreader.entity.User;
 import myreader.repository.UserRepository;
+import myreader.resource.RestControllerSupport;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.user.beans.UserGetResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,6 @@ import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
 
@@ -24,17 +23,16 @@ import spring.security.MyReaderUser;
  */
 @RestController
 @RequestMapping(value= "/users")
-public class UserCollectionResource {
+public class UserCollectionResource extends RestControllerSupport {
 
     private final UserRepository userRepository;
     private final SubscriptionCollectionResource subscriptionCollectionResource;
-    private ResourceAssemblers resourceAssemblers;
 
     @Autowired
     public UserCollectionResource(UserRepository userRepository, SubscriptionCollectionResource subscriptionCollectionResource, ResourceAssemblers resourceAssemblers) {
+        super(resourceAssemblers);
         this.userRepository = userRepository;
         this.subscriptionCollectionResource = subscriptionCollectionResource;
-        this.resourceAssemblers = resourceAssemblers;
     }
 
     @RequestMapping("")

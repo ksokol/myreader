@@ -1,17 +1,24 @@
-package spring.data.domain;
-
-import java.util.List;
+package myreader.resource;
 
 import myreader.entity.Identifiable;
-
 import org.springframework.util.Assert;
+import spring.data.domain.Sequence;
+import spring.data.domain.SequenceImpl;
+import spring.data.domain.SequenceRequest;
+import spring.data.domain.Sequenceable;
+import spring.hateoas.ResourceAssemblers;
+
+import java.util.List;
 
 /**
  * @author Kamill Sokol
  */
-public final class SequenceUtil {
-    private SequenceUtil() {
-        //empty
+public class RestControllerSupport {
+
+    protected final ResourceAssemblers resourceAssemblers;
+
+    public RestControllerSupport(final ResourceAssemblers resourceAssemblers) {
+        this.resourceAssemblers = resourceAssemblers;
     }
 
     public static <T extends Identifiable> Sequence<T> toSequence(final Sequenceable sequenceable, final List<T> content) {

@@ -1,4 +1,4 @@
-package myreader.resource;
+package myreader.resource.resources;
 
 import myreader.test.IntegrationTestSupport;
 import org.junit.Test;
