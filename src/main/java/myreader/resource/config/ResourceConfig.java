@@ -24,7 +24,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.web.bind.support.AuthenticationPrincipalArgumentResolver;
@@ -41,6 +40,8 @@ import spring.hateoas.EntityLinks;
 import javax.validation.TraversableResolver;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * @author Kamill Sokol
@@ -77,7 +78,10 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-        configurer.defaultContentType(MediaType.APPLICATION_JSON);
+        configurer
+                .defaultContentType(APPLICATION_JSON)
+                .favorParameter(false)
+                .favorPathExtension(false);
     }
 
     @Bean
