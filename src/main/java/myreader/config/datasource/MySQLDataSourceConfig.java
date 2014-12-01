@@ -1,6 +1,5 @@
 package myreader.config.datasource;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
@@ -11,36 +10,27 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 @Configuration
 class MySQLDataSourceConfig implements DataSourceConfig {
 
-    @Value("${driverClass:com.mysql.jdbc.Driver}")
-    private String driverClassName;
+    public static final String KEY_DB_USER = "db.user";
+    public static final String KEY_DB_PASSWORD = "db.password";
+    public static final String KEY_DB_HOST = "db.host";
 
-    private boolean jpaGenerateDdl = true;
-
-    @Value("${dialect:org.hibernate.dialect.MySQL5InnoDBDialect}")
-    private String hibernateDialect;
-
-    //  @Value("${db.user}")
-    private String username;
-
-    //@Value("${db.password}")
-    private String password;
-
-    @Value("${hibernateHbm2ddlAuto:false}")
-    private String hibernateHbm2ddlAuto;
+    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String DIALECT = "org.hibernate.dialect.MySQL5InnoDBDialect";
+    private static final String HBM_2_DDL_AUTO = "update";
 
     @Override
     public DataSource dataSource() {
         DataSource dataSource;
 
         //TODO split into separate configurations
-        String user = System.getProperty("db.user");
-        String password = System.getProperty("db.password");
-        String host = System.getProperty("db.host");
+        String user = System.getProperty(KEY_DB_USER);
+        String password = System.getProperty(KEY_DB_PASSWORD);
+        String host = System.getProperty(KEY_DB_HOST);
 
         if(user == null|| password == null|| host== null) {
             JndiDataSourceLookup lookup = new JndiDataSourceLookup();
@@ -48,7 +38,7 @@ class MySQLDataSourceConfig implements DataSourceConfig {
             dataSource = lookup.getDataSource("jdbc/collector");
         } else {
             DriverManagerDataSource dataSource1 = new DriverManagerDataSource();
-            dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
+            dataSource1.setDriverClassName(JDBC_DRIVER);
             dataSource1.setUrl("jdbc:mysql://"+host+"/"+user);
             dataSource1.setUsername(user);
             dataSource1.setPassword(password);
@@ -62,15 +52,17 @@ class MySQLDataSourceConfig implements DataSourceConfig {
     public JpaVendorAdapter jpaVendorAdapter() {
         return new HibernateJpaVendorAdapter() {
             {
-                setDatabasePlatform(hibernateDialect);
-                setGenerateDdl(jpaGenerateDdl);
-                setShowSql(true);
+                setDatabasePlatform(DIALECT);
+                setGenerateDdl(true);
             }
         };
     }
 
     @Override
     public Properties jpaProperties() {
-        return new Properties();
+        Properties properties = new Properties();
+        properties.put("hibernate.hbm2ddl.auto", HBM_2_DDL_AUTO);
+        return properties;
     }
+
 }

@@ -418,5 +418,11 @@
             <version>1.0.0.M1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>directory-naming</groupId>
+            <artifactId>naming-java</artifactId>
+            <version>0.8</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
