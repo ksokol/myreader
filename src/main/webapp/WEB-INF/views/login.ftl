@@ -8,7 +8,7 @@ Login
 <form action="${requestContext.getContextUrl(LOGIN_PROCESSING_URL)}" method="post" name="loginForm">
 
     <input type="text" name="username">
-    <input type="text" name="password">
+    <input type="password" name="password">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
     <input type="submit">
