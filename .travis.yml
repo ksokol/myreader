@@ -11,6 +11,7 @@ env:
     #PW
      - secure: "kJxt54H7lCCoRhWEeuCdU9XqWdCrWm1i6uAw1/FW65C2ppaKsbzAAGq1NQDCKvVvPrj9xIxoBmajVtsFe19zCvUe4/tOnUYY6iLfC6J7B+XxZHR67darX3xKP/YH8Tze0JduSPOC+Uz7vl6n9rWUlfaTE3UydIIt+iPCrq5Pth0="
 
+before_script: mvn -v
 script: mvn test
 after_success: 
  - if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn cobertura:cobertura coveralls:cobertura; fi
