@@ -2,6 +2,7 @@ package myreader.reader.web;
 
 import java.util.Date;
 
+@Deprecated
 public class UserEntryQuery {
 
     private Long id;

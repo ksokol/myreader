@@ -1,0 +1,70 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/users/2/subscriptions"
+        }
+    ],
+    "content": [
+        {
+            "uuid": "6",
+            "title": "user2_subscription1",
+            "tag": "tag1",
+            "sum": 15,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        },
+        {
+            "uuid": "7",
+            "title": "user2_subscription2",
+            "tag": "tag1",
+            "sum": 10,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        },
+        {
+            "uuid": "8",
+            "title": "user2_subscription3",
+            "tag": null,
+            "sum": 125,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        },
+        {
+            "uuid": "9",
+            "title": "user2_subscription4",
+            "tag": "tag1",
+            "sum": 25,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        },
+        {
+            "uuid": "10",
+            "title": "user2_subscription5",
+            "tag": null,
+            "sum": 5,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        },
+        {
+            "uuid": "11",
+            "title": "user2_subscription6",
+            "tag": "tag2",
+            "sum": 1,
+            "unseen": 0,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 6,
+        "totalPages": 1,
+        "number": 0
+    }
+}

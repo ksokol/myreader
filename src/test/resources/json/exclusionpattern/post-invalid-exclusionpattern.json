@@ -1,0 +1,10 @@
+{
+    "status": 400,
+    "message": "validation error",
+    "fieldErrors": [
+        {
+            "field": "pattern",
+            "message": "invalid regular expression"
+        }
+    ]
+}

@@ -7,15 +7,31 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-            classpath:/META-INF/spring/global-context.xml,
-            classpath:/META-INF/spring/security-context.xml
+            classpath:/META-INF/spring/global-context.xml
        </param-value>
-	</context-param> 
-	
+	</context-param>
+
+    <servlet>
+        <servlet-name>api-2-servlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextClass</param-name>
+            <param-value>
+                org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+            </param-value>
+        </init-param>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>
+                myreader.resource.config.ResourceConfig
+            </param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
 	<servlet>
 		<servlet-name>app-servlet</servlet-name>
 	   	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -25,11 +41,16 @@
     	</init-param>
     	<load-on-startup>1</load-on-startup>
 	</servlet>
-	
+
 	<servlet-mapping>
 		<servlet-name>app-servlet</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>api-2-servlet</servlet-name>
+        <url-pattern>/api/2/*</url-pattern>
+    </servlet-mapping>
 	
 	<filter>
 	  <filter-name>springSecurityFilterChain</filter-name>

@@ -1,71 +1,63 @@
 package myreader.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import myreader.config.datasource.DataSourceConfig;
+import myreader.repository.SubscriptionEntryRepository;
+import myreader.repository.SubscriptionEntryRepositoryImpl;
+import myreader.service.search.SubscriptionEntrySearchRepository;
+import myreader.service.search.converter.DateConverter;
+import myreader.service.search.converter.SearchableSubscriptionEntryConverter;
+import myreader.service.search.events.IndexSyncEventHandler;
+import myreader.service.search.jobs.IndexSyncJob;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.core.ConfigSolr;
+import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.SolrResourceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ConversionServiceFactoryBean;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
-import org.springframework.jndi.JndiObjectFactoryBean;
+import org.springframework.data.solr.core.SolrOperations;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.convert.CustomConversions;
+import org.springframework.data.solr.core.convert.MappingSolrConverter;
+import org.springframework.data.solr.core.mapping.SimpleSolrMappingContext;
+import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
+import javax.transaction.TransactionManager;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
- * @author dev@sokol-web.de <Kamill Sokol>
+ * @author Kamill Sokol
  */
 @Configuration
 @EnableJpaRepositories("myreader.repository")
+@EnableSolrRepositories("myreader.service.search")
 @EnableTransactionManagement
 public class PersistenceConfig {
 
-    @Value("${driverClass:com.mysql.jdbc.Driver}")
-    private String driverClassName;
+    private static final String SOLR_XML = "solr/solr.xml";
+    private static final Logger log = LoggerFactory.getLogger(PersistenceConfig.class);
 
-    private boolean jpaGenerateDdl = true;
-
-    @Value("${dialect:org.hibernate.dialect.MySQL5InnoDBDialect}")
-    private String hibernateDialect;
-
-  //  @Value("${db.user}")
-    private String username;
-
-    //@Value("${db.password}")
-    private String password;
-
-    @Value("${hibernateHbm2ddlAuto:false}")
-    private String hibernateHbm2ddlAuto;
-
-    @Bean
-    public DataSource dataSource() {
-        DataSource dataSource;
-
-        String user = System.getProperty("db.user");
-        String password = System.getProperty("db.password");
-        String host = System.getProperty("db.host");
-
-        if(user == null|| password == null|| host== null) {
-            JndiDataSourceLookup lookup = new JndiDataSourceLookup();
-            lookup.setResourceRef(true);
-            dataSource = lookup.getDataSource("jdbc/collector");
-        } else {
-            DriverManagerDataSource dataSource1 = new DriverManagerDataSource();
-            dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-            dataSource1.setUrl("jdbc:mysql://"+host+"/"+user);
-            dataSource1.setUsername(user);
-            dataSource1.setPassword(password);
-            dataSource = dataSource1;
-        }
-
-        return dataSource;
-    }
+    @Autowired
+    private DataSourceConfig dataSourceConfig;
 
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
@@ -75,21 +67,14 @@ public class PersistenceConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
-        factoryBean.setDataSource(dataSource());
+        factoryBean.setDataSource(dataSourceConfig.dataSource());
 
         //TODO
         factoryBean.setPackagesToScan(new String[]{"myreader.entity"});
-
-        final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter() {
-            {
-                setDatabasePlatform(hibernateDialect);
-                setGenerateDdl(jpaGenerateDdl);
-               // setShowSql(true);
-            }
-        };
+        final JpaVendorAdapter vendorAdapter = dataSourceConfig.jpaVendorAdapter();
 
         factoryBean.setJpaVendorAdapter(vendorAdapter);
-        //factoryBean.setJpaProperties(additionlProperties());
+        factoryBean.setJpaProperties(dataSourceConfig.jpaProperties());
 
         return factoryBean;
     }
@@ -104,4 +89,69 @@ public class PersistenceConfig {
         txManager.setEntityManagerFactory(factory);
         return txManager;
     }
+
+    @Bean
+    public IndexSyncEventHandler indexSyncEventHandler(IndexSyncJob indexSyncJob) {
+        return new IndexSyncEventHandler(indexSyncJob);
+    }
+
+    @Bean
+    public CoreContainer coreContainer() throws IOException {
+        File home = new ClassPathResource(SOLR_XML).getFile();
+        log.info("looking for cores in " + home.getParent());
+        SolrResourceLoader loader = new SolrResourceLoader(home.getParent());
+        ConfigSolr config = ConfigSolr.fromSolrHome(loader, loader.getInstanceDir());
+        CoreContainer cores = new CoreContainer(loader, config);
+        cores.load();
+        return cores;
+    }
+
+    @Bean
+    public SolrServer solrServer() throws IOException {
+        return new EmbeddedSolrServer(coreContainer(), "");
+    }
+
+    @Bean
+    public ConversionService conversionService() {
+        ConversionServiceFactoryBean conversionServiceFactoryBean = new ConversionServiceFactoryBean();
+        conversionServiceFactoryBean.setConverters(Collections.singleton(new SearchableSubscriptionEntryConverter()));
+        conversionServiceFactoryBean.afterPropertiesSet();
+        return conversionServiceFactoryBean.getObject();
+    }
+
+    @Bean
+    public SubscriptionEntryRepositoryImpl subscriptionEntryRepositoryImpl(EntityManager em, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository) throws IOException {
+        return new SubscriptionEntryRepositoryImpl(em, conversionService(), subscriptionEntrySearchRepository);
+    }
+
+    @Bean
+    public IndexSyncJob indexSyncJob(SubscriptionEntryRepository subscriptionEntryRepository,
+                                     SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, ConversionService conversionService,
+                                     PlatformTransactionManager transactionManager) {
+        return new IndexSyncJob(subscriptionEntryRepository, subscriptionEntrySearchRepository, conversionService, new TransactionTemplate(transactionManager));
+    }
+
+    @Bean
+    public CustomConversions customConversions() {
+		/*
+		 * Prevent using Solr's date field type.
+		 * Solr uses thread local for date formatting. These formatter aren't removed after undeployment causing a memory leak.
+		 */
+        return new CustomConversions(Arrays.asList(new DateConverter()));
+    }
+
+    @Bean
+    public MappingSolrConverter mappingSolrConverter() {
+        MappingSolrConverter mappingSolrConverter = new MappingSolrConverter(new SimpleSolrMappingContext());
+        mappingSolrConverter.setCustomConversions(customConversions());
+        return mappingSolrConverter;
+    }
+
+    @Bean
+    public SolrOperations solrTemplate() throws IOException {
+        SolrTemplate solrTemplate = new SolrTemplate(solrServer());
+        solrTemplate.setSolrConverter(mappingSolrConverter());
+        return solrTemplate;
+    }
+
 }

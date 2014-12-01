@@ -1,0 +1,46 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/exclusions/1/pattern"
+        }
+    ],
+    "content": [
+        {
+            "uuid": "0",
+            "hitCount": 1,
+            "pattern": "user1_subscription1_pattern1",
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/exclusions/1/pattern/0"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/1"
+                }
+            ]
+        },
+        {
+            "uuid": "1",
+            "hitCount": 1,
+            "pattern": "user1_subscription1_pattern2",
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "http://localhost/exclusions/1/pattern/1"
+                },
+                {
+                    "rel": "exclusion",
+                    "href": "http://localhost/exclusions/1"
+                }
+            ]
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 2,
+        "totalPages": 1,
+        "number": 0
+    }
+}

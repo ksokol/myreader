@@ -1,0 +1,20 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionEntries/tag/tag1"
+        }
+    ],
+    "content": [
+        {
+            "uuid": "1009",
+            "title": "Party time",
+            "feedTitle": "user4_subscription1",
+            "tag": "tag1",
+            "content": "content",
+            "seen": false,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        }
+    ]
+}

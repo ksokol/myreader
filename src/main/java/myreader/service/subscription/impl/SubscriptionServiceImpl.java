@@ -1,57 +1,75 @@
 package myreader.service.subscription.impl;
 
-/**
- * @author Kamill Sokol dev@sokol-web.de
- */
+import java.util.List;
+
+import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.repository.SubscriptionRepository;
-import myreader.service.AccessDeniedException;
+import myreader.repository.UserRepository;
 import myreader.service.EntityNotFoundException;
-import myreader.service.subscription.SubscriptionService;
-import myreader.service.user.UserService;
+import myreader.service.feed.FeedService;
 import myreader.service.search.SubscriptionSearchService;
+import myreader.service.subscription.SubscriptionExistException;
+import myreader.service.subscription.SubscriptionService;
+import myreader.service.time.TimeService;
+import myreader.service.user.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.List;
-
+/**
+ * @author Kamill Sokol
+ */
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final SubscriptionSearchService subscriptionSearchService;
+    private final FeedService feedService;
+    private final TimeService timeService;
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, SubscriptionSearchService subscriptionSearchService) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, UserRepository userRepository, SubscriptionSearchService subscriptionSearchService, FeedService feedService, TimeService timeService) {
         this.subscriptionRepository = subscriptionRepository;
         this.userService = userService;
+        this.userRepository = userRepository;
         this.subscriptionSearchService = subscriptionSearchService;
+        this.feedService = feedService;
+        this.timeService = timeService;
     }
 
     @Override
     public void delete(Long id) {
         User currentUser = userService.getCurrentUser();
-        Subscription subscription = subscriptionRepository.findOne(id);
+        Subscription subscription = subscriptionRepository.findByIdAndUsername(id, currentUser.getEmail());
 
         if(subscription == null) {
             throw new EntityNotFoundException();
         }
 
-        if(subscription.getUser().equals(currentUser)) {
-            subscriptionRepository.delete(subscription.getId());
-            subscriptionSearchService.delete(subscription.getId());
-        } else {
-            throw new AccessDeniedException();
-        }
+        subscriptionRepository.delete(subscription.getId());
+        subscriptionSearchService.delete(subscription.getId());
     }
 
     @Override
     public List<Subscription> findAll() {
         User currentUser = userService.getCurrentUser();
         List<Subscription> subscriptions =  subscriptionRepository.findByUser(currentUser.getId());
+
+        return subscriptions;
+    }
+
+    @Override
+    public Page<Subscription> findAll(Pageable pageable) {
+        User currentUser = userService.getCurrentUser();
+        Page<Subscription> subscriptions =  subscriptionRepository.findAllByUser(currentUser.getId(), pageable);
 
         return subscriptions;
     }
@@ -90,6 +108,30 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public void save(Subscription subscription) {
         subscriptionRepository.save(subscription);
+    }
+
+    @Transactional
+    @Override
+    public Subscription subscribe(Long userId, String url) {
+        Subscription check = subscriptionRepository.findByUserIdAndFeedUrl(userId, url);
+
+        if(check != null) {
+            throw new SubscriptionExistException();
+        }
+
+        Feed feed = feedService.findByUrl(url);
+        User user = userRepository.findOne(userId);
+
+        if(user == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Subscription subscription = new Subscription();
+        subscription.setTitle(feed.getTitle());
+        subscription.setFeed(feed);
+        subscription.setUser(user);
+        subscription.setCreatedAt(timeService.getCurrentTime());
+        return subscriptionRepository.save(subscription);
     }
 
 }

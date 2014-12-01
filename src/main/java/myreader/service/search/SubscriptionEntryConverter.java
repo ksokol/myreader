@@ -1,14 +1,15 @@
 package myreader.service.search;
 
-import myreader.entity.*;
+import myreader.entity.SubscriptionEntry;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Component;
 
 import static myreader.service.search.SolrSubscriptionFields.*;
 
 /**
- * @author dev@sokol-web.de <Kamill Sokol>
+ * @author Kamill Sokol
  */
+@Deprecated
 @Component
 public class SubscriptionEntryConverter {
 

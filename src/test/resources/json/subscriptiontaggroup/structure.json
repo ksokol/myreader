@@ -1,0 +1,88 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionTagGroups"
+        }
+    ],
+    "content": [
+        {
+            "links": [
+                {
+                    "rel": "subscriptions",
+                    "href": "http://localhost/subscriptionTagGroups/tag3/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionTagGroups/tag3/entries"
+                },
+                {
+                    "rel": "entries(seen=true)",
+                    "href": "http://localhost/subscriptionTagGroups/tag3/entries/new"
+                }
+            ],
+            "uuid": "tag3",
+            "tag": "tag3",
+            "unseen": 0
+        },
+        {
+            "links": [
+                {
+                    "rel": "subscription",
+                    "href": "http://localhost/subscriptions/4"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptions/4/entries"
+                }
+            ],
+            "uuid": "4",
+            "tag": "user1_subscription4",
+            "unseen": 0
+        },
+        {
+            "links": [
+                {
+                    "rel": "subscriptions",
+                    "href": "http://localhost/subscriptionTagGroups/tag1/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionTagGroups/tag1/entries"
+                },
+                {
+                    "rel": "entries(seen=true)",
+                    "href": "http://localhost/subscriptionTagGroups/tag1/entries/new"
+                }
+            ],
+            "uuid": "tag1",
+            "tag": "tag1",
+            "unseen": 1
+        },
+        {
+            "links": [
+                {
+                    "rel": "subscriptions",
+                    "href": "http://localhost/subscriptionTagGroups/tag2/subscriptions"
+                },
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionTagGroups/tag2/entries"
+                },
+                {
+                    "rel": "entries(seen=true)",
+                    "href": "http://localhost/subscriptionTagGroups/tag2/entries/new"
+                }
+            ],
+            "uuid": "tag2",
+            "tag": "tag2",
+            "unseen": 0
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 4,
+        "totalPages": 1,
+        "number": 0
+    }
+}

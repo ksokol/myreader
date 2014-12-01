@@ -1,0 +1,10 @@
+{
+  "status": 400,
+  "message": "validation error",
+  "fieldErrors": [
+    {
+      "field": "content[0].uuid",
+      "message": "numeric value out of bounds (<2147483647 digits>.<0 digits> expected)"
+    }
+  ]
+}

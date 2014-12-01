@@ -1,0 +1,10 @@
+{
+    "status": 400,
+    "message": "validation error",
+    "fieldErrors": [
+        {
+            "field": "url",
+            "message": "subscription exists"
+        }
+    ]
+}

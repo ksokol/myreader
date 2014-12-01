@@ -3,11 +3,23 @@ package myreader.entity;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 @Entity
 @Table(name = "user_feed")
-public class Subscription {
+public class Subscription implements Identifiable {
 
     @Id
     @GeneratedValue
@@ -27,28 +39,33 @@ public class Subscription {
     @Column(name = "user_feed_sum")
     private int sum;
 
+    @Column(name = "user_feed_unseen", columnDefinition = "INT DEFAULT 0", precision = 0)
+    private int unseen = 0;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "user_feed_created_at")
     private Date createdAt;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
     private Feed feed;
 
-    @OneToMany(mappedBy = "subscription")
+    @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
     private Set<SubscriptionEntry> subscriptionEntries;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
     private Set<ExclusionPattern> exclusions;
 
-    public Subscription() {
-        this.createdAt = new Date();
-    }
+    @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
+    @Version
+    private long version;
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -75,6 +92,14 @@ public class Subscription {
 
     public void setSum(int sum) {
         this.sum = sum;
+    }
+
+    public int getUnseen() {
+        return unseen;
+    }
+
+    public void setUnseen(int unseen) {
+        this.unseen = unseen;
     }
 
     public Date getCreatedAt() {
@@ -117,4 +142,11 @@ public class Subscription {
         this.subscriptionEntries = subscriptionEntries;
     }
 
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
 }

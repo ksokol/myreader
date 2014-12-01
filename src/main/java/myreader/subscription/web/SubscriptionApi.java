@@ -1,10 +1,7 @@
 package myreader.subscription.web;
 
-import java.net.URL;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
 import myreader.API;
 import myreader.dto.ExclusionPatternDto;
 import myreader.dto.SubscriptionDto;
@@ -13,12 +10,12 @@ import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.fetcher.icon.IconUpdateRequestEvent;
-
+import myreader.repository.ExclusionRepository;
 import myreader.repository.FeedRepository;
 import myreader.repository.UserRepository;
 import myreader.service.EntityNotFoundException;
-import myreader.service.subscription.SubscriptionService;
 import myreader.service.search.SubscriptionSearchService;
+import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
@@ -31,9 +28,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@Deprecated
 @Transactional
 @Controller
 @RequestMapping(API.V1 + "subscription")
@@ -53,6 +60,9 @@ class SubscriptionApi {
 
     @Autowired
     private SubscriptionSearchService subscriptionSearchService;
+
+    @Autowired
+    private ExclusionRepository exclusionRepository;
 
     @Autowired
     ApplicationEventPublisher publisher;
@@ -168,35 +178,49 @@ class SubscriptionApi {
             subscription.setTitle(String.valueOf(map.get("title")));
         }
 
+        subscriptionService.save(subscription);
+
         if (map.containsKey("exclusions")) {
             Set<ExclusionPattern> patterns = subscription.getExclusions();
-            Set<ExclusionPattern> newSet = new TreeSet<ExclusionPattern>();
-
+            Set<String> newPatterns = new TreeSet<>();
             List exclusions = (List) map.get("exclusions");
 
+            OUTER:
             for (Object o : exclusions) {
                 Map<String, String> exclusionMap = (Map<String, String>) o;
 
                 for (ExclusionPattern ep : patterns) {
                     if (ep.getPattern().equals(exclusionMap.get("pattern"))) {
-                        newSet.add(ep);
-                        continue;
+                        continue OUTER;
                     }
                 }
-
-                try {
-                    Pattern.compile(exclusionMap.get("pattern"));
-                } catch (Exception e) {
-                    throw new ValidationException("exclusion", "invalid.pattern " + exclusionMap.get("pattern"));
-                }
-
-                newSet.add(new ExclusionPattern(exclusionMap.get("pattern")));
+                newPatterns.add(exclusionMap.get("pattern"));
             }
 
-            subscription.setExclusions(newSet);
-        }
+            for (final String exclusionPattern : newPatterns) {
+                try {
+                    Pattern.compile(exclusionPattern);
+                } catch (Exception e) {
+                    throw new ValidationException("exclusion", "invalid.pattern " + exclusionPattern);
+                }
+                ExclusionPattern pattern1 = new ExclusionPattern(exclusionPattern);
+                pattern1.setSubscription(subscription);
+                exclusionRepository.save(pattern1);
+            }
 
-        subscriptionService.save(subscription);
+            Map<String, ExclusionPattern> subscriptionPatterns = new HashMap<>();
+            for (final ExclusionPattern exclusionPattern : patterns) {
+                subscriptionPatterns.put(exclusionPattern.getPattern(), exclusionPattern);
+            }
+            for (Object o : exclusions) {
+                Map<String, String> exclusionMap = (Map<String, String>) o;
+                String pattern = exclusionMap.get("pattern");
+                if(subscriptionPatterns.containsKey(pattern)) {
+                    subscriptionPatterns.remove(pattern);
+                }
+            }
+            exclusionRepository.delete(subscriptionPatterns.values());
+        }
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")

@@ -19,7 +19,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "entry")
-public class FeedEntry {
+public class FeedEntry implements Identifiable {
 
     @Id
     @TableGenerator(name = "feed_entry_id_generator", table = "primary_keys")
@@ -50,14 +50,12 @@ public class FeedEntry {
     @Column(name = "entry_created_at")
     private Date createdAt;
 
-    public FeedEntry() {
-        this.createdAt = new Date();
-    }
-
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

@@ -76,7 +76,7 @@ public class FeedParser {
             }
 
             Collections.reverse(entries);
-            return new FetchResult(entries, lastModified);
+            return new FetchResult(entries, lastModified, feed.getTitle());
         } catch (Exception e) {
             log.warn("url: {}, message: {}", feedUrl, e.getMessage());
             throw new FeedParseException(e.getMessage(), e);

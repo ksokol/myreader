@@ -1,13 +1,13 @@
 package myreader.service.feed;
 
-import myreader.entity.Subscription;
-
-import java.util.List;
+import myreader.entity.Feed;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public interface FeedService {
 
-    List<Subscription> findAllSubscriptionsByUrl(String url);
+    Feed createFromUrl(String url);
+
+    Feed findByUrl(String url);
 }

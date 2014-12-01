@@ -3,11 +3,21 @@ package myreader.entity;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 @Entity
 @Table(name = "feed")
-public class Feed {
+public class Feed implements Identifiable {
 
     @Id
     @GeneratedValue
@@ -39,14 +49,21 @@ public class Feed {
     @OneToMany(mappedBy = "feed")
     private Set<FeedEntry> entries;
 
+    @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
+    @Version
+    private long version;
+
     public Feed() {
+        //TODO
         this.createdAt = new Date();
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -119,5 +136,13 @@ public class Feed {
     @PrePersist
     public void onCreate() {
         this.createdAt = new Date();
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 }

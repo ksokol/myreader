@@ -1,0 +1,31 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/users"
+        }
+    ],
+    "content": [
+        {
+            "links": [
+                {
+                    "rel": "subscriptions",
+                    "href": "http://localhost/users/1/subscriptions"
+                },
+                {
+                    "rel": "self",
+                    "href": "http://localhost/users/1"
+                }
+            ],
+            "uuid": "1",
+            "email": "user1@localhost",
+            "role": "ROLE_USER"
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 1,
+        "totalPages": 1,
+        "number": 0
+    }
+}

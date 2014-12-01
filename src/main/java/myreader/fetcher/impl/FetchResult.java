@@ -1,23 +1,26 @@
 package myreader.fetcher.impl;
 
+import myreader.fetcher.persistence.FetcherEntry;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import myreader.fetcher.persistence.FetcherEntry;
 
 public class FetchResult {
 
     private List<FetcherEntry> entries;
     private String lastModified;
+    private String title;
 
     public FetchResult() {
         this.entries = new ArrayList<FetcherEntry>();
         this.lastModified = "";
+        this.title = "";
     }
 
-    public FetchResult(List<FetcherEntry> entries, String lastModified) {
+    public FetchResult(List<FetcherEntry> entries, String lastModified, String title) {
         this.entries = entries;
         this.lastModified = lastModified;
+        this.title = title;
     }
 
     public List<FetcherEntry> getEntries() {
@@ -32,8 +35,7 @@ public class FetchResult {
         return lastModified;
     }
 
-    public void setLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public String getTitle() {
+        return title;
     }
-
 }

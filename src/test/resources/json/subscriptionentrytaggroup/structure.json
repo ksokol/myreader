@@ -1,0 +1,93 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionEntryTagGroups"
+        }
+    ],
+    "content": [
+        {
+            "uuid": "tag1",
+            "tag": "tag1",
+            "count": 1,
+            "links": [
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag1"
+                }
+            ]
+        },
+        {
+            "uuid": "tag2-tag3",
+            "tag": "tag2-tag3",
+            "count": 1,
+            "links": [
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag2-tag3"
+                }
+            ]
+        },
+        {
+            "uuid": "tag4",
+            "tag": "tag4",
+            "count": 1,
+            "links": [
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag4"
+                }
+            ]
+        },
+        {
+            "uuid": "tag5",
+            "tag": "tag5",
+            "count": 1,
+            "links": [
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag5"
+                }
+            ]
+        },
+        {
+            "uuid": "tag6",
+            "tag": "tag6",
+            "count": 1,
+            "links": [
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag6"
+                }
+            ]
+        },
+        {
+            "uuid": "tag7",
+            "tag": "tag7",
+            "count": 1,
+            "links": [
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag7"
+                }
+            ]
+        },
+        {
+            "uuid": "tag8Tag9",
+            "tag": "tag8Tag9",
+            "count": 1,
+            "links": [
+                {
+                    "rel": "entries",
+                    "href": "http://localhost/subscriptionEntries/tag/tag8Tag9"
+                }
+            ]
+        }
+    ],
+    "page": {
+        "size": 20,
+        "totalElements": 7,
+        "totalPages": 1,
+        "number": 0
+    }
+}

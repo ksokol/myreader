@@ -1,0 +1,15 @@
+{
+    "uuid": "5",
+    "hitCount": 0,
+    "pattern": "test",
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/exclusions/9/pattern/5"
+        },
+        {
+            "rel": "exclusion",
+            "href": "http://localhost/exclusions/9"
+        }
+    ]
+}

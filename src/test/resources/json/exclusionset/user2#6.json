@@ -1,0 +1,19 @@
+{
+    "uuid": "6",
+    "patternCount": 1,
+    "overallPatternHits": 1,
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/exclusions/6"
+        },
+        {
+            "rel": "subscription",
+            "href": "http://localhost/subscriptions/6"
+        },
+        {
+            "rel": "pattern",
+            "href": "http://localhost/exclusions/6/pattern"
+        }
+    ]
+}

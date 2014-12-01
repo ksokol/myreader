@@ -1,0 +1,20 @@
+{
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://localhost/subscriptionTagGroups/tag1/entries?q=mysql"
+        }
+    ],
+    "content": [
+        {
+            "uuid": "1004",
+            "title": "MySQL is to SQL like ??? to NoSQL",
+            "feedTitle": "user2_subscription2",
+            "tag": "tag3",
+            "content": "content",
+            "seen": true,
+            "createdAt": "2011-04-15T19:20:46Z",
+            "links": "${json-unit.ignore}"
+        }
+    ]
+}
