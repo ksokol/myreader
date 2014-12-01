@@ -120,7 +120,7 @@ public class SecurityConfig {
        @Override
        protected void configure(HttpSecurity http) throws Exception {
             http
-                    .antMatcher("/api/1/**")
+                    .regexMatcher("/api/(1|user)/.*")
                     .authorizeRequests()
                     .anyRequest()
                     .hasAnyRole("USER", "ADMIN")
