@@ -11,6 +11,6 @@ env:
     #PW
      - secure: "kJxt54H7lCCoRhWEeuCdU9XqWdCrWm1i6uAw1/FW65C2ppaKsbzAAGq1NQDCKvVvPrj9xIxoBmajVtsFe19zCvUe4/tOnUYY6iLfC6J7B+XxZHR67darX3xKP/YH8Tze0JduSPOC+Uz7vl6n9rWUlfaTE3UydIIt+iPCrq5Pth0="
 
-script: if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn test cobertura:cobertura coveralls:cobertura; else mvn test; fi
+script: if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn cobertura:cobertura coveralls:cobertura; else mvn test; fi
 after_success:
  - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn package -DskipTests;  echo "deploying artefact"; curl --upload-file target/myreader.war -u travis:$PW --cacert cacert-root.crt "https://$DEPLOY_HOST/manager/text/deploy?update=true&path=/myreader"; echo "deploy result $?"; fi
