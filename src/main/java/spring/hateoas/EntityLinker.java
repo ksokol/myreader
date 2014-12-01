@@ -1,16 +1,13 @@
 package spring.hateoas;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-
 import spring.hateoas.annotation.Rel;
+
+import static myreader.utils.UrlUtils.encodeAsUTF8;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
  * @author Kamill Sokol
@@ -20,20 +17,13 @@ public class EntityLinker implements EntityLinks {
     private final Class<?> entityClass;
     private final Class<?> resourceClass;
     private final String rel;
-    private final String encoding;
 
     public EntityLinker(Class<?> entityClass, Class<?> resourceClass) {
-        this(entityClass, resourceClass, "UTF-8");
-    }
-
-    public EntityLinker(Class<?> entityClass, Class<?> resourceClass, String encoding) {
         Assert.notNull(entityClass, "entity class is null");
         Assert.notNull(resourceClass, "resource class is null");
-        Assert.notNull(encoding, "encoding is null");
 
         this.entityClass = entityClass;
         this.resourceClass = resourceClass;
-        this.encoding = encoding;
         Rel relAnnotation = entityClass.getAnnotation(Rel.class);
 
         if(relAnnotation != null) {
@@ -81,11 +71,4 @@ public class EntityLinker implements EntityLinks {
         return rel;
     }
 
-    private String encodeAsUTF8(Object toEncode) {
-        try {
-            return URLEncoder.encode(String.valueOf(toEncode), encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("encoding [" + encoding + "] not supported");
-        }
-    }
 }

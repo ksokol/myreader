@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import spring.hateoas.AbstractResourceAssembler;
 import spring.hateoas.EntityLinks;
 
+import static myreader.utils.UrlUtils.encodeAsUTF8;
+
 /**
  * @author Kamill Sokol
  */
@@ -31,7 +33,7 @@ public class SubscriptionEntryTagGroupGetResponseAssembler extends AbstractResou
         target.setTag(source.getTag());
         target.setCount(source.getCount());
 
-        Link entries = entityLinks.linkFor(SubscriptionEntryGetResponse.class).slash("tag").slash(source.getTag()).withRel("entries");
+        Link entries = entityLinks.linkFor(SubscriptionEntryGetResponse.class).slash("tag").slash(encodeAsUTF8(source.getTag())).withRel("entries");
         target.add(entries);
 
         return target;

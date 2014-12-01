@@ -1,8 +1,5 @@
 package spring.hateoas;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,8 +8,10 @@ import org.springframework.hateoas.Link;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import spring.hateoas.annotation.Rel;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class EntityLinkerTest {
 
@@ -50,14 +49,6 @@ public class EntityLinkerTest {
         EntityLinker entityLinker = new EntityLinker(Object.class, Object.class);
         Link link = entityLinker.linkForSingleResource(Object.class, 1L);
         assertThat(link, is(new Link("http://localhost/1")));
-    }
-
-    @Test
-    public void testLinkForSingleResourceException() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage(is("encoding [] not supported"));
-        EntityLinker entityLinker = new EntityLinker(Object.class, Object.class, "");
-        entityLinker.linkFor(Object.class, 1L);
     }
 
     @Rel("test")
