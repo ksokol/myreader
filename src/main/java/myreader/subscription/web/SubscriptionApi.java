@@ -1,7 +1,18 @@
 package myreader.subscription.web;
 
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import myreader.API;
 import myreader.dto.ExclusionPatternDto;
 import myreader.dto.SubscriptionDto;
@@ -16,6 +27,7 @@ import myreader.repository.UserRepository;
 import myreader.service.EntityNotFoundException;
 import myreader.service.search.SubscriptionSearchService;
 import myreader.service.subscription.SubscriptionService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
@@ -28,17 +40,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
 
 @Deprecated
 @Transactional
@@ -274,6 +277,7 @@ class SubscriptionApi {
 
         userFeed.setFeed(feed);
         userFeed.setTitle(feed.getTitle());
+        userFeed.setCreatedAt(new Date());
 
         if (map.containsKey("tag")) {
             if (!"".equals(map.get("tag"))) {
