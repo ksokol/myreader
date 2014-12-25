@@ -4,6 +4,7 @@ import myreader.API;
 import myreader.dto.UserDto;
 import myreader.entity.User;
 import myreader.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Deprecated
 @Controller
-@RequestMapping({ "api/user", API.V1 + "user" })
+@RequestMapping({ "user", API.V1 + "user" })
 public class UserApi {
 
     @Autowired

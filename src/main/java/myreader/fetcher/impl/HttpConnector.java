@@ -4,20 +4,22 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.net.ssl.HttpsURLConnection;
-
+/**
+ * @author Kamill Sokol
+ */
 @Component("httpConnector")
 public class HttpConnector {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(HttpConnector.class);
 
-    // defaults
     private String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20100101 Firefox/14.0.1";
-    private int connectTimeout = 5000;
-    private int readTimeout = 5000;
+    private int connectTimeout = 30000;
+    private int readTimeout = 30000;
 
     public void connect(HttpObject httpObject) {
         HttpURLConnection urlc = null;
@@ -63,29 +65,5 @@ public class HttpConnector {
                 httpObject.setReturnCode(504);
             }
         }
-    }
-
-    public String getUserAgent() {
-        return userAgent;
-    }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    public int getConnectTimeout() {
-        return connectTimeout;
-    }
-
-    public void setConnectTimeout(int connectTimeout) {
-        this.connectTimeout = connectTimeout;
-    }
-
-    public int getReadTimeout() {
-        return readTimeout;
-    }
-
-    public void setReadTimeout(int readTimeout) {
-        this.readTimeout = readTimeout;
     }
 }

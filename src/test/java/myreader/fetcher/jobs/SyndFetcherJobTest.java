@@ -1,28 +1,33 @@
 package myreader.fetcher.jobs;
 
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import myreader.fetcher.FeedQueue;
-import myreader.service.subscription.SubscriptionBatchService;
+import myreader.fetcher.SubscriptionBatch;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public class SyndFetcherJobTest {
 
     private SyndFetcherJob uut;
     private FeedQueue queueMock;
-    private SubscriptionBatchService serviceMock;
+    private SubscriptionBatch serviceMock;
 
     @Before
     public void setUp() throws Exception {
         queueMock = mock(FeedQueue.class);
-        serviceMock = mock(SubscriptionBatchService.class);
-        uut = new SyndFetcherJob(queueMock, serviceMock);
+        serviceMock = mock(SubscriptionBatch.class);
+        uut = new SyndFetcherJob("junit", queueMock, serviceMock);
     }
 
     @Test

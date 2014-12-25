@@ -1,4 +1,4 @@
-package myreader.service.subscriptionentry.impl;
+package myreader.fetcher;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

@@ -1,4 +1,4 @@
-package myreader.service.subscriptionentry.impl;
+package myreader.fetcher;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

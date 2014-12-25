@@ -1,25 +1,29 @@
 package myreader.fetcher.jobs;
 
 import myreader.fetcher.FeedQueue;
+import myreader.fetcher.SubscriptionBatch;
 
-import myreader.service.subscription.SubscriptionBatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.util.Assert;
 import org.springframework.util.StopWatch;
 
-public class SyndFetcherJob implements Runnable, BeanNameAware, ApplicationListener<ContextClosedEvent> {
+public class SyndFetcherJob implements Runnable, ApplicationListener<ContextClosedEvent> {
     private static final Logger log = LoggerFactory.getLogger(SyndFetcherJob.class);
 
     private String jobName;
     private String swap;
     private final FeedQueue feedQueue;
-    private final SubscriptionBatchService subscriptionBatchService;
+    private final SubscriptionBatch subscriptionBatchService;
     private volatile boolean alive = true;
 
-    public SyndFetcherJob(FeedQueue feedQueue, SubscriptionBatchService subscriptionBatchService) {
+    public SyndFetcherJob(String jobName, FeedQueue feedQueue, SubscriptionBatch subscriptionBatchService) {
+        Assert.notNull(jobName);
+        Assert.notNull(feedQueue);
+        Assert.notNull(subscriptionBatchService);
+        this.jobName = jobName;
         this.feedQueue = feedQueue;
         this.subscriptionBatchService = subscriptionBatchService;
     }
@@ -56,17 +60,8 @@ public class SyndFetcherJob implements Runnable, BeanNameAware, ApplicationListe
         alive = false;
     }
 
-    @Override
-    public void setBeanName(String name) {
-        this.jobName = name;
-    }
-
     private void toggleCurrentThreadName() {
-        if(jobName == null ) {
-            return;
-        }
         Thread thread = Thread.currentThread();
-
         if(swap == null) {
             swap = Thread.currentThread().getName();
             thread.setName(jobName);

@@ -1,16 +1,26 @@
-package myreader.service.subscription.impl;
+package myreader.fetcher;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import myreader.config.PersistenceConfig;
 import myreader.entity.Feed;
 import myreader.entity.SubscriptionEntry;
-import myreader.fetcher.FeedParser;
 import myreader.fetcher.impl.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
 import myreader.repository.FetchStatisticRepository;
-import myreader.service.search.SubscriptionEntrySearchService;
-import myreader.service.subscriptionentry.SubscriptionEntryBatchService;
+import myreader.repository.SubscriptionEntryRepository;
 import myreader.test.TestDataSourceConfig;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,43 +30,32 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-
 /**
  * @author Kamill Sokol
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {PersistenceConfig.class, TestDataSourceConfig.class})
 @Transactional
-public class SubscriptionBatchServiceImplTest {
+public class SubscriptionBatchTest {
 
-    private SubscriptionBatchServiceImpl uut;
+    private SubscriptionBatch uut;
 
     @Autowired
     private FeedRepository feedRepository;
     @Autowired
     private FetchStatisticRepository fetchStatisticRepository;
 
-    private SubscriptionEntryBatchService subscriptionEntryBatchServiceMock = mock(SubscriptionEntryBatchService.class);
     private FeedParser feedParserMock = mock(FeedParser.class);
-    private SubscriptionEntryBatchService subscriptionBatchServiceMock = mock(SubscriptionEntryBatchService.class);
-    private SubscriptionEntrySearchService searchServiceMock = mock(SubscriptionEntrySearchService.class);
+    private SubscriptionEntryBatch subscriptionEntryBatchMock = mock(SubscriptionEntryBatch.class);
+    private SubscriptionEntryRepository subscriptionEntryRepository = mock(SubscriptionEntryRepository.class);
 
     @Before
     public void before() {
-        reset(subscriptionEntryBatchServiceMock);
         reset(feedParserMock);
-        reset(subscriptionBatchServiceMock);
-        reset(searchServiceMock);
+        reset(subscriptionEntryBatchMock);
+        reset(subscriptionEntryRepository);
 
-        uut = new SubscriptionBatchServiceImpl(feedParserMock, feedRepository, null, null, fetchStatisticRepository, subscriptionBatchServiceMock, searchServiceMock);
+        uut = new SubscriptionBatch(feedParserMock, feedRepository, fetchStatisticRepository, subscriptionEntryBatchMock, subscriptionEntryRepository);
     }
 
     @Test
@@ -69,7 +68,7 @@ public class SubscriptionBatchServiceImplTest {
 
         FetchResult fetchResult = new FetchResult(Collections.<FetcherEntry>emptyList(), "last modified", "title");
         when(feedParserMock.parse(anyString())).thenReturn(fetchResult);
-        when(subscriptionBatchServiceMock.updateUserSubscriptionEntries(Matchers.<Feed>anyObject(), Matchers.<List<FetcherEntry>>anyObject())).thenReturn(Arrays.asList(new SubscriptionEntry()));
+        when(subscriptionEntryBatchMock.updateUserSubscriptionEntries(Matchers.<Feed>anyObject(), Matchers.<List<FetcherEntry>>anyObject())).thenReturn(Arrays.asList(new SubscriptionEntry()));
 
         uut.updateUserSubscriptions(url);
 

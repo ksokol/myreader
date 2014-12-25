@@ -1,26 +1,27 @@
-package myreader.service.subscriptionentry.impl;
+package myreader.fetcher;
 
-import myreader.entity.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import myreader.entity.ExclusionPattern;
+import myreader.entity.Feed;
+import myreader.entity.FeedEntry;
+import myreader.entity.Subscription;
+import myreader.entity.SubscriptionEntry;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedEntryRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
-import myreader.service.subscriptionentry.SubscriptionEntryBatchService;
 import myreader.service.time.TimeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Kamill Sokol
  */
 @Transactional
-@Service
-public class SubscriptionEntryBatchServiceImpl implements SubscriptionEntryBatchService {
+public class SubscriptionEntryBatch {
 
     private final FeedEntryRepository feedEntryRepository;
     private final SubscriptionRepository subscriptionRepository;
@@ -28,8 +29,7 @@ public class SubscriptionEntryBatchServiceImpl implements SubscriptionEntryBatch
     private final TimeService timeService;
     private ExclusionChecker exclusionChecker = new ExclusionChecker();
 
-    @Autowired
-    public SubscriptionEntryBatchServiceImpl(FeedEntryRepository feedEntryRepository, SubscriptionRepository subscriptionRepository, SubscriptionEntryRepository subscriptionEntryRepository, TimeService timeService) {
+    public SubscriptionEntryBatch(FeedEntryRepository feedEntryRepository, SubscriptionRepository subscriptionRepository, SubscriptionEntryRepository subscriptionEntryRepository, TimeService timeService) {
         this.feedEntryRepository = feedEntryRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
@@ -37,7 +37,6 @@ public class SubscriptionEntryBatchServiceImpl implements SubscriptionEntryBatch
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Override
     public List<SubscriptionEntry> updateUserSubscriptionEntries(Feed feed, List<FetcherEntry> fetchedEntries) {
         List<FetcherEntry> newEntries = new ArrayList<>();
         List<SubscriptionEntry> toIndex = new ArrayList<>();

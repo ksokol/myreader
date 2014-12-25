@@ -1,20 +1,19 @@
 package myreader.service.search;
 
+import static org.springframework.data.solr.core.query.Query.Operator.OR;
+
+import java.util.List;
+
 import myreader.entity.SearchableSubscriptionEntry;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.solr.repository.Query;
 import org.springframework.data.solr.repository.SolrCrudRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-import static org.springframework.data.solr.core.query.Query.Operator.OR;
 
 /**
  * @author Kamill Sokol
  */
-@Repository
 public interface SubscriptionEntrySearchRepository extends SolrCrudRepository<SearchableSubscriptionEntry, Long>, SubscriptionEntrySearchRepositoryCustom {
 
 	@Query(value = "?0", filters = {"owner_id:?1", "id:[* TO ?2]"}, defaultOperator = OR)

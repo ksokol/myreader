@@ -5,8 +5,5 @@ package myreader.service.subscription;
  */
 public interface SubscriptionBatchService {
 
-    @Deprecated
-    void updateUserSubscriptions(String feedUrl);
-
     void calculateUnseenAggregate();
 }
