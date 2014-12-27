@@ -152,6 +152,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
     }
 
+    @Order(3)
     @Configuration
     @EnableResourceServer
     public static class CustomResourceServerConfigurerAdapter extends ResourceServerConfigurerAdapter {
@@ -170,6 +171,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .httpStrictTransportSecurity()
                     .addHeaderWriter(new XFrameOptionsHeaderWriter(SAMEORIGIN))
                     .addHeaderWriter(new CorsHeaderWriter());
+        }
+    }
+
+    @Order(4)
+    @Configuration
+    public static class DefaultWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                    .antMatcher("/**").authorizeRequests().anyRequest().fullyAuthenticated();
         }
     }
 }
