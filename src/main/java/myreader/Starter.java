@@ -3,6 +3,7 @@ package myreader;
 import myreader.config.PersistenceConfig;
 import myreader.config.SecurityConfig;
 import myreader.config.TaskConfig;
+import myreader.config.TomcatConfiguration;
 import myreader.resource.config.ResourceConfig;
 
 import org.springframework.boot.SpringApplication;
@@ -20,7 +21,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Kamill Sokol
  */
 @ComponentScan({"myreader.service"})
-@Import({PersistenceConfig.class, SecurityConfig.class, TaskConfig.class})
+@Import({TomcatConfiguration.class, PersistenceConfig.class, SecurityConfig.class, TaskConfig.class})
 @EnableAutoConfiguration(exclude={FreeMarkerAutoConfiguration.class})
 //@SpringBootApplication
 public class Starter {
