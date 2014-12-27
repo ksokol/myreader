@@ -10,7 +10,7 @@ import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.icon.impl.IconUpdater;
 import myreader.fetcher.icon.jobs.IconUpdateJob;
 import myreader.fetcher.impl.HttpCallDecisionMaker;
-import myreader.fetcher.jobs.FeedListFetcher;
+import myreader.fetcher.jobs.FeedListFetcherJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
 import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
@@ -90,8 +90,8 @@ public class TaskConfig implements SchedulingConfigurer {
         return new SubscriptionBatch(feedParser, feedRepository, fetchStatisticRepository, subscriptionEntryBatch(), subscriptionEntryRepository);
     }
 
-    private FeedListFetcher feedListFetcher() {
-        return new FeedListFetcher(httpCallDecisionMaker, feedQueue, feedRepository);
+    private FeedListFetcherJob feedListFetcher() {
+        return new FeedListFetcherJob(httpCallDecisionMaker, feedQueue, feedRepository);
     }
 
     private SyndFetcherJob syndFetcherJob(String jobName) {
