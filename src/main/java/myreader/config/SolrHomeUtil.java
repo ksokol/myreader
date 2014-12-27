@@ -24,8 +24,8 @@ public class SolrHomeUtil {
     }
 
     public static File createSolrHomeInFileSystem() throws IOException {
-        Path userHome = Paths.get(System.getProperty("user.home"));
-        Path solrHome = createDirIfNotPresent(userHome, SOLR_HOME_FOLDER_NAME);
+        Path baseHome = getBaseDir();
+        Path solrHome = createDirIfNotPresent(baseHome, SOLR_HOME_FOLDER_NAME);
         Path core1 = createDirIfNotPresent(solrHome, "core1");
         Path conf = createDirIfNotPresent(core1, "conf");
 
@@ -34,6 +34,11 @@ public class SolrHomeUtil {
         writeToFile(conf, "solrconfig.xml", "/solr/core1/conf/solrconfig.xml");
 
         return solrHome.resolve("solr.xml").toFile();
+    }
+
+    private static Path getBaseDir() {
+        Path currentRelativePath = Paths.get("");
+        return currentRelativePath.toAbsolutePath();
     }
 
     private static Path createDirIfNotPresent(Path parent, String dir) throws IOException {
