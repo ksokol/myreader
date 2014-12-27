@@ -1,6 +1,5 @@
 package myreader;
 
-import myreader.config.JettyConfiguration;
 import myreader.config.PersistenceConfig;
 import myreader.config.SecurityConfig;
 import myreader.config.TaskConfig;
@@ -10,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.context.embedded.jetty.JettyConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
