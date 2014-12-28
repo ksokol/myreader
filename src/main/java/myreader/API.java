@@ -1,8 +1,12 @@
 package myreader;
 
+/**
+ * @author Kamill Sokol
+ */
 @Deprecated
 public final class API {
 
-    public static final String V1 = "/api/1/";
+    @Deprecated
+    public static final String V1 = "/1/";
 
 }

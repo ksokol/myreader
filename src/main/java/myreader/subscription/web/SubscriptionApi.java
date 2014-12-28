@@ -47,7 +47,7 @@ import com.sun.syndication.io.XmlReader;
 @Transactional
 @Controller
 @RequestMapping(API.V1 + "subscription")
-class SubscriptionApi {
+public class SubscriptionApi {
 
     static String pattern = "^https?://.*";
     static Pattern patternUrl = Pattern.compile(pattern);

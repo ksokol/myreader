@@ -1,12 +1,16 @@
 package myreader.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.service.search.SubscriptionEntrySearchRepository;
+
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
-
-import javax.persistence.EntityManager;
 
 /**
 * @author Kamill Sokol
@@ -17,10 +21,7 @@ public class SubscriptionEntryRepositoryImpl {
     private final ConversionService conversionService;
     private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
 
-    public SubscriptionEntryRepositoryImpl(EntityManager em, ConversionService conversionService, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository) {
-        Assert.notNull(em);
-        Assert.notNull(conversionService);
-        Assert.notNull(subscriptionEntrySearchRepository);
+    public SubscriptionEntryRepositoryImpl(final EntityManager em, final ConversionService conversionService, final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository) {
         this.em = em;
         this.conversionService = conversionService;
         this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
@@ -38,6 +39,17 @@ public class SubscriptionEntryRepositoryImpl {
         SearchableSubscriptionEntry convert = conversionService.convert(subscriptionEntry, SearchableSubscriptionEntry.class);
         subscriptionEntrySearchRepository.save(convert);
         return subscriptionEntry;
+    }
+
+    public List<SubscriptionEntry> save(Iterable<SubscriptionEntry> entities) {
+        List<SubscriptionEntry> result = new ArrayList<>();
+        if (entities == null) {
+            return result;
+        }
+        for (SubscriptionEntry entity : entities) {
+            result.add(save(entity));
+        }
+        return result;
     }
 
     public void delete(Long id) {

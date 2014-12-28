@@ -1,26 +1,44 @@
 package myreader.test;
 
-import myreader.config.datasource.DataSourceConfig;
+import java.util.Properties;
+
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-
-import javax.sql.DataSource;
-import java.util.Properties;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author Kamill Sokol
  */
 @Configuration
-public class TestDataSourceConfig implements DataSourceConfig {
+@EnableTransactionManagement
+public class TestDataSourceConfig {
 
     @Bean
-    @Override
+    public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
+        return new PersistenceExceptionTranslationPostProcessor();
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManagerFactory factory) {
+        JpaTransactionManager txManager = new JpaTransactionManager();
+        txManager.setEntityManagerFactory(factory);
+        return txManager;
+    }
+
+    @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.h2.Driver");
@@ -30,7 +48,6 @@ public class TestDataSourceConfig implements DataSourceConfig {
         return dataSource;
     }
 
-    @Override
     public JpaVendorAdapter jpaVendorAdapter() {
         return  new HibernateJpaVendorAdapter() {
             {
@@ -39,11 +56,25 @@ public class TestDataSourceConfig implements DataSourceConfig {
         };
     }
 
-    @Override
     public Properties jpaProperties() {
         Properties properties = new Properties();
         properties.put("hibernate.hbm2ddl.auto","create");
         return properties;
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+        factoryBean.setDataSource(dataSource());
+
+        //TODO
+        factoryBean.setPackagesToScan(new String[]{"myreader.entity"});
+        final JpaVendorAdapter vendorAdapter = jpaVendorAdapter();
+
+        factoryBean.setJpaVendorAdapter(vendorAdapter);
+        factoryBean.setJpaProperties(jpaProperties());
+
+        return factoryBean;
     }
 
     @Bean

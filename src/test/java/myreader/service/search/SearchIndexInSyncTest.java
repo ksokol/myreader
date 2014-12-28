@@ -2,12 +2,17 @@ package myreader.service.search;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
+import java.util.Arrays;
+import java.util.List;
 
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.test.IntegrationTestSupport;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +84,14 @@ public class SearchIndexInSyncTest extends IntegrationTestSupport {
 
         Page<SearchableSubscriptionEntry> p2 = (Page) subscriptionEntrySearchRepository.findAll();
         assertThat(p2.getTotalElements(), is(0L));
+    }
+
+    @Test
+    public void testSaveIterables() {
+        List<SubscriptionEntry> subscriptionEntries = Arrays.asList(newSubscriptionEntry());
+        List<SubscriptionEntry> saved = subscriptionEntryRepository.save(subscriptionEntries);
+        SearchableSubscriptionEntry one = subscriptionEntrySearchRepository.findOne(saved.get(0).getId());
+        Assert.assertThat(one, notNullValue());
     }
 
 	private SubscriptionEntry newSubscriptionEntry() {

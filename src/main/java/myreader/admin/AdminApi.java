@@ -7,12 +7,11 @@ import java.util.List;
 import myreader.API;
 import myreader.dto.FeedQueryDto;
 import myreader.entity.Feed;
-
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.icon.IconUpdateRequestEvent;
-
 import myreader.repository.FeedRepository;
 import myreader.service.IndexSyncEvent;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @Controller
 @RequestMapping(API.V1 + "admin")
-class AdminApi {
+public class AdminApi {
 
     @Autowired
     private ApplicationEventPublisher publisher;
@@ -36,7 +35,7 @@ class AdminApi {
     private FeedRepository feedRepository;
 
     @Autowired
-    FeedQueue feedQueue;
+    private FeedQueue feedQueue;
 
     @RequestMapping("/fetcher/queue")
     @ResponseBody

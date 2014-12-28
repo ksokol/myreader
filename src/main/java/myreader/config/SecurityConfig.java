@@ -1,6 +1,12 @@
 package myreader.config;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN;
+
+import java.util.Collections;
+
 import myreader.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,14 +32,10 @@ import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
+
 import spring.security.UserRepositoryUserDetailsService;
 import spring.security.oauth2.AutoApproveUserApprovalHandler;
 import spring.security.web.headers.writers.CorsHeaderWriter;
-
-import java.util.Collections;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN;
 
 /**
  * @author Kamill Sokol
@@ -41,7 +43,7 @@ import static org.springframework.security.web.header.writers.frameoptions.XFram
 @Configuration
 @EnableWebSecurity
 @ComponentScan(basePackages = {"spring.security"})
-public class SecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public static final String ACCOUNT_CONTEXT = "/account";
     public static final String LOGIN_URL = ACCOUNT_CONTEXT + "/login";
@@ -63,7 +65,7 @@ public class SecurityConfig {
         return new Md5PasswordEncoder();
     }
 
-    private UserDetailsService userDetailsService() {
+    public UserDetailsService userDetailsService() {
         return new UserRepositoryUserDetailsService(userRepository);
     }
 
@@ -89,9 +91,10 @@ public class SecurityConfig {
         @Bean
         public FreeMarkerConfigurer freeMarkerConfig() {
             FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
-            freeMarkerConfigurer.setTemplateLoaderPath("/WEB-INF/views/");
+            freeMarkerConfigurer.setTemplateLoaderPath("classpath:/templates/");
             return freeMarkerConfigurer;
         }
+
     }
 
     @Configuration
@@ -149,6 +152,7 @@ public class SecurityConfig {
         }
     }
 
+    @Order(3)
     @Configuration
     @EnableResourceServer
     public static class CustomResourceServerConfigurerAdapter extends ResourceServerConfigurerAdapter {
@@ -167,6 +171,17 @@ public class SecurityConfig {
                     .httpStrictTransportSecurity()
                     .addHeaderWriter(new XFrameOptionsHeaderWriter(SAMEORIGIN))
                     .addHeaderWriter(new CorsHeaderWriter());
+        }
+    }
+
+    @Order(4)
+    @Configuration
+    public static class DefaultWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                    .antMatcher("/**").authorizeRequests().anyRequest().fullyAuthenticated();
         }
     }
 }

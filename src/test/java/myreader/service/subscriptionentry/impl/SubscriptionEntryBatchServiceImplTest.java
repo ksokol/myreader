@@ -1,28 +1,29 @@
 package myreader.service.subscriptionentry.impl;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
+
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
+import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
-import myreader.service.subscriptionentry.SubscriptionEntryBatchService;
 import myreader.test.IntegrationTestSupport;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author Kamill Sokol
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertThat;
 public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSupport {
 
     @Autowired
-    private SubscriptionEntryBatchService uut;
+    private SubscriptionEntryBatch uut;
     @Autowired
     private SubscriptionRepository subscriptionRepository;
 	@Autowired

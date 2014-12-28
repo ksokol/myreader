@@ -7,26 +7,23 @@ import java.util.Iterator;
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.SubscriptionEntry;
-
 import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StopWatch;
 
+/**
+ * @author Kamill Sokol
+ */
 @Transactional
 @Component("purgerJob")
-class PurgerJob implements Runnable {
-
-    Logger logger = LoggerFactory.getLogger("myreader.PurgerJob");
+public class PurgerJob extends BaseJob {
 
     //TODO
-    static Long AMOUNT = 10L;
+    private static final Long AMOUNT = 10L;
 
     @Autowired
     private FeedRepository feedRepository;
@@ -34,10 +31,12 @@ class PurgerJob implements Runnable {
     @Autowired
     private FeedEntryRepository feedEntryRepository;
 
-    @Override
-    public void run() {
-        StopWatch timer = new StopWatch();
+    public PurgerJob() {
+        super("purgerJob");
+    }
 
+    @Override
+    public void work() {
         //TODO
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
@@ -45,28 +44,21 @@ class PurgerJob implements Runnable {
 
         final Date threshold = c.getTime();
 
-        logger.debug("start");
-        logger.info("threshold for deletion: {}", threshold);
+        log.debug("start");
+        log.info("threshold for deletion: {}", threshold);
 
         Iterable<Feed> feedList = feedRepository.findAll();
-
-        timer.start();
 
         for (final Feed feed : feedList) {
             this.doInTransaction(feed, threshold);
         }
-
-        timer.stop();
-
-        logger.info("purge time {} sec", timer.getTotalTimeSeconds());
-        logger.debug("stop");
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void doInTransaction(final Feed feed, final Date threshold) {
         if (feed.getSubscriptions().size() == 0) {
             feedRepository.delete(feed.getId());
-            logger.info("subscriptions {}, id: {} - deleting.", feed.getSubscriptions().size(), feed.getId());
+            log.info("subscriptions {}, id: {} - deleting.", feed.getSubscriptions().size(), feed.getId());
         } else {
             int count = feedEntryRepository.countByFeedAfterCreatedAt(feed, threshold);
             Iterable<FeedEntry> deprecatedEntries = feedEntryRepository.findByFeedAfterCreatedAt(feed, threshold);
@@ -74,8 +66,8 @@ class PurgerJob implements Runnable {
             int deleted = 0;
             long maxToDelete = Math.min(Math.max(entryCount - AMOUNT, 0), count);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("id: {}, entryCount {}, maxToDelete {}, deprecatedEntries {}", new Object[] { feed.getId(), entryCount, maxToDelete,
+            if (log.isDebugEnabled()) {
+                log.debug("id: {}, entryCount {}, maxToDelete {}, deprecatedEntries {}", new Object[] { feed.getId(), entryCount, maxToDelete,
                         count });
             }
 
@@ -96,13 +88,13 @@ class PurgerJob implements Runnable {
                 }
 
                 if (doDelete) {
-                    logger.trace("entry {} reached threshold. deleting", deprecatedEntry.getId());
+                    log.trace("entry {} reached threshold. deleting", deprecatedEntry.getId());
                     feedEntryRepository.delete(deprecatedEntry.getId());
                     deleted++;
                 }
             }
 
-            logger.info("max {}, deleted {}, id {}", new Object[] { maxToDelete, deleted, feed.getId() });
+            log.info("max {}, deleted {}, id {}", new Object[]{maxToDelete, deleted, feed.getId()});
         }
     }
 }
