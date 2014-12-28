@@ -6,7 +6,7 @@ A web interface for mobile and desktop browsers can be found [here](https://gith
 
 Caution
 --------
-This RRS reader transitioned from Java to Python to PL/SQL to Java with plain servlets to Java with Spring Framework.
+This RSS reader transitioned from Java to Python to PL/SQL to Java with plain servlets to Java with Spring Framework.
 It is a sandbox for different technologies that are worth to play with. So don't expect a fully working software or even clean code.
 
 Installation
@@ -14,48 +14,16 @@ Installation
 
 **Prerequisite**
 
-- Oracle JDK 7, OpenJDK 7 or newer
-- Apache Maven 2.x or newer
+- OpenJDK 7
+- Apache Maven 3.x or newer
 - MySQL 5.1.x (tested on 5.1.17, should run on 5.x too)
-- Servlet Container 2.5 or newer
 
 **Build and package**
 
-- run *mvn package*
+- run `mvn package`
+- You will find a fat jar (Spring Boot application) under `target` and a rpm under `target/rpm/myreader/RPMS/noarch/`
+- run `java -jar myreader.jar` or install rpm
 
-***JDBC driver and JDNI resource***
-
-- add `spring.profiles.active=myreader.prod` to your container's environment variables otherwise an in-memory transient database will be used
-- put [MySQL JDBC Driver](https://dev.mysql.com/downloads/connector/j) into your servlet container's classpath
-- add a JNDI resource named `jdbc/collector`:
-
-<pre>
-&lt;Resource name="jdbc/collector"
-   auth="Container"
-   type="javax.sql.DataSource"
-   username="<username>"
-   password="<password>"
-   driverClassName="com.mysql.jdbc.Driver" <!-- only MySQL is supported -->
-   url="jdbc:mysql://<host:port>/<dbname>"
-   maxActive="8"
-   maxIdle="4"
-/&gt;
-</pre>
-
-- deploy war artefact into servlet container
-
-***Memory leaks due to MySQL's 'Abandonded connection cleanup thread'***
-
-This thread starts with the first request and holds a reference to the webapp's classloader. The least invasive workaround is to force initialisation of the MySQL JDBC driver from code outside of the webapp's classloader.
-In `tomcat/conf/server.xml`, modify (inside the Server element):
-
-<pre>
-&lt;Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" /&gt;
-</pre>
-to
-<pre>
-&lt;Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" classesToInitialize="com.mysql.jdbc.NonRegisteringDriver" /&gt;
-</pre>
 
 **TODO**
 
