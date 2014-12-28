@@ -7,6 +7,7 @@
     <version>0.5</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <spring.version>4.1.3.RELEASE</spring.version>
         <spring.security.version>3.2.3.RELEASE</spring.security.version>
         <spring.oauth2.version>2.0.4.RELEASE</spring.oauth2.version>
@@ -152,6 +153,7 @@
                 </executions>
                 <configuration>
                     <group>Application/Internet</group>
+                    <release>${maven.build.timestamp}</release>
                     <requires>
                         <require>java-1.7.0-openjdk</require>
                         <require>mysql-server</require>
@@ -211,10 +213,10 @@
                         <script>id -u myreader &amp;>/dev/null || useradd myreader -d /opt/myreader</script>
                     </preinstallScriptlet>
                     <postinstallScriptlet>
-                        <script>chkconfig --add myreader --level 2345</script>
+                        <script>chkconfig --add myreader --level 2345; chown myreader:myreader /opt/myreader; service myreader status &amp;>/dev/null;if [ $? -eq 0 ]; then service myreader restart; fi</script>
                     </postinstallScriptlet>
                     <preremoveScriptlet>
-                        <script>chkconfig --del myreader</script>
+                        <script>service myreader status &amp;>/dev/null;if [ $? -eq 0 ]; then service myreader stop; fi</script>
                     </preremoveScriptlet>
                 </configuration>
             </plugin>

@@ -66,6 +66,7 @@ stop)
 ;;
 restart)
     $0 stop
+    sleep 2
     $0 start
 ;;
 status)
@@ -73,8 +74,10 @@ status)
 
     if [ ${PID} ]; then
         echo "${MYREADER_NAME} running PID: ${PID}"
+        exit 0
     else
         echo "${MYREADER_NAME} not running"
+        exit 1
     fi
 ;;
 *)
