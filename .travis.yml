@@ -15,4 +15,4 @@ before_install:
   - sudo apt-get install rpm
 script: if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn cobertura:cobertura coveralls:cobertura; else mvn test; fi
 after_success:
- - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn package -DskipTests; echo "deploying artefact"; curl --upload-file target/myreader.war -u travis:$PW --cacert cacert-root.crt "https://$DEPLOY_HOST/manager/text/deploy?update=true&path=/myreader; echo "deploy result $?"; fi
+ - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn package -DskipTests; echo "deploying artefact"; sshpass -p "$PW" scp -o StrictHostKeyChecking=no -P2323 target/rpm/myreader/RPMS/noarch/*.rpm travis@$DEPLOY_HOST:/var/www/html/rpm/myreader/; echo "deploy result $?"; fi
