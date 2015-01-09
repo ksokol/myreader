@@ -1,7 +1,6 @@
 package myreader.config;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN;
 
 import java.util.Collections;
 
@@ -25,7 +24,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
@@ -148,7 +146,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .and()
                     .formLogin()
                     .loginProcessingUrl(LOGIN_PROCESSING_URL).permitAll()
-                    .loginPage(LOGIN_URL).permitAll();
+                    .loginPage(LOGIN_URL).permitAll()
+                    .and().
+                     headers().frameOptions().disable();
         }
     }
 
@@ -169,7 +169,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .headers()
                     .cacheControl()
                     .httpStrictTransportSecurity()
-                    .addHeaderWriter(new XFrameOptionsHeaderWriter(SAMEORIGIN))
                     .addHeaderWriter(new CorsHeaderWriter());
         }
     }
