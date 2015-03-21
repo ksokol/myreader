@@ -16,11 +16,19 @@
         </encoder>
     </appender>
 
+    <logger name="org.hibernate" additivity="false" level="WARN">
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <logger name="net.jawr" additivity="false" level="WARN">
+        <appender-ref ref="FILE" />
+    </logger>
+
     <logger name="myreader" additivity="false" level="INFO">
         <appender-ref ref="FILE" />
     </logger>
 
-    <logger name="org.springframework" additivity="false" level="OFF">
+    <logger name="org.springframework" additivity="false" level="WARN">
         <appender-ref ref="FILE" />
     </logger>
 
