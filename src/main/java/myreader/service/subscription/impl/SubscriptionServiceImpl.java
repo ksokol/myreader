@@ -94,6 +94,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    public List<Subscription> findByTitle(final String title) {
+        Assert.notNull(title);
+        User currentUser = userService.getCurrentUser();
+        return subscriptionRepository.findByTitleAndUsername(title, currentUser.getEmail());
+    }
+
+    @Override
     public Subscription findByUrl(String url) {
         User currentUser = userService.getCurrentUser();
         Subscription subscription = subscriptionRepository.findByUsernameAndFeedUrl(currentUser.getEmail(), url);

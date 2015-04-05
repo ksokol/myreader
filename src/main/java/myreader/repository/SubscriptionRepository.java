@@ -29,6 +29,10 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query("select s from Subscription s join fetch s.feed where s.tag = ?1 and s.user.email = ?2")
     List<Subscription> findByTagAndUsername(String tag, String username);
 
+    @Deprecated
+    @Query("select s from Subscription s join fetch s.feed where s.title = ?1 and s.user.email = ?2")
+    List<Subscription> findByTitleAndUsername(String title, String username);
+
     @Query(value = "select s from Subscription s join fetch s.feed where s.tag = ?1 and s.user.id = ?2", countQuery = "select count(s) from Subscription s where s.tag = ?1 and s.user.id = ?2")
     Page<Subscription> findByTagAndUser(String tag, Long userId, Pageable pageable);
 

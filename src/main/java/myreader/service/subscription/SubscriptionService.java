@@ -1,10 +1,11 @@
 package myreader.service.subscription;
 
-import myreader.entity.Subscription;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import myreader.entity.Subscription;
 
 /**
  * @author Kamill Sokol
@@ -20,6 +21,8 @@ public interface SubscriptionService {
     Subscription findById(Long id);
 
     List<Subscription> findByTag(String tag);
+
+    List<Subscription> findByTitle(String title);
 
     Subscription findByUrl(String url);
 

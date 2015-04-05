@@ -1,46 +1,50 @@
 package spring;
 
-import myreader.test.KnownUser;
-import myreader.test.SecurityTestSupport;
-import org.apache.commons.codec.binary.Base64;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
-import static myreader.config.SecurityConfig.IMPLICIT_OAUTH_CLIENT;
+import static myreader.config.SecurityConfig.ACCOUNT_CONTEXT;
+import static myreader.config.SecurityConfig.LOGIN_PROCESSING_URL;
+import static myreader.config.SecurityConfig.LOGIN_URL;
 import static myreader.test.KnownUser.USER1;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.io.IOException;
+import java.net.URL;
+
+import org.apache.commons.codec.binary.Base64;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.web.servlet.MvcResult;
+
+import com.gargoylesoftware.htmlunit.StringWebResponse;
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.HTMLParser;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+
+import myreader.test.KnownUser;
+import myreader.test.SecurityTestSupport;
 
 /**
  * @author Kamill Sokol
  */
 public class ApiSecurityTest extends SecurityTestSupport {
 
-    public static final String TEST_ACCESS_TOKEN = "test";
-
-    @Autowired
-    private TokenStore tokenStore;
+    private static final String USERNAME_INPUT = "username";
+    private static final String PASSWORD_INPUT = "password";
+    private static final String CSRF_INPUT = "_csrf";
+    private static final String LOGIN_FORM_NAME = "loginForm";
 
     @Test
     public void testApi1Unauthorized() throws Exception {
-        mockMvc.perform(get(API_1))
-                .andExpect(status().isUnauthorized())
-                .andExpect(header().string("WWW-Authenticate", "Basic realm=\"API\""));
+        mockMvc.perform(get(API_1)
+                .header("X-Requested-With", "XMLHttpRequest"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -50,86 +54,52 @@ public class ApiSecurityTest extends SecurityTestSupport {
                 .andExpect(status().isOk());
     }
 
+    @Ignore
     @Test
     public void testApi2Unauthorized() throws Exception {
         mockMvc.perform(get(API_2))
                 .andExpect(status().isUnauthorized());
     }
 
+    @Ignore
     @Test
-    public void testAccessControlAllowOrigin() throws Exception {
-        createAccessTokenInTokenStore();
+    public void testLoginPage() throws IOException {
+        //https://github.com/spring-projects/spring-test-htmlunit/issues/40
+        String loginUrl = "http://localhost" + ACCOUNT_CONTEXT + LOGIN_URL;
+        String loginProcessingUrl = ACCOUNT_CONTEXT + LOGIN_PROCESSING_URL;
 
-        mockMvc.perform(get(API_2)
-                .header("Authorization", "Bearer " + TEST_ACCESS_TOKEN))
-                .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Origin", "*"));
-    }
+        HtmlPage page = webClient.getPage(loginUrl);
+        HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
 
-    @Test
-    public void testAccessControlAllowMethodsNotPresent() throws Exception {
-        createAccessTokenInTokenStore();
+        DomElement username = loginForm.getInputByName(USERNAME_INPUT);
+        DomElement password = loginForm.getInputByName(PASSWORD_INPUT);
+        HtmlInput csrf = loginForm.getInputByName(CSRF_INPUT);
+        HtmlElement submit = loginForm.getOneHtmlElementByAttribute("input", "type", "submit");
 
-        mockMvc.perform(options(API_2)
-                .header("Authorization", "Bearer " + TEST_ACCESS_TOKEN))
-                .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Methods", nullValue()));
-    }
-
-    @Test
-    public void testAccessControlAllowMethods() throws Exception {
-        createAccessTokenInTokenStore();
-
-        String method = "POST";
-        mockMvc.perform(options(API_2)
-                .header("Authorization", "Bearer " + TEST_ACCESS_TOKEN)
-                .header("Access-Control-Request-Method", method))
-                .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Methods", is("POST")));
-    }
-
-    public void testAccessControlAllowHeadersNotPresent() throws Exception {
-        createAccessTokenInTokenStore();
-
-        mockMvc.perform(options(API_2)
-                .header("Authorization", "Bearer " + TEST_ACCESS_TOKEN))
-                .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Headers", nullValue()));
-    }
-
-    @Test
-    public void testAccessControlAllowHeaders() throws Exception {
-        createAccessTokenInTokenStore();
-
-        String header = "X-Test-Header";
-        mockMvc.perform(options(API_2)
-                .header("Authorization", "Bearer " + TEST_ACCESS_TOKEN)
-                .header("Access-Control-Request-Headers", header))
-                .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Headers", is(header)));
-    }
-
-    private void createAccessTokenInTokenStore() {
-        OAuth2Request oAuth2Request = createOauth2Request();
-        OAuth2Authentication oAuth2Authentication = new OAuth2Authentication(oAuth2Request, null);
-        DefaultOAuth2AccessToken defaultOAuth2AccessToken = new DefaultOAuth2AccessToken(TEST_ACCESS_TOKEN);
-        tokenStore.storeAccessToken(defaultOAuth2AccessToken, oAuth2Authentication);
-    }
-
-    private OAuth2Request createOauth2Request() {
-        Map<String, String> requestParameters = null;
-        Collection<? extends GrantedAuthority> authorities = null;
-        boolean approved = true;
-        Set<String> scope = Collections.singleton("all");
-        Set<String> resourceIds = null;
-        String redirectUri = null;
-        Set<String> responseTypes = Collections.singleton("token");
-        Map<String, Serializable> extensionProperties = null;
-
-        return new OAuth2Request( requestParameters, IMPLICIT_OAUTH_CLIENT, authorities, approved,  scope, resourceIds, redirectUri, responseTypes, extensionProperties);
+        assertThat(username, notNullValue());
+        assertThat(password, notNullValue());
+        assertThat(csrf, notNullValue());
+        assertThat(submit, notNullValue());
+        assertThat(loginForm.getAttribute("action"), is(loginProcessingUrl));
     }
 
     private static String basic(KnownUser user) {
         return "Basic " + new String(Base64.encodeBase64((String.format("%s:%s", user.username, user.password)).getBytes()));
     }
+
+
+    private String extractCsrfToken(final MvcResult mvcResult) throws IOException {
+        /*
+         * workaround for https://github.com/spring-projects/spring-test-htmlunit/issues/40
+         * otherwise use webClient.getPage(mvcResult.getResponse().getHeader("Location"))
+         */
+        StringWebResponse response = new StringWebResponse(mvcResult.getResponse().getContentAsString(), new URL("http://irrelevant"));
+        HtmlPage htmlPage = HTMLParser.parseHtml(response, webClient.getCurrentWindow());
+        return htmlPage.getFormByName(LOGIN_FORM_NAME).getInputByName(CSRF_INPUT).getValueAttribute();
+    }
+
+    private MockHttpSession extractSession(final MvcResult mvcResult) {
+        return (MockHttpSession) mvcResult.getRequest().getSession();
+    }
+
 }

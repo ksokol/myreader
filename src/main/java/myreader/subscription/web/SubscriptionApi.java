@@ -169,7 +169,7 @@ public class SubscriptionApi {
         if (map.containsKey("tag")) {
             String valueOf = String.valueOf(map.get("tag"));
 
-            if (!"".equals(valueOf)) {
+            if (!"".equals(valueOf) || !"null".equals(valueOf)) {
                 subscription.setTag(valueOf);
             } else {
                 subscription.setTag(null);

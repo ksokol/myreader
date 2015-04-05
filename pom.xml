@@ -8,7 +8,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
-        <spring.oauth2.version>2.0.4.RELEASE</spring.oauth2.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -374,11 +373,6 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>4.3.1.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security.oauth</groupId>
-            <artifactId>spring-security-oauth2</artifactId>
-            <version>${spring.oauth2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.freemarker</groupId>

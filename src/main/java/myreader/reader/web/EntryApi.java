@@ -1,15 +1,23 @@
 package myreader.reader.web;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import myreader.API;
 import myreader.entity.FeedIcon;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.reader.web.UserEntryQuery.IconDto;
-import myreader.repository.FeedRepository;
-import myreader.repository.UserRepository;
 import myreader.service.subscription.SubscriptionService;
 import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
 import myreader.service.subscriptionentry.SubscriptionEntryService;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -22,14 +30,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 @Deprecated
 @Transactional
 @Controller
@@ -38,12 +38,6 @@ public class EntryApi {
 
     @Autowired
     private SubscriptionService subscriptionService;
-
-    @Autowired
-    private FeedRepository feedRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private SubscriptionEntryService subscriptionEntryService;
@@ -57,7 +51,12 @@ public class EntryApi {
         // TODO
         if (feedTag != null) {
             List<Subscription> subscriptionList = subscriptionService.findByTag(feedTag);
-            ArrayList<Long> ids = new ArrayList<Long>();
+
+            if(CollectionUtils.isEmpty(subscriptionList)) {
+                subscriptionList = subscriptionService.findByTitle(feedTag);
+            }
+
+            ArrayList<Long> ids = new ArrayList<>();
 
             for(Subscription s :subscriptionList) {
                 ids.add(s.getId());
@@ -75,8 +74,9 @@ public class EntryApi {
             query.setTag(tag);
         }
 
+
         List<SubscriptionEntry> query2 = subscriptionEntryService.search(query);
-        List<UserEntryQuery> dtoList = new ArrayList<UserEntryQuery>();
+        List<UserEntryQuery> dtoList = new ArrayList<>();
 
         for (SubscriptionEntry e : query2) {
             UserEntryQuery dto = new UserEntryQuery();
