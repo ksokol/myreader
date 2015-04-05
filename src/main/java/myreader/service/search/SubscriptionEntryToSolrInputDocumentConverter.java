@@ -1,11 +1,19 @@
 package myreader.service.search;
 
-import myreader.entity.SubscriptionEntry;
+import static myreader.service.search.SolrSubscriptionFields.CONTENT;
+import static myreader.service.search.SolrSubscriptionFields.FEED_ID;
+import static myreader.service.search.SolrSubscriptionFields.ID;
+import static myreader.service.search.SolrSubscriptionFields.OWNER;
+import static myreader.service.search.SolrSubscriptionFields.OWNER_ID;
+import static myreader.service.search.SolrSubscriptionFields.SEEN;
+import static myreader.service.search.SolrSubscriptionFields.TAGS;
+import static myreader.service.search.SolrSubscriptionFields.TITLE;
+
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import static myreader.service.search.SolrSubscriptionFields.*;
+import myreader.entity.SubscriptionEntry;
 
 /**
  * @author Kamill Sokol

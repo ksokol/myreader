@@ -1,39 +1,29 @@
 package myreader.config;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
-import java.util.Collections;
-
-import myreader.repository.UserRepository;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
+import myreader.repository.UserRepository;
+import spring.security.AjaxExceptionTranslationFilter;
+import spring.security.RoleBasedAuthenticationSuccessHandler;
 import spring.security.UserRepositoryUserDetailsService;
-import spring.security.oauth2.AutoApproveUserApprovalHandler;
-import spring.security.web.headers.writers.CorsHeaderWriter;
 
 /**
  * @author Kamill Sokol
@@ -43,8 +33,9 @@ import spring.security.web.headers.writers.CorsHeaderWriter;
 @ComponentScan(basePackages = {"spring.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final String ACCOUNT_CONTEXT = "/account";
+    public static final String ACCOUNT_CONTEXT = "/web";
     public static final String LOGIN_URL = ACCOUNT_CONTEXT + "/login";
+    public static final String LOGOUT_URL = ACCOUNT_CONTEXT + "/logout";
     public static final String LOGIN_PROCESSING_URL = ACCOUNT_CONTEXT + "/check";
     public static final String IMPLICIT_OAUTH_CLIENT = "public";
 
@@ -58,6 +49,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .passwordEncoder(passwordEncoder());
     }
 
+    @Override
+    public void configure(WebSecurity webSecurity) throws Exception {
+        webSecurity
+                .ignoring()
+                .antMatchers("/static/**");
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new Md5PasswordEncoder();
@@ -67,120 +65,50 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new UserRepositoryUserDetailsService(userRepository);
     }
 
-    @EnableWebMvc
-    @Configuration
-    public static class LoginConf extends WebMvcConfigurerAdapter {
-
-        @Override
-        public void addViewControllers(final ViewControllerRegistry registry) {
-            registry.addViewController(LOGIN_URL).setViewName("login");
-        }
-
-        @Override
-        public void configureViewResolvers(ViewResolverRegistry registry) {
-            FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver();
-            freeMarkerViewResolver.setExposeSpringMacroHelpers(false);
-            freeMarkerViewResolver.setRequestContextAttribute("requestContext");
-            freeMarkerViewResolver.setSuffix(".ftl");
-            freeMarkerViewResolver.setAttributesMap(Collections.singletonMap("LOGIN_PROCESSING_URL", LOGIN_PROCESSING_URL));
-            registry.viewResolver(freeMarkerViewResolver);
-        }
-
-        @Bean
-        public FreeMarkerConfigurer freeMarkerConfig() {
-            FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
-            freeMarkerConfigurer.setTemplateLoaderPath("classpath:/templates/");
-            return freeMarkerConfigurer;
-        }
-
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .authorizeRequests()
+                .antMatchers("/web/admin/**")
+                .hasRole("ADMIN")
+                .and()
+                .antMatcher("/**")
+                .authorizeRequests()
+                .anyRequest()
+                .hasAnyRole("USER")
+                .and()
+                .csrf().disable()
+                .httpBasic().realmName("API")
+                .and()
+                .formLogin()
+                .loginPage(LOGIN_URL).permitAll()
+                .loginProcessingUrl(LOGIN_PROCESSING_URL).permitAll()
+                .successHandler(successHandler())
+                .failureUrl(LOGIN_URL + "?result=failed")
+                .and()
+                .logout().logoutUrl(LOGOUT_URL).logoutSuccessUrl(LOGIN_URL).permitAll().deleteCookies("JSESSIONID")
+                .and()
+                .addFilterBefore(ajaxExceptionTranslationFilter(), FilterSecurityInterceptor.class)
+                .headers().frameOptions().disable();
     }
 
-    @Configuration
-    @EnableAuthorizationServer
-    public static class OAuth2Configuration extends AuthorizationServerConfigurerAdapter {
-
-        @Override
-        public void configure(final AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-            endpoints.userApprovalHandler(new AutoApproveUserApprovalHandler());
-        }
-
-        @Override
-        public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-            clients
-                    .inMemory()
-                    .withClient(IMPLICIT_OAUTH_CLIENT)
-                    .authorizedGrantTypes("implicit")
-                    .scopes("all");
-        }
+    private AjaxExceptionTranslationFilter ajaxExceptionTranslationFilter() {
+        return new AjaxExceptionTranslationFilter(authenticationEntryPoint());
     }
 
-    @Configuration
-    @Order(1)
-    public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-
-       @Override
-       protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .regexMatcher("/api/(1|user)/.*")
-                    .authorizeRequests()
-                    .anyRequest()
-                    .hasAnyRole("USER", "ADMIN")
-                    .and()
-                    .csrf().disable()
-                    .httpBasic().realmName("API")
-                    .and()
-                    .sessionManagement().sessionCreationPolicy(STATELESS);
-        }
+    private AuthenticationEntryPoint authenticationEntryPoint() {
+        return new LoginUrlAuthenticationEntryPoint(LOGIN_URL);
     }
 
-    @Order(2)
-    @Configuration
-    public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+    private AuthenticationSuccessHandler successHandler() {
+        final RoleBasedAuthenticationSuccessHandler successHandler = new RoleBasedAuthenticationSuccessHandler();
+        Map<String, String> roleUrlMap = new HashMap<>();
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .regexMatcher("/(oauth|account)/.*")
-                    .authorizeRequests()
-                    .anyRequest().authenticated()
-                    .and()
-                    .formLogin()
-                    .loginProcessingUrl(LOGIN_PROCESSING_URL).permitAll()
-                    .loginPage(LOGIN_URL).permitAll()
-                    .and().
-                     headers().frameOptions().disable();
-        }
+        roleUrlMap.put("ROLE_ADMIN", "/web/admin");
+        roleUrlMap.put("ROLE_USER", "/web/rss");
+
+        successHandler.setRoleUrlMap(roleUrlMap);
+        return successHandler;
     }
 
-    @Order(3)
-    @Configuration
-    @EnableResourceServer
-    public static class CustomResourceServerConfigurerAdapter extends ResourceServerConfigurerAdapter {
-
-        @Override
-        public void configure(final HttpSecurity http) throws Exception {
-            http
-                    .antMatcher("/api/2/**")
-                    .authorizeRequests()
-                    .anyRequest().fullyAuthenticated()
-                    .and()
-                    .sessionManagement().sessionCreationPolicy(STATELESS)
-                    .and()
-                    .headers()
-                    .cacheControl()
-                    .httpStrictTransportSecurity()
-                    .addHeaderWriter(new CorsHeaderWriter());
-        }
-    }
-
-    @Order(4)
-    @Configuration
-    public static class DefaultWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .antMatcher("/**").authorizeRequests().anyRequest().fullyAuthenticated();
-        }
-    }
 }

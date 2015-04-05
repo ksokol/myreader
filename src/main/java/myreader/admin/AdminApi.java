@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+@Deprecated
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @Controller
 @RequestMapping(API.V1 + "admin")
