@@ -4,6 +4,7 @@ import java.util.Date;
 
 import myreader.reader.web.UserEntryQuery;
 
+@Deprecated
 public class SubscriptionEntry {
 
     private Long id;

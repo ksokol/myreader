@@ -29,6 +29,7 @@ import myreader.subscription.web.SubscriptionApi;
 import myreader.web.treenavigation.TreeNavigation;
 import myreader.web.treenavigation.TreeNavigationBuilder;
 
+@Deprecated
 @Controller
 @RequestMapping("mobile/reader")
 class MobileController {

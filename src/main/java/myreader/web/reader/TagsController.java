@@ -31,6 +31,7 @@ import myreader.web.QueryString;
 import myreader.web.treenavigation.TreeNavigation;
 import myreader.web.treenavigation.TreeNavigationBuilder;
 
+@Deprecated
 @Scope(value = WebApplicationContext.SCOPE_REQUEST)
 @Controller
 @RequestMapping("web/tags")

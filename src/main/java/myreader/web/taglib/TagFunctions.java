@@ -20,6 +20,7 @@ import freemarker.template.TemplateScalarModel;
 import myreader.web.QueryString;
 import spring.security.MyReaderUser;
 
+@Deprecated
 public class TagFunctions {
 
     private static final ObjectMapper om = new ObjectMapper();

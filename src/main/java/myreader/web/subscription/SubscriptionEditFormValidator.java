@@ -8,6 +8,7 @@ import org.springframework.validation.Validator;
 
 import myreader.web.subscription.SubscriptionEditForm.Exclusion;
 
+@Deprecated
 class SubscriptionEditFormValidator implements Validator {
 
     private static final Pattern PATTERN_URL = Pattern.compile("^https?://.*");

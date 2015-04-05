@@ -12,6 +12,7 @@ import freemarker.template.TemplateModel;
 /**
  * @author Kamill Sokol
  */
+@Deprecated
 public class LoginTemplateDirective extends RequestAwareTemplateDirectiveModel {
 
     private static final String RESULT = "result";

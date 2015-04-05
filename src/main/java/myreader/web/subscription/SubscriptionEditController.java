@@ -22,6 +22,7 @@ import myreader.dto.SubscriptionDto;
 import myreader.service.EntityNotFoundException;
 import myreader.subscription.web.SubscriptionApi;
 
+@Deprecated
 @Controller
 @RequestMapping("web/subscription/edit")
 class SubscriptionEditController {

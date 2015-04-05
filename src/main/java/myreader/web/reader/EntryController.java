@@ -18,6 +18,7 @@ import org.springframework.web.context.request.WebRequest;
 import myreader.reader.web.EntryApi;
 import myreader.reader.web.UserEntryQuery;
 
+@Deprecated
 @Controller
 @RequestMapping("web/entry")
 public class EntryController {

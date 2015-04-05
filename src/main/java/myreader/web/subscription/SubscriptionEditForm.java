@@ -8,6 +8,7 @@ import org.apache.commons.collections.CollectionUtils;
 import myreader.dto.ExclusionPatternDto;
 import myreader.dto.SubscriptionDto;
 
+@Deprecated
 public class SubscriptionEditForm {
 
     private Long id;

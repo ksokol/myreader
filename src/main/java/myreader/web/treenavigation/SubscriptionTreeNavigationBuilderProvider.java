@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import myreader.dto.SubscriptionDto;
 
+@Deprecated
 @Component
 public class SubscriptionTreeNavigationBuilderProvider implements TreeNavigationBuilderProvider {
 

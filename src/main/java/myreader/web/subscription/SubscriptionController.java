@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import myreader.dto.SubscriptionDto;
 import myreader.subscription.web.SubscriptionApi;
 
+@Deprecated
 @Controller
 @RequestMapping("web/subscription")
 class SubscriptionController {

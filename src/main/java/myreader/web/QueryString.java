@@ -3,6 +3,7 @@ package myreader.web;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated
 public class QueryString extends ConcurrentHashMap<String, Object> {
 
     private static final long serialVersionUID = 1L;

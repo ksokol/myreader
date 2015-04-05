@@ -3,6 +3,7 @@ package myreader.web.taglib;
 import java.text.MessageFormat;
 import java.util.Date;
 
+@Deprecated
 public class TimeAgoFunction {
 
     private static final String PREFIX_AGO = null;

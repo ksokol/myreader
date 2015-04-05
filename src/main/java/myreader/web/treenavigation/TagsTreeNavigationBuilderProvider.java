@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
 
+@Deprecated
 @Component
 public class TagsTreeNavigationBuilderProvider implements TreeNavigationBuilderProvider {
 

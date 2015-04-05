@@ -4,6 +4,7 @@ import java.beans.PropertyEditorSupport;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+@Deprecated
 public class StringURLDecoderEditor extends PropertyEditorSupport {
 
     @Override

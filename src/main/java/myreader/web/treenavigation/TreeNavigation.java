@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Deprecated
 public class TreeNavigation implements Iterable<TreeNavigation> {
 
     private String name;

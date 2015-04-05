@@ -12,6 +12,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 
+@Deprecated
 public class AjaxExceptionTranslationFilter extends ExceptionTranslationFilter {
 
     @Autowired

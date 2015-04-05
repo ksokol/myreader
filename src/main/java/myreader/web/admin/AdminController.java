@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import myreader.admin.AdminApi;
 
+@Deprecated
 @Controller
 @RequestMapping(value = "web/admin")
 class AdminController {
