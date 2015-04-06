@@ -16,7 +16,7 @@
     <body>
         <div>
             <span>
-                <a href="${requestContext.getContextUrl("/mobile/reader/entry")}">${treeNavigation.title?html}</a>
+                <a href="${requestContext.getContextUrl("/mobile/reader/entry/all")}">${treeNavigation.title?html}</a>
             </span>
         </div>
         <#list treeNavigation.iterator() as tree>

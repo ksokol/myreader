@@ -78,7 +78,7 @@ class MobileController {
         List<SubscriptionEntry> l = new ArrayList<>();
         List<UserEntryQuery> feed;
 
-        if (collection == null) {
+        if (collection == null || "all".equals(collection)) {
             feed = entryApi.feed(null, null, true, new SubscriptionEntrySearchQuery(), null);
         } else {
             feed = entryApi.feed(collection, null, true, new SubscriptionEntrySearchQuery(), null);
