@@ -85,6 +85,9 @@
                     </a>
                 </td>
                 <td class="col2">
+                    <a target="_blank" href="${entry.url}">open</a>
+                </td>
+                <td class="col2">
                     <input  type="checkbox" name="id[]" value="${entry.id?string.computer}">
                 </td>
             </tr>
