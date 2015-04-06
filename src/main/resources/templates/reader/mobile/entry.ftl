@@ -67,8 +67,8 @@
 <div class="topbar-inner">
     <div class="container-fluid">
         <ul class="nav">
+            <li><a href="${requestContext.getContextUrl("/web/logout")}">logout</a></li>
             <li><a href="">refresh</a></li>
-            <li><a href="${requestContext.getContextUrl("/web/logout")}">Logout</a></li>
             <li><a id="feeds" href="${requestContext.getContextUrl("/mobile/reader")}">feeds</a></li>
         </ul>
     </div>
