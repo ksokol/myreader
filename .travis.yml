@@ -4,6 +4,6 @@ jdk:
   - openjdk7
   - oraclejdk8
 
-script: if [[ $TRAVIS_JDK_VERSION != "oraclejdk8" ]]; mvn test; fi
+script: if [[ $TRAVIS_JDK_VERSION != "oraclejdk8" ]]; then mvn test; fi
 after_success:
- - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then mvn cobertura:cobertura coveralls:cobertura; fi
+   - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then mvn cobertura:cobertura coveralls:cobertura; fi
