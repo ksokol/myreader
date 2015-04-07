@@ -4,10 +4,9 @@
     <groupId>myreader</groupId>
     <artifactId>myreader</artifactId>
     <packaging>jar</packaging>
-    <version>0.6</version>
+    <version>${app.version}</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -134,87 +133,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <finalName>myreader</finalName>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>rpm-maven-plugin</artifactId>
-                <version>2.1.1</version>
-                <executions>
-                    <execution>
-                        <id>generate-rpm</id>
-                        <goals>
-                            <goal>rpm</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <group>Application/Internet</group>
-                    <release>${maven.build.timestamp}</release>
-                    <requires>
-                        <require>java-1.7.0-openjdk</require>
-                        <require>mysql-server</require>
-                    </requires>
-                    <defineStatements>
-                        <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
-                    </defineStatements>
-                    <mappings>
-                        <mapping>
-                            <directory>/opt/myreader</directory>
-                            <filemode>740</filemode>
-                            <username>myreader</username>
-                            <groupname>myreader</groupname>
-                            <sources>
-                                <source>
-                                    <location>target/myreader.jar</location>
-                                </source>
-                            </sources>
-                        </mapping>
-                        <mapping>
-                            <directory>/opt/myreader</directory>
-                            <filemode>741</filemode>
-                            <username>myreader</username>
-                            <groupname>myreader</groupname>
-                            <sources>
-                                <source>
-                                    <location>src/main/scripts/myreader.sh</location>
-                                </source>
-                            </sources>
-                        </mapping>
-                        <mapping>
-                            <directory>/opt/myreader/config</directory>
-                            <filemode>740</filemode>
-                            <username>myreader</username>
-                            <groupname>myreader</groupname>
-                        </mapping>
-                        <mapping>
-                            <directory>/opt/myreader/logs</directory>
-                            <filemode>740</filemode>
-                            <username>myreader</username>
-                            <groupname>myreader</groupname>
-                        </mapping>
-                        <mapping>
-                            <directory>/etc/init.d</directory>
-                            <filemode>750</filemode>
-                            <username>root</username>
-                            <groupname>root</groupname>
-                            <sources>
-                                <softlinkSource>
-                                    <location>/opt/myreader/myreader.sh</location>
-                                    <destination>myreader</destination>
-                                </softlinkSource>
-                            </sources>
-                        </mapping>
-                    </mappings>
-                    <preinstallScriptlet>
-                        <script>id -u myreader &amp;>/dev/null || useradd myreader -d /opt/myreader</script>
-                    </preinstallScriptlet>
-                    <postinstallScriptlet>
-                        <script>chkconfig --add myreader --level 2345; chown myreader:myreader /opt/myreader; service myreader status &amp;>/dev/null;if [ $? -eq 0 ]; then service myreader restart; fi</script>
-                    </postinstallScriptlet>
-                    <preremoveScriptlet>
-                        <script>service myreader status &amp;>/dev/null;if [ $? -eq 0 ]; then service myreader stop; fi</script>
-                    </preremoveScriptlet>
                 </configuration>
             </plugin>
         </plugins>
