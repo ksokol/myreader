@@ -4,15 +4,9 @@ jdk:
   - openjdk7
   - oraclejdk8
 
-env:
-  global:
-    #DEPLOY_HOST
-     - secure: "TyKXDFs08GBy8CxDn360iEvmNBlhNum8/MuO0aePzF8to1TtSZhI944jqTNb+dTSwF/G8Bhxf2hb4y3v2v8fa0pE/4DO2RBf2pP+GBgdpz6FWm4eIy2whwcuR5xc8xbiVaLIFo+eF0owpk8W9qQvWmft8C9FMvDruwtPV11SEhY="
-    #PW
-     - secure: "QRmvPoRaFbgK+VZr+x3U93t8sYUk7erZxv3sC3EA/feekDb6Y7VLcj7Fmov88SvxJA3iNpc+o/5JVbwwfP15QHC9kUHr674gkz/tQ9K+T3Snd4xl7WMbYv02tmJeXfS7Y2Xyh2vUhsVId1/z3I8gDeAa5tuGq5uhAML21XvBVL8="
+sudo: false
 
-before_install:
-  - sudo apt-get install rpm sshpass
-script: if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn cobertura:cobertura coveralls:cobertura; else mvn test; fi
+script: mvn test
 after_success:
- - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn package -DskipTests; echo "deploying artefact"; sshpass -p "$PW" scp -o StrictHostKeyChecking=no -P2323 target/rpm/myreader/RPMS/noarch/*.rpm travis@$DEPLOY_HOST:/var/www/html/rpm/myreader/; echo "deploy result $?"; fi
+ - echo "current branch $TRAVIS_BRANCH on jdk version $TRAVIS_JDK_VERSION"
+ - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn cobertura:cobertura coveralls:cobertura; fi
