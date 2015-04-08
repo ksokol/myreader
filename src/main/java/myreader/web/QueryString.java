@@ -1,6 +1,5 @@
 package myreader.web;
 
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Deprecated
@@ -18,14 +17,11 @@ public class QueryString extends ConcurrentHashMap<String, Object> {
 
         if (this.size() > 0) {
             sb.append("?");
-            final Set<String> strings = this.keySet();
 
-            for (String key : strings) {
-                Object value = this.get(key);
-
-                sb.append(key);
+            for (final Entry<String, Object> entry : super.entrySet()) {
+                sb.append(entry.getKey());
                 sb.append("=");
-                sb.append(value);
+                sb.append(entry.getValue());
                 sb.append("&");
             }
 
