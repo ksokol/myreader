@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
-import org.springframework.boot.context.embedded.jetty.JettyConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
@@ -20,7 +19,7 @@ import myreader.config.TaskConfig;
  * @author Kamill Sokol
  */
 @ComponentScan({"myreader.service"})
-@Import({JettyConfiguration.class, PersistenceConfig.class, SecurityConfig.class, TaskConfig.class, MvcConfig.class})
+@Import({PersistenceConfig.class, SecurityConfig.class, TaskConfig.class, MvcConfig.class})
 @EnableAutoConfiguration(exclude={FreeMarkerAutoConfiguration.class})
 //@SpringBootApplication
 public class Starter {
