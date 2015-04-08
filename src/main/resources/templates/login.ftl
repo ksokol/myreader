@@ -67,6 +67,13 @@
                 </div>
             </div>
 
+            <div class="control-group">
+                <label class="control-label" for="email">Remember me</label>
+                <div class="controls">
+                    <input type="checkbox" class="input-medium" name="remember-me">
+                </div>
+            </div>
+
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary pull-right">Login</button>
             </div>

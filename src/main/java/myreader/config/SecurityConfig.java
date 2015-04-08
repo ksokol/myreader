@@ -86,6 +86,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(successHandler())
                 .failureUrl(LOGIN_URL + "?result=failed")
                 .and()
+                .rememberMe()
+                .and()
                 .logout().logoutUrl(LOGOUT_URL).logoutSuccessUrl(LOGIN_URL).permitAll().deleteCookies("JSESSIONID")
                 .and()
                 .addFilterBefore(ajaxExceptionTranslationFilter(), FilterSecurityInterceptor.class)
