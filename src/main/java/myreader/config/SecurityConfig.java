@@ -16,9 +16,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 import myreader.repository.UserRepository;
 import spring.security.AjaxExceptionTranslationFilter;
@@ -37,7 +39,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String LOGIN_URL = ACCOUNT_CONTEXT + "/login";
     public static final String LOGOUT_URL = ACCOUNT_CONTEXT + "/logout";
     public static final String LOGIN_PROCESSING_URL = ACCOUNT_CONTEXT + "/check";
-    public static final String IMPLICIT_OAUTH_CLIENT = "public";
 
     @Autowired
     private UserRepository userRepository;
@@ -103,14 +104,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private AuthenticationSuccessHandler successHandler() {
-        final RoleBasedAuthenticationSuccessHandler successHandler = new RoleBasedAuthenticationSuccessHandler();
-        Map<String, String> roleUrlMap = new HashMap<>();
+        final SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+        successHandler.setRedirectStrategy(redirectStrategy());
+        return successHandler;
+    }
 
+    private RedirectStrategy redirectStrategy() {
+        final Map<String, String> roleUrlMap = new HashMap<>();
         roleUrlMap.put("ROLE_ADMIN", "/web/admin");
         roleUrlMap.put("ROLE_USER", "/web/rss");
-
-        successHandler.setRoleUrlMap(roleUrlMap);
-        return successHandler;
+        return new RoleBasedAuthenticationSuccessHandler(roleUrlMap);
     }
 
 }
