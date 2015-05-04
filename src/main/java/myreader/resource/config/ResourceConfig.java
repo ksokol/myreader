@@ -1,22 +1,11 @@
 package myreader.resource.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import myreader.resource.exclusionpattern.assembler.ExclusionPatternEntityLinks;
-import myreader.resource.exclusionset.ExclusionSetCollectionResource;
-import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
-import myreader.resource.subscription.SubscriptionCollectionResource;
-import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.resource.subscriptionentrytaggroup.SubscriptionEntryTagGroupCollectionResource;
-import myreader.resource.subscriptionentrytaggroup.beans.SubscriptionEntryTagGroupGetResponse;
-import myreader.resource.subscriptiontaggroup.SubscriptionTagGroupCollectionResource;
-import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
-import myreader.resource.user.UserEntityResource;
-import myreader.resource.user.beans.UserGetResponse;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.validation.TraversableResolver;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -32,16 +21,27 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+
+import myreader.resource.exclusionpattern.assembler.ExclusionPatternEntityLinks;
+import myreader.resource.exclusionset.ExclusionSetCollectionResource;
+import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
+import myreader.resource.subscription.SubscriptionCollectionResource;
+import myreader.resource.subscription.beans.SubscriptionGetResponse;
+import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import myreader.resource.subscriptionentrytaggroup.SubscriptionEntryTagGroupCollectionResource;
+import myreader.resource.subscriptionentrytaggroup.beans.SubscriptionEntryTagGroupGetResponse;
+import myreader.resource.user.UserEntityResource;
+import myreader.resource.user.beans.UserGetResponse;
 import spring.data.web.SequenceableHandlerMethodArgumentResolver;
 import spring.hateoas.DelegatingEntityLinks;
 import spring.hateoas.EntityLinker;
 import spring.hateoas.EntityLinks;
-
-import javax.validation.TraversableResolver;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * @author Kamill Sokol
@@ -80,6 +80,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer
                 .defaultContentType(APPLICATION_JSON)
+                .ignoreAcceptHeader(true)
                 .favorParameter(false)
                 .favorPathExtension(false);
     }
@@ -88,7 +89,6 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     public EntityLinks entityLinks() {
         List<EntityLinker> el = new ArrayList<>();
 
-        el.add(new EntityLinker(SubscriptionTagGroupGetResponse.class, SubscriptionTagGroupCollectionResource.class));
         el.add(new EntityLinker(SubscriptionEntryGetResponse.class, SubscriptionEntryCollectionResource.class));
         el.add(new EntityLinker(SubscriptionGetResponse.class, SubscriptionCollectionResource.class));
         el.add(new EntityLinker(UserGetResponse.class, UserEntityResource.class));
