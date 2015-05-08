@@ -1,15 +1,15 @@
 package myreader.resource.user;
 
-import myreader.repository.UserRepository;
-import myreader.test.IntegrationTestSupport;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsAdmin;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
+import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsAdmin;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
-import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import myreader.repository.UserRepository;
+import myreader.test.IntegrationTestSupport;
 
 /**
  * @author Kamill Sokol
@@ -38,16 +38,4 @@ public class UserEntityResourceTest extends IntegrationTestSupport {
                 .andExpect(jsonEquals("json/user/1.json"));
     }
 
-    @Test
-    public void testUser2Subscriptions() throws Exception {
-        mockMvc.perform(getAsUser2("/users/2/subscriptions"))
-                .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/user/2#subscriptions.json"));
-    }
-
-    @Test
-    public void testNotFoundWhenGetNotOwnSubscription() throws Exception {
-        mockMvc.perform(getAsUser2("/users/1/subscriptions"))
-                .andExpect(status().isNotFound());
-    }
 }

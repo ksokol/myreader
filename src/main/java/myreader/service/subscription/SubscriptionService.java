@@ -2,9 +2,6 @@ package myreader.service.subscription;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import myreader.entity.Subscription;
 
 /**
@@ -15,8 +12,6 @@ public interface SubscriptionService {
     void delete(Long id);
 
     List<Subscription> findAll();
-
-    Page<Subscription> findAll(Pageable pageable);
 
     Subscription findById(Long id);
 

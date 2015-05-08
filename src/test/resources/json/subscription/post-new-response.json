@@ -5,5 +5,6 @@
     "sum": 0,
     "unseen": 0,
     "createdAt": "2014-04-30T12:43:46Z",
+    "origin": "http://use-the-index-luke.com/blog/feed",
     "links": "${json-unit.ignore}"
 }

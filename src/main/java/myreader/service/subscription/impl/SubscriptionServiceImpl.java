@@ -2,6 +2,11 @@ package myreader.service.subscription.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
@@ -14,13 +19,6 @@ import myreader.service.subscription.SubscriptionExistException;
 import myreader.service.subscription.SubscriptionService;
 import myreader.service.time.TimeService;
 import myreader.service.user.UserService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 /**
  * @author Kamill Sokol
@@ -62,14 +60,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public List<Subscription> findAll() {
         User currentUser = userService.getCurrentUser();
         List<Subscription> subscriptions =  subscriptionRepository.findByUser(currentUser.getId());
-
-        return subscriptions;
-    }
-
-    @Override
-    public Page<Subscription> findAll(Pageable pageable) {
-        User currentUser = userService.getCurrentUser();
-        Page<Subscription> subscriptions =  subscriptionRepository.findAllByUser(currentUser.getId(), pageable);
 
         return subscriptions;
     }

@@ -9,14 +9,6 @@
             "href": "http://localhost/subscriptions"
         },
         {
-            "rel": "subscriptionTagGroups",
-            "href": "http://localhost/subscriptionTagGroups"
-        },
-        {
-            "rel": "subscriptionTagGroups(unseen>0)",
-            "href": "http://localhost/subscriptionTagGroups/new"
-        },
-        {
             "rel": "subscriptionEntries",
             "href": "http://localhost/subscriptionEntries"
         },

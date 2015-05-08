@@ -5,43 +5,48 @@
         <title>MyReader</title>
         <@style id="mobile"></@style>
     </head>
-    <body>
+    <body ng-app="myreader" ng-controller="subscriptionNavigationCtrl">
         <div class="topbar-inner">
             <div class="container-fluid">
                 <ul class="nav">
-                    <li><a href="${requestContext.getContextUrl("/web/logout")}">logout</a></li>
-                    <li><a href="">refresh</a></li>
+                    <li>
+                        <loading-indicator>
+                            <div class="spinner hidden"></div>
+                            <span class="error-message hidden"></span>
+                        </loading-indicator>
+                    </li>
+                    <li><a href="../web/logout">logout</a></li>
+                    <li><a href="#" ng-click="refresh()">refresh</a></li>
                 </ul>
             </div>
         </div>
 
         <table>
-            <tr>
-                <td class="col1">
-                    <a href="${requestContext.getContextUrl("/mobile/reader/entry/all")}">
-                        <h3 class="entry-title">${treeNavigation.name?html}</h3>
-                        <span class="entry-producer">${treeNavigation.unseen?string.computer}</span>
-                    </a>
-                </td>
-                <td class="col2">
-                    <a href="${requestContext.getContextUrl("/mobile/reader/entry/all")}">open</a>
-                </td>
+            <tr ng-repeat="item in data.tags">
+               <td class="col1">
+                   <a ng-href="reader/entry/{{item.title}}">
+                       <h3 class="entry-title">{{item.title}}</h3>
+                       <span class="entry-producer">{{item.unseen}}</span>
+                   </a>
+               </td>
+               <td class="col2">
+                   <a ng-href="reader/entry/{{item.title}}">open</a>
+               </td>
             </tr>
-            <#list treeNavigation.iterator() as tree>
-                <tr>
-                    <td class="col1">
-                        <a href="${requestContext.getContextUrl("/mobile/reader/entry/${myreader.uriEncode(tree.name)}")}">
-                            <h3 class="entry-title">${tree.name?html}</h3>
-                            <span class="entry-producer">${tree.unseen?string.computer}</span>
-                        </a>
-                    </td>
-                    <td class="col2">
-                        <a href="${requestContext.getContextUrl("/mobile/reader/entry/${myreader.uriEncode(tree.name)}")}">open</a>
-                    </td>
-                </tr>
-            </#list>
+
+            <tr ng-repeat="item in data.subscriptions">
+               <td class="col1">
+                   <a ng-href="reader/entry/{{item.title}}">
+                       <h3 class="entry-title">{{item.title}}</h3>
+                       <span class="entry-producer">{{item.unseen}}</span>
+                   </a>
+               </td>
+               <td class="col2">
+                   <a ng-href="reader/entry/{{item.title}}">open</a>
+               </td>
+            </tr>
         </table>
 
-        <@script id="mobile"></@script>
-    </body>
+<@script id="mobile"></@script>
+</body>
 </html>

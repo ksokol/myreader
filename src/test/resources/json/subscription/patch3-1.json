@@ -4,6 +4,7 @@
     "tag": "test2",
     "sum": 15,
     "unseen": 1,
+    "origin": "http://feeds.feedburner.com/javaposse",
     "createdAt": "2011-04-15T19:20:46Z",
     "links": "${json-unit.ignore}"
 }

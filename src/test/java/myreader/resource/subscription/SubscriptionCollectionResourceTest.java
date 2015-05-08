@@ -1,21 +1,19 @@
 package myreader.resource.subscription;
 
-import myreader.service.time.TimeService;
-import myreader.test.IntegrationTestSupport;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
+import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Date;
+
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-
-import static org.hamcrest.Matchers.endsWith;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser3;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
-import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import myreader.service.time.TimeService;
+import myreader.test.IntegrationTestSupport;
 
 /**
  * @author Kamill Sokol
@@ -27,7 +25,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testCollectionResourceJsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser2("/subscriptions"))
+        mockMvc.perform(getAsUser2("/subscriptions?unseenGreaterThan=-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/structure.json"));
     }
@@ -68,10 +66,4 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
                 .andExpect(jsonEquals("json/subscription/post-new-response.json"));
     }
 
-	@Test
-	public void testDoubleEncodingInSubscriptionSubscriptionTagGroup() throws Exception {
-		mockMvc.perform(getAsUser3("/subscriptions"))
-				.andExpect(jsonPath("$.content[?(@.title=='user3_subscription2')].links[?(@.rel=='subscriptionTagGroup')].href[0]", endsWith("/tagWith%252FForward")));
-
-	}
 }

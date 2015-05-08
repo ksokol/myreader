@@ -1,10 +1,4 @@
 {
-    "links": [
-        {
-            "rel": "self",
-            "href": "http://localhost/subscriptions"
-        }
-    ],
     "content": [
         {
             "uuid": "6",
@@ -12,8 +6,9 @@
             "tag": "tag1",
             "sum": 15,
             "unseen": 0,
+            "origin": "http://www.obix-labs.com/blogs/highOctaneJava/feed/entries/atom",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": "${json-unit.ignore}"
+            "links": []
         },
         {
             "uuid": "7",
@@ -21,8 +16,9 @@
             "tag": "tag1",
             "sum": 10,
             "unseen": 0,
+            "origin": "http://www.javaspecialists.eu/archive/tjsn.rss",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": "${json-unit.ignore}"
+            "links": []
         },
         {
             "uuid": "8",
@@ -30,8 +26,9 @@
             "tag": null,
             "sum": 125,
             "unseen": 0,
+            "origin": "http://www.tomcatexpert.com/blog/feed",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": "${json-unit.ignore}"
+            "links": []
         },
         {
             "uuid": "9",
@@ -39,8 +36,9 @@
             "tag": "tag1",
             "sum": 25,
             "unseen": 0,
+            "origin": "http://martinfowler.com/feed.atom",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": "${json-unit.ignore}"
+            "links": []
         },
         {
             "uuid": "10",
@@ -48,8 +46,9 @@
             "tag": null,
             "sum": 5,
             "unseen": 0,
+            "origin": "http://feeds.feedburner.com/SpringSourceTeamBlog",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": "${json-unit.ignore}"
+            "links": []
         },
         {
             "uuid": "11",
@@ -57,14 +56,9 @@
             "tag": "tag2",
             "sum": 1,
             "unseen": 0,
+            "origin": "https://jira.springsource.org/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?&jqlQuery=project+%3D+SPR+AND+resolution+%3D+Unresolved+ORDER+BY+due+ASC%2C+priority+DESC%2C+created+ASC&tempMax=100&reset=true&decorator=none",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": "${json-unit.ignore}"
+            "links": []
         }
-    ],
-    "page": {
-        "size": 20,
-        "totalElements": 6,
-        "totalPages": 1,
-        "number": 0
-    }
+    ]
 }

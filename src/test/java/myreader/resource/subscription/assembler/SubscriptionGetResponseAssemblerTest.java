@@ -1,13 +1,12 @@
 package myreader.resource.subscription.assembler;
 
-import myreader.entity.Subscription;
-import myreader.resource.config.ResourceConfig;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import myreader.entity.Subscription;
 
 /**
  * @author Kamill Sokol
@@ -20,7 +19,7 @@ public class SubscriptionGetResponseAssemblerTest {
     public void setUp() throws Exception {
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockHttpServletRequest));
-        uut = new SubscriptionGetResponseAssembler(new ResourceConfig().entityLinks());
+        uut = new SubscriptionGetResponseAssembler();
     }
 
     @Test

@@ -1,20 +1,21 @@
 package myreader.resource.resources;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
-import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.resource.subscriptionentrytaggroup.beans.SubscriptionEntryTagGroupGetResponse;
-import myreader.resource.subscriptiontaggroup.beans.SubscriptionTagGroupGetResponse;
-import myreader.resource.user.beans.UserGetResponse;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import spring.hateoas.EntityLinks;
 
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
+import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
+import myreader.resource.subscription.beans.SubscriptionGetResponse;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import myreader.resource.subscriptionentrytaggroup.beans.SubscriptionEntryTagGroupGetResponse;
+import myreader.resource.user.beans.UserGetResponse;
+import spring.hateoas.EntityLinks;
 
 /**
  * @author Kamill Sokol
@@ -33,13 +34,11 @@ public class Resources {
     public Links get() {
         Link users = entityLinks.linkToCollectionResource(UserGetResponse.class);
         Link subscriptions = entityLinks.linkToCollectionResource(SubscriptionGetResponse.class);
-        Link subscriptionTagGroups = entityLinks.linkToCollectionResource(SubscriptionTagGroupGetResponse.class);
         Link subscriptionEntryTagGroups = entityLinks.linkToCollectionResource(SubscriptionEntryTagGroupGetResponse.class);
-        Link newSubscriptionTagGroups = entityLinks.linkFor(SubscriptionTagGroupGetResponse.class).slash("new").withRel("subscriptionTagGroups(unseen>0)");
         Link subscriptionEntries = entityLinks.linkToCollectionResource(SubscriptionEntryGetResponse.class);
         Link exclusionPattern = entityLinks.linkToCollectionResource(ExclusionSetGetResponse.class);
 
-        return new Links(users, subscriptions, subscriptionTagGroups, newSubscriptionTagGroups, subscriptionEntries, subscriptionEntryTagGroups, exclusionPattern);
+        return new Links(users, subscriptions, subscriptionEntries, subscriptionEntryTagGroups, exclusionPattern);
     }
 
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)

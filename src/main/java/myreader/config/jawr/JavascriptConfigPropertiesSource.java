@@ -16,7 +16,12 @@ public class JavascriptConfigPropertiesSource {
     public Properties javascriptConfigPropertiesSource(@Value("${jawr.debug.on:false}") boolean debug) {
         return new ConfigBuilder(debug)
                 .jsBundle("mobile")
-                .webjar("angularjs/1.3.6/angular.js")
-                .build();
+                    .webjar("angularjs/1.3.6/angular.js")
+                    .jar("static/js/common/config.js")
+                    .jar("static/js/common/api.js")
+                    .jar("static/js/common/services.js")
+                    .jar("static/js/common/controllers.js")
+                    .jar("static/js/common/directives.js")
+                    .build();
     }
 }

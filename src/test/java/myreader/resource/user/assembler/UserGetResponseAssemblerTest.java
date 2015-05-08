@@ -1,13 +1,12 @@
 package myreader.resource.user.assembler;
 
-import myreader.entity.User;
-import myreader.resource.config.ResourceConfig;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import myreader.entity.User;
 
 /**
  * @author Kamill Sokol
@@ -20,7 +19,7 @@ public class UserGetResponseAssemblerTest {
     public void setUp() throws Exception {
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockHttpServletRequest));
-        uut = new UserGetResponseAssembler(new ResourceConfig().entityLinks());
+        uut = new UserGetResponseAssembler();
     }
 
     @Test

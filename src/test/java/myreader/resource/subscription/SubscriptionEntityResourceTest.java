@@ -1,11 +1,8 @@
 package myreader.resource.subscription;
 
-import myreader.test.IntegrationTestSupport;
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.Is.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.deleteAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
@@ -13,6 +10,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.Test;
+
+import myreader.test.IntegrationTestSupport;
 
 /**
  * @author Kamill Sokol
@@ -62,18 +63,18 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testDelete() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions"))
+        mockMvc.perform(getAsUser1("/subscriptions?unseenGreaterThan=-1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page.totalElements", is(5)))
-                .andExpect(jsonPath("$.content..links[?(@.rel=='origin')].href", hasItem("http://feeds.feedburner.com/javaposse")));
+                .andExpect(jsonPath("$.content..origin", hasSize(5)))
+                .andExpect(jsonPath("$.content..origin", hasItem("http://feeds.feedburner.com/javaposse")));
 
         mockMvc.perform(deleteAsUser1("/subscriptions/1"))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(getAsUser1("/subscriptions"))
+        mockMvc.perform(getAsUser1("/subscriptions?unseenGreaterThan=-1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page.totalElements", is(4)))
-                .andExpect(jsonPath("$.content..links[?(@.rel=='origin')].href", not(hasItem("http://feeds.feedburner.com/javaposse"))));
+                .andExpect(jsonPath("$.content..origin", hasSize(4)))
+                .andExpect(jsonPath("$.content..origin", not(hasItem("http://feeds.feedburner.com/javaposse"))));
     }
 
     @Test

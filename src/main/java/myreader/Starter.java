@@ -7,6 +7,7 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -14,6 +15,7 @@ import myreader.config.MvcConfig;
 import myreader.config.PersistenceConfig;
 import myreader.config.SecurityConfig;
 import myreader.config.TaskConfig;
+import myreader.resource.config.ResourceConfig;
 
 /**
  * @author Kamill Sokol
@@ -56,17 +58,17 @@ public class Starter {
         return servletRegistrationBean;
     }
 
-//    @Bean
-//    public ServletRegistrationBean apiV2() {
-//        DispatcherServlet dispatcherServlet = new DispatcherServlet();
-//
-//        AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-//        applicationContext.register(ResourceConfig.class);
-//        dispatcherServlet.setApplicationContext(applicationContext);
-//
-//        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(dispatcherServlet, "/api/2/*");
-//        servletRegistrationBean.setName("api-v2");
-//        return servletRegistrationBean;
-//    }
+    @Bean
+    public ServletRegistrationBean apiV2() {
+        DispatcherServlet dispatcherServlet = new DispatcherServlet();
+
+        AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+        applicationContext.register(ResourceConfig.class);
+        dispatcherServlet.setApplicationContext(applicationContext);
+
+        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(dispatcherServlet, "/api/2/*");
+        servletRegistrationBean.setName("api-v2");
+        return servletRegistrationBean;
+    }
 
 }

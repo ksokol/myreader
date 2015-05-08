@@ -1,9 +1,9 @@
 package myreader.resource.subscription.beans;
 
+import java.util.Date;
+
 import spring.hateoas.UUIDResourceSupport;
 import spring.hateoas.annotation.Rel;
-
-import java.util.Date;
 
 /**
  * @author Kamill Sokol
@@ -15,6 +15,7 @@ public class SubscriptionGetResponse extends UUIDResourceSupport {
     private String tag;
     private int sum;
     private long unseen;
+    private String origin;
     private Date createdAt;
 
     public String getTitle() {
@@ -51,6 +52,14 @@ public class SubscriptionGetResponse extends UUIDResourceSupport {
 
     public Date getCreatedAt() {
         return createdAt;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(final String origin) {
+        this.origin = origin;
     }
 
     public void setCreatedAt(Date createdAt) {

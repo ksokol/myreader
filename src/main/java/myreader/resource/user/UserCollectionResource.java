@@ -1,20 +1,18 @@
 package myreader.resource.user;
 
-import myreader.entity.User;
-import myreader.repository.UserRepository;
-import myreader.resource.RestControllerSupport;
-import myreader.resource.exception.ResourceNotFoundException;
-import myreader.resource.subscription.SubscriptionCollectionResource;
-import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import myreader.resource.user.beans.UserGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import myreader.entity.User;
+import myreader.repository.UserRepository;
+import myreader.resource.RestControllerSupport;
+import myreader.resource.subscription.SubscriptionCollectionResource;
+import myreader.resource.user.beans.UserGetResponse;
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
 
@@ -48,11 +46,4 @@ public class UserCollectionResource extends RestControllerSupport {
         return resourceAssemblers.toResource(page, UserGetResponse.class);
     }
 
-    @RequestMapping("/{id}/subscriptions")
-    public PagedResources<SubscriptionGetResponse> userSubscriptions(@PathVariable("id") Long id, Pageable pageable, @AuthenticationPrincipal MyReaderUser user) {
-        if(user.getId().compareTo(id) != 0) {
-            throw new ResourceNotFoundException();
-        }
-        return subscriptionCollectionResource.get(pageable, user);
-    }
 }

@@ -1,9 +1,0 @@
-{
-    "links": [
-        {
-            "rel": "self",
-            "href": "http://localhost/subscriptionTagGroups/tag3/entries?q=unknown"
-        }
-    ],
-    "content": []
-}
