@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
@@ -55,6 +56,8 @@ public class TaskConfig implements SchedulingConfigurer {
     private SubscriptionEntryRepository subscriptionEntryRepository;
     @Autowired
     private TimeService timeService;
+    @Autowired
+    private Environment environment;
 
     @Bean
     public IconUpdateJob iconUpdateJob() {
@@ -75,15 +78,19 @@ public class TaskConfig implements SchedulingConfigurer {
     public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.setScheduler(taskScheduler());
 
-        taskRegistrar.addFixedRateTask(syndFetcherJob("syndFetcher-1"), 300000);
-        taskRegistrar.addFixedRateTask(syndFetcherJob("syndFetcher-2"), 300000);
-        taskRegistrar.addFixedRateTask(feedListFetcher(), 300000);
-        taskRegistrar.addCronTask(iconUpdateJob(), "0 0 2 * * SUN");
+        final boolean taskEnabled = environment.getProperty("task.enabled", Boolean.class, true);
 
-        /*
-            <!-- TODO deactivated until this job has an unittest -->
-            <!-- <task:scheduled ref="purgerJob" method="run" cron="0 0 3 * * *"/> -->
-         */
+        if(taskEnabled) {
+            taskRegistrar.addFixedRateTask(syndFetcherJob("syndFetcher-1"), 300000);
+            taskRegistrar.addFixedRateTask(syndFetcherJob("syndFetcher-2"), 300000);
+            taskRegistrar.addFixedRateTask(feedListFetcher(), 300000);
+            taskRegistrar.addCronTask(iconUpdateJob(), "0 0 2 * * SUN");
+
+            /*
+                <!-- TODO deactivated until this job has an unittest -->
+                <!-- <task:scheduled ref="purgerJob" method="run" cron="0 0 3 * * *"/> -->
+             */
+        }
     }
 
     private SubscriptionBatch subscriptionBatch() {
