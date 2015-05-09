@@ -47,9 +47,9 @@ public class SubscriptionCollectionResource extends RestControllerSupport {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public Map<String, Object> get(@RequestParam(value = "unseenGreaterThan", required = false, defaultValue = "0") int unseenCount, @AuthenticationPrincipal MyReaderUser user) {
+    public Map<String, Object> get(@RequestParam(value = "unseenGreaterThan", required = false, defaultValue = "-1") int unseenCount, @AuthenticationPrincipal MyReaderUser user) {
         final List<Subscription> source = subscriptionRepository.findAllByUserAndUnseenGreaterThan(user.getId(), unseenCount);
-            final List<SubscriptionGetResponse> target = new ArrayList<>(source.size());
+        final List<SubscriptionGetResponse> target = new ArrayList<>(source.size());
         for (final Subscription subscription : source) {
             target.add(resourceAssemblers.toResource(subscription, SubscriptionGetResponse.class));
         }

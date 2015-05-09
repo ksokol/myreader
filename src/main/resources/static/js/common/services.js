@@ -4,7 +4,7 @@ angular.module('common.services', ['common.api'])
 
     return {
         findAllByUnseen: function(unseen) {
-            var withUnseen = unseen ? '?unseenGreaterThan=-1' : '';
+            var withUnseen = unseen ? '?unseenGreaterThan=0' : '';
             return api.get('subscriptionTag', '/myreader/api/2/subscriptions' + withUnseen);
         }
     }

@@ -1,9 +1,12 @@
 package myreader.resource.subscription;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Date;
@@ -25,9 +28,29 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testCollectionResourceJsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser2("/subscriptions?unseenGreaterThan=-1"))
+        mockMvc.perform(getAsUser2("/subscriptions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/structure.json"));
+    }
+
+    @Test
+    public void unseenGreaterThanMinusOne() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptions?unseenGreaterThan=-1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("content..uuid", hasSize(5)));
+    }
+
+    @Test
+    public void unseenGreaterThanZero() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptions?unseenGreaterThan=0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("content..uuid", hasSize(1)));
+    }
+    @Test
+    public void unseenGreaterThanZeroOne() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptions?unseenGreaterThan=1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("content..uuid", hasSize(0)));
     }
 
     @Test
