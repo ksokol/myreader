@@ -18,11 +18,11 @@ public class JavascriptConfigPropertiesSource {
                 .jsBundle("mobile")
                     .webjar("angularjs/1.3.6/angular.js")
                     .webjar("angular-ui-router/0.2.13/angular-ui-router.js")
-                    .jar("static/js/common/config.js")
-                    .jar("static/js/common/api.js")
-                    .jar("static/js/common/services.js")
-                    .jar("static/js/common/controllers.js")
-                    .jar("static/js/common/directives.js")
+                    .jar("static/app/js/common/config.js")
+                    .jar("static/app/js/common/api.js")
+                    .jar("static/app/js/common/services.js")
+                    .jar("static/app/js/common/controllers.js")
+                    .jar("static/app/js/common/directives.js")
                     .build();
     }
 }
