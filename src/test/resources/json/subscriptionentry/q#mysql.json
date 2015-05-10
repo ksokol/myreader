@@ -13,6 +13,9 @@
             "tag": "tag1",
             "content": "content",
             "seen": true,
+            "feedUuid": "3",
+            "feedTag": "tag2",
+            "origin": "http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql",
             "createdAt": "2011-04-15T19:20:46Z",
             "links": "${json-unit.ignore}"
         }

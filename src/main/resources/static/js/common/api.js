@@ -66,6 +66,7 @@ angular.module('common.api', [])
                 theTag.subscriptions.push(s);
             } else {
                 var tag = new SubscriptionTag;
+                tag.uuid = s.tag;
                 tag.title = s.tag;
                 tag.unseen = s.unseen;
                 tag.subscriptions.push(s);
@@ -75,7 +76,7 @@ angular.module('common.api', [])
     };
 
     return {
-        convert: function (data) {
+        convertFrom: function (data) {
             var subscriptionTags = new SubscriptionTags;
             angular.forEach(data.content, function (value) {
                 if(!value.tag) {
@@ -101,10 +102,35 @@ angular.module('common.api', [])
     }
 })
 
+.service('subscriptionEntryConverter', function() {
+
+    var SubscriptionEntry = function() {};
+
+    return {
+        convertFrom: function (data) {
+            var subscriptionEntries = [];
+            angular.forEach(data.content, function (value) {
+                var subscriptionEntry = new SubscriptionEntry;
+                angular.forEach(value, function (v, k) {
+                    subscriptionEntry[k] = v;
+                });
+                subscriptionEntries.push(subscriptionEntry);
+            });
+            return subscriptionEntries;
+        },
+        convertTo: function(data) {
+            return {content: data};
+        }
+    }
+})
+
 .service('conversionService', function ($injector) {
     return {
-        convert: function (resourceType, data) {
-            return $injector.get(resourceType + "Converter").convert(data);
+        convertFrom: function (resourceType, data) {
+            return $injector.get(resourceType + "Converter").convertFrom(data);
+        },
+        convertTo: function (resourceType, data) {
+            return $injector.get(resourceType + "Converter").convertTo(data);
         }
     }
 })
@@ -114,9 +140,18 @@ angular.module('common.api', [])
         get: function (resourceType, href) {
             var deferred = $q.defer();
             $http.get(href)
-                .success(function (data) {
-                    deferred.resolve(conversionService.convert(resourceType, data));
-                });
+            .success(function (data) {
+                deferred.resolve(conversionService.convertFrom(resourceType, data));
+            });
+            return deferred.promise;
+        },
+        patch: function(resourceType, url, data) {
+            var converted = conversionService.convertTo(resourceType, data);
+            var deferred = $q.defer();
+            $http.patch(url, converted)
+            .success(function (data) {
+                deferred.resolve();
+            });
             return deferred.promise;
         }
     }

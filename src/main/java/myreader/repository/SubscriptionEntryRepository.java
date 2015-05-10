@@ -32,20 +32,8 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
     @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1 and se.id <= ?3 order by se.id desc")
     Slice<SubscriptionEntry> findBySubscriptionAndUser(Long userId, Long subscriptionId, Long nextId, Pageable pageable);
 
-    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1 and se.seen = false and se.id <= ?3 order by se.id desc")
-    Slice<SubscriptionEntry> findNewBySubscriptionAndUser(Long userId, Long subscriptionId, Long nextId, Pageable pageable);
-
-    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.tag = ?2 and se.subscription.user.id = ?1 and se.seen = false and se.id <= ?3 order by se.id desc")
-    Slice<SubscriptionEntry> findNewBySubscriptionTagAndUser(Long userId, String tag, Long nextId, Pageable pageable);
-
-    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.user.id = ?1 and se.id <= ?2 order by se.id desc")
-    Slice<SubscriptionEntry> findAllByUser(Pageable pageable, Long id, Long nextId);
-
     @Query("select count(se) from SubscriptionEntry se where se.subscription = ?1 and se.seen = ?2")
     int countBySeen(Subscription subscription, boolean flag);
-
-    @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.tag = ?1 and se.subscription.user.id = ?2 and se.id <= ?3 order by se.id desc")
-    Slice<SubscriptionEntry> findBySubscriptionTagAndUser(String tag, Long userId, Long nextId, Pageable pageable);
 
     @Query("select se from SubscriptionEntry se join fetch se.subscription join fetch se.feedEntry where se.id = ?1")
     @Override

@@ -1,8 +1,8 @@
 package myreader.entity;
 
-import org.apache.solr.client.solrj.beans.Field;
-
 import java.util.Date;
+
+import org.apache.solr.client.solrj.beans.Field;
 
 /**
  * @author Kamill Sokol
@@ -38,6 +38,9 @@ public class SearchableSubscriptionEntry implements Identifiable {
 
 	@Field
 	private String tag;
+
+	@Field("feed_tag")
+	private String feedTag;
 
 	@Field("created_at")
 	private Date createdAt;
@@ -124,6 +127,14 @@ public class SearchableSubscriptionEntry implements Identifiable {
 
 	public void setTag(String tag) {
 		this.tag = tag;
+	}
+
+	public String getFeedTag() {
+		return feedTag;
+	}
+
+	public void setFeedTag(final String feedTag) {
+		this.feedTag = feedTag;
 	}
 
 	public Date getCreatedAt() {

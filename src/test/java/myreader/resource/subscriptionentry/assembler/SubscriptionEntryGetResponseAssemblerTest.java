@@ -3,15 +3,14 @@ package myreader.resource.subscriptionentry.assembler;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import myreader.entity.SubscriptionEntry;
-import myreader.resource.config.ResourceConfig;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import myreader.entity.SubscriptionEntry;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 
 /**
  * @author Kamill Sokol
@@ -24,7 +23,7 @@ public class SubscriptionEntryGetResponseAssemblerTest {
     public void setUp() throws Exception {
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockHttpServletRequest));
-        uut = new SubscriptionEntryGetResponseAssembler(new ResourceConfig().entityLinks());
+        uut = new SubscriptionEntryGetResponseAssembler();
     }
 
     @Test

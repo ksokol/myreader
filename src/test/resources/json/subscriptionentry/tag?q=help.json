@@ -2,7 +2,7 @@
     "links": [
         {
             "rel": "self",
-            "href": "http://localhost/subscriptionEntries/tag?q=help"
+            "href": "http://localhost/subscriptionEntries?q=help"
         }
     ],
     "content": [
@@ -13,6 +13,9 @@
             "tag": "tag4 tag5",
             "content": "content",
             "seen": false,
+            "feedTag": null,
+            "feedUuid": "14",
+            "origin": "http://Use-The-Index-Luke.com/blog/2013-04/i-need-your-help",
             "createdAt": "2011-04-15T19:20:46Z",
             "links": "${json-unit.ignore}"
         }

@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.resource.subscriptionentrytaggroup.beans.SubscriptionEntryTagGroupGetResponse;
 import myreader.resource.user.beans.UserGetResponse;
 import spring.hateoas.EntityLinks;
 
@@ -34,11 +33,10 @@ public class Resources {
     public Links get() {
         Link users = entityLinks.linkToCollectionResource(UserGetResponse.class);
         Link subscriptions = entityLinks.linkToCollectionResource(SubscriptionGetResponse.class);
-        Link subscriptionEntryTagGroups = entityLinks.linkToCollectionResource(SubscriptionEntryTagGroupGetResponse.class);
         Link subscriptionEntries = entityLinks.linkToCollectionResource(SubscriptionEntryGetResponse.class);
         Link exclusionPattern = entityLinks.linkToCollectionResource(ExclusionSetGetResponse.class);
 
-        return new Links(users, subscriptions, subscriptionEntries, subscriptionEntryTagGroups, exclusionPattern);
+        return new Links(users, subscriptions, subscriptionEntries, exclusionPattern);
     }
 
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)

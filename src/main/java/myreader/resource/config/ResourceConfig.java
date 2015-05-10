@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -20,6 +19,7 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -34,8 +34,6 @@ import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.resource.subscriptionentrytaggroup.SubscriptionEntryTagGroupCollectionResource;
-import myreader.resource.subscriptionentrytaggroup.beans.SubscriptionEntryTagGroupGetResponse;
 import myreader.resource.user.UserEntityResource;
 import myreader.resource.user.beans.UserGetResponse;
 import spring.data.web.SequenceableHandlerMethodArgumentResolver;
@@ -46,10 +44,10 @@ import spring.hateoas.EntityLinks;
 /**
  * @author Kamill Sokol
  */
+@EnableWebMvc
 //@EnableWebMvcSecurity
 @ComponentScan(basePackages = {"myreader.resource", "spring.hateoas"})
 @Configuration
-@Import(CustomDelegatingWebMvcConfiguration.class)
 @EnableSpringDataWebSupport
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
@@ -94,7 +92,6 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
         el.add(new EntityLinker(UserGetResponse.class, UserEntityResource.class));
         el.add(new EntityLinker(ExclusionSetGetResponse.class, ExclusionSetCollectionResource.class));
         el.add(new ExclusionPatternEntityLinks());
-        el.add(new EntityLinker(SubscriptionEntryTagGroupGetResponse.class, SubscriptionEntryTagGroupCollectionResource.class));
 
         return new DelegatingEntityLinks(el);
     }

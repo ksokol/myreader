@@ -1,13 +1,10 @@
 package myreader.resource.subscriptionentry.assembler;
 
-import myreader.entity.SubscriptionEntry;
-import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
+
+import myreader.entity.SubscriptionEntry;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import spring.hateoas.AbstractResourceAssembler;
-import spring.hateoas.EntityLinks;
 
 /**
  * @author Kamill Sokol
@@ -15,12 +12,8 @@ import spring.hateoas.EntityLinks;
 @Component
 public class SubscriptionEntryGetResponseAssembler extends AbstractResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> {
 
-    private final EntityLinks entityLinks;
-
-    @Autowired
-    public SubscriptionEntryGetResponseAssembler(EntityLinks entityLinks) {
+    public SubscriptionEntryGetResponseAssembler() {
         super(SubscriptionEntry.class, SubscriptionEntryGetResponse.class);
-        this.entityLinks = entityLinks;
     }
 
     @Override
@@ -39,24 +32,15 @@ public class SubscriptionEntryGetResponseAssembler extends AbstractResourceAssem
 
         if(source.getSubscription() != null) {
             target.setFeedTitle(source.getSubscription().getTitle());
+            target.setFeedUuid(String.valueOf(source.getSubscription().getId()));
+            target.setFeedTag(source.getSubscription().getTag());
         }
 
-        addLinks(source, target);
+        if(source.getFeedEntry() != null) {
+            target.setOrigin(source.getFeedEntry().getUrl());
+        }
+
         return target;
-    }
-
-    private void addLinks(SubscriptionEntry source, SubscriptionEntryGetResponse target) {
-        Link self = entityLinks.linkToSingleResource(getOutputClass(), source.getId());
-        target.add(self);
-
-		if(source.getSubscription() != null) {
-			Link subscription = entityLinks.linkFor(SubscriptionGetResponse.class, source.getSubscription().getId()).withRel("subscription");
-			target.add(subscription);
-		}
-
-		if(source.getFeedEntry() != null) {
-			target.add(new Link(source.getFeedEntry().getUrl(), "origin"));
-		}
     }
 
 }

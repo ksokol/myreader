@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import myreader.entity.User;
 import myreader.repository.UserRepository;
-import myreader.resource.RestControllerSupport;
-import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.user.beans.UserGetResponse;
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
@@ -21,16 +19,15 @@ import spring.security.MyReaderUser;
  */
 @RestController
 @RequestMapping(value= "/users")
-public class UserCollectionResource extends RestControllerSupport {
+public class UserCollectionResource {
 
     private final UserRepository userRepository;
-    private final SubscriptionCollectionResource subscriptionCollectionResource;
+    private final ResourceAssemblers resourceAssemblers;
 
     @Autowired
-    public UserCollectionResource(UserRepository userRepository, SubscriptionCollectionResource subscriptionCollectionResource, ResourceAssemblers resourceAssemblers) {
-        super(resourceAssemblers);
+    public UserCollectionResource(UserRepository userRepository, ResourceAssemblers resourceAssemblers) {
         this.userRepository = userRepository;
-        this.subscriptionCollectionResource = subscriptionCollectionResource;
+        this.resourceAssemblers = resourceAssemblers;
     }
 
     @RequestMapping("")

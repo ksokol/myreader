@@ -28,34 +28,6 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
     }
 
     @Test
-    public void testEntityResourceSubscriptionEntries() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions/3/entries"))
-                .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscription/3#entries.json"));
-    }
-
-    @Test
-    public void testEntityResourceSubscriptionEntriesSearch() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions/3/entries?q=party"))
-                .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscription/3#entries#q=party.json"));
-    }
-
-    @Test
-    public void testEntityResourceNewSubscriptionEntries() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions/3/entries/new"))
-                .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscription/3#entries#new.json"));
-    }
-
-    @Test
-    public void testEntityResourceSubscriptionNewEntriesSearch() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions/3/entries/new?q=party"))
-                .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscription/3#entries#new#q=party.json"));
-    }
-
-    @Test
     public void testNotFoundWhenGetNotOwnSubscription() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptions/6"))
                 .andExpect(status().isNotFound());

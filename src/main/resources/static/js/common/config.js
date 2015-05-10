@@ -1,4 +1,4 @@
-angular.module('myreader', ['common.services', 'common.controllers', 'common.directives'])
+angular.module('myreader', ['common.services', 'common.controllers', 'common.directives', 'ui.router'])
 
 .config(['$httpProvider', function($httpProvider) {
 
@@ -43,4 +43,25 @@ angular.module('myreader', ['common.services', 'common.controllers', 'common.dir
         };
     }]);
 
+}])
+
+.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+
+    $stateProvider
+        .state('subscriptionTags', {
+            url: "/subscriptionTags",
+            templateUrl: 'subscriptionTags',
+            controller: 'SubscriptionNavigationCtrl'
+        })
+        .state('entries-tags', {
+            url: "/entries/:tag",
+            templateUrl: 'entries',
+            controller: 'SubscriptionEntryCtrl'
+        })
+        .state('entries-subscription', {
+            url: "/entries/:uuid",
+            templateUrl: 'entries',
+            controller: 'SubscriptionEntryCtrl'
+        });
+    $urlRouterProvider.otherwise('/subscriptionTags');
 }]);

@@ -17,6 +17,7 @@ public class JavascriptConfigPropertiesSource {
         return new ConfigBuilder(debug)
                 .jsBundle("mobile")
                     .webjar("angularjs/1.3.6/angular.js")
+                    .webjar("angular-ui-router/0.2.13/angular-ui-router.js")
                     .jar("static/js/common/config.js")
                     .jar("static/js/common/api.js")
                     .jar("static/js/common/services.js")

@@ -1,8 +1,10 @@
 package myreader.service.search.converter;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.core.convert.converter.Converter;
+
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
-import org.springframework.core.convert.converter.Converter;
 
 /**
  * @author Kamill Sokol
@@ -21,7 +23,8 @@ public class SearchableSubscriptionEntryConverter implements Converter<Subscript
 		target.setSubscriptionTitle(source.getSubscription().getTitle());
 		target.setContent(source.getFeedEntry().getContent());
 		target.setSeen(source.isSeen());
-		target.setTag(source.getTag());
+		target.setTag(StringUtils.defaultIfEmpty(source.getTag(), "*"));
+		target.setFeedTag(StringUtils.defaultIfEmpty(source.getSubscription().getTag(), "*"));
 		target.setCreatedAt(source.getCreatedAt());
 		target.setUrl(source.getFeedEntry().getUrl());
 

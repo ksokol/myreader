@@ -1,18 +1,20 @@
 package myreader.resource;
 
-import myreader.entity.Identifiable;
+import java.util.List;
+
 import org.springframework.util.Assert;
+
+import myreader.entity.Identifiable;
 import spring.data.domain.Sequence;
 import spring.data.domain.SequenceImpl;
 import spring.data.domain.SequenceRequest;
 import spring.data.domain.Sequenceable;
 import spring.hateoas.ResourceAssemblers;
 
-import java.util.List;
-
 /**
  * @author Kamill Sokol
  */
+@Deprecated
 public class RestControllerSupport {
 
     protected final ResourceAssemblers resourceAssemblers;

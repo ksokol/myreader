@@ -53,43 +53,6 @@ class MobileController {
         }
     }
 
-    @RequestMapping(value = { "entry" }, method = RequestMethod.GET)
-    public String index(Map<String, Object> model) {
-        return this.index(null, model);
-    }
-
-    @RequestMapping(value = { "entry/{collection:.+}" }, method = RequestMethod.GET)
-    public String index(@PathVariable String collection, Map<String, Object> model) {
-        List<SubscriptionEntry> l = new ArrayList<>();
-        List<UserEntryQuery> feed;
-
-        if (collection == null || "all".equals(collection)) {
-            feed = entryApi.feed(null, null, true, new SubscriptionEntrySearchQuery(), null);
-        } else {
-            feed = entryApi.feed(collection, null, true, new SubscriptionEntrySearchQuery(), null);
-        }
-
-        for (final UserEntryQuery userEntryQuery : feed) {
-            l.add(new SubscriptionEntry(userEntryQuery));
-        }
-
-        model.put("entryList", l);
-        return "reader/mobile/entry";
-    }
-
-    @Transactional
-    @RequestMapping(value = { "entry/{collection:.+}" }, method = RequestMethod.POST)
-    public String batchMarkAsRead(@PathVariable String collection, @RequestParam("id[]") Long[] ids, Map<String, Object> model) {
-        for (Long id : ids) {
-            myreader.entity.SubscriptionEntry subscriptionEntry = subscriptionEntryService.findById(id);
-            subscriptionEntry.setSeen(true);
-            subscriptionEntryService.save(subscriptionEntry);
-            subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
-        }
-
-        return this.index(collection, model);
-    }
-
     @RequestMapping(value = "entry/{collection:.+}", method = RequestMethod.GET, params = { "id" })
     public String showEntryDetails(@RequestParam Long id, Map<String, Object> model) {
         final UserEntryQuery feed = entryApi.feed(id, true);

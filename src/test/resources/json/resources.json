@@ -13,10 +13,6 @@
             "href": "http://localhost/subscriptionEntries"
         },
         {
-            "rel": "subscriptionEntryTagGroups",
-            "href": "http://localhost/subscriptionEntryTagGroups"
-        },
-        {
             "rel": "exclusions",
             "href": "http://localhost/exclusions"
         }

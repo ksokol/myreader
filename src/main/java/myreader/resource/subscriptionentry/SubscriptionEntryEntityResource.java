@@ -1,12 +1,8 @@
 package myreader.resource.subscriptionentry;
 
-import myreader.entity.SubscriptionEntry;
-import myreader.repository.SubscriptionEntryRepository;
-import myreader.resource.RestControllerSupport;
-import myreader.resource.exception.ResourceNotFoundException;
-import myreader.resource.service.patch.PatchService;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,19 +10,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import myreader.entity.SubscriptionEntry;
+import myreader.repository.SubscriptionEntryRepository;
+import myreader.resource.RestControllerSupport;
+import myreader.resource.exception.ResourceNotFoundException;
+import myreader.resource.service.patch.PatchService;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
-
-import static myreader.Constants.ID;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
 /**
  * @author Kamill Sokol
  */
 @Transactional
 @RestController
-@RequestMapping("subscriptionEntries/{" + ID + "}")
+@RequestMapping("subscriptionEntries/{id}")
 public class SubscriptionEntryEntityResource extends RestControllerSupport {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;
@@ -40,12 +40,12 @@ public class SubscriptionEntryEntityResource extends RestControllerSupport {
     }
 
     @RequestMapping(method = GET)
-    public SubscriptionEntryGetResponse get(@PathVariable(ID) Long id, @AuthenticationPrincipal MyReaderUser user) {
+    public SubscriptionEntryGetResponse get(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
         return resourceAssemblers.toResource(findOrThrowException(id, user.getUsername()), SubscriptionEntryGetResponse.class);
     }
 
     @RequestMapping(method = PATCH)
-    public SubscriptionEntryGetResponse patch(@PathVariable(ID) Long id, @AuthenticationPrincipal MyReaderUser user,
+    public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user,
                                               @RequestBody SubscriptionEntryPatchRequest request) {
         SubscriptionEntry patched = patchService.patch(request, findOrThrowException(id, user.getUsername()));
         SubscriptionEntry saved = subscriptionEntryRepository.save(patched);
