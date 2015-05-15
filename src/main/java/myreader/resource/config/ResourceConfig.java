@@ -15,6 +15,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.web.bind.support.AuthenticationPrincipalArgumentResolver;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -49,6 +50,7 @@ import spring.hateoas.EntityLinks;
 @ComponentScan(basePackages = {"myreader.resource", "spring.hateoas"})
 @Configuration
 @EnableSpringDataWebSupport
+@EnableTransactionManagement
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
     @Autowired

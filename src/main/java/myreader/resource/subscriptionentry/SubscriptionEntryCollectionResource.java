@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
+import myreader.repository.SubscriptionRepository;
 import myreader.resource.RestControllerSupport;
 import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
 import org.springframework.hateoas.Resources;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,16 +41,18 @@ import spring.security.MyReaderUser;
 @RequestMapping(value = "/subscriptionEntries")
 public class SubscriptionEntryCollectionResource extends RestControllerSupport {
 
+    private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
 	private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
     private final PatchService patchService;
 
     @Autowired
-    public SubscriptionEntryCollectionResource(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, final PatchService patchService, ResourceAssemblers resourceAssemblers) {
+    public SubscriptionEntryCollectionResource(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, final PatchService patchService, ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository) {
         super(resourceAssemblers);
         this.subscriptionEntryRepository = subscriptionEntryRepository;
 		this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
         this.patchService = patchService;
+        this.subscriptionRepository = subscriptionRepository;
     }
 
     @RequestMapping(method = GET)
@@ -63,6 +67,7 @@ public class SubscriptionEntryCollectionResource extends RestControllerSupport {
         return resourceAssemblers.toResource(toSequence(sequenceable, pagedEntries.getContent()), SubscriptionEntryGetResponse.class);
     }
 
+    @Transactional
     @RequestMapping(method = PATCH)
     public Resources<SubscriptionEntryGetResponse> patch(@Valid @RequestBody SubscriptionEntryBatchPatchRequest request, @AuthenticationPrincipal MyReaderUser user) {
         List<SubscriptionEntryGetResponse> subscriptionEntryGetResponses = new ArrayList<>();
@@ -72,6 +77,15 @@ public class SubscriptionEntryCollectionResource extends RestControllerSupport {
             if(subscriptionEntry == null) {
                 continue;
             }
+
+            if(subscriptionPatch.isFieldPatched("seen") && subscriptionPatch.getSeen() != null && subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
+                if (subscriptionPatch.getSeen()){
+                    subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
+                } else {
+                    subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
+                }
+            }
+
             SubscriptionEntry patched = patchService.patch(subscriptionPatch, subscriptionEntry);
             SubscriptionEntry saved = subscriptionEntryRepository.save(patched);
             SubscriptionEntryGetResponse subscriptionEntryGetResponse = resourceAssemblers.toResource(saved, SubscriptionEntryGetResponse.class);
