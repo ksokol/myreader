@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -125,7 +126,7 @@ public class TagsController {
     }
 
     @RequestMapping(value = "{collection:.+}", params = "entry")
-    public String entry(@PathVariable String collection, @RequestParam(required = false) Long offset, Long entry, Map<String, Object> model) {
+    public String entry(@PathVariable String collection, @RequestParam(required = false) Long offset, Long entry, Map<String, Object> model, Authentication authentication) {
         List<SubscriptionEntry> l = new ArrayList<>();
 
         if (entry == null) {
@@ -138,7 +139,7 @@ public class TagsController {
 
             search.setLastId(offset);
 
-            final List<UserEntryQuery> feed = entryApi.feed(null, theCollection, true, search, null);
+            final List<UserEntryQuery> feed = entryApi.feed(null, theCollection, true, search, null, authentication);
 
             for (final UserEntryQuery userEntryQuery : feed) {
                 l.add(new SubscriptionEntry(userEntryQuery));
@@ -155,7 +156,7 @@ public class TagsController {
     }
 
     @RequestMapping(value = "{collection:.+}")
-    public String entries(@PathVariable String collection, @RequestParam(required = false) Long offset, Map<String, Object> model) {
+    public String entries(@PathVariable String collection, @RequestParam(required = false) Long offset, Map<String, Object> model, Authentication authentication) {
         if ("all".equalsIgnoreCase(collection)) {
             return "reader/index";
         }
@@ -172,7 +173,7 @@ public class TagsController {
         search.setLastId(offset);
         search.setShowAll(true);
 
-        final List<UserEntryQuery> feed = entryApi.feed(null, theCollection, false, search, null);
+        final List<UserEntryQuery> feed = entryApi.feed(null, theCollection, false, search, null, authentication);
 
         for (final UserEntryQuery userEntryQuery : feed) {
             l.add(new SubscriptionEntry(userEntryQuery));

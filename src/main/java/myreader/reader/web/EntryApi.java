@@ -10,16 +10,24 @@ import java.util.TreeSet;
 
 import myreader.API;
 import myreader.entity.FeedIcon;
+import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.reader.web.UserEntryQuery.IconDto;
+import myreader.repository.SubscriptionRepository;
+import myreader.service.search.SubscriptionEntrySearchRepository;
 import myreader.service.subscription.SubscriptionService;
 import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
 import myreader.service.subscriptionentry.SubscriptionEntryService;
+import spring.data.domain.SequenceRequest;
+import spring.data.domain.Sequenceable;
+import spring.security.MyReaderUser;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,64 +49,71 @@ public class EntryApi {
 
     @Autowired
     private SubscriptionEntryService subscriptionEntryService;
+    @Autowired
+    private SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     public List<UserEntryQuery> feed(@RequestParam(value = "feed.tag", required = false) String feedTag,
             @RequestParam(value = "tag", required = false) String tag, boolean headingsOnly,
-            SubscriptionEntrySearchQuery query, @RequestParam(required = false) String fl) {
+            SubscriptionEntrySearchQuery query, @RequestParam(required = false) String fl, Authentication authentication) {
+        MyReaderUser user = (MyReaderUser) authentication.getPrincipal();
 
-        // TODO
-        if (feedTag != null) {
-            List<Subscription> subscriptionList = subscriptionService.findByTag(feedTag);
+        String feedUuidEqual = "*";
+        String feedTagEqual = "*";
+        String seenEqual = "*";
+        String q = query.getQ() == null ? "*" : query.getQ();
 
-            if(CollectionUtils.isEmpty(subscriptionList)) {
-                subscriptionList = subscriptionService.findByTitle(feedTag);
-            }
-
-            ArrayList<Long> ids = new ArrayList<>();
-
-            for(Subscription s :subscriptionList) {
-                ids.add(s.getId());
-            }
-
-            if(ids.isEmpty()) {
-                query.setFeedTitle(feedTag);
+        if(feedTag != null) {
+            final List<Subscription> s = subscriptionRepository.findByTitleAndUsername(feedTag, user.getUsername());
+            if(!s.isEmpty()) {
+                feedUuidEqual = s.get(0).getId().toString();
             } else {
-                query.setFeedId(ids);
+                feedTagEqual = feedTag;
             }
         }
 
-        // TODO
-        if (tag != null) {
-            query.setTag(tag);
+        if(!query.isShowAll()) {
+            seenEqual = "false";
         }
 
+        Sequenceable sequenceable;
+        if(query.getLastId() != null) {
+            sequenceable = new SequenceRequest(10, query.getLastId());
+        } else {
+            sequenceable = new SequenceRequest(10, Long.MAX_VALUE);
+        }
 
-        List<SubscriptionEntry> query2 = subscriptionEntryService.search(query);
+        Slice<SearchableSubscriptionEntry> pagedEntries = subscriptionEntrySearchRepository.findBy(q, user.getId(), feedUuidEqual, feedTagEqual,  seenEqual, sequenceable.getNext(), sequenceable.toPageable());
         List<UserEntryQuery> dtoList = new ArrayList<>();
 
-        for (SubscriptionEntry e : query2) {
+        for (SearchableSubscriptionEntry e : pagedEntries.getContent()) {
             UserEntryQuery dto = new UserEntryQuery();
 
             if (!headingsOnly) {
-                dto.setContent(e.getFeedEntry().getContent());
+                dto.setContent(e.getContent());
             }
 
             dto.setCreatedAt(e.getCreatedAt());
-            dto.setFeedTitle(e.getSubscription().getTitle());
+            dto.setFeedTitle(e.getSubscriptionTitle());
             dto.setId(e.getId());
             dto.setTag(e.getTag());
-            dto.setTitle(e.getFeedEntry().getTitle());
+            dto.setTitle(e.getTitle());
             dto.setUnseen(!e.isSeen());
-            dto.setUrl(e.getFeedEntry().getUrl());
+            dto.setUrl(e.getUrl());
 
             if ("icon".equals(fl)) {
-                FeedIcon icon = e.getSubscription().getFeed().getIcon();
+                final Subscription one = subscriptionRepository.findOne(e.getSubscriptionId());
 
-                if (icon != null) {
-                    IconDto iconDto = new UserEntryQuery.IconDto(icon.getMimeType(), icon.getIcon());
-                    dto.setIcon(iconDto);
+                if(one != null) {
+                    FeedIcon icon = one.getFeed().getIcon();
+
+                    if (icon != null) {
+                        IconDto iconDto = new UserEntryQuery.IconDto(icon.getMimeType(), icon.getIcon());
+                        dto.setIcon(iconDto);
+                    }
                 }
             }
 

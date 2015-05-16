@@ -1,21 +1,20 @@
 package myreader.service.subscriptionentry.impl;
 
-import myreader.entity.SubscriptionEntry;
-import myreader.entity.User;
-import myreader.repository.SubscriptionEntryRepository;
-import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
-import myreader.service.subscriptionentry.SubscriptionEntryService;
-import myreader.service.user.UserService;
-import myreader.service.search.SubscriptionEntrySearchService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
+import myreader.entity.SubscriptionEntry;
+import myreader.entity.User;
+import myreader.repository.SubscriptionEntryRepository;
+import myreader.service.search.SubscriptionEntrySearchService;
+import myreader.service.subscriptionentry.SubscriptionEntryService;
+import myreader.service.user.UserService;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 @Transactional
 @Service
@@ -44,18 +43,6 @@ public class SubscriptionEntryServiceImpl implements SubscriptionEntryService {
         User currentUser = userService.getCurrentUser();
         List<String> tags = subscriptionEntryRepository.findDistinctTagsByUsername(currentUser.getEmail());
         return tags;
-    }
-
-    @Override
-    public List<SubscriptionEntry> search(SubscriptionEntrySearchQuery search) {
-        User currentUser = userService.getCurrentUser();
-        List<Long> ids = searchService.findByQueryAndUser(search, currentUser.getEmail());
-
-        if(ids.isEmpty()) {
-            return Collections.EMPTY_LIST;
-        } else {
-            return subscriptionEntryRepository.findAll(ids);
-        }
     }
 
     @Override

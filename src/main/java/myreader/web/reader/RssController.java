@@ -129,7 +129,7 @@ public class RssController {
     }
 
     @RequestMapping(value = "{collection:.+}", params = "entry")
-    public String entry(@PathVariable String collection, @RequestParam(required = false) Long offset, Long entry, Map<String, Object> model) {
+    public String entry(@PathVariable String collection, @RequestParam(required = false) Long offset, Long entry, Map<String, Object> model, Authentication authentication) {
         List<SubscriptionEntry> l = new ArrayList<>();
 
         if (entry == null) {
@@ -142,7 +142,7 @@ public class RssController {
 
             search.setLastId(offset);
 
-            final List<UserEntryQuery> feed = entryApi.feed(null, theCollection, true, search, null);
+            final List<UserEntryQuery> feed = entryApi.feed(null, theCollection, true, search, null, authentication);
 
             for (final UserEntryQuery userEntryQuery : feed) {
                 l.add(new SubscriptionEntry(userEntryQuery));
@@ -159,7 +159,7 @@ public class RssController {
 
     @RequestMapping("{collection:.+}")
     public String entries(@PathVariable String collection, @RequestParam(required = false) Long offset, @RequestParam(required = false) boolean showAll,
-                          Map<String, Object> model) {
+                          Map<String, Object> model, Authentication authentication) {
         List<SubscriptionEntry> l = new ArrayList<>();
         String theCollection = "all".equalsIgnoreCase(collection) ? null : collection;
 
@@ -172,7 +172,7 @@ public class RssController {
         search.setLastId(offset);
         search.setShowAll(showAll);
 
-        final List<UserEntryQuery> feed = entryApi.feed(theCollection, null, false, search, null);
+        final List<UserEntryQuery> feed = entryApi.feed(theCollection, null, false, search, null, authentication);
 
         for (final UserEntryQuery userEntryQuery : feed) {
             l.add(new SubscriptionEntry(userEntryQuery));
