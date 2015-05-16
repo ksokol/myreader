@@ -45,14 +45,14 @@ class SubscriptionEditController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    String editGet(@RequestParam(required = false) Long id, Map<String, Object> model) {
+    String editGet(@RequestParam(required = false) Long id, Map<String, Object> model, Authentication authentication) {
 
         if (id == null) {
             model.put("subscriptionEditForm", new SubscriptionEditForm());
         } else {
 
             try {
-                final SubscriptionDto subscriptionDto = subscriptionApi.findById(id);
+                final SubscriptionDto subscriptionDto = subscriptionApi.findById(id, authentication);
                 SubscriptionEditForm form = new SubscriptionEditForm(subscriptionDto);
                 model.put("subscriptionEditForm", form);
             } catch (EntityNotFoundException e) {

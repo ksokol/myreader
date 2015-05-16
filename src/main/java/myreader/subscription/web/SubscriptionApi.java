@@ -23,14 +23,17 @@ import myreader.entity.User;
 import myreader.fetcher.icon.IconUpdateRequestEvent;
 import myreader.repository.ExclusionRepository;
 import myreader.repository.FeedRepository;
+import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
 import myreader.service.EntityNotFoundException;
 import myreader.service.search.SubscriptionSearchService;
 import myreader.service.subscription.SubscriptionService;
+import spring.security.MyReaderUser;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,28 +65,28 @@ public class SubscriptionApi {
     private SubscriptionService subscriptionService;
 
     @Autowired
-    private SubscriptionSearchService subscriptionSearchService;
-
-    @Autowired
     private ExclusionRepository exclusionRepository;
 
     @Autowired
-    ApplicationEventPublisher publisher;
+    private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     public List<SubscriptionDto> test(boolean showAll, Authentication authentication) {
-        List<Subscription> l = subscriptionService.findAll();
-        Map<Long, Long> unseenCount = subscriptionSearchService.countUnseenEntriesByUser(authentication.getName());
-        List<SubscriptionDto> dtos = new ArrayList<SubscriptionDto>();
+        MyReaderUser user = (MyReaderUser) authentication.getPrincipal();
+        int count = 0;
+
+        if(showAll) {
+            count = -1;
+        }
+
+        final List<Subscription> l = subscriptionRepository.findAllByUserAndUnseenGreaterThan(user.getId(), count);
+        List<SubscriptionDto> dtos = new ArrayList<>();
 
         for (Subscription s : l) {
-            Long count = unseenCount.get(s.getId());
-
-            if(!showAll && (count == null || count == 0)) {
-                continue;
-            }
-
             SubscriptionDto dto = new SubscriptionDto();
 
             dto.setCreatedAt(s.getCreatedAt());
@@ -93,10 +96,7 @@ public class SubscriptionApi {
             dto.setTitle(s.getTitle());
             dto.setUrl(s.getFeed().getUrl());
             dto.setExclusions(Collections.EMPTY_LIST);
-
-            if(count != null) {
-                dto.setUnseen(count);
-            }
+            dto.setUnseen(s.getUnseen());
 
             dtos.add(dto);
         }
@@ -126,8 +126,12 @@ public class SubscriptionApi {
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     @ResponseBody
-    public SubscriptionDto findById(@PathVariable Long id) {
-        Subscription s = subscriptionService.findById(id);
+    public SubscriptionDto findById(@PathVariable Long id, Authentication authentication) {
+        Subscription s = subscriptionRepository.findByIdAndUsername(id, authentication.getName());
+
+        if(s == null) {
+            throw new EntityNotFoundException();
+        }
 
         SubscriptionDto dto = new SubscriptionDto();
         dto.setCreatedAt(s.getCreatedAt());
@@ -136,11 +140,9 @@ public class SubscriptionApi {
         dto.setTag(s.getTag());
         dto.setTitle(s.getTitle());
         dto.setUrl(s.getFeed().getUrl());
+        dto.setUnseen(s.getUnseen());
 
-        long l = subscriptionSearchService.countUnseenEntriesById(s.getId());
-        dto.setUnseen(l);
-
-        List<ExclusionPatternDto> expDtos = new ArrayList<ExclusionPatternDto>();
+        List<ExclusionPatternDto> expDtos = new ArrayList<>();
 
         for (ExclusionPattern ep : s.getExclusions()) {
             ExclusionPatternDto expDto = new ExclusionPatternDto();

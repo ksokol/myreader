@@ -45,11 +45,6 @@ public class SolrSubscriptionFields {
     }
 
 	@Deprecated
-    public static String ownerId(Long ownerId) {
-        return format(OWNER_ID, Long.valueOf(ownerId));
-    }
-
-	@Deprecated
     public static String feedId(Object feedId) {
         return format(FEED_ID, String.valueOf(feedId));
     }
