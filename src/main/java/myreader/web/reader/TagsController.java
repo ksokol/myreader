@@ -52,7 +52,7 @@ public class TagsController {
     }
 
     @ModelAttribute("treeNavigation")
-    TreeNavigation subscriptionList(Map<String, Object> model, HttpServletRequest servletRequest)
+    TreeNavigation subscriptionList(Map<String, Object> model, HttpServletRequest servletRequest, Authentication authentication)
             throws UnsupportedEncodingException {
         // http://tedyoung.me/2011/05/09/spring-mvc-optional-path-variables/
         @SuppressWarnings("unchecked")
@@ -68,7 +68,7 @@ public class TagsController {
         // TODO
         model.put("path", "web/tags");
 
-        Collection<String> tags = entryApi.distinct("tag");
+        Collection<String> tags = entryApi.distinct("tag", authentication);
         TreeNavigation nav = treeNavigationBuilder.build(tags);
 
         if (collection.equals(nav.getName())) {

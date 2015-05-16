@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.WebDataBinder;
@@ -54,10 +55,10 @@ class MobileController {
     }
 
     @RequestMapping(value = "entry/{collection:.+}", method = RequestMethod.GET, params = { "id" })
-    public String showEntryDetails(@RequestParam Long id, Map<String, Object> model) {
+    public String showEntryDetails(@RequestParam Long id, Map<String, Object> model, Authentication authentication) {
         final UserEntryQuery feed = entryApi.feed(id, true);
         SubscriptionEntry userEntry = new SubscriptionEntry(feed);
-        Collection<String> tags = entryApi.distinct("tag");
+        Collection<String> tags = entryApi.distinct("tag", authentication);
 
         model.put("tagList", tags);
         model.put("entry", userEntry);
