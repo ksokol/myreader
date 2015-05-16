@@ -1,7 +1,5 @@
 package myreader.service.subscriptionentry.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,13 +34,6 @@ public class SubscriptionEntryServiceImpl implements SubscriptionEntryService {
         User currentUser = userService.getCurrentUser();
         SubscriptionEntry entry = subscriptionEntryRepository.findByIdAndUsername(id, currentUser.getEmail());
         return entry;
-    }
-
-    @Override
-    public List<String> findDistinctTags() {
-        User currentUser = userService.getCurrentUser();
-        List<String> tags = subscriptionEntryRepository.findDistinctTagsByUsername(currentUser.getEmail());
-        return tags;
     }
 
     @Override

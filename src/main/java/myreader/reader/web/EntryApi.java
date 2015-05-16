@@ -14,6 +14,7 @@ import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.reader.web.UserEntryQuery.IconDto;
+import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.search.SubscriptionEntrySearchRepository;
 import myreader.service.subscription.SubscriptionService;
@@ -53,6 +54,8 @@ public class EntryApi {
     private SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+    @Autowired
+    private SubscriptionEntryRepository subscriptionEntryRepository;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
@@ -148,10 +151,10 @@ public class EntryApi {
 
     @RequestMapping(value = "", method = RequestMethod.GET, params = "distinct")
     @ResponseBody
-    public Collection<String> distinct(@RequestParam String distinct) {
+    public Collection<String> distinct(@RequestParam String distinct, Authentication authentication) {
         // TODO
         if ("tag".equals(distinct)) {
-            return subscriptionEntryService.findDistinctTags();
+            return subscriptionEntryRepository.findDistinctTagsByUsername(authentication.getName());
         } else if ("feed.tag".equals(distinct)) {
             List<Subscription> findAll = subscriptionService.findAll();
             SortedSet<String> set = new TreeSet<String>();

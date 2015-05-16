@@ -1,7 +1,5 @@
 package myreader.service.subscriptionentry;
 
-import java.util.List;
-
 import myreader.entity.SubscriptionEntry;
 
 /**
@@ -10,8 +8,6 @@ import myreader.entity.SubscriptionEntry;
 public interface SubscriptionEntryService {
 
     SubscriptionEntry findById(Long id);
-
-    List<String> findDistinctTags();
 
     void save(SubscriptionEntry subscriptionEntry);
 }
