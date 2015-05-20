@@ -37,10 +37,10 @@ import spring.data.domain.SequenceRequest;
 import spring.data.domain.Sequenceable;
 import spring.security.MyReaderUser;
 
-@Deprecated
 @Transactional
 @Controller
 @RequestMapping(API.V1 + "subscription/entry")
+@Deprecated
 public class EntryApi {
 
     @Autowired
@@ -174,6 +174,14 @@ public class EntryApi {
 
         if (map.containsKey("unseen")) {
             boolean unseen = Boolean.valueOf(map.get("unseen"));
+
+            if(unseen == subscriptionEntry.isSeen()) {
+                if (unseen){
+                    subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
+                } else {
+                    subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
+                }
+            }
 
             subscriptionEntry.setSeen(!unseen);
         }
