@@ -28,7 +28,7 @@
         </#if>
         <tbody>
             <#list entryList as entry>
-                <tr data-entry-id="${entry.id}" data-reader-unseen="${entry.unseen}">
+                <tr data-entry-id="${entry.id?string.computer}" data-reader-unseen="${entry.unseen}">
                     <td>
                         <#if queryString.showDetails>
                             <#assign showDetailsCssClass = "">
