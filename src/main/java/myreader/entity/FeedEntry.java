@@ -17,6 +17,10 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.search.annotations.Boost;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+
 @Entity
 @Table(name = "entry")
 public class FeedEntry implements Identifiable {
@@ -31,6 +35,7 @@ public class FeedEntry implements Identifiable {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Feed feed;
 
+    @Field(boost = @Boost(value = 0.5F))
     @Column(name = "entry_title")
     private String title;
 
@@ -40,9 +45,11 @@ public class FeedEntry implements Identifiable {
     @Column(name = "entry_url")
     private String url;
 
+    @Field
     @Column(name = "entry_content", columnDefinition = "text")
     private String content;
 
+    @ContainedIn
     @OneToMany(mappedBy = "feedEntry")
     private List<SubscriptionEntry> subscriptionEntries;
 

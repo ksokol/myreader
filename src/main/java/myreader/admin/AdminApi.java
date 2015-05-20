@@ -4,14 +4,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import myreader.API;
-import myreader.dto.FeedQueryDto;
-import myreader.entity.Feed;
-import myreader.fetcher.FeedQueue;
-import myreader.fetcher.icon.IconUpdateRequestEvent;
-import myreader.repository.FeedRepository;
-import myreader.service.IndexSyncEvent;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -22,6 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import myreader.API;
+import myreader.dto.FeedQueryDto;
+import myreader.entity.Feed;
+import myreader.fetcher.FeedQueue;
+import myreader.fetcher.icon.IconUpdateRequestEvent;
+import myreader.repository.FeedRepository;
+import myreader.service.search.events.IndexSyncEvent;
 
 @Deprecated
 @PreAuthorize("hasRole('ROLE_ADMIN')")

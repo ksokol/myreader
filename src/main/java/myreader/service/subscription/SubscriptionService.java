@@ -9,15 +9,9 @@ import myreader.entity.Subscription;
  */
 public interface SubscriptionService {
 
-    void delete(Long id);
-
     List<Subscription> findAll();
 
     Subscription findById(Long id);
-
-    List<Subscription> findByTag(String tag);
-
-    List<Subscription> findByTitle(String title);
 
     Subscription findByUrl(String url);
 

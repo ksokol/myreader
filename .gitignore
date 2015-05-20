@@ -1,5 +1,4 @@
 target
 logs
-myreader-solr
-src/main/resources/solr/core1/data
 tmp
+data

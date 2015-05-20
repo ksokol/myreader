@@ -14,12 +14,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import myreader.test.IntegrationTestSupport;
 
 /**
  * @author Kamill Sokol
  */
+@Transactional
 public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupport {
 
     @Test

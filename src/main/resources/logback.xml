@@ -32,10 +32,6 @@
         <appender-ref ref="FILE" />
     </logger>
 
-    <logger name="org.apache.solr" additivity="false" level="WARN">
-        <appender-ref ref="FILE" />
-    </logger>
-
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>

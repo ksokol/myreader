@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import myreader.dto.SubscriptionDto;
+import myreader.entity.Subscription;
+import myreader.repository.SubscriptionRepository;
 import myreader.service.EntityNotFoundException;
 import myreader.subscription.web.SubscriptionApi;
 
@@ -31,6 +33,9 @@ class SubscriptionEditController {
 
     @Autowired
     private SubscriptionApi subscriptionApi;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
     @ModelAttribute("isNew")
     boolean model(@RequestParam(required = false) Long id) {
@@ -113,8 +118,14 @@ class SubscriptionEditController {
     }
 
     @RequestMapping(method = RequestMethod.GET, params = "delete")
-    String delete(@ModelAttribute("subscriptionEditForm") SubscriptionEditForm subscriptionEditForm, RedirectAttributes flash) {
-        subscriptionApi.delete(subscriptionEditForm.getId());
+    String delete(@ModelAttribute("subscriptionEditForm") SubscriptionEditForm subscriptionEditForm, RedirectAttributes flash, Authentication authentication) {
+        final Subscription subscription = subscriptionRepository.findByIdAndUsername(subscriptionEditForm.getId(), authentication.getName());
+
+        if (subscription == null) {
+            throw new EntityNotFoundException();
+        }
+
+        subscriptionRepository.delete(subscription);
         flash.addFlashAttribute("flash", "Subscription deleted");
         return "redirect:/web/subscription";
     }

@@ -1,6 +1,6 @@
 package myreader.web.taglib;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 
 import java.util.Date;
 

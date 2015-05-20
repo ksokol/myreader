@@ -1,7 +1,6 @@
 package myreader.entity;
 
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,26 +14,40 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.search.annotations.Boost;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.NumericField;
+
+@Indexed
 @Entity
 @Table(name = "user_feed_entry")
 public class SubscriptionEntry implements Identifiable {
 
+    @DocumentId
+    @NumericField(precisionStep = 0)
     @Id
     @TableGenerator(name = "user_feed_entry_id_generator", table = "primary_keys")
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_feed_entry_id_generator")
     @Column(name = "user_feed_entry_id")
     private Long id;
 
+    @Field
     @Column(name = "user_feed_entry_is_read")
     private boolean seen;
 
+    @Field(boost = @Boost(value = 0.5F))
     @Column(name = "user_feed_entry_tag")
     private String tag;
 
+    @IndexedEmbedded
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_feed_entry_user_feed_id")
     private Subscription subscription;
 
+    @IndexedEmbedded
     @ManyToOne(optional = false,fetch = FetchType.LAZY)
     @JoinColumn(name = "user_feed_entry_entry_id")
     private FeedEntry feedEntry;

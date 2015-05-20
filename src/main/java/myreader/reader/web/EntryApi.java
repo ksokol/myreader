@@ -10,21 +10,15 @@ import java.util.TreeSet;
 
 import myreader.API;
 import myreader.entity.FeedIcon;
-import myreader.entity.SearchableSubscriptionEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.reader.web.UserEntryQuery.IconDto;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
-import myreader.service.search.SubscriptionEntrySearchRepository;
 import myreader.service.subscription.SubscriptionService;
 import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
 import myreader.service.subscriptionentry.SubscriptionEntryService;
-import spring.data.domain.SequenceRequest;
-import spring.data.domain.Sequenceable;
-import spring.security.MyReaderUser;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
@@ -39,6 +33,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import spring.data.domain.SequenceRequest;
+import spring.data.domain.Sequenceable;
+import spring.security.MyReaderUser;
+
 @Deprecated
 @Transactional
 @Controller
@@ -47,11 +45,8 @@ public class EntryApi {
 
     @Autowired
     private SubscriptionService subscriptionService;
-
     @Autowired
     private SubscriptionEntryService subscriptionEntryService;
-    @Autowired
-    private SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
     @Autowired
     private SubscriptionRepository subscriptionRepository;
     @Autowired
@@ -64,9 +59,9 @@ public class EntryApi {
             SubscriptionEntrySearchQuery query, @RequestParam(required = false) String fl, Authentication authentication) {
         MyReaderUser user = (MyReaderUser) authentication.getPrincipal();
 
-        String feedUuidEqual = "*";
-        String feedTagEqual = "*";
-        String seenEqual = "*";
+        String feedUuidEqual = null;
+        String feedTagEqual = null;
+        String seenEqual = null;
         String q = query.getQ() == null ? "*" : query.getQ();
 
         if(feedTag != null) {
@@ -89,26 +84,26 @@ public class EntryApi {
             sequenceable = new SequenceRequest(10, Long.MAX_VALUE);
         }
 
-        Slice<SearchableSubscriptionEntry> pagedEntries = subscriptionEntrySearchRepository.findBy(q, user.getId(), feedUuidEqual, feedTagEqual,  seenEqual, sequenceable.getNext(), sequenceable.toPageable());
+        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(q, user.getId(), feedUuidEqual, feedTagEqual,  seenEqual, sequenceable.getNext(), sequenceable.toPageable());
         List<UserEntryQuery> dtoList = new ArrayList<>();
 
-        for (SearchableSubscriptionEntry e : pagedEntries.getContent()) {
+        for (SubscriptionEntry e : pagedEntries.getContent()) {
             UserEntryQuery dto = new UserEntryQuery();
 
             if (!headingsOnly) {
-                dto.setContent(e.getContent());
+                dto.setContent(e.getFeedEntry().getContent());
             }
 
             dto.setCreatedAt(e.getCreatedAt());
-            dto.setFeedTitle(e.getSubscriptionTitle());
+            dto.setFeedTitle(e.getSubscription().getTitle());
             dto.setId(e.getId());
             dto.setTag(e.getTag());
-            dto.setTitle(e.getTitle());
+            dto.setTitle(e.getFeedEntry().getTitle());
             dto.setUnseen(!e.isSeen());
-            dto.setUrl(e.getUrl());
+            dto.setUrl(e.getFeedEntry().getUrl());
 
             if ("icon".equals(fl)) {
-                final Subscription one = subscriptionRepository.findOne(e.getSubscriptionId());
+                final Subscription one = e.getSubscription();
 
                 if(one != null) {
                     FeedIcon icon = one.getFeed().getIcon();

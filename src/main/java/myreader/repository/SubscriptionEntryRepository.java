@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author Kamill Sokol
  */
-public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionEntry, Long> {
+public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionEntry, Long>, SubscriptionEntryRepositoryCustom {
 
     @Query("select se from SubscriptionEntry se join fetch se.subscription join fetch se.feedEntry where se.id = ?1 and se.subscription.user.email = ?2")
     SubscriptionEntry findByIdAndUsername(Long id, String username);

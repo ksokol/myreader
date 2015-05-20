@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
@@ -14,7 +13,6 @@ import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
 import myreader.service.EntityNotFoundException;
 import myreader.service.feed.FeedService;
-import myreader.service.search.SubscriptionSearchService;
 import myreader.service.subscription.SubscriptionExistException;
 import myreader.service.subscription.SubscriptionService;
 import myreader.service.time.TimeService;
@@ -29,31 +27,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserService userService;
     private final UserRepository userRepository;
-    private final SubscriptionSearchService subscriptionSearchService;
     private final FeedService feedService;
     private final TimeService timeService;
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, UserRepository userRepository, SubscriptionSearchService subscriptionSearchService, FeedService feedService, TimeService timeService) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, UserRepository userRepository, FeedService feedService, TimeService timeService) {
         this.subscriptionRepository = subscriptionRepository;
         this.userService = userService;
         this.userRepository = userRepository;
-        this.subscriptionSearchService = subscriptionSearchService;
         this.feedService = feedService;
         this.timeService = timeService;
-    }
-
-    @Override
-    public void delete(Long id) {
-        User currentUser = userService.getCurrentUser();
-        Subscription subscription = subscriptionRepository.findByIdAndUsername(id, currentUser.getEmail());
-
-        if(subscription == null) {
-            throw new EntityNotFoundException();
-        }
-
-        subscriptionRepository.delete(subscription.getId());
-        subscriptionSearchService.delete(subscription.getId());
     }
 
     @Override
@@ -74,20 +57,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
 
         return subscription;
-    }
-
-    @Override
-    public List<Subscription> findByTag(String tag) {
-        Assert.notNull(tag);
-        User currentUser = userService.getCurrentUser();
-        return subscriptionRepository.findByTagAndUsername(tag, currentUser.getEmail());
-    }
-
-    @Override
-    public List<Subscription> findByTitle(final String title) {
-        Assert.notNull(title);
-        User currentUser = userService.getCurrentUser();
-        return subscriptionRepository.findByTitleAndUsername(title, currentUser.getEmail());
     }
 
     @Override

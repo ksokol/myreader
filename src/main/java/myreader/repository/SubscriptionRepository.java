@@ -23,9 +23,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query("select s from Subscription s where s.feed.url = ?1")
     List<Subscription> findByUrl(String url);
 
-    @Deprecated
-    @Query("select s from Subscription s join fetch s.feed where s.tag = ?1 and s.user.email = ?2")
-    List<Subscription> findByTagAndUsername(String tag, String username);
+    @Query(value="select s from Subscription s join fetch s.feed where s.user.id = ?1 and s.unseen > ?2")
+    List<Subscription> findAllByUserAndUnseenGreaterThan(Long id, Integer unseenCount);
 
     @Deprecated
     @Query("select s from Subscription s join fetch s.feed where s.title = ?1 and s.user.email = ?2")
@@ -33,9 +32,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     @Query("select s from Subscription s join fetch s.feed where s.user.id = ?1")
     List<Subscription> findByUser(Long id);
-
-    @Query(value="select s from Subscription s join fetch s.feed where s.user.id = ?1 and s.unseen > ?2")
-    List<Subscription> findAllByUserAndUnseenGreaterThan(Long id, Integer unseenCount);
 
     @Query("select s from Subscription s join fetch s.feed where s.id = ?1 and s.user.email = ?2")
     Subscription findByIdAndUsername(Long id, String username);

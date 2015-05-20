@@ -1,7 +1,6 @@
 package myreader.entity;
 
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,10 +9,18 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.bridge.builtin.LongBridge;
+
 @Entity
 @Table(name = "user")
 public class User implements Identifiable {
 
+    @FieldBridge(impl = LongBridge.class)
+    @Field(name = "userId", index = Index.YES)
     @Id
     @Column(name = "user_id")
     private Long id;
@@ -27,6 +34,7 @@ public class User implements Identifiable {
     @Column(name = "user_password")
     private String password;
 
+    @ContainedIn
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Set<Subscription> subscriptions;
 

@@ -5,19 +5,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
-
-import myreader.entity.SearchableSubscriptionEntry;
-import myreader.entity.SubscriptionEntry;
-import myreader.repository.SubscriptionEntryRepository;
-import myreader.repository.SubscriptionRepository;
-import myreader.resource.RestControllerSupport;
-import myreader.resource.service.patch.PatchService;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
-import myreader.service.search.SubscriptionEntrySearchRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
@@ -29,6 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import myreader.entity.SubscriptionEntry;
+import myreader.repository.SubscriptionEntryRepository;
+import myreader.repository.SubscriptionRepository;
+import myreader.resource.RestControllerSupport;
+import myreader.resource.service.patch.PatchService;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import spring.data.domain.Sequenceable;
 import spring.hateoas.ResourceAssemblers;
 import spring.hateoas.SequencedResources;
@@ -43,27 +39,25 @@ public class SubscriptionEntryCollectionResource extends RestControllerSupport {
 
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
-	private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
     private final PatchService patchService;
 
     @Autowired
-    public SubscriptionEntryCollectionResource(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, final PatchService patchService, ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository) {
+    public SubscriptionEntryCollectionResource(SubscriptionEntryRepository subscriptionEntryRepository, final PatchService patchService, ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository) {
         super(resourceAssemblers);
         this.subscriptionEntryRepository = subscriptionEntryRepository;
-		this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
         this.patchService = patchService;
         this.subscriptionRepository = subscriptionRepository;
     }
 
     @RequestMapping(method = GET)
-    public SequencedResources<SubscriptionEntryGetResponse> get(@RequestParam(value = "q", defaultValue = "*") String q,
-                                                                @RequestParam(value = "feedUuidEqual", defaultValue = "*") String feedUuidEqual,
-                                                                @RequestParam(value = "seenEqual", defaultValue = "*") String seenEqual,
-                                                                @RequestParam(value = "feedTagEqual", defaultValue = "*") String feedTagEqual,
+    public SequencedResources<SubscriptionEntryGetResponse> get(@RequestParam(value = "q", required = false) String q,
+                                                                @RequestParam(value = "feedUuidEqual", required = false) String feedUuidEqual,
+                                                                @RequestParam(value = "seenEqual", required = false) String seenEqual,
+                                                                @RequestParam(value = "feedTagEqual", required = false) String feedTagEqual,
                                                                 Sequenceable sequenceable,
                                                                 @AuthenticationPrincipal MyReaderUser user) {
 
-        Slice<SearchableSubscriptionEntry> pagedEntries = subscriptionEntrySearchRepository.findBy(q, user.getId(), feedUuidEqual, feedTagEqual,  seenEqual, sequenceable.getNext(), sequenceable.toPageable());
+        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(q, user.getId(), feedUuidEqual, feedTagEqual,  seenEqual, sequenceable.getNext(), sequenceable.toPageable());
         return resourceAssemblers.toResource(toSequence(sequenceable, pagedEntries.getContent()), SubscriptionEntryGetResponse.class);
     }
 

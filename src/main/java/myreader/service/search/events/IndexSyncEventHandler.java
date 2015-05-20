@@ -1,8 +1,8 @@
 package myreader.service.search.events;
 
-import myreader.service.IndexSyncEvent;
-import myreader.service.search.jobs.IndexSyncJob;
 import org.springframework.context.ApplicationListener;
+
+import myreader.service.search.jobs.IndexSyncJob;
 
 /**
  * @author Kamill Sokol

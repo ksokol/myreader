@@ -26,14 +26,11 @@ import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
 import myreader.service.EntityNotFoundException;
-import myreader.service.search.SubscriptionSearchService;
 import myreader.service.subscription.SubscriptionService;
-import spring.security.MyReaderUser;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +39,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import spring.security.MyReaderUser;
 
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
@@ -158,8 +157,12 @@ public class SubscriptionApi {
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseBody
-    public void delete(@PathVariable Long id) {
-        subscriptionService.delete(id);
+    public void delete(@PathVariable Long id, Authentication authentication) {
+        final Subscription subscription = subscriptionRepository.findByIdAndUsername(id, authentication.getName());
+
+        if(subscription != null) {
+            subscriptionRepository.delete(subscription);
+        }
     }
 
     @SuppressWarnings("rawtypes")

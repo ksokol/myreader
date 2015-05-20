@@ -1,24 +1,23 @@
 package myreader.service.search.jobs;
 
-import java.util.List;
+import javax.persistence.EntityManager;
 
-import myreader.entity.SearchableSubscriptionEntry;
-import myreader.entity.SubscriptionEntry;
-import myreader.repository.SubscriptionEntryRepository;
-import myreader.service.search.SubscriptionEntrySearchRepository;
-
+import org.hibernate.CacheMode;
+import org.hibernate.FlushMode;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
+import org.hibernate.search.FullTextSession;
+import org.hibernate.search.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
+
+import myreader.entity.SubscriptionEntry;
 
 /**
  * TODO IndexSyncJob and SyndFetcherJob should be running exclusively. this prevents duplicate entries in index
@@ -26,20 +25,18 @@ import org.springframework.util.Assert;
  * @author Kamill Sokol
  */
 public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosedEvent> {
-    private static final Logger log = LoggerFactory.getLogger(IndexSyncJob.class);
 
-    private int pageSize = 1000;
-    private final SubscriptionEntryRepository subscriptionEntryRepository;
-	private final SubscriptionEntrySearchRepository subscriptionEntrySearchRepository;
-	private final ConversionService conversionService;
+    private static final Logger LOG = LoggerFactory.getLogger(IndexSyncJob.class);
+
+    private static final int BATCH_SIZE = 100;
+
     private final TransactionTemplate transactionTemplate;
+    private final EntityManager em;
 
     private volatile boolean alive = true;
 
-    public IndexSyncJob(SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchRepository subscriptionEntrySearchRepository, ConversionService conversionService, TransactionTemplate transactionTemplate) {
-        this.subscriptionEntryRepository = subscriptionEntryRepository;
-		this.subscriptionEntrySearchRepository = subscriptionEntrySearchRepository;
-		this.conversionService = conversionService;
+    public IndexSyncJob(EntityManager em, TransactionTemplate transactionTemplate) {
+        this.em = em;
         this.transactionTemplate = transactionTemplate;
     }
 
@@ -48,7 +45,7 @@ public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosed
 		try {
 			runInternal();
 		} catch (Exception e) {
-			log.error("error during index sync", e);
+			LOG.error("error during index sync", e);
 		}
 	}
 
@@ -56,44 +53,39 @@ public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosed
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                log.info("start");
-                subscriptionEntrySearchRepository.deleteAll();
+            LOG.info("start");
 
-                int pageNumber = 0;
-                Page<SubscriptionEntry> page;
-                List<SearchableSubscriptionEntry> converted;
+            final Session session = (Session) em.getDelegate();
+            FullTextSession fullTextSession = Search.getFullTextSession(session);
+            fullTextSession.setFlushMode(FlushMode.MANUAL);
+            fullTextSession.setCacheMode(CacheMode.IGNORE);
 
-                do {
-                    page = subscriptionEntryRepository.findAll(new PageRequest(pageNumber++, pageSize));
-                    converted = convert(page.getContent());
-                    subscriptionEntrySearchRepository.save(converted);
-                } while(page.hasNext() && alive);
+            //Scrollable results will avoid loading too many objects in memory
+            ScrollableResults results = fullTextSession.createCriteria(SubscriptionEntry.class).setFetchSize(BATCH_SIZE).scroll(ScrollMode.FORWARD_ONLY);
+            int index = 0;
+            while (results.next() && alive) {
+                index++;
+                fullTextSession.index(results.get(0)); //index each element
 
+                if (index % BATCH_SIZE == 0) {
+                    LOG.info("index {} items", index);
+                    fullTextSession.flushToIndexes(); //apply changes to indexes
+                    fullTextSession.clear(); //free memory since the queue is processed
+                }
+            }
 
-                log.info("search index sync done");
-                log.info("end");
+            fullTextSession.flushToIndexes(); //apply changes to indexes
+            fullTextSession.clear(); //free memory since the queue is processed
+
+            LOG.info("search index sync done");
+            LOG.info("end");
             }
         });
     }
 
-	public int getPageSize() {
-		return pageSize;
-	}
-
-	public void setPageSize(int pageSize) {
-		Assert.isTrue(pageSize > 0);
-		this.pageSize = pageSize;
-	}
-
-	private List<SearchableSubscriptionEntry> convert(List<SubscriptionEntry> source) {
-		TypeDescriptor sourceType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(SubscriptionEntry.class));
-		TypeDescriptor targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(SearchableSubscriptionEntry.class));
-		return (List<SearchableSubscriptionEntry>) conversionService.convert(source, sourceType, targetType);
-	}
-
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
-        log.info("got stop signal");
+        LOG.info("got stop signal");
         alive = false;
     }
 }

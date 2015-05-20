@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.User;
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.service.search.SubscriptionEntrySearchService;
 import myreader.service.subscriptionentry.SubscriptionEntryService;
 import myreader.service.user.UserService;
 
@@ -20,13 +19,11 @@ public class SubscriptionEntryServiceImpl implements SubscriptionEntryService {
 
     private final UserService userService;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
-    private final SubscriptionEntrySearchService searchService;
 
     @Autowired
-    public SubscriptionEntryServiceImpl(UserService userService, SubscriptionEntryRepository subscriptionEntryRepository, SubscriptionEntrySearchService searchService) {
+    public SubscriptionEntryServiceImpl(UserService userService, SubscriptionEntryRepository subscriptionEntryRepository) {
         this.userService = userService;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
-        this.searchService = searchService;
     }
 
     @Override
@@ -39,6 +36,5 @@ public class SubscriptionEntryServiceImpl implements SubscriptionEntryService {
     @Override
     public void save(SubscriptionEntry subscriptionEntry) {
         subscriptionEntryRepository.save(subscriptionEntry);
-        searchService.save(subscriptionEntry);
     }
 }

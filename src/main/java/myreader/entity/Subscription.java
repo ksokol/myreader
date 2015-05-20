@@ -17,10 +17,20 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.bridge.builtin.LongBridge;
+
 @Entity
 @Table(name = "user_feed")
 public class Subscription implements Identifiable {
 
+    @FieldBridge(impl = LongBridge.class)
+    @Field(name = "subscriptionId", index = Index.YES)
     @Id
     @GeneratedValue
     @Column(name = "user_feed_id")
@@ -29,9 +39,11 @@ public class Subscription implements Identifiable {
     @Column(name = "user_feed_title")
     private String title;
 
+    @Field(analyze = Analyze.NO)
     @Column(name = "user_feed_tag")
     private String tag;
 
+    @IndexedEmbedded
     @JoinColumn(name = "user_feed_user_id")
     @ManyToOne(optional = false)
     private User user;
@@ -50,6 +62,7 @@ public class Subscription implements Identifiable {
     @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
     private Feed feed;
 
+    @ContainedIn
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
     private Set<SubscriptionEntry> subscriptionEntries;
 
