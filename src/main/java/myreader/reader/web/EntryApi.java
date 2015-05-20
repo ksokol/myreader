@@ -79,7 +79,7 @@ public class EntryApi {
 
         Sequenceable sequenceable;
         if(query.getLastId() != null) {
-            sequenceable = new SequenceRequest(10, query.getLastId());
+            sequenceable = new SequenceRequest(10, query.getLastId() -1);
         } else {
             sequenceable = new SequenceRequest(10, Long.MAX_VALUE);
         }
@@ -118,7 +118,13 @@ public class EntryApi {
             dtoList.add(dto);
         }
 
-        return dtoList;
+        final ArrayList<UserEntryQuery> newList = new ArrayList<>(10);
+
+        if(dtoList.size() > 10) {
+            newList.addAll(dtoList.subList(0, 10));
+        }
+
+        return newList;
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
