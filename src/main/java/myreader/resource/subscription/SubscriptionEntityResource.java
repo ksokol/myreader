@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
-import myreader.resource.RestControllerSupport;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
@@ -27,15 +26,16 @@ import spring.security.MyReaderUser;
 @Transactional
 @RestController
 @RequestMapping(value = "/subscriptions/{id}")
-public class SubscriptionEntityResource extends RestControllerSupport {
+public class SubscriptionEntityResource {
 
+    private final ResourceAssemblers resourceAssemblers;
     private final SubscriptionRepository subscriptionRepository;
     private final PatchService patchService;
 
     @Autowired
-    public SubscriptionEntityResource(SubscriptionRepository subscriptionService, PatchService patchService, ResourceAssemblers resourceAssemblers) {
-        super(resourceAssemblers);
-        this.subscriptionRepository = subscriptionService;
+    public SubscriptionEntityResource(final ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository, final PatchService patchService) {
+        this.resourceAssemblers = resourceAssemblers;
+        this.subscriptionRepository = subscriptionRepository;
         this.patchService = patchService;
     }
 

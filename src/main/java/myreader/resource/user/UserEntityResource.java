@@ -1,10 +1,5 @@
 package myreader.resource.user;
 
-import myreader.entity.User;
-import myreader.repository.UserRepository;
-import myreader.resource.RestControllerSupport;
-import myreader.resource.exception.ResourceNotFoundException;
-import myreader.resource.user.beans.UserGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,6 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import myreader.entity.User;
+import myreader.repository.UserRepository;
+import myreader.resource.exception.ResourceNotFoundException;
+import myreader.resource.user.beans.UserGetResponse;
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
 
@@ -20,13 +20,14 @@ import spring.security.MyReaderUser;
  */
 @RestController
 @RequestMapping(value= "/users")
-public class UserEntityResource extends RestControllerSupport {
+public class UserEntityResource {
 
+    private final ResourceAssemblers resourceAssemblers;
     private final UserRepository userRepository;
 
     @Autowired
-    public UserEntityResource(UserRepository userRepository, ResourceAssemblers resourceAssemblers) {
-        super(resourceAssemblers);
+    public UserEntityResource(final ResourceAssemblers resourceAssemblers, final UserRepository userRepository) {
+        this.resourceAssemblers = resourceAssemblers;
         this.userRepository = userRepository;
     }
 

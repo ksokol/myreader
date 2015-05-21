@@ -4,7 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.validation.Valid;
+
+import myreader.entity.Subscription;
+import myreader.repository.SubscriptionRepository;
+import myreader.resource.subscription.beans.SubscribePostRequest;
+import myreader.resource.subscription.beans.SubscriptionGetResponse;
+import myreader.service.subscription.SubscriptionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
@@ -14,12 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import myreader.entity.Subscription;
-import myreader.repository.SubscriptionRepository;
-import myreader.resource.RestControllerSupport;
-import myreader.resource.subscription.beans.SubscribePostRequest;
-import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import myreader.service.subscription.SubscriptionService;
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
 
@@ -28,14 +29,15 @@ import spring.security.MyReaderUser;
  */
 @RestController
 @RequestMapping(value = "/subscriptions")
-public class SubscriptionCollectionResource extends RestControllerSupport {
+public class SubscriptionCollectionResource {
 
+    private final ResourceAssemblers resourceAssemblers;
 	private final SubscriptionService subscriptionService;
     private final SubscriptionRepository subscriptionRepository;
 
     @Autowired
-    public SubscriptionCollectionResource(SubscriptionService subscriptionService, SubscriptionRepository subscriptionRepository, ResourceAssemblers resourceAssemblers) {
-        super(resourceAssemblers);
+    public SubscriptionCollectionResource(final ResourceAssemblers resourceAssemblers, final SubscriptionService subscriptionService, final SubscriptionRepository subscriptionRepository) {
+        this.resourceAssemblers = resourceAssemblers;
         this.subscriptionService = subscriptionService;
         this.subscriptionRepository = subscriptionRepository;
     }

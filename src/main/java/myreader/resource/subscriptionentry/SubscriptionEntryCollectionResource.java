@@ -12,19 +12,23 @@ import org.springframework.data.domain.Slice;
 import org.springframework.hateoas.Resources;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import myreader.entity.Identifiable;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
-import myreader.resource.RestControllerSupport;
 import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
+import spring.data.domain.Sequence;
+import spring.data.domain.SequenceImpl;
+import spring.data.domain.SequenceRequest;
 import spring.data.domain.Sequenceable;
 import spring.hateoas.ResourceAssemblers;
 import spring.hateoas.SequencedResources;
@@ -35,18 +39,19 @@ import spring.security.MyReaderUser;
  */
 @RestController
 @RequestMapping(value = "/subscriptionEntries")
-public class SubscriptionEntryCollectionResource extends RestControllerSupport {
+public class SubscriptionEntryCollectionResource {
 
+    private final ResourceAssemblers resourceAssemblers;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final PatchService patchService;
 
     @Autowired
-    public SubscriptionEntryCollectionResource(SubscriptionEntryRepository subscriptionEntryRepository, final PatchService patchService, ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository) {
-        super(resourceAssemblers);
+    public SubscriptionEntryCollectionResource(final ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository, final SubscriptionEntryRepository subscriptionEntryRepository, final PatchService patchService) {
+        this.resourceAssemblers = resourceAssemblers;
+        this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
         this.patchService = patchService;
-        this.subscriptionRepository = subscriptionRepository;
     }
 
     @RequestMapping(method = GET)
@@ -87,6 +92,22 @@ public class SubscriptionEntryCollectionResource extends RestControllerSupport {
         }
 
         return new Resources<>(subscriptionEntryGetResponses);
+    }
+
+    private static <T extends Identifiable> Sequence<T> toSequence(final Sequenceable sequenceable, final List<T> content) {
+        Assert.notNull(content, "Content must not be null!");
+        Assert.notNull(sequenceable, "Sliceable must not be null!");
+        boolean hasNext = content.size() == (sequenceable.getPageSize() + 1);
+
+        if(!hasNext) {
+            return new SequenceImpl<>(content);
+        }
+
+        Identifiable last = content.get(content.size() - 1);
+        List<T> withoutLast = content.subList(0, content.size() - 1);
+
+        Sequenceable request = new SequenceRequest(sequenceable.getPageSize(), last.getId());
+        return new SequenceImpl<>(withoutLast, request);
     }
 
 }
