@@ -54,12 +54,12 @@ angular.module('myreader', ['common.services', 'common.controllers', 'common.dir
             controller: 'SubscriptionNavigationCtrl'
         })
         .state('entries-tags', {
-            url: "/entries/:tag",
+            url: "/tag/entries/:tag",
             templateUrl: 'SubscriptionEntries',
             controller: 'SubscriptionEntryListCtrl'
         })
         .state('entries-subscription', {
-            url: "/entries/:uuid",
+            url: "/subscription/entries/:uuid",
             templateUrl: 'SubscriptionEntries',
             controller: 'SubscriptionEntryListCtrl'
         })

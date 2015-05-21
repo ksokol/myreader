@@ -70,7 +70,7 @@
                 </tr>
             </table>
 
-            <input class="read-button" type="submit" value="mark as read" ng-click="markAsRead()">
+            <input class="read-button" type="submit" value="mark as read" ng-click="markAsRead()" ng-show="data.length > 0">
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntry">
