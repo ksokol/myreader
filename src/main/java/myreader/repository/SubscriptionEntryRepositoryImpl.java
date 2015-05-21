@@ -4,7 +4,14 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import myreader.entity.SubscriptionEntry;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.ChainedFilter;
@@ -23,7 +30,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
-import myreader.entity.SubscriptionEntry;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 
 /**
 * @author Kamill Sokol
@@ -39,6 +47,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     private static final String SEEN = "seen";
     private static final String SUBSCRIPTION_TAG = "subscription.tag";
     private static final String ID = "id";
+    private static final Pattern TAG_SPLIT_PATTERN = Pattern.compile("( |,)");
 
     private final EntityManager em;
 
@@ -91,6 +100,23 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         fullTextQuery.setSort(new Sort(new SortField(ID, SortField.Type.LONG, true)));
 
         return new SliceImpl<>(fullTextQuery.getResultList());
+    }
+
+    @Override
+    public Set<String> findDistinctTags(final Long userId) {
+        final TypedQuery<String> query = em.createQuery("select distinct(se.tag) from SubscriptionEntry as se where se.subscription.user.id = :id and se.tag is not null", String.class);
+
+        query.setParameter("id", userId);
+
+        final List<String> resultList = query.getResultList();
+        final Set<String> distinctTags = new TreeSet<>();
+
+        for (final String distinctTag : resultList) {
+            final Iterable<String> splitted = Splitter.on(TAG_SPLIT_PATTERN).trimResults().omitEmptyStrings().split(distinctTag);
+            Iterables.addAll(distinctTags, splitted);
+        }
+
+        return distinctTags;
     }
 
     private void addFilter(final String fieldName, final String fieldValue, final List<Filter> filters) {
