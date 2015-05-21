@@ -12,6 +12,7 @@ angular.module('common.services', ['common.api'])
 
 .service('subscriptionEntryService', ['api', function(api) {
      var url = '/myreader/api/2/subscriptionEntries?';
+     var url2 = '/myreader/api/2/subscriptionEntries';
 
     return {
         findBy: function(params) {
@@ -19,10 +20,16 @@ angular.module('common.services', ['common.api'])
             for(key in params) {
                 tmp += "&" + key + "=" + params[key]
             }
-            return api.get('subscriptionEntry', tmp);
+            return api.get('subscriptionEntries', tmp);
         },
         updateEntries: function(entries) {
-            return api.patch('subscriptionEntry', url, entries);
+            return api.patch('subscriptionEntries', url, entries);
+        },
+        findOne: function(id) {
+            return api.get('subscriptionEntry', url2 + '/' + id);
+        },
+        save: function(entry) {
+            return api.patch('subscriptionEntry', url2 + '/' + entry.uuid, entry);
         }
     }
 }]);

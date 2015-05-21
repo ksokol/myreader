@@ -1,4 +1,4 @@
-package myreader.resource.subscriptionentry.assembler;
+package myreader.resource.subscriptionentry.converter;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -15,23 +15,23 @@ import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionEntryGetResponseAssemblerTest {
+public class SubscriptionEntryGetResponseConverterTest {
 
-    private SubscriptionEntryGetResponseAssembler uut;
+    private SubscriptionEntryGetResponseConverter uut;
 
     @Before
     public void setUp() throws Exception {
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockHttpServletRequest));
-        uut = new SubscriptionEntryGetResponseAssembler();
+        uut = new SubscriptionEntryGetResponseConverter();
     }
 
     @Test
     public void testNpe() throws Exception {
         SubscriptionEntry entry = new SubscriptionEntry();
-        SubscriptionEntryGetResponse response = uut.toResource(entry);
-        assertThat(response.getLink("origin"), nullValue());
-        assertThat(response.getLink("subscription"), nullValue());
+        SubscriptionEntryGetResponse response = uut.convert(entry);
+        assertThat(response.getOrigin(), nullValue());
+        assertThat(response.getFeedTitle(), nullValue());
         assertThat(response.getTitle(), nullValue());
         assertThat(response.getContent(), nullValue());
         assertThat(response.getFeedTitle(), nullValue());

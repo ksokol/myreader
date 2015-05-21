@@ -334,5 +334,10 @@
             <artifactId>angular-ui-router</artifactId>
             <version>0.2.13</version>
         </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>ui-router-extras</artifactId>
+            <version>0.0.13</version>
+        </dependency>
     </dependencies>
 </project>

@@ -32,7 +32,7 @@ angular.module('common.controllers', ['common.services'])
 
 }])
 
-.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', 'subscriptionEntryService', function($scope, $stateParams, subscriptionEntryService) {
+.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', 'subscriptionEntryService', function($scope, $stateParams, subscriptionEntryService) {
 
     $scope.data = [];
     $scope.param = $stateParams;
@@ -82,4 +82,33 @@ angular.module('common.controllers', ['common.services'])
 
     refresh(params())
 
+}])
+
+.controller('SubscriptionEntryCtrl', ['$rootScope', '$scope', '$stateParams', '$previousState', 'subscriptionEntryService', 'subscriptionTagService', function($rootScope, $scope, $stateParams, $previousState, subscriptionEntryService, subscriptionTagService) {
+
+    $scope.entry = {};
+    $scope.availableTags = [];
+
+    if($stateParams.uuid) {
+        subscriptionEntryService.findOne($stateParams.uuid)
+        .then(function(data) {
+            $scope.entry = data.entry;
+            $scope.availableTags = data.availableTags;
+        });
+    }
+
+    $scope.save = function() {
+        subscriptionEntryService.save($scope.entry)
+        .then(function(data) {
+            $scope.entry = data.entry;
+            $scope.availableTags = data.availableTags;
+            $rootScope.$broadcast('success', "saved");
+        });
+    };
+
+    $scope.back = function() {
+        $previousState.go()
+    };
+
 }]);
+

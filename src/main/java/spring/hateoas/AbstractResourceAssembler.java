@@ -7,6 +7,7 @@ import org.springframework.util.Assert;
 /**
  * @author Kamill Sokol
  */
+@Deprecated
 public abstract class AbstractResourceAssembler<T, D extends ResourceSupport> implements ResourceAssembler<T, D> {
 
     private final Class<T> inputClass;

@@ -102,7 +102,7 @@ angular.module('common.api', [])
     }
 })
 
-.service('subscriptionEntryConverter', function() {
+.service('subscriptionEntriesConverter', function() {
 
     var SubscriptionEntry = function() {};
 
@@ -120,6 +120,23 @@ angular.module('common.api', [])
         },
         convertTo: function(data) {
             return {content: data};
+        }
+    }
+})
+
+.service('subscriptionEntryConverter', function() {
+
+    var SubscriptionEntry =  function(entry, availableTags) {
+        this.entry = entry;
+        this.availableTags = availableTags;
+    };
+
+    return {
+        convertFrom: function (data) {
+            return new SubscriptionEntry(data.content, data.availableTags);
+        },
+        convertTo: function(data) {
+            return {content: {tag: data.tag, seen: data.seen }};
         }
     }
 })
@@ -150,7 +167,7 @@ angular.module('common.api', [])
             var deferred = $q.defer();
             $http.patch(url, converted)
             .success(function (data) {
-                deferred.resolve();
+                deferred.resolve(conversionService.convertFrom(resourceType, data));
             });
             return deferred.promise;
         }

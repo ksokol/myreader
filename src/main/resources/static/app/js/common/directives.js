@@ -16,7 +16,12 @@ angular.module('common.directives', [])
 
             scope.$on("error", function(data, textStatus) {
                 element.find("div").addClass("hidden");
-                element.find("span").removeClass("hidden").text(textStatus);
+                element.find("span").removeClass("hidden").addClass("error").text(textStatus);
+            });
+
+            scope.$on("success", function(data, textStatus) {
+                element.find("div").addClass("hidden");
+                element.find("span").removeClass("hidden").addClass("success").text(textStatus);
             });
         }
     };

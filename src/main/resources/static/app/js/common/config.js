@@ -1,4 +1,4 @@
-angular.module('myreader', ['common.services', 'common.controllers', 'common.directives', 'ui.router'])
+angular.module('myreader', ['common.services', 'common.controllers', 'common.directives', 'ui.router', 'ct.ui.router.extras.previous'])
 
 .config(['$httpProvider', function($httpProvider) {
 
@@ -55,12 +55,17 @@ angular.module('myreader', ['common.services', 'common.controllers', 'common.dir
         })
         .state('entries-tags', {
             url: "/entries/:tag",
-            templateUrl: 'entries',
-            controller: 'SubscriptionEntryCtrl'
+            templateUrl: 'SubscriptionEntries',
+            controller: 'SubscriptionEntryListCtrl'
         })
         .state('entries-subscription', {
             url: "/entries/:uuid",
-            templateUrl: 'entries',
+            templateUrl: 'SubscriptionEntries',
+            controller: 'SubscriptionEntryListCtrl'
+        })
+        .state('entry', {
+            url: "/entry/:uuid",
+            templateUrl: 'SubscriptionEntry',
             controller: 'SubscriptionEntryCtrl'
         });
     $urlRouterProvider.otherwise('/subscriptionTags');

@@ -12,7 +12,7 @@
                     <li>
                         <loading-indicator>
                             <div class="spinner hidden"></div>
-                            <span class="error-message hidden"></span>
+                            <span class="message hidden"></span>
                         </loading-indicator>
                     </li>
                     <li><a href="../web/logout">logout</a></li>
@@ -52,11 +52,11 @@
             </table>
         </script>
 
-        <script type="text/ng-template" id="entries">
+        <script type="text/ng-template" id="SubscriptionEntries">
             <table>
                 <tr ng-repeat="entry in data">
                     <td class="col1">
-                        <a href="?id=entry.id?string.computer">
+                        <a ui-sref="entry({uuid: entry.uuid})">
                             <h3 class="entry-title">{{entry.title}}</h3>
                             <span class="entry-producer">{{entry.feedTitle}}</span>
                         </a>
@@ -71,6 +71,26 @@
             </table>
 
             <input class="read-button" type="submit" value="mark as read" ng-click="markAsRead()">
+        </script>
+
+        <script type="text/ng-template" id="SubscriptionEntry">
+            <center>
+                <h3>{{data.title}}</h3>
+
+                <select ng-options="tag for tag in availableTags" ng-model="entry.tag">
+                    <option value="">none</option>
+                </select>
+
+                <div id="chooseRadio">
+                    <input type="radio" ng-value="true" ng-model="entry.seen"> seen
+                    <input type="radio" ng-value="false" ng-model="entry.seen"> unseen
+                </div>
+
+                <div id="deprecatedEntryButtons">
+                    <input class="button" type="button" value="save" ng-click="save()">
+                    <input class="button" type="button" value="back" ng-click="back()">
+                </div>
+            </center>
         </script>
 
         <@script id="mobile"></@script>

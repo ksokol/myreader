@@ -1,5 +1,6 @@
-package myreader.resource.subscriptionentry.assembler;
+package myreader.resource.subscriptionentry.converter;
 
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import myreader.entity.SubscriptionEntry;
@@ -10,14 +11,14 @@ import spring.hateoas.AbstractResourceAssembler;
  * @author Kamill Sokol
  */
 @Component
-public class SubscriptionEntryGetResponseAssembler extends AbstractResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> {
+public class SubscriptionEntryGetResponseConverter extends AbstractResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> implements Converter<SubscriptionEntry, SubscriptionEntryGetResponse> {
 
-    public SubscriptionEntryGetResponseAssembler() {
+    public SubscriptionEntryGetResponseConverter() {
         super(SubscriptionEntry.class, SubscriptionEntryGetResponse.class);
     }
 
     @Override
-    public SubscriptionEntryGetResponse toResource(SubscriptionEntry source) {
+    public SubscriptionEntryGetResponse convert(final SubscriptionEntry source) {
         SubscriptionEntryGetResponse target = new SubscriptionEntryGetResponse();
 
         target.setUuid(String.valueOf(source.getId()));
@@ -43,4 +44,8 @@ public class SubscriptionEntryGetResponseAssembler extends AbstractResourceAssem
         return target;
     }
 
+    @Override
+    public SubscriptionEntryGetResponse toResource(final SubscriptionEntry entity) {
+        return convert(entity);
+    }
 }

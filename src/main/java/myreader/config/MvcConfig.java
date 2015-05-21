@@ -48,6 +48,9 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController(SecurityConfig.LOGIN_URL).setViewName("login");
+
+        //deprecated
+        registry.addViewController("mobile/reader").setViewName("reader/mobile/index");
     }
 
     @Override

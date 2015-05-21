@@ -3,7 +3,9 @@ package myreader.resource.config;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.validation.TraversableResolver;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ConversionServiceFactoryBean;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -34,6 +38,7 @@ import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
 import myreader.resource.subscription.SubscriptionCollectionResource;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
+import myreader.resource.subscriptionentry.converter.SubscriptionEntryGetResponseConverter;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.user.UserEntityResource;
 import myreader.resource.user.beans.UserGetResponse;
@@ -96,6 +101,15 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
         el.add(new ExclusionPatternEntityLinks());
 
         return new DelegatingEntityLinks(el);
+    }
+
+    @Bean
+    public ConversionServiceFactoryBean conversionService() {
+        ConversionServiceFactoryBean conversionServiceFactoryBean = new ConversionServiceFactoryBean();
+        Set<Converter> converters = new HashSet<>();
+        converters.add(new SubscriptionEntryGetResponseConverter());
+        conversionServiceFactoryBean.setConverters(converters);
+        return conversionServiceFactoryBean;
     }
 
     private MappingJackson2HttpMessageConverter configuredMappingJacksonHttpMessageConverter() {
