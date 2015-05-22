@@ -1,13 +1,11 @@
 package myreader.fetcher.icon;
 
-import java.awt.image.BufferedImage;
-
 public class IconResult {
 
     private final String mimeType;
-    private final BufferedImage icon;
+    private final String icon;
 
-    public IconResult(String mimeType, BufferedImage icon) {
+    public IconResult(String mimeType, String icon) {
         this.mimeType = mimeType;
         this.icon = icon;
     }
@@ -16,7 +14,11 @@ public class IconResult {
         return mimeType;
     }
 
-    public BufferedImage getIcon() {
+    public String getIcon() {
         return icon;
+    }
+
+    public String asDataUrl() {
+        return "data:" + mimeType + ";base64,"+icon;
     }
 }

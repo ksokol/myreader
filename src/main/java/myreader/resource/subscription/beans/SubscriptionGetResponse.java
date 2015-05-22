@@ -16,6 +16,7 @@ public class SubscriptionGetResponse extends UUIDResourceSupport {
     private int sum;
     private long unseen;
     private String origin;
+    private String icon;
     private Date createdAt;
 
     public String getTitle() {
@@ -56,6 +57,14 @@ public class SubscriptionGetResponse extends UUIDResourceSupport {
 
     public String getOrigin() {
         return origin;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(final String icon) {
+        this.icon = icon;
     }
 
     public void setOrigin(final String origin) {

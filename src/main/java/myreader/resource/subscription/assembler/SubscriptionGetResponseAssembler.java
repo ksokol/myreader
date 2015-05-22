@@ -2,6 +2,8 @@ package myreader.resource.subscription.assembler;
 
 import org.springframework.stereotype.Component;
 
+import myreader.entity.Feed;
+import myreader.entity.FeedIcon;
 import myreader.entity.Subscription;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import spring.hateoas.AbstractResourceAssembler;
@@ -27,9 +29,19 @@ public class SubscriptionGetResponseAssembler extends AbstractResourceAssembler<
         target.setTitle(source.getTitle());
         target.setUnseen(source.getUnseen());
 
-        if(source.getFeed() != null) {
-            target.setOrigin(source.getFeed().getUrl());
+        final Feed feed = source.getFeed();
+        if(feed == null) {
+            return target;
         }
+
+        target.setOrigin(feed.getUrl());
+
+        final FeedIcon feedIcon = feed.getIcon();
+        if(feedIcon == null) {
+            return target;
+        }
+
+        target.setIcon(feedIcon.getIcon());
 
         return target;
     }

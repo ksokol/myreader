@@ -8,7 +8,8 @@
             "unseen": 0,
             "origin": "http://www.obix-labs.com/blogs/highOctaneJava/feed/entries/atom",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
+            "links": [],
+            "icon": "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8_9hAAADPUlEQVR42o3T309bBRTA8f4D48lhxpVJpRk6rHOGjAjLMp_IMn3QBVQ2x35Issl0v3HMrbLBmjJKorAxgUHM1CbCXBxxQlxUFDWTYTCEUNdyO_qD9nL7m5bbX9m-XmgID754k5Pch3M-99yTczQa9XEeL5kQa3XY9zyJvfoJxN25iHtycfwn1mZjfz7OI5smNCvFjkNFivWAlhnDDtwdtbjNVbgM23AfL8RbvwH_R0WEGp8l0ryRBWMxMVMxEaNeWUbEveuwHdQyfbQEabCDhHMKxTGB8uB3lMlhosOtRLpeJdZeSuJqCanPtpDuKiHeuhHxzRw0M1VrsL_7NLYzW_H2XyRy_zaRiTvE_hklIdlJyyLJ6SESPzWTtLxOureMTO_LLJqLmXlNkwUchwoQ619i1vwGnu6DzPXsx_flewSGjSr0I-mwh4w0RfpeB-mBKhUpJ25-IQsstfGwTot4Wo-n6wCB200EBk4if16N71oFvi_2Ev6jh6RsIyNbSY-aSPWUqXN4bhWYfV8FGssJjt4gEwssfzFhHyF29wKBvh14OrcT_LWDVHCWjHWQxPVXiBryVwH3CR3uS2VIliMER64Sm_6BR6lFHqfiJMau4b9SiufKdhb-_oaMdxLluwZCDXmrwPzZIoKmzYTaNuM36_F-sgVpoI6Ea3wZiQ1-gKf1RXyWWhbto6Sm7iCfFlaGmIPUoCPQXEjYuJ5oy1OELq_H16Zn7sZuHiXjJK1DeDvVHemuJDo5RMr-G_ONpVngQWUOzlPr8KvJyr0e0uPXWbz5DoGWAmZNm4hZ75IJu5C-Ooyzs5Lw-LckxTGkSxVZwLorB_uJtYRG2slEfTxWgqT_6iN8uQBX0waCP7cvD1a-dU4Fqgn9eYukumzSp_uywPSuNcycyiX8i5q4IGWB8T6iJi3eJh2y5TDx-_1I3TVqRzuRvr5I6PtuXOd3ZgGbejhzZ_MIWtRfGOslpRYr_TVEjVr8FwqZbylHbqvA86Eex7HncdRvQzy2Fdvb-dlVfqgehHz-GSXwsUDAkEfIIBA6JxA8IyCfFPAeFZirE3DWCog1glqoxlvqDuzTKasXqb4saUst_Z9Yyl0p_hfcD8G5HwfzywAAAABJRU5ErkJggg"
         },
         {
             "uuid": "7",
@@ -18,7 +19,8 @@
             "unseen": 0,
             "origin": "http://www.javaspecialists.eu/archive/tjsn.rss",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
+            "links": [],
+            "icon": "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8_9hAAACCklEQVR42q2TS08TURTH2fgJ3Llw5Rcw4QP4PUzcGTVxwcJo3GjiBg34CkJUsFQq1hAafMSY8pAWK0Kkj8x02kpbhto60zt9oAhEoJ2__05lmoapK05yc8-5c_-_e-ece7ok0QunIYsHiAs3_Zf0x-g_ctzXdVj4EFF9CsnSCtY3FKyWQxRPQyoGENHe8ftQZ4AsHiOmB1HezkEuPsdM5jKm0xcxn7oAP-egepPDzX2uw4DGlWN6AJWdLObXriD8Y4AgBbX6LlBcxP7PJMRWDMv5fgRUF_cPtAMiuo_iAk-4jsKvEEzThG0N_3MP5zrdOtJlP8LaRAsgi7tQjGX-72v-9ywcLdoLFOb-8UxqFgnoawLixgjUjSSTNGSd4Ghrk8DSVTvMVGQe-vQA4EGOALXqR0fLeIG5s3aYrSoEjB4ZYIQLMrOe6AxYugZ8umSHqVKEgCcHVehjUr5gt7bpLK6xlOMngVVPM6zXmK8P1PS3yhjVJ1hG4Qz4egPwnAD2tpr5rCYoHm2VUTHGkDBcpC5ge2-zvf7SPWD4GJB7by0Vf-etp26_RJnXl9a5EL6FUOoZXkn3kdWCMNUp4O0ZwH0cUN_gz_4O0hWJYh-Fd9qfsiwGEf3uxbfgeRR83Sh5T0GbPI3kx3NQ8n7r0axoPjbV8P-7MW4McvMLdt64NceZ5UaPSOI2OrX9XzYAf28qoPpJAAAAAElFTkSuQmCC"
         },
         {
             "uuid": "8",
@@ -28,7 +30,8 @@
             "unseen": 0,
             "origin": "http://www.tomcatexpert.com/blog/feed",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
+            "links": [],
+            "icon": "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8_9hAAADPUlEQVR42o3T309bBRTA8f4D48lhxpVJpRk6rHOGjAjLMp_IMn3QBVQ2x35Issl0v3HMrbLBmjJKorAxgUHM1CbCXBxxQlxUFDWTYTCEUNdyO_qD9nL7m5bbX9m-XmgID754k5Pch3M-99yTczQa9XEeL5kQa3XY9zyJvfoJxN25iHtycfwn1mZjfz7OI5smNCvFjkNFivWAlhnDDtwdtbjNVbgM23AfL8RbvwH_R0WEGp8l0ryRBWMxMVMxEaNeWUbEveuwHdQyfbQEabCDhHMKxTGB8uB3lMlhosOtRLpeJdZeSuJqCanPtpDuKiHeuhHxzRw0M1VrsL_7NLYzW_H2XyRy_zaRiTvE_hklIdlJyyLJ6SESPzWTtLxOureMTO_LLJqLmXlNkwUchwoQ619i1vwGnu6DzPXsx_flewSGjSr0I-mwh4w0RfpeB-mBKhUpJ25-IQsstfGwTot4Wo-n6wCB200EBk4if16N71oFvi_2Ev6jh6RsIyNbSY-aSPWUqXN4bhWYfV8FGssJjt4gEwssfzFhHyF29wKBvh14OrcT_LWDVHCWjHWQxPVXiBryVwH3CR3uS2VIliMER64Sm_6BR6lFHqfiJMau4b9SiufKdhb-_oaMdxLluwZCDXmrwPzZIoKmzYTaNuM36_F-sgVpoI6Ea3wZiQ1-gKf1RXyWWhbto6Sm7iCfFlaGmIPUoCPQXEjYuJ5oy1OELq_H16Zn7sZuHiXjJK1DeDvVHemuJDo5RMr-G_ONpVngQWUOzlPr8KvJyr0e0uPXWbz5DoGWAmZNm4hZ75IJu5C-Ooyzs5Lw-LckxTGkSxVZwLorB_uJtYRG2slEfTxWgqT_6iN8uQBX0waCP7cvD1a-dU4Fqgn9eYukumzSp_uywPSuNcycyiX8i5q4IGWB8T6iJi3eJh2y5TDx-_1I3TVqRzuRvr5I6PtuXOd3ZgGbejhzZ_MIWtRfGOslpRYr_TVEjVr8FwqZbylHbqvA86Eex7HncdRvQzy2Fdvb-dlVfqgehHz-GSXwsUDAkEfIIBA6JxA8IyCfFPAeFZirE3DWCog1glqoxlvqDuzTKasXqb4saUst_Z9Yyl0p_hfcD8G5HwfzywAAAABJRU5ErkJggg"
         },
         {
             "uuid": "9",
@@ -38,7 +41,8 @@
             "unseen": 0,
             "origin": "http://martinfowler.com/feed.atom",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
+            "links": [],
+            "icon": "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8_9hAAABS0lEQVR42mOIFM35HyiUBMe-DIlgDGJHKGf892aI_W_DEPQ_y7Hi__S6Bf8DeBNR1DMgc8IU0_5vXLDt_5ePX8EatyzdCWb_-_cPjkGGoRjgKxCLInB050kUDSB86_Ld_2VhTf9dGSJRNcMATKDYvx5FY0_x1P-mDL5w16G4VjgD1QBHhlCwpif3nsE1xxnmgr0CMiRaOwvFAD_BBIQBAfwQb4AUgjDIgCm1c8D45ZPX2P0vEIcwANkbIBvRwwCEdRjcsTsfBkCCoOib07oYRePaOZvh0Yo1AJFdgGz7yX1nweGCHngY_ocBX764_7DABEXb5VPX_odIp2Boxmo7sjdAmkAJ6OnD5xipDqf_kb0BMgCUHj69-wz2EkkuAPkNOU2gJ1twXuGLw20AzBUWDP5gA0iyHT09XD1z43-JdxNKQOL1Pz6AnOHQ5QCpt6GkOm4PTwAAAABJRU5ErkJggg"
         },
         {
             "uuid": "10",
@@ -48,7 +52,8 @@
             "unseen": 0,
             "origin": "http://feeds.feedburner.com/SpringSourceTeamBlog",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
+            "links": [],
+            "icon": "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8_9hAAABU0lEQVR42mNgwAHuCxgIMJALnnAbGDzj1V9PtgHPeHX3gzBZmp_z6sU_49X7D8Igl5Bhu959mAFPefXnk-F3iGYIhnjjOY-uPShMCAbscx69emQDYC6AGECEiyCBp_f_tbUG2ACQRoi4_vqXqtoQMWAY4TXgrbv6_3fBqhBX8OhNgBn6Y5n0_-eSuv_xRi9I8cds5f_fZsn-R_YKyMA_J8X_f4hX-Y87eguOO7Sb5l4HGQBS_Klc8T_I2e9CVP__3isBFgPJLdeIuA1Uq4Cm-VgAQ97x_zJJW-C2YcOgsLEMW_ifIe_Ee5CFCANyj-8HGQDC_UYZ_7_2yWFoBjkfJAdTx5B7Aiks8o7HwyT4Mvb93y3vDXYJyMkgDLIZRTMYn_BH9UbuMXuYS0CGhHn1_W-0KPxfbFf9XytmNarNILU4QdoZfrCCvOP1CHwiHywGkkMDAG2mEs1clvCvAAAAAElFTkSuQmCC"
         },
         {
             "uuid": "11",
@@ -58,7 +63,8 @@
             "unseen": 0,
             "origin": "https://jira.springsource.org/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?&jqlQuery=project+%3D+SPR+AND+resolution+%3D+Unresolved+ORDER+BY+due+ASC%2C+priority+DESC%2C+created+ASC&tempMax=100&reset=true&decorator=none",
             "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
+            "links": [],
+            "icon": "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8_9hAAAA2klEQVR42mNgGLLg0FnlhINnlRrI1KxUAMT_D51T3E-0pv3nFQRAtgI13gdrhuD3GM4CmQqSgCuC8P_jwgjTCShExgt2qv5fsU8FYQAoMIjVvPOE8v-S-RqoLkBxMgHNQV1aYBegG0CUsz1btf_3rVNDFr9P0AUgjTmzNP5bVOugawbhfngMgBTWLlGH4-gJWmAbQRpBzoYFGnIUAgNfgcG8Wuc9CIMMASmGYZAmkM3TN6tic9n7o-cVDMA2IxtgXq3bX7dYowEUKzAMjl4YBjoZlFZA0T54MhUAioBYKw-y9ZoAAAAASUVORK5CYII"
         }
     ]
 }

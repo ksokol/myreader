@@ -3,13 +3,15 @@ package myreader.fetcher.icon.impl.converter;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import javax.xml.bind.DatatypeConverter;
+
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import myreader.fetcher.icon.IconResult;
 import myreader.fetcher.icon.impl.IconConverter;
 import net.sf.image4j.codec.bmp.BMPDecoder;
 import net.sf.image4j.codec.ico.ICOEncoder;
-
-import org.springframework.stereotype.Component;
 
 @Component
 class BMPIconConverter implements IconConverter {
@@ -19,15 +21,16 @@ class BMPIconConverter implements IconConverter {
         IconResult result = null;
 
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             BufferedImage decoded = BMPDecoder.read(in);
-            ICOEncoder.write(decoded, out);
-            byte[] imageInByte = out.toByteArray();
 
-            if (imageInByte.length > 0) {
-                result = new IconResult("image/bmp", decoded);
+            ICOEncoder.write(decoded, baos);
+            String base64 = DatatypeConverter.printBase64Binary(baos.toByteArray());
+
+            if ( StringUtils.hasText(base64) ) {
+                result = new IconResult("image/bmp", base64);
             }
-        } catch (Exception e) {
+        } catch ( Exception e ) {
         }
 
         return result;

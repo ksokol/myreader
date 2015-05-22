@@ -3,13 +3,14 @@ package myreader.fetcher.icon.impl.converter;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-
 import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
+
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import myreader.fetcher.icon.IconResult;
 import myreader.fetcher.icon.impl.IconConverter;
-
-import org.springframework.stereotype.Component;
 
 @Component
 class PNGIconConverter implements IconConverter {
@@ -22,10 +23,10 @@ class PNGIconConverter implements IconConverter {
             BufferedImage bi = ImageIO.read(in);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(bi, "png", baos);
-            byte[] imageInByte = baos.toByteArray();
+            String base64 = DatatypeConverter.printBase64Binary(baos.toByteArray());
 
-            if (imageInByte.length > 0) {
-                result = new IconResult("image/png", bi);
+            if (StringUtils.hasText(base64)) {
+                result = new IconResult("image/png", base64);
             }
         } catch (Exception e) {
         }

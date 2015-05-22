@@ -16,6 +16,8 @@ public class HttpURLConnectionHelper {
             urlc.setConnectTimeout(3000);
             urlc.setRequestMethod("GET");
             urlc.setRequestProperty("User-Agent", USER_AGENT);
+            urlc.setInstanceFollowRedirects(true);
+            HttpURLConnection.setFollowRedirects(true);
 
             return urlc;
 
