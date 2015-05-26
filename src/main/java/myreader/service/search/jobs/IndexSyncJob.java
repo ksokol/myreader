@@ -59,7 +59,7 @@ public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosed
             FullTextSession fullTextSession = Search.getFullTextSession(session);
             fullTextSession.setFlushMode(FlushMode.MANUAL);
             fullTextSession.setCacheMode(CacheMode.IGNORE);
-
+            fullTextSession.purgeAll(SubscriptionEntry.class);
             //Scrollable results will avoid loading too many objects in memory
             ScrollableResults results = fullTextSession.createCriteria(SubscriptionEntry.class).setFetchSize(BATCH_SIZE).scroll(ScrollMode.FORWARD_ONLY);
             int index = 0;
