@@ -62,7 +62,7 @@ public class EntryApi {
         String feedUuidEqual = null;
         String feedTagEqual = null;
         String seenEqual = null;
-        String q = query.getQ() == null ? "*" : query.getQ();
+        String q = query.getQ();
 
         if(feedTag != null) {
             final List<Subscription> s = subscriptionRepository.findByTitleAndUsername(feedTag, user.getUsername());
@@ -118,10 +118,12 @@ public class EntryApi {
             dtoList.add(dto);
         }
 
-        final ArrayList<UserEntryQuery> newList = new ArrayList<>(10);
+        final List<UserEntryQuery> newList = new ArrayList<>(10);
 
         if(dtoList.size() > 10) {
             newList.addAll(dtoList.subList(0, 10));
+        } else {
+            newList.addAll(dtoList);
         }
 
         return newList;
