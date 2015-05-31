@@ -124,7 +124,11 @@ angular.module('common.api', [])
             return subscriptionEntries;
         },
         convertTo: function(data) {
-            return {content: data};
+            var converted = [];
+            angular.forEach(data, function(val,idx) {
+                converted.push({uuid: val.uuid, seen: val.seen, tag: val.tag});
+            });
+            return {content: converted};
         }
     }
 })
