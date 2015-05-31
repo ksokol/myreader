@@ -1,6 +1,20 @@
 angular.module('common.directives', [])
 
 .directive("loadingIndicator", function() {
+    return {
+        restrict : "EA",
+        link : function(scope, element) {
+            scope.$on("loading-started", function() {
+                element.removeClass("hide");
+            });
+            scope.$on("loading-complete", function() {
+                element.addClass("hide");
+            });
+        }
+    };
+})
+
+.directive("loadingIndicator2", function() {
 
     return {
         restrict : "E",

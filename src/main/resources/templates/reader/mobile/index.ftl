@@ -1,55 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="myreader">
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>MyReader</title>
         <@style id="mobile"></@style>
+        <meta name="viewport" content="initial-scale=1">
     </head>
-    <body ng-app="myreader">
-        <div class="topbar-inner" ng-controller="NavigationBarCtrl">
-            <div class="container-fluid">
-                <ul class="nav">
-                    <li>
-                        <loading-indicator>
-                            <div class="spinner hidden"></div>
-                            <span class="message hidden"></span>
-                        </loading-indicator>
-                    </li>
-                    <li><a href="../web/logout">logout</a></li>
-                    <li><a ui-sref-active="hidden" ui-sref="subscriptionTags">feeds</a></li>
-                    <li><a href="#" ng-click="refresh()">refresh</a></li>
-                </ul>
+    <body>
+        <section layout="row" ui-view></section>
+
+        <script type="text/ng-template" id="SubscriptionTags">
+            <md-sidenav layout="column" class="site-sidenav md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')">
+                <md-toolbar class="md-whiteframe-glow-z2"></md-toolbar>
+
+                <md-content flex role="navigation">
+                    <ul class="subscription-tag-menu">
+                        <li class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}">
+                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{item.title}} ({{item.unseen}})</md-button>
+                            <ul ng-show="isOpen(item)" class="menu-toggle-list">
+                                <li ng-repeat="subscription in item.subscriptions">
+                                    <md-button
+                                            ng-class="{'active' : isSelected(subscription)}"
+                                            ui-sref="app.entries-tag-subscription({tag: subscription.tag, uuid: subscription.uuid})"
+                                            >{{subscription.title}} ({{subscription.unseen}})
+                                    </md-button>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}">
+                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{item.title}} ({{item.unseen}})</md-button>
+                        </li>
+                        <li>
+                            <!-- TODO -->
+                            <md-button href="../web/logout">logout</md-button>
+                        </li>
+                    </ul>
+                </md-content>
+            </md-sidenav>
+            <div layout="column" tabIndex="-1" role="main" flex>
+                <md-toolbar class="md-whiteframe-glow-z2" ng-controller="TopBarCtrl">
+                    <md-button class="md-icon-button" hide-gt-sm ng-click="openMenu()" aria-label="Menu">
+                        <md-icon md-svg-src="../app/img/icons/ic_menu_24px.svg"></md-icon>
+                    </md-button>
+                    <div layout="row" flex class="fill-height"></div>
+                        <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
+                </md-toolbar>
+                <md-content ui-view md-scroll-y flex layout-padding></md-content>
             </div>
-        </div>
-
-        <div ui-view></div>
-
-        <script type="text/ng-template" id="subscriptionTags">
-            <table>
-                <tr ng-repeat="item in data.tags">
-                   <td class="col1">
-                       <a ui-sref="entries-tags({tag: item.uuid})">
-                           <h3 class="entry-title">{{item.title}}</h3>
-                           <span class="entry-producer">{{item.unseen}}</span>
-                       </a>
-                   </td>
-                   <td class="col2">
-                       <a ui-sref="entries-tags({tag: item.uuid})">open</a>
-                   </td>
-                </tr>
-
-                <tr ng-repeat="item in data.subscriptions">
-                   <td class="col1">
-                       <a ui-sref="entries-subscription({uuid: item.uuid})">
-                           <h3 class="entry-title">{{item.title}}</h3>
-                           <span class="entry-producer">{{item.unseen}}</span>
-                       </a>
-                   </td>
-                   <td class="col2">
-                       <a ui-sref="entries-subscription({uuid: item.uuid})">open</a>
-                   </td>
-                </tr>
-            </table>
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntries">

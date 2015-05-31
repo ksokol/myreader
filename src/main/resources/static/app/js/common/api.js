@@ -29,6 +29,7 @@ angular.module('common.api', [])
 
     var SubscriptionTags = function() {
         var self = this;
+        self.unseen = 0;
         self.tags = [];
         self.subscriptions = [];
 
@@ -49,8 +50,10 @@ angular.module('common.api', [])
             var s = new Subscription;
             angular.forEach(subscription, function (v, k) {
                 s[k] = v;
+                s['type'] = 'subscription';
             });
             self.subscriptions.push(s);
+            self.unseen += s.unseen;
         };
 
         self.addTag = function(subscriptionTag) {
@@ -60,6 +63,7 @@ angular.module('common.api', [])
             });
 
             var theTag = self.getTag(s.tag);
+            self.unseen += s.unseen;
 
             if(theTag) {
                 theTag.unseen += s.unseen;
@@ -67,7 +71,9 @@ angular.module('common.api', [])
             } else {
                 var tag = new SubscriptionTag;
                 tag.uuid = s.tag;
+                tag.tag = s.tag;
                 tag.title = s.tag;
+                tag.type = 'tag';
                 tag.unseen = s.unseen;
                 tag.subscriptions.push(s);
                 self.tags.push(tag);
@@ -77,26 +83,25 @@ angular.module('common.api', [])
 
     return {
         convertFrom: function (data) {
+            var all = new SubscriptionTag;
+            all.title = "all";
+            all.uuid = "all";
+            all.subscriptions = [];
+            all.type = 'global';
+
             var subscriptionTags = new SubscriptionTags;
+
             angular.forEach(data.content, function (value) {
                 if(!value.tag) {
                     subscriptionTags.addSubscription(value);
                 } else {
                     subscriptionTags.addTag(value);
                 }
+                all.subscriptions.push(value);
+
             });
-
-            var tmp = subscriptionTags.tags.concat(subscriptionTags.subscriptions);
-            var count = 0;
-            for(i=0;i<tmp.length;i++) {
-                count += tmp[i].unseen;
-            }
-
-            var all = new SubscriptionTag;
-            all.unseen = count;
-            all.title = "all";
+            all.unseen = subscriptionTags.unseen;
             subscriptionTags.tags.unshift(all);
-
             return subscriptionTags;
         }
     }
