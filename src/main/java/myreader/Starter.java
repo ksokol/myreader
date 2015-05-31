@@ -1,8 +1,11 @@
 package myreader;
 
 import java.io.File;
+import java.io.IOException;
 import javax.servlet.ServletContext;
 
+import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,6 +33,9 @@ import myreader.resource.config.ResourceConfig;
 @EnableAutoConfiguration(exclude={FreeMarkerAutoConfiguration.class})
 //@SpringBootApplication
 public class Starter {
+
+    private static final String TMP_DIR = "tmp";
+    private static final int SIXTY_SECONDS = 60;
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Starter.class, args);
@@ -81,7 +87,16 @@ public class Starter {
         return new JettyEmbeddedServletContainerFactory() {
             @Override
             protected void postProcessWebAppContext(final WebAppContext webAppContext) {
-                webAppContext.setAttribute(ServletContext.TEMPDIR, new File("tmp")); //create tmp in current working directory
+                webAppContext.setAttribute(ServletContext.TEMPDIR, new File(TMP_DIR, "jawr")); //create tmp in current working directory
+
+                final HashSessionManager hashSessionManager = new HashSessionManager();
+                hashSessionManager.setSavePeriod(SIXTY_SECONDS);
+                try {
+                    hashSessionManager.setStoreDirectory(new File(TMP_DIR, "sessions"));
+                } catch (IOException e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
+                webAppContext.setSessionHandler(new SessionHandler(hashSessionManager));
             }
         };
     }
