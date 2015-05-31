@@ -80,5 +80,7 @@
         </fieldset>
     </form>
 </div>
+
+<@script id="login"></@script>
 </body>
 </html>
