@@ -1,17 +1,25 @@
 angular.module('common.controllers', ['common.services'])
 
-.controller('NavigationBarCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
+.controller('TopBarCtrl', ['$rootScope', '$scope', '$mdSidenav', function($rootScope, $scope, $mdSidenav) {
 
-    $scope.refresh = function() {
-        $rootScope.$broadcast('refresh');
-    }
+    $scope.openMenu = function() {
+        $rootScope.$broadcast('refresh-navigation-lg');
+        $mdSidenav('left').toggle();
+    };
+
+    $scope.$on('navigation-close', function() {
+        $mdSidenav('left').close();
+    });
+
 }])
 
-.controller('SubscriptionNavigationCtrl', ['$scope', 'subscriptionTagService', function($scope, subscriptionTagService) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', 'localStorageService', 'subscriptionTagService', function($rootScope, $scope, $mdMedia, $state, localStorageService, subscriptionTagService) {
     $scope.data = {
         tags: [],
         subscriptions: []
     };
+
+    var openItem = {tag: null, uuid: null};
 
     var refresh = function() {
         subscriptionTagService.findAllByUnseen(true)
@@ -20,19 +28,83 @@ angular.module('common.controllers', ['common.services'])
         });
     };
 
-    $scope.refresh = function() {
+    if($mdMedia('lg')){
         refresh();
-    };
+    }
 
-    $scope.$on('refresh', function() {
-        refresh();
+    $scope.$on('refresh', refresh);
+
+    $scope.$on('$stateChangeSuccess', function(a,b,c) {
+        //TODO
+        if ($state.is('app.entries-tags') || $state.is('app.entries-tag-subscription') || $state.is('app.entries-subscription')) {
+            openItem = c.uuid ? c.uuid : c.tag;
+        }
     });
 
-    refresh();
+    $scope.$on('refresh-navigation', function() {
+        $mdMedia('gt-lg') && refresh();
+    });
 
+    $scope.$on('refresh-navigation-lg', refresh);
+
+    $scope.$watch(function() {
+        return $mdMedia('gt-lg');
+    }, function(big) {
+        big && refresh();
+    });
+
+    $scope.isItemSelected= function(item) {
+        var openedSection = openItem;
+        if(openedSection === item.uuid) {
+            return true;
+        } else if(item.subscriptions) {
+            if(item.type === 'global') {
+                return false;
+            }
+            for(i=0;i<item.subscriptions.length;i++) {
+                if(item.subscriptions[i].uuid === openedSection) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
+    $scope.isOpen = function(item) {
+        if(item.type === 'global') {
+            return false;
+        }
+        if(openItem == item.uuid) {
+            return true;
+        }
+        if(item.subscriptions) {
+            for(i=0;i<item.subscriptions.length;i++) {
+                if(item.subscriptions[i].uuid === openItem) {
+                    return true;
+                }
+            }
+        }
+    };
+
+    $scope.toggleOpen = function(item) {
+        if(openItem === item) {
+            openItem = null;
+            $state.go('app.entries-tags', {tag: 'all'});
+        } else {
+            openItem = item.uuid;
+            if(item.type === 'tag' || item.type === 'global') {
+                $state.go('app.entries-tags', {tag: item.uuid});
+            } else {
+                $state.go('app.entries-subscription', {uuid: item.uuid});
+            }
+        }
+        if(!$mdMedia('gt')) {
+            $rootScope.$broadcast('navigation-close');
+        }
+    };
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', 'subscriptionEntryService', function($scope, $stateParams, subscriptionEntryService) {
+.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', function($rootScope, $scope, $stateParams, $state, subscriptionEntryService) {
 
     $scope.data = [];
     $scope.param = $stateParams;
@@ -49,15 +121,16 @@ angular.module('common.controllers', ['common.services'])
         if($stateParams.uuid) {
             param['feedUuidEqual'] = $stateParams.uuid;
         }
-        if($stateParams.tag) {
+        if($stateParams.tag && $stateParams.tag !== "all") {
             param['feedTagEqual'] = $stateParams.tag;
         }
         //TODO
         param['seenEqual'] = false;
+
         return param;
     };
 
-    $scope.markAsRead = function(){
+    $scope.markAsRead = function() {
         var selected = [];
         var tmp = [];
         angular.forEach($scope.data, function(entry) {
@@ -72,19 +145,23 @@ angular.module('common.controllers', ['common.services'])
             subscriptionEntryService.updateEntries(selected)
             .then(function() {
                 $scope.data = tmp;
+                $rootScope.$broadcast('refresh-navigation', $stateParams);
             });
         }
     };
 
-    $scope.$on('refresh', function() {
+    $scope.navigateToDetailPage = function(item) {
+        $state.go('app.entry', {uuid: item.uuid});
+    };
+
+    $scope.refresh = function() {
         refresh(params());
-    });
+    };
 
-    refresh(params())
-
+    refresh(params());
 }])
 
-.controller('SubscriptionEntryCtrl', ['$rootScope', '$scope', '$stateParams', '$previousState', 'subscriptionEntryService', 'subscriptionTagService', function($rootScope, $scope, $stateParams, $previousState, subscriptionEntryService, subscriptionTagService) {
+.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', function($scope, $stateParams, $previousState, $mdToast, subscriptionEntryService) {
 
     $scope.entry = {};
     $scope.availableTags = [];
@@ -102,7 +179,11 @@ angular.module('common.controllers', ['common.services'])
         .then(function(data) {
             $scope.entry = data.entry;
             $scope.availableTags = data.availableTags;
-            $rootScope.$broadcast('success', "saved");
+            $mdToast.show(
+                $mdToast.simple()
+                    .content('saved')
+                    .position('top right')
+                );
         });
     };
 
@@ -111,4 +192,3 @@ angular.module('common.controllers', ['common.services'])
     };
 
 }]);
-

@@ -1,4 +1,6 @@
-angular.module('myreader', ['common.services', 'common.controllers', 'common.directives', 'ui.router', 'ct.ui.router.extras.previous'])
+window.write = function() {};
+
+angular.module('myreader', ['common.services', 'common.controllers', 'common.directives', 'ui.router', 'ct.ui.router.extras.previous', 'ngMaterial', 'LocalStorageModule', 'ngSanitize'])
 
 .config(['$httpProvider', function($httpProvider) {
 
@@ -42,31 +44,40 @@ angular.module('myreader', ['common.services', 'common.controllers', 'common.dir
             }
         };
     }]);
-
 }])
 
 .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
-    $stateProvider
-        .state('subscriptionTags', {
-            url: "/subscriptionTags",
-            templateUrl: 'subscriptionTags',
-            controller: 'SubscriptionNavigationCtrl'
-        })
-        .state('entries-tags', {
-            url: "/tag/entries/:tag",
-            templateUrl: 'SubscriptionEntries',
-            controller: 'SubscriptionEntryListCtrl'
-        })
-        .state('entries-subscription', {
-            url: "/subscription/entries/:uuid",
-            templateUrl: 'SubscriptionEntries',
-            controller: 'SubscriptionEntryListCtrl'
-        })
-        .state('entry', {
-            url: "/entry/:uuid",
-            templateUrl: 'SubscriptionEntry',
-            controller: 'SubscriptionEntryCtrl'
-        });
-    $urlRouterProvider.otherwise('/subscriptionTags');
+        $stateProvider
+            .state('app', {
+                abstract: true,
+                url: "/app",
+                templateUrl: 'SubscriptionTags',
+                controller: 'SubscriptionNavigationCtrl'
+            })
+            .state('app.entries-tags', {
+                url: "/tag/entries/:tag",
+                templateUrl: 'SubscriptionEntries',
+                controller: 'SubscriptionEntryListCtrl'
+            })
+            .state('app.entries-tag-subscription', {
+                url: "/tag/entries/:tag/:uuid",
+                templateUrl: 'SubscriptionEntries',
+                controller: 'SubscriptionEntryListCtrl'
+            })
+            .state('app.entries-subscription', {
+                url: "/subscription/entries/:uuid",
+                templateUrl: 'SubscriptionEntries',
+                controller: 'SubscriptionEntryListCtrl'
+            })
+            .state('app.entry', {
+                url: "/entry/:uuid",
+                templateUrl: 'SubscriptionEntry',
+                controller: 'SubscriptionEntryCtrl'
+            });
+        $urlRouterProvider.otherwise('/app/tag/entries/all');
+}])
+
+.config(['localStorageServiceProvider', function(localStorageServiceProvider) {
+    localStorageServiceProvider.setPrefix('myreader').setStorageType('sessionStorage');
 }]);
