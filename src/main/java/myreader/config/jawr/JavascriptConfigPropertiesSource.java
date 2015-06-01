@@ -19,6 +19,7 @@ public class JavascriptConfigPropertiesSource {
                     .webjar("angularjs/1.3.15/angular.js")
                     .webjar("angularjs/1.3.15/angular-animate.js")
                     .webjar("angularjs/1.3.15/angular-aria.js")
+                    .webjar("angularjs/1.3.15/angular-sanitize.js")
                     .webjar("angular-ui-router/0.2.14/angular-ui-router.js")
                     .webjar("ui-router-extras/0.0.13/modular/ct-ui-router-extras.core.js")
                     .webjar("ui-router-extras/0.0.13/modular/ct-ui-router-extras.transition.js")

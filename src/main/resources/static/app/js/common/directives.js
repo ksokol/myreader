@@ -39,4 +39,25 @@ angular.module('common.directives', [])
             });
         }
     };
-});
+})
+
+.directive("wrapEntryContent", ['$window', '$mdMedia', function($window, $mdMedia) {
+    return {
+        restrict : "A",
+        link : function($scope, $element, attrs) {
+            $scope.$watch(function(){
+                return $window.innerWidth;
+            }, function(value) {
+                if($mdMedia('gt-lg')) {
+                    attrs.$set('style', 'width: ' + (value - 403) + 'px');
+                } else if($mdMedia('lg')) {
+                    attrs.$set('style', 'width: ' + (value - 403) + 'px')
+                } else if($mdMedia('gt-sm') || $mdMedia('md')) {
+                    attrs.$set('style', 'width: ' + (value - 403) + 'px')
+                } else {
+                    attrs.$set('style', 'width: ' + (value - 61) + 'px');
+                }
+            });
+        }
+    };
+}]);

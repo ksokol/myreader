@@ -49,44 +49,50 @@
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntries">
-            <table>
-                <tr ng-repeat="entry in data">
-                    <td class="col1">
-                        <a ui-sref="entry({uuid: entry.uuid})">
-                            <h3 class="entry-title">{{entry.title}}</h3>
-                            <span class="entry-producer">{{entry.feedTitle}}</span>
-                        </a>
-                    </td>
-                    <td class="col2">
-                        <a target="_blank" ng-href="{{entry.origin}}">open</a>
-                    </td>
-                    <td class="col2">
-                        <input ng-model="entry.seen" type="checkbox" name="id[]" value="{{entry.uuid}}">
-                    </td>
-                </tr>
-            </table>
+            <md-list>
+                <md-list-item ng-click="navigateToDetailPage(entry)" class="md-2-line" ng-repeat="entry in data">
+                    <div class="md-list-item-text">
+                        <h3>{{::entry.title}}</h3>
+                        <p>{{::entry.feedTitle}}</p>
+                    </div>
+                    <md-checkbox class="md-secondary" ng-model="entry.seen"></md-checkbox>
+                    <md-divider></md-divider>
+                </md-list-item>
+            </md-list>
 
-            <input class="read-button" type="submit" value="mark as read" ng-click="markAsRead()" ng-show="data.length > 0">
+            <section layout="row" layout-sm="column">
+                <md-button class="md-raised" ng-click="markAsRead()" ng-show="data.length > 0">mark as read</md-button>
+                <md-button class="md-raised" ng-click="refresh()">refresh</md-button>
+            </section>
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntry">
-            <center>
-                <h3>{{data.title}}</h3>
-
-                <select ng-options="tag for tag in availableTags" ng-model="entry.tag">
-                    <option value="">none</option>
-                </select>
-
-                <div id="chooseRadio">
-                    <input type="radio" ng-value="true" ng-model="entry.seen"> seen
-                    <input type="radio" ng-value="false" ng-model="entry.seen"> unseen
-                </div>
-
-                <div id="deprecatedEntryButtons">
-                    <input class="button" type="button" value="save" ng-click="save()">
-                    <input class="button" type="button" value="back" ng-click="back()">
-                </div>
-            </center>
+            <md-content class="md-padding">
+                <md-tabs md-dynamic-height md-border-bottom>
+                    <md-tab label="content">
+                        <md-content class="md-padding">
+                            <h3>{{::entry.title}}</h3>
+                            <div ng-bind-html="entry.content" wrap-entry-content></div>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="details">
+                        <md-content class="md-padding">
+                            <h3>{{::entry.title}}</h3>
+                            <md-select ng-options="" placeholder="none" ng-model="entry.tag">
+                                <md-option ng-repeat="tag in availableTags" value="{{tag}}">{{tag}}</md-option>
+                            </md-select>
+                            <md-radio-group ng-model="entry.seen">
+                                <md-radio-button ng-value="true">true</md-radio-button>
+                                <md-radio-button ng-value="false">false</md-radio-button>
+                            </md-radio-group>
+                            <section layout="row" layout-sm="column">
+                                <md-button class="md-raised" ng-click="save()">save</md-button>
+                                <md-button class="md-raised" ng-click="back()">back</md-button>
+                            </section>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            <md-content>
         </script>
 
         <@script id="mobile"></@script>
