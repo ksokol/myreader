@@ -15,19 +15,19 @@
                 <md-content flex role="navigation">
                     <ul class="subscription-tag-menu">
                         <li class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}">
-                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{item.title}} ({{item.unseen}})</md-button>
+                            <md-button class="md-button-toggle" ng-click="::toggleOpen(item)">{{::item.title}} ({{::item.unseen}})</md-button>
                             <ul ng-show="isOpen(item)" class="menu-toggle-list">
                                 <li ng-repeat="subscription in item.subscriptions">
                                     <md-button
                                             ng-class="{'active' : isSelected(subscription)}"
                                             ui-sref="app.entries-tag-subscription({tag: subscription.tag, uuid: subscription.uuid})"
-                                            >{{subscription.title}} ({{subscription.unseen}})
+                                            >{{::subscription.title}} ({{::subscription.unseen}})
                                     </md-button>
                                 </li>
                             </ul>
                         </li>
                         <li class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}">
-                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{item.title}} ({{item.unseen}})</md-button>
+                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{::item.unseen}})</md-button>
                         </li>
                         <li>
                             <!-- TODO -->
@@ -50,12 +50,16 @@
 
         <script type="text/ng-template" id="SubscriptionEntries">
             <md-list>
-                <md-list-item ng-click="navigateToDetailPage(entry)" class="md-2-line" ng-repeat="entry in data">
-                    <div class="md-list-item-text">
-                        <h3>{{::entry.title}}</h3>
-                        <p>{{::entry.feedTitle}}</p>
+                <md-list-item class="md-2-line" ng-repeat="entry in data">
+                    <div layout="row">
+                        <div flex="95" class="md-list-item-text">
+                            <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title}}</h3>
+                            <p>{{::entry.feedTitle}}</p>
+                        </div>
+                        <div  flex="5">
+                            <md-checkbox class="md-secondary" ng-model="::entry.seen"></md-checkbox>
+                        </div>
                     </div>
-                    <md-checkbox class="md-secondary" ng-model="entry.seen"></md-checkbox>
                     <md-divider></md-divider>
                 </md-list-item>
             </md-list>
@@ -69,10 +73,19 @@
         <script type="text/ng-template" id="SubscriptionEntry">
             <md-content class="md-padding">
                 <md-tabs md-dynamic-height md-border-bottom>
+                    <md-tab label="actions">
+                        <md-content class="md-padding">
+                            <section layout="row" layout-sm="column">
+                                <md-button class="md-raised" target="_blank" ng-href="{{::entry.origin}}">show</md-button>
+                                <md-button class="md-raised" ng-click="markAsRead()">read</md-button>
+                                <md-button class="md-raised" ng-click="back()">back</md-button>
+                            </section>
+                        </md-content>
+                    </md-tab>
                     <md-tab label="content">
                         <md-content class="md-padding">
                             <h3>{{::entry.title}}</h3>
-                            <div ng-bind-html="entry.content" wrap-entry-content></div>
+                            <div ng-bind-html="::entry.content" wrap-entry-content></div>
                         </md-content>
                     </md-tab>
                     <md-tab label="details">

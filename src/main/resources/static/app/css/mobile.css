@@ -59,3 +59,7 @@ ul li {
 button::-moz-focus-inner {
     border: 0;
 }
+
+.my-entry-title {
+    line-height: 1em !important;
+}
