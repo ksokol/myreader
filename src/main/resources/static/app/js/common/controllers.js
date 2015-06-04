@@ -187,8 +187,16 @@ angular.module('common.controllers', ['common.services'])
         });
     };
 
+    $scope.markAsRead = function() {
+        $scope.entry.seen = true;
+        subscriptionEntryService.save($scope.entry)
+        .then(function(data) {
+            $previousState.go();
+        });
+    };
+
     $scope.back = function() {
-        $previousState.go()
+        $previousState.go();
     };
 
 }]);

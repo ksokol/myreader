@@ -73,6 +73,15 @@
         <script type="text/ng-template" id="SubscriptionEntry">
             <md-content class="md-padding">
                 <md-tabs md-dynamic-height md-border-bottom>
+                    <md-tab label="actions">
+                        <md-content class="md-padding">
+                            <section layout="row" layout-sm="column">
+                                <md-button class="md-raised" target="_blank" ng-href="{{::entry.origin}}">show</md-button>
+                                <md-button class="md-raised" ng-click="markAsRead()">read</md-button>
+                                <md-button class="md-raised" ng-click="back()">back</md-button>
+                            </section>
+                        </md-content>
+                    </md-tab>
                     <md-tab label="content">
                         <md-content class="md-padding">
                             <h3>{{::entry.title}}</h3>
