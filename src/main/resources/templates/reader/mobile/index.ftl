@@ -52,11 +52,11 @@
             <md-list>
                 <md-list-item class="md-2-line" ng-repeat="entry in data">
                     <div layout="row">
-                        <div flex-order-gt-sm="95" class="md-list-item-text">
-                            <h3 ng-click="navigateToDetailPage(entry)">{{::entry.title}}</h3>
+                        <div flex="95" class="md-list-item-text">
+                            <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title}}</h3>
                             <p>{{::entry.feedTitle}}</p>
                         </div>
-                        <div flex-order-gt-sm="5">
+                        <div  flex="5">
                             <md-checkbox class="md-secondary" ng-model="::entry.seen"></md-checkbox>
                         </div>
                     </div>
