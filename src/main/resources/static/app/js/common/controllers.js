@@ -89,13 +89,13 @@ angular.module('common.controllers', ['common.services'])
     $scope.toggleOpen = function(item) {
         if(openItem === item) {
             openItem = null;
-            $state.go('app.entries-tags', {tag: 'all'});
+            $state.go('app.entries-tags', {tag: 'all'}, {reload: true});
         } else {
             openItem = item.uuid;
             if(item.type === 'tag' || item.type === 'global') {
-                $state.go('app.entries-tags', {tag: item.uuid});
+                $state.go('app.entries-tags', {tag: item.uuid}, {reload: true});
             } else {
-                $state.go('app.entries-subscription', {uuid: item.uuid});
+                $state.go('app.entries-subscription', {uuid: item.uuid}, {reload: true});
             }
         }
         if(!$mdMedia('gt')) {
