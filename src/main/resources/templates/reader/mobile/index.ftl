@@ -39,7 +39,7 @@
             <div layout="column" tabIndex="-1" role="main" flex>
                 <md-toolbar class="md-whiteframe-glow-z2" ng-controller="TopBarCtrl">
                     <md-button class="md-icon-button" hide-gt-sm ng-click="openMenu()" aria-label="Menu">
-                        <md-icon md-svg-src="../app/img/icons/ic_menu_24px.svg"></md-icon>
+                        <md-icon md-svg-src="../static/app/img/icons/ic_menu_24px.svg"></md-icon>
                     </md-button>
                     <div layout="row" flex class="fill-height"></div>
                         <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>

@@ -1,6 +1,5 @@
 package spring;
 
-import static myreader.config.SecurityConfig.ACCOUNT_CONTEXT;
 import static myreader.config.SecurityConfig.LOGIN_PROCESSING_URL;
 import static myreader.config.SecurityConfig.LOGIN_URL;
 import static myreader.test.KnownUser.USER1;
@@ -24,7 +23,6 @@ import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HTMLParser;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import myreader.test.KnownUser;
@@ -61,24 +59,22 @@ public class ApiSecurityTest extends SecurityTestSupport {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Ignore
     @Test
     public void testLoginPage() throws IOException {
-        //https://github.com/spring-projects/spring-test-htmlunit/issues/40
-        String loginUrl = "http://localhost" + ACCOUNT_CONTEXT + LOGIN_URL;
-        String loginProcessingUrl = ACCOUNT_CONTEXT + LOGIN_PROCESSING_URL;
+        String loginUrl = "http://localhost" + LOGIN_URL;
+        String loginProcessingUrl = LOGIN_PROCESSING_URL;
 
         HtmlPage page = webClient.getPage(loginUrl);
         HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
 
         DomElement username = loginForm.getInputByName(USERNAME_INPUT);
         DomElement password = loginForm.getInputByName(PASSWORD_INPUT);
-        HtmlInput csrf = loginForm.getInputByName(CSRF_INPUT);
-        HtmlElement submit = loginForm.getOneHtmlElementByAttribute("input", "type", "submit");
+       // HtmlInput csrf = loginForm.getInputByName(CSRF_INPUT);
+        HtmlElement submit = loginForm.getOneHtmlElementByAttribute("button", "type", "submit");
 
         assertThat(username, notNullValue());
         assertThat(password, notNullValue());
-        assertThat(csrf, notNullValue());
+       // assertThat(csrf, notNullValue());
         assertThat(submit, notNullValue());
         assertThat(loginForm.getAttribute("action"), is(loginProcessingUrl));
     }
@@ -86,7 +82,6 @@ public class ApiSecurityTest extends SecurityTestSupport {
     private static String basic(KnownUser user) {
         return "Basic " + new String(Base64.encodeBase64((String.format("%s:%s", user.username, user.password)).getBytes()));
     }
-
 
     private String extractCsrfToken(final MvcResult mvcResult) throws IOException {
         /*

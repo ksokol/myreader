@@ -2,18 +2,23 @@ package myreader.config.jawr;
 
 import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * @author Kamill Sokol
  */
 @Configuration
 public class JavascriptConfigPropertiesSource {
-    
+
+    @Autowired
+    private Environment environment;
+
     @Bean
-    public Properties javascriptConfigPropertiesSource(@Value("${jawr.debug.on:false}") boolean debug) {
+    public Properties javascriptConfigPropertiesSource() {
+        final boolean debug = environment.getProperty("jawr.debug.on", Boolean.class, false);
         return new ConfigBuilder(debug)
                 .jsBundle("mobile")
                     .webjar("angularjs/1.3.15/angular.js")

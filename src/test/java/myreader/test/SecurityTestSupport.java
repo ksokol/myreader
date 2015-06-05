@@ -1,9 +1,14 @@
 package myreader.test;
 
-import com.gargoylesoftware.htmlunit.WebClient;
+import static myreader.test.KnownUser.USER1;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import myreader.config.MvcConfig;
 import myreader.config.SecurityConfig;
 import myreader.entity.User;
 import myreader.repository.UserRepository;
+
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +28,13 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import static myreader.test.KnownUser.USER1;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.gargoylesoftware.htmlunit.WebClient;
 
 /**
  * @author Kamill Sokol
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SecurityConfig.class, SecurityTestSupport.AdditionalConfig.class})
+@ContextConfiguration(classes = {SecurityConfig.class, MvcConfig.class, SecurityTestSupport.AdditionalConfig.class})
 @WebAppConfiguration
 public class SecurityTestSupport {
 

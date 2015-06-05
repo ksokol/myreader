@@ -46,7 +46,7 @@
 </@login>
 
 <div class="container">
-    <form action="${requestContext.getContextUrl(LOGIN_PROCESSING_URL)}" method="POST" class="form-horizontal">
+    <form action="${requestContext.getContextUrl(LOGIN_PROCESSING_URL)}" method="POST" class="form-horizontal" name="loginForm">
         <#--
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         -->

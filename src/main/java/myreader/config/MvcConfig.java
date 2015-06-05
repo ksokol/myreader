@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
@@ -31,6 +32,7 @@ import net.jawr.web.servlet.JawrSpringController;
 /**
  * @author Kamill Sokol
  */
+@EnableWebMvc
 @Configuration
 @Import({CssConfigPropertiesSource.class, JavascriptConfigPropertiesSource.class})
 public class MvcConfig extends WebMvcConfigurerAdapter {

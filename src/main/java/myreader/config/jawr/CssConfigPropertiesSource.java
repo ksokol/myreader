@@ -2,9 +2,10 @@ package myreader.config.jawr;
 
 import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * @author Kamill Sokol
@@ -12,8 +13,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CssConfigPropertiesSource {
 
+    @Autowired
+    private Environment environment;
+
     @Bean
-    public Properties cssConfigProperties(@Value("${jawr.debug.on:false}") boolean debug) {
+    public Properties cssConfigProperties() {
+        final boolean debug = environment.getProperty("jawr.debug.on", Boolean.class, false);
         return new ConfigBuilder(debug)
                 .cssBundle("mobile")
                 .webjar("angular-material/0.9.0/angular-material.css")
