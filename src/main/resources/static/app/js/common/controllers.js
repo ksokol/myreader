@@ -28,9 +28,7 @@ angular.module('common.controllers', ['common.services'])
         });
     };
 
-    if($mdMedia('lg')){
-        refresh();
-    }
+    refresh();
 
     $scope.$on('refresh', refresh);
 
