@@ -3,7 +3,6 @@ angular.module('common.controllers', ['common.services'])
 .controller('TopBarCtrl', ['$rootScope', '$scope', '$mdSidenav', function($rootScope, $scope, $mdSidenav) {
 
     $scope.openMenu = function() {
-        $rootScope.$broadcast('refresh-navigation-lg');
         $mdSidenav('left').toggle();
     };
 
@@ -30,25 +29,11 @@ angular.module('common.controllers', ['common.services'])
 
     refresh();
 
-    $scope.$on('refresh', refresh);
-
     $scope.$on('$stateChangeSuccess', function(a,b,c) {
         //TODO
         if ($state.is('app.entries-tags') || $state.is('app.entries-tag-subscription') || $state.is('app.entries-subscription')) {
             openItem = c.uuid ? c.uuid : c.tag;
         }
-    });
-
-    $scope.$on('refresh-navigation', function() {
-        $mdMedia('gt-lg') && refresh();
-    });
-
-    $scope.$on('refresh-navigation-lg', refresh);
-
-    $scope.$watch(function() {
-        return $mdMedia('gt-lg');
-    }, function(big) {
-        big && refresh();
     });
 
     $scope.isItemSelected= function(item) {
@@ -128,22 +113,24 @@ angular.module('common.controllers', ['common.services'])
         return param;
     };
 
+    $scope.visible = function(item) {
+        return item.visible !== undefined ? item.visible : true;
+    };
+
     $scope.markAsRead = function() {
         var selected = [];
-        var tmp = [];
         angular.forEach($scope.data, function(entry) {
             if(entry.seen) {
                 selected.push(entry);
-            } else {
-                tmp.push(entry);
             }
         });
 
         if(selected.length > 0) {
             subscriptionEntryService.updateEntries(selected)
             .then(function() {
-                $scope.data = tmp;
-                $rootScope.$broadcast('refresh-navigation', $stateParams);
+                angular.forEach(selected, function(entry) {
+                    entry.visible = false;
+                });
             });
         }
     };

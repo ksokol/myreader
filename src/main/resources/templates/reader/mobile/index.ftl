@@ -39,6 +39,7 @@
             <div layout="column" tabIndex="-1" role="main" flex>
                 <md-toolbar class="md-whiteframe-glow-z2" ng-controller="TopBarCtrl">
                     <md-button class="md-icon-button" hide-gt-sm ng-click="openMenu()" aria-label="Menu">
+                        <!-- TODO -->
                         <md-icon md-svg-src="../static/app/img/icons/ic_menu_24px.svg"></md-icon>
                     </md-button>
                     <div layout="row" flex class="fill-height"></div>
@@ -50,7 +51,7 @@
 
         <script type="text/ng-template" id="SubscriptionEntries">
             <md-list>
-                <md-list-item class="md-2-line" ng-repeat="entry in data">
+                <md-list-item class="md-2-line" ng-repeat="entry in data | filter: visible">
                     <div layout="row">
                         <div flex="95" class="md-list-item-text">
                             <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title}}</h3>
