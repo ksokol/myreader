@@ -14,10 +14,10 @@
 
                 <md-content flex role="navigation">
                     <ul class="subscription-tag-menu">
-                        <li class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}">
+                        <li class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-hide="item.unseen < 1">
                             <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
                             <ul ng-show="isOpen(item)" class="menu-toggle-list">
-                                <li ng-repeat="subscription in item.subscriptions">
+                                <li ng-repeat="subscription in item.subscriptions" ng-hide="subscription.unseen < 1">
                                     <md-button
                                             ng-class="{'active' : isSelected(subscription)}"
                                             ui-sref="app.entries-tag-subscription({tag: subscription.tag, uuid: subscription.uuid})"
@@ -26,7 +26,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}">
+                        <li class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-hide="item.unseen < 1">
                             <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
                         </li>
                         <li>
