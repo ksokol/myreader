@@ -78,7 +78,51 @@ angular.module('common.api', [])
                 tag.subscriptions.push(s);
                 self.tags.push(tag);
             }
-        }
+        };
+
+        self.getSubscriptionByUuid = function(uuid) {
+            for(var i=0;i<self.subscriptions.length;i++) {
+                if(self.subscriptions[i].uuid === uuid) {
+                    return self.subscriptions[i];
+                }
+            }
+
+            for(var i=0;i<self.tags.length;i++) {
+                var tag = self.tags[i];
+
+                for(var j=0;j<tag.subscriptions.length;j++) {
+                    if(tag.subscriptions[j].uuid === uuid) {
+                        return tag.subscriptions[j];
+                    }
+                }
+            }
+        };
+
+        self.incrementSubscriptionUnseen = function(uuid) {
+            //TODO
+            var subscription = self.getSubscriptionByUuid(uuid);
+            if(subscription) {
+                subscription.unseen += 1;
+            }
+        };
+
+        self.decrementSubscriptionUnseen = function(uuid) {
+            var subscription = self.getSubscriptionByUuid(uuid);
+
+            if(subscription) {
+                subscription.unseen -= 1;
+                self.unseen -= 1;
+
+                var all = self.getTag('all');
+                all.unseen -= 1;
+
+                var subscriptionTag = self.getTag(subscription.tag);
+
+                if(subscriptionTag) {
+                    subscriptionTag.unseen -= 1;
+                }
+            }
+        };
     };
 
     return {
@@ -97,8 +141,6 @@ angular.module('common.api', [])
                 } else {
                     subscriptionTags.addTag(value);
                 }
-                all.subscriptions.push(value);
-
             });
             all.unseen = subscriptionTags.unseen;
             subscriptionTags.tags.unshift(all);

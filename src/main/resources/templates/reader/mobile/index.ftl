@@ -15,19 +15,19 @@
                 <md-content flex role="navigation">
                     <ul class="subscription-tag-menu">
                         <li class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}">
-                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{::item.unseen}})</md-button>
+                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
                             <ul ng-show="isOpen(item)" class="menu-toggle-list">
                                 <li ng-repeat="subscription in item.subscriptions">
                                     <md-button
                                             ng-class="{'active' : isSelected(subscription)}"
                                             ui-sref="app.entries-tag-subscription({tag: subscription.tag, uuid: subscription.uuid})"
-                                            >{{::subscription.title}} ({{::subscription.unseen}})
+                                            >{{::subscription.title}} ({{subscription.unseen}})
                                     </md-button>
                                 </li>
                             </ul>
                         </li>
                         <li class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}">
-                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{::item.unseen}})</md-button>
+                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
                         </li>
                         <li>
                             <!-- TODO -->
