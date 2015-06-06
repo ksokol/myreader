@@ -15,7 +15,7 @@
                 <md-content flex role="navigation">
                     <ul class="subscription-tag-menu">
                         <li class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-hide="item.unseen < 1">
-                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
+                            <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
                             <ul ng-show="isOpen(item)" class="menu-toggle-list">
                                 <li ng-repeat="subscription in item.subscriptions" ng-hide="subscription.unseen < 1">
                                     <md-button
@@ -27,7 +27,7 @@
                             </ul>
                         </li>
                         <li class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-hide="item.unseen < 1">
-                            <md-button class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
+                            <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
                         </li>
                         <li>
                             <!-- TODO -->
@@ -51,7 +51,7 @@
 
         <script type="text/ng-template" id="SubscriptionEntries">
             <md-list>
-                <md-list-item class="md-2-line" ng-repeat="entry in data | filter: visible">
+                <md-list-item md-no-ink class="md-2-line" ng-repeat="entry in data | filter: visible">
                     <div layout="row">
                         <div flex="95" class="md-list-item-text">
                             <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title}}</h3>
