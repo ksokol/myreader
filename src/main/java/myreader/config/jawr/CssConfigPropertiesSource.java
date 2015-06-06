@@ -21,7 +21,7 @@ public class CssConfigPropertiesSource {
         final boolean debug = environment.getProperty("jawr.debug.on", Boolean.class, false);
         return new ConfigBuilder(debug)
                 .cssBundle("mobile")
-                .webjar("angular-material/0.9.0/angular-material.css")
+                .webjar("angular-material/0.9.7/angular-material.css")
                 .jar("static/app/css/mobile.css")
                 .build();
     }

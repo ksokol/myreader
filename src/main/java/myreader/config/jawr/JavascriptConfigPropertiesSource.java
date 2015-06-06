@@ -31,7 +31,7 @@ public class JavascriptConfigPropertiesSource {
                     .webjar("ui-router-extras/0.0.13/modular/ct-ui-router-extras.previous.js")
                     .webjar("angular-local-storage/0.1.5/angular-local-storage.js")
                     .jar("static/app/js/lib/angular-cache.js") //TODO submit newest version to webjars
-                    .webjar("angular-material/0.9.0/angular-material.js")
+                    .webjar("angular-material/0.9.7/angular-material.js")
                     .jar("static/app/js/common/config.js")
                     .jar("static/app/js/common/api.js")
                     .jar("static/app/js/common/services.js")
