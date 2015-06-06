@@ -9,7 +9,7 @@
         <section layout="row" ui-view></section>
 
         <script type="text/ng-template" id="SubscriptionTags">
-            <md-sidenav layout="column" class="site-sidenav md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')">
+            <md-sidenav layout="column" class="site-sidenav md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
                 <md-toolbar class="md-whiteframe-glow-z2"></md-toolbar>
 
                 <md-content flex role="navigation">
