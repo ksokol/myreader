@@ -346,5 +346,10 @@
             <artifactId>angular-local-storage</artifactId>
             <version>0.1.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>angular-cache</artifactId>
+            <version>4.2.0</version>
+        </dependency>
     </dependencies>
 </project>
