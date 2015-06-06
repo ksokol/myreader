@@ -3,8 +3,6 @@ package myreader.resource.subscriptionentry;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
@@ -46,18 +44,14 @@ public class SubscriptionEntryEntityResource {
     }
 
     @RequestMapping(method = GET)
-    public Content<SubscriptionEntryGetResponse> get(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
+    public SubscriptionEntryGetResponse get(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
         final SubscriptionEntry subscriptionEntry = findOrThrowException(id, user.getUsername());
-        final Set<String> distinctTags = subscriptionEntryRepository.findDistinctTags(user.getId());
-        final SubscriptionEntryGetResponse subscriptionEntryGetResponse = conversionService.convert(subscriptionEntry, SubscriptionEntryGetResponse.class);
-        final Content<SubscriptionEntryGetResponse> body = new Content<>(subscriptionEntryGetResponse);
-        body.add("availableTags", distinctTags);
-        return body;
+        return conversionService.convert(subscriptionEntry, SubscriptionEntryGetResponse.class);
     }
 
     @Transactional
     @RequestMapping(method = PATCH)
-    public Content<SubscriptionEntryGetResponse> patch(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user, @RequestBody Content<SubscriptionEntryPatchRequest> content) {
+    public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user, @RequestBody Content<SubscriptionEntryPatchRequest> content) {
         final SubscriptionEntry subscriptionEntry = findOrThrowException(id, user.getUsername());
         final SubscriptionEntryPatchRequest patchRequest = content.getContent();
 
@@ -75,7 +69,7 @@ public class SubscriptionEntryEntityResource {
         return get(id, user);
     }
 
-    public SubscriptionEntry findOrThrowException(Long id, String username) {
+    private SubscriptionEntry findOrThrowException(Long id, String username) {
         SubscriptionEntry entry = subscriptionEntryRepository.findByIdAndUsername(id, username);
         if(entry == null) {
             throw new ResourceNotFoundException();

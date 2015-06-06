@@ -3,6 +3,7 @@ package myreader.resource.subscriptionentry;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
@@ -10,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -163,5 +165,13 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
                 .json("{'content':[{'uuid': 'digits-only'}]}"))
                 .andExpect(jsonEquals("json/subscriptionentry/patch-batch-validation-response.json"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void availableTags() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries/availableTags"))
+                .andDo(print())
+        .andExpect(jsonPath("$", hasItems("tag1", "tag2-tag3", "tag4", "tag5", "tag6", "tag7", "tag8Tag9")));
+;
     }
 }

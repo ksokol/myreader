@@ -1,8 +1,4 @@
 {
-  "availableTags": [
-    "tag3"
-  ],
-  "content": {
     "uuid": "1004",
     "title": "MySQL is to SQL like ??? to NoSQL",
     "feedTitle": "user2_subscription2",
@@ -14,5 +10,4 @@
     "origin": "http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql",
     "createdAt": "2011-04-15T19:20:46Z",
     "links": "${json-unit.ignore}"
-  }
 }

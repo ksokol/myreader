@@ -177,17 +177,21 @@ angular.module('common.api', [])
 
 .service('subscriptionEntryConverter', function() {
 
-    var SubscriptionEntry =  function(entry, availableTags) {
-        this.entry = entry;
-        this.availableTags = availableTags;
-    };
+    return {
+        convertFrom: function (data) {
+            return data;
+        },
+        convertTo: function(data) {
+            return {content: {tag: data.tag, seen: data.seen}};
+        }
+    }
+})
+
+.service('subscriptionEntryTagConverter', function() {
 
     return {
         convertFrom: function (data) {
-            return new SubscriptionEntry(data.content, data.availableTags);
-        },
-        convertTo: function(data) {
-            return {content: {tag: data.tag, seen: data.seen }};
+            return data;
         }
     }
 })

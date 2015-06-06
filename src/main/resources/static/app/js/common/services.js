@@ -44,9 +44,13 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     }
 }])
 
-.service('subscriptionEntryService', ['$rootScope', 'api', function($rootScope, api) {
-     var url = '/myreader/api/2/subscriptionEntries?';
-     var url2 = '/myreader/api/2/subscriptionEntries';
+.service('subscriptionEntryService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
+    var url = '/myreader/api/2/subscriptionEntries?';
+    var url2 = '/myreader/api/2/subscriptionEntries';
+
+    var subscriptionEntryCache = CacheFactory.createCache('subscriptionEntryCache', {
+        deleteOnExpire: 'aggressive'
+    });
 
     return {
         findBy: function(params) {
@@ -54,22 +58,72 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             for(key in params) {
                 tmp += "&" + key + "=" + params[key]
             }
-            return api.get('subscriptionEntries', tmp);
+            var promise = api.get('subscriptionEntries', tmp);
+
+            promise.then(function(data) {
+                angular.forEach(data, function(item) {
+                    subscriptionEntryCache.put(url2 + '/' + item.uuid, item);
+                });
+            });
+
+            return promise;
         },
         updateEntries: function(entries) {
             var promise =  api.patch('subscriptionEntries', url, entries);
 
             promise.then(function(data) {
                 $rootScope.$broadcast('subscriptionEntry:updateEntries', data);
+                angular.forEach(data, function(value) {
+                    subscriptionEntryCache.put(url2 + '/' + value.uuid, value);
+                });
             });
 
             return promise;
         },
         findOne: function(id) {
-            return api.get('subscriptionEntry', url2 + '/' + id);
+            var url = url2 + '/' + id;
+            var cached = subscriptionEntryCache.get(url);
+
+            if(cached) {
+                return deferService.resolved(cached);
+            }
+
+            return api.get('subscriptionEntry', url);
         },
         save: function(entry) {
-            return api.patch('subscriptionEntry', url2 + '/' + entry.uuid, entry);
+            var url = url2 + '/' + entry.uuid;
+            var promise = api.patch('subscriptionEntry', url, entry);
+
+            promise.then(function(data) {
+                subscriptionEntryCache.put(url, data);
+            });
+
+            return promise;
+        }
+    }
+}])
+.service('subscriptionEntryTagService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
+    var url = '/myreader/api/2/subscriptionEntries/availableTags';
+
+    var subscriptionEntryTagCache = CacheFactory.createCache('subscriptionEntryTagCache', {
+        deleteOnExpire: 'aggressive',
+        maxAge: 60 * 5 * 1000 //5 minutes
+    });
+
+    return {
+        findAll: function() {
+            var cached = subscriptionEntryTagCache.get('subscriptionEntryTags');
+            if(cached) {
+                return deferService.resolved(cached);
+            }
+
+            var promise = api.get('subscriptionEntryTag', url);
+
+            promise.then(function(data) {
+                subscriptionEntryTagCache.put('subscriptionEntryTags', data);
+            });
+
+            return promise;
         }
     }
 }])

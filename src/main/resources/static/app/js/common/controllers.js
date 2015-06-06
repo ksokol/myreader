@@ -120,7 +120,7 @@ angular.module('common.controllers', ['common.services'])
     $scope.markAsRead = function() {
         var selected = [];
         angular.forEach($scope.data, function(entry) {
-            if(entry.seen) {
+            if(entry.seen && (entry.visible === undefined || entry.visible) ) {
                 selected.push(entry);
             }
         });
@@ -146,7 +146,7 @@ angular.module('common.controllers', ['common.services'])
     refresh(params());
 }])
 
-.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', function($scope, $stateParams, $previousState, $mdToast, subscriptionEntryService) {
+.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', 'subscriptionEntryTagService', function($scope, $stateParams, $previousState, $mdToast, subscriptionEntryService, subscriptionEntryTagService) {
 
     $scope.entry = {};
     $scope.availableTags = [];
@@ -154,16 +154,19 @@ angular.module('common.controllers', ['common.services'])
     if($stateParams.uuid) {
         subscriptionEntryService.findOne($stateParams.uuid)
         .then(function(data) {
-            $scope.entry = data.entry;
-            $scope.availableTags = data.availableTags;
+            $scope.entry = data;
+        });
+
+        subscriptionEntryTagService.findAll()
+        .then(function(data) {
+            $scope.availableTags = data;
         });
     }
 
     $scope.save = function() {
         subscriptionEntryService.save($scope.entry)
         .then(function(data) {
-            $scope.entry = data.entry;
-            $scope.availableTags = data.availableTags;
+            $scope.entry = data;
             $mdToast.show(
                 $mdToast.simple()
                     .content('saved')

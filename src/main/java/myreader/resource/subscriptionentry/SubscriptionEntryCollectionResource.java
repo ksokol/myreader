@@ -5,6 +5,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,12 @@ public class SubscriptionEntryCollectionResource {
 
         Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(q, user.getId(), feedUuidEqual, feedTagEqual,  seenEqual, sequenceable.getNext(), sequenceable.toPageable());
         return resourceAssemblers.toResource(toSequence(sequenceable, pagedEntries.getContent()), SubscriptionEntryGetResponse.class);
+    }
+
+
+    @RequestMapping(value= "availableTags", method = GET)
+    public Set<String> tags(@AuthenticationPrincipal MyReaderUser user) {
+        return subscriptionEntryRepository.findDistinctTags(user.getId());
     }
 
     @Transactional
