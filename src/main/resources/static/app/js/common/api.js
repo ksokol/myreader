@@ -6,7 +6,7 @@ angular.module('common.api', [])
         var self = this;
 
         self.getLink = function(rel) {
-            for(i=0; i < self.links.length; i++) {
+            for(var i=0; i < self.links.length; i++) {
                 if(self.links[i].rel === rel) {
                     return self.links[i];
                 }
@@ -19,7 +19,7 @@ angular.module('common.api', [])
         self.subscriptions = [];
 
         self.getLink = function(rel) {
-            for(i=0; i < self.links.length; i++) {
+            for(var i=0; i < self.links.length; i++) {
                 if(self.links[i].rel === rel) {
                     return self.links[i];
                 }
@@ -34,7 +34,7 @@ angular.module('common.api', [])
         self.subscriptions = [];
 
         self.getTag = function(tag) {
-            for(i=0;i<self.tags.length;i++) {
+            for(var i=0;i<self.tags.length;i++) {
                 var t = self.tags[i];
                 if(t.title === tag) {
                     return t;
@@ -125,7 +125,7 @@ angular.module('common.api', [])
         },
         convertTo: function(data) {
             var converted = [];
-            angular.forEach(data, function(val,idx) {
+            angular.forEach(data, function(val) {
                 converted.push({uuid: val.uuid, seen: val.seen, tag: val.tag});
             });
             return {content: converted};
@@ -163,9 +163,9 @@ angular.module('common.api', [])
 
 .service('api', ['$http', '$q', 'conversionService', function ($http, $q, conversionService) {
     return {
-        get: function (resourceType, href) {
+        get: function (resourceType, url) {
             var deferred = $q.defer();
-            $http.get(href)
+            $http.get(url)
             .success(function (data) {
                 deferred.resolve(conversionService.convertFrom(resourceType, data));
             });
