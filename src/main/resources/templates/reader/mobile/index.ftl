@@ -10,7 +10,7 @@
 
         <script type="text/ng-template" id="SubscriptionTags">
             <md-sidenav layout="column" class="site-sidenav md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
-                <md-toolbar class="md-whiteframe-glow-z2"></md-toolbar>
+                <md-toolbar></md-toolbar>
 
                 <md-content flex role="navigation">
                     <ul class="subscription-tag-menu">
@@ -37,7 +37,7 @@
                 </md-content>
             </md-sidenav>
             <div layout="column" tabIndex="-1" role="main" flex>
-                <md-toolbar class="md-whiteframe-glow-z2" ng-controller="TopBarCtrl">
+                <md-toolbar ng-controller="TopBarCtrl">
                     <md-button class="md-icon-button" hide-gt-sm ng-click="openMenu()" aria-label="Menu">
                         <!-- TODO -->
                         <md-icon md-svg-src="../static/app/img/icons/ic_menu_24px.svg"></md-icon>
