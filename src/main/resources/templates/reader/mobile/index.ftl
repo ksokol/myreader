@@ -5,8 +5,7 @@
         <@style id="mobile"></@style>
         <meta name="viewport" content="initial-scale=1">
     </head>
-    <body>
-        <section layout="row" ui-view></section>
+    <body layout="row" ui-view>
 
         <script type="text/ng-template" id="SubscriptionTags">
             <md-sidenav layout="column" class="site-sidenav md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
@@ -86,7 +85,7 @@
                     <md-tab label="content">
                         <md-content class="md-padding">
                             <h3>{{::entry.title}}</h3>
-                            <div ng-bind-html="::entry.content" wrap-entry-content target-blank></div>
+                            <div ng-bind-html="::entry.content"  target-blank></div>
                         </md-content>
                     </md-tab>
                     <md-tab label="details" md-on-select="fetchTags()">
