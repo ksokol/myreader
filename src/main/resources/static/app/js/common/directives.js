@@ -43,7 +43,7 @@ angular.module('common.directives', [])
 
 .directive("wrapEntryContent", ['$window', '$mdMedia', function($window, $mdMedia) {
     return {
-        restrict : "A",
+        restrict : "E",
         link : function($scope, $element, attrs) {
             $scope.$watch(function(){
                 return $window.innerWidth;
@@ -60,4 +60,15 @@ angular.module('common.directives', [])
             });
         }
     };
-}]);
+}])
+.directive('targetBlank', function($timeout) {
+    return function($scope, element) {
+        $scope.initializeTarget = function() {
+            return $scope.$on('$viewContentLoaded', $timeout(function() {
+                var aTags = element.prop('tagName') === 'A' ? element : element.find('a');
+                aTags.attr('target', '_blank');
+            }));
+        };
+        return $scope.initializeTarget();
+    };
+});

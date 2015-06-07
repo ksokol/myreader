@@ -156,11 +156,6 @@ angular.module('common.controllers', ['common.services'])
         .then(function(data) {
             $scope.entry = data;
         });
-
-        subscriptionEntryTagService.findAll()
-        .then(function(data) {
-            $scope.availableTags = data;
-        });
     }
 
     $scope.save = function() {
@@ -180,6 +175,13 @@ angular.module('common.controllers', ['common.services'])
         subscriptionEntryService.save($scope.entry)
         .then(function(data) {
             $previousState.go();
+        });
+    };
+
+    $scope.fetchTags = function() {
+        subscriptionEntryTagService.findAll()
+        .then(function(data) {
+            $scope.availableTags = data;
         });
     };
 

@@ -86,10 +86,10 @@
                     <md-tab label="content">
                         <md-content class="md-padding">
                             <h3>{{::entry.title}}</h3>
-                            <div ng-bind-html="::entry.content" wrap-entry-content></div>
+                            <div ng-bind-html="::entry.content" wrap-entry-content target-blank></div>
                         </md-content>
                     </md-tab>
-                    <md-tab label="details">
+                    <md-tab label="details" md-on-select="fetchTags()">
                         <md-content class="md-padding">
                             <h3>{{::entry.title}}</h3>
                             <md-select ng-options="" placeholder="none" ng-model="entry.tag">
