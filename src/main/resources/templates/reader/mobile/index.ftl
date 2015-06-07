@@ -18,10 +18,10 @@
                             <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
                             <ul ng-show="isOpen(item)" class="menu-toggle-list">
                                 <li ng-repeat="subscription in item.subscriptions" ng-hide="subscription.unseen < 1">
-                                    <md-button
+                                    <md-button md-no-ink
                                             ng-class="{'active' : isSelected(subscription)}"
-                                            ui-sref="app.entries-tag-subscription({tag: subscription.tag, uuid: subscription.uuid})"
-                                            >{{::subscription.title}} ({{subscription.unseen}})
+                                            ui-sref="app.entries-tag-subscription({tag: subscription.tag, uuid: subscription.uuid})">
+                                        {{::subscription.title}} ({{subscription.unseen}})
                                     </md-button>
                                 </li>
                             </ul>
