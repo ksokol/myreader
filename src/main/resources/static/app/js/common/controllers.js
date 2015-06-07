@@ -12,6 +12,17 @@ angular.module('common.controllers', ['common.services'])
 
 }])
 
+.controller('TopBarActionsCtrl', ['$rootScope', '$scope', function($rootScope, $scope) {
+
+    $scope.refresh = function() {
+        $rootScope.$broadcast('refresh');
+    };
+
+    $scope.update = function() {
+        $rootScope.$broadcast('update');
+    };
+}])
+
 .controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', 'localStorageService', 'subscriptionTagService', function($rootScope, $scope, $mdMedia, $state, localStorageService, subscriptionTagService) {
     $scope.data = {
         tags: [],
@@ -112,6 +123,14 @@ angular.module('common.controllers', ['common.services'])
 
         return param;
     };
+
+    $scope.$on('refresh', function() {
+        refresh(params());
+    });
+
+    $scope.$on('update', function() {
+        $scope.markAsRead();
+    });
 
     $scope.visible = function(item) {
         return item.visible !== undefined ? item.visible : true;

@@ -5,7 +5,7 @@
         <@style id="mobile"></@style>
         <meta name="viewport" content="initial-scale=1">
     </head>
-    <body layout="row" ui-view>
+    <body layout="row" ui-view="body">
 
         <script type="text/ng-template" id="SubscriptionTags">
             <md-sidenav layout="column" class="site-sidenav md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
@@ -37,14 +37,20 @@
             </md-sidenav>
             <div layout="column" tabIndex="-1" role="main" flex>
                 <md-toolbar ng-controller="TopBarCtrl">
-                    <md-button class="md-icon-button" hide-gt-sm ng-click="openMenu()" aria-label="Menu">
-                        <!-- TODO -->
-                        <md-icon md-svg-src="../static/app/img/icons/ic_menu_24px.svg"></md-icon>
-                    </md-button>
-                    <div layout="row" flex class="fill-height"></div>
-                        <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
+                    <div class="md-toolbar-tools">
+                        <md-button class="md-icon-button" hide-gt-sm ng-click="openMenu()" aria-label="Menu">
+                            <md-icon md-font-library="material-icons">menu</md-icon>
+                        </md-button>
+                        <h2>
+                            <span></span>
+                        </h2>
+                        <span flex></span>
+                        <div ui-view="actions"></div>
+                    </div>
+                    <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
                 </md-toolbar>
-                <md-content ui-view md-scroll-y flex layout-padding></md-content>
+
+                <md-content ui-view="content" md-scroll-y flex layout-padding></md-content>
             </div>
         </script>
 
@@ -63,11 +69,6 @@
                     <md-divider></md-divider>
                 </md-list-item>
             </md-list>
-
-            <section layout="row" layout-sm="column">
-                <md-button class="md-raised" ng-click="markAsRead()" ng-show="data.length > 0">mark as read</md-button>
-                <md-button class="md-raised" ng-click="refresh()">refresh</md-button>
-            </section>
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntry">
@@ -85,7 +86,7 @@
                     <md-tab label="content">
                         <md-content class="md-padding">
                             <h3>{{::entry.title}}</h3>
-                            <div ng-bind-html="::entry.content"  target-blank></div>
+                            <div ng-bind-html="::entry.content" target-blank></div>
                         </md-content>
                     </md-tab>
                     <md-tab label="details" md-on-select="fetchTags()">
@@ -106,6 +107,15 @@
                     </md-tab>
                 </md-tabs>
             <md-content>
+        </script>
+
+        <script type="text/ng-template" id="SubscriptionEntriesActions">
+            <md-button class="md-icon-button" aria-label="Refresh" ng-click="refresh()">
+                <md-icon md-font-library="material-icons">refresh</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="Upload" ng-click="update()">
+                <md-icon md-font-library="material-icons">file_upload</md-icon>
+            </md-button>
         </script>
 
         <@script id="mobile"></@script>

@@ -52,28 +52,65 @@ angular.module('myreader', ['common.services', 'common.controllers', 'common.dir
             .state('app', {
                 abstract: true,
                 url: "/app",
-                templateUrl: 'SubscriptionTags',
-                controller: 'SubscriptionNavigationCtrl'
+
+                views: {
+                    body: {
+                        templateUrl: 'SubscriptionTags',
+                        controller: 'SubscriptionNavigationCtrl'
+                    }
+                }
             })
             .state('app.entries-tags', {
                 url: "/tag/entries/:tag",
-                templateUrl: 'SubscriptionEntries',
-                controller: 'SubscriptionEntryListCtrl'
+
+                views: {
+                    content: {
+                        templateUrl: 'SubscriptionEntries',
+                        controller: 'SubscriptionEntryListCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'SubscriptionEntriesActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
             })
             .state('app.entries-tag-subscription', {
                 url: "/tag/entries/:tag/:uuid",
-                templateUrl: 'SubscriptionEntries',
-                controller: 'SubscriptionEntryListCtrl'
+
+                views: {
+                    content: {
+                        templateUrl: 'SubscriptionEntries',
+                        controller: 'SubscriptionEntryListCtrl'
+
+                    },
+                    actions: {
+                        templateUrl: 'SubscriptionEntriesActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
             })
             .state('app.entries-subscription', {
                 url: "/subscription/entries/:uuid",
-                templateUrl: 'SubscriptionEntries',
-                controller: 'SubscriptionEntryListCtrl'
+                controller: 'SubscriptionEntryListCtrl',
+                views: {
+                    content: {
+                        templateUrl: 'SubscriptionEntries',
+                        controller: 'SubscriptionEntryListCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'SubscriptionEntriesActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
             })
             .state('app.entry', {
                 url: "/entry/:uuid",
-                templateUrl: 'SubscriptionEntry',
-                controller: 'SubscriptionEntryCtrl'
+                views: {
+                    content: {
+                        templateUrl: 'SubscriptionEntry',
+                        controller: 'SubscriptionEntryCtrl'
+                    }
+                }
             });
         $urlRouterProvider.otherwise('/app/tag/entries/all');
 }])
