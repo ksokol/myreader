@@ -80,3 +80,9 @@ button::-moz-focus-inner {
 .my-entry-title {
     line-height: 1em !important;
 }
+
+/* TODO */
+#md-progress-linear-wrapper {
+    height:10px;
+    margin-top: -5px;
+}

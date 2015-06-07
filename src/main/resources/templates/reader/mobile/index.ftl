@@ -47,8 +47,11 @@
                         <span flex></span>
                         <div ui-view="actions"></div>
                     </div>
-                    <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
+
                 </md-toolbar>
+                <div id="md-progress-linear-wrapper">
+                    <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
+                </div>
 
                 <md-content ui-view="content" md-scroll-y flex layout-padding></md-content>
             </div>
