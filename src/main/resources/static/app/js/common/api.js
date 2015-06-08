@@ -151,7 +151,28 @@ angular.module('common.api', [])
 
 .service('subscriptionEntriesConverter', function() {
 
-    var SubscriptionEntry = function() {};
+    var SubscriptionEntry = function() { };
+
+    var SubscriptionEnties = function(entries, links) {
+        var self = this;
+        self.entries = entries;
+
+        var links = angular.isArray(links) ? links : [];
+
+        var getLink = function(rel) {
+            if(rel) {
+                for(var i=0;i<links.length;i++) {
+                    if(links[i].rel === rel) {
+                        return links[i].href;
+                    }
+                }
+            }
+        };
+
+        self.next = function() {
+            return getLink('next');
+        };
+    };
 
     return {
         convertFrom: function (data) {
@@ -163,7 +184,7 @@ angular.module('common.api', [])
                 });
                 subscriptionEntries.push(subscriptionEntry);
             });
-            return subscriptionEntries;
+            return new SubscriptionEnties(subscriptionEntries, data.links);
         },
         convertTo: function(data) {
             var converted = [];

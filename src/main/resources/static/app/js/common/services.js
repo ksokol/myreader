@@ -55,8 +55,13 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     return {
         findBy: function(params) {
             var tmp = url;
-            for(key in params) {
-                tmp += "&" + key + "=" + params[key]
+
+            if(angular.isString(params)) {
+                tmp = params;
+            } else {
+                for(key in params) {
+                    tmp += "&" + key + "=" + params[key]
+                }
             }
             var promise = api.get('subscriptionEntries', tmp);
 

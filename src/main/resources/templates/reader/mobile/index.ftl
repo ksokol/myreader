@@ -59,7 +59,7 @@
 
         <script type="text/ng-template" id="SubscriptionEntries">
             <md-list>
-                <md-list-item md-no-ink class="md-2-line" ng-repeat="entry in data | filter: visible">
+                <md-list-item md-no-ink class="md-2-line" ng-repeat="entry in data.entries | filter: visible">
                     <div layout="row">
                         <div flex="95" class="md-list-item-text">
                             <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title}}</h3>
@@ -70,6 +70,9 @@
                         </div>
                     </div>
                     <md-divider></md-divider>
+                </md-list-item>
+                <md-list-item align="center" ng-click="loadMore()" ng-show="data.next()">
+                    <md-button>load more</md-button>
                 </md-list-item>
             </md-list>
         </script>

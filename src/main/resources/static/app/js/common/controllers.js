@@ -98,14 +98,15 @@ angular.module('common.controllers', ['common.services'])
     };
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', function($rootScope, $scope, $stateParams, $state, subscriptionEntryService) {
+.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', 'subscriptionEntryService', function($scope, $stateParams, subscriptionEntryService) {
 
-    $scope.data = [];
+    $scope.data = {entries: []};
     $scope.param = $stateParams;
 
     var refresh = function(param) {
         subscriptionEntryService.findBy(param)
         .then(function(data) {
+            data.entries = $scope.data.entries.concat(data.entries);
             $scope.data = data;
         })
     };
@@ -160,6 +161,10 @@ angular.module('common.controllers', ['common.services'])
 
     $scope.refresh = function() {
         refresh(params());
+    };
+
+    $scope.loadMore = function() {
+        refresh($scope.data.next());
     };
 
     refresh(params());
