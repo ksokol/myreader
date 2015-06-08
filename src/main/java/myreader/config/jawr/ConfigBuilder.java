@@ -1,5 +1,8 @@
 package myreader.config.jawr;
 
+import static net.jawr.web.JawrConstant.BASE64_MAX_IMG_FILE_SIZE;
+import static net.jawr.web.config.JawrConfig.JAWR_CSS_CLASSPATH_HANDLE_IMAGE;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -48,6 +51,8 @@ class ConfigBuilder {
         currentId = String.format("jawr.%s.bundle.%s.id", type.getType(), value);
         currentMapping = String.format("jawr.%s.bundle.%s.mappings", type.getType(), value);
         add(currentId, String.format("/%s.%s", value, type.getType()));
+        add(JAWR_CSS_CLASSPATH_HANDLE_IMAGE, "true");
+        add(BASE64_MAX_IMG_FILE_SIZE, "30000000");
         return new ConfigBuilderMappingStep();
     }
 

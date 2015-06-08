@@ -37,6 +37,10 @@ import net.jawr.web.servlet.JawrSpringController;
 @Import({CssConfigPropertiesSource.class, JavascriptConfigPropertiesSource.class})
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
+    private static final String JAWR_BIN_MAPPING = "/bin";
+    private static final String JAWR_CSS_MAPPING = "/css";
+    private static final String JAWR_JS_MAPPING = "/js";
+
     @Override
     public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
         configurer.favorPathExtension(false);
@@ -86,17 +90,27 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         simpleUrlHandlerMapping.setOrder(Integer.MAX_VALUE - 2);
         Properties properties = new Properties();
 
-        properties.setProperty("/css-min/**", "jawrCssController");
-        properties.setProperty("/js-min/**", "jawrJavascriptController");
+        properties.setProperty(JAWR_BIN_MAPPING + "/**", "jawrBinaryController");
+        properties.setProperty(JAWR_CSS_MAPPING + "/**", "jawrCssController");
+        properties.setProperty(JAWR_JS_MAPPING + "/**", "jawrJavascriptController");
 
         simpleUrlHandlerMapping.setMappings(properties);
         return simpleUrlHandlerMapping;
     }
 
     @Bean
+    public JawrSpringController jawrBinaryController() {
+        JawrSpringController jawrSpringController = new JawrSpringController();
+        jawrSpringController.setControllerMapping(JAWR_BIN_MAPPING);
+        jawrSpringController.setConfiguration(new Properties());
+        jawrSpringController.setType("binary");
+        return jawrSpringController;
+    }
+
+    @Bean
     public JawrSpringController jawrCssController(@Qualifier("cssConfigProperties") Properties properties) {
         JawrSpringController jawrSpringController = new JawrSpringController();
-        jawrSpringController.setControllerMapping("/css-min");
+        jawrSpringController.setControllerMapping(JAWR_CSS_MAPPING);
         jawrSpringController.setConfiguration(properties);
         jawrSpringController.setType("css");
         return jawrSpringController;
@@ -105,9 +119,11 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Bean
     public JawrSpringController jawrJavascriptController(@Qualifier("javascriptConfigPropertiesSource") Properties properties) {
         JawrSpringController jawrSpringController = new JawrSpringController();
-        jawrSpringController.setControllerMapping("/js-min");
+        jawrSpringController.setControllerMapping(JAWR_JS_MAPPING);
         jawrSpringController.setConfiguration(properties);
         jawrSpringController.setType("js");
         return jawrSpringController;
     }
+
+
 }
