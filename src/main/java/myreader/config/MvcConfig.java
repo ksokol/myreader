@@ -1,5 +1,11 @@
 package myreader.config;
 
+import static myreader.config.UrlMappings.JAWR_BIN;
+import static myreader.config.UrlMappings.JAWR_CSS;
+import static myreader.config.UrlMappings.JAWR_JS;
+import static myreader.config.UrlMappings.LOGIN_PROCESSING;
+import static myreader.config.UrlMappings.LOGIN;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,10 +43,6 @@ import net.jawr.web.servlet.JawrSpringController;
 @Import({CssConfigPropertiesSource.class, JavascriptConfigPropertiesSource.class})
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
-    private static final String JAWR_BIN_MAPPING = "/bin";
-    private static final String JAWR_CSS_MAPPING = "/css";
-    private static final String JAWR_JS_MAPPING = "/js";
-
     @Override
     public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
         configurer.favorPathExtension(false);
@@ -53,7 +55,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
-        registry.addViewController(SecurityConfig.LOGIN_URL).setViewName("login");
+        registry.addViewController(LOGIN).setViewName("login");
 
         //deprecated
         registry.addViewController("mobile/reader").setViewName("reader/mobile/index");
@@ -66,7 +68,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         freeMarkerViewResolver.setRequestContextAttribute("requestContext");
         freeMarkerViewResolver.setExposeRequestAttributes(true);
         freeMarkerViewResolver.setSuffix(".ftl");
-        freeMarkerViewResolver.setAttributesMap(Collections.singletonMap("LOGIN_PROCESSING_URL", SecurityConfig.LOGIN_PROCESSING_URL));
+        freeMarkerViewResolver.setAttributesMap(Collections.singletonMap("LOGIN_PROCESSING_URL", LOGIN_PROCESSING));
         registry.viewResolver(freeMarkerViewResolver);
     }
     @Bean
@@ -90,9 +92,9 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         simpleUrlHandlerMapping.setOrder(Integer.MAX_VALUE - 2);
         Properties properties = new Properties();
 
-        properties.setProperty(JAWR_BIN_MAPPING + "/**", "jawrBinaryController");
-        properties.setProperty(JAWR_CSS_MAPPING + "/**", "jawrCssController");
-        properties.setProperty(JAWR_JS_MAPPING + "/**", "jawrJavascriptController");
+        properties.setProperty(JAWR_BIN + "/**", "jawrBinaryController");
+        properties.setProperty(JAWR_CSS + "/**", "jawrCssController");
+        properties.setProperty(JAWR_JS + "/**", "jawrJavascriptController");
 
         simpleUrlHandlerMapping.setMappings(properties);
         return simpleUrlHandlerMapping;
@@ -101,7 +103,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Bean
     public JawrSpringController jawrBinaryController() {
         JawrSpringController jawrSpringController = new JawrSpringController();
-        jawrSpringController.setControllerMapping(JAWR_BIN_MAPPING);
+        jawrSpringController.setControllerMapping(JAWR_BIN);
         jawrSpringController.setConfiguration(new Properties());
         jawrSpringController.setType("binary");
         return jawrSpringController;
@@ -110,7 +112,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Bean
     public JawrSpringController jawrCssController(@Qualifier("cssConfigProperties") Properties properties) {
         JawrSpringController jawrSpringController = new JawrSpringController();
-        jawrSpringController.setControllerMapping(JAWR_CSS_MAPPING);
+        jawrSpringController.setControllerMapping(JAWR_CSS);
         jawrSpringController.setConfiguration(properties);
         jawrSpringController.setType("css");
         return jawrSpringController;
@@ -119,7 +121,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Bean
     public JawrSpringController jawrJavascriptController(@Qualifier("javascriptConfigPropertiesSource") Properties properties) {
         JawrSpringController jawrSpringController = new JawrSpringController();
-        jawrSpringController.setControllerMapping(JAWR_JS_MAPPING);
+        jawrSpringController.setControllerMapping(JAWR_JS);
         jawrSpringController.setConfiguration(properties);
         jawrSpringController.setType("js");
         return jawrSpringController;

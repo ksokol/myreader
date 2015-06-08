@@ -1,5 +1,8 @@
 package myreader.config;
 
+import static myreader.config.UrlMappings.*;
+import static myreader.config.UrlMappings.LOGIN;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,11 +38,6 @@ import spring.security.UserRepositoryUserDetailsService;
 @ComponentScan(basePackages = {"spring.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final String ACCOUNT_CONTEXT = "/web";
-    public static final String LOGIN_URL = ACCOUNT_CONTEXT + "/login";
-    public static final String LOGOUT_URL = ACCOUNT_CONTEXT + "/logout";
-    public static final String LOGIN_PROCESSING_URL = ACCOUNT_CONTEXT + "/check";
-
     @Autowired
     private UserRepository userRepository;
 
@@ -54,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity webSecurity) throws Exception {
         webSecurity
                 .ignoring()
-                .antMatchers("/static/**", "/js-min/**");
+                .antMatchers("/static/**", JAWR_JS + "/**");
     }
 
     @Bean
@@ -82,14 +80,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().realmName("API")
                 .and()
                 .formLogin()
-                .loginPage(LOGIN_URL).permitAll()
-                .loginProcessingUrl(LOGIN_PROCESSING_URL).permitAll()
+                .loginPage(LOGIN).permitAll()
+                .loginProcessingUrl(LOGIN_PROCESSING).permitAll()
                 .successHandler(successHandler())
-                .failureUrl(LOGIN_URL + "?result=failed")
+                .failureUrl(LOGIN + "?result=failed")
                 .and()
                 .rememberMe()
                 .and()
-                .logout().logoutUrl(LOGOUT_URL).logoutSuccessUrl(LOGIN_URL).permitAll().deleteCookies("JSESSIONID")
+                .logout().logoutUrl(LOGOUT).logoutSuccessUrl(LOGIN).permitAll().deleteCookies("JSESSIONID")
                 .and()
                 .addFilterBefore(ajaxExceptionTranslationFilter(), FilterSecurityInterceptor.class)
                 .headers().frameOptions().disable();
@@ -100,7 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private AuthenticationEntryPoint authenticationEntryPoint() {
-        return new LoginUrlAuthenticationEntryPoint(LOGIN_URL);
+        return new LoginUrlAuthenticationEntryPoint(LOGIN);
     }
 
     private AuthenticationSuccessHandler successHandler() {

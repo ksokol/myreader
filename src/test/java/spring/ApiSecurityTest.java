@@ -1,7 +1,7 @@
 package spring;
 
-import static myreader.config.SecurityConfig.LOGIN_PROCESSING_URL;
-import static myreader.config.SecurityConfig.LOGIN_URL;
+import static myreader.config.UrlMappings.LOGIN_PROCESSING;
+import static myreader.config.UrlMappings.LOGIN;
 import static myreader.test.KnownUser.USER1;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -61,8 +61,7 @@ public class ApiSecurityTest extends SecurityTestSupport {
 
     @Test
     public void testLoginPage() throws IOException {
-        String loginUrl = "http://localhost" + LOGIN_URL;
-        String loginProcessingUrl = LOGIN_PROCESSING_URL;
+        String loginUrl = "http://localhost" + LOGIN;
 
         HtmlPage page = webClient.getPage(loginUrl);
         HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
@@ -76,7 +75,7 @@ public class ApiSecurityTest extends SecurityTestSupport {
         assertThat(password, notNullValue());
        // assertThat(csrf, notNullValue());
         assertThat(submit, notNullValue());
-        assertThat(loginForm.getAttribute("action"), is(loginProcessingUrl));
+        assertThat(loginForm.getAttribute("action"), is(LOGIN_PROCESSING));
     }
 
     private static String basic(KnownUser user) {
