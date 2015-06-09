@@ -98,7 +98,7 @@ angular.module('common.controllers', ['common.services'])
     };
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', 'subscriptionEntryService', function($scope, $stateParams, subscriptionEntryService) {
+.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', '$state', 'subscriptionEntryService', function($scope, $stateParams, $state, subscriptionEntryService) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
