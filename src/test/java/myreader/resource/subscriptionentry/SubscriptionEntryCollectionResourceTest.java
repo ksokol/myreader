@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,7 +35,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     @Test
     public void testSearchSubscriptionEntryByTitle() throws Exception {
         mockMvc.perform(getAsUser1("/subscriptionEntries?q=mysql"))
-				.andExpect(jsonEquals("json/subscriptionentry/q#mysql.json"));
+                .andExpect(jsonPath("content..uuid", contains("1002")));
     }
 
     @Test
@@ -54,7 +53,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     @Test
     public void searchSubscriptionEntryTag() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries?q=help"))
-                .andExpect(jsonEquals("json/subscriptionentry/tag?q=help.json"));
+                .andExpect(jsonPath("content..uuid", contains("1011")));
     }
 
     @Test
@@ -170,8 +169,6 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     @Test
     public void availableTags() throws Exception {
         mockMvc.perform(getAsUser4("/subscriptionEntries/availableTags"))
-                .andDo(print())
         .andExpect(jsonPath("$", hasItems("tag1", "tag2-tag3", "tag4", "tag5", "tag6", "tag7", "tag8Tag9")));
-;
     }
 }

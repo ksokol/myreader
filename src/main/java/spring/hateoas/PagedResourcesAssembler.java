@@ -1,5 +1,11 @@
 package spring.hateoas;
 
+import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -14,13 +20,9 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import spring.data.domain.Sequence;
 import spring.data.web.SequenceableHandlerMethodArgumentResolver;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 /**
  * @author Oliver Gierke
@@ -51,7 +53,7 @@ public class PagedResourcesAssembler<T> {
         }
 
         PagedResources<R> pagedResources = new PagedResources<>(resources, asPageMetadata(page));
-        List<Link> links = addPaginationLinks(page, getDefaultUriString().toUriString());
+        List<Link> links = addPaginationLinks(page, getDefaultUriString());
 
         pagedResources.add(links);
         return pagedResources;
@@ -68,14 +70,21 @@ public class PagedResourcesAssembler<T> {
         }
 
         SequencedResources<R> pagedResources = new SequencedResources<>(resources);
-        List<Link> links = addPaginationLinks(sequence, getDefaultUriString().toUriString());
+        List<Link> links = addPaginationLinks(sequence, getDefaultUriString());
 
         pagedResources.add(links);
         return pagedResources;
     }
 
-    private UriComponents getDefaultUriString() {
-        return ServletUriComponentsBuilder.fromCurrentRequest().build();
+    private String getDefaultUriString() {
+        final UriComponents uriComponents = ServletUriComponentsBuilder.fromCurrentRequest().build();
+        String query = StringUtils.defaultString(uriComponents.getQuery());
+
+        if(StringUtils.isNotEmpty(query)) {
+            query = "?" + query;
+        }
+
+        return uriComponents.getPath() + query;
     }
 
     private List<Link> addPaginationLinks(Slice<?> slice, String uri) {

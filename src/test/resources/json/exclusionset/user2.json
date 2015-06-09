@@ -2,7 +2,7 @@
     "links": [
         {
             "rel": "self",
-            "href": "http://localhost/exclusions"
+            "href": "/exclusions"
         }
     ],
     "content": [

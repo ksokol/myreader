@@ -2,7 +2,7 @@
     "links": [
         {
             "rel": "self",
-            "href": "http://localhost/exclusions/6/pattern"
+            "href": "/exclusions/6/pattern"
         }
     ],
     "content": [

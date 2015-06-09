@@ -1,5 +1,16 @@
 package spring.hateoas;
 
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -13,18 +24,8 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import spring.data.domain.Sequence;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Kamill Sokol
@@ -38,7 +39,7 @@ public class DelegatingResourceAssemblersTest {
 
     @BeforeClass
     public static void beforeClass() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/junit");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
@@ -52,13 +53,13 @@ public class DelegatingResourceAssemblersTest {
     @Test
     public void testToPagedResourceNextLink() throws Exception {
         PagedResources<Object> pages = uut.toResource(page(0), Object.class);
-        assertThat(pages.getNextLink(), is(new Link("http://localhost?page=1&size=1", Link.REL_NEXT)));
+        assertThat(pages.getNextLink(), is(new Link("/junit?page=1&size=1", Link.REL_NEXT)));
     }
 
     @Test
     public void testToPagedResourceBeforeLink() throws Exception {
         PagedResources<Object> pages = uut.toResource(page(1), Object.class);
-        assertThat(pages.getPreviousLink(), is(new Link("http://localhost?page=0&size=1", Link.REL_PREVIOUS)));
+        assertThat(pages.getPreviousLink(), is(new Link("/junit?page=0&size=1", Link.REL_PREVIOUS)));
     }
 
     @Test
