@@ -66,7 +66,7 @@
                             <p>{{::entry.feedTitle}}</p>
                         </div>
                         <div  flex="5">
-                            <md-checkbox class="md-secondary" ng-model="::entry.seen"></md-checkbox>
+                            <md-checkbox class="md-secondary" ng-model="entry.seen"></md-checkbox>
                         </div>
                     </div>
                     <md-divider></md-divider>

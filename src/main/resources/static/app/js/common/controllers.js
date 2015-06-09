@@ -125,13 +125,10 @@ angular.module('common.controllers', ['common.services'])
         return param;
     };
 
-    $scope.$on('refresh', function() {
+    $scope.refresh = function() {
+        $scope.data = {entries: []};
         refresh(params());
-    });
-
-    $scope.$on('update', function() {
-        $scope.markAsRead();
-    });
+    };
 
     $scope.visible = function(item) {
         return item.visible !== undefined ? item.visible : true;
@@ -139,7 +136,7 @@ angular.module('common.controllers', ['common.services'])
 
     $scope.markAsRead = function() {
         var selected = [];
-        angular.forEach($scope.data, function(entry) {
+        angular.forEach($scope.data.entries, function(entry) {
             if(entry.seen && (entry.visible === undefined || entry.visible) ) {
                 selected.push(entry);
             }
@@ -159,13 +156,14 @@ angular.module('common.controllers', ['common.services'])
         $state.go('app.entry', {uuid: item.uuid});
     };
 
-    $scope.refresh = function() {
-        refresh(params());
-    };
-
     $scope.loadMore = function() {
         refresh($scope.data.next());
     };
+
+
+    $scope.$on('refresh', $scope.refresh);
+
+    $scope.$on('update', $scope.markAsRead);
 
     refresh(params());
 }])
