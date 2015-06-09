@@ -77,7 +77,7 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             var promise =  api.patch('subscriptionEntries', url, entries);
 
             promise.then(function(data) {
-                $rootScope.$broadcast('subscriptionEntry:updateEntries', data);
+                $rootScope.$broadcast('subscriptionEntry:updateEntries', data.entries);
                 angular.forEach(data, function(value) {
                     subscriptionEntryCache.put(url2 + '/' + value.uuid, value);
                 });
