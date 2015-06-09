@@ -1,5 +1,7 @@
 package myreader.config.jawr;
 
+import static myreader.config.jawr.LibraryVersions.ANGULAR_MATERIAL_VERSION;
+
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ public class CssConfigPropertiesSource {
         final boolean debug = environment.getProperty("jawr.debug.on", Boolean.class, false);
         return new ConfigBuilder(debug)
                 .cssBundle("mobile")
-                .webjar("angular-material/0.9.7/angular-material.css")
+                .webjar("angular-material/" + ANGULAR_MATERIAL_VERSION + "/angular-material.css")
                 .jar("static/app/css/mobile.css")
                 .build();
     }

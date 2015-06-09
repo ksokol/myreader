@@ -1,5 +1,7 @@
 package myreader.config.jawr;
 
+import static myreader.config.jawr.LibraryVersions.ANGULAR_MATERIAL_VERSION;
+
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +32,8 @@ public class JavascriptConfigPropertiesSource {
                     .webjar("ui-router-extras/0.0.13/modular/ct-ui-router-extras.transition.js")
                     .webjar("ui-router-extras/0.0.13/modular/ct-ui-router-extras.previous.js")
                     .webjar("angular-local-storage/0.1.5/angular-local-storage.js")
-                    .webjar("angular-cache/4.2.0/angular-cache.js") //TODO submit newest version to webjars
-                    .webjar("angular-material/0.9.7/angular-material.js")
+                    .webjar("angular-cache/4.2.0/angular-cache.js")
+                    .webjar("angular-material/" + ANGULAR_MATERIAL_VERSION +"/angular-material.js")
                     .jar("static/app/js/common/config.js")
                     .jar("static/app/js/common/api.js")
                     .jar("static/app/js/common/services.js")
