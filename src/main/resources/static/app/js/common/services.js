@@ -66,7 +66,7 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             var promise = api.get('subscriptionEntries', tmp);
 
             promise.then(function(data) {
-                angular.forEach(data, function(item) {
+                angular.forEach(data.entries, function(item) {
                     subscriptionEntryCache.put(url2 + '/' + item.uuid, item);
                 });
             });
@@ -78,7 +78,7 @@ angular.module('common.services', ['common.api', 'angular-cache'])
 
             promise.then(function(data) {
                 $rootScope.$broadcast('subscriptionEntry:updateEntries', data.entries);
-                angular.forEach(data, function(value) {
+                angular.forEach(data.entries, function(value) {
                     subscriptionEntryCache.put(url2 + '/' + value.uuid, value);
                 });
             });
@@ -88,7 +88,6 @@ angular.module('common.services', ['common.api', 'angular-cache'])
         findOne: function(id) {
             var url = url2 + '/' + id;
             var cached = subscriptionEntryCache.get(url);
-
             if(cached) {
                 return deferService.resolved(cached);
             }
@@ -96,14 +95,8 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             return api.get('subscriptionEntry', url);
         },
         save: function(entry) {
-            var url = url2 + '/' + entry.uuid;
-            var promise = api.patch('subscriptionEntry', url, entry);
-
-            promise.then(function(data) {
-                subscriptionEntryCache.put(url, data);
-            });
-
-            return promise;
+            var entries = this.updateEntries([entry]);
+            return deferService.resolved(function() { return entries[0]; });
         }
     }
 }])

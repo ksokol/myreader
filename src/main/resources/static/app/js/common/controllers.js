@@ -181,9 +181,11 @@ angular.module('common.controllers', ['common.services'])
     }
 
     $scope.save = function() {
-        subscriptionEntryService.save($scope.entry)
+        subscriptionEntryService.updateEntries($scope.entry)
         .then(function(data) {
             $scope.entry = data;
+            //TODO
+            $scope.entry.hidden = true;
             $mdToast.show(
                 $mdToast.simple()
                     .content('saved')
