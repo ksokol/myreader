@@ -186,12 +186,12 @@ angular.module('common.controllers', ['common.services'])
     }
 
     $scope.save = function() {
-        loadingIndicatorService.show();
-        subscriptionEntryService.updateEntries($scope.entry)
-        .then(function(data) {
-            $scope.entry = data;
-            //TODO
+        if($scope.entry.seen) {
             $scope.entry.visible = false;
+        }
+        loadingIndicatorService.show();
+        subscriptionEntryService.save($scope.entry)
+        .then(function() {
             loadingIndicatorService.hide();
             $mdToast.show(
                 $mdToast.simple()
