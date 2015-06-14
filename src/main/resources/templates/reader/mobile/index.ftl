@@ -36,13 +36,15 @@
                 </md-content>
             </md-sidenav>
             <div layout="column" tabIndex="-1" role="main" flex>
-                <div ui-view="actions"></div>
+                <md-toolbar >
+                    <div ui-view="actions" class="md-toolbar-tools"></div>
+                </md-toolbar>
 
                 <div id="md-progress-linear-wrapper">
                     <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
                 </div>
 
-                <md-content ui-view="content" md-scroll-y flex layout-padding></md-content>
+                <md-content ui-view="content" md-scroll-y flex layout-padding ></md-content>
             </div>
         </script>
 
@@ -67,73 +69,58 @@
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntry">
-            <md-content class="md-padding">
-                <md-tabs md-dynamic-height md-border-bottom>
-                    <md-tab label="content">
-                        <md-content class="md-padding">
-                            <h3>{{::entry.title}}</h3>
-                            <div ng-bind-html="::entry.content" target-blank></div>
-                        </md-content>
-                    </md-tab>
-                    <md-tab label="details" md-on-select="fetchTags()">
-                        <md-content class="md-padding">
-                            <h3>{{::entry.title}}</h3>
-                            <md-select ng-options="" placeholder="none" ng-model="entry.tag">
-                                <md-option ng-repeat="tag in availableTags" value="{{tag}}">{{tag}}</md-option>
-                            </md-select>
-                            <md-radio-group ng-model="entry.seen">
-                                <md-radio-button ng-value="true">true</md-radio-button>
-                                <md-radio-button ng-value="false">false</md-radio-button>
-                            </md-radio-group>
-                        </md-content>
-                    </md-tab>
-                </md-tabs>
-            <md-content>
+            <h3>{{::entry.title}}</h3>
+            <div layout="row">
+                <div flex="50">
+                    <md-select ng-options="" placeholder="none" ng-model="entry.tag">
+                        <md-option ng-repeat="tag in availableTags" value="{{tag}}">{{tag}}</md-option>
+                    </md-select>
+                </div>
+                <div flex="50">
+                    <md-radio-group ng-model="entry.seen">
+                        <md-radio-button ng-value="true">true</md-radio-button>
+                        <md-radio-button ng-value="false">false</md-radio-button>
+                    </md-radio-group>
+                </div>
+            </div>
+            <div ng-bind-html="entry.content | targetBlank" wrap-entry-content></div>
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntriesActions">
-            <md-toolbar ng-controller="TopBarCtrl">
-                <div class="md-toolbar-tools">
-                    <md-button class="md-icon-button" hide-gt-sm ng-click="openMenu()" aria-label="Menu">
-                        <md-icon md-font-library="material-icons">menu</md-icon>
-                    </md-button>
-                    <h2>
-                        <span></span>
-                    </h2>
-                    <span flex></span>
+            <md-button class="md-icon-button" hide-gt-sm ng-click="openMenu()" aria-label="Menu">
+                <md-icon md-font-library="material-icons">menu</md-icon>
+            </md-button>
+            <h2>
+                <span></span>
+            </h2>
+            <span flex></span>
 
-                    <md-button class="md-icon-button" aria-label="Refresh" ng-click="broadcast('refresh')">
-                        <md-icon md-font-library="material-icons">refresh</md-icon>
-                    </md-button>
-                    <md-button class="md-icon-button" aria-label="Upload" ng-click="broadcast('update')">
-                        <md-icon md-font-library="material-icons">file_upload</md-icon>
-                    </md-button>
-                </div>
-            </md-toolbar>
+            <md-button class="md-icon-button" aria-label="Refresh" ng-click="broadcast('refresh')">
+                <md-icon md-font-library="material-icons">refresh</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="Upload" ng-click="broadcast('update')">
+                <md-icon md-font-library="material-icons">file_upload</md-icon>
+            </md-button>
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntryActions">
-            <md-toolbar ng-controller="TopBarCtrl">
-                <div class="md-toolbar-tools">
-                    <md-button class="md-icon-button" aria-label="Back" ng-click="back()">
-                        <md-icon md-font-library="material-icons">arrow_back</md-icon>
-                    </md-button>
-                    <h2>
-                        <span></span>
-                    </h2>
-                    <span flex></span>
+            <md-button class="md-icon-button" aria-label="Back" ng-click="back()">
+                <md-icon md-font-library="material-icons">arrow_back</md-icon>
+            </md-button>
+            <h2>
+                <span></span>
+            </h2>
+            <span flex></span>
 
-                    <md-button class="md-icon-button" aria-label="Hide" ng-click="broadcast('hide')">
-                        <md-icon md-font-library="material-icons">visibility_off</md-icon>
-                    </md-button>
-                    <md-button class="md-icon-button" aria-label="Open" ng-click="broadcast('open')">
-                        <md-icon md-font-library="material-icons">open_in_new</md-icon>
-                    </md-button>
-                    <md-button class="md-icon-button" aria-label="Save" ng-click="broadcast('save')">
-                        <md-icon md-font-library="material-icons">save</md-icon>
-                    </md-button>
-                </div>
-            </md-toolbar>
+            <md-button class="md-icon-button" aria-label="Hide" ng-click="broadcast('hide')">
+                <md-icon md-font-library="material-icons">visibility_off</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="Open" ng-click="broadcast('open')">
+                <md-icon md-font-library="material-icons">open_in_new</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="Save" ng-click="broadcast('save')">
+                <md-icon md-font-library="material-icons">save</md-icon>
+            </md-button>
         </script>
 
         <@script id="mobile"></@script>

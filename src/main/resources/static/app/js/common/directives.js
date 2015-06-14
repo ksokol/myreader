@@ -41,14 +41,15 @@ angular.module('common.directives', [])
     };
 })
 
-.directive('targetBlank', function($timeout) {
-    return function($scope, element) {
-        $scope.initializeTarget = function() {
-            return $scope.$on('$viewContentLoaded', $timeout(function() {
-                var aTags = element.prop('tagName') === 'A' ? element : element.find('a');
-                aTags.attr('target', '_blank');
-            }));
-        };
-        return $scope.initializeTarget();
+.directive("wrapEntryContent", ['$window', function($window) {
+    return {
+        restrict : "A",
+        link : function($scope, $element, attrs) {
+            $scope.$watch(function() {
+                return $window.innerWidth;
+            }, function(value) {
+                attrs.$set('style', 'max-width: ' + (value - 16) + 'px');
+            });
+        }
     };
-});
+}]);

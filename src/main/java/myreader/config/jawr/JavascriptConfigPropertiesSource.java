@@ -35,6 +35,7 @@ public class JavascriptConfigPropertiesSource {
                     .webjar("angular-cache/4.2.0/angular-cache.js")
                     .webjar("angular-material/" + ANGULAR_MATERIAL_VERSION +"/angular-material.js")
                     .jar("static/app/js/common/config.js")
+                    .jar("static/app/js/common/filters.js")
                     .jar("static/app/js/common/api.js")
                     .jar("static/app/js/common/services.js")
                     .jar("static/app/js/common/controllers.js")

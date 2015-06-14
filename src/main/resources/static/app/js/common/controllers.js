@@ -182,7 +182,12 @@ angular.module('common.controllers', ['common.services'])
         subscriptionEntryService.findOne($stateParams.uuid)
         .then(function(data) {
             $scope.entry = data;
-            loadingIndicatorService.hide();
+
+            subscriptionEntryTagService.findAll()
+            .then(function(data) {
+                $scope.availableTags = data;
+                    loadingIndicatorService.hide();
+            });
         });
     }
 
@@ -210,13 +215,6 @@ angular.module('common.controllers', ['common.services'])
         .then(function() {
             loadingIndicatorService.hide();
             $previousState.go();
-        });
-    };
-
-    $scope.fetchTags = function() {
-        subscriptionEntryTagService.findAll()
-        .then(function(data) {
-            $scope.availableTags = data;
         });
     };
 
