@@ -2,29 +2,9 @@ angular.module('common.api', [])
 
 .service('subscriptionTagConverter', function () {
 
-    var Subscription = function () {
-        var self = this;
-
-        self.getLink = function(rel) {
-            for(var i=0; i < self.links.length; i++) {
-                if(self.links[i].rel === rel) {
-                    return self.links[i];
-                }
-            }
-        }
-    };
-
     var SubscriptionTag = function () {
         var self = this;
         self.subscriptions = [];
-
-        self.getLink = function(rel) {
-            for(var i=0; i < self.links.length; i++) {
-                if(self.links[i].rel === rel) {
-                    return self.links[i];
-                }
-            }
-        }
     };
 
     var SubscriptionTags = function() {
@@ -47,35 +27,26 @@ angular.module('common.api', [])
         };
 
         self.addSubscription = function(subscription) {
-            var s = new Subscription;
-            angular.forEach(subscription, function (v, k) {
-                s[k] = v;
-                s['type'] = 'subscription';
-            });
-            self.subscriptions.push(s);
+            subscription['type'] = 'subscription';
+            self.subscriptions.push(subscription);
             self.unseen += s.unseen;
         };
 
         self.addTag = function(subscriptionTag) {
-            var s = new SubscriptionTag;
-            angular.forEach(subscriptionTag, function (v, k) {
-                s[k] = v;
-            });
-
-            var theTag = self.getTag(s.tag);
-            self.unseen += s.unseen;
+            var theTag = self.getTag(subscriptionTag.tag);
+            self.unseen += subscriptionTag.unseen;
 
             if(theTag) {
-                theTag.unseen += s.unseen;
-                theTag.subscriptions.push(s);
+                theTag.unseen += subscriptionTag.unseen;
+                theTag.subscriptions.push(subscriptionTag);
             } else {
                 var tag = new SubscriptionTag;
-                tag.uuid = s.tag;
-                tag.tag = s.tag;
-                tag.title = s.tag;
+                tag.uuid = subscriptionTag.tag;
+                tag.tag = subscriptionTag.tag;
+                tag.title = subscriptionTag.tag;
                 tag.type = 'tag';
-                tag.unseen = s.unseen;
-                tag.subscriptions.push(s);
+                tag.unseen = subscriptionTag.unseen;
+                tag.subscriptions.push(subscriptionTag);
                 self.tags.push(tag);
             }
         };
@@ -87,12 +58,12 @@ angular.module('common.api', [])
                 }
             }
 
-            for(var i=0;i<self.tags.length;i++) {
-                var tag = self.tags[i];
+            for(var j=0;j<self.tags.length;j++) {
+                var tag = self.tags[j];
 
-                for(var j=0;j<tag.subscriptions.length;j++) {
-                    if(tag.subscriptions[j].uuid === uuid) {
-                        return tag.subscriptions[j];
+                for(var k=0;k<tag.subscriptions.length;k++) {
+                    if(tag.subscriptions[k].uuid === uuid) {
+                        return tag.subscriptions[k];
                     }
                 }
             }
@@ -151,13 +122,10 @@ angular.module('common.api', [])
 
 .service('subscriptionEntriesConverter', function() {
 
-    var SubscriptionEntry = function() { };
-
-    var SubscriptionEnties = function(entries, links) {
+    var SubscriptionEntries = function(entries, links) {
         var self = this;
         self.entries = entries;
-
-        var links = angular.isArray(links) ? links : [];
+        self.links = angular.isArray(links) ? links : [];
 
         var getLink = function(rel) {
             if(rel) {
@@ -176,15 +144,7 @@ angular.module('common.api', [])
 
     return {
         convertFrom: function (data) {
-            var subscriptionEntries = [];
-            angular.forEach(data.content, function (value) {
-                var subscriptionEntry = new SubscriptionEntry;
-                angular.forEach(value, function (v, k) {
-                    subscriptionEntry[k] = v;
-                });
-                subscriptionEntries.push(subscriptionEntry);
-            });
-            return new SubscriptionEnties(subscriptionEntries, data.links);
+            return new SubscriptionEntries(data.content, data.links);
         },
         convertTo: function(data) {
             var converted = [];
