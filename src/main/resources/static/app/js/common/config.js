@@ -31,19 +31,6 @@ angular.module('myreader', ['common.services', 'common.controllers', 'common.dir
             }
         };
     }]);
-
-    $httpProvider.interceptors.push(['$q', '$rootScope', function($q, $rootScope) {
-        return {
-            'request': function(config) {
-                $rootScope.$broadcast('loading-started');
-                return config || $q.when(config);
-            },
-            'response': function(response) {
-                $rootScope.$broadcast('loading-complete');
-                return response || $q.when(response);
-            }
-        };
-    }]);
 }])
 
 .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {

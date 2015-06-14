@@ -98,16 +98,18 @@ angular.module('common.controllers', ['common.services'])
     };
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', '$state', 'subscriptionEntryService', function($scope, $stateParams, $state, subscriptionEntryService) {
+.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', '$state', 'loadingIndicatorService', 'subscriptionEntryService', function($scope, $stateParams, $state, loadingIndicatorService, subscriptionEntryService) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
 
     var refresh = function(param) {
+        loadingIndicatorService.show();
         subscriptionEntryService.findBy(param)
         .then(function(data) {
             data.entries = $scope.data.entries.concat(data.entries);
             $scope.data = data;
+            loadingIndicatorService.hide();
         })
     };
 
@@ -143,11 +145,13 @@ angular.module('common.controllers', ['common.services'])
         });
 
         if(selected.length > 0) {
+            loadingIndicatorService.show();
             subscriptionEntryService.updateEntries(selected)
             .then(function() {
                 angular.forEach(selected, function(entry) {
                     entry.visible = false;
                 });
+                loadingIndicatorService.hide();
             });
         }
     };
@@ -160,7 +164,6 @@ angular.module('common.controllers', ['common.services'])
         refresh($scope.data.next());
     };
 
-
     $scope.$on('refresh', $scope.refresh);
 
     $scope.$on('update', $scope.markAsRead);
@@ -168,24 +171,28 @@ angular.module('common.controllers', ['common.services'])
     refresh(params());
 }])
 
-.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', 'subscriptionEntryTagService', function($scope, $stateParams, $previousState, $mdToast, subscriptionEntryService, subscriptionEntryTagService) {
+.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$previousState', '$mdToast', 'loadingIndicatorService', 'subscriptionEntryService', 'subscriptionEntryTagService', function($scope, $stateParams, $previousState, $mdToast, loadingIndicatorService, subscriptionEntryService, subscriptionEntryTagService) {
 
     $scope.entry = {};
     $scope.availableTags = [];
 
     if($stateParams.uuid) {
+        loadingIndicatorService.show();
         subscriptionEntryService.findOne($stateParams.uuid)
         .then(function(data) {
             $scope.entry = data;
+            loadingIndicatorService.hide();
         });
     }
 
     $scope.save = function() {
+        loadingIndicatorService.show();
         subscriptionEntryService.updateEntries($scope.entry)
         .then(function(data) {
             $scope.entry = data;
             //TODO
-            $scope.entry.hidden = true;
+            $scope.entry.visible = false;
+            loadingIndicatorService.hide();
             $mdToast.show(
                 $mdToast.simple()
                     .content('saved')
@@ -196,8 +203,12 @@ angular.module('common.controllers', ['common.services'])
 
     $scope.markAsRead = function() {
         $scope.entry.seen = true;
+        loadingIndicatorService.show();
         subscriptionEntryService.save($scope.entry)
         .then(function() {
+            //TODO
+            $scope.entry.visible = false;
+            loadingIndicatorService.hide();
             $previousState.go();
         });
     };
