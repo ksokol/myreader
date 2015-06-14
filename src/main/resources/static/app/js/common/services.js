@@ -52,6 +52,15 @@ angular.module('common.services', ['common.api', 'angular-cache'])
         deleteOnExpire: 'aggressive'
     });
 
+    var subscriptionEntriesCache = CacheFactory.createCache('subscriptionEntriesCache', {
+        deleteOnExpire: 'aggressive',
+        maxAge: 60 * 5 * 1000 //5 minutes
+    });
+
+    $rootScope.$on('refresh', function() {
+        subscriptionEntriesCache.removeAll();
+    });
+
     return {
         findBy: function(params) {
             var tmp = url;
@@ -59,13 +68,22 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             if(angular.isString(params)) {
                 tmp = params;
             } else {
-                for(key in params) {
-                    tmp += "&" + key + "=" + params[key]
+                for(var key in params) {
+                    if (params.hasOwnProperty(key)) {
+                        tmp += "&" + key + "=" + params[key];
+                    }
                 }
             }
+
+            var cached = subscriptionEntriesCache.get(tmp);
+            if(cached) {
+                return deferService.resolved(cached);
+            }
+
             var promise = api.get('subscriptionEntries', tmp);
 
             promise.then(function(data) {
+                subscriptionEntriesCache.put(tmp, data);
                 angular.forEach(data.entries, function(item) {
                     subscriptionEntryCache.put(url2 + '/' + item.uuid, item);
                 });
@@ -149,4 +167,17 @@ angular.module('common.services', ['common.api', 'angular-cache'])
         deferred: _deferred,
         resolved: _resolved
     }
+}])
+
+.service('loadingIndicatorService', ['$rootScope', function($rootScope) {
+
+    return {
+        show: function() {
+            $rootScope.$broadcast('loading-started');
+        },
+        hide: function() {
+            $rootScope.$broadcast('loading-complete');
+        }
+    }
+
 }]);
