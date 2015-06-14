@@ -55,7 +55,7 @@ angular.module('common.controllers', ['common.services'])
             if(item.type === 'global') {
                 return false;
             }
-            for(i=0;i<item.subscriptions.length;i++) {
+            for(var i=0;i<item.subscriptions.length;i++) {
                 if(item.subscriptions[i].uuid === openedSection) {
                     return true;
                 }
@@ -72,7 +72,7 @@ angular.module('common.controllers', ['common.services'])
             return true;
         }
         if(item.subscriptions) {
-            for(i=0;i<item.subscriptions.length;i++) {
+            for(var i=0;i<item.subscriptions.length;i++) {
                 if(item.subscriptions[i].uuid === openItem) {
                     return true;
                 }
@@ -197,7 +197,7 @@ angular.module('common.controllers', ['common.services'])
     $scope.markAsRead = function() {
         $scope.entry.seen = true;
         subscriptionEntryService.save($scope.entry)
-        .then(function(data) {
+        .then(function() {
             $previousState.go();
         });
     };
