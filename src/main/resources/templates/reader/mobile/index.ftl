@@ -53,8 +53,8 @@
                 <md-list-item md-no-ink class="md-2-line" ng-repeat="entry in data.entries | filter: visible">
                     <div layout="row">
                         <div flex="95" class="md-list-item-text">
-                            <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title}}</h3>
-                            <p>{{::entry.feedTitle}}</p>
+                            <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
+                            <p>{{::entry.feedTitle | htmlEntities}}</p>
                         </div>
                         <div  flex="5">
                             <md-checkbox class="md-secondary" ng-model="entry.seen"></md-checkbox>
@@ -69,7 +69,7 @@
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntry">
-            <h3>{{::entry.title}}</h3>
+            <h3>{{::entry.title | htmlEntities}}</h3>
             <div layout="row">
                 <div flex="50">
                     <md-select ng-options="" placeholder="none" ng-model="entry.tag">
