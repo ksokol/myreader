@@ -12,15 +12,16 @@ angular.module('common.controllers', ['common.services'])
 
 }])
 
-.controller('TopBarActionsCtrl', ['$rootScope', '$scope', function($rootScope, $scope) {
+.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', function($rootScope, $scope, $previousState) {
 
-    $scope.refresh = function() {
-        $rootScope.$broadcast('refresh');
+    $scope.broadcast = function(eventName) {
+        $rootScope.$broadcast(eventName);
     };
 
-    $scope.update = function() {
-        $rootScope.$broadcast('update');
+    $scope.back = function() {
+        $previousState.go();
     };
+
 }])
 
 .controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', 'localStorageService', 'subscriptionTagService', function($rootScope, $scope, $mdMedia, $state, localStorageService, subscriptionTagService) {
@@ -171,7 +172,7 @@ angular.module('common.controllers', ['common.services'])
     refresh(params());
 }])
 
-.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$previousState', '$mdToast', 'loadingIndicatorService', 'subscriptionEntryService', 'subscriptionEntryTagService', function($scope, $stateParams, $previousState, $mdToast, loadingIndicatorService, subscriptionEntryService, subscriptionEntryTagService) {
+.controller('SubscriptionEntryCtrl', ['$window', '$scope', '$stateParams', '$previousState', '$mdToast', 'loadingIndicatorService', 'subscriptionEntryService', 'subscriptionEntryTagService', function($window, $scope, $stateParams, $previousState, $mdToast, loadingIndicatorService, subscriptionEntryService, subscriptionEntryTagService) {
 
     $scope.entry = {};
     $scope.availableTags = [];
@@ -219,8 +220,11 @@ angular.module('common.controllers', ['common.services'])
         });
     };
 
-    $scope.back = function() {
-        $previousState.go();
-    };
+    $scope.$on('open', function() {
+        $window.open($scope.entry.origin, '_blank');
+    });
+
+    $scope.$on('hide', $scope.markAsRead);
+    $scope.$on('save', $scope.save);
 
 }]);

@@ -96,6 +96,10 @@ angular.module('myreader', ['common.services', 'common.controllers', 'common.dir
                     content: {
                         templateUrl: 'SubscriptionEntry',
                         controller: 'SubscriptionEntryCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'SubscriptionEntryActions',
+                        controller: 'TopBarActionsCtrl'
                     }
                 }
             });
