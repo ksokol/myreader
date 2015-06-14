@@ -203,11 +203,10 @@ angular.module('common.controllers', ['common.services'])
 
     $scope.markAsRead = function() {
         $scope.entry.seen = true;
+        $scope.entry.visible = false;
         loadingIndicatorService.show();
         subscriptionEntryService.save($scope.entry)
         .then(function() {
-            //TODO
-            $scope.entry.visible = false;
             loadingIndicatorService.hide();
             $previousState.go();
         });

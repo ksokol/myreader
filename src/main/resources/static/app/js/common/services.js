@@ -113,8 +113,7 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             return api.get('subscriptionEntry', url);
         },
         save: function(entry) {
-            var entries = this.updateEntries([entry]);
-            return deferService.resolved(function() { return entries[0]; });
+            return this.updateEntries([entry]);
         }
     }
 }])
