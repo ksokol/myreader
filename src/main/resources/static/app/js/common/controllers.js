@@ -1,6 +1,6 @@
 angular.module('common.controllers', ['common.services'])
 
-.controller('TopBarCtrl', ['$rootScope', '$scope', '$mdSidenav', function($rootScope, $scope, $mdSidenav) {
+.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', '$mdSidenav', function($rootScope, $scope, $previousState, $mdSidenav) {
 
     $scope.openMenu = function() {
         $mdSidenav('left').toggle();
@@ -9,10 +9,6 @@ angular.module('common.controllers', ['common.services'])
     $scope.$on('navigation-close', function() {
         $mdSidenav('left').close();
     });
-
-}])
-
-.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', function($rootScope, $scope, $previousState) {
 
     $scope.broadcast = function(eventName) {
         $rootScope.$broadcast(eventName);
