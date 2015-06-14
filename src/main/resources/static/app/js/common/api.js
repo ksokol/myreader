@@ -29,7 +29,7 @@ angular.module('common.api', [])
         self.addSubscription = function(subscription) {
             subscription['type'] = 'subscription';
             self.subscriptions.push(subscription);
-            self.unseen += s.unseen;
+            self.unseen += subscription.unseen;
         };
 
         self.addTag = function(subscriptionTag) {
