@@ -13,6 +13,24 @@ angular.module('common.api', [])
         self.tags = [];
         self.subscriptions = [];
 
+        self.updateSubscriptionUnseen = function(uuid, value) {
+            var subscription = self.getSubscriptionByUuid(uuid);
+
+            if(subscription) {
+                subscription.unseen += value;
+                self.unseen += value;
+
+                var all = self.getTag('all');
+                all.unseen += value;
+
+                var subscriptionTag = self.getTag(subscription.tag);
+
+                if(subscriptionTag) {
+                    subscriptionTag.unseen += value;
+                }
+            }
+        };
+
         self.getTag = function(tag) {
             for(var i=0;i<self.tags.length;i++) {
                 var t = self.tags[i];
@@ -70,29 +88,11 @@ angular.module('common.api', [])
         };
 
         self.incrementSubscriptionUnseen = function(uuid) {
-            //TODO
-            var subscription = self.getSubscriptionByUuid(uuid);
-            if(subscription) {
-                subscription.unseen += 1;
-            }
+            self.updateSubscriptionUnseen(uuid, 1);
         };
 
         self.decrementSubscriptionUnseen = function(uuid) {
-            var subscription = self.getSubscriptionByUuid(uuid);
-
-            if(subscription) {
-                subscription.unseen -= 1;
-                self.unseen -= 1;
-
-                var all = self.getTag('all');
-                all.unseen -= 1;
-
-                var subscriptionTag = self.getTag(subscription.tag);
-
-                if(subscriptionTag) {
-                    subscriptionTag.unseen -= 1;
-                }
-            }
+            self.updateSubscriptionUnseen(uuid, -1);
         };
     };
 
