@@ -52,7 +52,7 @@
             <md-list>
                 <md-list-item md-no-ink class="md-2-line" ng-repeat="entry in data.entries | filter: visible">
                     <div layout="row">
-                        <div flex="95" class="md-list-item-text">
+                        <div class="md-list-item-text">
                             <div>
                                 <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
                                 <h4>
