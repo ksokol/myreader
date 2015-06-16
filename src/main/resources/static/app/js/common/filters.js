@@ -331,4 +331,18 @@ angular.module('common.filters', ['ngSanitize'])
         text = text.replace(new RegExp(entityTable[38], "g"), String.fromCharCode(38));
         return text;
     }
+})
+.filter('timeago', function() {
+
+    return function(date) {
+        if(date) {
+            try {
+                return moment(date).fromNow();
+            } catch(e) {
+                return "sometime";
+            }
+        } else {
+            return "sometime";
+        }
+    }
 });

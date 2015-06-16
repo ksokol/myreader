@@ -57,7 +57,7 @@
                                 <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
                                 <h4>
                                     <md-icon hide show-gt-md ng-hide="{{entry.seen}}" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
-                                    {{::entry.feedTitle | htmlEntities}}
+                                    {{::entry.createdAt | timeago}} on {{::entry.feedTitle | htmlEntities}}
                                 </h4>
                             </div>
                             <p hide show-gt-md ng-bind-html="entry.content | targetBlank" wrap-entry-content></p>
