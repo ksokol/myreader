@@ -41,14 +41,20 @@ angular.module('common.directives', [])
     };
 })
 
-.directive("wrapEntryContent", ['$window', function($window) {
+.directive("wrapEntryContent", ['$window', '$mdMedia', function($window, $mdMedia) {
     return {
         restrict : "A",
         link : function($scope, $element, attrs) {
             $scope.$watch(function() {
                 return $window.innerWidth;
             }, function(value) {
-                attrs.$set('style', 'max-width: ' + (value - 16) + 'px');
+                var big = $mdMedia('gt-md');
+                var substract = 16;
+                //TODO
+                if(big) {
+                    substract += 350;
+                }
+                attrs.$set('style', 'max-width: ' + (value - substract) + 'px');
             });
         }
     };

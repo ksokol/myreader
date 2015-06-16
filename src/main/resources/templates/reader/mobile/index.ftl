@@ -55,11 +55,12 @@
                         <div flex="95" class="md-list-item-text">
                             <div>
                                 <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
-                                <p>
-                                    <md-icon hide show-gt-md  ng-hide="{{entry.seen}}" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
+                                <h4>
+                                    <md-icon hide show-gt-md ng-hide="{{entry.seen}}" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
                                     {{::entry.feedTitle | htmlEntities}}
-                                </p>
+                                </h4>
                             </div>
+                            <p hide show-gt-md ng-bind-html="entry.content | targetBlank" wrap-entry-content></p>
                             <div hide-gt-md>
                                 <md-checkbox ng-change="markAsReadAndHide(entry)" class="md-secondary" ng-model="entry.seen"></md-checkbox>
                             </div>
