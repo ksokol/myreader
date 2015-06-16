@@ -95,7 +95,7 @@ angular.module('common.controllers', ['common.services'])
     };
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', '$state', 'loadingIndicatorService', 'subscriptionEntryService', function($scope, $stateParams, $state, loadingIndicatorService, subscriptionEntryService) {
+.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', '$state', '$mdMedia', 'loadingIndicatorService', 'subscriptionEntryService', function($scope, $stateParams, $state, $mdMedia, loadingIndicatorService, subscriptionEntryService) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
@@ -131,6 +131,21 @@ angular.module('common.controllers', ['common.services'])
 
     $scope.visible = function(item) {
         return item.visible !== undefined ? item.visible : true;
+    };
+
+    $scope.seenIcon = function(item) {
+        return item.seen ? 'visibility_off' : 'visibility_on';
+    };
+
+    $scope.markAsReadAndHide = function(entry) {
+        if(!$mdMedia('gt-md')) {
+            return;
+        }
+        loadingIndicatorService.show();
+        subscriptionEntryService.save(entry)
+        .then(function() {
+            loadingIndicatorService.hide();
+        });
     };
 
     $scope.markAsRead = function() {

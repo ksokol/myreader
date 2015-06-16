@@ -15,8 +15,11 @@ angular.module('common.services', ['common.api', 'angular-cache'])
         }
 
         for(var i=0;i<subscriptionEntries.length;i++) {
-            //TODO
-            cachedSubscriptionTags.decrementSubscriptionUnseen(subscriptionEntries[i].feedUuid);
+            if(subscriptionEntries[i].seen) {
+                cachedSubscriptionTags.decrementSubscriptionUnseen(subscriptionEntries[i].feedUuid);
+            } else {
+                cachedSubscriptionTags.incrementSubscriptionUnseen(subscriptionEntries[i].feedUuid)
+            }
         }
 
         subscriptionTagCache.put('subscriptionTags', cachedSubscriptionTags);

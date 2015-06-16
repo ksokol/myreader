@@ -40,7 +40,7 @@
                     <div ui-view="actions" class="md-toolbar-tools"></div>
                 </md-toolbar>
 
-                <div id="md-progress-linear-wrapper">
+                <div hide-gt-md id="md-progress-linear-wrapper">
                     <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
                 </div>
 
@@ -53,11 +53,16 @@
                 <md-list-item md-no-ink class="md-2-line" ng-repeat="entry in data.entries | filter: visible">
                     <div layout="row">
                         <div flex="95" class="md-list-item-text">
-                            <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
-                            <p>{{::entry.feedTitle | htmlEntities}}</p>
-                        </div>
-                        <div  flex="5">
-                            <md-checkbox class="md-secondary" ng-model="entry.seen"></md-checkbox>
+                            <div>
+                                <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
+                                <p>
+                                    <md-icon hide show-gt-md  ng-hide="{{entry.seen}}" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
+                                    {{::entry.feedTitle | htmlEntities}}
+                                </p>
+                            </div>
+                            <div hide-gt-md>
+                                <md-checkbox ng-change="markAsReadAndHide(entry)" class="md-secondary" ng-model="entry.seen"></md-checkbox>
+                            </div>
                         </div>
                     </div>
                     <md-divider></md-divider>
@@ -87,7 +92,7 @@
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntriesActions">
-            <md-button class="md-icon-button" hide-gt-sm ng-click="openMenu()" aria-label="Menu">
+            <md-button class="md-icon-button" hide-gt-md ng-click="openMenu()" aria-label="Menu">
                 <md-icon md-font-library="material-icons">menu</md-icon>
             </md-button>
             <h2>
@@ -98,7 +103,7 @@
             <md-button class="md-icon-button" aria-label="Refresh" ng-click="broadcast('refresh')">
                 <md-icon md-font-library="material-icons">refresh</md-icon>
             </md-button>
-            <md-button class="md-icon-button" aria-label="Upload" ng-click="broadcast('update')">
+            <md-button class="md-icon-button" hide-gt-md aria-label="Upload" ng-click="broadcast('update')">
                 <md-icon md-font-library="material-icons">file_upload</md-icon>
             </md-button>
         </script>
