@@ -51,7 +51,7 @@ angular.module('common.filters', ['ngSanitize'])
     // http://developwithstyle.com/articles/2010/06/29/converting-html-entities-to-characters/
 
     var entityTable = {
-        // 34: "&quot;",     // Quotation mark. Not required
+        34: "&quot;",     // Quotation mark
         38: "&amp;",        // Ampersand. Applied before everything else in the application
         60: "&lt;",     // Less-than sign
         62: "&gt;",     // Greater-than sign
