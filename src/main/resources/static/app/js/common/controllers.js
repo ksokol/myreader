@@ -120,6 +120,7 @@ angular.module('common.controllers', ['common.services'])
         }
         //TODO
         param['seenEqual'] = false;
+        param['size'] = 10;
 
         return param;
     };
