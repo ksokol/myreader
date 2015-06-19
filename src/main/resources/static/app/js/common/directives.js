@@ -37,7 +37,7 @@ angular.module('common.directives', [])
         }
     };
 })
-.directive("wrapEntryContent", ['$window', '$mdMedia', function($window, $mdMedia) {
+.directive("myWrapEntryContent", ['$window', '$mdMedia', function($window, $mdMedia) {
     return {
         restrict : "A",
         link : function($scope, $element, attrs) {

@@ -55,13 +55,14 @@
                         <div layout="row">
                             <div class="my-list-item-text">
                                 <div>
-                                    <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
+                                    <h3 hide-gt-md class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
+                                    <h3 hide show-gt-md class="my-entry-title my-a" ng-click="openOrigin(entry)">{{::entry.title | htmlEntities}}</h3>
                                     <h4>
-                                        <md-icon class="my-a" hide show-gt-md ng-click="markAsRead(entry)" ng-hide="{{entry.seen}}" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
+                                        <md-icon class="my-a" hide show-gt-md ng-click="toogleRead(entry)" ng-hide="{{entry.seen}}" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
                                         {{::entry.createdAt | timeago}} on {{::entry.feedTitle | htmlEntities}}
                                     </h4>
                                 </div>
-                                <p hide show-gt-md ng-bind-html="entry.content | targetBlank" wrap-entry-content></p>
+                                <p hide show-gt-md ng-bind-html="entry.content | targetBlank" my-wrap-entry-content></p>
                                 <div hide-gt-md>
                                     <md-checkbox ng-change="markAsReadAndHide(entry)" class="my-secondary" ng-model="entry.seen" aria-label="Mark as seen"></md-checkbox>
                                 </div>
@@ -95,7 +96,7 @@
                     </md-radio-group>
                 </div>
             </div>
-            <div ng-bind-html="entry.content | targetBlank" wrap-entry-content></div>
+            <div ng-bind-html="entry.content | targetBlank" my-wrap-entry-content></div>
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntriesActions">

@@ -95,7 +95,7 @@ angular.module('common.controllers', ['common.services'])
     };
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', '$state', '$mdMedia', 'loadingIndicatorService', 'subscriptionEntryService', function($scope, $stateParams, $state, $mdMedia, loadingIndicatorService, subscriptionEntryService) {
+.controller('SubscriptionEntryListCtrl', ['$window', '$scope', '$stateParams', '$state', '$mdMedia', 'loadingIndicatorService', 'subscriptionEntryService', function($window, $scope, $stateParams, $state, $mdMedia, loadingIndicatorService, subscriptionEntryService) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
@@ -169,8 +169,8 @@ angular.module('common.controllers', ['common.services'])
         });
     };
 
-    $scope.markAsRead = function(entry) {
-        entry.seen = true;
+    $scope.toogleRead = function(entry) {
+        entry.seen = !entry.seen;
         loadingIndicatorService.show();
         subscriptionEntryService.save(entry)
             .then(function() {
@@ -184,6 +184,10 @@ angular.module('common.controllers', ['common.services'])
 
     $scope.loadMore = function() {
         refresh($scope.data.next());
+    };
+
+    $scope.openOrigin = function(entry) {
+        $window.open(entry.origin, '_blank');
     };
 
     $scope.$on('refresh', $scope.refresh);
