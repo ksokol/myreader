@@ -15,7 +15,7 @@ angular.module('common.filters', ['ngSanitize'])
         var i;
         while ((match = raw.match(A_TAG_REGEXP))) {
             aTag = match[0];
-            if(aTag.contains("href")) {
+            if(aTag.indexOf("href") > -1) {
                 addBlankTarget(aTag);
             }
             i = match.index;
@@ -23,7 +23,7 @@ angular.module('common.filters', ['ngSanitize'])
             raw = raw.substring(i + match[0].length);
         }
         addText(raw);
-        return $sanitize(text);
+        return $sanitize(html.join(" "));
 
         function addText(text) {
             if (!text) {
