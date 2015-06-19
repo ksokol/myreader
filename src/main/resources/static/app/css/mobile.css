@@ -5,6 +5,10 @@
     src: local('Material Icons'), local('MaterialIcons-Regular'), url('MaterialIcons-Regular.woff2') format('woff2'), url('MaterialIcons-Regular.woff') format('woff');
 }
 
+.my-a {
+    cursor: pointer;
+}
+
 .material-icons {
     font-family: 'Material Icons';
     font-weight: normal;
@@ -26,25 +30,31 @@ ul {
     margin: 0;
     padding: 0;
 }
+
 ul li {
     margin-left: 16px;
     padding: 0;
     margin-top: 3px;
     list-style-position: inside;
 }
-.subscription-tag-menu,.subscription-tag-menu ul {
+
+.subscription-tag-menu, .subscription-tag-menu ul {
     list-style: none;
     padding: 0;
 }
+
 .subscription-tag-menu li {
     margin: 0;
 }
+
 .subscription-tag-menu > li {
     border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
+
 .subscription-tag-menu > li:nth-child(-n+2) {
     border-top: none;
 }
+
 .subscription-tag-menu .md-button {
     border-radius: 0;
     color: inherit;
@@ -60,18 +70,22 @@ ul li {
     white-space: normal;
     width: 100%;
 }
+
 .subscription-tag-menu button.md-button::-moz-focus-inner {
     padding: 0;
 }
-.subscription-tag-menu li.parentActive,.subscription-tag-menu li.parentActive .menu-toggle-list {
+
+.subscription-tag-menu li.parentActive, .subscription-tag-menu li.parentActive .menu-toggle-list {
     background-color: #f6f6f6;
 }
+
 .subscription-tag-menu .menu-toggle-list a.md-button {
     display: block;
     font-weight: 400;
     padding: 0 16px 0 32px;
     text-transform: none;
 }
+
 /* remove dotted outline on buttons in firefox */
 button::-moz-focus-inner {
     border: 0;
@@ -83,6 +97,165 @@ button::-moz-focus-inner {
 
 /* TODO */
 #md-progress-linear-wrapper {
-    height:10px;
+    height: 10px;
     margin-top: -5px;
+}
+
+md-toolbar ~ md-content > my-list {
+    padding: 0;
+}
+
+my-list {
+    display: block;
+    padding: 8px 0;
+}
+
+my-select, my-card, my-list, my-toolbar, ul, ol, p, h1, h2, h3, h4, h5, h6 {
+    text-rendering: optimizelegibility;
+}
+
+my-list-item.my-2-line, my-list-item.my-2-line > .my-no-style, my-list-item.my-3-line, my-list-item.my-3-line > .my-no-style {
+    align-items: flex-start;
+}
+
+my-list-item, my-list-item .my-list-item-inner {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+    min-height: 48px;
+}
+
+my-list-item.my-no-proxy, my-list-item .my-no-style {
+    flex: 1 1 0;
+    padding: 0 16px;
+    position: relative;
+}
+
+my-list-item.my-2-line .my-list-item-text, my-list-item.my-2-line > .my-no-style .my-list-item-text {
+    flex: 1 1 0;
+    padding-top: 19px;
+}
+
+my-list-item.my-2-line .my-list-item-text, my-list-item.my-2-line > .my-no-style .my-list-item-text, my-list-item.my-3-line .my-list-item-text, my-list-item.my-3-line > .my-no-style .my-list-item-text {
+    flex: 1 1 0;
+    padding: 16px 0;
+    text-overflow: ellipsis;
+}
+
+my-list.my-default-theme my-list-item.my-2-line .my-list-item-text h3, my-list.my-default-theme my-list-item.my-2-line .my-list-item-text h4, my-list.my-default-theme my-list-item.my-3-line .my-list-item-text h3, my-list.my-default-theme my-list-item.my-3-line .my-list-item-text h4 {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+my-list-item.my-2-line .my-list-item-text h3, my-list-item.my-2-line > .my-no-style .my-list-item-text h3, my-list-item.my-3-line .my-list-item-text h3, my-list-item.my-3-line > .my-no-style .my-list-item-text h3 {
+    line-height: 0.75em;
+    margin: 0 0 6px;
+}
+
+.my-subhead, my-list-item.my-2-line .my-list-item-text h3, my-list-item.my-2-line > .my-no-style .my-list-item-text h3, my-list-item.my-3-line .my-list-item-text h3, my-list-item.my-3-line > .my-no-style .my-list-item-text h3 {
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+.my-body-2, my-list .my-subheader, my-list-item.my-2-line .my-list-item-text h4, my-list-item.my-2-line > .my-no-style .my-list-item-text h4, my-list-item.my-3-line .my-list-item-text h4, my-list-item.my-3-line > .my-no-style .my-list-item-text h4, my-list-item.my-2-line .my-list-item-text p, my-list-item.my-2-line > .my-no-style .my-list-item-text p, my-list-item.my-3-line .my-list-item-text p, my-list-item.my-3-line > .my-no-style .my-list-item-text p {
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+my-list-item.my-2-line .my-list-item-text h4, my-list-item.my-2-line > .my-no-style .my-list-item-text h4, my-list-item.my-3-line .my-list-item-text h4, my-list-item.my-3-line > .my-no-style .my-list-item-text h4 {
+    font-weight: 400;
+    line-height: 0.75em;
+    margin: 10px 0 5px;
+}
+
+element.style {
+    max-width: 1554px;
+}
+
+my-list.my-default-theme my-list-item.my-2-line .my-list-item-text p, my-list.my-default-theme my-list-item.my-3-line .my-list-item-text p {
+    color: rgba(0, 0, 0, 0.54);
+}
+
+my-list-item.my-2-line .my-list-item-text p, my-list-item.my-2-line > .my-no-style .my-list-item-text p, my-list-item.my-3-line .my-list-item-text p, my-list-item.my-3-line > .my-no-style .my-list-item-text p {
+    line-height: 1.6em;
+    margin: 0;
+}
+
+my-list-item md-checkbox.my-secondary, my-list-item my-switch.my-secondary, my-list-item .my-list-item-inner md-checkbox.my-secondary, my-list-item .my-list-item-inner my-switch.my-secondary {
+    margin-bottom: 0;
+    margin-right: 0;
+    margin-top: 0;
+}
+
+my-list-item > div.my-primary > md-checkbox, my-list-item > div.my-secondary > md-checkbox, my-list-item > md-checkbox:first-child, my-list-item md-checkbox.my-secondary, my-list-item .my-list-item-inner > div.my-primary > md-checkbox, my-list-item .my-list-item-inner > div.my-secondary > md-checkbox, my-list-item .my-list-item-inner > md-checkbox:first-child, my-list-item .my-list-item-inner md-checkbox.my-secondary {
+    align-self: center;
+}
+
+my-list-item .my-secondary-container, my-list-item .my-secondary, my-list-item .my-list-item-inner .my-secondary-container, my-list-item .my-list-item-inner .my-secondary {
+    margin-left: 16px;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translate3d(0px, -50%, 0px);
+}
+
+my-divider.my-default-theme {
+    border-top-color: rgba(0, 0, 0, 0.12);
+}
+
+my-list-item my-divider {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+}
+
+my-divider {
+    border-top: 1px solid;
+    display: block;
+    margin: 0;
+}
+
+.my-tag-chips .md-chip {
+    position: relative;
+    padding-right: 35px;
+}
+
+.my-tag-chips .md-chip .md-chip-remove-container {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    margin-right: 0;
+    height: 24px;
+}
+
+.my-tag-chips .md-chip .md-chip-remove-container button.my-tag-chip {
+    position: relative;
+    height: 24px;
+    width: 24px;
+    line-height: 30px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    transition: background 0.15s linear;
+    display: block;
+}
+
+.my-tag-chips .md-chip .md-chip-remove-container button.my-tag-chip md-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(0.7);
+    color: white;
+    fill: white;
+}
+
+.my-tag-chips .md-chip .md-chip-remove-container button.my-tag-chip:hover, .my-tag-chips .md-chip .md-chip-remove-container button.my-tag-chip:focus {
+    background: rgba(255, 0, 0, 0.8);
 }

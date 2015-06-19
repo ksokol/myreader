@@ -49,29 +49,35 @@
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntries">
-            <md-list>
-                <md-list-item md-no-ink class="md-2-line" ng-repeat="entry in data.entries | filter: visible">
-                    <div layout="row">
-                        <div class="md-list-item-text">
-                            <div>
-                                <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
-                                <h4>
-                                    <md-icon hide show-gt-md ng-hide="{{entry.seen}}" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
-                                    {{::entry.createdAt | timeago}} on {{::entry.feedTitle | htmlEntities}}
-                                </h4>
-                            </div>
-                            <p hide show-gt-md ng-bind-html="entry.content | targetBlank" wrap-entry-content></p>
-                            <div hide-gt-md>
-                                <md-checkbox ng-change="markAsReadAndHide(entry)" class="md-secondary" ng-model="entry.seen"></md-checkbox>
+            <my-list class="md-default-theme">
+                <my-list-item class="my-2-line" ng-repeat="entry in data.entries | filter: visible">
+                    <div class="my-no-style my-list-item-inner">
+                        <div layout="row">
+                            <div class="my-list-item-text">
+                                <div>
+                                    <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
+                                    <h4>
+                                        <md-icon class="my-a" hide show-gt-md ng-click="markAsRead(entry)" ng-hide="{{entry.seen}}" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
+                                        {{::entry.createdAt | timeago}} on {{::entry.feedTitle | htmlEntities}}
+                                    </h4>
+                                </div>
+                                <p hide show-gt-md ng-bind-html="entry.content | targetBlank" wrap-entry-content></p>
+                                <div hide-gt-md>
+                                    <md-checkbox ng-change="markAsReadAndHide(entry)" class="my-secondary" ng-model="entry.seen" aria-label="Mark as seen"></md-checkbox>
+                                </div>
+                                <div>
+                                    <my-entry-tags hide show-gt-md entry="entry"></my-entry-tags>
+                                </div>
                             </div>
                         </div>
+
+                        <my-divider class="my-default-theme"></my-divider>
                     </div>
-                    <md-divider></md-divider>
-                </md-list-item>
-                <md-list-item align="center" ng-click="loadMore()" ng-show="data.next()">
+                </my-list-item>
+                <my-list-item align="center" ng-click="loadMore()" ng-show="data.next()">
                     <md-button>load more</md-button>
-                </md-list-item>
-            </md-list>
+                </my-list-item>
+            </my-list>
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntry">
@@ -127,6 +133,19 @@
             <md-button class="md-icon-button" aria-label="Save" ng-click="broadcast('save')">
                 <md-icon md-font-library="material-icons">save</md-icon>
             </md-button>
+        </script>
+
+        <script type="text/ng-template" id="Tags">
+            <md-chips class="my-tag-chips" ng-model="tags" md-on-append="addTag($chip)">
+                <md-chip-template>
+                    <span>
+                      <strong>{{$chip}}</strong>
+                    </span>
+                </md-chip-template>
+                <button md-chip-remove ng-click="removeTag($chip)" class="md-primary my-tag-chip">
+                    <md-icon md-font-library="material-icons">close</md-icon>
+                </button>
+            </md-chips>
         </script>
 
         <@script id="mobile"></@script>

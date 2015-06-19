@@ -125,6 +125,26 @@ angular.module('common.controllers', ['common.services'])
         return param;
     };
 
+    var _update = function() {
+        var selected = [];
+        angular.forEach($scope.data.entries, function(entry) {
+            if(entry.seen && (entry.visible === undefined || entry.visible) ) {
+                selected.push(entry);
+            }
+        });
+
+        if(selected.length > 0) {
+            loadingIndicatorService.show();
+            subscriptionEntryService.updateEntries(selected)
+                .then(function() {
+                    angular.forEach(selected, function(entry) {
+                        entry.visible = false;
+                    });
+                    loadingIndicatorService.hide();
+                });
+        }
+    };
+
     $scope.refresh = function() {
         $scope.data = {entries: []};
         refresh(params());
@@ -149,24 +169,13 @@ angular.module('common.controllers', ['common.services'])
         });
     };
 
-    $scope.markAsRead = function() {
-        var selected = [];
-        angular.forEach($scope.data.entries, function(entry) {
-            if(entry.seen && (entry.visible === undefined || entry.visible) ) {
-                selected.push(entry);
-            }
-        });
-
-        if(selected.length > 0) {
-            loadingIndicatorService.show();
-            subscriptionEntryService.updateEntries(selected)
+    $scope.markAsRead = function(entry) {
+        entry.seen = true;
+        loadingIndicatorService.show();
+        subscriptionEntryService.save(entry)
             .then(function() {
-                angular.forEach(selected, function(entry) {
-                    entry.visible = false;
-                });
                 loadingIndicatorService.hide();
             });
-        }
     };
 
     $scope.navigateToDetailPage = function(item) {
@@ -178,8 +187,7 @@ angular.module('common.controllers', ['common.services'])
     };
 
     $scope.$on('refresh', $scope.refresh);
-
-    $scope.$on('update', $scope.markAsRead);
+    $scope.$on('update', _update);
 
     refresh(params());
 }])

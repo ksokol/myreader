@@ -345,4 +345,4 @@ angular.module('common.filters', ['ngSanitize'])
             return "sometime";
         }
     }
-});
+})
