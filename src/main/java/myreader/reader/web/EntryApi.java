@@ -210,29 +210,11 @@ public class EntryApi {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "", method = RequestMethod.PUT)
     @ResponseBody
-    public void batchUpdateEntry(@RequestBody Map<String, Object>[] map) {
-        for (Map<String, Object> m : map) {
+    public void batchUpdateEntry(@RequestBody Map<String, String>[] map) {
+        for (Map<String, String> m : map) {
             if (m.containsKey("id")) {
                 Long id = Long.valueOf(m.get("id").toString());
-                SubscriptionEntry userEntry = subscriptionEntryService.findById(id);
-
-                if (userEntry != null) {
-                    if (m.containsKey("unseen")) {
-                        userEntry.setSeen(!Boolean.valueOf(m.get("unseen").toString()));
-                    }
-
-                    if (m.containsKey("tag")) {
-                        Object tag = m.get("tag");
-
-                        if (tag == null) {
-                            userEntry.setTag(null);
-                        } else {
-                            userEntry.setTag(tag.toString());
-                        }
-                    }
-
-                    subscriptionEntryService.save(userEntry);
-                }
+                editPostXhr(m, id);
             }
         }
     }
