@@ -2,12 +2,19 @@ package myreader.resource.config;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.validation.TraversableResolver;
-
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import myreader.resource.exclusionset.ExclusionSetCollectionResource;
+import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
+import myreader.resource.subscription.SubscriptionCollectionResource;
+import myreader.resource.subscription.beans.SubscriptionGetResponse;
+import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import myreader.resource.subscriptionentry.converter.SubscriptionEntryGetResponseConverter;
+import myreader.resource.user.UserEntityResource;
+import myreader.resource.user.beans.UserGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -26,26 +33,16 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-
-import myreader.resource.exclusionpattern.assembler.ExclusionPatternEntityLinks;
-import myreader.resource.exclusionset.ExclusionSetCollectionResource;
-import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
-import myreader.resource.subscription.SubscriptionCollectionResource;
-import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import myreader.resource.subscriptionentry.SubscriptionEntryCollectionResource;
-import myreader.resource.subscriptionentry.converter.SubscriptionEntryGetResponseConverter;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.resource.user.UserEntityResource;
-import myreader.resource.user.beans.UserGetResponse;
 import spring.data.web.SequenceableHandlerMethodArgumentResolver;
 import spring.hateoas.DelegatingEntityLinks;
 import spring.hateoas.EntityLinker;
 import spring.hateoas.EntityLinks;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.validation.TraversableResolver;
 
 /**
  * @author Kamill Sokol
@@ -98,7 +95,6 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
         el.add(new EntityLinker(SubscriptionGetResponse.class, SubscriptionCollectionResource.class));
         el.add(new EntityLinker(UserGetResponse.class, UserEntityResource.class));
         el.add(new EntityLinker(ExclusionSetGetResponse.class, ExclusionSetCollectionResource.class));
-        el.add(new ExclusionPatternEntityLinks());
 
         return new DelegatingEntityLinks(el);
     }
