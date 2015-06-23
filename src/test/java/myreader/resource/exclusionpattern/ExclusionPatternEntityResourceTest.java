@@ -1,12 +1,13 @@
 package myreader.resource.exclusionpattern;
 
-import myreader.test.IntegrationTestSupport;
-import org.junit.Test;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.deleteAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
 
 /**
  * @author Kamill Sokol
@@ -23,6 +24,17 @@ public class ExclusionPatternEntityResourceTest extends IntegrationTestSupport {
     @Test
     public void testEntityResourceForUser2NotFound() throws Exception {
         mockMvc.perform(getAsUser2("/exclusions/1/pattern/0"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+        testEntityResourceForUser1JsonStructureEquality();
+
+        mockMvc.perform(deleteAsUser1("/exclusions/1/pattern/0"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(getAsUser1("/exclusions/1/pattern/0"))
                 .andExpect(status().isNotFound());
     }
 }
