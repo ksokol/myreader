@@ -1,5 +1,6 @@
 package myreader.resource.subscription;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
@@ -9,14 +10,13 @@ import static org.springframework.test.web.servlet.result.ContentResultMatchersJ
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Date;
-
+import myreader.service.time.TimeService;
+import myreader.test.IntegrationTestSupport;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import myreader.service.time.TimeService;
-import myreader.test.IntegrationTestSupport;
+import java.util.Date;
 
 /**
  * @author Kamill Sokol
@@ -89,4 +89,10 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
                 .andExpect(jsonEquals("json/subscription/post-new-response.json"));
     }
 
+    @Test
+    public void testAvailableTags() throws Exception {
+        mockMvc.perform(getAsUser2("/subscriptions/availableTags"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasItems("tag1", "tag2")));
+    }
 }
