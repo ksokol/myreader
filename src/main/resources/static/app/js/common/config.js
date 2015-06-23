@@ -1,6 +1,6 @@
 window.write = function() {};
 
-angular.module('myreader', ['common.filters', 'common.services', 'common.controllers', 'common.directives', 'ui.router', 'ct.ui.router.extras.previous', 'ngMaterial', 'LocalStorageModule'])
+angular.module('myreader', ['common.filters', 'common.services', 'common.controllers', 'common.directives', 'ui.router', 'ct.ui.router.extras.previous', 'ngMaterial', 'LocalStorageModule', 'ngMessages'])
 
 .config(['$httpProvider', function($httpProvider) {
 
@@ -28,6 +28,19 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
             'request': function (config) {
                 config.headers["X-Requested-With"] = "XMLHttpRequest";
                 return config || $q.when(config);
+            }
+        };
+    }]);
+
+    $httpProvider.interceptors.push(['$q', '$rootScope', function($q, $rootScope) {
+        return {
+            'request': function(config) {
+                $rootScope.$broadcast('loading-started');
+                return config || $q.when(config);
+            },
+            'response': function(response) {
+                $rootScope.$broadcast('loading-complete');
+                return response || $q.when(response);
             }
         };
     }]);
@@ -99,6 +112,32 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                     },
                     actions: {
                         templateUrl: 'SubscriptionEntryActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
+            })
+            .state('app.subscriptions', {
+                url: "/subscriptions",
+                views: {
+                    content: {
+                        templateUrl: 'Subscriptions',
+                        controller: 'SubscriptionsCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'SubscriptionsActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
+            })
+            .state('app.subscription', {
+                url: "/subscriptions/:uuid",
+                views: {
+                    content: {
+                        templateUrl: 'Subscription',
+                        controller: 'SubscriptionCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'SubscriptionActions',
                         controller: 'TopBarActionsCtrl'
                     }
                 }

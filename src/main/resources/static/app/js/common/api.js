@@ -1,6 +1,6 @@
 angular.module('common.api', [])
 
-.service('subscriptionTagConverter', function () {
+.service('subscriptionsTagConverter', function () {
 
     var SubscriptionTag = function () {
         var self = this;
@@ -177,6 +177,57 @@ angular.module('common.api', [])
     }
 })
 
+.service('subscriptionsConverter', function() {
+
+    return {
+        convertFrom: function (data) {
+            return data.content;
+        }
+    }
+})
+
+.service('subscriptionConverter', function() {
+
+    return {
+        convertFrom: function (data) {
+            return data;
+        },
+        convertTo: function(data) {
+            return data;
+        }
+    }
+})
+
+.service('exclusionsConverter', function() {
+
+    return {
+        convertFrom: function (data) {
+            return data.content;
+        }
+    }
+})
+
+.service('exclusionConverter', function() {
+
+    return {
+        convertFrom: function(data) {
+            return data;
+        },
+        convertTo: function (data) {
+            return { pattern: data };
+        }
+    }
+})
+
+.service('subscriptionTagConverter', function() {
+
+    return {
+        convertFrom: function (data) {
+            return data;
+        }
+    }
+})
+
 .service('conversionService', function ($injector) {
     return {
         convertFrom: function (resourceType, data) {
@@ -204,6 +255,23 @@ angular.module('common.api', [])
             $http.patch(url, converted)
             .success(function (data) {
                 deferred.resolve(conversionService.convertFrom(resourceType, data));
+            });
+            return deferred.promise;
+        },
+        post: function(resourceType, url, data) {
+            var converted = conversionService.convertTo(resourceType, data);
+            var deferred = $q.defer();
+            $http.post(url, converted)
+            .success(function (data) {
+                deferred.resolve(conversionService.convertFrom(resourceType, data));
+            });
+            return deferred.promise;
+        },
+        delete: function(resourceType, url) {
+            var deferred = $q.defer();
+            $http.delete(url)
+            .success(function (data) {
+                deferred.resolve();
             });
             return deferred.promise;
         }

@@ -45,7 +45,7 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
                 .andExpect(jsonEquals("json/subscriptionentry/4.json"));
 
         mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")
-                .json("{'content': {'seen':false}}"))
+                .json("{'seen':false}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/patch1#4.json"));
 
@@ -67,7 +67,7 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
                 .andExpect(jsonEquals("json/subscriptionentry/4.json"));
 
         mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")
-                .json("{'content': {'tag':'tag-patched'}}"))
+                .json("{'tag':'tag-patched'}"))
                 .andExpect(jsonEquals("json/subscriptionentry/patch2#4.json"));
 
         mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))

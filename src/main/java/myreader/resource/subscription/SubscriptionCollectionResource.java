@@ -1,5 +1,7 @@
 package myreader.resource.subscription;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +60,11 @@ public class SubscriptionCollectionResource {
         final HashMap<String, Object> body = new HashMap<>(2);
         body.put("content", target);
         return body;
+    }
+
+    @RequestMapping(value= "availableTags", method = GET)
+    public List<String> tags(@AuthenticationPrincipal MyReaderUser user) {
+        return subscriptionRepository.findDistinctTags(user.getId());
     }
 
 }

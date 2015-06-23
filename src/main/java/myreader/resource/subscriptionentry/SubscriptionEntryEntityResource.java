@@ -3,6 +3,13 @@ package myreader.resource.subscriptionentry;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
+import myreader.entity.SubscriptionEntry;
+import myreader.repository.SubscriptionEntryRepository;
+import myreader.repository.SubscriptionRepository;
+import myreader.resource.exception.ResourceNotFoundException;
+import myreader.resource.service.patch.PatchService;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
@@ -11,15 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import myreader.entity.SubscriptionEntry;
-import myreader.repository.SubscriptionEntryRepository;
-import myreader.repository.SubscriptionRepository;
-import myreader.resource.common.Content;
-import myreader.resource.exception.ResourceNotFoundException;
-import myreader.resource.service.patch.PatchService;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import spring.security.MyReaderUser;
 
 /**
@@ -51,19 +49,18 @@ public class SubscriptionEntryEntityResource {
 
     @Transactional
     @RequestMapping(method = PATCH)
-    public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user, @RequestBody Content<SubscriptionEntryPatchRequest> content) {
+    public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user, @RequestBody SubscriptionEntryPatchRequest request) {
         final SubscriptionEntry subscriptionEntry = findOrThrowException(id, user.getUsername());
-        final SubscriptionEntryPatchRequest patchRequest = content.getContent();
 
-        if(patchRequest.isFieldPatched("seen") && patchRequest.getSeen() != null && patchRequest.getSeen() != subscriptionEntry.isSeen()) {
-            if (patchRequest.getSeen()){
+        if(request.isFieldPatched("seen") && request.getSeen() != null && request.getSeen() != subscriptionEntry.isSeen()) {
+            if (request.getSeen()){
                 subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
             } else {
                 subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
             }
         }
 
-        SubscriptionEntry patched = patchService.patch(patchRequest, subscriptionEntry);
+        SubscriptionEntry patched = patchService.patch(request, subscriptionEntry);
         subscriptionEntryRepository.save(patched);
 
         return get(id, user);

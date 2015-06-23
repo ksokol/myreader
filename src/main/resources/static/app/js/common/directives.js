@@ -72,7 +72,7 @@ angular.module('common.directives', [])
                     if(tags.indexOf(splitted[i]) === -1) {
                         tags.push(splitted[i]);
                     }
-                };
+                }
                 return tags;
             };
 
@@ -99,6 +99,39 @@ angular.module('common.directives', [])
                 .then(function(data) {
                     $scope.tags = _split(data.entries[0].tag)
                 });
+            }
+        }]
+    }
+}])
+
+.directive('myExclusions',['exclusionService', function(exclusionService) {
+    return {
+        restrict: 'E',
+        templateUrl: 'Exclusions',
+        scope: {
+            subscription: '=subscription'
+        },
+        controller: ['$scope', function ($scope) {
+            $scope.exclusions = [];
+
+            var _fetch = function() {
+                if($scope.subscription.uuid) {
+                    exclusionService.find($scope.subscription.uuid)
+                    .then(function (data) {
+                        $scope.exclusions = data;
+                    });
+                }
+            };
+
+            $scope.$watch('subscription', _fetch);
+
+            $scope.addTag = function($chip) {
+                exclusionService.save($scope.subscription.uuid, $chip).then(_fetch);
+                return { pattern: $chip, hitCount: 0 };
+            };
+
+            $scope.removeTag = function(uuid) {
+                exclusionService.delete($scope.subscription.uuid, uuid).then(_fetch);
             }
         }]
     }

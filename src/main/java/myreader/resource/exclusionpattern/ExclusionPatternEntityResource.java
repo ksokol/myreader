@@ -44,4 +44,9 @@ public class ExclusionPatternEntityResource {
     public ExclusionPatternGetResponse get(@ModelAttribute("pattern") ExclusionPattern pattern) {
         return resourceAssemblers.toResource(pattern, ExclusionPatternGetResponse.class);
     }
+
+    @RequestMapping(value="", method = RequestMethod.DELETE)
+    public void delete(@ModelAttribute("pattern") ExclusionPattern pattern) {
+        exclusionRepository.delete(pattern);
+    }
 }

@@ -1,28 +1,28 @@
 angular.module('common.services', ['common.api', 'angular-cache'])
 
-.service('subscriptionTagService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
+.service('subscriptionsTagService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
 
-    var subscriptionTagCache = CacheFactory.createCache('subscriptionTagCache', {
+    var subscriptionTagCache = CacheFactory.createCache('subscriptionsTagCache', {
         deleteOnExpire: 'aggressive',
         maxAge: 60 * 5 * 1000 //5 minutes
     });
 
     $rootScope.$on('subscriptionEntry:updateEntries', function(event, subscriptionEntries) {
-        var cachedSubscriptionTags = subscriptionTagCache.get('subscriptionTags');
+        var cachedSubscriptionsTags = subscriptionTagCache.get('subscriptionsTagCache');
 
-        if(!cachedSubscriptionTags) {
+        if(!cachedSubscriptionsTags) {
             return;
         }
 
         for(var i=0;i<subscriptionEntries.length;i++) {
             if(subscriptionEntries[i].seen) {
-                cachedSubscriptionTags.decrementSubscriptionUnseen(subscriptionEntries[i].feedUuid);
+                cachedSubscriptionsTags.decrementSubscriptionUnseen(subscriptionEntries[i].feedUuid);
             } else {
-                cachedSubscriptionTags.incrementSubscriptionUnseen(subscriptionEntries[i].feedUuid)
+                cachedSubscriptionsTags.incrementSubscriptionUnseen(subscriptionEntries[i].feedUuid)
             }
         }
 
-        subscriptionTagCache.put('subscriptionTags', cachedSubscriptionTags);
+        subscriptionTagCache.put('subscriptionsTagCache', cachedSubscriptionsTags);
     });
 
     return {
@@ -35,11 +35,11 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             }
 
             var withUnseen = unseen ? '?unseenGreaterThan=0' : '';
-            var promise = api.get('subscriptionTag', '/myreader/api/2/subscriptions' + withUnseen, subscriptionTagCache);
+            var promise = api.get('subscriptionsTag', '/myreader/api/2/subscriptions' + withUnseen, subscriptionTagCache);
 
             promise.then(function(data) {
-                subscriptionTagCache.put('subscriptionTags', data);
-                subscriptionTagCache.put('subscriptionTags.unseenFlag', unseen);
+                subscriptionTagCache.put('subscriptionsTags', data);
+                subscriptionTagCache.put('subscriptionsTags.unseenFlag', unseen);
             });
 
             return promise;
@@ -145,6 +145,66 @@ angular.module('common.services', ['common.api', 'angular-cache'])
         }
     }
 }])
+
+
+.service('subscriptionService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
+    var url = '/myreader/api/2/subscriptions';
+
+    return {
+        findAll: function() {
+            return api.get('subscriptions', url);
+        },
+        find: function(uuid) {
+            return api.get('subscription', url + '/' + uuid);
+        },
+        save: function(subscription) {
+            return api.patch('subscription', url + '/' + subscription.uuid, subscription);
+        }
+    }
+}])
+
+.service('exclusionService', ['$rootScope', 'api', function($rootScope, api) {
+    var url = '/myreader/api/2/exclusions';
+
+    return {
+        find: function(uuid) {
+            return api.get('exclusions', url + '/' + uuid + '/pattern');
+        },
+        save: function(uuid, exclusion) {
+            return api.post('exclusion', url + '/' + uuid + '/pattern', exclusion);
+        },
+        delete: function(subscriptionUuid, uuid) {
+            return api.delete('exclusion', url + '/' + subscriptionUuid + '/pattern/' + uuid);
+        }
+    }
+}])
+
+.service('subscriptionTagService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
+    var url = '/myreader/api/2/subscriptions/availableTags';
+
+    var subscriptionEntryTagCache = CacheFactory.createCache('subscriptionTagCache', {
+        deleteOnExpire: 'aggressive',
+        maxAge: 60 * 5 * 1000 //5 minutes
+    });
+
+    return {
+        findAll: function() {
+            var cached = subscriptionEntryTagCache.get('subscriptionTags');
+            if(cached) {
+                return deferService.resolved(cached);
+            }
+
+            var promise = api.get('subscriptionTag', url);
+
+            promise.then(function(data) {
+                subscriptionEntryTagCache.put('subscriptionTags', data);
+            });
+
+            return promise;
+        }
+    }
+}])
+
 .service('deferService', ['$q', function($q) {
 
     var _deferred = function(fn, params) {
@@ -169,17 +229,4 @@ angular.module('common.services', ['common.api', 'angular-cache'])
         deferred: _deferred,
         resolved: _resolved
     }
-}])
-
-.service('loadingIndicatorService', ['$rootScope', function($rootScope) {
-
-    return {
-        show: function() {
-            $rootScope.$broadcast('loading-started');
-        },
-        hide: function() {
-            $rootScope.$broadcast('loading-complete');
-        }
-    }
-
 }]);

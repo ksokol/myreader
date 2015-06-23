@@ -2,12 +2,8 @@ package myreader.resource.exclusionpattern.assembler;
 
 import myreader.entity.ExclusionPattern;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
-import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 import spring.hateoas.AbstractResourceAssembler;
-import spring.hateoas.EntityLinks;
 
 /**
  * @author Kamill Sokol
@@ -15,12 +11,8 @@ import spring.hateoas.EntityLinks;
 @Component
 public class ExclusionPatternGetResponseAssembler extends AbstractResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> {
 
-    private final EntityLinks entityLinks;
-
-    @Autowired
-    public ExclusionPatternGetResponseAssembler(EntityLinks entityLinks) {
+    public ExclusionPatternGetResponseAssembler() {
         super(ExclusionPattern.class, ExclusionPatternGetResponse.class);
-        this.entityLinks = entityLinks;
     }
 
     @Override
@@ -30,11 +22,6 @@ public class ExclusionPatternGetResponseAssembler extends AbstractResourceAssemb
         target.setUuid(String.valueOf(source.getId()));
         target.setPattern(source.getPattern());
         target.setHitCount(source.getHitCount());
-
-        Link self = entityLinks.linkFor(ExclusionPatternGetResponse.class, source.getSubscription().getId(), source.getId()).withSelfRel();
-        target.add(self);
-        Link exclusionSet = entityLinks.linkForSingleResource(ExclusionSetGetResponse.class, source.getSubscription().getId()).withRel("exclusion");
-        target.add(exclusionSet);
 
         return target;
     }

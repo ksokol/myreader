@@ -29,6 +29,9 @@
                             <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
                         </li>
                         <li>
+                            <md-button ng-click="open('app.subscriptions')">subscriptions</md-button>
+                        </li>
+                        <li>
                             <!-- TODO -->
                             <md-button href="../web/logout">logout</md-button>
                         </li>
@@ -136,6 +139,29 @@
             </md-button>
         </script>
 
+        <script type="text/ng-template" id="SubscriptionsActions">
+            <md-button class="md-icon-button" hide-gt-md ng-click="openMenu()" aria-label="Menu">
+                <md-icon md-font-library="material-icons">menu</md-icon>
+            </md-button>
+            <h2>
+                <span></span>
+            </h2>
+        </script>
+
+        <script type="text/ng-template" id="SubscriptionActions">
+            <md-button hide-gt-md class="md-icon-button" aria-label="Back" ng-click="back()">
+                <md-icon md-font-library="material-icons">arrow_back</md-icon>
+            </md-button>
+            <h2>
+                <span></span>
+            </h2>
+            <span flex></span>
+
+            <md-button class="md-icon-button" aria-label="Save" ng-click="broadcast('save')">
+                <md-icon md-font-library="material-icons">save</md-icon>
+            </md-button>
+        </script>
+
         <script type="text/ng-template" id="Tags">
             <md-chips class="my-tag-chips" ng-model="tags" md-on-append="addTag($chip)">
                 <md-chip-template>
@@ -149,6 +175,69 @@
             </md-chips>
         </script>
 
+        <script type="text/ng-template" id="Subscriptions">
+            <md-list>
+                <md-list-item ng-click="open(subscription)" md-no-ink class="md-2-line" ng-repeat="subscription in data.subscriptions">
+                    <div layout="row">
+                        <div class="md-list-item-text">
+                            <div>
+                                <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::subscription.title | htmlEntities}}</h3>
+                                <h4>
+                                    {{::subscription.createdAt | timeago}}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <md-divider></md-divider>
+                </md-list-item>
+            </md-list>
+        </script>
+
+        <script type="text/ng-template" id="Subscription">
+            <form name="subscriptionForm">
+            <md-input-container>
+                <label>Title</label>
+                <input required name="title" ng-model="subscription.title">
+                <div  ng-messages="subscriptionForm.title.$error">
+                    <div ng-message="required">required</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container>
+                <label>Url</label>
+                <input ng-model="subscription.origin" disabled>
+            </md-input-container>
+
+            <md-autocomplete
+                    md-selected-item="subscription.tag"
+                    md-search-text="searchText"
+                    md-items="item in querySearch(searchText)"
+                    md-item-text="item"
+                    md-min-length="0"
+                    md-floating-label="Tag">
+                <md-item-template>
+                    <span md-highlight-text="searchText" md-highlight-flags="^i">{{item}}</span>
+                </md-item-template>
+            </md-autocomplete>
+
+            <my-exclusions ng-show="subscription.uuid" subscription="subscription"></my-exclusions>
+                </form>
+        </script>
+
+        <script type="text/ng-template" id="Exclusions">
+            <h2 class="md-title">Subscription entries to ignore</h2>
+            <md-chips class="my-tag-chips" ng-model="exclusions" md-on-append="addTag($chip)">
+                <md-chip-template>
+                    <span>
+                      <strong>{{$chip.pattern}}</strong>
+                        <em>({{$chip.hitCount}})</em>
+                    </span>
+                </md-chip-template>
+                <button md-chip-remove ng-click="removeTag($chip.uuid)" class="md-primary my-tag-chip">
+                    <md-icon md-font-library="material-icons">close</md-icon>
+                </button>
+            </md-chips>
+        </script>
         <@script id="mobile"></@script>
     </body>
 </html>
