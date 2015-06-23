@@ -1,22 +1,14 @@
 package spring;
 
-import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGIN;
+import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.test.KnownUser.USER1;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.IOException;
-import java.net.URL;
-
-import org.apache.commons.codec.binary.Base64;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.web.servlet.MvcResult;
 
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.html.DomElement;
@@ -24,9 +16,15 @@ import com.gargoylesoftware.htmlunit.html.HTMLParser;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
 import myreader.test.KnownUser;
 import myreader.test.SecurityTestSupport;
+import org.apache.commons.codec.binary.Base64;
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * @author Kamill Sokol
@@ -52,11 +50,11 @@ public class ApiSecurityTest extends SecurityTestSupport {
                 .andExpect(status().isOk());
     }
 
-    @Ignore
     @Test
     public void testApi2Unauthorized() throws Exception {
         mockMvc.perform(get(API_2))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", "http://localhost/web/login"));
     }
 
     @Test

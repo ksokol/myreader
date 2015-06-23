@@ -3,31 +3,24 @@ package myreader.service.search.jobs;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-import java.util.List;
-
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * @author Kamill Sokol
  */
-@Ignore
+//@Ignore
 public class IndexSyncJobTest extends IntegrationTestSupport {
 
 	@Autowired
 	private IndexSyncJob indexSyncJob;
 	@Autowired
 	private SubscriptionEntryRepository subscriptionEntryRepository;
-
-	public void beforeTest() {
-		assertThat(allSearchEntries(), hasSize(0));
-        indexSyncJob.run();
-	}
 
 	@Test
 	public void testReindexAllSubscriptionEntriesDifferentPageSize() {
