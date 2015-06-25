@@ -26,8 +26,4 @@ public abstract class AbstractResourceAssembler<T, D extends ResourceSupport> im
         boolean equalsOutput = outputClass.equals(output);
         return equalsInput && equalsOutput;
     }
-
-    protected Class<D> getOutputClass() {
-        return outputClass;
-    }
 }
