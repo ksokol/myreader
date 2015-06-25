@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
+import org.springframework.util.Assert;
 
 /**
 * @author Kamill Sokol
@@ -58,6 +59,8 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     @SuppressWarnings("unchecked")
     @Override
     public Slice<SubscriptionEntry> findBy(String q, Long ownerId, String feedId, String feedTagEqual, String seen, Long nextId, Pageable pageable) {
+        Assert.notNull(ownerId, "ownerId is null");
+
         final FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         final QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(SubscriptionEntry.class).get();
 
@@ -96,7 +99,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         }
 
         fullTextQuery.setFilter(new ChainedFilter(termFilters.toArray(new Filter[termFilters.size()]), ChainedFilter.AND));
-        fullTextQuery.setMaxResults(pageable.getPageSize());
+        fullTextQuery.setMaxResults(pageable == null ? 0 : pageable.getPageSize());
         fullTextQuery.setSort(new Sort(new SortField(ID, SortField.Type.LONG, true)));
 
         return new SliceImpl<>(fullTextQuery.getResultList());
