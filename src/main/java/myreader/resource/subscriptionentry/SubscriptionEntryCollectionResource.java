@@ -3,11 +3,14 @@ package myreader.resource.subscriptionentry;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import javax.validation.Valid;
-
+import myreader.entity.Identifiable;
+import myreader.entity.SubscriptionEntry;
+import myreader.repository.SubscriptionEntryRepository;
+import myreader.repository.SubscriptionRepository;
+import myreader.resource.service.patch.PatchService;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
 import org.springframework.hateoas.Resources;
@@ -18,15 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import myreader.entity.Identifiable;
-import myreader.entity.SubscriptionEntry;
-import myreader.repository.SubscriptionEntryRepository;
-import myreader.repository.SubscriptionRepository;
-import myreader.resource.service.patch.PatchService;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import spring.data.domain.Sequence;
 import spring.data.domain.SequenceImpl;
 import spring.data.domain.SequenceRequest;
@@ -34,6 +28,11 @@ import spring.data.domain.Sequenceable;
 import spring.hateoas.ResourceAssemblers;
 import spring.hateoas.SequencedResources;
 import spring.security.MyReaderUser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javax.validation.Valid;
 
 /**
  * @author Kamill Sokol
@@ -84,11 +83,13 @@ public class SubscriptionEntryCollectionResource {
                 continue;
             }
 
-            if(subscriptionPatch.isFieldPatched("seen") && subscriptionPatch.getSeen() != null && subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
-                if (subscriptionPatch.getSeen()){
-                    subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
-                } else {
-                    subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
+            if(subscriptionPatch.isFieldPatched("seen")) {
+                if(subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
+                    if (subscriptionPatch.getSeen()) {
+                        subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
+                    } else {
+                        subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
+                    }
                 }
             }
 

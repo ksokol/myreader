@@ -52,11 +52,13 @@ public class SubscriptionEntryEntityResource {
     public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user, @RequestBody SubscriptionEntryPatchRequest request) {
         final SubscriptionEntry subscriptionEntry = findOrThrowException(id, user.getUsername());
 
-        if(request.isFieldPatched("seen") && request.getSeen() != null && request.getSeen() != subscriptionEntry.isSeen()) {
-            if (request.getSeen()){
-                subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
-            } else {
-                subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
+        if(request.isFieldPatched("seen")) {
+            if(request.getSeen() != subscriptionEntry.isSeen()) {
+                if (request.getSeen()) {
+                    subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
+                } else {
+                    subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
+                }
             }
         }
 

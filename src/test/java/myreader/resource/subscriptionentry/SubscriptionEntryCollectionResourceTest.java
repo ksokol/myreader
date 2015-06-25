@@ -14,10 +14,10 @@ import static org.springframework.test.web.servlet.result.ContentResultMatchersJ
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import myreader.test.IntegrationTestSupport;
+
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
-
-import myreader.test.IntegrationTestSupport;
 
 /**
  * @author Kamill Sokol
@@ -149,6 +149,28 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
         mockMvc.perform(patchAsUser1("/subscriptionEntries")
                 .json("{ 'content': [{ 'uuid': '1002', 'seen': false }, { 'uuid': '1001', 'tag': '1001tag' }]}"))
                 .andExpect(jsonEquals("json/subscriptionentry/patch-batch-response.json"));
+    }
+
+    @Test
+    public void testBatchPatch2() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptionEntries"))
+                .andExpect(jsonEquals("json/subscriptionentry/structure.json"));
+
+        mockMvc.perform(patchAsUser1("/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1002', 'seen': false }, { 'uuid': '1001', 'seen': 'true' }]}"))
+                .andExpect(jsonPath("content[0].seen", is(false)))
+                .andExpect(jsonPath("content[1].seen", is(true)));
+    }
+
+    @Test
+    public void testBatchPatch3() throws Exception {
+        mockMvc.perform(getAsUser1("/subscriptionEntries"))
+                .andExpect(jsonEquals("json/subscriptionentry/structure.json"));
+
+        mockMvc.perform(patchAsUser1("/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1002', 'seen': false }, { 'uuid': '1001', 'seen': 'false' }]}"))
+                .andExpect(jsonPath("content[0].seen", is(false)))
+                .andExpect(jsonPath("content[1].seen", is(false)));
     }
 
     @Test
