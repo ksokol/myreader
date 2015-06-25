@@ -51,7 +51,8 @@ public class SubscriptionEntityResource {
         subscriptionRepository.delete(findOrThrowException(id, user.getUsername()));
     }
 
-    @RequestMapping(value = "", method = RequestMethod.PATCH)
+    //TODO remove RequestMethod.PUT after Android 2.x phased out
+    @RequestMapping(value = "", method = {RequestMethod.PATCH, RequestMethod.PUT})
     public SubscriptionGetResponse patch(@PathVariable("id") Long id,@RequestBody SubscriptionPatchRequest request, @AuthenticationPrincipal MyReaderUser user) {
         Subscription subscription = findOrThrowException(id, user.getUsername());
         Subscription patchedSubscription = patchService.patch(request, subscription);
