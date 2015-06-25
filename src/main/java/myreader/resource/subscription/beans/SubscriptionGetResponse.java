@@ -1,14 +1,12 @@
 package myreader.resource.subscription.beans;
 
-import java.util.Date;
-
 import spring.hateoas.UUIDResourceSupport;
-import spring.hateoas.annotation.Rel;
+
+import java.util.Date;
 
 /**
  * @author Kamill Sokol
  */
-@Rel("subscriptions")
 public class SubscriptionGetResponse extends UUIDResourceSupport {
 
     private String title;

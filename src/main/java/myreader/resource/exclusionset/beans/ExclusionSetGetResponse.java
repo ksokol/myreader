@@ -1,12 +1,10 @@
 package myreader.resource.exclusionset.beans;
 
 import spring.hateoas.UUIDResourceSupport;
-import spring.hateoas.annotation.Rel;
 
 /**
  * @author Kamill Sokol
  */
-@Rel("exclusions")
 public class ExclusionSetGetResponse extends UUIDResourceSupport {
 
     private long patternCount;

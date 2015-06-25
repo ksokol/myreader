@@ -10,96 +10,31 @@
             "uuid": "1",
             "patternCount": 2,
             "overallPatternHits": 2,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/1"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/1"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/1/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         },
         {
             "uuid": "2",
             "patternCount": 2,
             "overallPatternHits": 1,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/2"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/2"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/2/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         },
         {
             "uuid": "3",
             "patternCount": 0,
             "overallPatternHits": 0,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/3"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/3"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/3/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         },
         {
             "uuid": "4",
             "patternCount": 0,
             "overallPatternHits": 0,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/4"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/4"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/4/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         },
         {
             "uuid": "5",
             "patternCount": 0,
             "overallPatternHits": 0,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/5"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/5"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/5/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         }
     ],
     "page": {

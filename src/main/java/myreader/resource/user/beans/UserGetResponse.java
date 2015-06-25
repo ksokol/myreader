@@ -1,12 +1,10 @@
 package myreader.resource.user.beans;
 
 import spring.hateoas.UUIDResourceSupport;
-import spring.hateoas.annotation.Rel;
 
 /**
  * @author Kamill Sokol
  */
-@Rel("users")
 public class UserGetResponse extends UUIDResourceSupport {
 
     private String email;

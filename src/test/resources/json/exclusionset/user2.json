@@ -10,115 +10,37 @@
             "uuid": "9",
             "patternCount": 0,
             "overallPatternHits": 0,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/9"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/9"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/9/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         },
         {
             "uuid": "10",
             "patternCount": 0,
             "overallPatternHits": 0,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/10"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/10"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/10/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         },
         {
             "uuid": "11",
             "patternCount": 0,
             "overallPatternHits": 0,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/11"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/11"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/11/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         },
         {
             "uuid": "6",
             "patternCount": 1,
             "overallPatternHits": 1,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/6"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/6"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/6/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         },
         {
             "uuid": "7",
             "patternCount": 0,
             "overallPatternHits": 0,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/7"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/7"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/7/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         },
         {
             "uuid": "8",
             "patternCount": 0,
             "overallPatternHits": 0,
-            "links": [
-                {
-                    "rel": "self",
-                    "href": "http://localhost/exclusions/8"
-                },
-                {
-                    "rel": "subscription",
-                    "href": "http://localhost/subscriptions/8"
-                },
-                {
-                    "rel": "pattern",
-                    "href": "http://localhost/exclusions/8/pattern"
-                }
-            ]
+            "links": "${json-unit.ignore}"
         }
     ],
     "page": {
