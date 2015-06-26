@@ -1,7 +1,6 @@
 package myreader.resource.subscriptionentry;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
 import myreader.entity.Identifiable;
 import myreader.entity.SubscriptionEntry;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import spring.data.domain.Sequence;
@@ -72,8 +72,9 @@ public class SubscriptionEntryCollectionResource {
         return subscriptionEntryRepository.findDistinctTags(user.getId());
     }
 
+    //TODO remove RequestMethod.PUT after Android 2.x phased out
     @Transactional
-    @RequestMapping(method = PATCH)
+    @RequestMapping(method = {RequestMethod.PATCH, RequestMethod.PUT})
     public Resources<SubscriptionEntryGetResponse> patch(@Valid @RequestBody SubscriptionEntryBatchPatchRequest request, @AuthenticationPrincipal MyReaderUser user) {
         List<SubscriptionEntryGetResponse> subscriptionEntryGetResponses = new ArrayList<>();
 
