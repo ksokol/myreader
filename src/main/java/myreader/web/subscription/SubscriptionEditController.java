@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import myreader.entity.ExclusionPattern;
 import myreader.entity.Subscription;
@@ -12,8 +13,10 @@ import myreader.entity.User;
 import myreader.repository.ExclusionRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.EntityNotFoundException;
+import myreader.service.subscription.SubscriptionService;
 import myreader.service.user.UserService;
 import myreader.subscription.web.SubscriptionApi;
+import myreader.subscription.web.ValidationException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +51,9 @@ class SubscriptionEditController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SubscriptionService subscriptionService;
+
     @ModelAttribute("isNew")
     boolean model(@RequestParam(required = false) Long id) {
         return (id == null) ? true : false;
@@ -56,8 +62,7 @@ class SubscriptionEditController {
     @ModelAttribute("tags")
     Collection<String> model() {
         final User currentUser = userService.getCurrentUser();
-        final Collection<String> tags = subscriptionRepository.findDistinctTags(currentUser.getId());
-        return tags;
+        return subscriptionRepository.findDistinctTags(currentUser.getId());
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -89,7 +94,7 @@ class SubscriptionEditController {
 
     @RequestMapping(method = RequestMethod.POST)
     String submit(@ModelAttribute("subscriptionEditForm") SubscriptionEditForm subscriptionEditForm,
-            BindingResult errors, RedirectAttributes flash, Authentication principal, Map<String, Object> model) throws Exception {
+                  BindingResult errors, RedirectAttributes flash, Map<String, Object> model) throws Exception {
 
         validator.validate(subscriptionEditForm, errors);
         if (errors.hasErrors()) {
@@ -111,7 +116,14 @@ class SubscriptionEditController {
 
         if(CollectionUtils.isNotEmpty(subscriptionEditForm.getExclusions())) {
             List<Map<String, String>> exclusions = new ArrayList<>();
+
             for (final SubscriptionEditForm.Exclusion exclusion : subscriptionEditForm.getExclusions()) {
+                try {
+                    Pattern.compile(exclusion.getPattern());
+                } catch (Exception e) {
+                    throw new ValidationException("exclusion", "invalid.pattern " + exclusion.getPattern());
+                }
+
                 Map<String, String> pattern = new HashMap<>(3);
                 pattern.put("pattern", exclusion.getPattern());
                 exclusions.add(pattern);
@@ -120,7 +132,9 @@ class SubscriptionEditController {
         }
 
         if (subscriptionEditForm.getId() == null) {
-            subscriptionApi.post(map, principal);
+            Subscription subscription = subscriptionService.subscribe(userService.getCurrentUser().getId(), subscriptionEditForm.getUrl());
+            subscription.setTag(subscriptionEditForm.getTag());
+            subscriptionRepository.save(subscription);
             flash.addFlashAttribute("flash", "Subscription created");
         } else {
             subscriptionApi.editPost(subscriptionEditForm.getId(), map);

@@ -28,6 +28,8 @@ public class SubscriptionEditForm {
         private String pattern;
         private int hitCount;
 
+        public Exclusion() {}
+
         public Exclusion(final ExclusionPattern exclusionPatternDto) {
             pattern = exclusionPatternDto.getPattern();
             hitCount = exclusionPatternDto.getHitCount();

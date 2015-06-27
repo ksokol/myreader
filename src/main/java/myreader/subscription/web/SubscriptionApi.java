@@ -53,12 +53,6 @@ public class SubscriptionApi {
     static Pattern patternUrl = Pattern.compile(pattern);
 
     @Autowired
-    private FeedRepository feedRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private SubscriptionService subscriptionService;
 
     @Autowired
@@ -157,91 +151,5 @@ public class SubscriptionApi {
             }
             exclusionRepository.delete(subscriptionPatterns.values());
         }
-    }
-
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
-    public void post(@RequestBody Map<String, Object> map, Authentication authentication) throws Exception {
-        // TODO: everything
-
-        if (map.containsKey("url")) {
-            Matcher m = patternUrl.matcher(String.valueOf(map.get("url")));
-
-            if (m == null || !m.matches()) {
-                ValidationException ve = new ValidationException("url", "pattern");
-                ve.addMessage("expected", pattern);
-                throw ve;
-            }
-        } else {
-            throw new ValidationException("url", "empty");
-        }
-
-        Feed feed = feedRepository.findByUrl(String.valueOf(map.get("url")));
-
-        if(feed == null) {
-            String feedTitle = null;
-
-            try {
-                feedTitle = new SyndFeedInput().build(new XmlReader(new URL(String.valueOf(map.get("url"))))).getTitle();
-            } catch (Exception e1) {
-                throw new ValidationException("url", "no feed under url " + map.get("url") + " found");
-            }
-
-            feedTitle = (feedTitle == null) ? "" : feedTitle.replaceAll("\\p{Space}", " ");
-
-            feed = new Feed();
-
-            feed.setUrl(String.valueOf(map.get("url")));
-            feed.setTitle(feedTitle);
-
-            feedRepository.save(feed);
-        }
-
-        Subscription userFeed = null;
-
-        try {
-            userFeed = subscriptionService.findByUrl(String.valueOf(map.get("url")));
-        } catch (EntityNotFoundException e) {
-            userFeed = new Subscription();
-        }
-
-        userFeed.setFeed(feed);
-        userFeed.setTitle(feed.getTitle());
-        userFeed.setCreatedAt(new Date());
-
-        if (map.containsKey("tag")) {
-            if (!"".equals(map.get("tag"))) {
-                userFeed.setTag(String.valueOf(map.get("tag")));
-            } else {
-                userFeed.setTag(null);
-            }
-        }
-
-        if (map.containsKey("exclusions")) {
-            Set<ExclusionPattern> newSet = new TreeSet<ExclusionPattern>();
-            List exclusions = (List) map.get("exclusions");
-
-            for (Object o : exclusions) {
-                Map<String, String> exclusionMap = (Map<String, String>) o;
-
-                try {
-                    Pattern.compile(exclusionMap.get("pattern"));
-                } catch (Exception e) {
-                    throw new ValidationException("exclusion", "invalid.pattern " + exclusionMap.get("pattern"));
-                }
-
-                newSet.add(new ExclusionPattern(exclusionMap.get("pattern")));
-            }
-
-            userFeed.setExclusions(newSet);
-        }
-
-        User user = userRepository.findByEmail(authentication.getName());
-
-        userFeed.setUser(user);
-
-        subscriptionService.save(userFeed);
-        // TODO: copy entries for user if feed exists already
-
     }
 }
