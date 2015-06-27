@@ -25,12 +25,12 @@ public class SubscriptionEntryRepositoryImplTest extends IntegrationTestSupport 
     public void findByOwnerIdIsNullTest() throws Exception {
         expectedException.expect(InvalidDataAccessApiUsageException.class);
         expectedException.expectMessage("ownerId is null");
-        subscriptionEntryRepository.findBy(null, null, null, null, null, null, null);
+        subscriptionEntryRepository.findBy(null, null, null, null, null, null, null, null);
     }
 
     @Test
     public void findByPageableIsnullTest() throws Exception {
-        final Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBy(null, 1L, null, null, null, null, null);
+        final Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBy(null, 1L, null, null, null, null, null, null);
         assertThat(slice.getSize(), is(0));
     }
 }

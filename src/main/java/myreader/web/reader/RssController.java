@@ -1,18 +1,21 @@
 package myreader.web.reader;
 
 import myreader.dto.SubscriptionDto;
-import myreader.reader.web.EntryApi;
+import myreader.entity.Subscription;
 import myreader.reader.web.UserEntryQuery;
-import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
+import myreader.repository.SubscriptionEntryRepository;
+import myreader.repository.SubscriptionRepository;
 import myreader.subscription.web.SubscriptionApi;
 import myreader.web.QueryString;
 import myreader.web.treenavigation.TreeNavigation;
 import myreader.web.treenavigation.TreeNavigationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Slice;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,11 +24,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.view.RedirectView;
+import spring.data.domain.SequenceRequest;
+import spring.data.domain.Sequenceable;
+import spring.security.MyReaderUser;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +50,10 @@ public class RssController {
     private TreeNavigationBuilder treeNavigationBuilder;
 
     @Autowired
-    private EntryApi entryApi;
+    private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    private SubscriptionEntryRepository subscriptionEntryRepository;
 
     private QueryString queryString = new QueryString();
 
@@ -126,25 +136,74 @@ public class RssController {
         }
     }
 
+    @RequestMapping(value = "{collection:.+}", params = "entry")
+    public String entry(Long entry, Map<String, Object> model, Authentication authentication) {
+        final myreader.entity.SubscriptionEntry byIdAndUsername = subscriptionEntryRepository.findByIdAndUsername(entry, authentication.getName());
+        SubscriptionEntry ue = new SubscriptionEntry(byIdAndUsername);
+        final List<SubscriptionEntry> l = Collections.singletonList(ue);
+        model.put("entryList", l);
+        return "reader/index";
+    }
+
+    @Transactional(readOnly = true)
     @RequestMapping("{collection:.+}")
     public String entries(@PathVariable String collection, @RequestParam(required = false) Long offset, @RequestParam(required = false) boolean showAll,
                           Map<String, Object> model, Authentication authentication) {
-        List<SubscriptionEntry> l = new ArrayList<>();
-        String theCollection = "all".equalsIgnoreCase(collection) ? null : collection;
 
-        final SubscriptionEntrySearchQuery search = new SubscriptionEntrySearchQuery();
-        final Object q = queryString.get("q");
-        if(q != null) {
-            search.setQ(q.toString());
+        MyReaderUser user = (MyReaderUser) authentication.getPrincipal();
+        String feedUuidEqual = null;
+        String feedTagEqual = null;
+        String seenEqual = null;
+        String theCollection = "all".equalsIgnoreCase(collection) ? null : collection;
+        String q = null;
+
+        if(queryString.get("q") != null) {
+            q = queryString.get("q").toString();
         }
 
-        search.setLastId(offset);
-        search.setShowAll(showAll);
+        if(theCollection != null) {
+            final List<Subscription> s = subscriptionRepository.findByTitleAndUsername(theCollection, user.getUsername());
+            if(!s.isEmpty()) {
+                feedUuidEqual = s.get(0).getId().toString();
+            } else {
+                feedTagEqual = theCollection;
+            }
+        }
 
-        final List<UserEntryQuery> feed = entryApi.feed(theCollection, null, false, search, null, authentication);
+        if(!showAll) {
+            seenEqual = "false";
+        }
 
-        for (final UserEntryQuery userEntryQuery : feed) {
-            l.add(new SubscriptionEntry(userEntryQuery));
+        Sequenceable sequenceable;
+        if(offset != null) {
+            sequenceable = new SequenceRequest(10, offset -1);
+        } else {
+            sequenceable = new SequenceRequest(10, Long.MAX_VALUE);
+        }
+
+        Slice<myreader.entity.SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(q, user.getId(), feedUuidEqual, feedTagEqual,  null, seenEqual, sequenceable.getNext(), sequenceable.toPageable());
+        List<UserEntryQuery> dtoList = new ArrayList<>();
+
+        for (myreader.entity.SubscriptionEntry e : pagedEntries.getContent()) {
+            UserEntryQuery dto = new UserEntryQuery();
+            dto.setContent(e.getFeedEntry().getContent());
+            dto.setCreatedAt(e.getCreatedAt());
+            dto.setFeedTitle(e.getSubscription().getTitle());
+            dto.setId(e.getId());
+            dto.setTag(e.getTag());
+            dto.setTitle(e.getFeedEntry().getTitle());
+            dto.setUnseen(String.valueOf(!e.isSeen()));
+            dto.setUrl(e.getFeedEntry().getUrl());
+
+            dtoList.add(dto);
+        }
+
+        final List<UserEntryQuery> l = new ArrayList<>(10);
+
+        if(dtoList.size() > 10) {
+            l.addAll(dtoList.subList(0, 10));
+        } else {
+            l.addAll(dtoList);
         }
 
         model.put("entryList", l);

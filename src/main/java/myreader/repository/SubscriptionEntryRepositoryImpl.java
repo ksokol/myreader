@@ -58,7 +58,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
     @SuppressWarnings("unchecked")
     @Override
-    public Slice<SubscriptionEntry> findBy(String q, Long ownerId, String feedId, String feedTagEqual, String seen, Long nextId, Pageable pageable) {
+    public Slice<SubscriptionEntry> findBy(String q, Long ownerId, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, Pageable pageable) {
         Assert.notNull(ownerId, "ownerId is null");
 
         final FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
@@ -91,6 +91,10 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
         if(isNotEmpty(feedTagEqual)) {
             addFilter(SUBSCRIPTION_TAG, feedTagEqual, termFilters);
+        }
+
+        if(isNotEmpty(entryTagEqual)) {
+            addFilter(TAG, entryTagEqual, termFilters);
         }
 
         if(nextId != null) {

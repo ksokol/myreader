@@ -11,8 +11,7 @@ public class UserEntryQuery {
     private String feedTitle;
     private String tag;
     private String content;
-    private boolean unseen;
-    private IconDto icon;
+    private String unseen;
     private Date createdAt;
 
     public Long getId() {
@@ -63,11 +62,11 @@ public class UserEntryQuery {
         this.content = content;
     }
 
-    public boolean isUnseen() {
+    public String getUnseen() {
         return unseen;
     }
 
-    public void setUnseen(boolean unseen) {
+    public void setUnseen(String unseen) {
         this.unseen = unseen;
     }
 
@@ -79,37 +78,4 @@ public class UserEntryQuery {
         this.createdAt = createdAt;
     }
 
-    public IconDto getIcon() {
-        return icon;
-    }
-
-    public void setIcon(IconDto icon) {
-        this.icon = icon;
-    }
-
-    public static class IconDto {
-        private String mimeType;
-        private String base64;
-
-        public IconDto(String mimetype, String icon) {
-            this.mimeType = mimetype;
-            this.base64 = icon;
-        }
-
-        public String getMimeType() {
-            return mimeType;
-        }
-
-        public void setMimeType(String mimeType) {
-            this.mimeType = mimeType;
-        }
-
-        public String getBase64() {
-            return base64;
-        }
-
-        public void setBase64(String icon) {
-            this.base64 = icon;
-        }
-    }
 }

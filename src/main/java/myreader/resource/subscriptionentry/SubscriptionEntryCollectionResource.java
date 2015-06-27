@@ -59,10 +59,11 @@ public class SubscriptionEntryCollectionResource {
                                                                 @RequestParam(value = "feedUuidEqual", required = false) String feedUuidEqual,
                                                                 @RequestParam(value = "seenEqual", required = false) String seenEqual,
                                                                 @RequestParam(value = "feedTagEqual", required = false) String feedTagEqual,
+                                                                @RequestParam(value = "entryTagEqual", required = false) String entryTagEqual,
                                                                 Sequenceable sequenceable,
                                                                 @AuthenticationPrincipal MyReaderUser user) {
 
-        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(q, user.getId(), feedUuidEqual, feedTagEqual,  seenEqual, sequenceable.getNext(), sequenceable.toPageable());
+        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(q, user.getId(), feedUuidEqual, feedTagEqual, entryTagEqual, seenEqual, sequenceable.getNext(), sequenceable.toPageable());
         return resourceAssemblers.toResource(toSequence(sequenceable, pagedEntries.getContent()), SubscriptionEntryGetResponse.class);
     }
 

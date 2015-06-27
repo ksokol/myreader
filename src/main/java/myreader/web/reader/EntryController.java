@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import myreader.entity.User;
-import myreader.reader.web.EntryApi;
-import myreader.reader.web.UserEntryQuery;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.user.UserService;

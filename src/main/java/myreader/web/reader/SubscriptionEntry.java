@@ -23,7 +23,7 @@ public class SubscriptionEntry {
         feedTitle = userEntryQuery.getFeedTitle();
         tag = userEntryQuery.getTag();
         content = userEntryQuery.getContent();
-        unseen = String.valueOf(userEntryQuery.isUnseen());
+        unseen = userEntryQuery.getUnseen();
         createdAt = userEntryQuery.getCreatedAt();
     }
 
@@ -34,7 +34,7 @@ public class SubscriptionEntry {
         feedTitle = userEntryQuery.getSubscription().getTitle();
         tag = userEntryQuery.getTag();
         content = userEntryQuery.getFeedEntry().getContent();
-        unseen = String.valueOf(userEntryQuery.isSeen());
+        unseen = String.valueOf(!userEntryQuery.isSeen());
         createdAt = userEntryQuery.getCreatedAt();
     }
 
