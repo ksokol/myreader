@@ -1,14 +1,25 @@
 package myreader.web.reader;
 
-import myreader.dto.SubscriptionDto;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import myreader.web.SubscriptionDto;
 import myreader.entity.Subscription;
-import myreader.reader.web.UserEntryQuery;
+import myreader.web.UserEntryQuery;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
-import myreader.subscription.web.SubscriptionApi;
+import myreader.service.user.UserService;
 import myreader.web.QueryString;
 import myreader.web.treenavigation.TreeNavigation;
 import myreader.web.treenavigation.TreeNavigationBuilder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Slice;
@@ -24,27 +35,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.view.RedirectView;
+
 import spring.data.domain.SequenceRequest;
 import spring.data.domain.Sequenceable;
 import spring.security.MyReaderUser;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 @Deprecated
 @Scope(value = WebApplicationContext.SCOPE_REQUEST)
 @Controller
 @RequestMapping("web/rss")
 public class RssController {
-
-    @Autowired
-    private SubscriptionApi subscriptionApi;
 
     @Autowired
     private TreeNavigationBuilder treeNavigationBuilder;
@@ -55,10 +55,13 @@ public class RssController {
     @Autowired
     private SubscriptionEntryRepository subscriptionEntryRepository;
 
+    @Autowired
+    private UserService userService;
+
     private QueryString queryString = new QueryString();
 
     @ModelAttribute("treeNavigation")
-    TreeNavigation subscriptionList(Map<String, Object> model, boolean showAll, Authentication principal, HttpServletRequest servletRequest)
+    TreeNavigation subscriptionList(Map<String, Object> model, boolean showAll, HttpServletRequest servletRequest)
             throws UnsupportedEncodingException {
         // http://tedyoung.me/2011/05/09/spring-mvc-optional-path-variables/
         @SuppressWarnings("unchecked")
@@ -73,7 +76,30 @@ public class RssController {
         //TODO
         model.put("path", "web/rss");
 
-        final List<SubscriptionDto> list = subscriptionApi.test(showAll, principal);
+        int count = 0;
+
+        if(showAll) {
+            count = -1;
+        }
+
+        final List<Subscription> l = subscriptionRepository.findAllByUserAndUnseenGreaterThan(userService.getCurrentUser().getId(), count);
+        List<SubscriptionDto> list = new ArrayList<>();
+
+        for (Subscription s : l) {
+            SubscriptionDto dto = new SubscriptionDto();
+
+            dto.setCreatedAt(s.getCreatedAt());
+            dto.setId(s.getId());
+            dto.setSum(s.getSum());
+            dto.setTag(s.getTag());
+            dto.setTitle(s.getTitle());
+            dto.setUrl(s.getFeed().getUrl());
+            dto.setExclusions(Collections.EMPTY_LIST);
+            dto.setUnseen(s.getUnseen());
+
+            list.add(dto);
+        }
+
         TreeNavigation nav = treeNavigationBuilder.build(list);
 
         if (collection.equals(nav.getName())) {

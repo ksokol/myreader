@@ -7,7 +7,5 @@ import myreader.entity.Feed;
  */
 public interface FeedService {
 
-    Feed createFromUrl(String url);
-
     Feed findByUrl(String url);
 }

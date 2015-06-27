@@ -42,20 +42,6 @@ public class Starter {
     }
 
     @Bean
-    public ServletRegistrationBean apiV1() {
-        DispatcherServlet dispatcherServlet = new DispatcherServlet();
-
-        XmlWebApplicationContext applicationContext = new XmlWebApplicationContext();
-        applicationContext.setConfigLocation("classpath:/META-INF/spring/apimvc-context.xml");
-        dispatcherServlet.setApplicationContext(applicationContext);
-
-        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(dispatcherServlet, "/api/*");
-        servletRegistrationBean.setName("api-v1");
-
-        return servletRegistrationBean;
-    }
-
-    @Bean
     public ServletRegistrationBean web() {
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
 

@@ -12,7 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import myreader.entity.User;
-import myreader.reader.web.UserEntryQuery;
+import myreader.web.UserEntryQuery;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.service.user.UserService;
 import myreader.web.QueryString;

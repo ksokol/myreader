@@ -123,7 +123,7 @@ class SubscriptionEditController {
                 subscription.setTitle(subscriptionEditForm.getTitle());
             }
 
-            subscriptionService.save(subscription);
+            subscriptionRepository.save(subscription);
 
             List<ExclusionPattern> patterns = exclusionRepository.findAllSetsBySubscriptionAndUser(subscription.getId(), userService.getCurrentUser().getId());
 

@@ -48,11 +48,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return subscription;
     }
 
-    @Override
-    public void save(Subscription subscription) {
-        subscriptionRepository.save(subscription);
-    }
-
     @Transactional
     @Override
     public Subscription subscribe(Long userId, String url) {

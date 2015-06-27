@@ -1,21 +1,17 @@
-package myreader.dto;
+package myreader.web;
 
 import java.util.Date;
-import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-
-public class SubscriptionDto {
+@Deprecated
+public class UserEntryQuery {
 
     private Long id;
     private String title;
     private String url;
+    private String feedTitle;
     private String tag;
-    private int sum;
-    private long unseen;
-
-    private List<ExclusionPatternDto> exclusions;
+    private String content;
+    private String unseen;
     private Date createdAt;
 
     public Long getId() {
@@ -42,6 +38,14 @@ public class SubscriptionDto {
         this.url = url;
     }
 
+    public String getFeedTitle() {
+        return feedTitle;
+    }
+
+    public void setFeedTitle(String feedTitle) {
+        this.feedTitle = feedTitle;
+    }
+
     public String getTag() {
         return tag;
     }
@@ -50,30 +54,20 @@ public class SubscriptionDto {
         this.tag = tag;
     }
 
-    public int getSum() {
-        return sum;
+    public String getContent() {
+        return content;
     }
 
-    public void setSum(int sum) {
-        this.sum = sum;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public long getUnseen() {
+    public String getUnseen() {
         return unseen;
     }
 
-    public void setUnseen(long unseen) {
+    public void setUnseen(String unseen) {
         this.unseen = unseen;
-    }
-
-    @XmlElementWrapper(name = "exclusions")
-    @XmlElement(name = "exclusion")
-    public List<ExclusionPatternDto> getExclusions() {
-        return exclusions;
-    }
-
-    public void setExclusions(List<ExclusionPatternDto> exclusions) {
-        this.exclusions = exclusions;
     }
 
     public Date getCreatedAt() {

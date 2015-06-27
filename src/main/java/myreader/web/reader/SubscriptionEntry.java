@@ -1,6 +1,6 @@
 package myreader.web.reader;
 
-import myreader.reader.web.UserEntryQuery;
+import myreader.web.UserEntryQuery;
 
 import java.util.Date;
 

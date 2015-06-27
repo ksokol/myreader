@@ -2,7 +2,7 @@ package myreader.web.admin;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import myreader.dto.FeedQueryDto;
+import myreader.web.FeedQueryDto;
 import myreader.entity.Feed;
 import myreader.fetcher.FeedQueue;
 import myreader.repository.FeedRepository;

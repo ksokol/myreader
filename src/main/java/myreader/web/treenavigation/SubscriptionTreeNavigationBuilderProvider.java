@@ -1,13 +1,12 @@
 package myreader.web.treenavigation;
 
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
+import myreader.web.SubscriptionDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
 
-import myreader.dto.SubscriptionDto;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Deprecated
 @Component

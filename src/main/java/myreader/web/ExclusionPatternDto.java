@@ -1,5 +1,6 @@
-package myreader.dto;
+package myreader.web;
 
+@Deprecated
 public class ExclusionPatternDto {
 
     private String pattern;

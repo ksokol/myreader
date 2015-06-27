@@ -1,9 +1,10 @@
-package myreader.dto;
+package myreader.web;
 
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
+@Deprecated
 public class FeedQueryDto {
 
     private BigInteger id;
