@@ -98,38 +98,6 @@ public class SubscriptionApi {
         return dtos;
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public SubscriptionDto findById(@PathVariable Long id, Authentication authentication) {
-        Subscription s = subscriptionRepository.findByIdAndUsername(id, authentication.getName());
-
-        if(s == null) {
-            throw new EntityNotFoundException();
-        }
-
-        SubscriptionDto dto = new SubscriptionDto();
-        dto.setCreatedAt(s.getCreatedAt());
-        dto.setId(s.getId());
-        dto.setSum(s.getSum());
-        dto.setTag(s.getTag());
-        dto.setTitle(s.getTitle());
-        dto.setUrl(s.getFeed().getUrl());
-        dto.setUnseen(s.getUnseen());
-
-        List<ExclusionPatternDto> expDtos = new ArrayList<>();
-
-        for (ExclusionPattern ep : s.getExclusions()) {
-            ExclusionPatternDto expDto = new ExclusionPatternDto();
-            expDto.setPattern(ep.getPattern());
-            expDto.setHitCount(ep.getHitCount());
-            expDtos.add(expDto);
-        }
-
-        dto.setExclusions(expDtos);
-
-        return dto;
-    }
-
     @SuppressWarnings("rawtypes")
     @RequestMapping(value = { "{id}" }, method = RequestMethod.PUT, consumes = "application/json")
     @ResponseBody

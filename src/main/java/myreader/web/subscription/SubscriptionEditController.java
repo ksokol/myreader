@@ -6,13 +6,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import myreader.entity.ExclusionPattern;
+import myreader.entity.Subscription;
 import myreader.entity.User;
+import myreader.repository.ExclusionRepository;
+import myreader.repository.SubscriptionRepository;
+import myreader.service.EntityNotFoundException;
 import myreader.service.user.UserService;
+import myreader.subscription.web.SubscriptionApi;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,12 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import myreader.dto.SubscriptionDto;
-import myreader.entity.Subscription;
-import myreader.repository.SubscriptionRepository;
-import myreader.service.EntityNotFoundException;
-import myreader.subscription.web.SubscriptionApi;
-
+@Transactional
 @Deprecated
 @Controller
 @RequestMapping("web/subscription/edit")
@@ -38,6 +41,9 @@ class SubscriptionEditController {
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    private ExclusionRepository exclusionRepository;
 
     @Autowired
     private UserService userService;
@@ -56,17 +62,25 @@ class SubscriptionEditController {
 
     @RequestMapping(method = RequestMethod.GET)
     String editGet(@RequestParam(required = false) Long id, Map<String, Object> model, Authentication authentication) {
-
         if (id == null) {
             model.put("subscriptionEditForm", new SubscriptionEditForm());
         } else {
+            Subscription s = subscriptionRepository.findByIdAndUsername(id, authentication.getName());
 
-            try {
-                final SubscriptionDto subscriptionDto = subscriptionApi.findById(id, authentication);
-                SubscriptionEditForm form = new SubscriptionEditForm(subscriptionDto);
-                model.put("subscriptionEditForm", form);
-            } catch (EntityNotFoundException e) {
+            if(s == null) {
                 model.put("subscriptionEditForm", new SubscriptionEditForm());
+            } else {
+                SubscriptionEditForm form = new SubscriptionEditForm(s);
+
+                final List<ExclusionPattern> exclusionPatterns = exclusionRepository.findAllSetsBySubscriptionAndUser(s.getId(), userService.getCurrentUser().getId());
+                List<SubscriptionEditForm.Exclusion> exclusions = new ArrayList<>(exclusionPatterns.size());
+
+                for (final ExclusionPattern exclusionPattern : exclusionPatterns) {
+                    exclusions.add(new SubscriptionEditForm.Exclusion(exclusionPattern));
+                }
+
+                form.setExclusions(exclusions);
+                model.put("subscriptionEditForm", form);
             }
         }
 

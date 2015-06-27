@@ -1,12 +1,10 @@
 package myreader.web.subscription;
 
+import myreader.entity.ExclusionPattern;
+import myreader.entity.Subscription;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-
-import myreader.dto.ExclusionPatternDto;
-import myreader.dto.SubscriptionDto;
 
 @Deprecated
 public class SubscriptionEditForm {
@@ -19,26 +17,18 @@ public class SubscriptionEditForm {
 
     public SubscriptionEditForm() {}
 
-    public SubscriptionEditForm(SubscriptionDto subscriptionDto) {
-        id = subscriptionDto.getId();
-        url = subscriptionDto.getUrl();
-        title = subscriptionDto.getTitle();
-        tag = subscriptionDto.getTag();
-
-        if(CollectionUtils.isNotEmpty(subscriptionDto.getExclusions())) {
-            for (final ExclusionPatternDto exclusionPatternDto : subscriptionDto.getExclusions()) {
-                exclusions.add(new Exclusion(exclusionPatternDto));
-            }
-        }
+    public SubscriptionEditForm(Subscription subscription) {
+        id = subscription.getId();
+        url = subscription.getFeed().getUrl();
+        title = subscription.getTitle();
+        tag = subscription.getTag();
     }
 
     public static class Exclusion {
         private String pattern;
         private int hitCount;
 
-        public Exclusion() {}
-
-        public Exclusion(final ExclusionPatternDto exclusionPatternDto) {
+        public Exclusion(final ExclusionPattern exclusionPatternDto) {
             pattern = exclusionPatternDto.getPattern();
             hitCount = exclusionPatternDto.getHitCount();
         }
