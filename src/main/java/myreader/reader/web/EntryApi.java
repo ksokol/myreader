@@ -42,8 +42,6 @@ import spring.security.MyReaderUser;
 public class EntryApi {
 
     @Autowired
-    private SubscriptionService subscriptionService;
-    @Autowired
     private SubscriptionEntryService subscriptionEntryService;
     @Autowired
     private SubscriptionRepository subscriptionRepository;
@@ -137,70 +135,4 @@ public class EntryApi {
         return dto;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET, params = "distinct")
-    @ResponseBody
-    public Collection<String> distinct(@RequestParam String distinct, Authentication authentication) {
-        // TODO
-        if ("tag".equals(distinct)) {
-            return subscriptionEntryRepository.findDistinctTagsByUsername(authentication.getName());
-        } else if ("feed.tag".equals(distinct)) {
-            List<Subscription> findAll = subscriptionService.findAll();
-            SortedSet<String> set = new TreeSet<String>();
-
-            for (Subscription s : findAll) {
-                if (s.getTag() != null && !s.getTag().isEmpty()) {
-                    set.add(s.getTag());
-                }
-            }
-
-            return set;
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    @RequestMapping(value = "{id}", method = RequestMethod.POST)
-    public void editPostXhr(@RequestBody Map<String, String> map, @PathVariable Long id) {
-        SubscriptionEntry subscriptionEntry = subscriptionEntryService.findById(id);
-
-        if (map.containsKey("unseen")) {
-            boolean unseen = Boolean.valueOf(map.get("unseen"));
-
-            if(unseen == subscriptionEntry.isSeen()) {
-                if (unseen){
-                    subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
-                } else {
-                    subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
-                }
-            }
-
-            subscriptionEntry.setSeen(!unseen);
-        }
-
-        if (map.containsKey("tag")) {
-            String tag = map.get("tag");
-
-            if ("".equals(tag) || tag == null) {
-                subscriptionEntry.setTag(null);
-            } else {
-                subscriptionEntry.setTag(tag);
-            }
-        }
-
-        subscriptionEntryService.save(subscriptionEntry);
-    }
-
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "", method = RequestMethod.PUT)
-    @ResponseBody
-    public void batchUpdateEntry(@RequestBody Map<String, String>[] map) {
-        for (Map<String, String> m : map) {
-            if (m.containsKey("id")) {
-                Long id = Long.valueOf(m.get("id").toString());
-                editPostXhr(m, id);
-            }
-        }
-    }
 }

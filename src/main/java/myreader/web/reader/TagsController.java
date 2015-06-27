@@ -1,15 +1,14 @@
 package myreader.web.reader;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-
+import myreader.entity.User;
+import myreader.reader.web.EntryApi;
+import myreader.reader.web.UserEntryQuery;
+import myreader.repository.SubscriptionEntryRepository;
+import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
+import myreader.service.user.UserService;
+import myreader.web.QueryString;
+import myreader.web.treenavigation.TreeNavigation;
+import myreader.web.treenavigation.TreeNavigationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
@@ -25,12 +24,15 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
-import myreader.reader.web.EntryApi;
-import myreader.reader.web.UserEntryQuery;
-import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
-import myreader.web.QueryString;
-import myreader.web.treenavigation.TreeNavigation;
-import myreader.web.treenavigation.TreeNavigationBuilder;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 @Deprecated
 @Scope(value = WebApplicationContext.SCOPE_REQUEST)
@@ -42,7 +44,13 @@ public class TagsController {
     private EntryApi entryApi;
 
     @Autowired
-    TreeNavigationBuilder treeNavigationBuilder;
+    private SubscriptionEntryRepository subscriptionEntryRepository;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private TreeNavigationBuilder treeNavigationBuilder;
 
     private QueryString queryString = new QueryString();
 
@@ -52,7 +60,7 @@ public class TagsController {
     }
 
     @ModelAttribute("treeNavigation")
-    TreeNavigation subscriptionList(Map<String, Object> model, HttpServletRequest servletRequest, Authentication authentication)
+    TreeNavigation subscriptionList(Map<String, Object> model, HttpServletRequest servletRequest)
             throws UnsupportedEncodingException {
         // http://tedyoung.me/2011/05/09/spring-mvc-optional-path-variables/
         @SuppressWarnings("unchecked")
@@ -68,7 +76,8 @@ public class TagsController {
         // TODO
         model.put("path", "web/tags");
 
-        Collection<String> tags = entryApi.distinct("tag", authentication);
+        final User currentUser = userService.getCurrentUser();
+        Collection<String> tags = subscriptionEntryRepository.findDistinctTags(currentUser.getId());
         TreeNavigation nav = treeNavigationBuilder.build(tags);
 
         if (collection.equals(nav.getName())) {

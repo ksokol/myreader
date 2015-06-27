@@ -98,26 +98,6 @@ public class SubscriptionApi {
         return dtos;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET, params = "distinct")
-    @ResponseBody
-    public Collection<String> distinct(@RequestParam String distinct) {
-        List<Subscription> subscriptionList = subscriptionService.findAll();
-        Set<String> distinction = new TreeSet<String>();
-
-        for (Subscription s : subscriptionList) {
-            // TODO
-            if ("tag".equals(distinct)) {
-                if (s.getTag() != null && !s.getTag().isEmpty()) {
-                    distinction.add(s.getTag());
-                }
-            } else {
-                break;
-            }
-        }
-
-        return distinction;
-    }
-
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     @ResponseBody
     public SubscriptionDto findById(@PathVariable Long id, Authentication authentication) {
@@ -150,16 +130,6 @@ public class SubscriptionApi {
         return dto;
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public void delete(@PathVariable Long id, Authentication authentication) {
-        final Subscription subscription = subscriptionRepository.findByIdAndUsername(id, authentication.getName());
-
-        if(subscription != null) {
-            subscriptionRepository.delete(subscription);
-        }
-    }
-
     @SuppressWarnings("rawtypes")
     @RequestMapping(value = { "{id}" }, method = RequestMethod.PUT, consumes = "application/json")
     @ResponseBody
@@ -167,13 +137,8 @@ public class SubscriptionApi {
         Subscription subscription = subscriptionService.findById(id);
 
         if (map.containsKey("tag")) {
-            String valueOf = String.valueOf(map.get("tag"));
-
-            if (!"".equals(valueOf) || !"null".equals(valueOf)) {
-                subscription.setTag(valueOf);
-            } else {
-                subscription.setTag(null);
-            }
+            String valueOf = "".equals(map.get("tag")) ? null : String.valueOf(map.get("tag"));
+            subscription.setTag(valueOf);
         }
 
         if (map.containsKey("title")) {

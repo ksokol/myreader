@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import myreader.entity.User;
+import myreader.service.user.UserService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,9 @@ class SubscriptionEditController {
     @Autowired
     private SubscriptionRepository subscriptionRepository;
 
+    @Autowired
+    private UserService userService;
+
     @ModelAttribute("isNew")
     boolean model(@RequestParam(required = false) Long id) {
         return (id == null) ? true : false;
@@ -44,8 +49,8 @@ class SubscriptionEditController {
 
     @ModelAttribute("tags")
     Collection<String> model() {
-        final Collection<String> tags = subscriptionApi.distinct("tag");
-
+        final User currentUser = userService.getCurrentUser();
+        final Collection<String> tags = subscriptionRepository.findDistinctTags(currentUser.getId());
         return tags;
     }
 
@@ -84,13 +89,7 @@ class SubscriptionEditController {
             map.put("url", subscriptionEditForm.getUrl());
         }
 
-        if(StringUtils.isNotBlank(subscriptionEditForm.getTag())) {
-            map.put("tag", subscriptionEditForm.getTag());
-        }
-
-        if(StringUtils.isEmpty(subscriptionEditForm.getTag())) {
-            map.put("tag", null);
-        }
+        map.put("tag", subscriptionEditForm.getTag());
 
         if(StringUtils.isNotBlank(subscriptionEditForm.getTitle())) {
             map.put("title", subscriptionEditForm.getTitle());
