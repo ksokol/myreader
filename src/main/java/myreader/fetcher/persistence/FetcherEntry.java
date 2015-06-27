@@ -1,30 +1,14 @@
 package myreader.fetcher.persistence;
 
-
+/**
+ * @author Kamill Sokol
+ */
 public class FetcherEntry {
 
-    private Long id;
-    private Long feedId;
     private String title;
     private String guid;
     private String url;
     private String content;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getFeedId() {
-        return feedId;
-    }
-
-    public void setFeedId(Long feedId) {
-        this.feedId = feedId;
-    }
 
     public String getTitle() {
         return title;

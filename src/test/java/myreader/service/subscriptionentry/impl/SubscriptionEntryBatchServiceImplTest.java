@@ -4,9 +4,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Arrays;
-import java.util.List;
-
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
@@ -18,12 +15,14 @@ import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.test.IntegrationTestSupport;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -77,7 +76,6 @@ public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSuppor
         fetcherEntry.setTitle("title");
         fetcherEntry.setUrl("url");
         fetcherEntry.setContent("content");
-        fetcherEntry.setFeedId(id);
         fetcherEntry.setGuid("guid");
         return fetcherEntry;
     }

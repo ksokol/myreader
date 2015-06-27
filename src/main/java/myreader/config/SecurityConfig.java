@@ -1,11 +1,11 @@
 package myreader.config;
 
-import static myreader.config.UrlMappings.*;
+import static myreader.config.UrlMappings.JAWR_JS;
 import static myreader.config.UrlMappings.LOGIN;
+import static myreader.config.UrlMappings.LOGIN_PROCESSING;
+import static myreader.config.UrlMappings.LOGOUT;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import myreader.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,11 +24,12 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-
-import myreader.repository.UserRepository;
 import spring.security.AjaxExceptionTranslationFilter;
 import spring.security.RoleBasedAuthenticationSuccessHandler;
 import spring.security.UserRepositoryUserDetailsService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Kamill Sokol
@@ -68,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/web/admin/**", "/api/1/admin/**")
+                .antMatchers("/web/admin/**")
                 .hasRole("ADMIN")
                 .and()
                 .antMatcher("/**")
