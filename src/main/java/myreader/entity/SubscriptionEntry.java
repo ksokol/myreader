@@ -1,5 +1,17 @@
 package myreader.entity;
 
+import org.apache.lucene.analysis.pattern.PatternTokenizerFactory;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.Boost;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.NumericField;
+import org.hibernate.search.annotations.Parameter;
+import org.hibernate.search.annotations.TokenizerDef;
+
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,13 +26,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.search.annotations.Boost;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.NumericField;
-
+@AnalyzerDef(name = "tag" , tokenizer = @TokenizerDef(factory = PatternTokenizerFactory.class, params = @Parameter(name = "pattern" , value = "\\ |,")))
 @Indexed
 @Entity
 @Table(name = "user_feed_entry")
@@ -38,6 +44,7 @@ public class SubscriptionEntry implements Identifiable {
     @Column(name = "user_feed_entry_is_read")
     private boolean seen;
 
+    @Analyzer(definition = "tag")
     @Field(boost = @Boost(value = 0.5F))
     @Column(name = "user_feed_entry_tag")
     private String tag;

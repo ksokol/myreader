@@ -135,6 +135,53 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     }
 
     @Test
+    public void entryTagEqualTag2Tag3() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries?entryTagEqual=tag2"))
+                .andExpect(jsonPath("content", hasSize(0)));
+
+        mockMvc.perform(getAsUser4("/subscriptionEntries?entryTagEqual=tag2-tag3"))
+                .andExpect(jsonPath("content", hasSize(1)))
+                .andExpect(jsonPath("content[0].tag", is("tag2-tag3")))
+                .andExpect(jsonPath("content[0].uuid", is("1010")));
+    }
+
+    @Test
+    public void entryTagEqualTag4AndTag5() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries?entryTagEqual=tag4"))
+                .andExpect(jsonPath("content", hasSize(1)))
+                .andExpect(jsonPath("content[0].tag", is("tag4 tag5")))
+                .andExpect(jsonPath("content[0].uuid", is("1011")));
+
+        mockMvc.perform(getAsUser4("/subscriptionEntries?entryTagEqual=tag5"))
+                .andExpect(jsonPath("content", hasSize(1)))
+                .andExpect(jsonPath("content[0].tag", is("tag4 tag5")))
+                .andExpect(jsonPath("content[0].uuid", is("1011")));
+    }
+
+    @Test
+    public void entryTagEqualTag6AndTag7() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries?entryTagEqual=tag6"))
+                .andExpect(jsonPath("content", hasSize(1)))
+                .andExpect(jsonPath("content[0].tag", is("tag6,tag7")))
+                .andExpect(jsonPath("content[0].uuid", is("1012")));
+
+        mockMvc.perform(getAsUser4("/subscriptionEntries?entryTagEqual=tag7"))
+                .andExpect(jsonPath("content", hasSize(1)))
+                .andExpect(jsonPath("content[0].tag", is("tag6,tag7")))
+                .andExpect(jsonPath("content[0].uuid", is("1012")));
+    }
+
+    @Test
+    public void entryTagEqualTag8Tag9() throws Exception {
+        mockMvc.perform(getAsUser4("/subscriptionEntries?entryTagEqual=tag8tag9"))
+                .andExpect(jsonPath("content", hasSize(0)));
+
+        mockMvc.perform(getAsUser4("/subscriptionEntries?entryTagEqual=tag8Tag9"))
+                .andExpect(jsonPath("content", hasSize(1)))
+                .andExpect(jsonPath("content[0].uuid", is("1013")));
+    }
+
+    @Test
     public void testBatchPatchEmptyRequestBody() throws Exception {
         mockMvc.perform(patchAsUser1("/subscriptionEntries")
                 .json("{ 'content' : [] }"))
