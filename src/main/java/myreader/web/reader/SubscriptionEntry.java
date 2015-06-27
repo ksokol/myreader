@@ -1,8 +1,8 @@
 package myreader.web.reader;
 
-import java.util.Date;
-
 import myreader.reader.web.UserEntryQuery;
+
+import java.util.Date;
 
 @Deprecated
 public class SubscriptionEntry {
@@ -24,6 +24,17 @@ public class SubscriptionEntry {
         tag = userEntryQuery.getTag();
         content = userEntryQuery.getContent();
         unseen = String.valueOf(userEntryQuery.isUnseen());
+        createdAt = userEntryQuery.getCreatedAt();
+    }
+
+    public SubscriptionEntry(myreader.entity.SubscriptionEntry userEntryQuery) {
+        id = userEntryQuery.getId();
+        title = userEntryQuery.getFeedEntry().getTitle();
+        url = userEntryQuery.getFeedEntry().getUrl();
+        feedTitle = userEntryQuery.getSubscription().getTitle();
+        tag = userEntryQuery.getTag();
+        content = userEntryQuery.getFeedEntry().getContent();
+        unseen = String.valueOf(userEntryQuery.isSeen());
         createdAt = userEntryQuery.getCreatedAt();
     }
 

@@ -1,39 +1,26 @@
 package myreader.reader.web;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import myreader.API;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
-import myreader.service.subscription.SubscriptionService;
 import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
-import myreader.service.subscriptionentry.SubscriptionEntryService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 import spring.data.domain.SequenceRequest;
 import spring.data.domain.Sequenceable;
 import spring.security.MyReaderUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Transactional
 @Controller
@@ -41,8 +28,6 @@ import spring.security.MyReaderUser;
 @Deprecated
 public class EntryApi {
 
-    @Autowired
-    private SubscriptionEntryService subscriptionEntryService;
     @Autowired
     private SubscriptionRepository subscriptionRepository;
     @Autowired
@@ -111,28 +96,4 @@ public class EntryApi {
 
         return newList;
     }
-
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public UserEntryQuery feed(@PathVariable Long id, boolean headingsOnly) {
-        SubscriptionEntry subscriptionEntry = subscriptionEntryService.findById(id);
-        UserEntryQuery dto = new UserEntryQuery();
-
-        dto.setCreatedAt(subscriptionEntry.getCreatedAt());
-        dto.setFeedTitle(subscriptionEntry.getSubscription().getTitle());
-        dto.setId(subscriptionEntry.getId());
-        dto.setTag(subscriptionEntry.getTag());
-        dto.setTitle(subscriptionEntry.getFeedEntry().getTitle());
-        dto.setUnseen(!subscriptionEntry.isSeen());
-        dto.setUrl(subscriptionEntry.getFeedEntry().getUrl());
-
-        if (headingsOnly) {
-            dto.setContent(null);
-        } else {
-            dto.setContent(subscriptionEntry.getFeedEntry().getContent());
-        }
-
-        return dto;
-    }
-
 }

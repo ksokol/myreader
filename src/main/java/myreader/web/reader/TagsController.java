@@ -78,7 +78,7 @@ public class TagsController {
 
         final User currentUser = userService.getCurrentUser();
         Collection<String> tags = subscriptionEntryRepository.findDistinctTags(currentUser.getId());
-        TreeNavigation nav = treeNavigationBuilder.build(tags);
+        TreeNavigation nav = treeNavigationBuilder.build(new ArrayList<>(tags));
 
         if (collection.equals(nav.getName())) {
             nav.setSelected(true);
@@ -132,36 +132,6 @@ public class TagsController {
          * /web/servlet/view/RedirectView.html
          */
         return new RedirectView("/web/tags/all", true, false, false);
-    }
-
-    @RequestMapping(value = "{collection:.+}", params = "entry")
-    public String entry(@PathVariable String collection, @RequestParam(required = false) Long offset, Long entry, Map<String, Object> model, Authentication authentication) {
-        List<SubscriptionEntry> l = new ArrayList<>();
-
-        if (entry == null) {
-            String theCollection = "all".equalsIgnoreCase(collection) ? null : collection;
-            final SubscriptionEntrySearchQuery search = new SubscriptionEntrySearchQuery();
-            final Object q = queryString.get("q");
-            if(q != null) {
-                search.setQ(q.toString());
-            }
-
-            search.setLastId(offset);
-
-            final List<UserEntryQuery> feed = entryApi.feed(null, theCollection, true, search, null, authentication);
-
-            for (final UserEntryQuery userEntryQuery : feed) {
-                l.add(new SubscriptionEntry(userEntryQuery));
-            }
-
-        } else {
-            final UserEntryQuery feed = entryApi.feed(entry, true);
-            SubscriptionEntry ue = new SubscriptionEntry(feed);
-            l = Collections.singletonList(ue);
-        }
-
-        model.put("entryList", l);
-        return "reader/index";
     }
 
     @RequestMapping(value = "{collection:.+}")

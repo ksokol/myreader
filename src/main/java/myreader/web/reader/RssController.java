@@ -1,14 +1,13 @@
 package myreader.web.reader;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-
+import myreader.dto.SubscriptionDto;
+import myreader.reader.web.EntryApi;
+import myreader.reader.web.UserEntryQuery;
+import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
+import myreader.subscription.web.SubscriptionApi;
+import myreader.web.QueryString;
+import myreader.web.treenavigation.TreeNavigation;
+import myreader.web.treenavigation.TreeNavigationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.mobile.device.Device;
@@ -23,14 +22,13 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
-import myreader.dto.SubscriptionDto;
-import myreader.reader.web.EntryApi;
-import myreader.reader.web.UserEntryQuery;
-import myreader.service.subscriptionentry.SubscriptionEntrySearchQuery;
-import myreader.subscription.web.SubscriptionApi;
-import myreader.web.QueryString;
-import myreader.web.treenavigation.TreeNavigation;
-import myreader.web.treenavigation.TreeNavigationBuilder;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 @Deprecated
 @Scope(value = WebApplicationContext.SCOPE_REQUEST)
@@ -126,35 +124,6 @@ public class RssController {
 
             return new RedirectView("/web/rss/all", true, false, false);
         }
-    }
-
-    @RequestMapping(value = "{collection:.+}", params = "entry")
-    public String entry(@PathVariable String collection, @RequestParam(required = false) Long offset, Long entry, Map<String, Object> model, Authentication authentication) {
-        List<SubscriptionEntry> l = new ArrayList<>();
-
-        if (entry == null) {
-            String theCollection = "all".equalsIgnoreCase(collection) ? null : collection;
-            final SubscriptionEntrySearchQuery search = new SubscriptionEntrySearchQuery();
-            final Object q = queryString.get("q");
-            if(q != null) {
-                search.setQ(q.toString());
-            }
-
-            search.setLastId(offset);
-
-            final List<UserEntryQuery> feed = entryApi.feed(null, theCollection, true, search, null, authentication);
-
-            for (final UserEntryQuery userEntryQuery : feed) {
-                l.add(new SubscriptionEntry(userEntryQuery));
-            }
-        } else {
-            final UserEntryQuery feed = entryApi.feed(entry, true);
-            SubscriptionEntry ue = new SubscriptionEntry(feed);
-            l = Collections.singletonList(ue);
-        }
-
-        model.put("entryList", l);
-        return "reader/index";
     }
 
     @RequestMapping("{collection:.+}")
