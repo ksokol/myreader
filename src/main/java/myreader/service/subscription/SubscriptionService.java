@@ -1,7 +1,5 @@
 package myreader.service.subscription;
 
-import java.util.List;
-
 import myreader.entity.Subscription;
 
 /**
@@ -9,11 +7,7 @@ import myreader.entity.Subscription;
  */
 public interface SubscriptionService {
 
-    List<Subscription> findAll();
-
     Subscription findById(Long id);
-
-    Subscription findByUrl(String url);
 
     void save(Subscription subscription);
 

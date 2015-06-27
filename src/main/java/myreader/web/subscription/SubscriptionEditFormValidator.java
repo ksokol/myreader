@@ -1,12 +1,11 @@
 package myreader.web.subscription;
 
-import java.util.regex.Pattern;
-
+import myreader.web.subscription.SubscriptionEditForm.Exclusion;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import myreader.web.subscription.SubscriptionEditForm.Exclusion;
+import java.util.regex.Pattern;
 
 @Deprecated
 class SubscriptionEditFormValidator implements Validator {
@@ -41,7 +40,7 @@ class SubscriptionEditFormValidator implements Validator {
                 try {
                     Pattern.compile(e.getPattern());
                 } catch (Exception e1) {
-                    errors.rejectValue("exclusion[]", "exclusion.Regexp", "not a valid java regular expression");
+                    errors.rejectValue("exclusions[" + i + "].pattern", "exclusion.Regexp", "not a valid java regular expression");
                 }
             }
         }

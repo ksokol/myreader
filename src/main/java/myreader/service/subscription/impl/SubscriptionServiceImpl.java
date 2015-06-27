@@ -1,11 +1,5 @@
 package myreader.service.subscription.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
@@ -17,6 +11,9 @@ import myreader.service.subscription.SubscriptionExistException;
 import myreader.service.subscription.SubscriptionService;
 import myreader.service.time.TimeService;
 import myreader.service.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Kamill Sokol
@@ -40,29 +37,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public List<Subscription> findAll() {
-        User currentUser = userService.getCurrentUser();
-        List<Subscription> subscriptions =  subscriptionRepository.findByUser(currentUser.getId());
-
-        return subscriptions;
-    }
-
-    @Override
     public Subscription findById(Long id) {
         User currentUser = userService.getCurrentUser();
         Subscription subscription = subscriptionRepository.findByIdAndUsername(id, currentUser.getEmail());
-
-        if(subscription == null) {
-            throw new EntityNotFoundException();
-        }
-
-        return subscription;
-    }
-
-    @Override
-    public Subscription findByUrl(String url) {
-        User currentUser = userService.getCurrentUser();
-        Subscription subscription = subscriptionRepository.findByUsernameAndFeedUrl(currentUser.getEmail(), url);
 
         if(subscription == null) {
             throw new EntityNotFoundException();

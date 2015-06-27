@@ -5,7 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.Set;
+import java.util.TreeSet;
 
 import myreader.entity.ExclusionPattern;
 import myreader.entity.Subscription;
@@ -15,8 +16,6 @@ import myreader.repository.SubscriptionRepository;
 import myreader.service.EntityNotFoundException;
 import myreader.service.subscription.SubscriptionService;
 import myreader.service.user.UserService;
-import myreader.subscription.web.SubscriptionApi;
-import myreader.subscription.web.ValidationException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,9 +37,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 class SubscriptionEditController {
 
     private final SubscriptionEditFormValidator validator = new SubscriptionEditFormValidator();
-
-    @Autowired
-    private SubscriptionApi subscriptionApi;
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
@@ -102,33 +98,12 @@ class SubscriptionEditController {
             return "subscription/edit";
         }
 
-        Map<String, Object> map = new HashMap<>();
-
-        if(StringUtils.isNotBlank(subscriptionEditForm.getUrl())) {
-            map.put("url", subscriptionEditForm.getUrl());
-        }
-
-        map.put("tag", subscriptionEditForm.getTag());
-
-        if(StringUtils.isNotBlank(subscriptionEditForm.getTitle())) {
-            map.put("title", subscriptionEditForm.getTitle());
-        }
+        Set<String> map = new TreeSet<>();
 
         if(CollectionUtils.isNotEmpty(subscriptionEditForm.getExclusions())) {
-            List<Map<String, String>> exclusions = new ArrayList<>();
-
             for (final SubscriptionEditForm.Exclusion exclusion : subscriptionEditForm.getExclusions()) {
-                try {
-                    Pattern.compile(exclusion.getPattern());
-                } catch (Exception e) {
-                    throw new ValidationException("exclusion", "invalid.pattern " + exclusion.getPattern());
-                }
-
-                Map<String, String> pattern = new HashMap<>(3);
-                pattern.put("pattern", exclusion.getPattern());
-                exclusions.add(pattern);
+                map.add(exclusion.getPattern());
             }
-            map.put("exclusions", exclusions);
         }
 
         if (subscriptionEditForm.getId() == null) {
@@ -137,7 +112,44 @@ class SubscriptionEditController {
             subscriptionRepository.save(subscription);
             flash.addFlashAttribute("flash", "Subscription created");
         } else {
-            subscriptionApi.editPost(subscriptionEditForm.getId(), map);
+            Subscription subscription = subscriptionService.findById(subscriptionEditForm.getId());
+
+            if(subscription == null) {
+                throw new EntityNotFoundException();
+            }
+
+            subscription.setTag(subscriptionEditForm.getTag());
+            if(StringUtils.isNotBlank(subscriptionEditForm.getTitle())) {
+                subscription.setTitle(subscriptionEditForm.getTitle());
+            }
+
+            subscriptionService.save(subscription);
+
+            List<ExclusionPattern> patterns = exclusionRepository.findAllSetsBySubscriptionAndUser(subscription.getId(), userService.getCurrentUser().getId());
+
+            OUTER:
+            for (final String s : map) {
+                for (ExclusionPattern ep : patterns) {
+                    if (ep.getPattern().equals(s)) {
+                        continue OUTER;
+                    }
+                }
+                ExclusionPattern pattern1 = new ExclusionPattern(s);
+                pattern1.setSubscription(subscription);
+                exclusionRepository.save(pattern1);
+            }
+
+            Map<String, ExclusionPattern> subscriptionPatterns = new HashMap<>();
+            for (final ExclusionPattern exclusionPattern : patterns) {
+                subscriptionPatterns.put(exclusionPattern.getPattern(), exclusionPattern);
+            }
+
+            for (String pattern : map) {
+                if (subscriptionPatterns.containsKey(pattern)) {
+                    subscriptionPatterns.remove(pattern);
+                }
+            }
+            exclusionRepository.delete(subscriptionPatterns.values());
             flash.addFlashAttribute("flash", "Subscription updated");
         }
 
