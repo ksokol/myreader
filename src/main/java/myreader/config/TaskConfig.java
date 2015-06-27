@@ -7,8 +7,6 @@ import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.SubscriptionEntryBatch;
-import myreader.fetcher.icon.impl.IconUpdater;
-import myreader.fetcher.icon.jobs.IconUpdateJob;
 import myreader.fetcher.impl.HttpCallDecisionMaker;
 import myreader.fetcher.jobs.FeedListFetcherJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
@@ -43,8 +41,6 @@ public class TaskConfig implements SchedulingConfigurer {
     @Autowired
     private FeedRepository feedRepository;
     @Autowired
-    private IconUpdater iconUpdater;
-    @Autowired
     private FeedParser feedParser;
     @Autowired
     private FetchStatisticRepository fetchStatisticRepository;
@@ -58,11 +54,6 @@ public class TaskConfig implements SchedulingConfigurer {
     private TimeService timeService;
     @Autowired
     private Environment environment;
-
-    @Bean
-    public IconUpdateJob iconUpdateJob() {
-        return new IconUpdateJob(iconUpdater, feedRepository);
-    }
 
     @Bean(destroyMethod="shutdown")
     public Executor taskScheduler() {
@@ -84,7 +75,6 @@ public class TaskConfig implements SchedulingConfigurer {
             taskRegistrar.addFixedRateTask(syndFetcherJob("syndFetcher-1"), 300000);
             taskRegistrar.addFixedRateTask(syndFetcherJob("syndFetcher-2"), 300000);
             taskRegistrar.addFixedRateTask(feedListFetcher(), 300000);
-            taskRegistrar.addCronTask(iconUpdateJob(), "0 0 2 * * SUN");
 
             /*
                 <!-- TODO deactivated until this job has an unittest -->

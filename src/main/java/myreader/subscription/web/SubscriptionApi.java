@@ -20,7 +20,6 @@ import myreader.entity.ExclusionPattern;
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
-import myreader.fetcher.icon.IconUpdateRequestEvent;
 import myreader.repository.ExclusionRepository;
 import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionRepository;
@@ -29,7 +28,6 @@ import myreader.service.EntityNotFoundException;
 import myreader.service.subscription.SubscriptionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,9 +66,6 @@ public class SubscriptionApi {
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
-
-    @Autowired
-    private ApplicationEventPublisher publisher;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
@@ -267,9 +262,6 @@ public class SubscriptionApi {
             feed.setTitle(feedTitle);
 
             feedRepository.save(feed);
-
-            IconUpdateRequestEvent iconUpdateRequestEvent = new IconUpdateRequestEvent(feed.getUrl());
-            publisher.publishEvent(iconUpdateRequestEvent);
         }
 
         Subscription userFeed = null;

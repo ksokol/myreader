@@ -9,10 +9,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import myreader.API;
-import myreader.entity.FeedIcon;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-import myreader.reader.web.UserEntryQuery.IconDto;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.subscription.SubscriptionService;
@@ -101,19 +99,6 @@ public class EntryApi {
             dto.setTitle(e.getFeedEntry().getTitle());
             dto.setUnseen(!e.isSeen());
             dto.setUrl(e.getFeedEntry().getUrl());
-
-            if ("icon".equals(fl)) {
-                final Subscription one = e.getSubscription();
-
-                if(one != null) {
-                    FeedIcon icon = one.getFeed().getIcon();
-
-                    if (icon != null) {
-                        IconDto iconDto = new UserEntryQuery.IconDto(icon.getMimeType(), icon.getIcon());
-                        dto.setIcon(iconDto);
-                    }
-                }
-            }
 
             dtoList.add(dto);
         }

@@ -2,9 +2,7 @@ package myreader.entity;
 
 import java.util.Date;
 import java.util.Set;
-
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -42,9 +40,6 @@ public class Feed implements Identifiable {
 
     @OneToMany(mappedBy = "feed")
     private Set<Subscription> subscriptions;
-
-    @Embedded
-    private FeedIcon icon;
 
     @OneToMany(mappedBy = "feed")
     private Set<FeedEntry> entries;
@@ -114,14 +109,6 @@ public class Feed implements Identifiable {
 
     public void setSubscriptions(Set<Subscription> subscriptions) {
         this.subscriptions = subscriptions;
-    }
-
-    public FeedIcon getIcon() {
-        return icon;
-    }
-
-    public void setIcon(FeedIcon icon) {
-        this.icon = icon;
     }
 
     public Set<FeedEntry> getEntries() {
