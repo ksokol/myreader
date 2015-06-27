@@ -1,9 +1,11 @@
 package myreader;
 
-import java.io.File;
-import java.io.IOException;
-import javax.servlet.ServletContext;
-
+import myreader.config.CommonConfig;
+import myreader.config.MvcConfig;
+import myreader.config.PersistenceConfig;
+import myreader.config.SecurityConfig;
+import myreader.config.TaskConfig;
+import myreader.resource.config.ResourceConfig;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -19,17 +21,15 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import myreader.config.MvcConfig;
-import myreader.config.PersistenceConfig;
-import myreader.config.SecurityConfig;
-import myreader.config.TaskConfig;
-import myreader.resource.config.ResourceConfig;
+import java.io.File;
+import java.io.IOException;
+import javax.servlet.ServletContext;
 
 /**
  * @author Kamill Sokol
  */
 @ComponentScan({"myreader.service"})
-@Import({PersistenceConfig.class, SecurityConfig.class, TaskConfig.class, MvcConfig.class})
+@Import({CommonConfig.class, PersistenceConfig.class, SecurityConfig.class, TaskConfig.class, MvcConfig.class})
 @EnableAutoConfiguration(exclude={FreeMarkerAutoConfiguration.class})
 //@SpringBootApplication
 public class Starter {

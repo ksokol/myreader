@@ -55,6 +55,19 @@
             $.notification({type : 'success',  message: '${success}'});
             $.notification({type : 'error',  message: '${error}'});
         })(jQuery);
+
+        $(document).ready(function() {
+            $('#rebuild-search').on('click', function(event) {
+                event.preventDefault();
+                $.post($(this).attr('href'))
+                .success(function() {
+                    $.notification({type : 'success', message : 'search index rebuild triggered'});
+                })
+                .error(function() {
+                    $.notification({type : 'error', message : 'error during search index rebuild'});
+                })
+            });
+        });
     </script>
 </#noparse>
 </head>
@@ -83,6 +96,9 @@
                     </li>
                     <li>
                         <a href="${requestContext.getContextUrl("/web/admin/feeds")}"><i class="icon-chevron-right"></i> Feeds</a>
+                    </li>
+                    <li>
+                        <a id="rebuild-search" href="${requestContext.getContextUrl("/web/admin/searchIndex")}"><i class="icon-refresh"></i>Rebuild search index</a>
                     </li>
                 </ul>
                 <ul class="nav pull-right">

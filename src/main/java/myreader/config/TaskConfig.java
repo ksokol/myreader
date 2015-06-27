@@ -18,6 +18,7 @@ import myreader.repository.SubscriptionRepository;
 import myreader.service.time.TimeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -54,11 +55,9 @@ public class TaskConfig implements SchedulingConfigurer {
     private TimeService timeService;
     @Autowired
     private Environment environment;
-
-    @Bean(destroyMethod="shutdown")
-    public Executor taskScheduler() {
-        return Executors.newScheduledThreadPool(10);
-    }
+    @Qualifier(value = "customExecutor")
+    @Autowired
+    private Executor executor;
 
     @Bean
     public SubscriptionEntryBatch subscriptionEntryBatch() {
@@ -67,7 +66,7 @@ public class TaskConfig implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.setScheduler(taskScheduler());
+        taskRegistrar.setScheduler(executor);
 
         final boolean taskEnabled = environment.getProperty("task.enabled", Boolean.class, true);
 

@@ -4,6 +4,7 @@ import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.get;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
+import myreader.config.CommonConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ import myreader.service.time.TimeService;
  * @author Kamill Sokol
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, TaskConfig.class})
+@ContextConfiguration(classes = {CommonConfig.class, ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, TaskConfig.class})
 @WebAppConfiguration
 @TestPropertySource(properties = { "task.enabled = false" })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
