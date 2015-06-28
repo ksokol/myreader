@@ -8,4 +8,6 @@ import myreader.entity.Feed;
 public interface FeedService {
 
     Feed findByUrl(String url);
+
+    boolean valid(String url);
 }

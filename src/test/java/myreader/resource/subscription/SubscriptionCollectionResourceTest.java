@@ -1,7 +1,9 @@
 package myreader.resource.subscription;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
@@ -58,7 +60,10 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         mockMvc.perform(postAsUser2("/subscriptions")
                 .json("{}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonEquals("json/subscription/post-empty-url.json"));
+                .andExpect(jsonPath("status", is(400)))
+                .andExpect(jsonPath("message", is("validation error")))
+                .andExpect(jsonPath("fieldErrors..field", contains("origin", "origin")))
+                .andExpect(jsonPath("fieldErrors..message", hasItems("invalid syndication feed", "may not be null")));
     }
 
     @Test
@@ -66,15 +71,19 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         mockMvc.perform(postAsUser2("/subscriptions")
                 .json("{'url':'invalid url'}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonEquals("json/subscription/post-invalid-url.json"));
+                .andExpect(jsonPath("message", is("validation error")))
+                .andExpect(jsonPath("fieldErrors..field", contains("origin", "origin")))
+                .andExpect(jsonPath("fieldErrors..message", hasItems("invalid syndication feed", "may not be null")));
     }
 
     @Test
     public void testFieldErrorWhenPostingExistentSubscription() throws Exception {
         mockMvc.perform(postAsUser2("/subscriptions")
-                .json("json/subscription/post-duplicate-request.json"))
+                .json("{ 'origin' : 'http://martinfowler.com/feed.atom' }"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonEquals("json/subscription/post-duplicate-response.json"));
+                .andExpect(jsonPath("message", is("validation error")))
+                .andExpect(jsonPath("fieldErrors..field", contains("origin")))
+                .andExpect(jsonPath("fieldErrors..message", contains("subscription exists")));
     }
 
     @Test
@@ -84,7 +93,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         when(timeServiceMock.getCurrentTime()).thenReturn(now);
 
         mockMvc.perform(postAsUser2("/subscriptions")
-                .json("json/subscription/post-new-request.json"))
+                .json("{ 'origin': 'http://use-the-index-luke.com/blog/feed' }"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/post-new-response.json"));
     }

@@ -1,12 +1,14 @@
 package myreader.service.feed;
 
 import myreader.entity.Feed;
+import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.impl.FetchResult;
 import myreader.repository.FeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Kamill Sokol
@@ -38,5 +40,27 @@ public class FeedServiceImpl implements FeedService {
         }
 
         return feed;
+    }
+
+    @Override
+    public boolean valid(String url) {
+        if(!StringUtils.hasText(url)) {
+            return false;
+        }
+
+        Feed feed = feedRepository.findByUrl(url);
+
+        if(feed != null) {
+            return true;
+        }
+
+        try {
+            feedParser.parse(url);
+            return true;
+        } catch (FeedParseException exception) {
+            //ignore
+        }
+
+        return false;
     }
 }

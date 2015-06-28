@@ -227,6 +227,19 @@ angular.module('common.api', [])
         }
     }
 })
+.service('feedProbeConverter', function() {
+    return {
+        convertFrom: function () {
+            return {};
+        },
+        convertTo: function(data) {
+            return { url: data };
+        },
+        convertError: function (data) {
+            return data;
+        }
+    }
+})
 
 .service('conversionService', function ($injector) {
     return {
@@ -235,6 +248,9 @@ angular.module('common.api', [])
         },
         convertTo: function (resourceType, data) {
             return $injector.get(resourceType + "Converter").convertTo(data);
+        },
+        convertError: function (resourceType, data) {
+            return $injector.get(resourceType + "Converter").convertError(data.data);
         }
     }
 })
@@ -264,6 +280,9 @@ angular.module('common.api', [])
             $http.post(url, converted)
             .success(function (data) {
                 deferred.resolve(conversionService.convertFrom(resourceType, data));
+            })
+            .catch(function(error) {
+                deferred.reject(conversionService.convertError(resourceType, error));
             });
             return deferred.promise;
         },

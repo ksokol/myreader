@@ -158,7 +158,10 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             return api.get('subscription', url + '/' + uuid);
         },
         save: function(subscription) {
-            return api.patch('subscription', url + '/' + subscription.uuid, subscription);
+            if(subscription.uuid) {
+                return api.patch('subscription', url + '/' + subscription.uuid, subscription);
+            }
+            return api.post('subscription', url, subscription);
         }
     }
 }])
@@ -205,6 +208,38 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     }
 }])
 
+.service('feedService', ['api', 'deferService', 'CacheFactory', function(api, deferService, CacheFactory) {
+    var url = '/myreader/api/2/feeds/probe';
+
+    var feedProbeCache = CacheFactory.createCache('feedProbeCache');
+
+    return {
+        probe: function(urlToProbe) {
+            var tmp = url + '?url=' + urlToProbe;
+            var cached = feedProbeCache.get(tmp);
+
+            if(cached) {
+                if(cached.status === 400) {
+                    return deferService.reject(cached);
+                }
+                return deferService.resolved(cached);
+            }
+
+            var promise = api.post('feedProbe', url, urlToProbe);
+
+            promise.then(function(data) {
+                feedProbeCache.put(tmp, data);
+            });
+
+            promise.catch(function(data) {
+                feedProbeCache.put(tmp, data);
+            });
+
+            return promise;
+        }
+    }
+}])
+
 .service('deferService', ['$q', function($q) {
 
     var _deferred = function(fn, params) {
@@ -225,8 +260,15 @@ angular.module('common.services', ['common.api', 'angular-cache'])
         return deferred.promise;
     };
 
+    var _reject = function(params) {
+        var deferred = $q.defer();
+        deferred.reject(params);
+        return deferred.promise;
+    };
+
     return {
         deferred: _deferred,
-        resolved: _resolved
+        resolved: _resolved,
+        reject: _reject
     }
 }]);

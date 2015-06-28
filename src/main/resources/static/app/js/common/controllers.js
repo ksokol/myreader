@@ -256,7 +256,7 @@ angular.module('common.controllers', ['common.services'])
 
 }])
 
-.controller('SubscriptionCtrl', ['$window', '$scope', '$mdToast', '$stateParams', 'subscriptionService', 'subscriptionTagService', function($window, $scope, $mdToast, $stateParams, subscriptionService, subscriptionTagService) {
+.controller('SubscriptionCtrl', ['$window', '$scope', '$state', '$mdToast', '$stateParams', 'subscriptionService', 'subscriptionTagService', function($window, $scope, $state, $mdToast, $stateParams, subscriptionService, subscriptionTagService) {
 
     $scope.availableTags = [];
 
@@ -267,26 +267,32 @@ angular.module('common.controllers', ['common.services'])
         };
     }
 
-    subscriptionService.find($stateParams.uuid)
-    .then(function(data) {
-        $scope.subscription = data;
-    })
-    .then(function() {
+    if($stateParams.uuid) {
         subscriptionTagService.findAll()
         .then(function(data) {
             $scope.availableTags = data;
+        })
+        .then(function() {
+            subscriptionService.find($stateParams.uuid)
+            .then(function(data) {
+                $scope.subscription = data;
+            });
         });
-    });
+    }
 
     $scope.querySearch = function(query) {
         return query ? $scope.availableTags.filter(createFilterFor(query)) : $scope.availableTags;
     };
 
+    $scope.isEditForm = function() {
+        return $state.is('app.subscription');
+    };
+
     $scope.$on('save', function() {
-        if(angular.isDefined($scope.subscriptionForm.$error.required)) {
+        if(!$scope.subscriptionForm.$valid) {
             $mdToast.show(
                 $mdToast.simple()
-                    .content('Missing required')
+                    .content('Can not subscribe to feed yet')
                     .position('top right')
             );
             return;
@@ -294,12 +300,17 @@ angular.module('common.controllers', ['common.services'])
 
         subscriptionService.save($scope.subscription)
         .then(function(data) {
-            $scope.subscription = data;
             $mdToast.show(
                 $mdToast.simple()
                     .content('saved')
                     .position('top right')
             );
+
+            if($scope.subscription.uuid) {
+                $scope.subscription = data;
+            } else {
+                $state.go('app.subscription', {uuid: data.uuid});
+            }
         });
     });
 

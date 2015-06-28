@@ -129,6 +129,19 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                     }
                 }
             })
+            .state('app.subscription-add', {
+                url: "/subscriptions/add",
+                views: {
+                    content: {
+                        templateUrl: 'Subscription',
+                        controller: 'SubscriptionCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'SubscriptionAddActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
+            })
             .state('app.subscription', {
                 url: "/subscriptions/:uuid",
                 views: {

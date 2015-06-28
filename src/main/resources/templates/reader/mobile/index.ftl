@@ -146,6 +146,11 @@
             <h2>
                 <span></span>
             </h2>
+            <span flex></span>
+
+            <md-button class="md-icon-button" aria-label="Open" ui-sref="app.subscription-add">
+                <md-icon md-font-library="material-icons">add</md-icon>
+            </md-button>
         </script>
 
         <script type="text/ng-template" id="SubscriptionActions">
@@ -160,6 +165,20 @@
             <md-button class="md-icon-button" aria-label="Open" ng-click="broadcast('open')">
                 <md-icon md-font-library="material-icons">open_in_new</md-icon>
             </md-button>
+            <md-button class="md-icon-button" aria-label="Save" ng-click="broadcast('save')">
+                <md-icon md-font-library="material-icons">save</md-icon>
+            </md-button>
+        </script>
+
+        <script type="text/ng-template" id="SubscriptionAddActions">
+            <md-button hide-gt-md class="md-icon-button" aria-label="Back" ng-click="back()">
+                <md-icon md-font-library="material-icons">arrow_back</md-icon>
+            </md-button>
+            <h2>
+                <span></span>
+            </h2>
+            <span flex></span>
+
             <md-button class="md-icon-button" aria-label="Save" ng-click="broadcast('save')">
                 <md-icon md-font-library="material-icons">save</md-icon>
             </md-button>
@@ -198,33 +217,48 @@
 
         <script type="text/ng-template" id="Subscription">
             <form name="subscriptionForm">
-            <md-input-container>
-                <label>Title</label>
-                <input required name="title" ng-model="subscription.title">
-                <div  ng-messages="subscriptionForm.title.$error">
-                    <div ng-message="required">required</div>
-                </div>
-            </md-input-container>
+                <md-input-container>
+                    <label>Title</label>
+                    <input required name="title" ng-model="subscription.title">
+                    <div  ng-messages="subscriptionForm.title.$error">
+                        <div ng-message="required">required</div>
+                    </div>
+                </md-input-container>
 
-            <md-input-container>
-                <label>Url</label>
-                <input ng-model="subscription.origin" disabled>
-            </md-input-container>
+                <md-input-container ng-hide="isEditForm()">
+                    <label>Url</label>
+                    <input required
+                           name="origin"
+                           ng-model="subscription.origin"
+                           my-valid-syndication disable="isEditForm()"
+                           ng-model-options="{ debounce: 500 }"
+                           ng-disabled="subscriptionForm.origin.$pending">
 
-            <md-autocomplete
-                    md-selected-item="subscription.tag"
-                    md-search-text="searchText"
-                    md-items="item in querySearch(searchText)"
-                    md-item-text="item"
-                    md-min-length="0"
-                    md-floating-label="Tag">
-                <md-item-template>
-                    <span md-highlight-text="searchText" md-highlight-flags="^i">{{item}}</span>
-                </md-item-template>
-            </md-autocomplete>
+                    <div ng-messages="subscriptionForm.origin.$error">
+                        <div ng-message="required">required</div>
+                        <div ng-message="validSyndication">This is not a valid syndication feed</div>
+                    </div>
+                </md-input-container>
 
-            <my-exclusions ng-show="subscription.uuid" subscription="subscription"></my-exclusions>
-                </form>
+                <md-input-container ng-show="isEditForm()">
+                    <label>Url</label>
+                    <input ng-model="subscription.origin" disabled>
+                </md-input-container>
+
+                <md-autocomplete
+                        md-selected-item="subscription.tag"
+                        md-search-text="searchText"
+                        md-items="item in querySearch(searchText)"
+                        md-item-text="item"
+                        md-min-length="0"
+                        md-floating-label="Tag">
+                    <md-item-template>
+                        <span md-highlight-text="searchText" md-highlight-flags="^i">{{item}}</span>
+                    </md-item-template>
+                </md-autocomplete>
+
+                <my-exclusions ng-show="subscription.uuid" subscription="subscription"></my-exclusions>
+            </form>
         </script>
 
         <script type="text/ng-template" id="Exclusions">

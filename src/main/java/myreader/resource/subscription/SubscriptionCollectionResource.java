@@ -46,7 +46,7 @@ public class SubscriptionCollectionResource {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public SubscriptionGetResponse post(@Valid @RequestBody SubscribePostRequest request, @AuthenticationPrincipal MyReaderUser user) {
-        Subscription subscription = subscriptionService.subscribe(user.getId(), request.getUrl());
+        Subscription subscription = subscriptionService.subscribe(user.getId(), request.getOrigin());
         return resourceAssemblers.toResource(subscription, SubscriptionGetResponse.class);
     }
 
