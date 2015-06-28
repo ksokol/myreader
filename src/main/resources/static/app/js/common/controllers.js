@@ -126,6 +126,7 @@ angular.module('common.controllers', ['common.services'])
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
+    $scope.search = "";
 
     var refresh = function(param) {
         subscriptionEntryService.findBy(param)
@@ -142,6 +143,13 @@ angular.module('common.controllers', ['common.services'])
         }
         if($stateParams.tag && $stateParams.tag !== "all") {
             param['feedTagEqual'] = $stateParams.tag;
+        }
+        if($scope.search !== "") {
+            if($scope.search.indexOf('*') === -1) {
+                param['q'] = $scope.search + '*';
+            } else {
+                param['q'] = $scope.search;
+            }
         }
         //TODO
         param['seenEqual'] = false;
@@ -204,6 +212,11 @@ angular.module('common.controllers', ['common.services'])
     $scope.openOrigin = function(entry) {
         $window.open(entry.origin, '_blank');
     };
+
+    $scope.$on('search', function(event, param) {
+        $scope.search = param;
+        $scope.refresh();
+    });
 
     $scope.$on('refresh', $scope.refresh);
     $scope.$on('update', _update);

@@ -103,18 +103,32 @@
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntriesActions">
-            <md-button class="md-icon-button" hide-gt-md ng-click="openMenu()" aria-label="Menu">
+            <md-button class="md-icon-button" ng-hide="isInvisible('gt-md')" ng-click="openMenu()" aria-label="Menu">
                 <md-icon md-font-library="material-icons">menu</md-icon>
             </md-button>
             <h2>
                 <span></span>
             </h2>
+
+            <md-input-container ng-show="isInvisible('gt-md')" class="md-icon-float">
+                <md-icon md-font-library="material-icons">search</md-icon>
+                <input class="my-input"
+                       ng-model="searchKey"
+                       aria-label="Subscription search"
+                       ng-keyup="onKey()"
+                       my-enter-key="broadcast('search', searchKey)"
+                       my-delete-key="broadcast('search', searchKey)">
+            </md-input-container>
+
             <span flex></span>
 
-            <md-button class="md-icon-button" aria-label="Refresh" ng-click="broadcast('refresh')">
+            <md-button ng-hide="isInvisible('gt-md')" tabindex="-1" class="md-icon-button" aria-label="subscription search" ng-click="openSearch()">
+                <md-icon md-font-library="material-icons">search</md-icon>
+            </md-button>
+            <md-button ng-hide="isInvisible()" class="md-icon-button" aria-label="Refresh" ng-click="broadcast('refresh')">
                 <md-icon md-font-library="material-icons">refresh</md-icon>
             </md-button>
-            <md-button class="md-icon-button" hide-gt-md aria-label="Upload" ng-click="broadcast('update')">
+            <md-button ng-hide="isInvisible('gt-md')" class="md-icon-button" hide-gt-md aria-label="Upload" ng-click="broadcast('update')">
                 <md-icon md-font-library="material-icons">file_upload</md-icon>
             </md-button>
         </script>
