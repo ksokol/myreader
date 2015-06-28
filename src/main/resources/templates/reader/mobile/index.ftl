@@ -162,6 +162,9 @@
             </h2>
             <span flex></span>
 
+            <md-button class="md-icon-button" aria-label="Save" ng-click="broadcast('delete')">
+                <md-icon md-font-library="material-icons">delete</md-icon>
+            </md-button>
             <md-button class="md-icon-button" aria-label="Open" ng-click="broadcast('open')">
                 <md-icon md-font-library="material-icons">open_in_new</md-icon>
             </md-button>

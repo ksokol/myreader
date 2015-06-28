@@ -162,6 +162,9 @@ angular.module('common.services', ['common.api', 'angular-cache'])
                 return api.patch('subscription', url + '/' + subscription.uuid, subscription);
             }
             return api.post('subscription', url, subscription);
+        },
+        unsubscribe: function(subscription) {
+            return api.delete('subscription', url + '/' + subscription.uuid);
         }
     }
 }])

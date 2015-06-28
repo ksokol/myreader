@@ -256,7 +256,7 @@ angular.module('common.controllers', ['common.services'])
 
 }])
 
-.controller('SubscriptionCtrl', ['$window', '$scope', '$state', '$mdToast', '$stateParams', 'subscriptionService', 'subscriptionTagService', function($window, $scope, $state, $mdToast, $stateParams, subscriptionService, subscriptionTagService) {
+.controller('SubscriptionCtrl', ['$window', '$scope', '$state', '$mdToast', '$mdDialog', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', function($window, $scope, $state, $mdToast, $mdDialog, $stateParams, $previousState, subscriptionService, subscriptionTagService) {
 
     $scope.availableTags = [];
 
@@ -316,6 +316,22 @@ angular.module('common.controllers', ['common.services'])
 
     $scope.$on('open', function() {
         $window.open($scope.subscription.origin, '_blank');
+    });
+
+    $scope.$on('delete', function(ev) {
+        var confirm = $mdDialog.confirm()
+            .title('Delete subscription?')
+            .ariaLabel('Delete subscription dialog')
+            .ok('Yes')
+            .cancel('No')
+            .targetEvent(ev);
+
+        $mdDialog.show(confirm).then(function() {
+            subscriptionService.unsubscribe($scope.subscription)
+            .then(function() {
+                $previousState.go();
+            });
+        });
     });
 
 }]);
