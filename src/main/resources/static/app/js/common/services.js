@@ -8,7 +8,7 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     });
 
     $rootScope.$on('subscriptionEntry:updateEntries', function(event, subscriptionEntries) {
-        var cachedSubscriptionsTags = subscriptionTagCache.get('subscriptionsTagCache');
+        var cachedSubscriptionsTags = subscriptionTagCache.get('subscriptionsTags');
 
         if(!cachedSubscriptionsTags) {
             return;
@@ -22,13 +22,13 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             }
         }
 
-        subscriptionTagCache.put('subscriptionsTagCache', cachedSubscriptionsTags);
+        subscriptionTagCache.put('subscriptionsTags', cachedSubscriptionsTags);
     });
 
     return {
         findAllByUnseen: function(unseen) {
-            var cachedSubscriptionTags = subscriptionTagCache.get('subscriptionTags');
-            var cachedUnseenFlag = subscriptionTagCache.get('subscriptionTags.unseenFlag');
+            var cachedSubscriptionTags = subscriptionTagCache.get('subscriptionsTags');
+            var cachedUnseenFlag = subscriptionTagCache.get('subscriptionsTags.unseenFlag');
 
             if(cachedUnseenFlag === unseen && cachedSubscriptionTags) {
                 return deferService.resolved(cachedSubscriptionTags);
