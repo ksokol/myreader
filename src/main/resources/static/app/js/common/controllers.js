@@ -256,9 +256,8 @@ angular.module('common.controllers', ['common.services'])
 
 }])
 
-.controller('SubscriptionCtrl', ['$scope', '$mdToast', '$stateParams', 'subscriptionService', 'subscriptionTagService', function($scope, $mdToast, $stateParams, subscriptionService, subscriptionTagService) {
+.controller('SubscriptionCtrl', ['$window', '$scope', '$mdToast', '$stateParams', 'subscriptionService', 'subscriptionTagService', function($window, $scope, $mdToast, $stateParams, subscriptionService, subscriptionTagService) {
 
-    $scope.subscriptions = {};
     $scope.availableTags = [];
 
     function createFilterFor(query) {
@@ -302,6 +301,10 @@ angular.module('common.controllers', ['common.services'])
                     .position('top right')
             );
         });
+    });
+
+    $scope.$on('open', function() {
+        $window.open($scope.subscription.origin, '_blank');
     });
 
 }]);
