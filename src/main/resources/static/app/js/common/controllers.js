@@ -1,6 +1,9 @@
 angular.module('common.controllers', ['common.services'])
 
-.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', '$mdSidenav', function($rootScope, $scope, $previousState, $mdSidenav) {
+.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', '$mdSidenav', '$mdMedia', function($rootScope, $scope, $previousState, $mdSidenav, $mdMedia) {
+
+    $scope.searchOpen = false;
+    $scope.searchKey = "";
 
     $scope.openMenu = function() {
         $mdSidenav('left').toggle();
@@ -10,14 +13,30 @@ angular.module('common.controllers', ['common.services'])
         $mdSidenav('left').close();
     });
 
-    $scope.broadcast = function(eventName) {
-        $rootScope.$broadcast(eventName);
+    $scope.broadcast = function(eventName, param) {
+        $rootScope.$broadcast(eventName, param);
     };
 
     $scope.back = function() {
         $previousState.go();
     };
 
+    $scope.isInvisible = function(media) {
+        if(media) {
+            return $mdMedia(media) || $scope.searchOpen;
+        }
+        return $scope.searchOpen;
+    };
+
+    $scope.openSearch = function() {
+        $scope.searchOpen = true;
+    };
+
+    $scope.onKey = function() {
+        if($scope.searchKey.length === 0) {
+            $scope.searchOpen = false;
+        }
+    }
 }])
 
 .controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', 'localStorageService', 'subscriptionsTagService', function($rootScope, $scope, $mdMedia, $state, localStorageService, subscriptionsTagService) {
@@ -243,7 +262,7 @@ angular.module('common.controllers', ['common.services'])
 
 .controller('SubscriptionsCtrl', ['$scope', '$state', 'subscriptionService', function($scope, $state, subscriptionService) {
 
-   $scope.data.subscriptions = [];
+    $scope.data.subscriptions = [];
 
     subscriptionService.findAll()
     .then(function(data) {
@@ -252,7 +271,11 @@ angular.module('common.controllers', ['common.services'])
 
     $scope.open = function(subscription) {
         $state.go('app.subscription', {uuid: subscription.uuid});
-    }
+    };
+
+    $scope.$on('search', function(event, param) {
+        $scope.search = param;
+    });
 
 }])
 

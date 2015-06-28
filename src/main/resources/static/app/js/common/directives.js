@@ -152,4 +152,30 @@ angular.module('common.directives', [])
             }
         }
     }
-}]);
+}])
+
+.directive('myEnterKey', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function () {
+                    scope.$eval(attrs.myEnterKey);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+})
+
+.directive('myDeleteKey', function () {
+    return function (scope, element, attrs) {
+        element.bind("keyup keypress", function (event) {
+            if(event.which === 8) {
+                scope.$apply(function () {
+                    scope.$eval(attrs.myDeleteKey);
+                });
+            }
+        });
+    };
+});

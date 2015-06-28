@@ -140,15 +140,29 @@
         </script>
 
         <script type="text/ng-template" id="SubscriptionsActions">
-            <md-button class="md-icon-button" hide-gt-md ng-click="openMenu()" aria-label="Menu">
+            <md-button class="md-icon-button" ng-hide="isInvisible('gt-md')" ng-click="openMenu()" aria-label="Menu">
                 <md-icon md-font-library="material-icons">menu</md-icon>
             </md-button>
             <h2>
                 <span></span>
             </h2>
+
+            <md-input-container ng-show="isInvisible('gt-md')" class="md-icon-float">
+                <md-icon md-font-library="material-icons">search</md-icon>
+                <input class="my-input"
+                       ng-model="searchKey"
+                       aria-label="Subscription search"
+                       ng-keyup="onKey()"
+                       my-enter-key="broadcast('search', searchKey)"
+                       my-delete-key="broadcast('search', searchKey)">
+            </md-input-container>
+
             <span flex></span>
 
-            <md-button class="md-icon-button" aria-label="Open" ui-sref="app.subscription-add">
+            <md-button ng-hide="isInvisible('gt-md')" tabindex="-1" class="md-icon-button" aria-label="subscription search" ng-click="openSearch()">
+                <md-icon md-font-library="material-icons">search</md-icon>
+            </md-button>
+            <md-button ng-hide="isInvisible()" tabindex="-1" class="md-icon-button" aria-label="Open" ui-sref="app.subscription-add">
                 <md-icon md-font-library="material-icons">add</md-icon>
             </md-button>
         </script>
@@ -202,11 +216,11 @@
 
         <script type="text/ng-template" id="Subscriptions">
             <md-list>
-                <md-list-item ng-click="open(subscription)" md-no-ink class="md-2-line" ng-repeat="subscription in data.subscriptions">
+                <md-list-item ng-click="open(subscription)" md-no-ink class="md-2-line" ng-repeat="subscription in data.subscriptions | filter: search">
                     <div layout="row">
                         <div class="md-list-item-text">
                             <div>
-                                <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::subscription.title | htmlEntities}}</h3>
+                                <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)" tabindex="-1">{{::subscription.title | htmlEntities}}</h3>
                                 <h4>
                                     {{::subscription.createdAt | timeago}}
                                 </h4>

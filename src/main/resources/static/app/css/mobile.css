@@ -259,3 +259,8 @@ my-divider {
 .my-tag-chips .md-chip .md-chip-remove-container button.my-tag-chip:hover, .my-tag-chips .md-chip .md-chip-remove-container button.my-tag-chip:focus {
     background: rgba(255, 0, 0, 0.8);
 }
+
+md-input-container.md-default-theme .my-input {
+    border-color: rgba(255, 255, 255, 255);
+    color: rgba(255, 255, 255, 255);
+}
