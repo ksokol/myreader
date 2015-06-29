@@ -18,14 +18,14 @@
                             <ul ng-show="isOpen(item)" class="menu-toggle-list">
                                 <li ng-repeat="subscription in item.subscriptions" ng-hide="subscription.unseen < 1">
                                     <md-button md-no-ink
-                                            ng-class="{'active' : isSelected(subscription)}"
-                                            ui-sref="app.entries-tag-subscription({tag: subscription.tag, uuid: subscription.uuid})">
+                                               ng-class="{'active' : isSelected(subscription)}"
+                                               ui-sref="app.entries-tag-subscription({tag: subscription.tag, uuid: subscription.uuid})">
                                         {{::subscription.title}} ({{subscription.unseen}})
                                     </md-button>
                                 </li>
                             </ul>
                         </li>
-                        <li class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-hide="item.unseen < 1">
+                        <li class="md-2-line" ng-repeat="item in data.items" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-hide="item.unseen < 1">
                             <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
                         </li>
                         <li>

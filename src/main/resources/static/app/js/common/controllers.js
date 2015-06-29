@@ -42,7 +42,7 @@ angular.module('common.controllers', ['common.services'])
 .controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', 'localStorageService', 'subscriptionsTagService', function($rootScope, $scope, $mdMedia, $state, localStorageService, subscriptionsTagService) {
     $scope.data = {
         tags: [],
-        subscriptions: []
+        items: []
     };
 
     var openItem = {tag: null, uuid: null};
