@@ -160,4 +160,18 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
 
 .config(['localStorageServiceProvider', function(localStorageServiceProvider) {
     localStorageServiceProvider.setPrefix('myreader').setStorageType('sessionStorage');
-}]);
+}])
+
+.config(function($provide) {
+
+    $provide.decorator("$exceptionHandler", ['$delegate', '$log', function($delegate, $log){
+        return function(exception, cause) {
+            var isBadParse = exception.message.indexOf('[$sanitize:badparse]') === 0;
+            if(isBadParse) {
+                $log.warn(exception.message.substr(0,150) + '...');
+            }
+            !isBadParse && $delegate(exception, cause);
+        };
+    }]);
+});
+
