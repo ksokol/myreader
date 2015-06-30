@@ -122,7 +122,7 @@ angular.module('common.controllers', ['common.services'])
     }
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$window', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', function($window, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService) {
+.controller('SubscriptionEntryListCtrl', ['$window', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'hotkeys', function($window, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
@@ -176,6 +176,52 @@ angular.module('common.controllers', ['common.services'])
         }
     };
 
+    var _down = function() {
+        var focused;
+        for(var i=0;i<$scope.data.entries.length;i++) {
+            var entry = $scope.data.entries[i];
+            if(entry.focused) {
+                entry.focused = false;
+                entry.visible = false;
+                var j = i + 1;
+                if(j < $scope.data.entries.length) {
+                    focused = $scope.data.entries[j];
+                }
+                break;
+            }
+        }
+
+        if(!focused) {
+            focused = $scope.data.entries[0];
+        }
+
+        if(focused.seen === false) {
+            focused.seen = true;
+            subscriptionEntryService.save(focused)
+                .then(function() {
+                    focused.focused = true;
+                })
+        } else {
+            focused.focused = true;
+        }
+    };
+
+    var _up = function() {
+        for(var i=0;i<$scope.data.entries.length;i++) {
+            var entry = $scope.data.entries[i];
+            if(entry.focused) {
+                entry.focused = false;
+                entry.visible = true;
+                var j = i - 1;
+                if(j > -1) {
+                    $scope.data.entries[j].focused = true;
+                    $scope.data.entries[j].visible = true;
+                }
+                return;
+            }
+        }
+    };
+
     $scope.refresh = function() {
         $scope.data = {entries: []};
         refresh(params());
@@ -222,54 +268,22 @@ angular.module('common.controllers', ['common.services'])
         return   item.focused ? 'my-focused' : '';
     };
 
-    $scope.$on('move-down', function() {
-        var focused;
-        for(var i=0;i<$scope.data.entries.length;i++) {
-            var entry = $scope.data.entries[i];
-            if(entry.focused) {
-                entry.focused = false;
-                entry.visible = false;
-                var j = i + 1;
-                if(j < $scope.data.entries.length) {
-                    focused = $scope.data.entries[j];
-                }
-                break;
-            }
-        }
-
-        if(!focused) {
-            focused = $scope.data.entries[0];
-        }
-
-        if(focused.seen === false) {
-            focused.seen = true;
-            subscriptionEntryService.save(focused)
-            .then(function() {
-                focused.focused = true;
-            })
-        } else {
-            focused.focused = true;
-        }
-    });
-
-    $scope.$on('move-up', function () {
-        for(var i=0;i<$scope.data.entries.length;i++) {
-            var entry = $scope.data.entries[i];
-            if(entry.focused) {
-                entry.focused = false;
-                entry.visible = true;
-                var j = i - 1;
-                if(j > -1) {
-                    $scope.data.entries[j].focused = true;
-                    $scope.data.entries[j].visible = true;
-                }
-                return;
-            }
-        }
-    });
-
+    $scope.$on('move-down', _down);
+    $scope.$on('move-up', _up)
     $scope.$on('refresh', $scope.refresh);
     $scope.$on('update', _update);
+
+    hotkeys.bindTo($scope)
+    .add({
+        combo: 'right',
+        callback: _down
+    });
+
+    hotkeys.bindTo($scope)
+    .add({
+        combo: 'left',
+        callback: _up
+    });
 
     refresh(params());
 }])

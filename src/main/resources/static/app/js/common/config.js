@@ -1,6 +1,6 @@
 window.write = function() {};
 
-angular.module('myreader', ['common.filters', 'common.services', 'common.controllers', 'common.directives', 'ui.router', 'ct.ui.router.extras.previous', 'ngMaterial', 'LocalStorageModule', 'ngMessages'])
+angular.module('myreader', ['common.filters', 'common.services', 'common.controllers', 'common.directives', 'ui.router', 'ct.ui.router.extras.previous', 'ngMaterial', 'LocalStorageModule', 'ngMessages', 'cfp.hotkeys'])
 
 .config(['$httpProvider', function($httpProvider) {
 
