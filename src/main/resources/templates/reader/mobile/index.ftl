@@ -53,7 +53,7 @@
 
         <script type="text/ng-template" id="SubscriptionEntries">
             <my-list class="md-default-theme">
-                <my-list-item class="my-2-line" ng-repeat="entry in data.entries | filter: visible">
+                <my-list-item ng-class="{{isFocused(entry)}}" class="my-2-line" ng-repeat="entry in data.entries | filter: visible">
                     <div class="my-no-style my-list-item-inner">
                         <div layout="row">
                             <div class="my-list-item-text">
@@ -124,6 +124,12 @@
 
             <md-button ng-hide="isInvisible('gt-md')" tabindex="-1" class="md-icon-button" aria-label="subscription search" ng-click="openSearch()">
                 <md-icon md-font-library="material-icons">search</md-icon>
+            </md-button>
+            <md-button hide show-gt-md class="md-icon-button" hide-gt-md aria-label="Upload" ng-click="broadcast('move-down')">
+                <md-icon md-font-library="material-icons">keyboard_arrow_down</md-icon>
+            </md-button>
+            <md-button hide show-gt-md class="md-icon-button" hide-gt-md aria-label="Upload" ng-click="broadcast('move-up')">
+                <md-icon md-font-library="material-icons">keyboard_arrow_up</md-icon>
             </md-button>
             <md-button ng-hide="isInvisible()" class="md-icon-button" aria-label="Refresh" ng-click="broadcast('refresh')">
                 <md-icon md-font-library="material-icons">refresh</md-icon>

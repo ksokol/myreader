@@ -218,6 +218,56 @@ angular.module('common.controllers', ['common.services'])
         $scope.refresh();
     });
 
+    $scope.isFocused = function(item) {
+        return   item.focused ? 'my-focused' : '';
+    };
+
+    $scope.$on('move-down', function() {
+        var focused;
+        for(var i=0;i<$scope.data.entries.length;i++) {
+            var entry = $scope.data.entries[i];
+            if(entry.focused) {
+                entry.focused = false;
+                entry.visible = false;
+                var j = i + 1;
+                if(j < $scope.data.entries.length) {
+                    focused = $scope.data.entries[j];
+                }
+                break;
+            }
+        }
+
+        if(!focused) {
+            focused = $scope.data.entries[0];
+        }
+
+        if(focused.seen === false) {
+            focused.seen = true;
+            subscriptionEntryService.save(focused)
+            .then(function() {
+                focused.focused = true;
+            })
+        } else {
+            focused.focused = true;
+        }
+    });
+
+    $scope.$on('move-up', function () {
+        for(var i=0;i<$scope.data.entries.length;i++) {
+            var entry = $scope.data.entries[i];
+            if(entry.focused) {
+                entry.focused = false;
+                entry.visible = true;
+                var j = i - 1;
+                if(j > -1) {
+                    $scope.data.entries[j].focused = true;
+                    $scope.data.entries[j].visible = true;
+                }
+                return;
+            }
+        }
+    });
+
     $scope.$on('refresh', $scope.refresh);
     $scope.$on('update', _update);
 
