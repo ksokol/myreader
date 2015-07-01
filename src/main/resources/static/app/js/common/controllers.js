@@ -1,6 +1,6 @@
 angular.module('common.controllers', ['common.services'])
 
-.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', '$mdSidenav', '$mdMedia', function($rootScope, $scope, $previousState, $mdSidenav, $mdMedia) {
+.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', '$mdSidenav', '$mdMedia', 'hotkeys', function($rootScope, $scope, $previousState, $mdSidenav, $mdMedia, hotkeys) {
 
     $scope.searchOpen = false;
     $scope.searchKey = "";
@@ -36,7 +36,15 @@ angular.module('common.controllers', ['common.services'])
         if($scope.searchKey.length === 0) {
             $scope.searchOpen = false;
         }
-    }
+    };
+
+    hotkeys.bindTo($scope)
+    .add({
+        combo: 'r',
+        callback: function() {
+            $scope.broadcast('refresh');
+        }
+    });
 }])
 
 .controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', 'localStorageService', 'subscriptionsTagService', function($rootScope, $scope, $mdMedia, $state, localStorageService, subscriptionsTagService) {
@@ -198,9 +206,9 @@ angular.module('common.controllers', ['common.services'])
         if(focused.seen === false) {
             focused.seen = true;
             subscriptionEntryService.save(focused)
-                .then(function() {
-                    focused.focused = true;
-                })
+            .then(function() {
+                focused.focused = true;
+            });
         } else {
             focused.focused = true;
         }
@@ -242,9 +250,19 @@ angular.module('common.controllers', ['common.services'])
         subscriptionEntryService.save(entry);
     };
 
-    $scope.toogleRead = function(entry) {
+    $scope.toggleRead = function(entry) {
         entry.seen = !entry.seen;
         subscriptionEntryService.save(entry);
+    };
+
+    $scope.toggleReadFromEnter = function() {
+        for(var i=0;i<$scope.data.entries.length;i++) {
+            var entry = $scope.data.entries[i];
+            if(entry.focused) {
+                $scope.toggleRead(entry);
+                return;
+            }
+        }
     };
 
     $scope.navigateToDetailPage = function(item) {
@@ -265,24 +283,30 @@ angular.module('common.controllers', ['common.services'])
     });
 
     $scope.isFocused = function(item) {
-        return   item.focused ? 'my-focused' : '';
+        return item.focused ? 'my-focused' : '';
     };
 
     $scope.$on('move-down', _down);
-    $scope.$on('move-up', _up)
+    $scope.$on('move-up', _up);
     $scope.$on('refresh', $scope.refresh);
     $scope.$on('update', _update);
 
     hotkeys.bindTo($scope)
     .add({
-        combo: 'right',
+        combo: 'down',
         callback: _down
     });
 
     hotkeys.bindTo($scope)
     .add({
-        combo: 'left',
+        combo: 'up',
         callback: _up
+    });
+
+    hotkeys.bindTo($scope)
+    .add({
+        combo: 'enter',
+        callback: $scope.toggleReadFromEnter
     });
 
     refresh(params());

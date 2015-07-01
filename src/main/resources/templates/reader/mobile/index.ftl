@@ -61,7 +61,7 @@
                                     <h3 hide-gt-md class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
                                     <h3 hide show-gt-md class="my-entry-title my-a" ng-click="openOrigin(entry)">{{::entry.title | htmlEntities}}</h3>
                                     <h4>
-                                        <md-icon class="my-a" hide show-gt-md ng-click="toogleRead(entry)" ng-hide="{{entry.seen}}" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
+                                        <md-icon class="my-a" hide show-gt-md ng-click="toggleRead(entry)" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
                                         {{::entry.createdAt | timeago}} on {{::entry.feedTitle | htmlEntities}}
                                     </h4>
                                 </div>

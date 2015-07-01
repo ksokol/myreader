@@ -162,7 +162,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
     localStorageServiceProvider.setPrefix('myreader').setStorageType('sessionStorage');
 }])
 
-.config(function($provide) {
+.config(['$provide', function($provide) {
 
     $provide.decorator("$exceptionHandler", ['$delegate', '$log', function($delegate, $log){
         return function(exception, cause) {
@@ -173,5 +173,10 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
             !isBadParse && $delegate(exception, cause);
         };
     }]);
-});
+}])
+
+.config(['hotkeysProvider', function(hotkeysProvider) {
+    hotkeysProvider.includeCheatSheet = false;
+    hotkeysProvider.useNgRoute = false;
+}]);
 
