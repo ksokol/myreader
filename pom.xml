@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.2.4.RELEASE</version>
+        <version>1.2.5.RELEASE</version>
     </parent>
     <repositories>
         <repository>
@@ -153,6 +153,14 @@
         </plugins>
     </build>
     <dependencies>
+        <!-- obsolete with Spring Boot 1.2.5.RELEASE or higher
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.4.1</version>
+            <scope>test</scope>
+        </dependency>
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -256,19 +264,21 @@
             <artifactId>freemarker</artifactId>
             <version>2.3.21</version>
         </dependency>
-        <!-- obsolete with Spring Boot 1.2.5.RELEASE or higher -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.4.1</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.springframework.test.htmlunit</groupId>
             <artifactId>spring-test-htmlunit</artifactId>
             <version>1.0.0.RC1</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- wrong apache httpcomponents version referenced in net.sourceforge.htmlunit:htmlunit -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.4.1</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
@@ -352,4 +362,6 @@
             <version>1.4.0</version>
         </dependency>
     </dependencies>
+
+
 </project>
