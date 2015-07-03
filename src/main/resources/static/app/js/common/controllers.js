@@ -10,7 +10,9 @@ angular.module('common.controllers', ['common.services'])
     };
 
     $scope.$on('navigation-close', function() {
-        $mdSidenav('left').close();
+        if(!$mdMedia('gt')) {
+            $mdSidenav('left').close();
+        }
     });
 
     $scope.broadcast = function(eventName, param) {
@@ -107,27 +109,17 @@ angular.module('common.controllers', ['common.services'])
     $scope.toggleOpen = function(item) {
         if(openItem === item) {
             openItem = null;
-            $state.go('app.entries-tags', {tag: 'all'}, {reload: true});
+            $state.go('app.entries-tags', {tag: 'all'});
         } else {
             openItem = item.uuid;
             if(item.type === 'tag' || item.type === 'global') {
-                $state.go('app.entries-tags', {tag: item.uuid}, {reload: true});
+                $state.go('app.entries-tags', {tag: item.uuid});
             } else {
-                $state.go('app.entries-subscription', {uuid: item.uuid}, {reload: true});
+                $state.go('app.entries-subscription', {uuid: item.uuid});
             }
-        }
-        if(!$mdMedia('gt')) {
-            $rootScope.$broadcast('navigation-close');
         }
     };
 
-    $scope.open = function(item) {
-        $state.go(item);
-
-        if(!$mdMedia('gt')) {
-            $rootScope.$broadcast('navigation-close');
-        }
-    }
 }])
 
 .controller('SubscriptionEntryListCtrl', ['$window', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'hotkeys', function($window, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys) {
