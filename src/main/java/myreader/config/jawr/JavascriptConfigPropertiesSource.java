@@ -1,5 +1,6 @@
 package myreader.config.jawr;
 
+import static myreader.config.jawr.LibraryVersions.ANGULAR_HOTKEYS_VERSION;
 import static myreader.config.jawr.LibraryVersions.ANGULAR_MATERIAL_VERSION;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class JavascriptConfigPropertiesSource {
                     .webjar("ui-router-extras/0.0.13/modular/ct-ui-router-extras.previous.js")
                     .webjar("angular-local-storage/0.1.5/angular-local-storage.js")
                     .webjar("angular-cache/4.2.0/angular-cache.js")
-                    .webjar("angular-hotkeys/1.4.0/hotkeys.min.js")
+                    .webjar("angular-hotkeys/" + ANGULAR_HOTKEYS_VERSION + "/hotkeys.js")
                     .webjar("momentjs/2.7.0/moment.js")
                     .webjar("angular-material/" + ANGULAR_MATERIAL_VERSION +"/angular-material.js")
                     .jar("static/app/js/common/config.js")
