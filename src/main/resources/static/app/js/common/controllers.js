@@ -49,7 +49,7 @@ angular.module('common.controllers', ['common.services'])
     });
 }])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', 'localStorageService', 'subscriptionsTagService', function($rootScope, $scope, $mdMedia, $state, localStorageService, subscriptionsTagService) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', function($rootScope, $scope, $mdMedia, $state) {
     $scope.data = {
         tags: [],
         items: []
@@ -57,17 +57,11 @@ angular.module('common.controllers', ['common.services'])
 
     var openItem = {tag: null, uuid: null};
 
-    var refresh = function() {
-        subscriptionsTagService.findAllByUnseen(true)
-        .then(function (data) {
-            $scope.data = data;
-        });
-    };
-
-    refresh();
-
     $scope.$on('navigation-change', function(ev, param) {
-        openItem = param;
+        if(param.data) {
+            $scope.data = param.data;
+        }
+        openItem = param.selected;
     });
 
     $scope.$on('navigation-clear-selection', function() {
@@ -123,13 +117,16 @@ angular.module('common.controllers', ['common.services'])
 
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'hotkeys', function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys) {
+.controller('SubscriptionEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'subscriptionsTagService', 'hotkeys', function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, subscriptionsTagService, hotkeys) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
     $scope.search = "";
 
-    $rootScope.$broadcast('navigation-change', $stateParams);
+    subscriptionsTagService.findAllByUnseen(true)
+    .then(function (data) {
+        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+    });
 
     var refresh = function(param) {
         subscriptionEntryService.findBy(param)

@@ -103,6 +103,20 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                     }
                 }
             })
+            .state('app.bookmarks', {
+                url: "/bookmarks",
+                controller: 'SubscriptionEntryListCtrl',
+                views: {
+                    content: {
+                        templateUrl: 'SubscriptionEntries',
+                        controller: 'SubscriptionEntryListCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'SubscriptionEntriesActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
+            })
             .state('app.entry', {
                 url: "/entry/:uuid",
                 views: {
