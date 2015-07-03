@@ -66,23 +66,24 @@ angular.module('common.controllers', ['common.services'])
 
     refresh();
 
-    $scope.$on('$stateChangeSuccess', function(a,b,c) {
-        //TODO
-        if ($state.is('app.entries-tags') || $state.is('app.entries-tag-subscription') || $state.is('app.entries-subscription')) {
-            openItem = c.uuid ? c.uuid : c.tag;
-        }
+    $scope.$on('navigation-change', function(ev, param) {
+        openItem = param;
+    });
+
+    $scope.$on('navigation-clear-selection', function() {
+        openItem = {tag: null, uuid: null};
     });
 
     $scope.isItemSelected= function(item) {
         var openedSection = openItem;
-        if(openedSection === item.uuid) {
+        if(openedSection.tag === item.tag) {
             return true;
         } else if(item.subscriptions) {
             if(item.type === 'global') {
                 return false;
             }
             for(var i=0;i<item.subscriptions.length;i++) {
-                if(item.subscriptions[i].uuid === openedSection) {
+                if(item.subscriptions[i].uuid === openedSection.uuid) {
                     return true;
                 }
             }
@@ -94,12 +95,12 @@ angular.module('common.controllers', ['common.services'])
         if(item.type === 'global') {
             return false;
         }
-        if(openItem == item.uuid) {
+        if(openItem.tag == item.tag) {
             return true;
         }
         if(item.subscriptions) {
             for(var i=0;i<item.subscriptions.length;i++) {
-                if(item.subscriptions[i].uuid === openItem) {
+                if(item.subscriptions[i].uuid === openItem.uuid) {
                     return true;
                 }
             }
@@ -107,11 +108,11 @@ angular.module('common.controllers', ['common.services'])
     };
 
     $scope.toggleOpen = function(item) {
-        if(openItem === item) {
+        if(openItem.uuid === item.uuid && openItem.tag === item.tag) {
             openItem = null;
             $state.go('app.entries-tags', {tag: 'all'});
         } else {
-            openItem = item.uuid;
+            openItem.uuid = item.uuid;
             if(item.type === 'tag' || item.type === 'global') {
                 $state.go('app.entries-tags', {tag: item.uuid});
             } else {
@@ -122,11 +123,13 @@ angular.module('common.controllers', ['common.services'])
 
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$window', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'hotkeys', function($window, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys) {
+.controller('SubscriptionEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'hotkeys', function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
     $scope.search = "";
+
+    $rootScope.$broadcast('navigation-change', $stateParams);
 
     var refresh = function(param) {
         subscriptionEntryService.findBy(param)

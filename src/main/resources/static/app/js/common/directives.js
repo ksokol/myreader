@@ -185,7 +185,10 @@ angular.module('common.directives', [])
     return {
         link : function(scope, element, attrs) {
             element.bind("click", function() {
-                $rootScope.$broadcast(attrs.myClickBroadcast);
+                var splitted = attrs.myClickBroadcast.split(' ');
+                angular.forEach(splitted, function(eventName) {
+                    $rootScope.$broadcast(eventName);
+                });
             });
         }
     }
