@@ -126,7 +126,7 @@ BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stat
     };
 
     $scope.seenIcon = function(item) {
-        return item.seen ? 'visibility_off' : 'visibility_on';
+        return item.seen ? 'visibility_on' : 'visibility_off';
     };
 
     $scope.markAsReadAndHide = function(entry) {
@@ -244,7 +244,6 @@ SubscriptionEntryListCtrl.prototype.constructor = SubscriptionEntryListCtrl;
 
 BookmarkEntryListCtrl.prototype = Object.create(BaseEntryCtrl.prototype);
 BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
-
 
 angular.module('common.controllers', ['common.services'])
 
