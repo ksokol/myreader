@@ -30,7 +30,7 @@
                             <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
                         </li>
                         <li>
-                            <md-button my-click-broadcast="navigation-close navigation-clear-selection" ui-sref="app.subscriptions">subscriptions</md-button>
+                            <md-button my-click-broadcast="navigation-close" ui-sref="app.subscriptions">subscriptions</md-button>
                         </li>
                         <li>
                             <md-button my-click-broadcast="navigation-close navigation-clear-selection" ui-sref="app.bookmarks">bookmarks</md-button>
