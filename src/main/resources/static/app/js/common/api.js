@@ -5,6 +5,7 @@ angular.module('common.api', [])
     var SubscriptionTag = function () {
         var self = this;
         self.subscriptions = [];
+        self.links = {};
     };
 
     var SubscriptionTags = function() {
@@ -46,6 +47,7 @@ angular.module('common.api', [])
 
         self.addSubscription = function(subscription) {
             subscription['type'] = 'subscription';
+            subscription.links.entries = {route: 'app.entries', param: { uuid: subscription.uuid }};
             self.subscriptions.push(subscription);
             self.unseen += subscription.unseen;
         };
@@ -64,6 +66,7 @@ angular.module('common.api', [])
                 tag.title = subscriptionTag.tag;
                 tag.type = 'tag';
                 tag.unseen = subscriptionTag.unseen;
+                tag.links.entries = {route: 'app.entries', param: { tag: subscriptionTag.tag, uuid: undefined } };
                 tag.subscriptions.push(subscriptionTag);
                 self.tags.push(tag);
             }
@@ -103,6 +106,7 @@ angular.module('common.api', [])
             all.uuid = "all";
             all.subscriptions = [];
             all.type = 'global';
+            all.links.entries = {route: 'app.entries', param: {tag: 'all', uuid: undefined }};
 
             var subscriptionTags = new SubscriptionTags;
 
@@ -114,6 +118,56 @@ angular.module('common.api', [])
                 }
             });
             all.unseen = subscriptionTags.unseen;
+            subscriptionTags.tags.unshift(all);
+            return subscriptionTags;
+        }
+    }
+})
+
+.service('bookmarkTagsConverter', function () {
+
+    var Bookmark = function () {
+        var self = this;
+        self.links = {};
+    };
+
+    var Bookmarks = function() {
+        var self = this;
+        self.tags = [];
+
+        self.getBookmark = function(tag) {
+            for(var i=0;i<self.tags.length;i++) {
+                var t = self.tags[i];
+                if(t === tag) {
+                    return t;
+                }
+            }
+        };
+
+        self.addTag = function(bookmarkTag) {
+            var theTag = self.getBookmark(bookmarkTag);
+            var tag = new Bookmark;
+            tag.tag = bookmarkTag;
+            tag.title = bookmarkTag;
+            tag.type = 'tag';
+            tag.links.entries = {route: 'app.bookmarks', param: { tag: bookmarkTag } };
+            self.tags.push(tag);
+        };
+    };
+
+    return {
+        convertFrom: function (data) {
+            var all = new Bookmark;
+            all.title = "all";
+            all.type = 'global';
+            all.links.entries = {route: 'app.bookmarks', param: {tag: 'all' }};
+
+            var subscriptionTags = new Bookmarks;
+
+            angular.forEach(data, function (value) {
+                subscriptionTags.addTag(value);
+            });
+
             subscriptionTags.tags.unshift(all);
             return subscriptionTags;
         }

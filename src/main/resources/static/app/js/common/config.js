@@ -52,7 +52,6 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
             .state('app', {
                 abstract: true,
                 url: "/app",
-
                 views: {
                     body: {
                         templateUrl: 'SubscriptionTags',
@@ -60,38 +59,8 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                     }
                 }
             })
-            .state('app.entries-tags', {
-                url: "/tag/entries/:tag",
-
-                views: {
-                    content: {
-                        templateUrl: 'SubscriptionEntries',
-                        controller: 'SubscriptionEntryListCtrl'
-                    },
-                    actions: {
-                        templateUrl: 'SubscriptionEntriesActions',
-                        controller: 'TopBarActionsCtrl'
-                    }
-                }
-            })
-            .state('app.entries-tag-subscription', {
-                url: "/tag/entries/:tag/:uuid",
-
-                views: {
-                    content: {
-                        templateUrl: 'SubscriptionEntries',
-                        controller: 'SubscriptionEntryListCtrl'
-
-                    },
-                    actions: {
-                        templateUrl: 'SubscriptionEntriesActions',
-                        controller: 'TopBarActionsCtrl'
-                    }
-                }
-            })
-            .state('app.entries-subscription', {
-                url: "/subscription/entries/:uuid",
-                controller: 'SubscriptionEntryListCtrl',
+            .state('app.entries', {
+                url: "/entry/:tag/:uuid",
                 views: {
                     content: {
                         templateUrl: 'SubscriptionEntries',
@@ -104,12 +73,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 }
             })
             .state('app.bookmarks', {
-                url: "/bookmarks",
-                controller: 'SubscriptionEntryListCtrl',
+                url: "/bookmark/:tag",
                 views: {
                     content: {
                         templateUrl: 'SubscriptionEntries',
-                        controller: 'SubscriptionEntryListCtrl'
+                        controller: 'BookmarkEntryListCtrl'
                     },
                     actions: {
                         templateUrl: 'SubscriptionEntriesActions',
@@ -169,7 +137,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                     }
                 }
             });
-        $urlRouterProvider.otherwise('/app/tag/entries/all');
+        $urlRouterProvider.otherwise('/app/entry//');
 }])
 
 .config(['localStorageServiceProvider', function(localStorageServiceProvider) {

@@ -13,27 +13,30 @@
 
                 <md-content flex role="navigation">
                     <ul class="subscription-tag-menu">
-                        <li class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-hide="item.unseen < 1">
-                            <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)" my-click-broadcast="navigation-close">{{::item.title}} ({{item.unseen}})</md-button>
+                        <li class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
+                            <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)" my-click-broadcast="navigation-close">{{item | navigationItemTitle}}</md-button>
                             <ul ng-show="isOpen(item)" class="menu-toggle-list">
                                 <li ng-repeat="subscription in item.subscriptions" ng-hide="subscription.unseen < 1">
                                     <md-button md-no-ink
                                                ng-class="{'active' : isSelected(subscription)}"
-                                               ui-sref="app.entries-tag-subscription({tag: subscription.tag, uuid: subscription.uuid})"
+                                               ui-sref="app.entries({tag: subscription.tag, uuid: subscription.uuid})"
                                                my-click-broadcast="navigation-close">
                                         {{::subscription.title}} ({{subscription.unseen}})
                                     </md-button>
                                 </li>
                             </ul>
                         </li>
-                        <li class="md-2-line" ng-repeat="item in data.items" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-hide="item.unseen < 1">
-                            <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{::item.title}} ({{item.unseen}})</md-button>
+                        <li class="md-2-line" ng-repeat="item in data.items" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
+                            <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{item | navigationItemTitle}}</md-button>
                         </li>
                         <li>
-                            <md-button my-click-broadcast="navigation-close" ui-sref="app.subscriptions">subscriptions</md-button>
+                            <md-button my-click-broadcast="navigation-close navigation-clear-selection" ui-sref="app.subscriptions">subscriptions</md-button>
                         </li>
-                        <li>
-                            <md-button my-click-broadcast="navigation-close navigation-clear-selection" ui-sref="app.bookmarks">bookmarks</md-button>
+                        <li ui-sref-active="hide">
+                            <md-button my-click-broadcast="navigation-close" ui-sref="app.bookmarks">bookmarks</md-button>
+                        </li>
+                        <li ui-sref-active="hide">
+                            <md-button my-click-broadcast="navigation-close" ui-sref="app.entries">Stream</md-button>
                         </li>
                         <li>
                             <!-- TODO -->

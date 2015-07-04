@@ -243,6 +243,32 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     }
 }])
 
+.service('bookmarkService', ['api', 'deferService', 'CacheFactory', function(api, deferService, CacheFactory) {
+    var url = '/myreader/api/2/subscriptionEntries/availableTags';
+
+    var bookmarksCache = CacheFactory.createCache('bookmarks', {
+        deleteOnExpire: 'aggressive',
+        maxAge: 60 * 5 * 1000 //5 minutes
+    });
+
+    return {
+        findAll: function() {
+            var cached = bookmarksCache.get('bookmarks');
+            if(cached) {
+                return deferService.resolved(cached);
+            }
+
+            var promise = api.get('bookmarkTags', url);
+
+            promise.then(function(data) {
+                bookmarksCache.put('bookmarks', data);
+            });
+
+            return promise;
+        }
+    }
+}])
+
 .service('deferService', ['$q', function($q) {
 
     var _deferred = function(fn, params) {

@@ -1,3 +1,246 @@
+(function() {
+"use strict";
+
+var BaseEntryCtrl = function() {};
+
+BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys) {
+    $scope.data = {entries: []};
+    $scope.param = $stateParams;
+    $scope.search = "";
+
+    $scope.addUuidParam = function(stateParams, param) {
+        if(stateParams.uuid) {
+            param['feedUuidEqual'] = stateParams.uuid;
+        }
+    };
+
+    $scope.addTagParam = function(stateParams, param) {
+        if(stateParams.tag && $stateParams.tag !== "all") {
+            param['feedTagEqual'] = stateParams.tag;
+        }
+    };
+
+    $scope.addSearchParam = function(param) {
+        if($scope.search !== "") {
+            if($scope.search.indexOf('*') === -1) {
+                param['q'] = $scope.search + '*';
+            } else {
+                param['q'] = $scope.search;
+            }
+        }
+    };
+
+    $scope.addSeenParam = function(param) {
+        //TODO
+        param['seenEqual'] = false;
+    };
+
+    $scope.params = function() {
+        var param = {};
+
+        $scope.addUuidParam($stateParams, param);
+        $scope.addTagParam($stateParams, param);
+        $scope.addSearchParam(param);
+        $scope.addSeenParam(param);
+
+        //TODO
+        param['size'] = 10;
+
+        return param;
+    };
+
+    var _update = function() {
+        var selected = [];
+        angular.forEach($scope.data.entries, function(entry) {
+            if(entry.seen && (entry.visible === undefined || entry.visible) ) {
+                selected.push(entry);
+            }
+        });
+
+        if(selected.length > 0) {
+            subscriptionEntryService.updateEntries(selected)
+            .then(function() {
+                angular.forEach(selected, function(entry) {
+                    entry.visible = false;
+                });
+            });
+        }
+    };
+
+    var _down = function() {
+        var focused;
+        for(var i=0;i<$scope.data.entries.length;i++) {
+            var entry = $scope.data.entries[i];
+            if(entry.focused) {
+                entry.focused = false;
+                entry.visible = false;
+                var j = i + 1;
+                if(j < $scope.data.entries.length) {
+                    focused = $scope.data.entries[j];
+                }
+                break;
+            }
+        }
+
+        if(!focused) {
+            focused = $scope.data.entries[0];
+        }
+
+        if(focused.seen === false) {
+            focused.seen = true;
+            subscriptionEntryService.save(focused)
+            .then(function() {
+                focused.focused = true;
+            });
+        } else {
+            focused.focused = true;
+        }
+    };
+
+    var _up = function() {
+        for(var i=0;i<$scope.data.entries.length;i++) {
+            var entry = $scope.data.entries[i];
+            if(entry.focused) {
+                entry.focused = false;
+                entry.visible = true;
+                var j = i - 1;
+                if(j > -1) {
+                    $scope.data.entries[j].focused = true;
+                    $scope.data.entries[j].visible = true;
+                }
+                return;
+            }
+        }
+    };
+
+    $scope.refresh = function(param) {
+        subscriptionEntryService.findBy(param)
+        .then(function(data) {
+            data.entries = $scope.data.entries.concat(data.entries);
+            $scope.data = data;
+        });
+    };
+
+    $scope.visible = function(item) {
+        return item.visible !== undefined ? item.visible : true;
+    };
+
+    $scope.seenIcon = function(item) {
+        return item.seen ? 'visibility_off' : 'visibility_on';
+    };
+
+    $scope.markAsReadAndHide = function(entry) {
+        if(!$mdMedia('gt-md')) {
+            return;
+        }
+        subscriptionEntryService.save(entry);
+    };
+
+    $scope.toggleRead = function(entry) {
+        entry.seen = !entry.seen;
+        subscriptionEntryService.save(entry);
+    };
+
+    $scope.toggleReadFromEnter = function() {
+        for(var i=0;i<$scope.data.entries.length;i++) {
+            var entry = $scope.data.entries[i];
+            if(entry.focused) {
+                $scope.toggleRead(entry);
+                return;
+            }
+        }
+    };
+
+    $scope.navigateToDetailPage = function(item) {
+        $state.go('app.entry', {uuid: item.uuid});
+    };
+
+    $scope.loadMore = function() {
+        $scope.refresh($scope.data.next());
+    };
+
+    $scope.openOrigin = function(entry) {
+        $window.open(entry.origin, '_blank');
+    };
+
+    $scope.$on('search', function(event, param) {
+        $scope.search = param;
+        $scope.data = {entries: []};
+        $scope.refresh($scope.params());
+    });
+
+    $scope.isFocused = function(item) {
+        return item.focused ? 'my-focused' : '';
+    };
+
+    $scope.$on('move-down', _down);
+    $scope.$on('move-up', _up);
+    $scope.$on('refresh', $scope.refresh);
+    $scope.$on('update', _update);
+
+    hotkeys.bindTo($scope)
+    .add({
+        combo: 'down',
+        callback: _down
+    });
+
+    hotkeys.bindTo($scope)
+    .add({
+        combo: 'up',
+        callback: _up
+    });
+
+    hotkeys.bindTo($scope)
+    .add({
+        combo: 'enter',
+        callback: $scope.toggleReadFromEnter
+    });
+};
+
+var SubscriptionEntryListCtrl = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, subscriptionsTagService, hotkeys) {
+
+    BaseEntryCtrl.call(this);
+    this.initialize($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys);
+
+    subscriptionsTagService.findAllByUnseen(true)
+    .then(function (data) {
+        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+    });
+
+    $scope.refresh($scope.params());
+};
+
+var BookmarkEntryListCtrl = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, bookmarkService, hotkeys) {
+
+    BaseEntryCtrl.call(this);
+    this.initialize($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys);
+
+    $scope.addTagParam = function(stateParams, param) {
+        if(stateParams.tag) {
+            param['entryTagEqual'] = stateParams.tag === "all" ? "*" : stateParams.tag;
+        }
+    };
+
+    $scope.addSeenParam = function(param) {
+        //don't add param
+    };
+
+    bookmarkService.findAll()
+    .then(function (data) {
+        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+    });
+
+    $scope.refresh($scope.params());
+};
+
+
+SubscriptionEntryListCtrl.prototype = Object.create(BaseEntryCtrl.prototype);
+SubscriptionEntryListCtrl.prototype.constructor = SubscriptionEntryListCtrl;
+
+BookmarkEntryListCtrl.prototype = Object.create(BaseEntryCtrl.prototype);
+BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
+
+
 angular.module('common.controllers', ['common.services'])
 
 .controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', '$mdSidenav', '$mdMedia', 'hotkeys', function($rootScope, $scope, $previousState, $mdSidenav, $mdMedia, hotkeys) {
@@ -102,207 +345,21 @@ angular.module('common.controllers', ['common.services'])
     };
 
     $scope.toggleOpen = function(item) {
-        if(openItem.uuid === item.uuid && openItem.tag === item.tag) {
-            openItem = null;
-            $state.go('app.entries-tags', {tag: 'all'});
-        } else {
-            openItem.uuid = item.uuid;
-            if(item.type === 'tag' || item.type === 'global') {
-                $state.go('app.entries-tags', {tag: item.uuid});
-            } else {
-                $state.go('app.entries-subscription', {uuid: item.uuid});
-            }
-        }
-    };
-
-}])
-
-.controller('SubscriptionEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'subscriptionsTagService', 'hotkeys', function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, subscriptionsTagService, hotkeys) {
-
-    $scope.data = {entries: []};
-    $scope.param = $stateParams;
-    $scope.search = "";
-
-    subscriptionsTagService.findAllByUnseen(true)
-    .then(function (data) {
-        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
-    });
-
-    var refresh = function(param) {
-        subscriptionEntryService.findBy(param)
-        .then(function(data) {
-            data.entries = $scope.data.entries.concat(data.entries);
-            $scope.data = data;
-        })
-    };
-
-    var params = function() {
-        var param = {};
-        if($stateParams.uuid) {
-            param['feedUuidEqual'] = $stateParams.uuid;
-        }
-        if($stateParams.tag && $stateParams.tag !== "all") {
-            param['feedTagEqual'] = $stateParams.tag;
-        }
-        if($scope.search !== "") {
-            if($scope.search.indexOf('*') === -1) {
-                param['q'] = $scope.search + '*';
-            } else {
-                param['q'] = $scope.search;
-            }
-        }
-        //TODO
-        param['seenEqual'] = false;
-        param['size'] = 10;
-
-        return param;
-    };
-
-    var _update = function() {
-        var selected = [];
-        angular.forEach($scope.data.entries, function(entry) {
-            if(entry.seen && (entry.visible === undefined || entry.visible) ) {
-                selected.push(entry);
-            }
-        });
-
-        if(selected.length > 0) {
-            subscriptionEntryService.updateEntries(selected)
-            .then(function() {
-                angular.forEach(selected, function(entry) {
-                    entry.visible = false;
-                });
-            });
-        }
-    };
-
-    var _down = function() {
-        var focused;
-        for(var i=0;i<$scope.data.entries.length;i++) {
-            var entry = $scope.data.entries[i];
-            if(entry.focused) {
-                entry.focused = false;
-                entry.visible = false;
-                var j = i + 1;
-                if(j < $scope.data.entries.length) {
-                    focused = $scope.data.entries[j];
-                }
-                break;
-            }
-        }
-
-        if(!focused) {
-            focused = $scope.data.entries[0];
-        }
-
-        if(focused.seen === false) {
-            focused.seen = true;
-            subscriptionEntryService.save(focused)
-            .then(function() {
-                focused.focused = true;
-            });
-        } else {
-            focused.focused = true;
-        }
-    };
-
-    var _up = function() {
-        for(var i=0;i<$scope.data.entries.length;i++) {
-            var entry = $scope.data.entries[i];
-            if(entry.focused) {
-                entry.focused = false;
-                entry.visible = true;
-                var j = i - 1;
-                if(j > -1) {
-                    $scope.data.entries[j].focused = true;
-                    $scope.data.entries[j].visible = true;
-                }
-                return;
-            }
-        }
-    };
-
-    $scope.refresh = function() {
-        $scope.data = {entries: []};
-        refresh(params());
+        var link = item.links.entries;
+        $state.go(link.route, link.param);
     };
 
     $scope.visible = function(item) {
-        return item.visible !== undefined ? item.visible : true;
-    };
-
-    $scope.seenIcon = function(item) {
-        return item.seen ? 'visibility_off' : 'visibility_on';
-    };
-
-    $scope.markAsReadAndHide = function(entry) {
-        if(!$mdMedia('gt-md')) {
-            return;
+        if(item.unseen) {
+            return item.unseen > 0;
         }
-        subscriptionEntryService.save(entry);
-    };
-
-    $scope.toggleRead = function(entry) {
-        entry.seen = !entry.seen;
-        subscriptionEntryService.save(entry);
-    };
-
-    $scope.toggleReadFromEnter = function() {
-        for(var i=0;i<$scope.data.entries.length;i++) {
-            var entry = $scope.data.entries[i];
-            if(entry.focused) {
-                $scope.toggleRead(entry);
-                return;
-            }
-        }
-    };
-
-    $scope.navigateToDetailPage = function(item) {
-        $state.go('app.entry', {uuid: item.uuid});
-    };
-
-    $scope.loadMore = function() {
-        refresh($scope.data.next());
-    };
-
-    $scope.openOrigin = function(entry) {
-        $window.open(entry.origin, '_blank');
-    };
-
-    $scope.$on('search', function(event, param) {
-        $scope.search = param;
-        $scope.refresh();
-    });
-
-    $scope.isFocused = function(item) {
-        return item.focused ? 'my-focused' : '';
-    };
-
-    $scope.$on('move-down', _down);
-    $scope.$on('move-up', _up);
-    $scope.$on('refresh', $scope.refresh);
-    $scope.$on('update', _update);
-
-    hotkeys.bindTo($scope)
-    .add({
-        combo: 'down',
-        callback: _down
-    });
-
-    hotkeys.bindTo($scope)
-    .add({
-        combo: 'up',
-        callback: _up
-    });
-
-    hotkeys.bindTo($scope)
-    .add({
-        combo: 'enter',
-        callback: $scope.toggleReadFromEnter
-    });
-
-    refresh(params());
+        return true;
+    }
 }])
+
+.controller('SubscriptionEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'subscriptionsTagService', 'hotkeys', SubscriptionEntryListCtrl])
+
+.controller('BookmarkEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'bookmarkService', 'hotkeys', BookmarkEntryListCtrl])
 
 .controller('SubscriptionEntryCtrl', ['$window', '$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', 'subscriptionEntryTagService', function($window, $scope, $stateParams, $previousState, $mdToast, subscriptionEntryService, subscriptionEntryTagService) {
 
@@ -451,3 +508,4 @@ angular.module('common.controllers', ['common.services'])
     });
 
 }]);
+})();
