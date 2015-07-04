@@ -38,7 +38,6 @@ import com.gargoylesoftware.htmlunit.WebClient;
 @WebAppConfiguration
 public class SecurityTestSupport {
 
-    public static final String API_1 = "/api/1/irrelevant";
     public static final String API_2 = "/api/2/irrelevant";
 
     @EnableWebMvc
@@ -60,7 +59,7 @@ public class SecurityTestSupport {
 
         @RestController
         static class TestController {
-            @RequestMapping({API_1, API_2})
+            @RequestMapping({API_2})
             public void ok() {
             }
         }

@@ -37,17 +37,18 @@ public class ApiSecurityTest extends SecurityTestSupport {
     private static final String LOGIN_FORM_NAME = "loginForm";
 
     @Test
-    public void testApi1Unauthorized() throws Exception {
-        mockMvc.perform(get(API_1)
+    public void testApiUnauthorized() throws Exception {
+        mockMvc.perform(get(API_2)
                 .header("X-Requested-With", "XMLHttpRequest"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void testApi1Ok() throws Exception {
-        mockMvc.perform(get(API_1)
+    public void testApiOk() throws Exception {
+        mockMvc.perform(get(API_2)
                 .header("Authorization", basic(USER1)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
     }
 
     @Test

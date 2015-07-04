@@ -27,6 +27,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import spring.security.AjaxExceptionTranslationFilter;
 import spring.security.RoleBasedAuthenticationSuccessHandler;
 import spring.security.UserRepositoryUserDetailsService;
+import spring.security.XAuthoritiesFilter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -75,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatcher("/**")
                 .authorizeRequests()
                 .anyRequest()
-                .hasAnyRole("USER")
+                .hasAnyRole("USER", "ADMIN")
                 .and()
                 .csrf().disable()
                 .httpBasic().realmName("API")
@@ -91,6 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().logoutUrl(LOGOUT).logoutSuccessUrl(LOGIN).permitAll().deleteCookies("JSESSIONID")
                 .and()
                 .addFilterBefore(ajaxExceptionTranslationFilter(), FilterSecurityInterceptor.class)
+                .addFilterAfter(new XAuthoritiesFilter(), FilterSecurityInterceptor.class)
                 .headers().frameOptions().disable();
     }
 
