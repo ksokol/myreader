@@ -175,8 +175,11 @@ BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stat
 
     $scope.$on('move-down', _down);
     $scope.$on('move-up', _up);
-    $scope.$on('refresh', $scope.refresh);
     $scope.$on('update', _update);
+
+    $scope.$on('refresh', function() {
+        $scope.refresh($scope.params());
+    });
 
     hotkeys.bindTo($scope)
     .add({
@@ -218,6 +221,8 @@ var BookmarkEntryListCtrl = function($window, $rootScope, $scope, $stateParams, 
     $scope.addTagParam = function(stateParams, param) {
         if(stateParams.tag) {
             param['entryTagEqual'] = stateParams.tag === "all" ? "*" : stateParams.tag;
+        } else {
+            param['entryTagEqual'] = '*';
         }
     };
 
