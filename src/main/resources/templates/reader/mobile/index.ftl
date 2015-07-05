@@ -38,6 +38,9 @@
                         <li ui-sref-active="hide">
                             <md-button my-click-broadcast="navigation-close" ui-sref="app.entries">Stream</md-button>
                         </li>
+                        <li my-show-admin>
+                            <md-button my-click-broadcast="navigation-close" ui-sref="app.admin">Admin</md-button>
+                        </li>
                         <li>
                             <!-- TODO -->
                             <md-button href="../web/logout">logout</md-button>

@@ -44,6 +44,15 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
             }
         };
     }]);
+
+    $httpProvider.interceptors.push(['$q', 'permissionService', function($q, permissionService) {
+        return {
+            'response': function(response) {
+                permissionService.setAuthorities(response.headers("X-MY-AUTHORITIES"));
+                return response || $q.when(response);
+            }
+        };
+    }]);
 }])
 
 .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
