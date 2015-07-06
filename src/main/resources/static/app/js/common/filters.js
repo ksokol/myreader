@@ -350,8 +350,11 @@ angular.module('common.filters', ['ngSanitize'])
 .filter('navigationItemTitle', function() {
 
     return function(item) {
+        if(!item) {
+            return '';
+        }
         var unseen = item.unseen;
-        var title = item.title;
+        var title = item.title || '';
         if(unseen && unseen > 0) {
             title += " (" + unseen + ")";
         }
