@@ -4,6 +4,7 @@ module.exports = function(config) {
     // put JSON data into a mock
     preprocessors['**/*.json'] = 'json2js';
     preprocessors['**/*.html'] = 'ng-html2js';
+    preprocessors['src/main/resources/static/app/js/**'] = 'coverage';
 
     config.set({
         // base path, that will be used to resolve files and exclude
@@ -17,7 +18,8 @@ module.exports = function(config) {
             'karma-jasmine',
             'karma-phantomjs-launcher',
             'karma-ng-json2js-preprocessor',
-            'karma-ng-html2js-preprocessor'
+            'karma-ng-html2js-preprocessor',
+            'karma-coverage'
         ],
 
         junitReporter: {
@@ -47,6 +49,10 @@ module.exports = function(config) {
             moduleName: 'htmlTemplates'
         },
 
+        coverageReporter: {
+            dir : 'target/coverage/'
+        },
+
         // list of files to exclude
         exclude: [
 
@@ -54,7 +60,7 @@ module.exports = function(config) {
 
         // test results reporter to use
         // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-        reporters: ['progress', 'junit'],
+        reporters: ['progress', 'junit', 'coverage'],
 
         // web server port
         port: 9876,
