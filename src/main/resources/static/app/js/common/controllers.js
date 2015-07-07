@@ -3,7 +3,7 @@
 
 var BaseEntryCtrl = function() {};
 
-BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys) {
+BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, hotkeys) {
     $scope.data = {entries: []};
     $scope.param = $stateParams;
     $scope.search = "";
@@ -31,8 +31,13 @@ BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stat
     };
 
     $scope.addSeenParam = function(param) {
-        //TODO
-        param['seenEqual'] = false;
+        if(settingsService.isShowUnseenEntries()) {
+            param['seenEqual'] = false;
+        }
+    };
+
+    $scope.showDetails = function() {
+        return settingsService.isShowEntryDetails();
     };
 
     $scope.params = function() {
@@ -43,8 +48,7 @@ BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stat
         $scope.addSearchParam(param);
         $scope.addSeenParam(param);
 
-        //TODO
-        param['size'] = 10;
+        param['size'] = settingsService.getPageSize();
 
         return param;
     };
@@ -200,10 +204,10 @@ BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stat
     });
 };
 
-var SubscriptionEntryListCtrl = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, subscriptionsTagService, hotkeys) {
+var SubscriptionEntryListCtrl = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, subscriptionsTagService, settingsService, hotkeys) {
 
     BaseEntryCtrl.call(this);
-    this.initialize($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys);
+    this.initialize($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, hotkeys);
 
     subscriptionsTagService.findAllByUnseen(true)
     .then(function (data) {
@@ -213,10 +217,10 @@ var SubscriptionEntryListCtrl = function($window, $rootScope, $scope, $statePara
     $scope.refresh($scope.params());
 };
 
-var BookmarkEntryListCtrl = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, bookmarkService, hotkeys) {
+var BookmarkEntryListCtrl = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, bookmarkService, settingsService, hotkeys) {
 
     BaseEntryCtrl.call(this);
-    this.initialize($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, hotkeys);
+    this.initialize($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, hotkeys);
 
     $scope.addTagParam = function(stateParams, param) {
         if(stateParams.tag) {
@@ -361,9 +365,9 @@ angular.module('common.controllers', ['common.services'])
     }
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'subscriptionsTagService', 'hotkeys', SubscriptionEntryListCtrl])
+.controller('SubscriptionEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'hotkeys', SubscriptionEntryListCtrl])
 
-.controller('BookmarkEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'bookmarkService', 'hotkeys', BookmarkEntryListCtrl])
+.controller('BookmarkEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'hotkeys', BookmarkEntryListCtrl])
 
 .controller('SubscriptionEntryCtrl', ['$window', '$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', 'subscriptionEntryTagService', function($window, $scope, $stateParams, $previousState, $mdToast, subscriptionEntryService, subscriptionEntryTagService) {
 
@@ -554,5 +558,26 @@ angular.module('common.controllers', ['common.services'])
     });
 
     $scope.refresh();
+}])
+
+.controller('SettingsCtrl', ['$scope', '$mdToast', 'settingsService', function($scope, $mdToast, settingsService) {
+
+    $scope.sizes = [10, 20, 30];
+    $scope.currentSize = settingsService.getPageSize();
+    $scope.showUnseenEntries = settingsService.isShowUnseenEntries();
+    $scope.showEntryDetails = settingsService.isShowEntryDetails();
+
+
+    $scope.$on('save', function() {
+        settingsService.setPageSize($scope.currentSize);
+        settingsService.setShowUnseenEntries($scope.showUnseenEntries);
+        settingsService.setShowEntryDetails($scope.showEntryDetails);
+
+        $mdToast.show(
+            $mdToast.simple()
+                .content('saved')
+                .position('top right')
+        );
+    });
 }])
 })();

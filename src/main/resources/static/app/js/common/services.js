@@ -340,4 +340,35 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             return api.put('searchIndexJob', rebuildIndex, 'indexSyncJob');
         }
     }
+}])
+
+.service('settingsService', ['CacheFactory', function(CacheFactory) {
+
+    var settingsCache = CacheFactory.createCache('settingsCache', {
+        storageMode : 'localStorage'
+    });
+
+    return {
+        getPageSize: function() {
+            var pageSize = settingsCache.get('settings-pageSize');
+            return pageSize || 10;
+        },
+        setPageSize: function(pageSize) {
+            settingsCache.put('settings-pageSize', pageSize);
+        },
+        isShowEntryDetails: function() {
+            var showEntryDetails = settingsCache.get('settings-showEntryDetails');
+            return angular.isDefined(showEntryDetails) ? showEntryDetails : true;
+        },
+        setShowEntryDetails: function(showEntryDetails) {
+            settingsCache.put('settings-showEntryDetails', showEntryDetails);
+        },
+        isShowUnseenEntries: function() {
+            var showUnseenEntries = settingsCache.get('settings-showUnseenEntries');
+            return angular.isDefined(showUnseenEntries) ? showUnseenEntries : true;
+        },
+        setShowUnseenEntries: function(showUnseenEntries) {
+            settingsCache.put('settings-showUnseenEntries', showUnseenEntries);
+        }
+    }
 }]);

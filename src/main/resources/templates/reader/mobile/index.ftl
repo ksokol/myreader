@@ -42,6 +42,9 @@
                             <md-button my-click-broadcast="navigation-close" ui-sref="app.admin">Admin</md-button>
                         </li>
                         <li>
+                            <md-button my-click-broadcast="navigation-close" ui-sref="app.settings">Settings</md-button>
+                        </li>
+                        <li>
                             <!-- TODO -->
                             <md-button href="../web/logout">logout</md-button>
                         </li>
@@ -75,7 +78,7 @@
                                         {{::entry.createdAt | timeago}} on {{::entry.feedTitle | htmlEntities}}
                                     </h4>
                                 </div>
-                                <p hide show-gt-md ng-bind-html="entry.content | targetBlank" my-wrap-entry-content></p>
+                                <p hide show-gt-md ng-show="showDetails()" ng-bind-html="entry.content | targetBlank" my-wrap-entry-content></p>
                                 <div hide-gt-md>
                                     <md-checkbox ng-change="markAsReadAndHide(entry)" class="my-secondary" ng-model="entry.seen" aria-label="Mark as seen"></md-checkbox>
                                 </div>
@@ -357,6 +360,41 @@
                     <md-divider></md-divider>
                 </md-list-item>
             </md-list>
+        </script>
+
+        <script type="text/ng-template" id="SettingsActions">
+            <md-button class="md-icon-button" ng-hide="isInvisible('gt-md')" ng-click="openMenu()" aria-label="Menu">
+                <md-icon md-font-library="material-icons">menu</md-icon>
+            </md-button>
+            <h2>
+                <span></span>
+            </h2>
+            <span flex></span>
+
+            <md-button class="md-icon-button" aria-label="Save" ng-click="broadcast('save')">
+                <md-icon md-font-library="material-icons">save</md-icon>
+            </md-button>
+        </script>
+
+        <script type="text/ng-template" id="Settings">
+            <form name="settingsForm">
+                <label>Page size</label>
+                <md-select ng-model="currentSize" placeholder="Page Size">
+                    <md-option ng-repeat="size in sizes" value="{{size}}">{{size}}</md-option>
+                </md-select>
+
+                <label>Unseen entries only</label>
+                <md-radio-group ng-model="showUnseenEntries">
+                    <md-radio-button ng-value="true">true</md-radio-button>
+                    <md-radio-button ng-value="false">false</md-radio-button>
+                </md-radio-group>
+
+                <label>Show entry details</label>
+                <md-radio-group ng-model="showEntryDetails">
+                    <md-radio-button ng-value="true">true</md-radio-button>
+                    <md-radio-button ng-value="false">false</md-radio-button>
+                </md-radio-group>
+            </form>
         </script>
 
         <@script id="mobile"></@script>

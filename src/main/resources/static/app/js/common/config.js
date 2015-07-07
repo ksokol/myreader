@@ -158,6 +158,19 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'TopBarActionsCtrl'
                     }
                 }
+            })
+            .state('app.settings', {
+                url: "/settings",
+                views: {
+                    content: {
+                        templateUrl: 'Settings',
+                        controller: 'SettingsCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'SettingsActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
             });
         $urlRouterProvider.otherwise('/app/entry//');
 }])
