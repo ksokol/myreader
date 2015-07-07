@@ -112,7 +112,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private RedirectStrategy redirectStrategy() {
         final Map<String, String> roleUrlMap = new HashMap<>();
-        roleUrlMap.put("ROLE_ADMIN", "/web/admin");
+        roleUrlMap.put("ROLE_ADMIN", "/mobile/reader");
         roleUrlMap.put("ROLE_USER", "/web/rss");
         return new RoleBasedAuthenticationSuccessHandler(roleUrlMap);
     }

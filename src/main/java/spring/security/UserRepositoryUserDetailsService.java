@@ -33,10 +33,10 @@ public class UserRepositoryUserDetailsService implements UserDetailsService {
         }
 
         return new MyReaderUser(user.getId(), user.getEmail(), user.getPassword(), true /* enabled */,
-                true, true, true, AuthorityUtils.createAuthorityList(user.getRole()), isAdmin(user));
+                true, true, true, AuthorityUtils.createAuthorityList(user.getRole().split(",")), isAdmin(user));
     }
 
     private boolean isAdmin(User user) {
-        return ADMIN_GROUP.equals(user.getRole());
+        return ADMIN_GROUP.contains(user.getRole());
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.web.bind.support.AuthenticationPrincipalArgumentResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
@@ -41,6 +42,7 @@ import javax.validation.TraversableResolver;
 @Configuration
 @EnableSpringDataWebSupport
 @EnableTransactionManagement
+@EnableAsync
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
     @Autowired

@@ -4,6 +4,7 @@ import myreader.config.CommonConfig;
 import myreader.config.MvcConfig;
 import myreader.config.PersistenceConfig;
 import myreader.config.SecurityConfig;
+import myreader.config.ServiceConfig;
 import myreader.config.TaskConfig;
 import myreader.resource.config.ResourceConfig;
 import org.eclipse.jetty.server.session.HashSessionManager;
@@ -29,7 +30,7 @@ import javax.servlet.ServletContext;
  * @author Kamill Sokol
  */
 @ComponentScan({"myreader.service"})
-@Import({CommonConfig.class, PersistenceConfig.class, SecurityConfig.class, TaskConfig.class, MvcConfig.class})
+@Import({CommonConfig.class, PersistenceConfig.class, SecurityConfig.class, ServiceConfig.class, TaskConfig.class, MvcConfig.class})
 @EnableAutoConfiguration(exclude={FreeMarkerAutoConfiguration.class})
 //@SpringBootApplication
 public class Starter {

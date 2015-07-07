@@ -511,5 +511,48 @@ angular.module('common.controllers', ['common.services'])
         });
     });
 
-}]);
+}])
+
+.controller('AdminCtrl', ['$window', '$scope', '$mdToast', 'processingService', function($window, $scope, $mdToast, processingService) {
+
+    $scope.data = [];
+
+    $scope.refresh = function() {
+        processingService.runningFeedFetches()
+        .then(function(data) {
+            $scope.data = data;
+        });
+    };
+
+    $scope.loadMore = function() {
+        //TODO
+        $scope.refresh($scope.data.next());
+    };
+
+    $scope.openOrigin = function(item) {
+        $window.open(item.origin, '_blank');
+    };
+
+    $scope.$on('refresh', $scope.refresh);
+
+    $scope.$on('build-search-index', function() {
+        processingService.rebuildSearchIndex()
+        .then(function() {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content('started')
+                    .position('top right')
+            );
+        })
+        .catch(function(data) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content(data)
+                    .position('top right')
+            );
+        })
+    });
+
+    $scope.refresh();
+}])
 })();

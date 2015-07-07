@@ -1,5 +1,11 @@
 package org.springframework.test.web.servlet.request;
 
+import static myreader.test.KnownUser.ADMIN;
+import static myreader.test.KnownUser.USER1;
+import static myreader.test.KnownUser.USER2;
+import static myreader.test.KnownUser.USER3;
+import static myreader.test.KnownUser.USER4;
+
 import myreader.test.KnownUser;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,12 +16,6 @@ import spring.security.MyReaderUser;
 import java.util.Collections;
 import java.util.Set;
 
-import static myreader.test.KnownUser.ADMIN;
-import static myreader.test.KnownUser.USER1;
-import static myreader.test.KnownUser.USER2;
-import static myreader.test.KnownUser.USER3;
-import static myreader.test.KnownUser.USER4;
-
 /**
  * @author Kamill Sokol
  */
@@ -23,6 +23,10 @@ public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcR
 
     public static MockHttpServletRequestBuilder getAsAdmin(String urlTemplate, Object... urlVariables) {
         return actionAsUserX(HttpMethod.GET, ADMIN, urlTemplate, urlVariables);
+    }
+
+    public static MockHttpServletRequestBuilderWithJsonSupport putAsAdmin(String urlTemplate, Object... urlVariables) {
+        return actionAsUserX(HttpMethod.PUT, ADMIN, urlTemplate, urlVariables);
     }
 
     public static MockHttpServletRequestBuilder getAsUser1(String urlTemplate, Object... urlVariables) {

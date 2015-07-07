@@ -294,7 +294,48 @@ angular.module('common.api', [])
         }
     }
 })
+.service('feedsConverter', function() {
 
+    var Feeds = function(feeds, links) {
+        var self = this;
+        self.feeds = feeds;
+        self.links = angular.isArray(links) ? links : [];
+
+        var getLink = function(rel) {
+            if(rel) {
+                for(var i=0;i<links.length;i++) {
+                    if(links[i].rel === rel) {
+                        return links[i].href;
+                    }
+                }
+            }
+        };
+
+        self.next = function() {
+            return getLink('next');
+        };
+    };
+
+    return {
+        convertFrom: function (data) {
+            return new Feeds(data.content, data.links);
+        }
+    }
+})
+.service('searchIndexJobConverter', function() {
+
+    return {
+        convertFrom: function() {
+            return {};
+        },
+        convertTo: function (data) {
+            return {process: data};
+        },
+        convertError: function (data) {
+            return data;
+        }
+    }
+})
 .service('conversionService', function ($injector) {
     return {
         convertFrom: function (resourceType, data) {
@@ -332,6 +373,18 @@ angular.module('common.api', [])
             var converted = conversionService.convertTo(resourceType, data);
             var deferred = $q.defer();
             $http.post(url, converted)
+            .success(function (data) {
+                deferred.resolve(conversionService.convertFrom(resourceType, data));
+            })
+            .catch(function(error) {
+                deferred.reject(conversionService.convertError(resourceType, error));
+            });
+            return deferred.promise;
+        },
+        put: function(resourceType, url, data) {
+            var converted = conversionService.convertTo(resourceType, data);
+            var deferred = $q.defer();
+            $http.put(url, converted)
             .success(function (data) {
                 deferred.resolve(conversionService.convertFrom(resourceType, data));
             })

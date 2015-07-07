@@ -5,6 +5,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import myreader.config.CommonConfig;
+import myreader.config.PersistenceConfig;
+import myreader.config.ServiceConfig;
+import myreader.fetcher.FeedParser;
+import myreader.resource.config.ResourceConfig;
+import myreader.service.search.jobs.IndexSyncJob;
+import myreader.service.time.TimeService;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -19,18 +26,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-import myreader.config.PersistenceConfig;
-import myreader.config.TaskConfig;
-import myreader.fetcher.FeedParser;
-import myreader.resource.config.ResourceConfig;
-import myreader.service.search.jobs.IndexSyncJob;
-import myreader.service.time.TimeService;
-
 /**
  * @author Kamill Sokol
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CommonConfig.class, ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, TaskConfig.class})
+@ContextConfiguration(classes = {CommonConfig.class, ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, ServiceConfig.class})
 @WebAppConfiguration
 @TestPropertySource(properties = { "task.enabled = false" })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)

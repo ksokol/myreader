@@ -1,25 +1,16 @@
 package myreader.config;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
-import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
-import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.impl.HttpCallDecisionMaker;
 import myreader.fetcher.jobs.FeedListFetcherJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
-import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
-import myreader.repository.FetchStatisticRepository;
-import myreader.repository.SubscriptionEntryRepository;
-import myreader.repository.SubscriptionRepository;
-import myreader.service.time.TimeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -42,27 +33,13 @@ public class TaskConfig implements SchedulingConfigurer {
     @Autowired
     private FeedRepository feedRepository;
     @Autowired
-    private FeedParser feedParser;
-    @Autowired
-    private FetchStatisticRepository fetchStatisticRepository;
-    @Autowired
-    private FeedEntryRepository feedEntryRepository;
-    @Autowired
-    private SubscriptionRepository subscriptionRepository;
-    @Autowired
-    private SubscriptionEntryRepository subscriptionEntryRepository;
-    @Autowired
-    private TimeService timeService;
+    private SubscriptionBatch subscriptionBatch;
     @Autowired
     private Environment environment;
     @Qualifier(value = "customExecutor")
     @Autowired
     private Executor executor;
 
-    @Bean
-    public SubscriptionEntryBatch subscriptionEntryBatch() {
-        return new SubscriptionEntryBatch(feedEntryRepository, subscriptionRepository, subscriptionEntryRepository, timeService);
-    }
 
     @Override
     public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
@@ -82,10 +59,6 @@ public class TaskConfig implements SchedulingConfigurer {
         }
     }
 
-    private SubscriptionBatch subscriptionBatch() {
-        return new SubscriptionBatch(feedParser, feedRepository, fetchStatisticRepository, subscriptionEntryBatch(), subscriptionEntryRepository);
-    }
-
     private FeedListFetcherJob feedListFetcher() {
         return new FeedListFetcherJob(httpCallDecisionMaker, feedQueue, feedRepository);
     }
@@ -95,7 +68,7 @@ public class TaskConfig implements SchedulingConfigurer {
     }
 
     private SyndFetcherJob newSyndFetcherJob(String jobName) {
-        return new SyndFetcherJob(jobName, feedQueue, subscriptionBatch());
+        return new SyndFetcherJob(jobName, feedQueue, subscriptionBatch);
     }
 
 }

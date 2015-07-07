@@ -322,6 +322,43 @@
                 </button>
             </md-chips>
         </script>
+
+        <script type="text/ng-template" id="AdminActions">
+            <md-button class="md-icon-button" ng-hide="isInvisible('gt-md')" ng-click="openMenu()" aria-label="Menu">
+                <md-icon md-font-library="material-icons">menu</md-icon>
+            </md-button>
+            <h2>
+                <span></span>
+            </h2>
+            <span flex></span>
+
+
+            <md-button ng-hide="isInvisible()" class="md-icon-button" aria-label="Build search index" ng-click="broadcast('build-search-index')">
+                <md-icon md-font-library="material-icons">build</md-icon>
+            </md-button>
+            <md-button ng-hide="isInvisible()" class="md-icon-button" aria-label="Refresh" ng-click="broadcast('refresh')">
+                <md-icon md-font-library="material-icons">refresh</md-icon>
+            </md-button>
+        </script>
+
+        <script type="text/ng-template" id="Admin">
+            <md-list>
+                <md-list-item ng-click="openOrigin(feed)" md-no-ink class="md-2-line" ng-repeat="feed in data.feeds">
+                    <div layout="row">
+                        <div class="md-list-item-text">
+                            <div>
+                                <h3 class="my-entry-title" tabindex="-1">{{::feed.title | htmlEntities}}</h3>
+                                <h4>
+                                    {{::feed.createdAt | timeago}}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <md-divider></md-divider>
+                </md-list-item>
+            </md-list>
+        </script>
+
         <@script id="mobile"></@script>
     </body>
 </html>

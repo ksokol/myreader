@@ -145,6 +145,19 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'TopBarActionsCtrl'
                     }
                 }
+            })
+            .state('app.admin', {
+                url: "/admin",
+                views: {
+                    content: {
+                        templateUrl: 'Admin',
+                        controller: 'AdminCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'AdminActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
             });
         $urlRouterProvider.otherwise('/app/entry//');
 }])
