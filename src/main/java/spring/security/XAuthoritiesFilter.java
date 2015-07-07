@@ -1,7 +1,7 @@
 package spring.security;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -22,7 +22,7 @@ public class XAuthoritiesFilter extends GenericFilterBean {
     public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
-        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) request.getUserPrincipal();
+        AbstractAuthenticationToken token = (AbstractAuthenticationToken) request.getUserPrincipal();
 
         if(token != null && CollectionUtils.isNotEmpty(token.getAuthorities())) {
             final StringBuilder authorities = new StringBuilder(token.getAuthorities().size() * 10);
