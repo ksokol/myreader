@@ -1,8 +1,5 @@
 package myreader.fetcher;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import myreader.entity.ExclusionPattern;
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
@@ -13,9 +10,10 @@ import myreader.repository.FeedEntryRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.time.TimeService;
-
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -36,7 +34,6 @@ public class SubscriptionEntryBatch {
         this.timeService = timeService;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<SubscriptionEntry> updateUserSubscriptionEntries(Feed feed, List<FetcherEntry> fetchedEntries) {
         List<FetcherEntry> newEntries = new ArrayList<>();
         List<SubscriptionEntry> toIndex = new ArrayList<>();

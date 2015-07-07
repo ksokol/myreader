@@ -3,6 +3,7 @@ package myreader.fetcher.jobs;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -21,6 +22,7 @@ public class SyndFetcherJob extends BaseJob {
         this.subscriptionBatchService = subscriptionBatchService;
     }
 
+    @Transactional
     @Override
     public void work() {
         String feedUrl;
