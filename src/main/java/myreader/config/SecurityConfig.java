@@ -6,6 +6,7 @@ import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
 
 import myreader.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,18 +20,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+
 import spring.security.AjaxExceptionTranslationFilter;
-import spring.security.RoleBasedAuthenticationSuccessHandler;
 import spring.security.UserRepositoryUserDetailsService;
 import spring.security.XAuthoritiesFilter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Kamill Sokol
@@ -69,10 +66,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .antMatchers("/web/admin/**")
-                .hasRole("ADMIN")
-                .and()
                 .antMatcher("/**")
                 .authorizeRequests()
                 .anyRequest()
@@ -106,15 +99,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private AuthenticationSuccessHandler successHandler() {
         final SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-        successHandler.setRedirectStrategy(redirectStrategy());
+        successHandler.setDefaultTargetUrl("/reader");
         return successHandler;
-    }
-
-    private RedirectStrategy redirectStrategy() {
-        final Map<String, String> roleUrlMap = new HashMap<>();
-        roleUrlMap.put("ROLE_ADMIN", "/mobile/reader");
-        roleUrlMap.put("ROLE_USER", "/web/rss");
-        return new RoleBasedAuthenticationSuccessHandler(roleUrlMap);
     }
 
 }

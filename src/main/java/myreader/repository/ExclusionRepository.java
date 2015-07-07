@@ -2,12 +2,11 @@ package myreader.repository;
 
 import myreader.entity.ExclusionPattern;
 import myreader.entity.ExclusionSet;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-
-import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -19,9 +18,6 @@ public interface ExclusionRepository extends PagingAndSortingRepository<Exclusio
 
     @Query("select new myreader.entity.ExclusionSet(count(ep.id), sum(coalesce(ep.hitCount, 0)), s.id) from Subscription s left join s.exclusions ep where s.user.id = ?1 group by s")
     Page<ExclusionSet> findAllSetsByUser(Long userId, Pageable pageable);
-
-    @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.subscription.id = ?1 and ep.subscription.user.id = ?2")
-    List<ExclusionPattern> findAllSetsBySubscriptionAndUser(Long subscriptionId, Long userId);
 
     @Query(value = "select ep from ExclusionPattern ep join fetch ep.subscription where ep.subscription.id = ?1", countQuery = "select count(ep) from ExclusionPattern ep where ep.subscription.id = ?1")
     Page<ExclusionPattern> findBySubscriptionId(Long id, Pageable pageable);

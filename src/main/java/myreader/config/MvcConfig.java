@@ -3,15 +3,16 @@ package myreader.config;
 import static myreader.config.UrlMappings.JAWR_BIN;
 import static myreader.config.UrlMappings.JAWR_CSS;
 import static myreader.config.UrlMappings.JAWR_JS;
-import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGIN;
+import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
+import freemarker.JawrScriptTemplateDirectiveModel;
+import freemarker.JawrStyleTemplateDirectiveModel;
+import freemarker.LoginTemplateDirective;
+import freemarker.template.TemplateException;
+import myreader.config.jawr.CssConfigPropertiesSource;
+import myreader.config.jawr.JavascriptConfigPropertiesSource;
+import net.jawr.web.servlet.JawrSpringController;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,14 +27,11 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-import freemarker.JawrScriptTemplateDirectiveModel;
-import freemarker.JawrStyleTemplateDirectiveModel;
-import freemarker.LoginTemplateDirective;
-import freemarker.template.TemplateException;
-import myreader.config.jawr.CssConfigPropertiesSource;
-import myreader.config.jawr.JavascriptConfigPropertiesSource;
-import myreader.web.taglib.TagFunctions;
-import net.jawr.web.servlet.JawrSpringController;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Kamill Sokol
@@ -58,7 +56,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         registry.addViewController(LOGIN).setViewName("login");
 
         //deprecated
-        registry.addViewController("mobile/reader").setViewName("reader/mobile/index");
+        registry.addViewController("reader").setViewName("index");
     }
 
     @Override
@@ -77,7 +75,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         freeMarkerConfigurer.setTemplateLoaderPath("classpath:/templates/");
         Map<String, Object> m = new HashMap<>(5);
         m.put("login", new LoginTemplateDirective());
-        m.put("myreader", new TagFunctions());
 
         m.put("style", new JawrStyleTemplateDirectiveModel());
         m.put("script", new JawrScriptTemplateDirectiveModel());

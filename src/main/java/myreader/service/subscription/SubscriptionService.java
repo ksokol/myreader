@@ -7,7 +7,5 @@ import myreader.entity.Subscription;
  */
 public interface SubscriptionService {
 
-    Subscription findById(Long id);
-
     Subscription subscribe(Long userId, String url);
 }

@@ -8,7 +8,7 @@ import myreader.config.CommonConfig;
 import myreader.config.PersistenceConfig;
 import myreader.config.ServiceConfig;
 import myreader.fetcher.FeedParser;
-import myreader.resource.config.ResourceConfig;
+import myreader.config.ResourceConfig;
 import myreader.service.search.jobs.IndexSyncJob;
 import myreader.service.time.TimeService;
 

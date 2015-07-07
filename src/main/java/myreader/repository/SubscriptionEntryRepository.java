@@ -1,6 +1,5 @@
 package myreader.repository;
 
-import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 
 import org.springframework.data.domain.Page;
@@ -23,9 +22,6 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
 
     @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription where se.subscription.id = ?2 and se.subscription.user.id = ?1 and se.id <= ?3 order by se.id desc")
     Slice<SubscriptionEntry> findBySubscriptionAndUser(Long userId, Long subscriptionId, Long nextId, Pageable pageable);
-
-    @Query("select count(se) from SubscriptionEntry se where se.subscription = ?1 and se.seen = ?2")
-    int countBySeen(Subscription subscription, boolean flag);
 
     @Query("select se from SubscriptionEntry se join fetch se.subscription join fetch se.feedEntry where se.id = ?1")
     @Override

@@ -1,4 +1,4 @@
-package myreader.resource.config;
+package myreader.config;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 

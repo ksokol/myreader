@@ -46,7 +46,7 @@
                         </li>
                         <li>
                             <!-- TODO -->
-                            <md-button href="../web/logout">logout</md-button>
+                            <md-button href="logout">logout</md-button>
                         </li>
                     </ul>
                 </md-content>

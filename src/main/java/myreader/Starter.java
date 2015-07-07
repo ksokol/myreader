@@ -6,7 +6,7 @@ import myreader.config.PersistenceConfig;
 import myreader.config.SecurityConfig;
 import myreader.config.ServiceConfig;
 import myreader.config.TaskConfig;
-import myreader.resource.config.ResourceConfig;
+import myreader.config.ResourceConfig;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import java.io.File;
@@ -40,20 +39,6 @@ public class Starter {
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Starter.class, args);
-    }
-
-    @Bean
-    public ServletRegistrationBean web() {
-        DispatcherServlet dispatcherServlet = new DispatcherServlet();
-
-        XmlWebApplicationContext applicationContext = new XmlWebApplicationContext();
-        applicationContext.setConfigLocation("classpath:/META-INF/spring/webmvc-context.xml");
-        dispatcherServlet.setApplicationContext(applicationContext);
-
-        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(dispatcherServlet, "/");
-        servletRegistrationBean.setName("dispatcherServlet");
-
-        return servletRegistrationBean;
     }
 
     @Bean

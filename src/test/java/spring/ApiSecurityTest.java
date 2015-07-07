@@ -55,7 +55,7 @@ public class ApiSecurityTest extends SecurityTestSupport {
     public void testApi2Unauthorized() throws Exception {
         mockMvc.perform(get(API_2))
                 .andExpect(status().isFound())
-                .andExpect(header().string("Location", "http://localhost/web/login"));
+                .andExpect(header().string("Location", "http://localhost/login"));
     }
 
     @Test
