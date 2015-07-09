@@ -7,17 +7,16 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-
 import myreader.entity.Feed;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.impl.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
 import myreader.test.IntegrationTestSupport;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collections;
 
 /**
  * @author Kamill Sokol
@@ -48,7 +47,7 @@ public class FeedServiceTest extends IntegrationTestSupport {
 
     @Test
     public void testNewFeed() {
-        String feedUrl = "http://feeds.feedblitz.com/PetriKainulainen";
+        String feedUrl = "irrelevant";
         String feedTitle = "feed title";
 
         FetchResult fetchResult = new FetchResult(Collections.<FetcherEntry>emptyList(), "last modified", feedTitle);
