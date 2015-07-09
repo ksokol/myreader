@@ -1,0 +1,28 @@
+{
+  "links": [
+    {
+      "rel": "self",
+      "href": "/exclusions"
+    }
+  ],
+  "content": [
+    {
+      "uuid": "12",
+      "patternCount": 0,
+      "overallPatternHits": 0,
+      "links": []
+    },
+    {
+      "uuid": "13",
+      "patternCount": 0,
+      "overallPatternHits": 0,
+      "links": []
+    }
+  ],
+  "page": {
+    "size": 20,
+    "totalElements": 2,
+    "totalPages": 1,
+    "number": 0
+  }
+}
