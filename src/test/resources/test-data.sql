@@ -3,6 +3,11 @@ insert into user(user_id,user_email,user_password,user_role) values (1,'user1@lo
 insert into user(user_id,user_email,user_password,user_role) values (2,'user2@localhost','c81e728d9d4c2f636f067f89cc14862c','ROLE_USER');
 insert into user(user_id,user_email,user_password,user_role) values (3,'user3@localhost','eccbc87e4b5ce2fe28308fd9f2a7baf3','ROLE_USER');
 insert into user(user_id,user_email,user_password,user_role) values (4,'user4@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (100,'user100@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (101,'user101@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (102,'user102@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (103,'user103@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (104,'user104@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
 
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (0,'The Java Posse','http://feeds.feedburner.com/javaposse','Thu, 27 Mar 2014 13:23:32 GMT',282,'2011-04-15T22:20:46Z');
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (1,'dzone.com: latest front page','http://feeds.dzone.com/dzone/frontpage','Thu, 27 Mar 2014 14:11:00 GMT',30167,'2011-04-15T22:20:46Z');
@@ -23,6 +28,8 @@ INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,fe
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (16,'active questions tagged spring - Stack Overflow','http://stackoverflow.com/feeds/tag/spring','Thu, 27 Mar 2014 14:14:45 GMT',3337,'2012-12-13T16:15:20Z');
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (17,'SpringSource.org','http://www.springsource.org/node/feed','Tue, 24 Sep 2013 21:43:44 GMT',186,'2013-01-19T09:45:43Z');
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (18,'Atlassian Blogs','http://feeds.feedburner.com/AllAtlassianBlogs','Thu, 27 Mar 2014 13:53:36 GMT',142,'2014-03-07T21:07:33Z');
+
+INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (100,'Spiegel Online','http://www.spiegel.de/schlagzeilen/tops/index.rss','Thu, 27 Mar 2014 13:53:36 GMT',0,'2014-03-07T21:07:33Z');
 
 INSERT INTO entry (entry_id,entry_feed_id,entry_title,entry_guid,entry_url,entry_content,entry_created_at) values (1001,2,'Party time','756 at http://Use-The-Index-Luke.com','http://Use-The-Index-Luke.com/blog/2013-03/Party-Time','content','2013-09-05T03:03:14Z');
 INSERT INTO entry (entry_id,entry_feed_id,entry_title,entry_guid,entry_url,entry_content,entry_created_at) values (1002,2,'MySQL is to SQL like ??? to NoSQL','http://Use-The-Index-Luke.com','http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql','content','2013-10-01T10:10:02Z');
@@ -49,6 +56,10 @@ INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_t
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (13,0,'user3_subscription2','tagWith/Forward',3,15,'2011-04-15T19:20:46Z',1);
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (14,0,'user4_subscription1',null,4,15,'2011-04-15T19:20:46Z',2);
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (15,0,'user4_subscription2',null,4,15,'2011-04-15T19:20:46Z',6);
+
+INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (100,0,'user101_subscription1',null,101,0,'2011-04-15T19:20:46Z',100);
+INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (101,1,'user103_subscription1','tag1',103,15,'2011-04-15T19:20:46Z',0);
+INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (102,1,'user104_subscription1','tag1',104,0,'2011-04-15T19:20:46Z',0);
 
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1001,0,'tag1',3,1001,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1002,1,'tag1',3,1002,'2011-04-15T19:20:46Z');

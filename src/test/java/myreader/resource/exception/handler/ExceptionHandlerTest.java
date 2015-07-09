@@ -4,12 +4,13 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser100;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import myreader.service.time.TimeService;
 import myreader.test.IntegrationTestSupport;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,7 +26,7 @@ public class ExceptionHandlerTest extends IntegrationTestSupport {
     public void testRuntimeException() throws Exception {
         when(timeServiceMock.getCurrentTime()).thenThrow(new RuntimeException("exception")) ;
 
-        mockMvc.perform(postAsUser2("/subscriptions")
+        mockMvc.perform(postAsUser100("/subscriptions")
                 .json("{ 'origin': 'http://use-the-index-luke.com/blog/feed' }"))
                 .andExpect(jsonPath("status", is(500)))
                 .andExpect(jsonPath("message", is("exception")));

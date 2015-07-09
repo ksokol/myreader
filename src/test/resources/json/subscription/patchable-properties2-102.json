@@ -1,0 +1,10 @@
+{
+    "uuid": "102",
+    "title": "patch",
+    "tag": "patch",
+    "sum": 0,
+    "unseen": 1,
+    "createdAt": "2011-04-15T19:20:46Z",
+    "origin": "http://feeds.feedburner.com/javaposse",
+    "links": "${json-unit.ignore}"
+}

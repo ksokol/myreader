@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser102;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,20 +37,14 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void unseenGreaterThanMinusOne() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions?unseenGreaterThan=-1"))
+        mockMvc.perform(getAsUser2("/subscriptions?unseenGreaterThan=-1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("content..uuid", hasSize(5)));
+                .andExpect(jsonPath("content..uuid", hasSize(6)));
     }
 
     @Test
-    public void unseenGreaterThanZero() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions?unseenGreaterThan=0"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("content..uuid", hasSize(1)));
-    }
-    @Test
     public void unseenGreaterThanZeroOne() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions?unseenGreaterThan=1"))
+        mockMvc.perform(getAsUser2("/subscriptions?unseenGreaterThan=1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("content..uuid", hasSize(0)));
     }
@@ -92,7 +86,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
         when(timeServiceMock.getCurrentTime()).thenReturn(now);
 
-        mockMvc.perform(postAsUser2("/subscriptions")
+        mockMvc.perform(postAsUser102("/subscriptions")
                 .json("{ 'origin': 'http://use-the-index-luke.com/blog/feed' }"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/post-new-response.json"));

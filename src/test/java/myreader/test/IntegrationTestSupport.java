@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 import myreader.config.CommonConfig;
 import myreader.config.PersistenceConfig;
+import myreader.config.ResourceConfig;
 import myreader.config.ServiceConfig;
 import myreader.fetcher.FeedParser;
-import myreader.config.ResourceConfig;
 import myreader.service.search.jobs.IndexSyncJob;
 import myreader.service.time.TimeService;
 
@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -33,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration(classes = {CommonConfig.class, ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, ServiceConfig.class})
 @WebAppConfiguration
 @TestPropertySource(properties = { "task.enabled = false" })
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class IntegrationTestSupport {
 
 	static {

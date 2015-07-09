@@ -42,36 +42,36 @@ public class SubscriptionEntryBatchServiceImplTest extends IntegrationTestSuppor
 
     @Test
     public void testUpdateUserSubscriptionEntries() {
-        Feed beforeFeed = feedRepository.findOne(2L);
-        Subscription beforeSubscription = subscriptionRepository.findOne(3L);
+        Feed beforeFeed = feedRepository.findOne(100L);
+        Subscription beforeSubscription = subscriptionRepository.findOne(100L);
 
         Page<FeedEntry> beforeFeedEntries = feedEntryRepository.findByFeedId(beforeFeed.getId(), new PageRequest(1,10));
         Slice<SubscriptionEntry> beforeSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
                 beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
 
         assertThat(beforeFeed.getUrl(), is(beforeSubscription.getFeed().getUrl()));
-        assertThat(beforeFeedEntries.getTotalElements(), is(3L));
-        assertThat(beforeSubscriptionEntries.getContent(), hasSize(2));
+        assertThat(beforeFeedEntries.getTotalElements(), is(0L));
+        assertThat(beforeSubscriptionEntries.getContent(), hasSize(0));
         assertThat(beforeFeed.getUrl(), is(beforeSubscription.getFeed().getUrl()));
         assertThat(beforeSubscription.getUnseen(), is(0));
-        assertThat(beforeSubscription.getSum(), is(25));
+        assertThat(beforeSubscription.getSum(), is(0));
 
-        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeFeed, Arrays.asList(fetcherEntry(2L)));
-        assertThat(subscriptionEntries.size(), is(2));
+        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeFeed, Arrays.asList(fetcherEntry()));
+        assertThat(subscriptionEntries.size(), is(1));
 
-        Page<FeedEntry> afterFeedEntries = feedEntryRepository.findByFeedId(2L, new PageRequest(0,10));
-        assertThat(afterFeedEntries.getTotalElements(), is(4L));
+        Page<FeedEntry> afterFeedEntries = feedEntryRepository.findByFeedId(100L, new PageRequest(0,10));
+        assertThat(afterFeedEntries.getTotalElements(), is(1L));
 
         Slice<SubscriptionEntry> afterSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
                 beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
 
-        Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(3L);
-        assertThat(afterSubscriptionEntries.getContent(), hasSize(3));
+        Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(100L);
+        assertThat(afterSubscriptionEntries.getContent(), hasSize(1));
         assertThat(afterSubscriptionClearedEm.getUnseen(), is(1));
-        assertThat(afterSubscriptionClearedEm.getSum(), is(26));
+        assertThat(afterSubscriptionClearedEm.getSum(), is(1));
     }
 
-    private FetcherEntry fetcherEntry(Long id) {
+    private FetcherEntry fetcherEntry() {
         FetcherEntry fetcherEntry = new FetcherEntry();
         fetcherEntry.setTitle("title");
         fetcherEntry.setUrl("url");

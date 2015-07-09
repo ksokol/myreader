@@ -14,6 +14,8 @@ import org.junit.Test;
  */
 public class ExclusionPatternEntityResourceTest extends IntegrationTestSupport {
 
+    
+
     @Test
     public void testEntityResourceForUser1JsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser1("/exclusions/1/pattern/0"))

@@ -1,7 +1,7 @@
 {
-    "uuid": "1",
-    "title": "user1_subscription1",
-    "tag": "test1",
+    "uuid": "101",
+    "title": "test2",
+    "tag": "test2",
     "sum": 15,
     "unseen": 1,
     "origin": "http://feeds.feedburner.com/javaposse",
