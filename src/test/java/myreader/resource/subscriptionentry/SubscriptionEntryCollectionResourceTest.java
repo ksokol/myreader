@@ -6,17 +6,21 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import myreader.test.IntegrationTestSupport;
 
+import myreader.test.KnownUser;
 import org.junit.Test;
+import org.springframework.http.HttpMethod;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -200,11 +204,11 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
 
     @Test
     public void testBatchPatch2() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptionEntries"))
-                .andExpect(jsonEquals("json/subscriptionentry/structure.json"));
+        mockMvc.perform(actionAsUserX(HttpMethod.GET, KnownUser.USER107, "/subscriptionEntries"))
+                .andExpect(jsonEquals("json/subscriptionentry/user107-subscriptionEntries.json"));
 
-        mockMvc.perform(patchAsUser1("/subscriptionEntries")
-                .json("{ 'content': [{ 'uuid': '1002', 'seen': false }, { 'uuid': '1001', 'seen': 'true' }]}"))
+        mockMvc.perform(actionAsUserX(HttpMethod.PATCH, KnownUser.USER107, "/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1016', 'seen': false }, { 'uuid': '1017', 'seen': 'true' }]}"))
                 .andExpect(jsonPath("content[0].seen", is(false)))
                 .andExpect(jsonPath("content[1].seen", is(true)));
     }
