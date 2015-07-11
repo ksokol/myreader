@@ -1,7 +1,12 @@
 package myreader.resource.subscriptionentry;
 
+import static myreader.test.KnownUser.USER105;
+import static myreader.test.KnownUser.USER106;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
@@ -86,46 +91,45 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
 
     @Test
     public void testPatchSeen3() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findOne(1004L);
+        SubscriptionEntry before = subscriptionEntryRepository.findOne(1014L);
         assertThat(before.isSeen(), is(true));
-        assertThat(subscriptionRepository.findOne(7L).getUnseen(), is(0));
+        assertThat(subscriptionRepository.findOne(13L).getUnseen(), is(0));
 
-        mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
+        mockMvc.perform(actionAsUserX(GET, USER105, "/subscriptionEntries/1014"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscriptionentry/4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/1014.json"));
 
-        mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")
+        mockMvc.perform(actionAsUserX(PATCH, USER105, "/subscriptionEntries/1014")
                 .json("{'seen':true}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscriptionentry/4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/patch2#1014.json"));
 
-        mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
+        mockMvc.perform(actionAsUserX(GET, USER105, "/subscriptionEntries/1014"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscriptionentry/4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/patch2#1014.json"));
 
-        SubscriptionEntry after = subscriptionEntryRepository.findOne(1004L);
+        SubscriptionEntry after = subscriptionEntryRepository.findOne(1014L);
         assertThat(after.isSeen(), is(true));
-        assertThat(subscriptionRepository.findOne(7L).getUnseen(), is(0));
+        assertThat(subscriptionRepository.findOne(13L).getUnseen(), is(0));
     }
 
     @Test
     public void testPatchTag() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findOne(1004L);
+        SubscriptionEntry before = subscriptionEntryRepository.findOne(1015L);
         assertThat(before.getTag(), is("tag3"));
 
-        mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
+        mockMvc.perform(actionAsUserX(GET, USER106, "/subscriptionEntries/1015"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscriptionentry/4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/1015.json"));
 
-        mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")
+        mockMvc.perform(actionAsUserX(PATCH, USER106, "/subscriptionEntries/1015")
                 .json("{'tag':'tag-patched'}"))
-                .andExpect(jsonEquals("json/subscriptionentry/patch2#4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/patch2#1015.json"));
 
-        mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
+        mockMvc.perform(actionAsUserX(GET, USER106,"/subscriptionEntries/1015"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscriptionentry/patch2#4.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/patch2#1015.json"));
 
-        SubscriptionEntry after = subscriptionEntryRepository.findOne(1004L);
+        SubscriptionEntry after = subscriptionEntryRepository.findOne(1015L);
         assertThat(after.getTag(), is("tag-patched"));
     }
 

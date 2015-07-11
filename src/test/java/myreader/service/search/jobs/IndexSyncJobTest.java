@@ -1,6 +1,6 @@
 package myreader.service.search.jobs;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import myreader.entity.SubscriptionEntry;
@@ -14,7 +14,6 @@ import java.util.List;
 /**
  * @author Kamill Sokol
  */
-//@Ignore
 public class IndexSyncJobTest extends IntegrationTestSupport {
 
 	@Autowired
@@ -23,8 +22,8 @@ public class IndexSyncJobTest extends IntegrationTestSupport {
 	private SubscriptionEntryRepository subscriptionEntryRepository;
 
 	@Test
-	public void testReindexAllSubscriptionEntriesDifferentPageSize() {
-		assertThat(allSearchEntries(), hasSize(13));
+	public void testReindexAllSubscriptionEntries() {
+        int sizeBefore = allSearchEntries().size();
 
 		addSubscriptionEntry();
 		addSubscriptionEntry();
@@ -32,7 +31,9 @@ public class IndexSyncJobTest extends IntegrationTestSupport {
 
 		indexSyncJob.run();
 
-		assertThat(allSearchEntries(), hasSize(16));
+        int sizeAfter = allSearchEntries().size();
+
+        assertThat(sizeBefore, is(sizeAfter - 3));
 	}
 
 

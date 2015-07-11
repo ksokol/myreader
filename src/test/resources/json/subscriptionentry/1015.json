@@ -1,12 +1,12 @@
 {
-    "uuid": "1004",
+    "uuid": "1015",
     "title": "MySQL is to SQL like ??? to NoSQL",
-    "feedTitle": "user2_subscription2",
-    "tag": "tag-patched",
+    "feedTitle": "user106_subscription1",
+    "tag": "tag3",
     "content": "content",
     "seen": true,
     "feedTag": "tag1",
-    "feedUuid": "7",
+    "feedUuid": "104",
     "origin": "http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql",
     "createdAt": "2011-04-15T19:20:46Z",
     "links": "${json-unit.ignore}"
