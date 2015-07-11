@@ -32,7 +32,6 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration(classes = {CommonConfig.class, ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, ServiceConfig.class})
 @WebAppConfiguration
 @TestPropertySource(properties = { "task.enabled = false" })
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class IntegrationTestSupport {
 
 	static {

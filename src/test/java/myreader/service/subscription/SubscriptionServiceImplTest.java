@@ -1,5 +1,12 @@
 package myreader.service.subscription;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.mockito.Mockito.when;
+
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
@@ -10,17 +17,12 @@ import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
 import myreader.test.IntegrationTestSupport;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Kamill Sokol
@@ -37,6 +39,9 @@ public class SubscriptionServiceImplTest extends IntegrationTestSupport {
     private UserRepository userRepository;
     @Autowired
     private FeedParser feedParserMock;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Test(expected = SubscriptionExistException.class)
     public void testExpectedSubscriptionExistException() {
@@ -68,6 +73,22 @@ public class SubscriptionServiceImplTest extends IntegrationTestSupport {
         assertThat(newSubscription.getFeed().getUrl(), is(newFeed.getUrl()));
         assertThat(newSubscription, hasProperty("title", is(feedTitle)));
         assertThat(newSubscription, hasProperty("user", is(user)));
+    }
+
+    @Test
+    public void testNewFeedUnknownUser() {
+        User user = new User();
+        user.setId(-99L);
+        String feedUrl = "http://feeds.feedblitz.com/PetriKainulainen";
+        String feedTitle = "feed title";
+
+        FetchResult fetchResult = new FetchResult(Collections.<FetcherEntry>emptyList(), "last modified", feedTitle);
+        when(feedParserMock.parse(feedUrl)).thenReturn(fetchResult);
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("user with uuid [-99] not found");
+
+        uut.subscribe(user.getId(), feedUrl);
     }
 
 }

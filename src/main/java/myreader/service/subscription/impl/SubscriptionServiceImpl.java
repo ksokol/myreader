@@ -45,7 +45,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         User user = userRepository.findOne(userId);
 
         if(user == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("user with uuid [" + userId + "] not found");
         }
 
         Subscription subscription = new Subscription();
