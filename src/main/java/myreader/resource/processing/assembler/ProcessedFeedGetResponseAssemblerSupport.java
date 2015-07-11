@@ -3,15 +3,15 @@ package myreader.resource.processing.assembler;
 import myreader.entity.Feed;
 import myreader.resource.processing.beans.ProcessedFeedGetResponse;
 import org.springframework.stereotype.Component;
-import spring.hateoas.AbstractResourceAssembler;
+import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class ProcessedFeedGetResponseAssembler extends AbstractResourceAssembler<Feed, ProcessedFeedGetResponse> {
+public class ProcessedFeedGetResponseAssemblerSupport extends ResourceAssemblerSupport<Feed, ProcessedFeedGetResponse> {
 
-    public ProcessedFeedGetResponseAssembler() {
+    public ProcessedFeedGetResponseAssemblerSupport() {
         super(Feed.class, ProcessedFeedGetResponse.class);
     }
 

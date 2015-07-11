@@ -13,13 +13,13 @@ import myreader.entity.User;
  */
 public class UserGetResponseAssemblerTest {
 
-    private UserGetResponseAssembler uut;
+    private UserGetResponseAssemblerSupport uut;
 
     @Before
     public void setUp() throws Exception {
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockHttpServletRequest));
-        uut = new UserGetResponseAssembler();
+        uut = new UserGetResponseAssemblerSupport();
     }
 
     @Test

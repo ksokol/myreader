@@ -3,15 +3,15 @@ package myreader.resource.exclusionpattern.assembler;
 import myreader.entity.ExclusionPattern;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import org.springframework.stereotype.Component;
-import spring.hateoas.AbstractResourceAssembler;
+import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class ExclusionPatternGetResponseAssembler extends AbstractResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> {
+public class ExclusionPatternGetResponseAssemblerSupport extends ResourceAssemblerSupport<ExclusionPattern, ExclusionPatternGetResponse> {
 
-    public ExclusionPatternGetResponseAssembler() {
+    public ExclusionPatternGetResponseAssemblerSupport() {
         super(ExclusionPattern.class, ExclusionPatternGetResponse.class);
     }
 

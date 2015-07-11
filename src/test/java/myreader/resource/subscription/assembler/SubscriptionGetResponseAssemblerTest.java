@@ -13,13 +13,13 @@ import myreader.entity.Subscription;
  */
 public class SubscriptionGetResponseAssemblerTest {
 
-    private SubscriptionGetResponseAssembler uut;
+    private SubscriptionGetResponseAssemblerSupport uut;
 
     @Before
     public void setUp() throws Exception {
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockHttpServletRequest));
-        uut = new SubscriptionGetResponseAssembler();
+        uut = new SubscriptionGetResponseAssemblerSupport();
     }
 
     @Test

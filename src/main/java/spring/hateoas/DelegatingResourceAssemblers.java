@@ -20,11 +20,11 @@ import java.util.List;
 @Component
 public class DelegatingResourceAssemblers implements ResourceAssemblers {
 
-    private final List<AbstractResourceAssembler> delegates;
+    private final List<ResourceAssemblerSupport> delegates;
     private final PagedResourcesAssembler pagedResourcesAssembler;
 
     @Autowired
-    public DelegatingResourceAssemblers(List<AbstractResourceAssembler> delegates, PagedResourcesAssembler pagedResourcesAssembler) {
+    public DelegatingResourceAssemblers(List<ResourceAssemblerSupport> delegates, PagedResourcesAssembler pagedResourcesAssembler) {
         Assert.notNull(delegates, "delegates is null");
         Assert.notNull(pagedResourcesAssembler, "pagedResourcesAssembler is null");
         this.delegates = delegates;
@@ -62,8 +62,8 @@ public class DelegatingResourceAssemblers implements ResourceAssemblers {
         return pagedResourcesAssembler.toResource(sequence, resourceAssembler);
     }
 
-    private AbstractResourceAssembler getResourceAssemblerFor(Class<?> inputClass, Class<?> outputClass) {
-        for (AbstractResourceAssembler delegate : delegates) {
+    private ResourceAssemblerSupport getResourceAssemblerFor(Class<?> inputClass, Class<?> outputClass) {
+        for (ResourceAssemblerSupport delegate : delegates) {
             if(delegate.supports(inputClass, outputClass)) {
                 return delegate;
             }

@@ -9,10 +9,10 @@ import org.springframework.hateoas.ResourceSupport;
 /**
  * @author Kamill Sokol
  */
-public class AbstractResourceAssemblerTest {
+public class ResourceAssemblerSupportTest {
 
-    TestAbstractResourceAssembler uut1 = new TestAbstractResourceAssembler(Integer.class, Long.class);
-    TestAbstractResourceAssembler uut2 = new TestAbstractResourceAssembler(Long.class, Integer.class);
+    private TestResourceAssemblerSupportSupport uut1 = new TestResourceAssemblerSupportSupport(Integer.class, Long.class);
+    private TestResourceAssemblerSupportSupport uut2 = new TestResourceAssemblerSupportSupport(Long.class, Integer.class);
 
     @Test
     public void testSupportsRightInputClassOutputClass() throws Exception {
@@ -37,9 +37,9 @@ public class AbstractResourceAssemblerTest {
         assertThat(uut1.supports(Object.class, Object.class), is(false));
     }
 
-    static class TestAbstractResourceAssembler extends AbstractResourceAssembler {
+    static class TestResourceAssemblerSupportSupport extends ResourceAssemblerSupport {
 
-        protected TestAbstractResourceAssembler(Class inputClass, Class outputClass) {
+        protected TestResourceAssemblerSupportSupport(Class inputClass, Class outputClass) {
             super(inputClass, outputClass);
         }
 

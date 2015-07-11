@@ -5,13 +5,13 @@ import org.springframework.stereotype.Component;
 
 import myreader.entity.SubscriptionEntry;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import spring.hateoas.AbstractResourceAssembler;
+import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class SubscriptionEntryGetResponseConverter extends AbstractResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> implements Converter<SubscriptionEntry, SubscriptionEntryGetResponse> {
+public class SubscriptionEntryGetResponseConverter extends ResourceAssemblerSupport<SubscriptionEntry, SubscriptionEntryGetResponse> implements Converter<SubscriptionEntry, SubscriptionEntryGetResponse> {
 
     public SubscriptionEntryGetResponseConverter() {
         super(SubscriptionEntry.class, SubscriptionEntryGetResponse.class);

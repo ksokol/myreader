@@ -8,12 +8,12 @@ import org.springframework.util.Assert;
  * @author Kamill Sokol
  */
 @Deprecated
-public abstract class AbstractResourceAssembler<T, D extends ResourceSupport> implements ResourceAssembler<T, D> {
+public abstract class ResourceAssemblerSupport<T, D extends ResourceSupport> implements ResourceAssembler<T, D> {
 
     private final Class<T> inputClass;
     private final Class<D> outputClass;
 
-    protected AbstractResourceAssembler(Class<T> inputClass, Class<D> outputClass) {
+    protected ResourceAssemblerSupport(Class<T> inputClass, Class<D> outputClass) {
         Assert.notNull(inputClass);
         Assert.notNull(outputClass);
 

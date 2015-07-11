@@ -45,7 +45,7 @@ public class DelegatingResourceAssemblersTest {
 
     @Before
     public void before() {
-        AbstractResourceAssembler mock = mock(AbstractResourceAssembler.class);
+        ResourceAssemblerSupport mock = mock(ResourceAssemblerSupport.class);
         when(mock.supports(Object.class, Object.class)).thenReturn(true);
         uut = new DelegatingResourceAssemblers(Arrays.asList(mock), new PagedResourcesAssembler());
     }
@@ -91,7 +91,7 @@ public class DelegatingResourceAssemblersTest {
     public void testToResourceException() {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage(is("Cannot determine resource assembler for java.lang.Class -> java.lang.Object!"));
-        uut = new DelegatingResourceAssemblers(Collections.<AbstractResourceAssembler>emptyList(), new PagedResourcesAssembler());
+        uut = new DelegatingResourceAssemblers(Collections.<ResourceAssemblerSupport>emptyList(), new PagedResourcesAssembler());
         uut.toResource(Object.class, Object.class);
     }
 

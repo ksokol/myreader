@@ -3,15 +3,15 @@ package myreader.resource.exclusionset.assembler;
 import myreader.entity.ExclusionSet;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
 import org.springframework.stereotype.Component;
-import spring.hateoas.AbstractResourceAssembler;
+import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class ExclusionSetGetResponseAssembler extends AbstractResourceAssembler<ExclusionSet, ExclusionSetGetResponse> {
+public class ExclusionSetGetResponseAssemblerSupport extends ResourceAssemblerSupport<ExclusionSet, ExclusionSetGetResponse> {
 
-    public ExclusionSetGetResponseAssembler() {
+    public ExclusionSetGetResponseAssemblerSupport() {
         super(ExclusionSet.class, ExclusionSetGetResponse.class);
     }
 

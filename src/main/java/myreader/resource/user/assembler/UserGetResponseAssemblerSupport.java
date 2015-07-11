@@ -4,15 +4,15 @@ import org.springframework.stereotype.Component;
 
 import myreader.entity.User;
 import myreader.resource.user.beans.UserGetResponse;
-import spring.hateoas.AbstractResourceAssembler;
+import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class UserGetResponseAssembler extends AbstractResourceAssembler<User,UserGetResponse> {
+public class UserGetResponseAssemblerSupport extends ResourceAssemblerSupport<User,UserGetResponse> {
 
-    public UserGetResponseAssembler() {
+    public UserGetResponseAssemblerSupport() {
         super(User.class, UserGetResponse.class);
     }
 
