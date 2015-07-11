@@ -1,7 +1,6 @@
 package myreader.service.search.jobs;
 
-import javax.persistence.EntityManager;
-
+import myreader.entity.SubscriptionEntry;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.ScrollMode;
@@ -16,8 +15,9 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.Assert;
 
-import myreader.entity.SubscriptionEntry;
+import javax.persistence.EntityManager;
 
 /**
  * TODO IndexSyncJob and SyndFetcherJob should be running exclusively. this prevents duplicate entries in index
@@ -28,7 +28,7 @@ public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosed
 
     private static final Logger LOG = LoggerFactory.getLogger(IndexSyncJob.class);
 
-    private static final int BATCH_SIZE = 100;
+    private int batchSize = 100;
 
     private final TransactionTemplate transactionTemplate;
     private final EntityManager em;
@@ -61,13 +61,13 @@ public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosed
             fullTextSession.setCacheMode(CacheMode.IGNORE);
             fullTextSession.purgeAll(SubscriptionEntry.class);
             //Scrollable results will avoid loading too many objects in memory
-            ScrollableResults results = fullTextSession.createCriteria(SubscriptionEntry.class).setFetchSize(BATCH_SIZE).scroll(ScrollMode.FORWARD_ONLY);
+            ScrollableResults results = fullTextSession.createCriteria(SubscriptionEntry.class).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
             int index = 0;
             while (results.next() && alive) {
                 index++;
                 fullTextSession.index(results.get(0)); //index each element
 
-                if (index % BATCH_SIZE == 0) {
+                if (index % batchSize == 0) {
                     LOG.info("index {} items", index);
                     fullTextSession.flushToIndexes(); //apply changes to indexes
                     fullTextSession.clear(); //free memory since the queue is processed
@@ -87,5 +87,10 @@ public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosed
     public void onApplicationEvent(ContextClosedEvent event) {
         LOG.info("got stop signal");
         alive = false;
+    }
+
+    public void setBatchSize(final int batchSize) {
+        Assert.isTrue(batchSize > 0, "batchSize less than 1");
+        this.batchSize = batchSize;
     }
 }
