@@ -1,15 +1,15 @@
 insert into user(user_id,user_email,user_password,user_role) values (0,'user0@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_ADMIN');
-insert into user(user_id,user_email,user_password,user_role) values (1,'user1@localhost','c4ca4238a0b923820dcc509a6f75849b','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (2,'user2@localhost','c81e728d9d4c2f636f067f89cc14862c','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (3,'user3@localhost','eccbc87e4b5ce2fe28308fd9f2a7baf3','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (4,'user4@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (100,'user100@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (101,'user101@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (102,'user102@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (103,'user103@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (104,'user104@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (105,'user105@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (106,'user106@localhost','a87ff679a2f3e71d9181a67b7542122c','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (1,'user1@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (2,'user2@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (3,'user3@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (4,'user4@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (100,'user100@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (101,'user101@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (102,'user102@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (103,'user103@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (104,'user104@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (105,'user105@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (106,'user106@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
 
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (0,'The Java Posse','http://feeds.feedburner.com/javaposse','Thu, 27 Mar 2014 13:23:32 GMT',282,'2011-04-15T22:20:46Z');
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (1,'dzone.com: latest front page','http://feeds.dzone.com/dzone/frontpage','Thu, 27 Mar 2014 14:11:00 GMT',30167,'2011-04-15T22:20:46Z');
