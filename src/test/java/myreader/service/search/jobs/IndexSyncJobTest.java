@@ -67,7 +67,7 @@ public class IndexSyncJobTest extends IntegrationTestSupport {
     public void testCatchedException() {
         final TransactionTemplate mockTransactionalTemplate = mock(TransactionTemplate.class);
         when(mockTransactionalTemplate.execute(any(TransactionCallback.class))).thenThrow(new RuntimeException("junit"));
-        final IndexSyncJob indexSyncJob = new IndexSyncJob(null, mockTransactionalTemplate);
+        final IndexSyncJob indexSyncJob = new IndexSyncJob("junit", null, mockTransactionalTemplate);
 
         try {
             indexSyncJob.run();
@@ -99,7 +99,7 @@ public class IndexSyncJobTest extends IntegrationTestSupport {
         when(mockCriteria.scroll(ScrollMode.FORWARD_ONLY)).thenReturn(mockScrollableResults);
         when(mockScrollableResults.next()).thenReturn(true, false);
 
-        final IndexSyncJob uut = new IndexSyncJob(spyEm, new TransactionTemplate(transactionManager));
+        final IndexSyncJob uut = new IndexSyncJob("junit", spyEm, new TransactionTemplate(transactionManager));
         uut.onApplicationEvent(new ContextClosedEvent(applicationContext));
 
         addSubscriptionEntry();

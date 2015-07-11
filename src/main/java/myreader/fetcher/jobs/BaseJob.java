@@ -10,7 +10,7 @@ import org.springframework.util.StopWatch;
 /**
  * @author Kamill Sokol
  */
-abstract class BaseJob implements Runnable, ApplicationListener<ContextClosedEvent> {
+public abstract class BaseJob implements Runnable, ApplicationListener<ContextClosedEvent> {
 
     private final String jobName;
     private String swap;
@@ -24,7 +24,7 @@ abstract class BaseJob implements Runnable, ApplicationListener<ContextClosedEve
         log = LoggerFactory.getLogger(jobName);
     }
 
-    abstract void work();
+    public abstract void work();
 
     @Override
     public final void run() {
@@ -36,6 +36,8 @@ abstract class BaseJob implements Runnable, ApplicationListener<ContextClosedEve
         try {
             timer.start();
             work();
+        } catch(Exception e) {
+            log.warn("caught ", e.getMessage());
         } finally {
             timer.stop();
             log.info("total time {} sec", timer.getTotalTimeSeconds());

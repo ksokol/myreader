@@ -27,7 +27,7 @@ public class PersistenceConfig {
 
     @Bean
     public IndexSyncJob indexSyncJob(EntityManager em, PlatformTransactionManager transactionManager) {
-        return new IndexSyncJob(em, new TransactionTemplate(transactionManager));
+        return new IndexSyncJob("indexSyncJob", em, new TransactionTemplate(transactionManager));
     }
 
 }

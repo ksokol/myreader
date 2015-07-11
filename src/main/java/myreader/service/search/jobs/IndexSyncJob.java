@@ -1,6 +1,7 @@
 package myreader.service.search.jobs;
 
 import myreader.entity.SubscriptionEntry;
+import myreader.fetcher.jobs.BaseJob;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.ScrollMode;
@@ -10,7 +11,6 @@ import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -24,7 +24,7 @@ import javax.persistence.EntityManager;
  *
  * @author Kamill Sokol
  */
-public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosedEvent> {
+public class IndexSyncJob extends BaseJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(IndexSyncJob.class);
 
@@ -35,21 +35,14 @@ public class IndexSyncJob implements Runnable, ApplicationListener<ContextClosed
 
     private volatile boolean alive = true;
 
-    public IndexSyncJob(EntityManager em, TransactionTemplate transactionTemplate) {
+    public IndexSyncJob(String jobName, EntityManager em, TransactionTemplate transactionTemplate) {
+        super(jobName);
         this.em = em;
         this.transactionTemplate = transactionTemplate;
     }
 
-	@Override
-	public void run() {
-		try {
-			runInternal();
-		} catch (Exception e) {
-			LOG.error("error during index sync", e);
-		}
-	}
-
-    private void runInternal() {
+    @Override
+    public void work() {
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
