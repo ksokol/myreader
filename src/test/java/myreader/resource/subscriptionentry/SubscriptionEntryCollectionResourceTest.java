@@ -12,12 +12,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import myreader.test.IntegrationTestSupport;
-
 import myreader.test.KnownUser;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
@@ -194,12 +192,15 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
 
     @Test
     public void testBatchPatch() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptionEntries"))
-                .andExpect(jsonEquals("json/subscriptionentry/structure.json"));
+        mockMvc.perform(actionAsUserX(HttpMethod.GET, KnownUser.USER108, "/subscriptionEntries"))
+                .andExpect(jsonEquals("json/subscriptionentry/user108-subscriptionEntries.json"));
 
-        mockMvc.perform(patchAsUser1("/subscriptionEntries")
-                .json("{ 'content': [{ 'uuid': '1002', 'seen': false }, { 'uuid': '1001', 'tag': '1001tag' }]}"))
-                .andExpect(jsonEquals("json/subscriptionentry/patch-batch-response.json"));
+        mockMvc.perform(actionAsUserX(HttpMethod.PATCH, KnownUser.USER108, "/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1018', 'seen': false }, { 'uuid': '1019', 'tag': '1001tag' }]}"))
+                .andExpect(jsonPath("content[0].tag", is("tag3")))
+                .andExpect(jsonPath("content[1].tag", is("1001tag")))
+                .andExpect(jsonPath("content[0].seen", is(false)))
+                .andExpect(jsonPath("content[1].seen", is(false)));
     }
 
     @Test
