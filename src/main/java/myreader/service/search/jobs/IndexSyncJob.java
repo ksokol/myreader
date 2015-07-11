@@ -11,7 +11,6 @@ import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -32,8 +31,6 @@ public class IndexSyncJob extends BaseJob {
 
     private final TransactionTemplate transactionTemplate;
     private final EntityManager em;
-
-    private volatile boolean alive = true;
 
     public IndexSyncJob(String jobName, EntityManager em, TransactionTemplate transactionTemplate) {
         super(jobName);
@@ -74,12 +71,6 @@ public class IndexSyncJob extends BaseJob {
             LOG.info("end");
             }
         });
-    }
-
-    @Override
-    public void onApplicationEvent(ContextClosedEvent event) {
-        LOG.info("got stop signal");
-        alive = false;
     }
 
     public void setBatchSize(final int batchSize) {
