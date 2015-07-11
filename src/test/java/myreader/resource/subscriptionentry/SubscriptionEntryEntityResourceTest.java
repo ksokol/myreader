@@ -2,14 +2,13 @@ package myreader.resource.subscriptionentry;
 
 import static myreader.test.KnownUser.USER105;
 import static myreader.test.KnownUser.USER106;
+import static myreader.test.KnownUser.USER110;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser2;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -71,22 +70,22 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
 
     @Test
     public void testPatchSeen2() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findOne(1001L);
+        SubscriptionEntry before = subscriptionEntryRepository.findOne(1022L);
         assertThat(before.isSeen(), is(false));
-        assertThat(subscriptionRepository.findOne(3L).getUnseen(), is(0));
+        assertThat(subscriptionRepository.findOne(108L).getUnseen(), is(0));
 
-        mockMvc.perform(getAsUser1("/subscriptionEntries/1001"))
+        mockMvc.perform(actionAsUserX(GET, USER110, "/subscriptionEntries/1022"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscriptionentry/1001.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/1022.json"));
 
-        mockMvc.perform(patchAsUser1("/subscriptionEntries/1001")
+        mockMvc.perform(actionAsUserX(PATCH, USER110, "/subscriptionEntries/1022")
                 .json("{'seen':true}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscriptionentry/patch1#1001.json"));
+                .andExpect(jsonEquals("json/subscriptionentry/patch1#1022.json"));
 
-        SubscriptionEntry after = subscriptionEntryRepository.findOne(1001L);
+        SubscriptionEntry after = subscriptionEntryRepository.findOne(1022L);
         assertThat(after.isSeen(), is(true));
-        assertThat(subscriptionRepository.findOne(3L).getUnseen(), is(-1));
+        assertThat(subscriptionRepository.findOne(108L).getUnseen(), is(-1));
     }
 
     @Test

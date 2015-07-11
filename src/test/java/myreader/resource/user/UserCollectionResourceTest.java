@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsAdmin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,7 +20,6 @@ public class UserCollectionResourceTest extends IntegrationTestSupport {
     public void givenAdminIsAuthenticated_whenCallsCollectionResource_thenAllThreeUsersShouldBeReturned() throws Exception {
        mockMvc.perform(getAsAdmin("/users"))
                 .andExpect(status().isOk())
-               .andDo(print())
                 .andExpect(jsonPath("$.page.totalElements", greaterThanOrEqualTo(5)));
     }
 
