@@ -1,22 +1,33 @@
 package myreader.fetcher.impl;
 
-import myreader.fetcher.impl.StringDecoder;
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author Kamill Sokol
  */
-public class StringDecoderTest {
+public class StringDecoderTests {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void testNull() {
-        String decoded = StringDecoder.escapeHtmlContent(null, null);
+        String decoded = new StringDecoder().escapeHtmlContent(null, null);
         assertThat(decoded, is(""));
+    }
+
+    @Test
+    public void eliminateRelativeImgException() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("second parameter [invalid] not a valid ur");
+        StringDecoder.eliminateRelativeUrls("irrelevant", "invalid");
     }
 
 	@Test
@@ -53,50 +64,9 @@ public class StringDecoderTest {
 		assertTrue("<a href=\"http://example.com/blog/wp-content/uploads/2011/03/logo-front.png\"><img height=\"159\" width=\"240\" alt=\"\" src=\"http://example.com/blog/wp-content/uploads/2011/03/logo-front-300x198.png\" title=\"logo-front\" style=\"border: 2px solid white;\" class=\"alignright size-medium wp-image-3278\"></a>".equals(decoded));
 	}
 
-	//@Test
-	public void testEscapeHTML1() {
-		assertTrue("&lt;p&gt; tag &lt;/p&gt;".equals(StringDecoder.escapeHtml("<p> tag </p>")));
-	}
-
-	/*
-	@Test
-	public void testEscapeHTMLWithCR1() {
-		assertTrue("string string".equals(StringDecoder.eliminateWhitespace("string\r\nstring")));
-	}
-
-	@Test
-	public void testEscapeHTMLWithCR2() {
-		assertTrue("string string".equals(StringDecoder.eliminateWhitespace("string\nstring")));
-	}
-
-	@Test
-	public void testEscapeHTMLNormalizeWhitespace() {
-		assertTrue("string string".equals(StringDecoder.normalize("  string    string ")));
-	}
-
-	@Test
-	public void testEscapeHTMLRemoveStyle1() {
-		assertTrue("style=\"some directive;\"".equals(StringDecoder.eliminateCssStyle("style=\"some directive;clear: both;\"")));
-	}
-
-	@Test
-	public void testEscapeHTMLRemoveStyle2() {
-		assertTrue("style=\"some directive;\"".equals(StringDecoder.eliminateCssStyle("style=\"some directive;clear:both;\"")));
-	}
-
-	@Test
-	public void testEscapeHTMLRemoveStyle3() {
-		assertTrue("style=\"some directive;\"".equals(StringDecoder.eliminateCssStyle("style=\"some directive;clear: left;\"")));
-	}
-
-	@Test
-	public void testEscapeHTMLRemoveStyle4() {
-		assertTrue("style=\"some directive;\"".equals(StringDecoder.eliminateCssStyle("style=\"some directive;float: left;\"")));
-	}
-	 */
 	@Test
 	public void testEscapeHTMLRemoveJavascript1() {
-		assertTrue("string   string".equals(StringDecoder.eliminateJavascript("string <script>alert('')</script> string")));
+		assertThat(StringDecoder.eliminateJavascript("string <script>alert('')</script> string"), is("string   string"));
 	}
 
 	@Test
@@ -114,18 +84,18 @@ public class StringDecoderTest {
 		assertTrue("string   string".equals(StringDecoder.eliminateJavascript("string <script>alert('')</script> string")));
 	}
 
-	//@Test
-	public void testEscapeHTMLRemoveJavascript5() {
-		assertTrue("ein \\\\&".equals(StringDecoder.escapeForJson("ein \\&")));
-	}
-
 	@Test
 	public void testEscapeHTMLWithNotNull() {
-		assertTrue("".equals(StringDecoder.escapeHtmlContent("string",null)));
+		assertTrue("".equals(StringDecoder.escapeHtmlContent("string", null)));
 	}
 
 	@Test
 	public void testEscapeHTMLWithNull() {
 		assertTrue("".equals(StringDecoder.escapeHtmlContent(null,null)));
 	}
+
+    @Test
+    public void testEscapeSimpleHtmlWithNull() {
+        assertThat(StringDecoder.escapeSimpleHtml(null), isEmptyString());
+    }
 }
