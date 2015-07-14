@@ -9,17 +9,6 @@ public class HttpObject {
 	private String lastModified;
 	private InputStream responseBody;
 
-	public HttpObject(String url, String method, String lastModified, int returnCode, InputStream responseBody) {
-		this.url = url;
-		this.returnCode = returnCode;
-		this.lastModified = lastModified;
-		this.responseBody = responseBody;
-
-		if(method == null) {
-			throw new IllegalArgumentException("method must not be null");
-		}
-	}
-
 	public HttpObject(String url, String method, String lastModified) {
 		this.url = url;
 		this.lastModified = lastModified;
@@ -28,12 +17,6 @@ public class HttpObject {
 			throw new IllegalArgumentException("method must not be null");
 		}
 		this.method = method.toUpperCase();
-	}
-
-	public HttpObject(String url, String lastModified) {
-		this.url = url;
-		this.method = "GET";
-		this.lastModified = lastModified;
 	}
 
 	public HttpObject(String url) {
