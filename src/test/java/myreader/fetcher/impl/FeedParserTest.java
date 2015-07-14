@@ -1,23 +1,28 @@
 package myreader.fetcher.impl;
 
-import myreader.fetcher.FeedParser;
-import myreader.fetcher.persistence.FetcherEntry;
-import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import java.io.FileInputStream;
-
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+
+import myreader.fetcher.FeedParseException;
+import myreader.fetcher.FeedParser;
+import myreader.fetcher.persistence.FetcherEntry;
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import java.io.FileInputStream;
 
 /**
  * @author Kamill Sokol
@@ -30,6 +35,8 @@ public class FeedParserTest {
 
 	private FeedParser parser;
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
     @Before
     public void setUp() throws Exception {
 		reset(httpConnectorMock);
@@ -48,9 +55,9 @@ public class FeedParserTest {
 		mockAnswer("feed2");
 		FetchResult result = parser.parse(URL);
 		assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
-				hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217.html")),
-				hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217b.html"))
-		));
+                hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217.html")),
+                hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217b.html"))
+        ));
 	}
 
 	@Test
@@ -78,6 +85,27 @@ public class FeedParserTest {
         FetchResult result = parser.parse(URL);
         assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
                 hasProperty("content", startsWith("Ein Gastbeitrag von Erik W. Ende Juni 2014 sagte"))
+        ));
+    }
+
+    @Test
+    public void testFeed6() throws Exception {
+        final IllegalArgumentException illegalArgumentException = new IllegalArgumentException("junit");
+        doThrow(illegalArgumentException).when(httpConnectorMock).connect(any(HttpObject.class));
+
+        expectedException.expect(FeedParseException.class);
+        expectedException.expectMessage("junit");
+
+        parser.parse(URL);
+    }
+
+    @Test
+    public void testFeed7() throws Exception {
+        mockAnswer("feed2");
+        parser.setMaxSize(1);
+        FetchResult result = parser.parse(URL);
+        assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
+                hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue220b.html"))
         ));
     }
 

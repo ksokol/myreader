@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ public class FeedParser {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     private HttpConnector httpConnector;
+    private int maxSize= 10;
 
     @Autowired
     public FeedParser(HttpConnector httpConnector) {
@@ -60,7 +62,7 @@ public class FeedParser {
                 SyndContent con = e.getDescription();
                 String content = con == null ? null : con.getValue();
 
-                if (content == null || content.isEmpty()) {
+                if (StringUtils.isEmpty(content)) {
                     List contents = e.getContents();
                     if(!contents.isEmpty()) {
                         SyndContent syndContent = (SyndContent) contents.get(0);
@@ -71,8 +73,9 @@ public class FeedParser {
                 dto.setContent(StringDecoder.escapeHtmlContent(content, feedUrl));
 
                 entries.add(dto);
-                if (i == 10)
+                if (i == maxSize) {
                     break;
+                }
             }
 
             Collections.reverse(entries);
@@ -81,5 +84,9 @@ public class FeedParser {
             log.warn("url: {}, message: {}", feedUrl, e.getMessage());
             throw new FeedParseException(e.getMessage(), e);
         }
+    }
+
+    public void setMaxSize(final int maxSize) {
+        this.maxSize = maxSize;
     }
 }
