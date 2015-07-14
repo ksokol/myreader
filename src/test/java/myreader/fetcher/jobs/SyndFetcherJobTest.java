@@ -12,25 +12,19 @@ import static org.mockito.Mockito.when;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
 
-import myreader.test.IntegrationTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 
 /**
  * @author Kamill Sokol
  */
-public class SyndFetcherJobTest extends IntegrationTestSupport {
+public class SyndFetcherJobTest {
 
     private SyndFetcherJob uut;
     private FeedQueue queueMock;
     private SubscriptionBatch serviceMock;
-
-    @Autowired
-    private ApplicationContext applicationContext;
-
 
     @Before
     public void setUp() throws Exception {
@@ -58,7 +52,7 @@ public class SyndFetcherJobTest extends IntegrationTestSupport {
     public void shouldNeverCallService() throws Exception {
         when(queueMock.poll()).thenReturn("url1", "url2", null);
 
-        uut.onApplicationEvent(new ContextClosedEvent(applicationContext));
+        uut.onApplicationEvent(new ContextClosedEvent(mock(ApplicationContext.class)));
         uut.run();
 
         verify(queueMock, times(1)).poll();
