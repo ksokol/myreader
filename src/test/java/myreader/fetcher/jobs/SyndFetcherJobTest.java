@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
 
+import myreader.fetcher.persistence.FetchResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -35,7 +36,7 @@ public class SyndFetcherJobTest {
 
     @Test
     public void shouldNotThrowAnException() throws Exception {
-        when(queueMock.poll()).thenReturn("url1", "url2", null);
+        when(queueMock.poll()).thenReturn(new FetchResult("url1"), new FetchResult("url2"), null);
         doThrow(new RuntimeException()).when(serviceMock).updateUserSubscriptions(anyString());
 
         try {
@@ -50,7 +51,7 @@ public class SyndFetcherJobTest {
 
     @Test
     public void shouldNeverCallService() throws Exception {
-        when(queueMock.poll()).thenReturn("url1", "url2", null);
+        when(queueMock.poll()).thenReturn(new FetchResult("url1"), new FetchResult("url2"), null);
 
         uut.onApplicationEvent(new ContextClosedEvent(mock(ApplicationContext.class)));
         uut.run();

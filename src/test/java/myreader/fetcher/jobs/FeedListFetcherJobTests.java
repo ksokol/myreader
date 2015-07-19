@@ -8,14 +8,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import myreader.entity.Feed;
+import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
-import myreader.fetcher.impl.HttpCallDecisionMaker;
+import myreader.fetcher.persistence.FetchResult;
+import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -27,16 +30,16 @@ public class FeedListFetcherJobTests {
     private static final String URL = "url";
 
     private FeedListFetcherJob uut;
-    private HttpCallDecisionMaker httpCallDecisionMakerMock;
     private FeedQueue queueMock;
     private FeedRepository feedRepositoryMock;
+    private FeedParser feedParser;
 
     @Before
     public void setUp() throws Exception {
-        httpCallDecisionMakerMock = mock(HttpCallDecisionMaker.class);
         queueMock = mock(FeedQueue.class);
         feedRepositoryMock = mock(FeedRepository.class);
-        uut = new FeedListFetcherJob(httpCallDecisionMakerMock, queueMock, feedRepositoryMock);
+        feedParser = mock(FeedParser.class);
+        uut = new FeedListFetcherJob(queueMock, feedRepositoryMock, feedParser);
     }
 
     @Test
@@ -45,7 +48,7 @@ public class FeedListFetcherJobTests {
 
         uut.run();
 
-        verify(httpCallDecisionMakerMock, never()).decide(anyString());
+        verify(feedParser, never()).parse(anyString(), anyString());
     }
 
     @Test
@@ -56,7 +59,7 @@ public class FeedListFetcherJobTests {
         uut.onApplicationEvent(new ContextClosedEvent(mock(ApplicationContext.class)));
         uut.run();
 
-        verify(httpCallDecisionMakerMock, never()).decide(anyString());
+        verify(feedParser, never()).parse(anyString(), anyString());
     }
 
     @Test
@@ -67,11 +70,10 @@ public class FeedListFetcherJobTests {
 
         when(queueMock.getSize()).thenReturn(0);
         when(feedRepositoryMock.findAll()).thenReturn(Collections.singletonList(feed));
-        when(httpCallDecisionMakerMock.decide(URL, LAST_MODIFIED)).thenReturn(false);
 
         uut.run();
 
-        verify(httpCallDecisionMakerMock, times(1)).decide(URL, LAST_MODIFIED);
+        verify(feedParser, times(1)).parse(URL, LAST_MODIFIED);
     }
 
     @Test
@@ -82,11 +84,15 @@ public class FeedListFetcherJobTests {
 
         when(queueMock.getSize()).thenReturn(0);
         when(feedRepositoryMock.findAll()).thenReturn(Collections.singletonList(feed));
-        when(httpCallDecisionMakerMock.decide(URL, LAST_MODIFIED)).thenReturn(true);
+
+        final FetchResult fetchResult = new FetchResult(Arrays.asList(new FetcherEntry()), null, null);
+        fetchResult.setUrl(URL);
+
+        when(feedParser.parse(URL, LAST_MODIFIED)).thenReturn(fetchResult);
 
         uut.run();
 
-        verify(httpCallDecisionMakerMock, times(1)).decide(URL, LAST_MODIFIED);
-        verify(queueMock, times(1)).add(URL);
+        verify(feedParser, times(1)).parse(URL, LAST_MODIFIED);
+        verify(queueMock, times(1)).add(fetchResult);
     }
 }

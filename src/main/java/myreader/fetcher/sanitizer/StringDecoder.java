@@ -1,4 +1,4 @@
-package myreader.fetcher.impl;
+package myreader.fetcher.sanitizer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class StringDecoder {
+final class StringDecoder {
 
 	private static final Pattern PATTERN_HREF = Pattern.compile("(?:(src|href)=)+\"(/[^\"]*)");
 	private static final Pattern PATTERN_JAVASCRIPT = Pattern.compile("<[\\ ]*script.*>.*<[\\ ]*/[\\ ]*script[\\ ]*>");

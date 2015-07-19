@@ -1,20 +1,19 @@
 package myreader.fetcher;
 
-import java.util.Date;
-import java.util.List;
-
 import myreader.entity.Feed;
 import myreader.entity.FetchStatistics;
 import myreader.entity.SubscriptionEntry;
-import myreader.fetcher.impl.FetchResult;
+import myreader.fetcher.persistence.FetchResult;
 import myreader.repository.FeedRepository;
 import myreader.repository.FetchStatisticRepository;
 import myreader.repository.SubscriptionEntryRepository;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Kamill Sokol

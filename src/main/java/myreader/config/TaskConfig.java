@@ -1,14 +1,11 @@
 package myreader.config;
 
-import java.util.concurrent.Executor;
-
+import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
-import myreader.fetcher.impl.HttpCallDecisionMaker;
 import myreader.fetcher.jobs.FeedListFetcherJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
 import myreader.repository.FeedRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,6 +15,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
+import java.util.concurrent.Executor;
+
 /**
  * @author Kamill Sokol
  */
@@ -26,8 +25,6 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 @EnableScheduling
 public class TaskConfig implements SchedulingConfigurer {
 
-    @Autowired
-    private HttpCallDecisionMaker httpCallDecisionMaker;
     @Autowired
     private FeedQueue feedQueue;
     @Autowired
@@ -39,7 +36,8 @@ public class TaskConfig implements SchedulingConfigurer {
     @Qualifier(value = "customExecutor")
     @Autowired
     private Executor executor;
-
+    @Autowired
+    private FeedParser feedParser;
 
     @Override
     public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
@@ -60,7 +58,7 @@ public class TaskConfig implements SchedulingConfigurer {
     }
 
     private FeedListFetcherJob feedListFetcher() {
-        return new FeedListFetcherJob(httpCallDecisionMaker, feedQueue, feedRepository);
+        return new FeedListFetcherJob(feedQueue, feedRepository, feedParser);
     }
 
     private SyndFetcherJob syndFetcherJob(String jobName) {

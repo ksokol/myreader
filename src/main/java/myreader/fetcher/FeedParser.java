@@ -1,21 +1,21 @@
 package myreader.fetcher;
 
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
-import myreader.fetcher.impl.*;
-import myreader.fetcher.persistence.FetcherEntry;
+import com.rometools.rome.feed.WireFeed;
+import myreader.fetcher.persistence.FetchResult;
+import myreader.fetcher.sanitizer.Sanitizer;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.springframework.util.Assert;
+import org.springframework.web.client.RestTemplate;
 
 //TODO introduce an interface
 /**
@@ -24,69 +24,49 @@ import java.util.List;
 @Service("parser")
 public class FeedParser {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(FeedParser.class);
 
-    private HttpConnector httpConnector;
-    private int maxSize= 10;
+    private final RestTemplate syndicationRestTemplate;
+    private final ConversionService conversionService;
 
     @Autowired
-    public FeedParser(HttpConnector httpConnector) {
-        this.httpConnector = httpConnector;
+    public FeedParser(final RestTemplate syndicationRestTemplate, final ConversionService conversionService) {
+        Assert.notNull(syndicationRestTemplate, "syndicationRestTemplate is null");
+        Assert.notNull(conversionService, "conversionService is null");
+        this.conversionService = conversionService;
+        this.syndicationRestTemplate = syndicationRestTemplate;
     }
 
     public FetchResult parse(String feedUrl) {
-        try {
-            HttpObject httpObject = new HttpObject(feedUrl);
-            httpConnector.connect(httpObject);
-
-            SyndFeedInput input = new SyndFeedInput();
-            SyndFeed feed;
-            List<FetcherEntry> entries = new ArrayList<FetcherEntry>();
-            String lastModified;
-
-            lastModified = httpObject.getLastModified();
-            XmlReader xml = new XmlReader(httpObject.getResponseBody());
-            feed = input.build(xml);
-
-            List<SyndEntry> lfe = feed.getEntries();
-            int i = 0;
-
-            for (SyndEntry e : lfe) {
-                i++;
-                FetcherEntry dto = new FetcherEntry();
-
-                dto.setGuid(e.getUri());
-                dto.setTitle(StringDecoder.escapeSimpleHtml(e.getTitle()));
-
-                dto.setUrl(EntryLinkSanitizer.sanitize(e.getLink(), feed.getLink(), feedUrl));
-                SyndContent con = e.getDescription();
-                String content = con == null ? null : con.getValue();
-
-                if (StringUtils.isEmpty(content)) {
-                    List contents = e.getContents();
-                    if(!contents.isEmpty()) {
-                        SyndContent syndContent = (SyndContent) contents.get(0);
-                        content = syndContent.getValue();
-                    }
-                }
-
-                dto.setContent(StringDecoder.escapeHtmlContent(content, feedUrl));
-
-                entries.add(dto);
-                if (i == maxSize) {
-                    break;
-                }
-            }
-
-            Collections.reverse(entries);
-            return new FetchResult(entries, lastModified, feed.getTitle());
-        } catch (Exception e) {
-            log.warn("url: {}, message: {}", feedUrl, e.getMessage());
-            throw new FeedParseException(e.getMessage(), e);
-        }
+        return parse(feedUrl, null);
     }
 
-    public void setMaxSize(final int maxSize) {
-        this.maxSize = maxSize;
+    public FetchResult parse(String feedUrl, String lastModified) {
+        try {
+            final HttpHeaders httpHeaders = new HttpHeaders();
+
+            if(StringUtils.isNotBlank(lastModified)) {
+                httpHeaders.add("If-Modified-Since", lastModified);
+            }
+
+            final HttpEntity<Void> objectHttpEntity = new HttpEntity<>(httpHeaders);
+            final ResponseEntity<WireFeed> responseEntity = syndicationRestTemplate.exchange(feedUrl, HttpMethod.GET, objectHttpEntity, WireFeed.class);
+
+            if(HttpStatus.NOT_MODIFIED == responseEntity.getStatusCode()) {
+                return new FetchResult(feedUrl);
+            }
+
+            final FetchResult convert = conversionService.convert(responseEntity.getBody(), FetchResult.class);
+
+            convert.setUrl(feedUrl);
+            convert.setLastModified(responseEntity.getHeaders().getFirst(HttpHeaders.LAST_MODIFIED));
+
+            Sanitizer.sanitize(convert);
+
+            return convert;
+        } catch (Exception e) {
+            LOG.warn("url: {}, message: {}", feedUrl, e.getMessage());
+            throw new FeedParseException(e.getMessage(), e);
+        }
     }
 }

@@ -255,6 +255,7 @@
             <artifactId>jdom</artifactId>
             <version>1.0</version>
         </dependency>
+
         <dependency>
             <groupId>rome</groupId>
             <artifactId>rome</artifactId>
@@ -318,12 +319,17 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+
         <!-- wrong apache httpcomponents version referenced in net.sourceforge.htmlunit:htmlunit -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.4.1</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>

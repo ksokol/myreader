@@ -11,7 +11,7 @@ import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.fetcher.FeedParser;
-import myreader.fetcher.impl.FetchResult;
+import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionRepository;

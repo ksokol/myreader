@@ -3,6 +3,7 @@ package myreader.fetcher.jobs;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
 
+import myreader.fetcher.persistence.FetchResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -25,11 +26,11 @@ public class SyndFetcherJob extends BaseJob {
     @Transactional
     @Override
     public void work() {
-        String feedUrl;
+        FetchResult feedUrl;
 
         while ((feedUrl = feedQueue.poll()) != null && alive) {
             try {
-                subscriptionBatchService.updateUserSubscriptions(feedUrl);
+                subscriptionBatchService.updateUserSubscriptions(feedUrl.getUrl());
             } catch(Exception e) {
                 log.error("error during subscription update for {}", feedUrl, e);
             }

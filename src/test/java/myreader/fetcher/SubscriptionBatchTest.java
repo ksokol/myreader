@@ -14,7 +14,7 @@ import java.util.List;
 import myreader.config.PersistenceConfig;
 import myreader.entity.Feed;
 import myreader.entity.SubscriptionEntry;
-import myreader.fetcher.impl.FetchResult;
+import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
 import myreader.repository.FetchStatisticRepository;

@@ -1,59 +1,94 @@
 package myreader.fetcher.impl;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.MediaType.TEXT_XML;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import myreader.config.PersistenceConfig;
+import myreader.config.ResourceConfig;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
+import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
+import myreader.test.TestDataSourceConfig;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import java.io.FileInputStream;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Kamill Sokol
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, FeedParserTest.TestConfig.class})
+@WebAppConfiguration
 public class FeedParserTest {
 
-    private static String URL = "http://localhost:8000";
+    @Configuration
+    @ComponentScan({"myreader.service", "myreader.fetcher"})
+    public static class TestConfig  {}
 
-	private HttpConnector httpConnectorMock = mock(HttpConnector.class);
+    private static final String HTTP_WWW_HEISE_DE_NEWSTICKER_HEISE_ATOM_XML = "http://www.heise.de/newsticker/heise-atom.xml";
+    private static final String HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS = "http://www.javaspecialists.eu/archive/tjsn.rss";
+    private static final String HTTP_WWW_VZBV_DE_KLAGENURTEILE_XML = "http://www.vzbv.de/klagenurteile.xml";
 
-	private FeedParser parser;
+    @Autowired
+    private RestTemplate syndicationRestTemplate;
+
+    @Autowired
+    private ConversionService conversionService;
+
+    private MockRestServiceServer mockServer;
+    private FeedParser parser;
+
+    @Before
+    public void beforeTest() {
+        mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
+        parser = new FeedParser(syndicationRestTemplate, conversionService);
+    }
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-    @Before
-    public void setUp() throws Exception {
-		reset(httpConnectorMock);
-		parser = new FeedParser(httpConnectorMock);
-    }
 
     @Test
 	public void testFeed1() throws Exception {
-		mockAnswer("feed1");
-		FetchResult result = parser.parse(URL);
+        mockServer.expect(requestTo(HTTP_WWW_HEISE_DE_NEWSTICKER_HEISE_ATOM_XML)).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed1.xml"), TEXT_XML));
+
+		FetchResult result = parser.parse(HTTP_WWW_HEISE_DE_NEWSTICKER_HEISE_ATOM_XML);
 		assertThat(result.getEntries(), hasSize(2));
 	}
 
 	@Test
 	public void testFeed2() throws Exception {
-		mockAnswer("feed2");
-		FetchResult result = parser.parse(URL);
+        mockServer.expect(requestTo(HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS)).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
+
+		FetchResult result = parser.parse(HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS);
 		assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217.html")),
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217b.html"))
@@ -62,8 +97,10 @@ public class FeedParserTest {
 
 	@Test
 	public void testFeed3() throws Exception {
-		mockAnswer("feed3");
-		FetchResult result = parser.parse("http://www.vzbv.de/klagenurteile.xml");
+        mockServer.expect(requestTo(HTTP_WWW_VZBV_DE_KLAGENURTEILE_XML)).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed3.xml"), TEXT_XML));
+
+		FetchResult result = parser.parse(HTTP_WWW_VZBV_DE_KLAGENURTEILE_XML);
 		assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
 				hasProperty("url", is("http://www.vzbv.de/12539.htm")),
 				hasProperty("url", is("http://www.vzbv.de/12673.htm"))
@@ -72,8 +109,10 @@ public class FeedParserTest {
 
     @Test
     public void testFeed4() throws Exception {
-        mockAnswer("feed4");
-        FetchResult result = parser.parse(URL);
+        mockServer.expect(requestTo("https://github.com/ksokol.private.atom")).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed4.xml"), TEXT_XML));
+
+        FetchResult result = parser.parse("https://github.com/ksokol.private.atom");
         assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
                 hasProperty("content", startsWith("<!-- issue_comment -->"))
         ));
@@ -81,8 +120,10 @@ public class FeedParserTest {
 
     @Test
     public void testFeed5() throws Exception {
-        mockAnswer("feed5");
-        FetchResult result = parser.parse(URL);
+        mockServer.expect(requestTo("http://neusprech.org/feed/")).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed5.xml"), TEXT_XML));
+
+        FetchResult result = parser.parse("http://neusprech.org/feed/");
         assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
                 hasProperty("content", startsWith("Ein Gastbeitrag von Erik W. Ende Juni 2014 sagte"))
         ));
@@ -90,33 +131,42 @@ public class FeedParserTest {
 
     @Test
     public void testFeed6() throws Exception {
-        final IllegalArgumentException illegalArgumentException = new IllegalArgumentException("junit");
-        doThrow(illegalArgumentException).when(httpConnectorMock).connect(any(HttpObject.class));
+        mockServer.expect(requestTo("irrelevant")).andRespond(withBadRequest());
 
         expectedException.expect(FeedParseException.class);
-        expectedException.expectMessage("junit");
+        expectedException.expectMessage("400 Bad Request");
 
-        parser.parse(URL);
+        parser.parse("irrelevant");
     }
 
     @Test
     public void testFeed7() throws Exception {
-        mockAnswer("feed2");
-        parser.setMaxSize(1);
-        FetchResult result = parser.parse(URL);
+        mockServer.expect(requestTo(HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS)).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
+
+       // parser.setMaxSize(1);
+        FetchResult result = parser.parse(HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS);
         assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue220b.html"))
         ));
     }
 
-	private void mockAnswer(final String file) {
-		doAnswer(new Answer<Void>() {
-			@Override
-			public Void answer(InvocationOnMock invocation) throws Throwable {
-				HttpObject httpObject = (HttpObject) invocation.getArguments()[0];
-				httpObject.setResponseBody(new FileInputStream(String.format("src/test/resources/rss/%s.xml", file)));
-				return null;
-			}
-		}).when(httpConnectorMock).connect(org.mockito.Matchers.<HttpObject>anyObject());
-	}
+    @Test
+    public void testFeed8() throws Exception {
+        mockServer.expect(requestTo("irrelevant")).andExpect(method(GET))
+                .andExpect(header("If-Modified-Since", is("lastModified")))
+                .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
+
+        FetchResult result = parser.parse("irrelevant", "lastModified");
+        assertThat(result.getEntries(), empty());
+    }
+
+    @Test
+    public void testFeed9() throws Exception {
+        mockServer.expect(requestTo("irrelevant")).andExpect(method(GET))
+                .andExpect(header("User-Agent", startsWith("Mozilla")))
+                .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
+
+        parser.parse("irrelevant", "lastModified");
+    }
 }

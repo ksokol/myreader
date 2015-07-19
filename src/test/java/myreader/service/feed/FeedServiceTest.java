@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import myreader.entity.Feed;
 import myreader.fetcher.FeedParser;
-import myreader.fetcher.impl.FetchResult;
+import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
 import myreader.test.IntegrationTestSupport;

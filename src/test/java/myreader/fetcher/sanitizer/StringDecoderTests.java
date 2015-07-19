@@ -1,10 +1,11 @@
-package myreader.fetcher.impl;
+package myreader.fetcher.sanitizer;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import myreader.fetcher.sanitizer.StringDecoder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

@@ -1,5 +1,6 @@
 package myreader.fetcher;
 
+import myreader.fetcher.persistence.FetchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,27 +15,27 @@ public class FeedQueue {
 
     private static final Logger LOG = LoggerFactory.getLogger(FeedQueue.class);
 
-    private final Queue<String> queue = new ConcurrentLinkedQueue<>();
+    private final Queue<FetchResult> queue = new ConcurrentLinkedQueue<>();
 
-    public void add(String f) {
-        if (!queue.contains(f))
-            queue.add(f);
+    public void add(FetchResult fetchResult) {
+        if (!queue.contains(fetchResult))
+            queue.add(fetchResult);
     }
 
     public int getSize() {
         return queue.size();
     }
 
-    public String poll() {
-        String url = queue.poll();
+    public FetchResult poll() {
+        FetchResult fetchResult = queue.poll();
         LOG.debug("left in queue: {}", queue.size());
-        return url;
+        return fetchResult;
     }
 
     public List<String> getSnapshot() {
         final List<String> snapshots = new ArrayList<>();
-        for (final String entry : queue) {
-            snapshots.add(entry);
+        for (final FetchResult fetchResult : queue) {
+            snapshots.add(fetchResult.getUrl());
         }
         return snapshots;
     }
