@@ -33,14 +33,14 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
 
     @Test
     public void testEntityResourceJsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
+        mockMvc.perform(getAsUser2("/api/2/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/4.json"));
     }
 
     @Test
     public void testEntityNotFound() throws Exception {
-        mockMvc.perform(getAsUser2("/subscriptionEntries/1001"))
+        mockMvc.perform(getAsUser2("/api/2/subscriptionEntries/1001"))
                 .andExpect(status().isNotFound());
     }
 
@@ -50,16 +50,16 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
         assertThat(before.isSeen(), is(true));
         assertThat(subscriptionRepository.findOne(7L).getUnseen(), is(0));
 
-        mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
+        mockMvc.perform(getAsUser2("/api/2/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/4.json"));
 
-        mockMvc.perform(patchAsUser2("/subscriptionEntries/1004")
+        mockMvc.perform(patchAsUser2("/api/2/subscriptionEntries/1004")
                 .json("{'seen':false}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/patch1#4.json"));
 
-        mockMvc.perform(getAsUser2("/subscriptionEntries/1004"))
+        mockMvc.perform(getAsUser2("/api/2/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/patch1#4.json"));
 
@@ -74,11 +74,11 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
         assertThat(before.isSeen(), is(false));
         assertThat(subscriptionRepository.findOne(108L).getUnseen(), is(0));
 
-        mockMvc.perform(actionAsUserX(GET, USER110, "/subscriptionEntries/1022"))
+        mockMvc.perform(actionAsUserX(GET, USER110, "/api/2/subscriptionEntries/1022"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/1022.json"));
 
-        mockMvc.perform(actionAsUserX(PATCH, USER110, "/subscriptionEntries/1022")
+        mockMvc.perform(actionAsUserX(PATCH, USER110, "/api/2/subscriptionEntries/1022")
                 .json("{'seen':true}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/patch1#1022.json"));
@@ -94,15 +94,15 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
         assertThat(before.isSeen(), is(true));
         assertThat(subscriptionRepository.findOne(13L).getUnseen(), is(0));
 
-        mockMvc.perform(actionAsUserX(GET, USER105, "/subscriptionEntries/1014"))
+        mockMvc.perform(actionAsUserX(GET, USER105, "/api/2/subscriptionEntries/1014"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/1014.json"));
 
-        mockMvc.perform(actionAsUserX(PATCH, USER105, "/subscriptionEntries/1014")
+        mockMvc.perform(actionAsUserX(PATCH, USER105, "/api/2/subscriptionEntries/1014")
                 .json("{'seen':true}"))
                 .andExpect(jsonEquals("json/subscriptionentry/patch2#1014.json"));
 
-        mockMvc.perform(actionAsUserX(GET, USER105, "/subscriptionEntries/1014"))
+        mockMvc.perform(actionAsUserX(GET, USER105, "/api/2/subscriptionEntries/1014"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/patch2#1014.json"));
 
@@ -116,15 +116,15 @@ public class SubscriptionEntryEntityResourceTest extends IntegrationTestSupport 
         SubscriptionEntry before = subscriptionEntryRepository.findOne(1015L);
         assertThat(before.getTag(), is("tag3"));
 
-        mockMvc.perform(actionAsUserX(GET, USER106, "/subscriptionEntries/1015"))
+        mockMvc.perform(actionAsUserX(GET, USER106, "/api/2/subscriptionEntries/1015"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/1015.json"));
 
-        mockMvc.perform(actionAsUserX(PATCH, USER106, "/subscriptionEntries/1015")
+        mockMvc.perform(actionAsUserX(PATCH, USER106, "/api/2/subscriptionEntries/1015")
                 .json("{'tag':'tag-patched'}"))
                 .andExpect(jsonEquals("json/subscriptionentry/patch2#1015.json"));
 
-        mockMvc.perform(actionAsUserX(GET, USER106,"/subscriptionEntries/1015"))
+        mockMvc.perform(actionAsUserX(GET, USER106,"/api/2/subscriptionEntries/1015"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/patch2#1015.json"));
 

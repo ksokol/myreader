@@ -25,7 +25,7 @@ public class FeedCollectionResourceTests extends IntegrationTestSupport {
 
     @Test
     public void emptyUrl() throws Exception {
-        mockMvc.perform(postAsUser2("/feeds/probe")
+        mockMvc.perform(postAsUser2("/api/2/feeds/probe")
                 .json("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status", is(400)))
@@ -36,7 +36,7 @@ public class FeedCollectionResourceTests extends IntegrationTestSupport {
 
     @Test
     public void notHttpOrHttps() throws Exception {
-        mockMvc.perform(postAsUser2("/feeds/probe")
+        mockMvc.perform(postAsUser2("/api/2/feeds/probe")
                 .json("{ 'url': 'containts no http' }"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status", is(400)))
@@ -50,7 +50,7 @@ public class FeedCollectionResourceTests extends IntegrationTestSupport {
         String url = "http://duckduckgo.com";
         when(feedParserMock.parse(url)).thenThrow(new FeedParseException());
 
-        mockMvc.perform(postAsUser2("/feeds/probe")
+        mockMvc.perform(postAsUser2("/api/2/feeds/probe")
                 .json("{ 'url': '" + url + "' }"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status", is(400)))
@@ -64,7 +64,7 @@ public class FeedCollectionResourceTests extends IntegrationTestSupport {
         String url = "http://duckduckgo.com";
         when(feedParserMock.parse(url)).thenReturn(null);
 
-        mockMvc.perform(postAsUser2("/feeds/probe")
+        mockMvc.perform(postAsUser2("/api/2/feeds/probe")
                 .json("{ 'url': '" + url + "' }"))
                 .andExpect(status().isOk());
     }

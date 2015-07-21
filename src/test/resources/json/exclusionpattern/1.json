@@ -2,7 +2,7 @@
     "links": [
         {
             "rel": "self",
-            "href": "/exclusions/1/pattern"
+            "href": "/api/2/exclusions/1/pattern"
         }
     ],
     "content": [

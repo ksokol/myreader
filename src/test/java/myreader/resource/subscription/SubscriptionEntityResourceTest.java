@@ -25,28 +25,28 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testEntityResourceJsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions/1"))
+        mockMvc.perform(getAsUser1("/api/2/subscriptions/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/structure-1.json"));
     }
 
     @Test
     public void testNotFoundWhenGetNotOwnSubscription() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions/6"))
+        mockMvc.perform(getAsUser1("/api/2/subscriptions/6"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void testDelete() throws Exception {
-        mockMvc.perform(getAsUser1("/subscriptions?unseenGreaterThan=-1"))
+        mockMvc.perform(getAsUser1("/api/2/subscriptions?unseenGreaterThan=-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content..origin", hasSize(5)))
                 .andExpect(jsonPath("$.content..origin", hasItem("http://feeds.feedburner.com/javaposse")));
 
-        mockMvc.perform(deleteAsUser1("/subscriptions/1"))
+        mockMvc.perform(deleteAsUser1("/api/2/subscriptions/1"))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(getAsUser1("/subscriptions?unseenGreaterThan=-1"))
+        mockMvc.perform(getAsUser1("/api/2/subscriptions?unseenGreaterThan=-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content..origin", hasSize(4)))
                 .andExpect(jsonPath("$.content..origin", not(hasItem("http://feeds.feedburner.com/javaposse"))));
@@ -54,40 +54,40 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testNotFoundWhenPatchNotOwnSubscription() throws Exception {
-        mockMvc.perform(patchAsUser2("/subscriptions/1")
+        mockMvc.perform(patchAsUser2("/api/2/subscriptions/1")
                 .json("{ 'tag' : 'irrelevant' }"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void testPatchableProperties() throws Exception {
-        mockMvc.perform(actionAsUserX(PATCH, USER104, "/subscriptions/102")
+        mockMvc.perform(actionAsUserX(PATCH, USER104, "/api/2/subscriptions/102")
                 .json("json/subscription/patchable-properties1-102.json"))
                 .andExpect(jsonEquals("json/subscription/patchable-properties2-102.json"));
     }
 
     @Test
     public void testPatch() throws Exception {
-        mockMvc.perform(getAsUser103("/subscriptions/101"))
+        mockMvc.perform(getAsUser103("/api/2/subscriptions/101"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/101.json"));
 
-        mockMvc.perform(patchAsUser103("/subscriptions/101")
+        mockMvc.perform(patchAsUser103("/api/2/subscriptions/101")
                 .json("{'tag':'test1'}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/patch1-101.json"));
 
-        mockMvc.perform(patchAsUser103("/subscriptions/101")
+        mockMvc.perform(patchAsUser103("/api/2/subscriptions/101")
                 .json("{'title':null}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/patch2-101.json"));
 
-        mockMvc.perform(patchAsUser103("/subscriptions/101")
+        mockMvc.perform(patchAsUser103("/api/2/subscriptions/101")
                 .json("{'title':'test2','tag':'test2'}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/patch3-101.json"));
 
-        mockMvc.perform(getAsUser103("/subscriptions/101"))
+        mockMvc.perform(getAsUser103("/api/2/subscriptions/101"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/patch3-101.json"));
     }

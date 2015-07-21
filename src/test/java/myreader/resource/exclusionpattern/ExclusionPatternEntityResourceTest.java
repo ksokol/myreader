@@ -14,18 +14,16 @@ import org.junit.Test;
  */
 public class ExclusionPatternEntityResourceTest extends IntegrationTestSupport {
 
-    
-
     @Test
     public void testEntityResourceForUser1JsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser1("/exclusions/1/pattern/0"))
+        mockMvc.perform(getAsUser1("/api/2/exclusions/1/pattern/0"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/exclusionpattern/1#pattern#0.json"));
     }
 
     @Test
     public void testEntityResourceForUser2NotFound() throws Exception {
-        mockMvc.perform(getAsUser2("/exclusions/1/pattern/0"))
+        mockMvc.perform(getAsUser2("/api/2/exclusions/1/pattern/0"))
                 .andExpect(status().isNotFound());
     }
 
@@ -33,10 +31,10 @@ public class ExclusionPatternEntityResourceTest extends IntegrationTestSupport {
     public void testDelete() throws Exception {
         testEntityResourceForUser1JsonStructureEquality();
 
-        mockMvc.perform(deleteAsUser1("/exclusions/1/pattern/0"))
+        mockMvc.perform(deleteAsUser1("/api/2/exclusions/1/pattern/0"))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(getAsUser1("/exclusions/1/pattern/0"))
+        mockMvc.perform(getAsUser1("/api/2/exclusions/1/pattern/0"))
                 .andExpect(status().isNotFound());
     }
 }

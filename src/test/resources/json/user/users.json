@@ -2,7 +2,7 @@
     "links": [
         {
             "rel": "self",
-            "href": "/users"
+            "href": "/api/2/users"
         }
     ],
     "content": [

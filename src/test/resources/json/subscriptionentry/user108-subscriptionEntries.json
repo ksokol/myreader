@@ -2,7 +2,7 @@
   "links": [
     {
       "rel": "self",
-      "href": "/subscriptionEntries"
+      "href": "/api/2/subscriptionEntries"
     }
   ],
   "content": [

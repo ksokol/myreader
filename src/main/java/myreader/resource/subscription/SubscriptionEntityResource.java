@@ -25,7 +25,7 @@ import spring.security.MyReaderUser;
  */
 @Transactional
 @RestController
-@RequestMapping(value = "/subscriptions/{id}")
+@RequestMapping(value = "api/2/subscriptions/{id}")
 public class SubscriptionEntityResource {
 
     private final ResourceAssemblers resourceAssemblers;

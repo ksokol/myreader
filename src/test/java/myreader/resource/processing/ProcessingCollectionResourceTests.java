@@ -27,7 +27,7 @@ public class ProcessingCollectionResourceTests extends IntegrationTestSupport {
 
     @Test
     public void processingFeedsEmpty() throws Exception {
-        mockMvc.perform(getAsAdmin("/processing/feeds"))
+        mockMvc.perform(getAsAdmin("/api/2/processing/feeds"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("page.totalElements", is(0)));
     }
@@ -36,7 +36,7 @@ public class ProcessingCollectionResourceTests extends IntegrationTestSupport {
     public void processingFeeds() throws Exception {
         when(feedQueue.getSnapshot()).thenReturn(Collections.singletonList("http://feeds.feedburner.com/javaposse"));
 
-        mockMvc.perform(getAsAdmin("/processing/feeds"))
+        mockMvc.perform(getAsAdmin("/api/2/processing/feeds"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("content..origin", hasItem("http://feeds.feedburner.com/javaposse")))
                 .andExpect(jsonPath("page.totalElements", is(1)));
@@ -44,7 +44,7 @@ public class ProcessingCollectionResourceTests extends IntegrationTestSupport {
 
     @Test
     public void processingFeeds2() throws Exception {
-        mockMvc.perform(putAsAdmin("/processing")
+        mockMvc.perform(putAsAdmin("/api/2/processing")
                 .json("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status", is(400)))
@@ -56,7 +56,7 @@ public class ProcessingCollectionResourceTests extends IntegrationTestSupport {
 
     @Test
     public void processingFeeds22() throws Exception {
-        mockMvc.perform(putAsAdmin("/processing")
+        mockMvc.perform(putAsAdmin("/api/2/processing")
                 .json("{ 'process': 'indexSyncJob' }"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("done", is(false)))

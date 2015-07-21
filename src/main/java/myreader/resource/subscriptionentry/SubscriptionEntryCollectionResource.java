@@ -38,7 +38,7 @@ import javax.validation.Valid;
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping(value = "/subscriptionEntries")
+@RequestMapping(value = "api/2/subscriptionEntries")
 public class SubscriptionEntryCollectionResource {
 
     private final ResourceAssemblers resourceAssemblers;

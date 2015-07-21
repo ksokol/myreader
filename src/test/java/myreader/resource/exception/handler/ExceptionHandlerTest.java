@@ -26,7 +26,7 @@ public class ExceptionHandlerTest extends IntegrationTestSupport {
     public void testRuntimeException() throws Exception {
         when(timeServiceMock.getCurrentTime()).thenThrow(new RuntimeException("exception")) ;
 
-        mockMvc.perform(postAsUser100("/subscriptions")
+        mockMvc.perform(postAsUser100("/api/2/subscriptions")
                 .json("{ 'origin': 'http://use-the-index-luke.com/blog/feed' }"))
                 .andExpect(jsonPath("status", is(500)))
                 .andExpect(jsonPath("message", is("exception")));
@@ -34,7 +34,7 @@ public class ExceptionHandlerTest extends IntegrationTestSupport {
 
     @Test
     public void testJsonWrongFormat() throws Exception {
-        mockMvc.perform(patchAsUser1("/subscriptionEntries")
+        mockMvc.perform(patchAsUser1("/api/2/subscriptionEntries")
                 .json("[{ 'uuid': '1002', 'seen': false }]"))
                 .andExpect(jsonPath("status", is(400)))
                 .andExpect(status().isBadRequest());
@@ -42,7 +42,7 @@ public class ExceptionHandlerTest extends IntegrationTestSupport {
 
     @Test
     public void testJsonSyntaxError() throws Exception {
-        mockMvc.perform(patchAsUser1("/subscriptionEntries")
+        mockMvc.perform(patchAsUser1("/api/2/subscriptionEntries")
                 .contentType(APPLICATION_JSON)
                 .content("{[]"))
                 .andExpect(jsonPath("status", is(400)));

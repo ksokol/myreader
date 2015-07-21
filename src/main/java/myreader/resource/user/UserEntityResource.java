@@ -19,7 +19,7 @@ import spring.security.MyReaderUser;
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping(value= "/users")
+@RequestMapping(value= "api/2/users")
 public class UserEntityResource {
 
     private final ResourceAssemblers resourceAssemblers;

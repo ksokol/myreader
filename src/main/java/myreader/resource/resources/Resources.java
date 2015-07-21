@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class Resources {
 
-    @RequestMapping({"", "/"})
+    @RequestMapping({"/api/2/", "/api/2"})
     public void get() {
         // do nothing
     }

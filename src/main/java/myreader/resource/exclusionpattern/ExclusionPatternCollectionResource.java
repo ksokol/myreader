@@ -1,7 +1,12 @@
 package myreader.resource.exclusionpattern;
 
-import javax.validation.Valid;
-
+import myreader.entity.ExclusionPattern;
+import myreader.entity.Subscription;
+import myreader.repository.ExclusionRepository;
+import myreader.repository.SubscriptionRepository;
+import myreader.resource.exception.ResourceNotFoundException;
+import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
+import myreader.resource.exclusionpattern.beans.ExclusionPatternPostRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,22 +18,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import myreader.entity.ExclusionPattern;
-import myreader.entity.Subscription;
-import myreader.repository.ExclusionRepository;
-import myreader.repository.SubscriptionRepository;
-import myreader.resource.exception.ResourceNotFoundException;
-import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
-import myreader.resource.exclusionpattern.beans.ExclusionPatternPostRequest;
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
+
+import javax.validation.Valid;
 
 /**
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping(value = "/exclusions/{id}/pattern")
+@RequestMapping(value = "api/2/exclusions/{id}/pattern")
 public class ExclusionPatternCollectionResource {
 
     private final ResourceAssemblers resourceAssemblers;

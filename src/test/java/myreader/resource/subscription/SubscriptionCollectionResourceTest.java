@@ -30,28 +30,28 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testCollectionResourceJsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser2("/subscriptions"))
+        mockMvc.perform(getAsUser2("/api/2/subscriptions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/structure.json"));
     }
 
     @Test
     public void unseenGreaterThanMinusOne() throws Exception {
-        mockMvc.perform(getAsUser2("/subscriptions?unseenGreaterThan=-1"))
+        mockMvc.perform(getAsUser2("/api/2/subscriptions?unseenGreaterThan=-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("content..uuid", hasSize(6)));
     }
 
     @Test
     public void unseenGreaterThanZeroOne() throws Exception {
-        mockMvc.perform(getAsUser2("/subscriptions?unseenGreaterThan=1"))
+        mockMvc.perform(getAsUser2("/api/2/subscriptions?unseenGreaterThan=1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("content..uuid", hasSize(0)));
     }
 
     @Test
     public void testFieldErrorWhenUrlIsEmpty() throws Exception {
-        mockMvc.perform(postAsUser2("/subscriptions")
+        mockMvc.perform(postAsUser2("/api/2/subscriptions")
                 .json("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status", is(400)))
@@ -62,7 +62,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testFieldErrorWhenUrlHasInvalidPattern() throws Exception {
-        mockMvc.perform(postAsUser2("/subscriptions")
+        mockMvc.perform(postAsUser2("/api/2/subscriptions")
                 .json("{'url':'invalid url'}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message", is("validation error")))
@@ -72,7 +72,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testFieldErrorWhenPostingExistentSubscription() throws Exception {
-        mockMvc.perform(postAsUser2("/subscriptions")
+        mockMvc.perform(postAsUser2("/api/2/subscriptions")
                 .json("{ 'origin' : 'http://martinfowler.com/feed.atom' }"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message", is("validation error")))
@@ -86,7 +86,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
         when(timeServiceMock.getCurrentTime()).thenReturn(now);
 
-        mockMvc.perform(postAsUser102("/subscriptions")
+        mockMvc.perform(postAsUser102("/api/2/subscriptions")
                 .json("{ 'origin': 'http://use-the-index-luke.com/blog/feed' }"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/post-new-response.json"));
@@ -94,7 +94,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testAvailableTags() throws Exception {
-        mockMvc.perform(getAsUser2("/subscriptions/availableTags"))
+        mockMvc.perform(getAsUser2("/api/2/subscriptions/availableTags"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems("tag1", "tag2")));
     }

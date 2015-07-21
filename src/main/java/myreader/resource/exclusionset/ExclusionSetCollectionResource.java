@@ -19,7 +19,7 @@ import spring.security.MyReaderUser;
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping(value = "/exclusions")
+@RequestMapping(value = "api/2/exclusions")
 public class ExclusionSetCollectionResource {
 
     private final ResourceAssemblers resourceAssemblers;

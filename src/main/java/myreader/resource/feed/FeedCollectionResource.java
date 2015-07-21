@@ -15,7 +15,7 @@ import javax.validation.Valid;
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping(value = "feeds")
+@RequestMapping(value = "api/2/feeds")
 public class FeedCollectionResource {
 
     private static final Logger LOG = getLogger(FeedCollectionResource.class);

@@ -25,7 +25,7 @@ import spring.security.MyReaderUser;
  */
 @Transactional
 @RestController
-@RequestMapping("subscriptionEntries/{id}")
+@RequestMapping("api/2/subscriptionEntries/{id}")
 public class SubscriptionEntryEntityResource {
 
     private final ConversionService conversionService;

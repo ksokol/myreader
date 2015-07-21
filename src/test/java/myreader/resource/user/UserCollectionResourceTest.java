@@ -18,21 +18,21 @@ public class UserCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void givenAdminIsAuthenticated_whenCallsCollectionResource_thenAllThreeUsersShouldBeReturned() throws Exception {
-       mockMvc.perform(getAsAdmin("/users"))
+       mockMvc.perform(getAsAdmin("/api/2/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements", greaterThanOrEqualTo(5)));
     }
 
     @Test
     public void givenUser1IsAuthenticated_whenCallsCollectionResource_thenOnlyUser1ShouldBeReturned() throws Exception {
-        mockMvc.perform(getAsUser1("/users"))
+        mockMvc.perform(getAsUser1("/api/2/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements", greaterThanOrEqualTo(1)));
     }
 
     @Test
     public void testCollectionResourceJsonEquality() throws Exception {
-        mockMvc.perform(getAsUser1("/users"))
+        mockMvc.perform(getAsUser1("/api/2/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/user/users.json"));
     }

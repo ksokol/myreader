@@ -16,14 +16,14 @@ public class ExclusionSetCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testCollectionResourceForUser1JsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser3("/exclusions"))
+        mockMvc.perform(getAsUser3("/api/2/exclusions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/exclusionset/user3.json"));
     }
 
     @Test
     public void testCollectionResourceForUser2JsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser4("/exclusions"))
+        mockMvc.perform(getAsUser4("/api/2/exclusions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/exclusionset/user4.json"));
     }

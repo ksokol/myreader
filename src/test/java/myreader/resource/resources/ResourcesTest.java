@@ -14,7 +14,7 @@ public class ResourcesTest extends IntegrationTestSupport {
 
     @Test
     public void testResources() throws Exception {
-        mockMvc.perform(getAsUser1("/"))
+        mockMvc.perform(getAsUser1("/api/2/"))
                 .andExpect(status().isOk());
     }
 

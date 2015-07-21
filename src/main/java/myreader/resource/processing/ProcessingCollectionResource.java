@@ -31,7 +31,7 @@ import javax.validation.Valid;
  */
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
-@RequestMapping(value = "processing")
+@RequestMapping(value = "api/2/processing")
 public class ProcessingCollectionResource {
 
     private final FeedRepository feedRepository;
