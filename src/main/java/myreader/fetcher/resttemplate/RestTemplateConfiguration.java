@@ -69,7 +69,9 @@ public class RestTemplateConfiguration implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        conversionService.addConverter(new AtomConverter());
-        conversionService.addConverter(new ChannelConverter());
+        //TODO
+        int maxSize = 10;
+        conversionService.addConverter(new AtomConverter(maxSize));
+        conversionService.addConverter(new ChannelConverter(maxSize));
     }
 }

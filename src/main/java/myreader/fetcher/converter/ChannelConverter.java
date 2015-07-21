@@ -6,6 +6,7 @@ import com.rometools.rome.feed.rss.Item;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +17,13 @@ import java.util.List;
  */
 public class ChannelConverter implements Converter<Channel, FetchResult> {
 
-    private int maxSize = 10;
+    private final int maxSize;
+
+    public ChannelConverter(final int maxSize) {
+        Assert.isTrue(maxSize > 0, "maxSize has to be greater than 0");
+        this.maxSize = maxSize;
+    }
+
 
     @Override
     public FetchResult convert(final Channel source) {
