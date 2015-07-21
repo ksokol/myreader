@@ -126,7 +126,7 @@ public class FetchStatistics implements Identifiable {
     }
 
     public enum Type {
-        REFRESH, ENTRY_LIST;
+        ENTRY_LIST;
     }
 
 }
