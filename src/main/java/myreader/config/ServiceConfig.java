@@ -1,6 +1,5 @@
 package myreader.config;
 
-import myreader.fetcher.FeedParser;
 import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.repository.FeedEntryRepository;
@@ -22,8 +21,6 @@ public class ServiceConfig {
     @Autowired
     private FeedRepository feedRepository;
     @Autowired
-    private FeedParser feedParser;
-    @Autowired
     private FetchStatisticRepository fetchStatisticRepository;
     @Autowired
     private FeedEntryRepository feedEntryRepository;
@@ -41,6 +38,6 @@ public class ServiceConfig {
 
     @Bean
     public SubscriptionBatch subscriptionBatch() {
-        return new SubscriptionBatch(feedParser, feedRepository, fetchStatisticRepository, subscriptionEntryBatch(), subscriptionEntryRepository);
+        return new SubscriptionBatch(feedRepository, fetchStatisticRepository, subscriptionEntryBatch(), subscriptionEntryRepository);
     }
 }

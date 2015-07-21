@@ -26,13 +26,13 @@ public class SyndFetcherJob extends BaseJob {
     @Transactional
     @Override
     public void work() {
-        FetchResult feedUrl;
+        FetchResult fetchResult;
 
-        while ((feedUrl = feedQueue.poll()) != null && alive) {
+        while ((fetchResult = feedQueue.poll()) != null && alive) {
             try {
-                subscriptionBatchService.updateUserSubscriptions(feedUrl.getUrl());
+                subscriptionBatchService.updateUserSubscriptions(fetchResult);
             } catch(Exception e) {
-                log.error("error during subscription update for {}", feedUrl, e);
+                log.error("error during subscription update for {}", fetchResult.getUrl(), e);
             }
         }
     }

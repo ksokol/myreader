@@ -2,14 +2,9 @@ package myreader.fetcher;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import myreader.config.PersistenceConfig;
 import myreader.entity.Feed;
@@ -20,7 +15,6 @@ import myreader.repository.FeedRepository;
 import myreader.repository.FetchStatisticRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.test.TestDataSourceConfig;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -45,17 +43,15 @@ public class SubscriptionBatchTest {
     @Autowired
     private FetchStatisticRepository fetchStatisticRepository;
 
-    private FeedParser feedParserMock = mock(FeedParser.class);
     private SubscriptionEntryBatch subscriptionEntryBatchMock = mock(SubscriptionEntryBatch.class);
     private SubscriptionEntryRepository subscriptionEntryRepository = mock(SubscriptionEntryRepository.class);
 
     @Before
     public void before() {
-        reset(feedParserMock);
         reset(subscriptionEntryBatchMock);
         reset(subscriptionEntryRepository);
 
-        uut = new SubscriptionBatch(feedParserMock, feedRepository, fetchStatisticRepository, subscriptionEntryBatchMock, subscriptionEntryRepository);
+        uut = new SubscriptionBatch(feedRepository, fetchStatisticRepository, subscriptionEntryBatchMock, subscriptionEntryRepository);
     }
 
     @Test
@@ -67,10 +63,11 @@ public class SubscriptionBatchTest {
         assertThat(before.getFetched(), is(282));
 
         FetchResult fetchResult = new FetchResult(Collections.<FetcherEntry>emptyList(), "last modified", "title");
-        when(feedParserMock.parse(anyString())).thenReturn(fetchResult);
+        fetchResult.setUrl(url);
+
         when(subscriptionEntryBatchMock.updateUserSubscriptionEntries(Matchers.<Feed>anyObject(), Matchers.<List<FetcherEntry>>anyObject())).thenReturn(Arrays.asList(new SubscriptionEntry()));
 
-        uut.updateUserSubscriptions(url);
+        uut.updateUserSubscriptions(fetchResult);
 
         Feed after = feedRepository.findByUrl(url);
 

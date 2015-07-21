@@ -1,7 +1,7 @@
 package myreader.fetcher.jobs;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
-
 import myreader.fetcher.persistence.FetchResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +36,7 @@ public class SyndFetcherJobTest {
     @Test
     public void shouldNotThrowAnException() throws Exception {
         when(queueMock.poll()).thenReturn(new FetchResult("url1"), new FetchResult("url2"), null);
-        doThrow(new RuntimeException()).when(serviceMock).updateUserSubscriptions(anyString());
+        doThrow(new RuntimeException()).when(serviceMock).updateUserSubscriptions(any(FetchResult.class));
 
         try {
             uut.run();
@@ -46,7 +45,7 @@ public class SyndFetcherJobTest {
         }
 
         verify(queueMock, times(3)).poll();
-        verify(serviceMock, times(2)).updateUserSubscriptions(anyString());
+        verify(serviceMock, times(2)).updateUserSubscriptions(any(FetchResult.class));
     }
 
     @Test
@@ -57,6 +56,6 @@ public class SyndFetcherJobTest {
         uut.run();
 
         verify(queueMock, times(1)).poll();
-        verify(serviceMock, never()).updateUserSubscriptions(anyString());
+        verify(serviceMock, never()).updateUserSubscriptions(any(FetchResult.class));
     }
 }
