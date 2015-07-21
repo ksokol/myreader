@@ -4,7 +4,6 @@ package myreader.config;
  * @author Kamill Sokol
  */
 public final class UrlMappings {
-    private UrlMappings() {}
 
     public static final String JAWR_BIN = "/bin";
     public static final String JAWR_CSS = "/css";
