@@ -1,4 +1,4 @@
-package myreader.fetcher;
+package myreader.fetcher.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -9,10 +9,11 @@ import static org.mockito.Mockito.when;
 import myreader.config.PersistenceConfig;
 import myreader.entity.Feed;
 import myreader.entity.SubscriptionEntry;
+import myreader.fetcher.SubscriptionBatch;
+import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
-import myreader.repository.FetchStatisticRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.test.TestDataSourceConfig;
 import org.junit.Before;
@@ -34,14 +35,12 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {PersistenceConfig.class, TestDataSourceConfig.class})
 @Transactional
-public class SubscriptionBatchTest {
+public class SubscriptionBatchImplTest {
 
     private SubscriptionBatch uut;
 
     @Autowired
     private FeedRepository feedRepository;
-    @Autowired
-    private FetchStatisticRepository fetchStatisticRepository;
 
     private SubscriptionEntryBatch subscriptionEntryBatchMock = mock(SubscriptionEntryBatch.class);
     private SubscriptionEntryRepository subscriptionEntryRepository = mock(SubscriptionEntryRepository.class);
@@ -51,7 +50,7 @@ public class SubscriptionBatchTest {
         reset(subscriptionEntryBatchMock);
         reset(subscriptionEntryRepository);
 
-        uut = new SubscriptionBatch(feedRepository, fetchStatisticRepository, subscriptionEntryBatchMock, subscriptionEntryRepository);
+        uut = new SubscriptionBatchImpl(feedRepository, subscriptionEntryBatchMock, subscriptionEntryRepository);
     }
 
     @Test
@@ -73,5 +72,14 @@ public class SubscriptionBatchTest {
 
         assertThat(after.getLastModified(), is("last modified"));
         assertThat(after.getFetched(), is(283));
+    }
+
+    @Test
+    public void testUnknownFeed() {
+        final FetchResult fetchResult = new FetchResult("irrelevant");
+
+        final long count = uut.updateUserSubscriptions(fetchResult);
+
+        assertThat(count, is(0L));
     }
 }

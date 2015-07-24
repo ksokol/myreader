@@ -1,6 +1,8 @@
 package myreader.config;
 
+import myreader.fetcher.impl.FetchStatisticsMethodInterceptor;
 import myreader.fetcher.SubscriptionBatch;
+import myreader.fetcher.impl.SubscriptionBatchImpl;
 import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
@@ -8,6 +10,8 @@ import myreader.repository.FetchStatisticRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.time.TimeService;
+
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +42,12 @@ public class ServiceConfig {
 
     @Bean
     public SubscriptionBatch subscriptionBatch() {
-        return new SubscriptionBatch(feedRepository, fetchStatisticRepository, subscriptionEntryBatch(), subscriptionEntryRepository);
+        final SubscriptionBatch SubscriptionBatch = new SubscriptionBatchImpl(feedRepository, subscriptionEntryBatch(), subscriptionEntryRepository);
+        final ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
+
+        proxyFactoryBean.setTarget(SubscriptionBatch);
+        proxyFactoryBean.addAdvice(new FetchStatisticsMethodInterceptor(fetchStatisticRepository, timeService));
+
+        return (SubscriptionBatch) proxyFactoryBean.getObject();
     }
 }
