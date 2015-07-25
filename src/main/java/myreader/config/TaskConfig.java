@@ -8,6 +8,7 @@ import myreader.fetcher.jobs.SyndFetcherJob;
 import myreader.repository.FeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -25,8 +26,6 @@ import java.util.concurrent.Executor;
 @EnableScheduling
 public class TaskConfig implements SchedulingConfigurer {
 
-    @Autowired
-    private FeedQueue feedQueue;
     @Autowired
     private FeedRepository feedRepository;
     @Autowired
@@ -57,8 +56,13 @@ public class TaskConfig implements SchedulingConfigurer {
         }
     }
 
+    @Bean
+    public FeedQueue feedQueue() {
+        return new FeedQueue();
+    }
+
     private FeedListFetcherJob feedListFetcher() {
-        return new FeedListFetcherJob(feedQueue, feedRepository, feedParser);
+        return new FeedListFetcherJob(feedQueue(), feedRepository, feedParser);
     }
 
     private SyndFetcherJob syndFetcherJob(String jobName) {
@@ -66,7 +70,7 @@ public class TaskConfig implements SchedulingConfigurer {
     }
 
     private SyndFetcherJob newSyndFetcherJob(String jobName) {
-        return new SyndFetcherJob(jobName, feedQueue, subscriptionBatch);
+        return new SyndFetcherJob(jobName, feedQueue(), subscriptionBatch);
     }
 
 }

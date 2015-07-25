@@ -4,10 +4,7 @@ import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.get;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-import myreader.config.CommonConfig;
-import myreader.config.PersistenceConfig;
-import myreader.config.ResourceConfig;
-import myreader.config.ServiceConfig;
+import myreader.Starter;
 import myreader.fetcher.FeedParser;
 import myreader.service.search.jobs.IndexSyncJob;
 import myreader.service.time.TimeService;
@@ -16,12 +13,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -29,8 +26,8 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Kamill Sokol
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CommonConfig.class, ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, TestConfig.class, ServiceConfig.class})
-@WebAppConfiguration
+@SpringApplicationConfiguration(classes = { Starter.class, TestConfig.class, TestDataSourceConfig.class} )
+@WebIntegrationTest("server.port:0")
 @TestPropertySource(properties = { "task.enabled = false" })
 public class IntegrationTestSupport {
 

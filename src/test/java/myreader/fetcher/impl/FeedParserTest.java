@@ -15,45 +15,30 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-import myreader.config.PersistenceConfig;
-import myreader.config.ResourceConfig;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
-import myreader.test.TestDataSourceConfig;
+import myreader.test.IntegrationTestSupport;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Kamill Sokol
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ResourceConfig.class, PersistenceConfig.class, TestDataSourceConfig.class, FeedParserTest.TestConfig.class})
-@WebAppConfiguration
 @DirtiesContext
-public class FeedParserTest {
-
-    @Configuration
-    @ComponentScan({"myreader.service", "myreader.fetcher"})
-    public static class TestConfig  {}
+public class FeedParserTest extends IntegrationTestSupport {
 
     private static final String HTTP_WWW_HEISE_DE_NEWSTICKER_HEISE_ATOM_XML = "http://www.heise.de/newsticker/heise-atom.xml";
     private static final String HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS = "http://www.javaspecialists.eu/archive/tjsn.rss";

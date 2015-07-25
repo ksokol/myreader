@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import myreader.resource.subscriptionentry.converter.SubscriptionEntryGetResponseConverter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +18,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.web.bind.support.AuthenticationPrincipalArgumentResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.validation.Validator;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -31,7 +27,6 @@ import spring.data.web.SequenceableHandlerMethodArgumentResolver;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.validation.TraversableResolver;
 
 /**
  * @author Kamill Sokol
@@ -45,10 +40,6 @@ import javax.validation.TraversableResolver;
 @EnableAsync
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
-    @Autowired
-    @Qualifier("patchSupportTraversableResolver")
-    private TraversableResolver traversableResolver;
-
     //TODO should be added automatically when @EnableWebMvcSecurity is enabled
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -59,13 +50,6 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(configuredMappingJacksonHttpMessageConverter());
-    }
-
-    @Override
-    public Validator getValidator() {
-        LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-        localValidatorFactoryBean.setTraversableResolver(traversableResolver);
-        return localValidatorFactoryBean;
     }
 
     @Override
