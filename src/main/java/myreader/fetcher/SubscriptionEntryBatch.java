@@ -93,12 +93,4 @@ public class SubscriptionEntryBatch {
 
         return toIndex;
     }
-
-    public ExclusionChecker getExclusionChecker() {
-        return exclusionChecker;
-    }
-
-    public void setExclusionChecker(ExclusionChecker exclusionChecker) {
-        this.exclusionChecker = exclusionChecker;
-    }
 }
