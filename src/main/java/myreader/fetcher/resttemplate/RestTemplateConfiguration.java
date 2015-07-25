@@ -3,10 +3,11 @@ package myreader.fetcher.resttemplate;
 import myreader.fetcher.converter.AtomConverter;
 import myreader.fetcher.converter.ChannelConverter;
 import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -51,13 +52,10 @@ public class RestTemplateConfiguration implements InitializingBean {
                     }
                 }).build();
 
-        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
-
-        // based on HttpClients.createSystem()
         return HttpClientBuilder.create()
                 .useSystemProperties()
                 .setMaxConnTotal(30000)
-                .setSSLSocketFactory(sslConnectionSocketFactory) // add custom config
+                .setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier()))
                 .build();
     }
 
