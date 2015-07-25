@@ -137,7 +137,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     @Test
     public void feedTagEqualTag1() throws Exception {
         mockMvc.perform(getAsUser2("/api/2/subscriptionEntries?feedTagEqual=tag1"))
-                .andExpect(jsonPath("content", hasSize(3)));
+                .andExpect(jsonPath("content", hasSize(2)));
     }
 
     @Test

@@ -1,0 +1,13 @@
+{
+    "uuid": "1004",
+    "title": "Bliki: TellDontAsk",
+    "feedTitle": "user112_subscription1",
+    "tag": "tag3",
+    "content": "content",
+    "seen": false,
+    "feedTag": "tag1",
+    "feedUuid": "1100",
+    "origin": "http://martinfowler.com/bliki/TellDontAsk.html",
+    "createdAt": "2011-04-15T19:20:46Z",
+    "links": "${json-unit.ignore}"
+}
