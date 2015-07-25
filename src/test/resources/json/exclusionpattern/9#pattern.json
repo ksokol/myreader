@@ -7,7 +7,7 @@
     ],
     "content": [
         {
-            "uuid": "5",
+            "uuid": "7",
             "hitCount": 0,
             "pattern": "test",
             "links": "${json-unit.ignore}"

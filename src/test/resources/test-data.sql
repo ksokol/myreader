@@ -14,6 +14,7 @@ insert into user(user_id,user_email,user_password,user_role) values (107,'user10
 insert into user(user_id,user_email,user_password,user_role) values (108,'user108@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
 insert into user(user_id,user_email,user_password,user_role) values (109,'user109@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
 insert into user(user_id,user_email,user_password,user_role) values (110,'user110@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password,user_role) values (111,'user111@localhost','cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
 
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (0,'The Java Posse','http://feeds.feedburner.com/javaposse','Thu, 27 Mar 2014 13:23:32 GMT',282,'2011-04-15T22:20:46Z');
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (1,'dzone.com: latest front page','http://feeds.dzone.com/dzone/frontpage','Thu, 27 Mar 2014 14:11:00 GMT',30167,'2011-04-15T22:20:46Z');
@@ -71,6 +72,8 @@ INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_t
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (107,1,'user109_subscription1','tag1',109,0,'2011-04-15T19:20:46Z',0);
 INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (108,0,'user110_subscription1','tag1',110,0,'2011-04-15T19:20:46Z',0);
 
+INSERT INTO user_feed (user_feed_id,user_feed_unseen,user_feed_title,user_feed_tag,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (109,0,'user111_subscription1','tag1',111,0,'2011-04-15T19:20:46Z',0);
+
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1001,0,'tag1',3,1001,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1002,1,'tag1',3,1002,'2011-04-15T19:20:46Z');
 INSERT INTO user_feed_entry (user_feed_entry_id,user_feed_entry_is_read,user_feed_entry_tag,user_feed_entry_user_feed_id,user_feed_entry_entry_id,user_feed_entry_created_at) values (1003,0,'tag3',7,1001,'2011-04-15T19:20:46Z');
@@ -99,3 +102,6 @@ INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_
 INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (2,'user1_subscription2_pattern1',1,2);
 INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (3,'user1_subscription2_pattern2',0,2);
 INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (4,'user2_subscription1_pattern1',1,6);
+
+INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (5,'user111_subscription1_pattern1',1,109);
+INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (6,'user111_subscription1_pattern2',1,109);

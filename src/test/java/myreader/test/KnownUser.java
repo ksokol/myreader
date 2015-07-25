@@ -18,7 +18,8 @@ public enum KnownUser {
     USER107,
     USER108,
     USER109,
-    USER110;
+    USER110,
+    USER111;
 
     KnownUser() {
         this(false);

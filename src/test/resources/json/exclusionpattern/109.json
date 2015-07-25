@@ -1,0 +1,28 @@
+{
+  "links": [
+    {
+      "rel": "self",
+      "href": "/api/2/exclusions/109/pattern"
+    }
+  ],
+  "content": [
+    {
+      "uuid": "5",
+      "hitCount": 1,
+      "pattern": "user111_subscription1_pattern1",
+      "links": []
+    },
+    {
+      "uuid": "6",
+      "hitCount": 1,
+      "pattern": "user111_subscription1_pattern2",
+      "links": []
+    }
+  ],
+  "page": {
+    "size": 20,
+    "totalElements": 2,
+    "totalPages": 1,
+    "number": 0
+  }
+}

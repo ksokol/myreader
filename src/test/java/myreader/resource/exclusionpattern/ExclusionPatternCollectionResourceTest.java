@@ -1,6 +1,8 @@
 package myreader.resource.exclusionpattern;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
+import static myreader.test.KnownUser.USER111;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
@@ -16,9 +18,9 @@ public class ExclusionPatternCollectionResourceTest extends IntegrationTestSuppo
 
     @Test
     public void testCollectionResourceForUser1JsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser1("/api/2/exclusions/1/pattern"))
+        mockMvc.perform(actionAsUserX(GET, USER111, "/api/2/exclusions/109/pattern"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/exclusionpattern/1.json"));
+                .andExpect(jsonEquals("json/exclusionpattern/109.json"));
     }
 
     @Test

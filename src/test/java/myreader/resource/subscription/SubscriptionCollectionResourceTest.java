@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser102;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +33,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
     public void testCollectionResourceJsonStructureEquality() throws Exception {
         mockMvc.perform(getAsUser2("/api/2/subscriptions"))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andExpect(jsonEquals("json/subscription/structure.json"));
     }
 
