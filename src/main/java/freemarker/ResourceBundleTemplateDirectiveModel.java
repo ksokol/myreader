@@ -1,10 +1,10 @@
 package freemarker;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import freemarker.core.Environment;
+import freemarker.template.TemplateDirectiveBody;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
 import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.context.ThreadLocalJawrContext;
@@ -12,11 +12,10 @@ import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.resource.bundle.renderer.BundleRendererContext;
 import net.jawr.web.servlet.RendererRequestUtils;
-import freemarker.core.Environment;
-import freemarker.template.TemplateDirectiveBody;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
+
+import java.io.IOException;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Kamill Sokol
@@ -32,12 +31,6 @@ public abstract class ResourceBundleTemplateDirectiveModel extends RequestAwareT
             throw new TemplateModelException("id is not set");
         }
 
-        Boolean useRandomFlag = null;
-        String useRandomParam = String.valueOf(params.get("useRandomParam"));
-        if(!"null".equals(useRandomParam)) {
-            useRandomFlag = Boolean.valueOf(useRandomParam);
-        }
-
         if(null == getServletContext().getAttribute(getResourceHandlerAttributeName())) {
             throw new TemplateModelException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
         }
@@ -45,13 +38,8 @@ public abstract class ResourceBundleTemplateDirectiveModel extends RequestAwareT
         ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) getServletContext().getAttribute(getResourceHandlerAttributeName());
         JawrConfig jawrConfig = rsHandler.getConfig();
 
-        if(RendererRequestUtils.refreshConfigIfNeeded(request, jawrConfig)){
-            rsHandler = (ResourceBundlesHandler) getServletContext().getAttribute(getResourceHandlerAttributeName());
-            jawrConfig = rsHandler.getConfig();
-        }
-
         // Renderer instance which takes care of generating the response
-        BundleRenderer renderer = createRenderer(rsHandler, useRandomFlag, params);
+        BundleRenderer renderer = createRenderer(rsHandler, null, params);
 
         // set the debug override
         RendererRequestUtils.setRequestDebuggable(request, jawrConfig);
