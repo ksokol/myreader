@@ -1,7 +1,8 @@
 package myreader.entity;
 
 import java.util.Date;
-
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,31 +16,24 @@ import javax.persistence.TemporalType;
 /**
  * @author Kamill Sokol
  */
+@Access(AccessType.PROPERTY)
 @Entity
 @Table(name = "exclusion_pattern")
 public class ExclusionPattern implements Identifiable {
 
-    @Id
-    @GeneratedValue
     private Long id;
-
     private String pattern;
-
-    @Column(name = "hit_count")
     private int hitCount;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "exclusion_pattern_user_feed_id")
     private Subscription subscription;
+    private Date createdAt;
 
     public ExclusionPattern() {
         //TODO
         this.createdAt = new Date();
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-
+    @Id
+    @GeneratedValue
     @Override
     public Long getId() {
         return id;
@@ -58,6 +52,7 @@ public class ExclusionPattern implements Identifiable {
         this.pattern = pattern;
     }
 
+    @Column(name = "hit_count")
     public int getHitCount() {
         return hitCount;
     }
@@ -66,6 +61,7 @@ public class ExclusionPattern implements Identifiable {
         this.hitCount = hitCount;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -74,6 +70,8 @@ public class ExclusionPattern implements Identifiable {
         this.createdAt = createdAt;
     }
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "exclusion_pattern_user_feed_id")
     public Subscription getSubscription() {
         return subscription;
     }

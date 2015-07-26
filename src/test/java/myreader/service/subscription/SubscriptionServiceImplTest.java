@@ -72,7 +72,7 @@ public class SubscriptionServiceImplTest extends IntegrationTestSupport {
         assertThat(newSubscription.getFeed().getId(), is(newFeed.getId()));
         assertThat(newSubscription.getFeed().getUrl(), is(newFeed.getUrl()));
         assertThat(newSubscription, hasProperty("title", is(feedTitle)));
-        assertThat(newSubscription, hasProperty("user", is(user)));
+        assertThat(newSubscription.getUser(), hasProperty("id", is(user.getId())));
     }
 
     @Test

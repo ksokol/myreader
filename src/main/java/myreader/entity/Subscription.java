@@ -1,8 +1,17 @@
 package myreader.entity;
 
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.bridge.builtin.LongBridge;
+
 import java.util.Date;
 import java.util.Set;
-
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,62 +26,28 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Index;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.bridge.builtin.LongBridge;
-
+@Access(AccessType.PROPERTY)
 @Entity
 @Table(name = "user_feed")
 public class Subscription implements Identifiable {
+
+    private Long id;
+    private String title;
+    private String tag;
+    private User user;
+    private int sum;
+    private int unseen = 0;
+    private Date createdAt;
+    private Feed feed;
+    private Set<SubscriptionEntry> subscriptionEntries;
+    private Set<ExclusionPattern> exclusions;
+    private long version;
 
     @FieldBridge(impl = LongBridge.class)
     @Field(name = "subscriptionId", index = Index.YES)
     @Id
     @GeneratedValue
     @Column(name = "user_feed_id")
-    private Long id;
-
-    @Column(name = "user_feed_title")
-    private String title;
-
-    @Field(analyze = Analyze.NO)
-    @Column(name = "user_feed_tag")
-    private String tag;
-
-    @IndexedEmbedded
-    @JoinColumn(name = "user_feed_user_id")
-    @ManyToOne(optional = false)
-    private User user;
-
-    @Column(name = "user_feed_sum")
-    private int sum;
-
-    @Column(name = "user_feed_unseen", columnDefinition = "INT DEFAULT 0", precision = 0)
-    private int unseen = 0;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "user_feed_created_at")
-    private Date createdAt;
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
-    private Feed feed;
-
-    @ContainedIn
-    @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
-    private Set<SubscriptionEntry> subscriptionEntries;
-
-    @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
-    private Set<ExclusionPattern> exclusions;
-
-    @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
-    @Version
-    private long version;
-
     @Override
     public Long getId() {
         return id;
@@ -83,6 +58,7 @@ public class Subscription implements Identifiable {
         this.id = id;
     }
 
+    @Column(name = "user_feed_title")
     public String getTitle() {
         return title;
     }
@@ -91,6 +67,8 @@ public class Subscription implements Identifiable {
         this.title = title;
     }
 
+    @Field(analyze = Analyze.NO)
+    @Column(name = "user_feed_tag")
     public String getTag() {
         return tag;
     }
@@ -99,6 +77,7 @@ public class Subscription implements Identifiable {
         this.tag = tag;
     }
 
+    @Column(name = "user_feed_sum")
     public int getSum() {
         return sum;
     }
@@ -107,6 +86,7 @@ public class Subscription implements Identifiable {
         this.sum = sum;
     }
 
+    @Column(name = "user_feed_unseen", columnDefinition = "INT DEFAULT 0", precision = 0)
     public int getUnseen() {
         return unseen;
     }
@@ -115,6 +95,8 @@ public class Subscription implements Identifiable {
         this.unseen = unseen;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "user_feed_created_at")
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -123,6 +105,9 @@ public class Subscription implements Identifiable {
         this.createdAt = createdAt;
     }
 
+    @IndexedEmbedded
+    @JoinColumn(name = "user_feed_user_id")
+    @ManyToOne(optional = false)
     public User getUser() {
         return user;
     }
@@ -131,6 +116,8 @@ public class Subscription implements Identifiable {
         this.user = user;
     }
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
     public Feed getFeed() {
         return feed;
     }
@@ -139,6 +126,7 @@ public class Subscription implements Identifiable {
         this.feed = feed;
     }
 
+    @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
     public Set<ExclusionPattern> getExclusions() {
         return exclusions;
     }
@@ -147,6 +135,8 @@ public class Subscription implements Identifiable {
         this.exclusions = exclusions;
     }
 
+    @ContainedIn
+    @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
     public Set<SubscriptionEntry> getSubscriptionEntries() {
         return subscriptionEntries;
     }
@@ -155,6 +145,8 @@ public class Subscription implements Identifiable {
         this.subscriptionEntries = subscriptionEntries;
     }
 
+    @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
+    @Version
     public long getVersion() {
         return version;
     }

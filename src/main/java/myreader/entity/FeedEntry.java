@@ -1,8 +1,13 @@
 package myreader.entity;
 
+import org.hibernate.search.annotations.Boost;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+
 import java.util.Date;
 import java.util.List;
-
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,46 +22,24 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.search.annotations.Boost;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Field;
-
+@Access(AccessType.PROPERTY)
 @Entity
 @Table(name = "entry")
 public class FeedEntry implements Identifiable {
+
+    private Long id;
+    private Feed feed;
+    private String title;
+    private String guid;
+    private String url;
+    private String content;
+    private List<SubscriptionEntry> subscriptionEntries;
+    private Date createdAt;
 
     @Id
     @TableGenerator(name = "feed_entry_id_generator", table = "primary_keys")
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "feed_entry_id_generator")
     @Column(name = "entry_id")
-    private Long id;
-
-    @JoinColumn(name = "entry_feed_id")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Feed feed;
-
-    @Field(boost = @Boost(value = 0.5F))
-    @Column(name = "entry_title")
-    private String title;
-
-    @Column(name = "entry_guid")
-    private String guid;
-
-    @Column(name = "entry_url")
-    private String url;
-
-    @Field
-    @Column(name = "entry_content", columnDefinition = "text")
-    private String content;
-
-    @ContainedIn
-    @OneToMany(mappedBy = "feedEntry")
-    private List<SubscriptionEntry> subscriptionEntries;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "entry_created_at")
-    private Date createdAt;
-
     @Override
     public Long getId() {
         return id;
@@ -67,6 +50,8 @@ public class FeedEntry implements Identifiable {
         this.id = id;
     }
 
+    @JoinColumn(name = "entry_feed_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     public Feed getFeed() {
         return feed;
     }
@@ -74,7 +59,8 @@ public class FeedEntry implements Identifiable {
     public void setFeed(Feed feed) {
         this.feed = feed;
     }
-
+    @Field(boost = @Boost(value = 0.5F))
+    @Column(name = "entry_title")
     public String getTitle() {
         return title;
     }
@@ -83,6 +69,7 @@ public class FeedEntry implements Identifiable {
         this.title = title;
     }
 
+    @Column(name = "entry_guid")
     public String getGuid() {
         return guid;
     }
@@ -91,6 +78,7 @@ public class FeedEntry implements Identifiable {
         this.guid = guid;
     }
 
+    @Column(name = "entry_url")
     public String getUrl() {
         return url;
     }
@@ -99,6 +87,8 @@ public class FeedEntry implements Identifiable {
         this.url = url;
     }
 
+    @Field
+    @Column(name = "entry_content", columnDefinition = "text")
     public String getContent() {
         return content;
     }
@@ -107,6 +97,8 @@ public class FeedEntry implements Identifiable {
         this.content = content;
     }
 
+    @ContainedIn
+    @OneToMany(mappedBy = "feedEntry")
     public List<SubscriptionEntry> getSubscriptionEntries() {
         return subscriptionEntries;
     }
@@ -115,6 +107,8 @@ public class FeedEntry implements Identifiable {
         this.subscriptionEntries = subscriptionEntries;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "entry_created_at")
     public Date getCreatedAt() {
         return createdAt;
     }

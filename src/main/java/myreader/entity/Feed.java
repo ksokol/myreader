@@ -2,6 +2,8 @@ package myreader.entity;
 
 import java.util.Date;
 import java.util.Set;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,39 +15,19 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+@Access(AccessType.PROPERTY)
 @Entity
 @Table(name = "feed")
 public class Feed implements Identifiable {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "feed_id")
     private Long id;
-
-    @Column(name = "feed_title", nullable = false)
     private String title;
-
-    @Column(name = "feed_url")
     private String url;
-
-    @Column(name = "feed_last_modified")
     private String lastModified;
-
-    @Column(name = "feed_fetched")
     private Integer fetched = 0;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "feed_created_at")
     private Date createdAt;
-
-    @OneToMany(mappedBy = "feed")
     private Set<Subscription> subscriptions;
-
-    @OneToMany(mappedBy = "feed")
     private Set<FeedEntry> entries;
-
-    @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
-    @Version
     private long version;
 
     public Feed() {
@@ -53,6 +35,9 @@ public class Feed implements Identifiable {
         this.createdAt = new Date();
     }
 
+    @Id
+    @GeneratedValue
+    @Column(name = "feed_id")
     @Override
     public Long getId() {
         return id;
@@ -63,6 +48,7 @@ public class Feed implements Identifiable {
         this.id = id;
     }
 
+    @Column(name = "feed_title", nullable = false)
     public String getTitle() {
         return title;
     }
@@ -71,6 +57,7 @@ public class Feed implements Identifiable {
         this.title = title;
     }
 
+    @Column(name = "feed_url")
     public String getUrl() {
         return url;
     }
@@ -79,6 +66,7 @@ public class Feed implements Identifiable {
         this.url = url;
     }
 
+    @Column(name = "feed_last_modified")
     public String getLastModified() {
         return lastModified;
     }
@@ -87,6 +75,7 @@ public class Feed implements Identifiable {
         this.lastModified = lastModified;
     }
 
+    @Column(name = "feed_fetched")
     public Integer getFetched() {
         return fetched;
     }
@@ -95,6 +84,8 @@ public class Feed implements Identifiable {
         this.fetched = fetched;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "feed_created_at")
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -103,6 +94,7 @@ public class Feed implements Identifiable {
         this.createdAt = createdAt;
     }
 
+    @OneToMany(mappedBy = "feed")
     public Set<Subscription> getSubscriptions() {
         return subscriptions;
     }
@@ -111,6 +103,7 @@ public class Feed implements Identifiable {
         this.subscriptions = subscriptions;
     }
 
+    @OneToMany(mappedBy = "feed")
     public Set<FeedEntry> getEntries() {
         return entries;
     }
@@ -125,6 +118,8 @@ public class Feed implements Identifiable {
         this.createdAt = new Date();
     }
 
+    @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
+    @Version
     public long getVersion() {
         return version;
     }

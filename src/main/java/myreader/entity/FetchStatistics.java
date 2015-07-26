@@ -2,6 +2,8 @@ package myreader.entity;
 
 import java.util.Date;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,41 +14,23 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+@Access(AccessType.PROPERTY)
 @Entity
 @Table(name = "fetch_statistics")
 public class FetchStatistics implements Identifiable {
 
-    @Id
-    @GeneratedValue
     private Long id;
-
-    @Column(nullable = false)
     private String issuer;
-
-    @Column(nullable = false)
     private String url;
-
-    @Column(columnDefinition = "int default '0'", nullable = false)
     private Long fetchCount;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
     private Date startedAt;
-
-    @Temporal(TemporalType.TIMESTAMP)
     private Date stoppedAt;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Result result;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Type type;
-
-    @Column(columnDefinition="text")
     private String message;
 
+    @Id
+    @GeneratedValue
     @Override
     public Long getId() {
         return id;
@@ -57,6 +41,7 @@ public class FetchStatistics implements Identifiable {
         this.id = id;
     }
 
+    @Column(nullable = false)
     public String getIssuer() {
         return issuer;
     }
@@ -65,6 +50,7 @@ public class FetchStatistics implements Identifiable {
         this.issuer = issuer;
     }
 
+    @Column(nullable = false)
     public String getUrl() {
         return url;
     }
@@ -73,6 +59,7 @@ public class FetchStatistics implements Identifiable {
         this.url = url;
     }
 
+    @Column(columnDefinition = "int default '0'", nullable = false)
     public Long getFetchCount() {
         return fetchCount;
     }
@@ -81,6 +68,8 @@ public class FetchStatistics implements Identifiable {
         this.fetchCount = fetchCount;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     public Date getStartedAt() {
         return startedAt;
     }
@@ -88,7 +77,7 @@ public class FetchStatistics implements Identifiable {
     public void setStartedAt(Date startedAt) {
         this.startedAt = startedAt;
     }
-
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getStoppedAt() {
         return stoppedAt;
     }
@@ -97,6 +86,8 @@ public class FetchStatistics implements Identifiable {
         this.stoppedAt = stoppedAt;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     public Result getResult() {
         return result;
     }
@@ -105,6 +96,8 @@ public class FetchStatistics implements Identifiable {
         this.result = result;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     public Type getType() {
         return type;
     }
@@ -113,6 +106,7 @@ public class FetchStatistics implements Identifiable {
         this.type = type;
     }
 
+    @Column(columnDefinition="text")
     public String getMessage() {
         return message;
     }
@@ -122,11 +116,11 @@ public class FetchStatistics implements Identifiable {
     }
 
     public enum Result {
-        SUCCESS, ERROR;
+        SUCCESS, ERROR
     }
 
     public enum Type {
-        ENTRY_LIST;
+        ENTRY_LIST
     }
 
 }
