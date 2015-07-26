@@ -1,11 +1,12 @@
 package myreader.config.jawr;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.util.Properties;
-
 import org.junit.Test;
+
+import java.util.Properties;
 
 /**
 * @author Kamill Sokol
@@ -53,4 +54,15 @@ public class ConfigBuilderTest {
         assertThat((String) properties.get("jawr.css.bundle.desktop.mappings"), is("webjars:/test1.css,jar:/test2.css"));
     }
 
+    @Test
+    public void testDebugFlagIsFalse() {
+        Properties properties = new ConfigBuilder(false).jsBundle("test").build();
+        assertThat(properties.get("jawr.debug.on"), nullValue());
+    }
+
+    @Test
+    public void testDebugFlagIsTrue() {
+        Properties properties = new ConfigBuilder(true).jsBundle("test").build();
+        assertThat((String) properties.get("jawr.debug.on"), is("true"));
+    }
 }
