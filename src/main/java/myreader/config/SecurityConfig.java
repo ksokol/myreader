@@ -51,7 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity webSecurity) throws Exception {
         webSecurity
                 .ignoring()
-                .antMatchers("/static/**", JAWR_JS + "/**");
+                .antMatchers("/static/**", JAWR_JS.mapping() + "/**");
     }
 
     @Bean
@@ -75,14 +75,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().realmName("API")
                 .and()
                 .formLogin()
-                .loginPage(LOGIN).permitAll()
-                .loginProcessingUrl(LOGIN_PROCESSING).permitAll()
+                .loginPage(LOGIN.mapping()).permitAll()
+                .loginProcessingUrl(LOGIN_PROCESSING.mapping()).permitAll()
                 .successHandler(successHandler())
-                .failureUrl(LOGIN + "?result=failed")
+                .failureUrl(LOGIN.mapping() + "?result=failed")
                 .and()
                 .rememberMe()
                 .and()
-                .logout().logoutUrl(LOGOUT).logoutSuccessUrl(LOGIN).permitAll().deleteCookies("JSESSIONID")
+                .logout().logoutUrl(LOGOUT.mapping()).logoutSuccessUrl(LOGIN.mapping()).permitAll().deleteCookies("JSESSIONID")
                 .and()
                 .addFilterBefore(ajaxExceptionTranslationFilter(), FilterSecurityInterceptor.class)
                 .addFilterAfter(new XAuthoritiesFilter(), FilterSecurityInterceptor.class)
@@ -94,7 +94,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private AuthenticationEntryPoint authenticationEntryPoint() {
-        return new LoginUrlAuthenticationEntryPoint(LOGIN);
+        return new LoginUrlAuthenticationEntryPoint(LOGIN.mapping());
     }
 
     private AuthenticationSuccessHandler successHandler() {

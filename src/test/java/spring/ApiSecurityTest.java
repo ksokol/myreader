@@ -60,7 +60,7 @@ public class ApiSecurityTest extends SecurityTestSupport {
 
     @Test
     public void testLoginPage() throws IOException {
-        String loginUrl = "http://localhost" + LOGIN;
+        String loginUrl = "http://localhost" + LOGIN.mapping();
 
         HtmlPage page = webClient.getPage(loginUrl);
         HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
@@ -74,7 +74,7 @@ public class ApiSecurityTest extends SecurityTestSupport {
         assertThat(password, notNullValue());
        // assertThat(csrf, notNullValue());
         assertThat(submit, notNullValue());
-        assertThat(loginForm.getAttribute("action"), is(LOGIN_PROCESSING));
+        assertThat(loginForm.getAttribute("action"), is(LOGIN_PROCESSING.mapping()));
     }
 
     private static String basic(KnownUser user) {

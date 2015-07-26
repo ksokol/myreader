@@ -3,13 +3,22 @@ package myreader.config;
 /**
  * @author Kamill Sokol
  */
-public final class UrlMappings {
+public enum UrlMappings {
 
-    public static final String JAWR_BIN = "/bin";
-    public static final String JAWR_CSS = "/css";
-    public static final String JAWR_JS = "/js";
+    JAWR_BIN("bin"),
+    JAWR_CSS("css"),
+    JAWR_JS("js"),
+    LOGIN("login"),
+    LOGOUT("logout"),
+    LOGIN_PROCESSING("check");
 
-    public static final String LOGIN = "/login";
-    public static final String LOGOUT = "/logout";
-    public static final String LOGIN_PROCESSING = "/check";
+    private final String mapping;
+
+    UrlMappings(final String mapping) {
+        this.mapping = "/"+mapping;
+    }
+
+    public String mapping() {
+        return mapping;
+    }
 }

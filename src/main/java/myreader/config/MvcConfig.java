@@ -53,7 +53,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
-        registry.addViewController(LOGIN).setViewName("login");
+        registry.addViewController(LOGIN.mapping()).setViewName("login");
 
         //deprecated
         registry.addViewController("reader").setViewName("index");
@@ -66,7 +66,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         freeMarkerViewResolver.setRequestContextAttribute("requestContext");
         freeMarkerViewResolver.setExposeRequestAttributes(true);
         freeMarkerViewResolver.setSuffix(".ftl");
-        freeMarkerViewResolver.setAttributesMap(Collections.singletonMap("LOGIN_PROCESSING_URL", LOGIN_PROCESSING));
+        freeMarkerViewResolver.setAttributesMap(Collections.singletonMap("LOGIN_PROCESSING_URL", LOGIN_PROCESSING.mapping()));
         registry.viewResolver(freeMarkerViewResolver);
     }
     @Bean
@@ -89,9 +89,9 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         simpleUrlHandlerMapping.setOrder(Integer.MAX_VALUE - 2);
         Properties properties = new Properties();
 
-        properties.setProperty(JAWR_BIN + "/**", "jawrBinaryController");
-        properties.setProperty(JAWR_CSS + "/**", "jawrCssController");
-        properties.setProperty(JAWR_JS + "/**", "jawrJavascriptController");
+        properties.setProperty(JAWR_BIN.mapping() + "/**", "jawrBinaryController");
+        properties.setProperty(JAWR_CSS.mapping() + "/**", "jawrCssController");
+        properties.setProperty(JAWR_JS.mapping() + "/**", "jawrJavascriptController");
 
         simpleUrlHandlerMapping.setMappings(properties);
         return simpleUrlHandlerMapping;
@@ -100,7 +100,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Bean
     public JawrSpringController jawrBinaryController() {
         JawrSpringController jawrSpringController = new JawrSpringController();
-        jawrSpringController.setControllerMapping(JAWR_BIN);
+        jawrSpringController.setControllerMapping(JAWR_BIN.mapping());
         jawrSpringController.setConfiguration(new Properties());
         jawrSpringController.setType("binary");
         return jawrSpringController;
@@ -109,7 +109,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Bean
     public JawrSpringController jawrCssController(@Qualifier("cssConfigProperties") Properties properties) {
         JawrSpringController jawrSpringController = new JawrSpringController();
-        jawrSpringController.setControllerMapping(JAWR_CSS);
+        jawrSpringController.setControllerMapping(JAWR_CSS.mapping());
         jawrSpringController.setConfiguration(properties);
         jawrSpringController.setType("css");
         return jawrSpringController;
@@ -118,7 +118,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Bean
     public JawrSpringController jawrJavascriptController(@Qualifier("javascriptConfigPropertiesSource") Properties properties) {
         JawrSpringController jawrSpringController = new JawrSpringController();
-        jawrSpringController.setControllerMapping(JAWR_JS);
+        jawrSpringController.setControllerMapping(JAWR_JS.mapping());
         jawrSpringController.setConfiguration(properties);
         jawrSpringController.setType("js");
         return jawrSpringController;
