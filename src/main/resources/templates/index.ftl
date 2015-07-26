@@ -2,6 +2,8 @@
 <html ng-app="myreader">
     <head>
         <title>MyReader</title>
+
+        <link rel="icon" type="image/gif" href="${requestContext.getContextUrl("/static/img/favicon.gif")}">
         <@style id="mobile"></@style>
         <meta name="viewport" content="initial-scale=1">
     </head>
