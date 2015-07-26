@@ -8,29 +8,21 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.test.IntegrationTestSupport;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.client.RestTemplate;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**
  * @author Kamill Sokol
  */
 public class FeedParserHttpsTests extends IntegrationTestSupport {
-
-    @Configuration
-    @ComponentScan({"myreader.service", "myreader.fetcher"})
-    public static class TestConfig  {}
 
     private static final int PORT = 18443;
     private static final String HTTPS_URL = "https://localhost:" + PORT + "/rss";
