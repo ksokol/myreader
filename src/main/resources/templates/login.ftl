@@ -6,32 +6,7 @@
     <link rel="icon" type="image/gif" href="${requestContext.getContextUrl("/static/img/favicon.gif")}">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="${requestContext.getContextUrl("/static/css/bootstrap-2.1.min.css")}" rel="stylesheet">
-
-    <style type="text/css">
-        body {
-            padding-top:40px;
-        }
-        #alerts {
-            position: fixed;
-            top: 0px;
-            z-index: 1031;
-            right: 0;
-            left: 0;
-        }
-        .alert {
-            margin-bottom: 0px !important;
-        }
-        .container {
-            width: 260px !important;
-        }
-        .form-horizontal .control-label {
-            width: 0px !important;
-        }
-        .form-horizontal .controls {
-            margin-left: 80px !important;
-        }
-    </style>
+    <@style id="login"></@style>
 </head>
 <body>
 
@@ -42,7 +17,6 @@
             <span>Login failed. Try again.</span>
         </div>
     </div>
-
 </@login>
 
 <div class="container">

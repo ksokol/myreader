@@ -1,5 +1,6 @@
 package myreader.config;
 
+import static myreader.config.UrlMappings.JAWR_CSS;
 import static myreader.config.UrlMappings.JAWR_JS;
 import static myreader.config.UrlMappings.LOGIN;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
@@ -51,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity webSecurity) throws Exception {
         webSecurity
                 .ignoring()
-                .antMatchers("/static/**", JAWR_JS.mapping() + "/**");
+                .antMatchers("/static/**", JAWR_JS.mapping() + "/**", JAWR_CSS.mapping() + "/**");
     }
 
     @Bean

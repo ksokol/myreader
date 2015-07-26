@@ -23,8 +23,12 @@ public class CssConfigPropertiesSource {
         final boolean debug = environment.getProperty("jawr.debug.on", Boolean.class, false);
         return new ConfigBuilder(debug)
                 .cssBundle("mobile")
-                .webjar("angular-material/" + ANGULAR_MATERIAL.version() + "/angular-material.css")
-                .jar("static/app/css/mobile.css")
+                    .webjar("angular-material/" + ANGULAR_MATERIAL.version() + "/angular-material.css")
+                    .jar("static/app/css/mobile.css")
+                .and()
+                .cssBundle("login")
+                    .jar("/static/css/bootstrap-2.1.min.css")
+                    .jar("/static/css/login.css")
                 .build();
     }
 }
