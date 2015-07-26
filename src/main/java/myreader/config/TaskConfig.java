@@ -26,16 +26,10 @@ import java.util.concurrent.Executor;
 @EnableScheduling
 public class TaskConfig implements SchedulingConfigurer {
 
-    @Autowired
     private FeedRepository feedRepository;
-    @Autowired
     private SubscriptionBatch subscriptionBatch;
-    @Autowired
     private Environment environment;
-    @Qualifier(value = "customExecutor")
-    @Autowired
     private Executor executor;
-    @Autowired
     private FeedParser feedParser;
 
     @Override
@@ -73,4 +67,29 @@ public class TaskConfig implements SchedulingConfigurer {
         return new SyndFetcherJob(jobName, feedQueue(), subscriptionBatch);
     }
 
+    @Autowired
+    public void setFeedRepository(final FeedRepository feedRepository) {
+        this.feedRepository = feedRepository;
+    }
+
+    @Autowired
+    public void setSubscriptionBatch(final SubscriptionBatch subscriptionBatch) {
+        this.subscriptionBatch = subscriptionBatch;
+    }
+
+    @Autowired
+    public void setEnvironment(final Environment environment) {
+        this.environment = environment;
+    }
+
+    @Qualifier(value = "customExecutor")
+    @Autowired
+    public void setExecutor(final Executor executor) {
+        this.executor = executor;
+    }
+
+    @Autowired
+    public void setFeedParser(final FeedParser feedParser) {
+        this.feedParser = feedParser;
+    }
 }
