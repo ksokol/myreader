@@ -63,6 +63,9 @@ public class ApiSecurityTest extends SecurityTestSupport {
         String loginUrl = "http://localhost" + LOGIN.mapping();
 
         HtmlPage page = webClient.getPage(loginUrl);
+
+        assertThat(page.getUrl().toString(), is("http://localhost" + LOGIN.mapping() ));
+
         HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
 
         DomElement username = loginForm.getInputByName(USERNAME_INPUT);
@@ -75,6 +78,30 @@ public class ApiSecurityTest extends SecurityTestSupport {
        // assertThat(csrf, notNullValue());
         assertThat(submit, notNullValue());
         assertThat(loginForm.getAttribute("action"), is(LOGIN_PROCESSING.mapping()));
+    }
+
+    @Test
+    public void testLoginPageWithWrongCredentials() throws IOException {
+        String loginUrl = "http://localhost" + LOGIN.mapping();
+
+        HtmlPage page = webClient.getPage(loginUrl);
+        HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
+
+        DomElement username = loginForm.getInputByName(USERNAME_INPUT);
+        DomElement password = loginForm.getInputByName(PASSWORD_INPUT);
+        // HtmlInput csrf = loginForm.getInputByName(CSRF_INPUT);
+        HtmlElement submit = loginForm.getOneHtmlElementByAttribute("button", "type", "submit");
+
+        username.setNodeValue("unknown");
+        password.setNodeValue("unknown");
+
+        final HtmlPage afterSubmit = submit.click();
+
+        assertThat(afterSubmit.getUrl().toString(), is("http://localhost" + LOGIN.mapping() + "?result=failed"));
+
+        HtmlForm loginFormAfterSubmit = afterSubmit.getFormByName(LOGIN_FORM_NAME);
+
+        assertThat(loginFormAfterSubmit.getAttribute("action"), is(LOGIN_PROCESSING.mapping()));
     }
 
     private static String basic(KnownUser user) {

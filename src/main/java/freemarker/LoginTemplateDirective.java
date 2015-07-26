@@ -1,13 +1,12 @@
 package freemarker;
 
-import java.io.IOException;
-import java.util.Map;
-
 import freemarker.core.Environment;
-import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author Kamill Sokol
@@ -19,18 +18,8 @@ public class LoginTemplateDirective extends RequestAwareTemplateDirectiveModel {
 
     @Override
     public void execute(final Environment env, final Map params, final TemplateModel[] loopVars, final TemplateDirectiveBody body) throws TemplateException, IOException {
-        final SimpleScalar login = (SimpleScalar) params.get(RESULT);
-
-        if(login == null) {
-            return;
+        if("failed".equalsIgnoreCase(getRequest().getParameter(RESULT))) {
+            body.render(env.getOut());
         }
-
-        final String parameterValue = getRequest().getParameter(RESULT);
-
-        if(!login.getAsString().equals(parameterValue)) {
-            return;
-        }
-
-        body.render(env.getOut());
     }
 }
