@@ -2,11 +2,11 @@ angular.module('common.filters', ['ngSanitize'])
 
 .filter('targetBlank', ['$sanitize', function($sanitize) {
     var A_TAG_REGEXP = /<a[^>]*>[\s\S]*?<\/a>/i;
-    var TARGET_REGEXP = /target="(.*)"/i;
+    var TARGET_REGEXP = /target="([a-zA-Z_#]{1,})"/i;
 
     return function(text, target) {
         if (!text) {
-            return text;
+            return '';
         }
         var match;
         var raw = text;
@@ -37,9 +37,7 @@ angular.module('common.filters', ['ngSanitize'])
             if((match = text.match(TARGET_REGEXP) )) {
                 if(match[1] === '_blank') {
                     html.push(text);
-                } else {
-                    //TODO
-                    return text;
+                    return;
                 }
             }
             html.push(text.substr(0, 2) + ' target="_blank" ' + text.substr(3));
