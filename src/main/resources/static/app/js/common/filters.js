@@ -325,7 +325,6 @@ angular.module('common.filters', ['ngSanitize'])
                 text = text.replace(new RegExp(entityTable[i], "g"), String.fromCharCode(i));
             }
         }
-     //   text = text.replace(new RegExp("&#(x?)(\\d+);", "g"), String.fromCharCode(((p1 == 'x') ? parseInt(p2, 16) : p2)));
         text = text.replace(new RegExp(entityTable[38], "g"), String.fromCharCode(38));
         return text;
     }
@@ -336,12 +335,9 @@ angular.module('common.filters', ['ngSanitize'])
         if(date) {
             try {
                 return moment(date).fromNow();
-            } catch(e) {
-                return "sometime";
-            }
-        } else {
-            return "sometime";
+            } catch(e) {}
         }
+        return "sometime";
     }
 })
 

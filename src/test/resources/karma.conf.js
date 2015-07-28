@@ -33,6 +33,7 @@ module.exports = function(config) {
             'target/dependency/META-INF/resources/webjars/angularjs/**/angular.js',
             'target/dependency/META-INF/resources/webjars/angularjs/**/angular-sanitize.js',
             'target/dependency/META-INF/resources/webjars/angularjs/**/angular-mocks.js',
+            'target/dependency/META-INF/resources/webjars/momentjs/**/moment.js',
             'src/main/resources/static/app/js/**',
             'src/test/js/**Tests.js'
         ],
