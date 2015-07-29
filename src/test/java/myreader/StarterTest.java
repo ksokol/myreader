@@ -5,10 +5,12 @@ import static org.junit.Assert.fail;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * @author Kamill Sokol
  */
+@DirtiesContext
 public class StarterTest {
 
     @Rule
