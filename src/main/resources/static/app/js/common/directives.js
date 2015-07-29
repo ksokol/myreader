@@ -162,7 +162,9 @@ angular.module('common.directives', [])
             element.bind("click", function() {
                 var splitted = attrs.myClickBroadcast.split(' ');
                 angular.forEach(splitted, function(eventName) {
-                    $rootScope.$broadcast(eventName);
+                    if(eventName.length > 0) {
+                        $rootScope.$broadcast(eventName);
+                    }
                 });
             });
         }
