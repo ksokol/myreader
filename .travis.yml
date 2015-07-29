@@ -1,8 +1,6 @@
 sudo: false
 language: java
 jdk:
-  - oraclejdk7
-  - openjdk7
   - oraclejdk8
 
 script: if [[ $TRAVIS_JDK_VERSION != "oraclejdk8" ]]; then mvn test; fi
