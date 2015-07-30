@@ -9,7 +9,7 @@ Installation
 **Prerequisite**
 
 - Java 8
-- Apache Maven 3.x or newer
+- Apache Maven 3.1 or newer
 
 **Build and package**
 
