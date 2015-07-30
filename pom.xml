@@ -111,14 +111,10 @@
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>2.3.1</version>
             </plugin>
-            <!--
             <plugin>
                 <groupId>com.qulice</groupId>
                 <artifactId>qulice-maven-plugin</artifactId>
                 <version>0.10</version>
-                <configuration>
-                    <license>file:${basedir}/LICENSE.txt</license>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -127,7 +123,6 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -410,6 +405,4 @@
             <version>1.4.5</version>
         </dependency>
     </dependencies>
-
-
 </project>
