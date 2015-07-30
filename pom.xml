@@ -135,8 +135,6 @@
                     <finalName>myreader</finalName>
                 </configuration>
             </plugin>
-
-            <!--
             <plugin>
                 <groupId>org.codefx.maven.plugin</groupId>
                 <artifactId>jdeps-maven-plugin</artifactId>
@@ -149,7 +147,6 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
