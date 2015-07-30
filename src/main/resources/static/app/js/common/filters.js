@@ -17,6 +17,8 @@ angular.module('common.filters', ['ngSanitize'])
             aTag = match[0];
             if(aTag.indexOf("href") > -1) {
                 addBlankTarget(aTag);
+            } else {
+                html.push(aTag);
             }
             i = match.index;
             addText(raw.substr(0, i));

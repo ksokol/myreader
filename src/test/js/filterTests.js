@@ -54,6 +54,14 @@ describe("targetBlank filter", function() {
     it('should not modify given text"', function () {
         expect(targetBlank('text without a tag')).toBe('text without a tag');
     });
+
+    it('should not modify given a tag without attribute href', function () {
+        expect(targetBlank('<a>test</a>')).toBe('<a>test</a>');
+    });
+
+    it('should not modify given a tag with existing target attribute', function () {
+        expect(targetBlank('<a target="different" href="test">test</a>')).toBe('<a target="different" href="test">test</a>');
+    });
 });
 
 describe("htmlEntities filter", function() {
