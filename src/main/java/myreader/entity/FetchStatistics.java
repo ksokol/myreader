@@ -10,6 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -22,7 +23,7 @@ public class FetchStatistics implements Identifiable {
     private Long id;
     private String issuer;
     private String url;
-    private Long fetchCount;
+    private Long fetchCount = 0L;
     private Date startedAt;
     private Date stoppedAt;
     private Result result;
@@ -59,7 +60,7 @@ public class FetchStatistics implements Identifiable {
         this.url = url;
     }
 
-    @Column(columnDefinition = "int default '0'", nullable = false)
+    @Column(nullable = false)
     public Long getFetchCount() {
         return fetchCount;
     }
@@ -77,6 +78,7 @@ public class FetchStatistics implements Identifiable {
     public void setStartedAt(Date startedAt) {
         this.startedAt = startedAt;
     }
+
     @Temporal(TemporalType.TIMESTAMP)
     public Date getStoppedAt() {
         return stoppedAt;
@@ -106,7 +108,7 @@ public class FetchStatistics implements Identifiable {
         this.type = type;
     }
 
-    @Column(columnDefinition="text")
+    @Lob
     public String getMessage() {
         return message;
     }
