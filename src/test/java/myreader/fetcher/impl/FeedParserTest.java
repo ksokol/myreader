@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.TEXT_XML;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
@@ -19,8 +21,10 @@ import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
+import myreader.fetcher.resttemplate.FeedParserConfiguration;
+import myreader.repository.FetchStatisticRepository;
+import myreader.service.time.TimeService;
 import myreader.test.IntegrationTestSupport;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,6 +37,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Date;
 
 /**
  * @author Kamill Sokol
@@ -50,17 +56,31 @@ public class FeedParserTest extends IntegrationTestSupport {
     @Autowired
     private ConversionService conversionService;
 
-    private MockRestServiceServer mockServer;
-    private FeedParser parser;
+    @Autowired
+    private TimeService timeServiceMock;
 
-    @Before
-    public void beforeTest() {
-        mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
-        parser = new FeedParser(syndicationRestTemplate, conversionService);
-    }
+    @Autowired
+    private FeedParserConfiguration feedParserConfiguration;
+
+    @Autowired
+    private FetchStatisticRepository fetchStatisticRepository;
+
+    private MockRestServiceServer mockServer;
+
+    private FeedParser parser;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+
+    @Before
+    public void beforeTest() throws Exception {
+        fetchStatisticRepository.deleteAll();;
+
+        when(timeServiceMock.getCurrentTime()).thenReturn(new Date(), new Date());
+
+        mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
+        parser = feedParserConfiguration.parser(conversionService, fetchStatisticRepository, timeServiceMock);
+    }
 
     @Test
 	public void testFeed1() throws Exception {
@@ -132,7 +152,6 @@ public class FeedParserTest extends IntegrationTestSupport {
         mockServer.expect(requestTo(HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
 
-       // parser.setMaxSize(1);
         FetchResult result = parser.parse(HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS);
         assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue220b.html"))
@@ -156,5 +175,35 @@ public class FeedParserTest extends IntegrationTestSupport {
                 .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
 
         parser.parse("irrelevant", "lastModified");
+    }
+
+    @Test
+    public void testFeed10() {
+        mockServer.expect(requestTo("irrelevant")).andExpect(method(GET))
+                .andExpect(header("User-Agent", startsWith("Mozilla")))
+                .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
+
+        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
+
+        try {
+            parser.parse("irrelevant", "lastModified");
+            fail("exception 500 Internal Server Error");
+        } catch(FeedParseException exception) {
+            //ignore
+        }
+
+        assertThat(fetchStatisticRepository.findAll(), hasSize(1));
+    }
+
+    @Test
+    public void testFeed11() throws Exception {
+        mockServer.expect(requestTo("http://neusprech.org/feed/")).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed5.xml"), TEXT_XML));
+
+        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
+
+        parser.parse("http://neusprech.org/feed/");
+
+        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
     }
 }
