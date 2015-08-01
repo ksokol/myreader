@@ -19,12 +19,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -45,8 +43,7 @@ public class SubscriptionEntry implements Identifiable {
     @DocumentId
     @NumericField(precisionStep = 0)
     @Id
-    @TableGenerator(name = "user_feed_entry_id_generator", table = "primary_keys")
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_feed_entry_id_generator")
+    @GeneratedValue
     @Column(name = "user_feed_entry_id")
     @Override
     public Long getId() {

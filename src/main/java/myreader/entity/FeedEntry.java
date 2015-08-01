@@ -12,13 +12,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -37,8 +35,7 @@ public class FeedEntry implements Identifiable {
     private Date createdAt;
 
     @Id
-    @TableGenerator(name = "feed_entry_id_generator", table = "primary_keys")
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "feed_entry_id_generator")
+    @GeneratedValue
     @Column(name = "entry_id")
     @Override
     public Long getId() {
