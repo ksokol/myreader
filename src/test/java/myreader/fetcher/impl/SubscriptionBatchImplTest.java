@@ -1,25 +1,20 @@
 package myreader.fetcher.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import myreader.entity.Feed;
-import myreader.entity.FetchStatistics;
 import myreader.entity.SubscriptionEntry;
 import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
-import myreader.repository.FetchStatisticRepository;
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.service.time.TimeService;
 import myreader.test.IntegrationTestSupport;
-import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +33,6 @@ public class SubscriptionBatchImplTest extends IntegrationTestSupport {
 
     @Autowired
     private FeedRepository feedRepository;
-
-    @Autowired
-    private SubscriptionBatch subscriptionBatch;
-
-    @Autowired
-    private FetchStatisticRepository fetchStatisticRepository;
-
-    @Autowired
-    private TimeService timeServiceMock;
 
     private SubscriptionEntryBatch subscriptionEntryBatchMock = mock(SubscriptionEntryBatch.class);
     private SubscriptionEntryRepository subscriptionEntryRepository = mock(SubscriptionEntryRepository.class);
@@ -78,21 +64,6 @@ public class SubscriptionBatchImplTest extends IntegrationTestSupport {
 
         assertThat(after.getLastModified(), is("last modified"));
         assertThat(after.getFetched(), is(283));
-    }
-
-    @Test
-    public void testFetchStatistic() {
-        final LocalDateTime localDateTime = new LocalDateTime("2015-01-01T00:00:00");
-        when(timeServiceMock.getCurrentTime()).thenReturn(localDateTime.toDate(), localDateTime.plusMinutes(1).toDate());
-
-        final List<FetchStatistics> all = fetchStatisticRepository.findAll();
-        assertThat(all, hasSize(0));
-
-        subscriptionBatch.updateUserSubscriptions(new FetchResult("http://feeds.feedburner.com/AllAtlassianBlogs"));
-
-        final List<FetchStatistics> all2 = fetchStatisticRepository.findAll();
-
-        assertThat(all2, hasSize(1));
     }
 
     @Test

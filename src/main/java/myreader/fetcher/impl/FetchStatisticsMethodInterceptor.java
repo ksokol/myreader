@@ -1,10 +1,8 @@
 package myreader.fetcher.impl;
 
 import myreader.entity.FetchStatistics;
-import myreader.fetcher.persistence.FetchResult;
 import myreader.repository.FetchStatisticRepository;
 import myreader.service.time.TimeService;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.util.Assert;
@@ -27,30 +25,20 @@ public class FetchStatisticsMethodInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(final MethodInvocation invocation) throws Throwable {
-        final FetchResult fetchResult = (FetchResult) invocation.getArguments()[0];
+        final String url = String.valueOf(invocation.getArguments()[0]);
         FetchStatistics fetchStatistics = new FetchStatistics();
 
         fetchStatistics.setStartedAt(timeService.getCurrentTime());
-        fetchStatistics.setUrl(fetchResult.getUrl());
-        fetchStatistics.setType(FetchStatistics.Type.ENTRY_LIST);
-        fetchStatistics.setFetchCount(0L);
+        fetchStatistics.setUrl(url);
         fetchStatistics.setIssuer(Thread.currentThread().getName());
 
         try {
-            final long result = (long) invocation.proceed();
-
-            fetchStatistics.setFetchCount(result);
-            fetchStatistics.setResult(FetchStatistics.Result.SUCCESS);
-
-            return result;
+            return invocation.proceed();
         } catch (Exception e) {
             fetchStatistics.setMessage(e.getMessage());
-            fetchStatistics.setResult(FetchStatistics.Result.ERROR);
-            fetchStatistics.setFetchCount(0L);
-            throw e;
-        } finally {
             fetchStatistics.setStoppedAt(timeService.getCurrentTime());
             fetchStatisticRepository.save(fetchStatistics);
+            throw e;
         }
     }
 }

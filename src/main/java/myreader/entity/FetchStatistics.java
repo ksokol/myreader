@@ -1,13 +1,10 @@
 package myreader.entity;
 
 import java.util.Date;
-
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -22,11 +19,8 @@ public class FetchStatistics implements Identifiable {
     private Long id;
     private String issuer;
     private String url;
-    private Long fetchCount;
     private Date startedAt;
     private Date stoppedAt;
-    private Result result;
-    private Type type;
     private String message;
 
     @Id
@@ -59,15 +53,6 @@ public class FetchStatistics implements Identifiable {
         this.url = url;
     }
 
-    @Column(columnDefinition = "int default '0'", nullable = false)
-    public Long getFetchCount() {
-        return fetchCount;
-    }
-
-    public void setFetchCount(Long fetchCount) {
-        this.fetchCount = fetchCount;
-    }
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     public Date getStartedAt() {
@@ -86,26 +71,6 @@ public class FetchStatistics implements Identifiable {
         this.stoppedAt = stoppedAt;
     }
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    public Result getResult() {
-        return result;
-    }
-
-    public void setResult(Result result) {
-        this.result = result;
-    }
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
     @Column(columnDefinition="text")
     public String getMessage() {
         return message;
@@ -113,14 +78,6 @@ public class FetchStatistics implements Identifiable {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public enum Result {
-        SUCCESS, ERROR
-    }
-
-    public enum Type {
-        ENTRY_LIST
     }
 
 }
