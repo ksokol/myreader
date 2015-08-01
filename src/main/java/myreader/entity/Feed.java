@@ -48,7 +48,7 @@ public class Feed implements Identifiable {
         this.id = id;
     }
 
-    @Column(name = "feed_title", nullable = false)
+    @Column(columnDefinition = "VARCHAR(1000)", name = "feed_title", nullable = false)
     public String getTitle() {
         return title;
     }
@@ -57,7 +57,7 @@ public class Feed implements Identifiable {
         this.title = title;
     }
 
-    @Column(name = "feed_url")
+    @Column(columnDefinition = "VARCHAR(1000)", name = "feed_url")
     public String getUrl() {
         return url;
     }

@@ -70,7 +70,7 @@ public class SubscriptionEntry implements Identifiable {
 
     @Analyzer(definition = "tag")
     @Field(boost = @Boost(value = 0.5F))
-    @Column(name = "user_feed_entry_tag")
+    @Column(columnDefinition = "VARCHAR(1000)", name = "user_feed_entry_tag")
     public String getTag() {
         return tag;
     }

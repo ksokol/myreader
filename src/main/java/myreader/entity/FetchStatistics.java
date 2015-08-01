@@ -1,7 +1,6 @@
 package myreader.entity;
 
 import java.util.Date;
-
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
@@ -10,7 +9,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -108,7 +106,7 @@ public class FetchStatistics implements Identifiable {
         this.type = type;
     }
 
-    @Lob
+    @Column(columnDefinition = "LONGVARCHAR")
     public String getMessage() {
         return message;
     }

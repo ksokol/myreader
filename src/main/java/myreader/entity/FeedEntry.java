@@ -15,7 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -60,8 +59,9 @@ public class FeedEntry implements Identifiable {
     public void setFeed(Feed feed) {
         this.feed = feed;
     }
+
     @Field(boost = @Boost(value = 0.5F))
-    @Column(name = "entry_title")
+    @Column(columnDefinition = "VARCHAR(1000)", name = "entry_title")
     public String getTitle() {
         return title;
     }
@@ -70,7 +70,7 @@ public class FeedEntry implements Identifiable {
         this.title = title;
     }
 
-    @Column(name = "entry_guid")
+    @Column(columnDefinition = "VARCHAR(1000)", name = "entry_guid")
     public String getGuid() {
         return guid;
     }
@@ -79,7 +79,7 @@ public class FeedEntry implements Identifiable {
         this.guid = guid;
     }
 
-    @Column(name = "entry_url")
+    @Column(columnDefinition = "VARCHAR(1000)", name = "entry_url")
     public String getUrl() {
         return url;
     }
@@ -88,9 +88,8 @@ public class FeedEntry implements Identifiable {
         this.url = url;
     }
 
-    @Lob
     @Field
-    @Column(name = "entry_content")
+    @Column(columnDefinition = "LONGVARCHAR", name = "entry_content")
     public String getContent() {
         return content;
     }
