@@ -1,10 +1,7 @@
 package myreader.test;
 
-import java.util.Properties;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
+import org.hibernate.dialect.HSQLDialect;
+import org.hsqldb.jdbc.JDBCDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -18,6 +15,10 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.util.Properties;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 /**
  * @author Kamill Sokol
@@ -41,17 +42,17 @@ public class TestDataSourceConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
-        dataSource.setUsername("");
+        dataSource.setDriverClassName(JDBCDriver.class.getName());
+        dataSource.setUrl("jdbc:hsqldb:mem:test");
+        dataSource.setUsername("SA");
         dataSource.setPassword("");
         return dataSource;
     }
 
     public JpaVendorAdapter jpaVendorAdapter() {
-        return  new HibernateJpaVendorAdapter() {
+        return new HibernateJpaVendorAdapter() {
             {
-                setDatabasePlatform("org.hibernate.dialect.H2Dialect");
+                setDatabasePlatform(HSQLDialect.class.getName());
             }
         };
     }

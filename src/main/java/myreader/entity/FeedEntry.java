@@ -12,19 +12,24 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Access(AccessType.PROPERTY)
 @Entity
-@Table(name = "entry")
+@Table(name = "entry",
+        indexes = {
+                @Index(name = "entry_title_idx", columnList = "entry_title"),
+                @Index(name = "entry_guid_idx", columnList = "entry_guid"),
+                @Index(name = "entry_url_idx", columnList = "entry_url")
+        }
+)
 public class FeedEntry implements Identifiable {
 
     private Long id;
@@ -37,8 +42,7 @@ public class FeedEntry implements Identifiable {
     private Date createdAt;
 
     @Id
-    @TableGenerator(name = "feed_entry_id_generator", table = "primary_keys")
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "feed_entry_id_generator")
+    @GeneratedValue
     @Column(name = "entry_id")
     @Override
     public Long getId() {
@@ -59,8 +63,9 @@ public class FeedEntry implements Identifiable {
     public void setFeed(Feed feed) {
         this.feed = feed;
     }
+
     @Field(boost = @Boost(value = 0.5F))
-    @Column(name = "entry_title")
+    @Column(columnDefinition = "VARCHAR(1000)", name = "entry_title")
     public String getTitle() {
         return title;
     }
@@ -69,7 +74,7 @@ public class FeedEntry implements Identifiable {
         this.title = title;
     }
 
-    @Column(name = "entry_guid")
+    @Column(columnDefinition = "VARCHAR(1000)", name = "entry_guid")
     public String getGuid() {
         return guid;
     }
@@ -78,7 +83,7 @@ public class FeedEntry implements Identifiable {
         this.guid = guid;
     }
 
-    @Column(name = "entry_url")
+    @Column(columnDefinition = "VARCHAR(1000)", name = "entry_url")
     public String getUrl() {
         return url;
     }
@@ -88,7 +93,7 @@ public class FeedEntry implements Identifiable {
     }
 
     @Field
-    @Column(name = "entry_content", columnDefinition = "text")
+    @Column(columnDefinition = "LONGVARCHAR", name = "entry_content")
     public String getContent() {
         return content;
     }

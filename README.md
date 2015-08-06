@@ -9,8 +9,7 @@ Installation
 **Prerequisite**
 
 - Java 8
-- Apache Maven 3.x or newer
-- MySQL 5.1.x (tested on 5.1.17, should run on 5.x too)
+- Apache Maven 3.1 or newer
 
 **Build and package**
 

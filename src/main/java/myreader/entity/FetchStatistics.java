@@ -1,6 +1,7 @@
 package myreader.entity;
 
 import java.util.Date;
+
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
@@ -62,6 +63,7 @@ public class FetchStatistics implements Identifiable {
     public void setStartedAt(Date startedAt) {
         this.startedAt = startedAt;
     }
+
     @Temporal(TemporalType.TIMESTAMP)
     public Date getStoppedAt() {
         return stoppedAt;
@@ -71,7 +73,7 @@ public class FetchStatistics implements Identifiable {
         this.stoppedAt = stoppedAt;
     }
 
-    @Column(columnDefinition="text")
+    @Column(columnDefinition = "LONGVARCHAR")
     public String getMessage() {
         return message;
     }
