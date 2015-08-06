@@ -23,9 +23,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query(value="select s from Subscription s join fetch s.feed where s.user.id = ?1 and s.unseen > ?2")
     List<Subscription> findAllByUserAndUnseenGreaterThan(Long id, Integer unseenCount);
 
-    @Query("select s from Subscription s join fetch s.feed where s.user.id = ?1")
-    List<Subscription> findByUser(Long id);
-
     @Query("select s from Subscription s join fetch s.feed where s.id = ?1 and s.user.email = ?2")
     Subscription findByIdAndUsername(Long id, String username);
 
