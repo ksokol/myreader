@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -22,7 +23,13 @@ import javax.persistence.TemporalType;
 
 @Access(AccessType.PROPERTY)
 @Entity
-@Table(name = "entry")
+@Table(name = "entry",
+        indexes = {
+                @Index(name = "entry_title_idx", columnList = "entry_title"),
+                @Index(name = "entry_guid_idx", columnList = "entry_guid"),
+                @Index(name = "entry_url_idx", columnList = "entry_url")
+        }
+)
 public class FeedEntry implements Identifiable {
 
     private Long id;
