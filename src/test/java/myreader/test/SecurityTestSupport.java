@@ -82,5 +82,7 @@ public class SecurityTestSupport {
 
         webClient = new WebClient();
         webClient.setWebConnection(new MockMvcWebConnection(mockMvc));
+        webClient.getOptions().setCssEnabled(false);
+        webClient.getOptions().setJavaScriptEnabled(false);
     }
 }

@@ -10,7 +10,8 @@ public enum UrlMappings {
     JAWR_JS("js"),
     LOGIN("login"),
     LOGOUT("logout"),
-    LOGIN_PROCESSING("check");
+    LOGIN_PROCESSING("check"),
+    LANDING_PAGE("reader");
 
     private final String mapping;
 

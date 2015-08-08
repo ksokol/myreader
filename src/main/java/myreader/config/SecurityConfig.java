@@ -2,12 +2,12 @@ package myreader.config;
 
 import static myreader.config.UrlMappings.JAWR_CSS;
 import static myreader.config.UrlMappings.JAWR_JS;
+import static myreader.config.UrlMappings.LANDING_PAGE;
 import static myreader.config.UrlMappings.LOGIN;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
 
 import myreader.repository.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,10 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-
 import spring.security.AjaxExceptionTranslationFilter;
 import spring.security.UserRepositoryUserDetailsService;
 import spring.security.XAuthoritiesFilter;
@@ -67,9 +64,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-
+                .antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/**")
+                .anyRequest()
                 .hasAnyRole("USER", "ADMIN")
                 .and()
                 .csrf().disable()
@@ -78,7 +75,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage(LOGIN.mapping()).permitAll()
                 .loginProcessingUrl(LOGIN_PROCESSING.mapping()).permitAll()
-                .successHandler(successHandler())
+                .defaultSuccessUrl(LANDING_PAGE.mapping(), true)
                 .failureUrl(LOGIN.mapping() + "?result=failed")
                 .and()
                 .rememberMe()
@@ -97,11 +94,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationEntryPoint authenticationEntryPoint() {
         return new LoginUrlAuthenticationEntryPoint(LOGIN.mapping());
     }
-
-    private AuthenticationSuccessHandler successHandler() {
-        final SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-        successHandler.setDefaultTargetUrl("/reader");
-        return successHandler;
-    }
-
 }
