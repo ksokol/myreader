@@ -3,12 +3,10 @@ package myreader.config;
 import static myreader.config.UrlMappings.JAWR_BIN;
 import static myreader.config.UrlMappings.JAWR_CSS;
 import static myreader.config.UrlMappings.JAWR_JS;
-import static myreader.config.UrlMappings.LOGIN;
-import static myreader.config.UrlMappings.LOGIN_PROCESSING;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import freemarker.JawrScriptTemplateDirectiveModel;
 import freemarker.JawrStyleTemplateDirectiveModel;
-import freemarker.LoginTemplateDirective;
 import freemarker.template.TemplateException;
 import myreader.config.jawr.CssConfigPropertiesSource;
 import myreader.config.jawr.JavascriptConfigPropertiesSource;
@@ -28,10 +26,10 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 /**
  * @author Kamill Sokol
@@ -53,20 +51,14 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
-        registry.addViewController(LOGIN.mapping()).setViewName("login");
-
-        //deprecated
-        registry.addViewController("reader").setViewName("index");
+        registry.addViewController(EMPTY).setViewName("index");
     }
 
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver();
         freeMarkerViewResolver.setExposeSpringMacroHelpers(false);
-        freeMarkerViewResolver.setRequestContextAttribute("requestContext");
-        freeMarkerViewResolver.setExposeRequestAttributes(true);
         freeMarkerViewResolver.setSuffix(".ftl");
-        freeMarkerViewResolver.setAttributesMap(Collections.singletonMap("LOGIN_PROCESSING_URL", LOGIN_PROCESSING.mapping()));
         registry.viewResolver(freeMarkerViewResolver);
     }
     @Bean
@@ -74,7 +66,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
         freeMarkerConfigurer.setTemplateLoaderPath("classpath:/templates/");
         Map<String, Object> m = new HashMap<>(5);
-        m.put("login", new LoginTemplateDirective());
 
         m.put("style", new JawrStyleTemplateDirectiveModel());
         m.put("script", new JawrScriptTemplateDirectiveModel());
@@ -87,13 +78,14 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public SimpleUrlHandlerMapping urlMapping() {
         SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
         simpleUrlHandlerMapping.setOrder(Integer.MAX_VALUE - 2);
-        Properties properties = new Properties();
 
-        properties.setProperty(JAWR_BIN.mapping() + "/**", "jawrBinaryController");
-        properties.setProperty(JAWR_CSS.mapping() + "/**", "jawrCssController");
-        properties.setProperty(JAWR_JS.mapping() + "/**", "jawrJavascriptController");
+        final TreeMap<String, String> urlMap = new TreeMap<>();
 
-        simpleUrlHandlerMapping.setMappings(properties);
+        urlMap.put(JAWR_BIN.mapping() + "/**", "jawrBinaryController");
+        urlMap.put(JAWR_CSS.mapping() + "/**", "jawrCssController");
+        urlMap.put(JAWR_JS.mapping() + "/**", "jawrJavascriptController");
+
+        simpleUrlHandlerMapping.setUrlMap(urlMap);
         return simpleUrlHandlerMapping;
     }
 

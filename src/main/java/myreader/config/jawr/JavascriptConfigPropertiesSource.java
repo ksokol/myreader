@@ -43,10 +43,6 @@ public class JavascriptConfigPropertiesSource {
                     .jar("static/app/js/common/services.js")
                     .jar("static/app/js/common/controllers.js")
                     .jar("static/app/js/common/directives.js")
-                .and()
-                    .jsBundle("login")
-                    .jar("static/js/jquery-1.8.min.js")
-                    .jar("static/js/login.js")
                 .build();
     }
 }

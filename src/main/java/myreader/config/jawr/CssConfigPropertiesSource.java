@@ -25,10 +25,6 @@ public class CssConfigPropertiesSource {
                 .cssBundle("mobile")
                     .webjar("angular-material/" + ANGULAR_MATERIAL.version() + "/angular-material.css")
                     .jar("static/app/css/mobile.css")
-                .and()
-                .cssBundle("login")
-                    .jar("/static/css/bootstrap-2.1.min.css")
-                    .jar("/static/css/login.css")
                 .build();
     }
 }

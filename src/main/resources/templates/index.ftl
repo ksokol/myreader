@@ -3,9 +3,12 @@
     <head>
         <title>MyReader</title>
 
-        <link rel="icon" type="image/gif" href="${requestContext.getContextUrl("/static/img/favicon.gif")}">
-        <@style id="mobile"></@style>
+        <link rel="icon" type="image/gif" href="static/app/img/favicon.gif">
+
         <meta name="viewport" content="initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+        <@style id="mobile"></@style>
     </head>
     <body layout="row" ui-view="body">
 
@@ -47,7 +50,6 @@
                             <md-button my-click-broadcast="navigation-close" ui-sref="app.settings">Settings</md-button>
                         </li>
                         <li>
-                            <!-- TODO -->
                             <md-button href="logout">logout</md-button>
                         </li>
                     </ul>
@@ -272,7 +274,7 @@
                 <md-input-container>
                     <label>Title</label>
                     <input required name="title" ng-model="subscription.title">
-                    <div  ng-messages="subscriptionForm.title.$error">
+                    <div ng-messages="subscriptionForm.title.$error">
                         <div ng-message="required">required</div>
                     </div>
                 </md-input-container>
@@ -397,6 +399,56 @@
                     <md-radio-button ng-value="false">false</md-radio-button>
                 </md-radio-group>
             </form>
+        </script>
+
+        <script type="text/ng-template" id="Login">
+            <div layout="column" tabIndex="-1" role="main" flex>
+                <md-toolbar></md-toolbar>
+
+                <div id="md-progress-linear-wrapper">
+                    <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
+                </div>
+
+                <md-content ui-view="content" md-scroll-y flex layout-padding>
+                    <div layout="row">
+                        <div flex></div>
+                        <div flex>
+                            <form name="loginForm" ng-submit="login()">
+                                <md-input-container>
+                                    <label>Username</label>
+                                    <input required name="username" ng-model="form.username" my-disable-loading>
+                                    <div ng-messages="loginForm.username.$error">
+                                        <div ng-message="required">required</div>
+                                    </div>
+                                </md-input-container>
+
+                                <md-input-container>
+                                    <label>Password</label>
+                                    <input type="password" required name="password" ng-model="form.password" my-disable-loading>
+                                    <div ng-messages="loginForm.password.$error">
+                                        <div ng-message="required">required</div>
+                                    </div>
+                                </md-input-container>
+
+                                <md-input-container>
+                                    <md-checkbox ng-model="form.rememberMe" aria-label="Remember me" my-disable-loading>
+                                        Remember me
+                                    </md-checkbox>
+                                </md-input-container>
+
+                                <div layout="row">
+                                    <div flex></div>
+                                    <div flex>
+                                        <md-button my-disable-loading class="md-raised">login</md-button>
+                                    </div>
+                                    <div flex></div>
+                                </div>
+                            </form>
+                        </div>
+                        <div flex></div>
+                    <div>
+                </md-content>
+            </div>
         </script>
 
         <@script id="mobile"></@script>

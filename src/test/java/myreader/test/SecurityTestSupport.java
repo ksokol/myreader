@@ -4,6 +4,7 @@ import static myreader.test.KnownUser.USER1;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import myreader.config.MvcConfig;
 import myreader.config.SecurityConfig;
 import myreader.entity.User;
@@ -80,9 +81,7 @@ public class SecurityTestSupport {
                 .addFilter(springSecurityFilterChain)
                 .build();
 
-        webClient = new WebClient();
+        webClient = new WebClient(BrowserVersion.FIREFOX_31);
         webClient.setWebConnection(new MockMvcWebConnection(mockMvc));
-        webClient.getOptions().setCssEnabled(false);
-        webClient.getOptions().setJavaScriptEnabled(false);
     }
 }

@@ -8,10 +8,10 @@ public enum UrlMappings {
     JAWR_BIN("bin"),
     JAWR_CSS("css"),
     JAWR_JS("js"),
-    LOGIN("login"),
+    LOGIN("#/login"),
     LOGOUT("logout"),
     LOGIN_PROCESSING("check"),
-    LANDING_PAGE("reader");
+    LANDING_PAGE("");
 
     private final String mapping;
 

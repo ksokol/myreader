@@ -3,6 +3,8 @@ angular.module('common.directives', [])
     return {
         restrict : "EA",
         link : function(scope, element) {
+            element.addClass("hide");
+
             scope.$on("loading-started", function() {
                 element.removeClass("hide");
             });
@@ -187,4 +189,19 @@ angular.module('common.directives', [])
             });
         }
     }
+}])
+
+.directive('myDisableLoading', [function() {
+
+    return {
+        restrict : "EA",
+        link : function(scope, element, attrs) {
+            scope.$on("loading-started", function() {
+                attrs.$set('disabled', 'disabled');
+            });
+            scope.$on("loading-complete", function() {
+                attrs.$set('disabled', null);
+            });
+        }
+    };
 }]);

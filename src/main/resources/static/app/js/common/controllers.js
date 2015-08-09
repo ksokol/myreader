@@ -580,4 +580,36 @@ angular.module('common.controllers', ['common.services'])
         );
     });
 }])
+
+.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$mdToast', '$state', function($rootScope, $scope, $http, $mdToast, $state) {
+
+    $scope.form = {};
+
+    $scope.login = function() {
+        var rememberMe = "remember-me=";
+        if($scope.form.rememberMe === true) {
+            rememberMe = rememberMe + "on";
+        }
+
+        var encodedString = "username=" + encodeURIComponent($scope.form.username)+ '&password=' + encodeURIComponent($scope.form.password) + "&" + rememberMe;
+
+        $http({
+            method: 'POST',
+            url: 'check',
+            data: encodedString,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(data, status) {
+            $state.go('app.entries', {tag: 'all'});
+        })
+        .error(function(data, status) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content('username or password wrong')
+                    .position('top right')
+            );
+        });
+    }
+}])
+
 })();

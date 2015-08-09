@@ -8,6 +8,7 @@ import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
 
 import myreader.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,7 +24,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+
 import spring.security.AjaxExceptionTranslationFilter;
+import spring.security.CustomAuthenticationSuccessHandler;
+import spring.security.CustomFailureAuthenticationSuccessHandler;
 import spring.security.UserRepositoryUserDetailsService;
 import spring.security.XAuthoritiesFilter;
 
@@ -49,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity webSecurity) throws Exception {
         webSecurity
                 .ignoring()
-                .antMatchers("/static/**", JAWR_JS.mapping() + "/**", JAWR_CSS.mapping() + "/**");
+                .antMatchers("/static/**", JAWR_JS.mapping() + "/**", JAWR_CSS.mapping() + "/**", LANDING_PAGE.mapping());
     }
 
     @Bean
@@ -73,14 +77,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().realmName("API")
                 .and()
                 .formLogin()
-                .loginPage(LOGIN.mapping()).permitAll()
                 .loginProcessingUrl(LOGIN_PROCESSING.mapping()).permitAll()
-                .defaultSuccessUrl(LANDING_PAGE.mapping(), true)
-                .failureUrl(LOGIN.mapping() + "?result=failed")
+                .successHandler(new CustomAuthenticationSuccessHandler())
+                .failureHandler(new CustomFailureAuthenticationSuccessHandler())
                 .and()
                 .rememberMe()
                 .and()
-                .logout().logoutUrl(LOGOUT.mapping()).logoutSuccessUrl(LOGIN.mapping()).permitAll().deleteCookies("JSESSIONID")
+                .logout()
+                .logoutUrl(LOGOUT.mapping())
+                .logoutSuccessUrl(LOGIN.mapping()).permitAll()
+                .deleteCookies("JSESSIONID")
                 .and()
                 .addFilterBefore(ajaxExceptionTranslationFilter(), FilterSecurityInterceptor.class)
                 .addFilterAfter(new XAuthoritiesFilter(), FilterSecurityInterceptor.class)

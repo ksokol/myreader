@@ -4,11 +4,12 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
 
 .config(['$httpProvider', function($httpProvider) {
 
-    $httpProvider.interceptors.push(['$q', '$window', '$rootScope', function($q, $window, $rootScope) {
+    $httpProvider.interceptors.push(['$q', '$window', '$rootScope', '$injector', function($q, $window, $rootScope, $injector) {
         return {
             'responseError': function(rejection) {
                 if(rejection.status === 401) {
-                    $window.location.reload();
+                    var $state = $injector.get('$state');
+                    $state.go('login');
                 }
                 if(rejection.status >= 500) {
                     if(typeof rejection.data === 'string') {
@@ -36,11 +37,15 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
         return {
             'request': function(config) {
                 $rootScope.$broadcast('loading-started');
-                return config || $q.when(config);
+                return $q.when(config);
             },
             'response': function(response) {
                 $rootScope.$broadcast('loading-complete');
-                return response || $q.when(response);
+                return $q.when(response);
+            },
+            'responseError': function(response) {
+                $rootScope.$broadcast('loading-complete');
+                return $q.reject(response);
             }
         };
     }]);
@@ -58,6 +63,15 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
 .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
         $stateProvider
+            .state('login', {
+                url: "/login",
+                views: {
+                    body: {
+                        templateUrl: 'Login',
+                        controller: 'LoginCtrl'
+                    }
+                }
+            })
             .state('app', {
                 abstract: true,
                 url: "/app",
