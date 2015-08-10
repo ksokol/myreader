@@ -3,6 +3,5 @@ language: java
 jdk:
   - oraclejdk8
 
-script: if [[ $TRAVIS_JDK_VERSION != "oraclejdk8" ]]; then mvn test; fi
 after_success:
    - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then mvn cobertura:cobertura coveralls:cobertura; fi
