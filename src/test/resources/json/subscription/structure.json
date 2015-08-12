@@ -1,64 +1,24 @@
 {
-    "content": [
-        {
-            "uuid": "6",
-            "title": "user2_subscription1",
-            "tag": "tag1",
-            "sum": 15,
-            "unseen": 0,
-            "origin": "http://www.obix-labs.com/blogs/highOctaneJava/feed/entries/atom",
-            "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
-        },
-        {
-            "uuid": "7",
-            "title": "user2_subscription2",
-            "tag": "tag1",
-            "sum": 10,
-            "unseen": 0,
-            "origin": "http://www.javaspecialists.eu/archive/tjsn.rss",
-            "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
-        },
-        {
-            "uuid": "8",
-            "title": "user2_subscription3",
-            "tag": null,
-            "sum": 125,
-            "unseen": 0,
-            "origin": "http://www.tomcatexpert.com/blog/feed",
-            "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
-        },
-        {
-            "uuid": "9",
-            "title": "user2_subscription4",
-            "tag": "tag1",
-            "sum": 25,
-            "unseen": 0,
-            "origin": "http://martinfowler.com/feed.atom",
-            "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
-        },
-        {
-            "uuid": "10",
-            "title": "user2_subscription5",
-            "tag": null,
-            "sum": 5,
-            "unseen": 0,
-            "origin": "http://feeds.feedburner.com/SpringSourceTeamBlog",
-            "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
-        },
-        {
-            "uuid": "11",
-            "title": "user2_subscription6",
-            "tag": "tag2",
-            "sum": 1,
-            "unseen": 0,
-            "origin": "https://jira.springsource.org/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?&jqlQuery=project+%3D+SPR+AND+resolution+%3D+Unresolved+ORDER+BY+due+ASC%2C+priority+DESC%2C+created+ASC&tempMax=100&reset=true&decorator=none",
-            "createdAt": "2011-04-15T19:20:46Z",
-            "links": []
-        }
-    ]
+  "content": [
+    {
+      "uuid": "1104",
+      "title": "user116_subscription1",
+      "tag": "tag1",
+      "sum": 0,
+      "unseen": 0,
+      "origin": "http://feeds.feedburner.com/javaposse",
+      "createdAt": "2011-04-15T19:20:46Z",
+      "links": []
+    },
+    {
+      "uuid": "1105",
+      "title": "user116_subscription2",
+      "tag": "tag1",
+      "sum": 0,
+      "unseen": 0,
+      "origin": "http://use-the-index-luke.com/blog/feed",
+      "createdAt": "2011-04-15T19:20:46Z",
+      "links": []
+    }
+  ]
 }

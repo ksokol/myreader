@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser102;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
@@ -14,9 +15,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import myreader.service.time.TimeService;
 import myreader.test.IntegrationTestSupport;
+import myreader.test.KnownUser;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 
 import java.util.Date;
 
@@ -30,7 +33,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testCollectionResourceJsonStructureEquality() throws Exception {
-        mockMvc.perform(getAsUser2("/api/2/subscriptions"))
+        mockMvc.perform(actionAsUserX(HttpMethod.GET, KnownUser.USER116, "/api/2/subscriptions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/structure.json"));
     }
