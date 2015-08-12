@@ -1,12 +1,14 @@
 package myreader.resource.exclusionpattern;
 
 import static myreader.test.KnownUser.USER113;
+import static myreader.test.KnownUser.USER114;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.deleteAsUser1;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import myreader.test.IntegrationTestSupport;
@@ -32,12 +34,14 @@ public class ExclusionPatternEntityResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testDelete() throws Exception {
-        testEntityResourceForUser1JsonStructureEquality();
+        mockMvc.perform(actionAsUserX(GET, USER114, "/api/2/exclusions/1102/pattern/8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("uuid", is("8")));
 
-        mockMvc.perform(deleteAsUser1("/api/2/exclusions/1/pattern/0"))
+        mockMvc.perform(actionAsUserX(DELETE, USER114, "/api/2/exclusions/1102/pattern/8"))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(getAsUser1("/api/2/exclusions/1/pattern/0"))
+        mockMvc.perform(actionAsUserX(GET, USER114, "/api/2/exclusions/1102/pattern/8"))
                 .andExpect(status().isNotFound());
     }
 }
