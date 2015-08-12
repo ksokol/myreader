@@ -3,6 +3,7 @@ package myreader.resource.subscriptionentry;
 import static myreader.test.KnownUser.USER107;
 import static myreader.test.KnownUser.USER108;
 import static myreader.test.KnownUser.USER109;
+import static myreader.test.KnownUser.USER115;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.endsWith;
@@ -13,7 +14,6 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import myreader.test.IntegrationTestSupport;
-
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -136,7 +135,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
 
     @Test
     public void feedTagEqualTag1() throws Exception {
-        mockMvc.perform(getAsUser2("/api/2/subscriptionEntries?feedTagEqual=tag1"))
+        mockMvc.perform(actionAsUserX(GET, USER115, "/api/2/subscriptionEntries?feedTagEqual=tag1"))
                 .andExpect(jsonPath("content", hasSize(2)));
     }
 
