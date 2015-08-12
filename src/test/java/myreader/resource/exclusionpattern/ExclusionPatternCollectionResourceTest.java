@@ -1,7 +1,9 @@
 package myreader.resource.exclusionpattern;
 
 import static myreader.test.KnownUser.USER111;
+import static myreader.test.KnownUser.USER115;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
@@ -67,15 +69,15 @@ public class ExclusionPatternCollectionResourceTest extends IntegrationTestSuppo
 
     @Test
     public void testPostDuplicate() throws Exception {
-        mockMvc.perform(getAsUser2("/api/2/exclusions/6/pattern"))
-                .andExpect(jsonEquals("json/exclusionpattern/6#pattern.json"));
+        mockMvc.perform(actionAsUserX(GET, USER115, "/api/2/exclusions/1103/pattern"))
+                .andExpect(jsonEquals("json/exclusionpattern/1103#pattern.json"));
 
-        mockMvc.perform(postAsUser2("/api/2/exclusions/6/pattern")
-                .json("{'pattern':'user2_subscription1_pattern1'}"))
+        mockMvc.perform(actionAsUserX(POST, USER115, "/api/2/exclusions/1103/pattern")
+                .json("{'pattern':'user115_subscription1_pattern1'}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/exclusionpattern/post-6#pattern-response.json"));
+                .andExpect(jsonEquals("json/exclusionpattern/post-1103#pattern-response.json"));
 
-        mockMvc.perform(getAsUser2("/api/2/exclusions/6/pattern"))
-                .andExpect(jsonEquals("json/exclusionpattern/6#pattern.json"));
+        mockMvc.perform(actionAsUserX(GET, USER115, "/api/2/exclusions/1103/pattern"))
+                .andExpect(jsonEquals("json/exclusionpattern/1103#pattern.json"));
     }
 }

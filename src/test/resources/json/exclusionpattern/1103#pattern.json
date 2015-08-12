@@ -2,14 +2,14 @@
     "links": [
         {
             "rel": "self",
-            "href": "/api/2/exclusions/6/pattern"
+            "href": "/api/2/exclusions/1103/pattern"
         }
     ],
     "content": [
         {
-            "uuid": "4",
+            "uuid": "9",
             "hitCount": 1,
-            "pattern": "user2_subscription1_pattern1",
+            "pattern": "user115_subscription1_pattern1",
             "links": "${json-unit.ignore}"
         }
     ],
