@@ -10,6 +10,8 @@ import myreader.repository.FeedEntryRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.time.TimeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import java.util.List;
 /**
  * @author Kamill Sokol
  */
+@Component
 @Transactional
 public class SubscriptionEntryBatch {
 
@@ -27,6 +30,7 @@ public class SubscriptionEntryBatch {
     private final TimeService timeService;
     private ExclusionChecker exclusionChecker = new ExclusionChecker();
 
+    @Autowired
     public SubscriptionEntryBatch(FeedEntryRepository feedEntryRepository, SubscriptionRepository subscriptionRepository, SubscriptionEntryRepository subscriptionEntryRepository, TimeService timeService) {
         this.feedEntryRepository = feedEntryRepository;
         this.subscriptionRepository = subscriptionRepository;

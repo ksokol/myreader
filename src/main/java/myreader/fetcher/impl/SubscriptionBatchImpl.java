@@ -7,6 +7,8 @@ import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionEntryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,12 +16,14 @@ import java.util.List;
 /**
  * @author Kamill Sokol
  */
+@Component
 public class SubscriptionBatchImpl implements SubscriptionBatch {
 
     private final FeedRepository feedRepository;
     private final SubscriptionEntryBatch subscriptionBatchService;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
 
+    @Autowired
     public SubscriptionBatchImpl(FeedRepository feedRepository, SubscriptionEntryBatch subscriptionBatchService, SubscriptionEntryRepository subscriptionEntryRepository) {
         this.feedRepository = feedRepository;
         this.subscriptionBatchService = subscriptionBatchService;
