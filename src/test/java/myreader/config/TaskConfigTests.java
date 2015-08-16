@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import myreader.fetcher.FeedParser;
+import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.jobs.FeedListFetcherJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
@@ -35,6 +36,7 @@ public class TaskConfigTests {
         uut.setFeedParser(mock(FeedParser.class));
         uut.setFeedRepository(mock(FeedRepository.class));
         uut.setSubscriptionBatch(mock(SubscriptionBatch.class));
+        uut.setFeedQueue(mock(FeedQueue.class));
     }
 
     @Test
