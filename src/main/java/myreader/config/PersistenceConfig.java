@@ -4,7 +4,6 @@ import myreader.repository.SubscriptionEntryRepositoryImpl;
 import myreader.service.search.jobs.IndexSyncJob;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -17,7 +16,6 @@ import javax.persistence.EntityManager;
  * @author Kamill Sokol
  */
 @Configuration
-@EnableJpaRepositories("myreader.repository")
 @EnableTransactionManagement
 public class PersistenceConfig {
 
