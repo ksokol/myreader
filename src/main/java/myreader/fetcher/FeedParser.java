@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,6 +23,7 @@ import com.rometools.rome.feed.WireFeed;
 /**
  * @author Kamill Sokol
  */
+@Component
 public class FeedParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(FeedParser.class);
