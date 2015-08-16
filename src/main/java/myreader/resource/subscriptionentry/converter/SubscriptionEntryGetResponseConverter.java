@@ -1,24 +1,24 @@
 package myreader.resource.subscriptionentry.converter;
 
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.stereotype.Component;
-
 import myreader.entity.SubscriptionEntry;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
+
+import org.springframework.stereotype.Component;
+
 import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class SubscriptionEntryGetResponseConverter extends ResourceAssemblerSupport<SubscriptionEntry, SubscriptionEntryGetResponse> implements Converter<SubscriptionEntry, SubscriptionEntryGetResponse> {
+public class SubscriptionEntryGetResponseConverter extends ResourceAssemblerSupport<SubscriptionEntry, SubscriptionEntryGetResponse> {
 
     public SubscriptionEntryGetResponseConverter() {
         super(SubscriptionEntry.class, SubscriptionEntryGetResponse.class);
     }
 
     @Override
-    public SubscriptionEntryGetResponse convert(final SubscriptionEntry source) {
+    public SubscriptionEntryGetResponse toResource(final SubscriptionEntry source) {
         SubscriptionEntryGetResponse target = new SubscriptionEntryGetResponse();
 
         target.setUuid(String.valueOf(source.getId()));
@@ -42,10 +42,5 @@ public class SubscriptionEntryGetResponseConverter extends ResourceAssemblerSupp
         }
 
         return target;
-    }
-
-    @Override
-    public SubscriptionEntryGetResponse toResource(final SubscriptionEntry entity) {
-        return convert(entity);
     }
 }

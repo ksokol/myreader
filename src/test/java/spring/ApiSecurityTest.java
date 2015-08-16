@@ -44,7 +44,7 @@ public class ApiSecurityTest extends SecurityTestSupport {
 
     @Test
     public void testApiOk() throws Exception {
-        mockMvc.perform(get(API_2)
+        mockMvc.perform(get("/api/2/users")
                 .header("Authorization", basic(USER1)))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));

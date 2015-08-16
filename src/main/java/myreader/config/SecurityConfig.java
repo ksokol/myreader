@@ -11,7 +11,6 @@ import myreader.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
@@ -36,7 +35,6 @@ import spring.security.XAuthoritiesFilter;
  */
 @Configuration
 @EnableWebSecurity
-@ComponentScan(basePackages = {"spring.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -61,6 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new Md5PasswordEncoder();
     }
 
+    @Bean
     public UserDetailsService userDetailsService() {
         return new UserRepositoryUserDetailsService(userRepository);
     }

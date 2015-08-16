@@ -5,6 +5,7 @@ import myreader.service.search.jobs.IndexSyncJob;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -30,4 +31,8 @@ public class PersistenceConfig {
         return new IndexSyncJob("indexSyncJob", em, new TransactionTemplate(transactionManager));
     }
 
+    @Bean
+    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+        return new SecurityEvaluationContextExtension();
+    }
 }

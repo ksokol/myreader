@@ -4,29 +4,35 @@ import static myreader.config.UrlMappings.JAWR_BIN;
 import static myreader.config.UrlMappings.JAWR_CSS;
 import static myreader.config.UrlMappings.JAWR_JS;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import freemarker.JawrScriptTemplateDirectiveModel;
 import freemarker.JawrStyleTemplateDirectiveModel;
 import freemarker.template.TemplateException;
-import myreader.config.jawr.CssConfigPropertiesSource;
-import myreader.config.jawr.JavascriptConfigPropertiesSource;
 import net.jawr.web.servlet.JawrSpringController;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.web.bind.support.AuthenticationPrincipalArgumentResolver;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
+import spring.data.web.SequenceableHandlerMethodArgumentResolver;
+import spring.hateoas.PagedResourcesAssembler;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -34,21 +40,37 @@ import java.util.TreeMap;
 /**
  * @author Kamill Sokol
  */
-@EnableWebMvc
+//@EnableWebMvcSecurity
+@ComponentScan(basePackages = {"spring.hateoas"})
 @Configuration
-@Import({CssConfigPropertiesSource.class, JavascriptConfigPropertiesSource.class})
+@EnableSpringDataWebSupport
+@EnableTransactionManagement
+@EnableAsync
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
-        configurer.favorPathExtension(false);
+        configurer
+                .defaultContentType(APPLICATION_JSON)
+                .ignoreAcceptHeader(true)
+                .favorParameter(false)
+                .favorPathExtension(false);
     }
 
+    //TODO should be added automatically when @EnableWebMvcSecurity is enabled
     @Override
-    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.clear();
+        argumentResolvers.add(new AuthenticationPrincipalArgumentResolver());
+        argumentResolvers.add(new PageableHandlerMethodArgumentResolver());
+        argumentResolvers.add(new SequenceableHandlerMethodArgumentResolver());
     }
-    
+
+    @Bean
+    public PagedResourcesAssembler pagedResourcesAssembler() {
+        return new PagedResourcesAssembler();
+    }
+
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController(EMPTY).setViewName("index");
@@ -99,7 +121,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public JawrSpringController jawrCssController(@Qualifier("cssConfigProperties") Properties properties) {
+    public JawrSpringController jawrCssController(@Qualifier("cssConfig") Properties properties) {
         JawrSpringController jawrSpringController = new JawrSpringController();
         jawrSpringController.setControllerMapping(JAWR_CSS.mapping());
         jawrSpringController.setConfiguration(properties);
@@ -108,13 +130,11 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public JawrSpringController jawrJavascriptController(@Qualifier("javascriptConfigPropertiesSource") Properties properties) {
+    public JawrSpringController jawrJavascriptController(@Qualifier("javascriptConfig") Properties properties) {
         JawrSpringController jawrSpringController = new JawrSpringController();
         jawrSpringController.setControllerMapping(JAWR_JS.mapping());
         jawrSpringController.setConfiguration(properties);
         jawrSpringController.setType("js");
         return jawrSpringController;
     }
-
-
 }

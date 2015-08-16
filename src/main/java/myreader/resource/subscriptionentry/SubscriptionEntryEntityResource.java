@@ -10,14 +10,16 @@ import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
 
 /**
@@ -28,14 +30,14 @@ import spring.security.MyReaderUser;
 @RequestMapping("api/2/subscriptionEntries/{id}")
 public class SubscriptionEntryEntityResource {
 
-    private final ConversionService conversionService;
+    private final ResourceAssemblers resourceAssemblers;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final PatchService patchService;
 
     @Autowired
-    public SubscriptionEntryEntityResource(final ConversionService conversionService, final SubscriptionRepository subscriptionRepository, final SubscriptionEntryRepository subscriptionEntryRepository, final PatchService patchService) {
-        this.conversionService = conversionService;
+    public SubscriptionEntryEntityResource(final ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository, final SubscriptionEntryRepository subscriptionEntryRepository, final PatchService patchService) {
+        this.resourceAssemblers = resourceAssemblers;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
         this.patchService = patchService;
@@ -44,7 +46,7 @@ public class SubscriptionEntryEntityResource {
     @RequestMapping(method = GET)
     public SubscriptionEntryGetResponse get(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
         final SubscriptionEntry subscriptionEntry = findOrThrowException(id, user.getUsername());
-        return conversionService.convert(subscriptionEntry, SubscriptionEntryGetResponse.class);
+        return resourceAssemblers.toResource(subscriptionEntry, SubscriptionEntryGetResponse.class);
     }
 
     @Transactional

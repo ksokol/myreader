@@ -19,7 +19,7 @@ public class CssConfigPropertiesSource {
     private Environment environment;
 
     @Bean
-    public Properties cssConfigProperties() {
+    public Properties cssConfig() {
         final boolean debug = environment.getProperty("jawr.debug.on", Boolean.class, false);
         return new ConfigBuilder(debug)
                 .cssBundle("mobile")

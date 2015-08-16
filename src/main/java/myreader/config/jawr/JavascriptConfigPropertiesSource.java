@@ -19,7 +19,7 @@ public class JavascriptConfigPropertiesSource {
     private Environment environment;
 
     @Bean
-    public Properties javascriptConfigPropertiesSource() {
+    public Properties javascriptConfig() {
         final boolean debug = environment.getProperty("jawr.debug.on", Boolean.class, false);
         return new ConfigBuilder(debug)
                 .jsBundle("mobile")
