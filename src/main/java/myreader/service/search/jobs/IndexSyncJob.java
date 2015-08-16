@@ -11,6 +11,8 @@ import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -23,6 +25,7 @@ import javax.persistence.EntityManager;
  *
  * @author Kamill Sokol
  */
+@Component
 public class IndexSyncJob extends BaseJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(IndexSyncJob.class);
@@ -32,8 +35,9 @@ public class IndexSyncJob extends BaseJob {
     private final TransactionTemplate transactionTemplate;
     private final EntityManager em;
 
-    public IndexSyncJob(String jobName, EntityManager em, TransactionTemplate transactionTemplate) {
-        super(jobName);
+    @Autowired
+    public IndexSyncJob(EntityManager em, TransactionTemplate transactionTemplate) {
+        super("indexSyncJob");
         this.em = em;
         this.transactionTemplate = transactionTemplate;
     }

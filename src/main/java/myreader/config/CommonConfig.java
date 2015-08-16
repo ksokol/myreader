@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +35,10 @@ public class CommonConfig {
         return simpleApplicationEventMulticaster;
     }
 
+    @Bean
+    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+        return new SecurityEvaluationContextExtension();
+    }
     @Bean
     public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value("${tmpdir:tmp}") final String tmpDir, @Value("${saveperiod:60}") final int savePeriod) {
         return new JettyEmbeddedServletContainerFactory() {

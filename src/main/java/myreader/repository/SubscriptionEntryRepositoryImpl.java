@@ -25,9 +25,11 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Splitter;
@@ -37,6 +39,7 @@ import org.springframework.util.Assert;
 /**
 * @author Kamill Sokol
 */
+@Component
 @Transactional
 public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryRepositoryCustom {
 
@@ -52,6 +55,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
     private final EntityManager em;
 
+    @Autowired
     public SubscriptionEntryRepositoryImpl(final EntityManager em) {
         this.em = em;
     }
