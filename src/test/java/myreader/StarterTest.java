@@ -15,14 +15,6 @@ public class StarterTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void testMainWithFaultyTmpDir() throws Exception {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Invalid file path");
-
-        Starter.main(new String[] {"--tmpdir=\u0000"});
-    }
-
-    @Test
     public void testMain() throws Exception {
         try {
             Starter.main(new String[]{System.getProperty("java.io.tmpdir")});
