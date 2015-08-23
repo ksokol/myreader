@@ -1,6 +1,7 @@
 package myreader.fetcher.impl;
 
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -205,5 +206,18 @@ public class FeedParserTest extends IntegrationTestSupport {
         parser.parse("http://neusprech.org/feed/");
 
         assertThat(fetchStatisticRepository.findAll(), hasSize(0));
+    }
+
+    @Test
+    public void testFeed12() throws Exception {
+        mockServer.expect(requestTo("https://spring.io/blog.atom")).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed6.xml"), TEXT_XML));
+
+        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
+
+        final FetchResult parse = parser.parse("https://spring.io/blog.atom");
+
+        assertThat(parse.getEntries(), hasSize(greaterThan(0)));
+        assertThat(parse.getEntries().get(0).getUrl(), is("https://spring.io/blog/2015/08/10/spring-batch-3-0-5-release-is-now-available"));
     }
 }

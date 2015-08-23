@@ -38,7 +38,7 @@ public class AtomConverter implements Converter<Feed, FetchResult> {
 
             dto.setGuid(e.getId());
             dto.setTitle(e.getTitle());
-            dto.setUrl(e.getId());
+            dto.setUrl(e.getAlternateLinks().get(0).getHref());
 
             final List<Content> contents1 = e.getContents();
 
