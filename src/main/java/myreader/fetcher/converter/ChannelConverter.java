@@ -1,11 +1,13 @@
 package myreader.fetcher.converter;
 
+import static org.springframework.http.HttpHeaders.LAST_MODIFIED;
+
 import com.rometools.rome.feed.rss.Channel;
 import com.rometools.rome.feed.rss.Description;
 import com.rometools.rome.feed.rss.Item;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.List;
 /**
  * @author Kamill Sokol
  */
-public class ChannelConverter implements Converter<Channel, FetchResult> {
+final class ChannelConverter {
 
     private final int maxSize;
 
@@ -24,10 +26,8 @@ public class ChannelConverter implements Converter<Channel, FetchResult> {
         this.maxSize = maxSize;
     }
 
-
-    @Override
-    public FetchResult convert(final Channel source) {
-        final List<Item> items = source.getItems();
+    public FetchResult convert(final String feedUrl, final ResponseEntity<Channel> source) {
+        final List<Item> items = source.getBody().getItems();
         List<FetcherEntry> entries = new ArrayList<>();
         int i = 0;
 
@@ -37,8 +37,8 @@ public class ChannelConverter implements Converter<Channel, FetchResult> {
 
             dto.setGuid(e.getLink());
             dto.setTitle(e.getTitle());
-
             dto.setUrl(e.getLink());
+            dto.setFeedUrl(feedUrl);
 
             final Description description = e.getDescription();
             String content = description == null ? null : description.getValue();
@@ -52,8 +52,8 @@ public class ChannelConverter implements Converter<Channel, FetchResult> {
         }
 
         Collections.reverse(entries);
-        return new FetchResult(entries, null, source.getTitle());
 
-
+        final String lastModified = source.getHeaders().getFirst(LAST_MODIFIED);
+        return new FetchResult(entries, lastModified, source.getBody().getTitle());
     }
 }

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * @author Kamill Sokol
  */
-final class EntryLinkSanitizer {
+public final class EntryLinkSanitizer {
 
     private static final Pattern PATTERN = Pattern.compile("^http(s)?://.*");
 
@@ -19,7 +19,7 @@ final class EntryLinkSanitizer {
         Assert.notNull(feedLink, "feedLink is null");
         Assert.isTrue(PATTERN.matcher(feedLink).matches(), "feedLink must start with http(s)?://");
 
-        entryLink = entryLink.trim();
+        entryLink = entryLink.replace("\n", "").trim();
 
         if (PATTERN.matcher(entryLink).matches()) {
             return entryLink;

@@ -44,10 +44,6 @@ public class FetchResult {
         this.url = url;
     }
 
-    public void setLastModified(final String lastModified) {
-        this.lastModified = lastModified;
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

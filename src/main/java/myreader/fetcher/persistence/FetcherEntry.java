@@ -1,17 +1,27 @@
 package myreader.fetcher.persistence;
 
+import myreader.fetcher.sanitizer.EntryLinkSanitizer;
+import myreader.fetcher.sanitizer.StringDecoder;
+
 /**
  * @author Kamill Sokol
  */
 public class FetcherEntry {
 
     private String title;
+    private String titleSanitized;
     private String guid;
     private String url;
+    private String feedUrl;
+    private String urlSanitized;
     private String content;
+    private String contentSanitized;
 
     public String getTitle() {
-        return title;
+        if(titleSanitized == null) {
+            titleSanitized = StringDecoder.escapeSimpleHtml(title);
+        }
+        return titleSanitized;
     }
 
     public void setTitle(String title) {
@@ -27,15 +37,25 @@ public class FetcherEntry {
     }
 
     public String getUrl() {
-        return url;
+        if(urlSanitized == null) {
+            urlSanitized = EntryLinkSanitizer.sanitize(url, feedUrl);
+        }
+        return urlSanitized;
     }
 
     public void setUrl(String url) {
         this.url = url;
     }
 
+    public void setFeedUrl(final String feedUrl) {
+        this.feedUrl = feedUrl;
+    }
+
     public String getContent() {
-        return content;
+        if(contentSanitized == null) {
+            contentSanitized = StringDecoder.escapeHtmlContent(content, getUrl());
+        }
+        return contentSanitized;
     }
 
     public void setContent(String content) {

@@ -51,6 +51,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         fetcherEntry.setUrl("url");
         fetcherEntry.setContent("content");
         fetcherEntry.setGuid("guid");
+        fetcherEntry.setFeedUrl("http://localhost");
 
         Feed beforeFeed = feedRepository.findOne(100L);
         Subscription beforeSubscription = subscriptionRepository.findOne(100L);
@@ -92,6 +93,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         fetcherEntry.setTitle("Party time");
         fetcherEntry.setUrl("http://Use-The-Index-Luke.com/blog/2013-03/Party-Time");
         fetcherEntry.setGuid("http://Use-The-Index-Luke.com");
+        fetcherEntry.setFeedUrl("http://localhost");
 
         List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(new Feed(), Arrays.asList(fetcherEntry));
         assertThat(subscriptionEntries, hasSize(0));
@@ -104,12 +106,15 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         fetcherEntry1.setUrl("url1");
         fetcherEntry1.setContent("content1");
         fetcherEntry1.setGuid("guid1");
+        fetcherEntry1.setFeedUrl("http://localhost");
 
         FetcherEntry fetcherEntry2 = new FetcherEntry();
         fetcherEntry2.setTitle("title1");
         fetcherEntry2.setUrl("url1");
         fetcherEntry2.setContent("content1");
         fetcherEntry2.setGuid("guid1");
+        fetcherEntry2.setFeedUrl("http://localhost");
+
 
         Subscription beforeSubscription = subscriptionRepository.findOne(6L);
         final Page<ExclusionPattern> exclusions = exclusionRepository.findBySubscriptionId(beforeSubscription.getId(), new PageRequest(0, 10));

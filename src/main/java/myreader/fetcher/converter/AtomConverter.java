@@ -1,5 +1,7 @@
 package myreader.fetcher.converter;
 
+import static org.springframework.http.HttpHeaders.LAST_MODIFIED;
+
 import com.rometools.rome.feed.atom.Content;
 import com.rometools.rome.feed.atom.Entry;
 import com.rometools.rome.feed.atom.Feed;
@@ -7,7 +9,7 @@ import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import java.util.List;
 /**
  * @author Kamill Sokol
  */
-public class AtomConverter implements Converter<Feed, FetchResult> {
+final class AtomConverter {
 
     private final int maxSize;
 
@@ -26,9 +28,8 @@ public class AtomConverter implements Converter<Feed, FetchResult> {
         this.maxSize = maxSize;
     }
 
-    @Override
-    public FetchResult convert(final Feed source) {
-        final List<Entry> items = source.getEntries();
+    public FetchResult convert(final String feedUrl, final ResponseEntity<Feed> source) {
+        final List<Entry> items = source.getBody().getEntries();
         List<FetcherEntry> entries = new ArrayList<>();
         int i = 0;
 
@@ -39,6 +40,7 @@ public class AtomConverter implements Converter<Feed, FetchResult> {
             dto.setGuid(e.getId());
             dto.setTitle(e.getTitle());
             dto.setUrl(e.getAlternateLinks().get(0).getHref());
+            dto.setFeedUrl(feedUrl);
 
             final List<Content> contents1 = e.getContents();
 
@@ -56,6 +58,8 @@ public class AtomConverter implements Converter<Feed, FetchResult> {
         }
 
         Collections.reverse(entries);
-        return new FetchResult(entries, null, source.getTitle());
+
+        final String lastModified = source.getHeaders().getFirst(LAST_MODIFIED);
+        return new FetchResult(entries, lastModified, source.getBody().getTitle());
     }
 }

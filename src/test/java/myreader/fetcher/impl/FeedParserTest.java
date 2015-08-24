@@ -1,7 +1,6 @@
 package myreader.fetcher.impl;
 
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -32,8 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -53,9 +52,6 @@ public class FeedParserTest extends IntegrationTestSupport {
 
     @Autowired
     private RestTemplate syndicationRestTemplate;
-
-    @Autowired
-    private ConversionService conversionService;
 
     @Autowired
     private TimeService timeServiceMock;
@@ -80,7 +76,7 @@ public class FeedParserTest extends IntegrationTestSupport {
         when(timeServiceMock.getCurrentTime()).thenReturn(new Date(), new Date());
 
         mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
-        parser = feedParserConfiguration.parser(conversionService, fetchStatisticRepository, timeServiceMock);
+        parser = feedParserConfiguration.parser(fetchStatisticRepository, timeServiceMock);
     }
 
     @Test
@@ -217,7 +213,39 @@ public class FeedParserTest extends IntegrationTestSupport {
 
         final FetchResult parse = parser.parse("https://spring.io/blog.atom");
 
-        assertThat(parse.getEntries(), hasSize(greaterThan(0)));
+        assertThat(parse.getEntries(), hasSize(10));
         assertThat(parse.getEntries().get(0).getUrl(), is("https://spring.io/blog/2015/08/10/spring-batch-3-0-5-release-is-now-available"));
+    }
+
+    @Test
+    public void testFeed13() throws Exception {
+        mockServer.expect(requestTo("https://spring.io/blog.atom"))
+                .andExpect(method(GET))
+                .andExpect(header("If-Modified-Since", "yesterday"))
+                .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
+
+        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
+
+        final FetchResult parse = parser.parse("https://spring.io/blog.atom", "yesterday");
+
+        assertThat(parse.getEntries(), hasSize(0));
+    }
+
+    @Test
+    public void testFeed14() throws Exception {
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("last-Modified", "now");
+
+        mockServer.expect(requestTo("https://spring.io/blog.atom"))
+                .andExpect(method(GET))
+                .andExpect(header("If-Modified-Since", "yesterday"))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed6.xml"), TEXT_XML).headers(httpHeaders));
+
+        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
+
+        final FetchResult parse = parser.parse("https://spring.io/blog.atom", "yesterday");
+
+        assertThat(parse.getLastModified(), is("now"));
+        assertThat(parse.getEntries(), hasSize(10));
     }
 }

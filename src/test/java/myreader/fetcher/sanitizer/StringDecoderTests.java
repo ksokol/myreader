@@ -1,11 +1,11 @@
 package myreader.fetcher.sanitizer;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import myreader.fetcher.sanitizer.StringDecoder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -21,7 +21,7 @@ public class StringDecoderTests {
     @Test
     public void testNull() {
         String decoded = new StringDecoder().escapeHtmlContent(null, null);
-        assertThat(decoded, is(""));
+        assertThat(decoded, is(EMPTY));
     }
 
     @Test
@@ -87,12 +87,12 @@ public class StringDecoderTests {
 
 	@Test
 	public void testEscapeHTMLWithNotNull() {
-		assertTrue("".equals(StringDecoder.escapeHtmlContent("string", null)));
+		assertThat(StringDecoder.escapeHtmlContent("string", null), is(EMPTY));
 	}
 
 	@Test
 	public void testEscapeHTMLWithNull() {
-		assertTrue("".equals(StringDecoder.escapeHtmlContent(null,null)));
+		assertThat(StringDecoder.escapeHtmlContent(null,null), is(EMPTY));
 	}
 
     @Test

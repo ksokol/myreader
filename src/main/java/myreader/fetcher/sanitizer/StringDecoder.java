@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-final class StringDecoder {
+public final class StringDecoder {
 
 	private static final Pattern PATTERN_HREF = Pattern.compile("(?:(src|href)=)+\"(/[^\"]*)");
 	private static final Pattern PATTERN_JAVASCRIPT = Pattern.compile("<[\\ ]*script.*>.*<[\\ ]*/[\\ ]*script[\\ ]*>");
