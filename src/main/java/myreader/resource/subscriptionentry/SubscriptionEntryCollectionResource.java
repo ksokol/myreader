@@ -85,13 +85,11 @@ public class SubscriptionEntryCollectionResource {
                 continue;
             }
 
-            if(subscriptionPatch.isFieldPatched("seen")) {
-                if(subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
-                    if (subscriptionPatch.getSeen()) {
-                        subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
-                    } else {
-                        subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
-                    }
+            if(subscriptionPatch.isFieldPatched("seen") && subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
+                if (subscriptionPatch.getSeen()) {
+                    subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
+                } else {
+                    subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
                 }
             }
 
@@ -107,7 +105,7 @@ public class SubscriptionEntryCollectionResource {
     private static <T extends Identifiable> Sequence<T> toSequence(final Sequenceable sequenceable, final List<T> content) {
         Assert.notNull(content, "Content must not be null!");
         Assert.notNull(sequenceable, "Sliceable must not be null!");
-        boolean hasNext = content.size() == (sequenceable.getPageSize() + 1);
+        boolean hasNext = content.size() == sequenceable.getPageSize() + 1;
 
         if(!hasNext) {
             return new SequenceImpl<>(content);

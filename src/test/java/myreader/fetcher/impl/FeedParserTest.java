@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.TEXT_XML;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
@@ -30,6 +31,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
@@ -45,6 +47,8 @@ import java.util.Date;
  */
 @DirtiesContext
 public class FeedParserTest extends IntegrationTestSupport {
+
+    private static final Logger LOG = getLogger(FeedParserTest.class);
 
     private static final String HTTP_WWW_HEISE_DE_NEWSTICKER_HEISE_ATOM_XML = "http://www.heise.de/newsticker/heise-atom.xml";
     private static final String HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS = "http://www.javaspecialists.eu/archive/tjsn.rss";
@@ -71,7 +75,7 @@ public class FeedParserTest extends IntegrationTestSupport {
 
     @Before
     public void beforeTest() throws Exception {
-        fetchStatisticRepository.deleteAll();;
+        fetchStatisticRepository.deleteAll();
 
         when(timeServiceMock.getCurrentTime()).thenReturn(new Date(), new Date());
 
@@ -186,7 +190,7 @@ public class FeedParserTest extends IntegrationTestSupport {
             parser.parse("irrelevant", "lastModified");
             fail("exception 500 Internal Server Error");
         } catch(FeedParseException exception) {
-            //ignore
+            LOG.info("caught expected exception " + exception.getMessage());
         }
 
         assertThat(fetchStatisticRepository.findAll(), hasSize(1));

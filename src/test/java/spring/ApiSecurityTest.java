@@ -219,6 +219,6 @@ public class ApiSecurityTest extends SecurityTestSupport {
     }
 
     private static String basic(KnownUser user) {
-        return "Basic " + new String(Base64.encodeBase64((String.format("%s:%s", user.username, user.password)).getBytes()));
+        return "Basic " + new String(Base64.encodeBase64(String.format("%s:%s", user.username, user.password).getBytes()));
     }
 }

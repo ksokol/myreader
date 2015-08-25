@@ -1,5 +1,8 @@
 package myreader.resource.processing.validation;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -10,6 +13,8 @@ import javax.validation.ConstraintValidatorContext;
  * @author Kamill Sokol
  */
 public class ValidProcessValidator implements ConstraintValidator<ValidProcess, String> {
+
+    private static final Logger LOG = getLogger(ValidProcessValidator.class);
 
     private final ApplicationContext applicationContext;
 
@@ -28,7 +33,7 @@ public class ValidProcessValidator implements ConstraintValidator<ValidProcess, 
             applicationContext.getBean(processName, Runnable.class);
             return true;
         } catch (Exception exception) {
-            //empty on purpose
+            LOG.warn("bean for requested process {} not found", processName);
         }
         return false;
     }

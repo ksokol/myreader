@@ -1,10 +1,13 @@
 package myreader.service.feed;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import myreader.entity.Feed;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.repository.FeedRepository;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,8 @@ import org.springframework.util.StringUtils;
 @Transactional
 @Service
 public class FeedServiceImpl implements FeedService {
+
+    private static final Logger LOG = getLogger(FeedServiceImpl.class);
 
     private final FeedRepository feedRepository;
     private final FeedParser feedParser;
@@ -58,7 +63,7 @@ public class FeedServiceImpl implements FeedService {
             feedParser.parse(url);
             return true;
         } catch (FeedParseException exception) {
-            //ignore
+            LOG.warn("couldn't parse feed {}. error: {}", url, exception.getMessage());
         }
 
         return false;
