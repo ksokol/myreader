@@ -18,10 +18,16 @@ public class FetchResult {
         setUrl(url);
     }
 
+    @Deprecated
     public FetchResult(List<FetcherEntry> entries, String lastModified, String title) {
+        this(entries, lastModified, title, null);
+    }
+
+    public FetchResult(List<FetcherEntry> entries, String lastModified, String title, String url) {
         this.entries = entries;
         this.lastModified = lastModified;
         this.title = title;
+        this.url = url;
     }
 
     public List<FetcherEntry> getEntries() {

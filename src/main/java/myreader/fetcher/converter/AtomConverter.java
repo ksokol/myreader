@@ -60,6 +60,6 @@ final class AtomConverter {
         Collections.reverse(entries);
 
         final String lastModified = source.getHeaders().getFirst(LAST_MODIFIED);
-        return new FetchResult(entries, lastModified, source.getBody().getTitle());
+        return new FetchResult(entries, lastModified, source.getBody().getTitle(), feedUrl);
     }
 }
