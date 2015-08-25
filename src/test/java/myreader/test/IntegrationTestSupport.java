@@ -8,7 +8,6 @@ import myreader.Starter;
 import myreader.fetcher.FeedParser;
 import myreader.service.search.jobs.IndexSyncJob;
 import myreader.service.time.TimeService;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -33,7 +32,7 @@ import java.util.TimeZone;
 @SpringApplicationConfiguration(classes = { Starter.class, TestConfig.class, TestDataSourceConfig.class} )
 @WebIntegrationTest("server.port:0")
 @TestPropertySource(properties = { "task.enabled = false" })
-public class IntegrationTestSupport {
+public abstract class IntegrationTestSupport {
 
 	static {
         //TODO move to src/test/resources/application.properties

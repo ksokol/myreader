@@ -10,7 +10,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.security.Principal;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Kamill Sokol
@@ -22,17 +21,17 @@ public class XAuthoritiesFilterTests {
 
     @Test
     public void noPrincipal() throws Exception {
-        final HttpServletResponse mockHttpServletResponse = setup(null);
+        final MockHttpServletResponse mockHttpServletResponse = setup(null);
         assertThat(mockHttpServletResponse.getHeader(X_MY_AUTHORITIES), nullValue());
     }
 
     @Test
     public void principalWithoutAuthorities() throws Exception {
-        final HttpServletResponse mockHttpServletResponse = setup(new UsernamePasswordAuthenticationToken("irrelevant", "irrelevant"));
+        final MockHttpServletResponse mockHttpServletResponse = setup(new UsernamePasswordAuthenticationToken("irrelevant", "irrelevant"));
         assertThat(mockHttpServletResponse.getHeader(X_MY_AUTHORITIES), nullValue());
     }
 
-    private HttpServletResponse setup(Principal principal) throws Exception {
+    private MockHttpServletResponse setup(Principal principal) throws Exception {
         final MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         mockHttpServletRequest.setUserPrincipal(principal);
         final MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();

@@ -23,10 +23,11 @@ import com.gargoylesoftware.htmlunit.WebClient;
 /**
  * @author Kamill Sokol
  */
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {Starter.class, SecurityTestSupport.AdditionalConfig.class, TestDataSourceConfig.class})
 @WebAppConfiguration
-public class SecurityTestSupport {
+public abstract class SecurityTestSupport {
 
     public static final String API_2 = "/api/2/irrelevant";
 
