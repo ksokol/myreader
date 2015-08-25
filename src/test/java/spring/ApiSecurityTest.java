@@ -3,11 +3,13 @@ package spring;
 import static myreader.config.UrlMappings.LANDING_PAGE;
 import static myreader.config.UrlMappings.LOGIN;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
+import static myreader.config.UrlMappings.LOGOUT;
 import static myreader.test.KnownUser.USER1;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,6 +26,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import javax.servlet.http.Cookie;
 
 /**
  * @author Kamill Sokol
@@ -55,6 +58,53 @@ public class ApiSecurityTest extends SecurityTestSupport {
         mockMvc.perform(get(API_2))
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", "http://localhost" + LOGIN.mapping()));
+    }
+
+    @Test
+    public void testSuccessfulAuthorization() throws Exception {
+        mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", USER1.username)
+                .param("password", USER1.password))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testUnsuccessfulAuthorization() throws Exception {
+        mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", USER1.username)
+                .param("password", "wrong"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testRememberMe() throws Exception {
+        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", USER1.username)
+                .param("password", USER1.password)
+                .param("remember-me", "on"))
+                .andExpect(status().isNoContent())
+                .andReturn()
+                .getResponse().getCookie("remember-me");
+
+        mockMvc.perform(get(API_2)
+                .cookie(rememberMeCookie))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testLogout() throws Exception {
+        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", USER1.username)
+                .param("password", USER1.password)
+                .param("remember-me", "on"))
+                .andExpect(status().isNoContent())
+                .andReturn()
+                .getResponse().getCookie("remember-me");
+
+        mockMvc.perform(get(LOGOUT.mapping())
+                .cookie(rememberMeCookie))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", LOGIN.mapping()));
     }
 
     @Ignore
