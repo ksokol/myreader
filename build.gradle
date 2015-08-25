@@ -23,14 +23,13 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
-
+apply plugin: 'pmd'
 
 group = 'myreader'
 version = '0.6'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-
 
 jar {
     archiveName = 'myreader.jar'
