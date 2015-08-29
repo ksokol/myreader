@@ -32,7 +32,8 @@ public enum KnownUser {
 
     KnownUser(boolean admin) {
         if(name().startsWith("USER")) {
-            this.id = Integer.valueOf(name().substring(4));
+            final Integer integer = Integer.valueOf(name().substring(4));
+            this.id = integer.intValue();
         } else {
             this.id = 0;
         }

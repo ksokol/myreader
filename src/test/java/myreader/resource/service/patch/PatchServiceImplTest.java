@@ -1,10 +1,10 @@
 package myreader.resource.service.patch;
 
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 /**
  * @author Kamill Sokol
@@ -34,7 +34,7 @@ public class PatchServiceImplTest {
         assertThat(target.getField2(), nullValue());
     }
 
-    class TestPatchSupport extends PatchSupport {
+    static class TestPatchSupport extends PatchSupport {
         private String field1;
         private String field2;
 
@@ -57,7 +57,7 @@ public class PatchServiceImplTest {
         }
     }
 
-    class TargetClass {
+    static class TargetClass {
         private String field1;
         private String field2;
 

@@ -1,5 +1,8 @@
 package spring.data.web;
 
+import static java.lang.Long.MAX_VALUE;
+import static java.lang.Long.parseLong;
+
 import org.springframework.core.MethodParameter;
 import org.springframework.hateoas.mvc.UriComponentsContributor;
 import org.springframework.util.StringUtils;
@@ -12,9 +15,6 @@ import spring.data.domain.Sequence;
 import spring.data.domain.SequenceRequest;
 import spring.data.domain.Sequenceable;
 
-import static java.lang.Long.MAX_VALUE;
-import static java.lang.Long.parseLong;
-
 /**
  * @author Kamill Sokol
  */
@@ -25,7 +25,7 @@ public class SequenceableHandlerMethodArgumentResolver implements HandlerMethodA
     private static final int DEFAULT_MAX_PAGE_SIZE = 50;
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final Sequenceable DEFAULT_PAGE_REQUEST = new SequenceRequest(DEFAULT_PAGE_SIZE, MAX_VALUE);
-    private static final Long DEFAULT_NEXT = MAX_VALUE;
+    private static final long DEFAULT_NEXT = MAX_VALUE;
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
@@ -42,7 +42,7 @@ public class SequenceableHandlerMethodArgumentResolver implements HandlerMethodA
             return DEFAULT_PAGE_REQUEST;
         }
 
-        Long next = StringUtils.hasText(nextString) ? parseAndApplyBoundaries(nextString, 0) : DEFAULT_NEXT;
+        long next = StringUtils.hasText(nextString) ? parseAndApplyBoundaries(nextString, 0) : DEFAULT_NEXT;
         int pageSize = parseAndApplyBoundaries(pageSizeString, 0, DEFAULT_MAX_PAGE_SIZE);
 
         return new SequenceRequest(pageSize, next);
@@ -73,9 +73,9 @@ public class SequenceableHandlerMethodArgumentResolver implements HandlerMethodA
         }
     }
 
-    private static Long parseAndApplyBoundaries(String parameter, long lower) {
+    private static long parseAndApplyBoundaries(String parameter, long lower) {
         try {
-            Long parsed = parseLong(parameter);
+            long parsed = parseLong(parameter);
             return parsed < lower ? lower : parsed;
         } catch (NumberFormatException e) {
             return DEFAULT_NEXT;

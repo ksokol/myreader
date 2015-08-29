@@ -25,4 +25,24 @@ public class ExclusionSetGetResponse extends UUIDResourceSupport {
     public void setOverallPatternHits(long overallPatternHits) {
         this.overallPatternHits = overallPatternHits;
     }
+
+    @Override
+    public int hashCode() {
+        return getUuid().hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (object == null || !object.getClass().equals(this.getClass())) {
+            return false;
+        }
+
+        ExclusionSetGetResponse that = (ExclusionSetGetResponse) object;
+
+        return this.getUuid().equals(that.getUuid());
+    }
 }

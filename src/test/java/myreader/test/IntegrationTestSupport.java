@@ -70,10 +70,13 @@ public abstract class IntegrationTestSupport {
     }
 
     @After
-    public final void after() {
+    public final void after() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(null);
+        afterTest();
     }
 
 	protected void beforeTest() throws Exception {}
+
+    protected void afterTest() throws Exception {}
 
 }

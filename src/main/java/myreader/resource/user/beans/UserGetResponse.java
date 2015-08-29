@@ -25,4 +25,24 @@ public class UserGetResponse extends UUIDResourceSupport {
     public void setRole(String role) {
         this.role = role;
     }
+
+    @Override
+    public int hashCode() {
+        return getUuid().hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (object == null || !object.getClass().equals(this.getClass())) {
+            return false;
+        }
+
+        UserGetResponse that = (UserGetResponse) object;
+
+        return this.getUuid().equals(that.getUuid());
+    }
 }

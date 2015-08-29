@@ -26,6 +26,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import javax.servlet.http.Cookie;
 
 /**
@@ -219,6 +220,7 @@ public class ApiSecurityTest extends SecurityTestSupport {
     }
 
     private static String basic(KnownUser user) {
-        return "Basic " + new String(Base64.encodeBase64(String.format("%s:%s", user.username, user.password).getBytes()));
+        final byte[] usernamePassword = String.format("%s:%s", user.username, user.password).getBytes(Charset.forName("UTF-8"));
+        return "Basic " + new String(Base64.encodeBase64(usernamePassword), Charset.forName("UTF-8"));
     }
 }

@@ -57,20 +57,22 @@ public class FetchStatistics implements Identifiable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     public Date getStartedAt() {
-        return startedAt;
+        return new Date(startedAt.getTime());
     }
 
     public void setStartedAt(Date startedAt) {
-        this.startedAt = startedAt;
+        if(startedAt != null) {
+            this.startedAt = new Date(startedAt.getTime());
+        }
     }
 
     @Temporal(TemporalType.TIMESTAMP)
     public Date getStoppedAt() {
-        return stoppedAt;
+        return new Date(stoppedAt.getTime());
     }
 
     public void setStoppedAt(Date stoppedAt) {
-        this.stoppedAt = stoppedAt;
+        this.stoppedAt = new Date(stoppedAt.getTime());
     }
 
     @Column(columnDefinition = "LONGVARCHAR")

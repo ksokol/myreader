@@ -12,13 +12,11 @@ import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.test.IntegrationTestSupport;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.WireMockServer;
 
 /**
  * @author Kamill Sokol
@@ -28,17 +26,23 @@ public class FeedParserHttpsTests extends IntegrationTestSupport {
     private static final int PORT = 18443;
     private static final String HTTPS_URL = "https://localhost:" + PORT + "/rss";
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().httpsPort(PORT));
+    private WireMockServer wireMockServer;
 
     @Autowired
     private RestTemplate syndicationRestTemplate;
 
     private FeedParser parser;
 
-    @Before
+    @Override
     public void beforeTest() {
+        wireMockServer = new WireMockServer(wireMockConfig().httpsPort(PORT));
+        wireMockServer.start();
         parser = new FeedParser(syndicationRestTemplate);
+    }
+
+    @Override
+    public void afterTest() {
+        wireMockServer.stop();
     }
 
     @Test

@@ -87,11 +87,11 @@ public class Feed implements Identifiable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "feed_created_at")
     public Date getCreatedAt() {
-        return createdAt;
+        return new Date(createdAt.getTime());
     }
 
     public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+        this.createdAt = new Date(createdAt.getTime());
     }
 
     @OneToMany(mappedBy = "feed")

@@ -49,7 +49,7 @@ public class SubscriptionGetResponse extends UUIDResourceSupport {
     }
 
     public Date getCreatedAt() {
-        return createdAt;
+        return new Date(createdAt.getTime());
     }
 
     public String getOrigin() {
@@ -61,7 +61,27 @@ public class SubscriptionGetResponse extends UUIDResourceSupport {
     }
 
     public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+        this.createdAt = new Date(createdAt.getTime());
+    }
+
+    @Override
+    public int hashCode() {
+        return getUuid().hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (object == null || !object.getClass().equals(this.getClass())) {
+            return false;
+        }
+
+        SubscriptionGetResponse that = (SubscriptionGetResponse) object;
+
+        return this.getUuid().equals(that.getUuid());
     }
 
 }

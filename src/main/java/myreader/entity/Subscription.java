@@ -98,11 +98,16 @@ public class Subscription implements Identifiable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "user_feed_created_at")
     public Date getCreatedAt() {
-        return createdAt;
+        if(createdAt != null) {
+            return new Date(createdAt.getTime());
+        }
+        return new Date();
     }
 
     public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+        if(createdAt != null) {
+            this.createdAt = new Date(createdAt.getTime());
+        }
     }
 
     @IndexedEmbedded

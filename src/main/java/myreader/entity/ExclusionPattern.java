@@ -63,11 +63,13 @@ public class ExclusionPattern implements Identifiable {
 
     @Temporal(TemporalType.TIMESTAMP)
     public Date getCreatedAt() {
-        return createdAt;
+        return new Date(createdAt.getTime());
     }
 
     public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+        if(createdAt != null) {
+            this.createdAt = new Date(createdAt.getTime());
+        }
     }
 
     @ManyToOne(optional = false)
