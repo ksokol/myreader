@@ -9,13 +9,12 @@ Installation
 **Prerequisite**
 
 - Java 8
-- Apache Maven 3.1 or newer
 
 **Build and package**
 
-- run `mvn package`
-- You will find a fat jar (Spring Boot application) under `target`
-- run `java -jar myreader.jar`
+- run `gradlew build`
+- You will find a fat jar (Spring Boot application) under `build/libs`
+- run `java -jar build/libs/myreader.jar`
 
 
 **TODO**

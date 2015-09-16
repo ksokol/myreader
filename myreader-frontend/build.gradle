@@ -1,0 +1,57 @@
+plugins {
+    id 'com.moowork.node' version '0.10'
+}
+
+apply plugin: 'java'
+apply plugin: 'com.moowork.node'
+
+node {
+    version = '0.12.0'
+    npmVersion = '1.4.28'
+    download = true
+}
+
+jar {
+    from 'dist'
+    eachFile { details ->
+        details.path = details.path.startsWith('META-INF') ?: 'static/' + details.path
+    }
+    // Jar contains duplicate empty folders, see Gradle issue:
+    // http://issues.gradle.org/browse/GRADLE-1830
+    // so we need to set includeEmptyDirs to false
+    includeEmptyDirs = false
+}
+
+task gulp(type: NodeTask) {
+    script = file('node_modules/gulp/bin/gulp.js')
+    args = ['build']
+}
+
+task gulpClean(type: NodeTask) {
+    script = file('node_modules/gulp/bin/gulp.js')
+    args = ['clean']
+}
+
+task npmClean(type: NodeTask) {
+    args = ['clean']
+}
+
+task test(overwrite:true, type: NodeTask) {
+    script = file('node_modules/karma/bin/karma')
+    args = ['start', 'karma.conf.js']
+}
+
+clean {
+    delete "node_modules", "node", "dist"
+}
+
+npmInstall {
+    args
+//    outputs.upToDateWhen {
+//        false
+//    }
+}
+
+clean.dependsOn gulpClean
+gulp.dependsOn npmInstall
+jar.dependsOn gulp

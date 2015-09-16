@@ -1,0 +1,82 @@
+plugins {
+    id "net.saliman.cobertura" version "2.2.8"
+    id "com.github.kt3k.coveralls" version "2.4.0"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+apply plugin: 'pmd'
+apply plugin: 'findbugs'
+
+group = 'myreader'
+version = '0.6'
+
+jar {
+    archiveName = 'myreader.jar'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.spring.io/libs-milestone" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+    compile group: 'org.springframework.security', name: 'spring-security-data', version: '4.0.2.RELEASE'
+    compile group: 'jdom', name: 'jdom', version: '1.0'
+    compile group: 'org.hibernate', name: 'hibernate-search', version: '5.1.2.Final'
+    compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.12.0.RELEASE'
+    compile group: 'org.hsqldb', name: 'hsqldb', version: '2.3.3'
+    compile group: 'org.hibernate', name: 'hibernate-validator', version: '4.3.1.Final'
+    compile group: 'org.freemarker', name: 'freemarker', version: '2.3.21'
+    compile group: 'com.rometools', name: 'rome', version: '1.5.1'
+    // wrong apache httpcomponents version referenced in net.sourceforge.htmlunit:htmlunit
+    compile(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4.1') {
+        exclude(module: 'commons-logging')
+    }
+    compile group: 'joda-time', name: 'joda-time', version: '2.6'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
+    compile group: 'commons-collections', name: 'commons-collections', version: '3.2.1'
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    compile group: 'com.google.guava', name: 'guava', version: '18.0'
+    compile project(':myreader-frontend')
+
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '4.0.2.RELEASE'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'com.jayway.jsonpath', name: 'json-path', version: '0.8.1'
+    testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '0.8.1'
+    testCompile group: 'net.javacrumbs.json-unit', name: 'json-unit', version: '1.1.5'
+    testCompile group: 'org.springframework.test.htmlunit', name: 'spring-test-htmlunit', version: '1.0.0.RC1'
+    testCompile group: 'xml-apis', name: 'xml-apis', version: '1.4.01'
+    testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '1.57'
+}
+
+cobertura {
+    coverageFormats = [ 'html', 'xml']
+    coverageCheckBranchRate = 100
+    coverageCheckLineRate = 100
+    coverageCheckPackageBranchRate = 100
+    coverageCheckPackageLineRate = 100
+    coverageCheckTotalBranchRate = 100
+    coverageCheckTotalLineRate = 100
+    coverageCheckHaltOnFailure = false
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+
+bootRun {
+    /* Lets you pick Spring Boot profile by system properties, e.g. gradle bootRun -Dspring.profiles.active=dev */
+    systemProperty "spring.profiles.active", "dev"
+}

@@ -1,7 +1,6 @@
-target
+build
 logs
 tmp
-data
 node**
 .idea
 myreader.iml

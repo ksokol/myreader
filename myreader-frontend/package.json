@@ -1,0 +1,48 @@
+{
+  "name": "myreader-frontend",
+  "description": "Myreader frontend package",
+  "dependencies": {
+    "angular": "1.4.5",
+    "angular-sanitize": "1.4.5",
+    "angular-messages": "1.4.5",
+    "angular-ui-router": "0.2.15",
+    "ui-router-extras": "0.0.14",
+    "angular-material": "0.10.1",
+    "angular-local-storage": "0.1.5",
+    "angular-cache": "4.2.0",
+    "moment": "2.7.0",
+    "angular-hotkeys": "1.5.0",
+    "mousetrap": "1.5.3"
+  },
+  "devDependencies": {
+    "karma": "0.12.17",
+    "karma-jasmine": "~0.1.5",
+    "karma-phantomjs-launcher": "~0.1.1",
+    "karma-junit-reporter": "~0.2.2",
+    "karma-ng-json2js-preprocessor": "~0.1.1",
+    "karma-ng-scenario": "~0.1.0",
+    "karma-ng-html2js-preprocessor": "~0.1.0",
+    "karma-coverage": "~0.4.2",
+
+    "gulp": "3.8.7",
+    "gulp-base64": "0.1.3",
+    "gulp-html-replace": "1.5.1",
+    "gulp-minify-css": "0.3.7",
+    "gulp-uglify": "0.3.1",
+    "gulp-concat": "2.6.0",
+    "gulp-minify-html": "1.0.4",
+    "gulp-sequence": "0.4.1",
+    "gulp-rev": "6.0.1",
+    "del": "2.0.1",
+    "gulp-html-src": "1.0.0",
+    "gulp-debug": "*",
+    "phantomjs": "1.9.18",
+    "through2": "2.0.0",
+    "vinyl-paths": "2.0.0",
+
+    "angular-mocks": "1.4.5"
+  },
+  "directories": {
+    "test": "test"
+  }
+}

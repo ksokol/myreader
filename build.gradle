@@ -1,0 +1,65 @@
+def vJavaLang = '1.8'
+def javaProjects = [ project('myreader-backend') ]
+def gradleDir = "${rootProject.rootDir}/gradle"
+
+wrapper.gradleVersion = '2.6'
+
+buildscript {
+    ext.springBootVersion = '1.3.0.M4'
+    ext.springRepo = 'http://repo.spring.io/libs-release'
+    ext.springRepoMilestone = 'http://repo.spring.io/libs-release'
+
+    repositories {
+        maven { url springRepo }
+        maven { url springRepoMilestone }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+configure(allprojects) {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+
+    idea.module {
+        excludeDirs += [
+                file('bin'),      // containing build artifacts from Eclipse (if any)
+                file('work'),     // containing transient artifacts used by embedded Tomcat
+                file('logs'),     // containing app logs written by embedded Tomcat
+                file('data'),     // containing logs and data written by elasticsearch
+                file('.settings') // containing intentionally checked-in Eclipse metadata
+        ]
+    }
+}
+
+configure(javaProjects) {
+    apply plugin: 'java'
+
+    targetCompatibility = vJavaLang
+    sourceCompatibility = vJavaLang
+
+    repositories {
+        maven { url springRepo }
+    }
+
+    // Ensure that all Gradle-compiled classes are available to Eclipse's
+    // classpath.
+    eclipseClasspath.dependsOn testClasses
+
+    // Skip generation and removal of .settings/org.eclipse.jdt.core.prefs files
+    // during the normal `gradle eclipse` / `gradle cleanEclipse` lifecycle, as
+    // these files have been checked in with formatting settings imported from
+    // style/sagan-format.xml and style/sagan.importorder.
+    // See http://www.gradle.org/docs/current/userguide/eclipse_plugin.html
+    eclipseJdt.onlyIf { false }
+    cleanEclipseJdt.onlyIf { false }
+}
+
+configure(javaProjects) {
+    apply plugin: 'spring-boot'
+    apply from: "$gradleDir/integTest.gradle"
+
+    springBoot.backupSource = false
+}
