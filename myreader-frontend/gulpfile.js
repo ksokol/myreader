@@ -11,8 +11,7 @@ var uglify = require('gulp-uglify'),
     through = require('through2'),
     gulpSequence = require('gulp-sequence'),
     vinylPaths = require('vinyl-paths'),
-    base64 = require('gulp-base64'),
-    karma = require('gulp-karma');
+    base64 = require('gulp-base64');
 
 var paths = {
     index: 'src/index.html',
@@ -93,18 +92,6 @@ gulp.task('process-css', function() {
         .pipe(memorizeCompressedFilename())
 });
 
-gulp.task('test', function () {
-    return gulp.src([])
-        .pipe(karma({
-            configFile: 'karma.conf.js',
-            action: 'run'
-        }))
-        .on('error', function(err) {
-            // Make sure failed tests cause gulp to exit non-zero
-            throw err;
-        });
-});
-
 gulp.task('clean', function () {
     return gulp.src(paths.dest.root)
         .pipe(debug({title: 'cleaning folder'}))
@@ -112,4 +99,4 @@ gulp.task('clean', function () {
         .pipe(gulp.dest('.'));
 });
 
-gulp.task('build', gulpSequence('clean', 'test', 'process-js', 'process-css', 'process-index-file', 'copy-assets'));
+gulp.task('build', gulpSequence('clean', 'process-js', 'process-css', 'process-index-file', 'copy-assets'));
