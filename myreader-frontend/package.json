@@ -21,7 +21,6 @@
     "karma-junit-reporter": "~0.2.2",
     "karma-ng-json2js-preprocessor": "~0.1.1",
     "karma-ng-scenario": "~0.1.0",
-    "karma-ng-html2js-preprocessor": "~0.1.0",
     "karma-coverage": "~0.4.2",
 
     "gulp": "3.8.7",
@@ -33,6 +32,8 @@
     "gulp-minify-html": "1.0.4",
     "gulp-sequence": "0.4.1",
     "gulp-rev": "6.0.1",
+    "gulp-util": "3.0.6",
+    "gulp-add-src": "0.2.0",
     "del": "2.0.1",
     "gulp-html-src": "1.0.0",
     "gulp-debug": "*",

@@ -11,7 +11,10 @@ var uglify = require('gulp-uglify'),
     through = require('through2'),
     gulpSequence = require('gulp-sequence'),
     vinylPaths = require('vinyl-paths'),
-    base64 = require('gulp-base64');
+    base64 = require('gulp-base64'),
+    gutil = require('gulp-util'),
+    addSrc = require('gulp-add-src'),
+    karma = require('karma').server;
 
 var paths = {
     index: 'src/index.html',
@@ -90,6 +93,51 @@ gulp.task('process-css', function() {
         .pipe(gulp.dest(paths.dest.app))
         .pipe(debug({title: 'processed css file'}))
         .pipe(memorizeCompressedFilename())
+});
+
+gulp.task('test', function (done) {
+    gulp.src(paths.index)
+        .pipe(ghtmlSrc({presets: 'script', getFileName: replaceNodeModulesPath('src')}))
+        .pipe(addSrc.append(['node_modules/angular-mocks/angular-mocks.js', 'test/**Tests.js'], { base: '.' }))
+        .pipe(debug({title: 'javascript file(s) for testing'}))
+        .pipe(gutil.buffer(function(error, files) {
+            if(error) {
+                throw error;
+            }
+            var files = files.map(function(file) {
+                var relativeFile = file.relative;
+                if(relativeFile.indexOf('../') === 0) {
+                    return relativeFile.replace('../', '');
+                } else if(relativeFile.indexOf('app') === 0) {
+                    return 'src/' + relativeFile;
+                }
+                return relativeFile;
+            });
+            karma.start({
+                preprocessors: {
+                    '**/*.json': 'json2js',
+                    'src/app/js/**': 'coverage'
+                },
+                frameworks: ['jasmine'],
+                junitReporter: {
+                    outputFile: 'build/reports/tests/TEST-phantomjsTest.xml',
+                    suite: ''
+                },
+                ngJson2JsPreprocessor: {
+                    // strip this from the file path
+                    stripPrefix: 'src/test/resources/json/',
+                    prependPrefix : 'fixture/'
+                },
+                coverageReporter: {
+                    dir : 'build/reports/istanbul/'
+                },
+                files: files,
+                reporters: ['progress', 'junit', 'coverage'],
+                browsers: ['PhantomJS'],
+                captureTimeout: 60000,
+                singleRun: true
+            }, done);
+        }));
 });
 
 gulp.task('clean', function () {

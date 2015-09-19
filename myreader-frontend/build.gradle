@@ -37,8 +37,8 @@ task npmClean(type: NodeTask) {
 }
 
 task test(overwrite:true, type: NodeTask) {
-    script = file('node_modules/karma/bin/karma')
-    args = ['start', 'karma.conf.js']
+    script = file('node_modules/gulp/bin/gulp.js')
+    args = ['test']
 }
 
 clean {
@@ -52,6 +52,8 @@ npmInstall {
 //    }
 }
 
+
 clean.dependsOn gulpClean
 gulp.dependsOn npmInstall
 jar.dependsOn gulp
+build.dependsOn test
