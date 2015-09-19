@@ -182,6 +182,7 @@ BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stat
     $scope.$on('update', _update);
 
     $scope.$on('refresh', function() {
+        $scope.data = {entries: []};
         $scope.refresh($scope.params());
     });
 
