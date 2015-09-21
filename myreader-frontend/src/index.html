@@ -34,7 +34,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="md-2-line" ng-repeat="item in data.items" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
+                        <li class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
                             <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{item | navigationItemTitle}}</md-button>
                         </li>
                         <li>

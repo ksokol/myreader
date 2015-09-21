@@ -145,7 +145,14 @@ describe("api subscriptionsTagConverter", function() {
                 title : 'untagged',
                 tag : null,
                 unseen : 94,
-                links : [  ],
+                links : {
+                    entries : {
+                        route : 'app.entries',
+                        param : {
+                            uuid : '52',
+                            tag : '' }
+                    }
+                },
                 type : 'subscription'
             },
             {
@@ -153,7 +160,14 @@ describe("api subscriptionsTagConverter", function() {
                 title : 'untagged',
                 tag : '',
                 unseen : 0,
-                links : [  ],
+                links : {
+                    entries : {
+                        route : 'app.entries',
+                        param : {
+                            uuid : '53',
+                            tag : '' }
+                    }
+                },
                 type : 'subscription'
             }
         ];

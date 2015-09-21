@@ -47,7 +47,13 @@ angular.module('common.api', [])
 
         self.addSubscription = function(subscription) {
             subscription['type'] = 'subscription';
-            subscription.links.entries = {route: 'app.entries', param: { uuid: subscription.uuid }};
+            subscription['links'] = {
+                entries: {
+                    route: 'app.entries', param: {
+                        uuid: subscription.uuid, tag: ''
+                    }
+                }
+            };
             self.subscriptions.push(subscription);
             self.unseen += subscription.unseen;
         };
