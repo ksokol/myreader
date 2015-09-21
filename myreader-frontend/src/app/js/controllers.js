@@ -463,7 +463,8 @@ angular.module('common.controllers', ['common.services'])
     }
 
     $scope.querySearch = function(query) {
-        return query ? $scope.availableTags.filter(createFilterFor(query)) : $scope.availableTags;
+        var filtered = $scope.availableTags.filter(createFilterFor(query));
+        return filtered.length === 0 ? [query] : filtered;
     };
 
     $scope.isEditForm = function() {
