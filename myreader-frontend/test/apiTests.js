@@ -68,75 +68,75 @@ describe("api subscriptionsTagConverter", function() {
     it('should return converted subscriptions with a tag as subscription tag objects', function () {
         var expectedTags = [
             {
-                    subscriptions : [],
-                    links : {
-                        entries : {
-                            route : 'app.entries', param : {
-                                tag : 'all', uuid : undefined
-                            }
+                subscriptions : [],
+                links : {
+                    entries : {
+                        route : 'app.entries', param : {
+                            tag : 'all', uuid : undefined
                         }
-                    },
-                    title : 'all', uuid : 'all', type : 'global', unseen : 334
+                    }
                 },
-                {
-                    subscriptions : [
-                        {
-                            uuid : '35',
-                            title : 'tag1',
-                            tag : 'news',
-                            unseen : 106,
-                            links : [  ]
-                        }
-                    ],
-                    links : {
-                        entries :
-                        {
-                            route : 'app.entries',
-                            param : {
-                                tag : 'news',
-                                uuid : undefined
-                            }
-                        }
-                    },
-                    uuid : 'news',
-                    tag : 'news',
-                    title : 'news',
-                    type : 'tag',
-                    unseen : 106
-                },
-                {
-                    subscriptions : [
-                        {
-                            uuid : '36',
-                            title : 'tag2',
-                            tag : 'misc',
-                            unseen : 102,
-                            links : [  ]
-                        },
-                        {
-                            uuid : '1309597895632',
-                            title : 'tag3',
-                            tag : 'misc',
-                            unseen : 32,
-                            links : [  ]
-                        }
-                    ],
-                    links :
+                title : 'all', uuid : 'all', type : 'global', unseen : 334
+            },
+            {
+                subscriptions : [
                     {
-                        entries : {
-                            route : 'app.entries',
-                            param : {
-                                tag : 'misc',
-                                uuid : undefined
-                            }
+                        uuid : '35',
+                        title : 'tag1',
+                        tag : 'news',
+                        unseen : 106,
+                        links : [  ]
+                    }
+                ],
+                links : {
+                    entries :
+                    {
+                        route : 'app.entries',
+                        param : {
+                            tag : 'news',
+                            uuid : undefined
                         }
+                    }
+                },
+                uuid : 'news',
+                tag : 'news',
+                title : 'news',
+                type : 'tag',
+                unseen : 106
+            },
+            {
+                subscriptions : [
+                    {
+                        uuid : '36',
+                        title : 'tag2',
+                        tag : 'misc',
+                        unseen : 102,
+                        links : [  ]
                     },
-                    uuid : 'misc',
-                    tag : 'misc',
-                    title : 'misc',
-                    type : 'tag',
-                    unseen : 134
-                }
+                    {
+                        uuid : '1309597895632',
+                        title : 'tag3',
+                        tag : 'misc',
+                        unseen : 32,
+                        links : [  ]
+                    }
+                ],
+                links :
+                {
+                    entries : {
+                        route : 'app.entries',
+                        param : {
+                            tag : 'misc',
+                            uuid : undefined
+                        }
+                    }
+                },
+                uuid : 'misc',
+                tag : 'misc',
+                title : 'misc',
+                type : 'tag',
+                unseen : 134
+            }
         ];
 
         var expectedSubscriptions = [

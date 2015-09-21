@@ -10,7 +10,7 @@ angular.module('common.api', [])
 
     var SubscriptionTags = function() {
         var self = this;
-        self.unseen = 10;
+        self.unseen = 0;
         self.tags = [];
         self.subscriptions = [];
 
