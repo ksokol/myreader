@@ -1,5 +1,49 @@
 describe('api', function() {
 
+    var tag1 = {
+        "uuid": "35",
+        "title": "tag1",
+        "tag": "news",
+        "unseen": 106,
+        "links": []
+    };
+
+    var tag2 = {
+        "uuid": "36",
+        "title": "tag2",
+        "tag": "misc",
+        "unseen": 102,
+        "links": []
+    };
+
+    var tag3 = {
+        "uuid": "1309597895632",
+        "title": "tag3",
+        "tag": "misc",
+        "unseen": 32,
+        "links": []
+    };
+
+    var untagged1 = {
+        "uuid": "52",
+        "title": "untagged",
+        "tag": null,
+        "unseen": 94,
+        "links": []
+    };
+
+    var untagged2 = {
+        "uuid": "53",
+        "title": "untagged",
+        "tag": "",
+        "unseen": 0,
+        "links": []
+    };
+
+    var raw = {
+        "content": [tag1, tag2, tag3, untagged1, untagged2]
+    };
+
     beforeEach(module('common.api'));
 
     beforeEach(function(){
@@ -8,56 +52,18 @@ describe('api', function() {
                 return angular.equals(this.actual, expected);
             }
         });
+
+        //TODO remove when fail() in jasmine is available
+        this.addMatchers({
+            toBeCalled: function() {
+                return true;
+            }
+        });
     });
 
     describe("subscriptionsTagConverter", function() {
-        var converter;
-
-        var tag1 = {
-            "uuid": "35",
-            "title": "tag1",
-            "tag": "news",
-            "unseen": 106,
-            "links": []
-        };
-
-        var tag2 = {
-            "uuid": "36",
-            "title": "tag2",
-            "tag": "misc",
-            "unseen": 102,
-            "links": []
-        };
-
-        var tag3 = {
-            "uuid": "1309597895632",
-            "title": "tag3",
-            "tag": "misc",
-            "unseen": 32,
-            "links": []
-        };
-
-        var untagged1 = {
-            "uuid": "52",
-            "title": "untagged",
-            "tag": null,
-            "unseen": 94,
-            "links": []
-        };
-
-        var untagged2 = {
-            "uuid": "53",
-            "title": "untagged",
-            "tag": "",
-            "unseen": 0,
-            "links": []
-        };
-
-        var raw = {
-            "content": [tag1, tag2, tag3, untagged1, untagged2]
-        };
-
-        var expectedCount = 334;
+        var converter,
+            expectedCount = 334;
 
         beforeEach(inject(function (subscriptionsTagConverter) {
             converter = subscriptionsTagConverter;
@@ -188,6 +194,383 @@ describe('api', function() {
         });
     });
 
+    describe("bookmarkTagsConverter", function() {
+        var converter;
+
+        beforeEach(inject(function (bookmarkTagsConverter) {
+            converter = bookmarkTagsConverter;
+        }));
+
+        it('should return converted bookmarks', function () {
+            var expectedTags = {
+                tags: [
+                    {
+                        links: {
+                            entries: {
+                                route: 'app.bookmarks',
+                                param: {
+                                    tag: 'all'
+                                }
+                            }
+                        },
+                        title: 'all',
+                        type: 'global'
+                    },
+                    {
+                        links: {
+                            entries: {
+                                route: 'app.bookmarks',
+                                param: {
+                                    tag: [
+                                        {
+                                            uuid: '35',
+                                            title: 'tag1',
+                                            tag: 'news',
+                                            unseen: 106,
+                                            links: []
+                                        },
+                                        {
+                                            uuid: '36',
+                                            title: 'tag2',
+                                            tag: 'misc',
+                                            unseen: 102,
+                                            links: []
+                                        },
+                                        {
+                                            uuid: '1309597895632',
+                                            title: 'tag3',
+                                            tag: 'misc',
+                                            unseen: 32,
+                                            links: []
+                                        },
+                                        {
+                                            uuid: '52',
+                                            title: 'untagged',
+                                            tag: null,
+                                            unseen: 94,
+                                            links: {
+                                                entries: {
+                                                    route: 'app.entries',
+                                                    param: {
+                                                        uuid: '52',
+                                                        tag: ''
+                                                    }
+                                                }
+                                            },
+                                            type: 'subscription'
+                                        },
+                                        {
+                                            uuid: '53',
+                                            title: 'untagged',
+                                            tag: '',
+                                            unseen: 0,
+                                            links: {
+                                                entries: {
+                                                    route: 'app.entries',
+                                                    param: {
+                                                        uuid: '53',
+                                                        tag: ''
+                                                    }
+                                                }
+                                            },
+                                            type: 'subscription'
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        tag: [
+                            {
+                                uuid: '35',
+                                title: 'tag1',
+                                tag: 'news',
+                                unseen: 106,
+                                links: []
+                            },
+                            {
+                                uuid: '36',
+                                title: 'tag2',
+                                tag: 'misc',
+                                unseen: 102,
+                                links: []
+                            },
+                            {
+                                uuid: '1309597895632',
+                                title: 'tag3',
+                                tag: 'misc',
+                                unseen: 32,
+                                links: []
+                            },
+                            {
+                                uuid: '52',
+                                title: 'untagged',
+                                tag: null,
+                                unseen: 94,
+                                links: {
+                                    entries: {
+                                        route: 'app.entries',
+                                        param: {
+                                            uuid: '52',
+                                            tag: ''
+                                        }
+                                    }
+                                },
+                                type: 'subscription'
+                            },
+                            {
+                                uuid: '53',
+                                title: 'untagged',
+                                tag: '',
+                                unseen: 0,
+                                links: {
+                                    entries: {
+                                        route: 'app.entries',
+                                        param: {
+                                            uuid: '53',
+                                            tag: ''
+                                        }
+                                    }
+                                },
+                                type: 'subscription'
+                            }
+                        ],
+                        title: [
+                            {
+                                uuid: '35',
+                                title: 'tag1',
+                                tag: 'news',
+                                unseen: 106,
+                                links: []
+                            },
+                            {
+                                uuid: '36',
+                                title: 'tag2',
+                                tag: 'misc',
+                                unseen: 102,
+                                links: []
+                            },
+                            {
+                                uuid: '1309597895632',
+                                title: 'tag3',
+                                tag: 'misc',
+                                unseen: 32,
+                                links: []
+                            },
+                            {
+                                uuid: '52',
+                                title: 'untagged',
+                                tag: null,
+                                unseen: 94,
+                                links: {
+                                    entries: {
+                                        route: 'app.entries',
+                                        param: {
+                                            uuid: '52',
+                                            tag: ''
+                                        }
+                                    }
+                                },
+                                type: 'subscription'
+                            },
+                            {
+                                uuid: '53',
+                                title: 'untagged',
+                                tag: '',
+                                unseen: 0,
+                                links: {
+                                    entries: {
+                                        route: 'app.entries',
+                                        param: {
+                                            uuid: '53',
+                                            tag: ''
+                                        }
+                                    }
+                                },
+                                type: 'subscription'
+                            }
+                        ],
+                        type: 'tag'
+                    }
+                ]
+            };
+
+            var converted = converter.convertFrom(raw);
+
+            expect(converted).toEqualData(expectedTags);
+        });
+    });
+
+    describe("subscriptionEntriesConverter", function() {
+        var converter,
+            link = {
+                rel: 'next',
+                href: 'nextHref'
+            };
+
+        beforeEach(inject(function (subscriptionEntriesConverter) {
+            converter = subscriptionEntriesConverter;
+        }));
+
+        it('should return empty object', function () {
+            var converted = converter.convertFrom({content: [], links: []});
+
+            expect(converted.entries).toEqual([]);
+            expect(converted.links).toEqual([]);
+        });
+
+        it('should return empty object', function () {
+            var converted = converter.convertFrom({content: undefined, links: undefined});
+
+            expect(converted.entries).toEqual([]);
+            expect(converted.links).toEqual([]);
+        });
+
+        it('should return links', function () {
+            var converted = converter.convertFrom({content: undefined, links: [link]});
+
+            expect(converted.links).toEqual([link]);
+        });
+
+        it('should return undefined for rel "next"', function () {
+            var converted = converter.convertFrom({content: undefined, links: [{ rel: "unknown" }]});
+
+            expect(converted.next()).toEqual(undefined);
+        });
+
+        it('should return link for rel "next"', function () {
+            var converted = converter.convertFrom({content: undefined, links: [link]});
+
+            expect(converted.next()).toEqual('nextHref');
+        });
+
+        it('should return empty array', function () {
+            var converted = converter.convertTo([]);
+
+            expect(converted).toEqualData({content: []});
+        });
+
+        it('should return empty array', function () {
+            var converted = converter.convertTo([{uuid: "1", seen: true, ignore: "me"}, {uuid: "2", tag: "tag", ignoreMeTwo: true}, {uuid: "3", seen: "true", tag : ""}, {seen: true}]);
+
+            expect(converted).toEqualData({ content : [ { uuid : "1", seen : true }, { uuid : "2", tag : 'tag' }, { uuid : '3', tag : '' } ] });
+        });
+
+
+    });
+
+    describe("SubscriptionTags object", function() {
+        var converter;
+
+        beforeEach(inject(function (subscriptionsTagConverter) {
+            converter = subscriptionsTagConverter;
+        }));
+
+        it('should increment unseen count for all/tag/subscription', function () {
+            var converted = converter.convertFrom(raw);
+
+            var uuid = "36";
+            var tag = converted.getTag("misc");
+            var subscription = tag.subscriptions[0];
+
+            expect(subscription.uuid).toEqual(uuid);
+
+            var inc = 1;
+            var expectedCount = converted.unseen;
+            var expectedTagCount = tag.unseen;
+            var expectedSubscriptionCount = subscription.unseen;
+
+            var newExpectedCount = expectedCount + inc;
+            var newExpectedTagCount = expectedTagCount + inc;
+            var newExpectedSubscriptionCount = expectedSubscriptionCount + inc;
+
+            expect(converted.unseen).toEqual(expectedCount);
+            expect(tag.unseen).toEqual(expectedTagCount);
+            expect(subscription.unseen).toEqual(expectedSubscriptionCount);
+
+            converted.incrementSubscriptionUnseen(uuid);
+
+            expect(converted.unseen).toEqual(newExpectedCount);
+            expect(tag.unseen).toEqual(newExpectedTagCount);
+            expect(subscription.unseen).toEqual(newExpectedSubscriptionCount);
+        });
+
+        it('should not increment', function () {
+            var converted = converter.convertFrom(raw);
+
+            var uuid = "37";
+            var inc = 1;
+            var expectedCount = converted.unseen;
+
+            expect(converted.unseen).toEqual(expectedCount);
+
+            converted.incrementSubscriptionUnseen(uuid, inc);
+
+            expect(converted.unseen).toEqual(expectedCount);
+        });
+
+        it('should increment unseen count for all/subscription', function () {
+            var converted = converter.convertFrom(raw);
+
+            var uuid = "52";
+            var subscription = converted.getSubscriptionByUuid(uuid);
+
+            expect(subscription.uuid).toEqual(uuid);
+            expect(subscription.tag).toEqual(null);
+
+            var inc = 1;
+            var expectedCount = converted.unseen;
+            var expectedSubscriptionCount = subscription.unseen;
+
+            var newExpectedCount = expectedCount + inc;
+            var newExpectedSubscriptionCount = expectedSubscriptionCount + inc;
+
+            expect(converted.unseen).toEqual(expectedCount);
+            expect(subscription.unseen).toEqual(expectedSubscriptionCount);
+
+            converted.incrementSubscriptionUnseen(uuid);
+
+            expect(converted.unseen).toEqual(newExpectedCount);
+            expect(subscription.unseen).toEqual(newExpectedSubscriptionCount);
+        });
+
+        it('should decrement unseen count for all/subscription', function () {
+            var converted = converter.convertFrom(raw);
+
+            var uuid = "52";
+            var subscription = converted.getSubscriptionByUuid(uuid);
+
+            expect(subscription.uuid).toEqual(uuid);
+            expect(subscription.tag).toEqual(null);
+
+            var dec = 1;
+            var expectedCount = converted.unseen;
+            var expectedSubscriptionCount = subscription.unseen;
+
+            var newExpectedCount = expectedCount - dec;
+            var newExpectedSubscriptionCount = expectedSubscriptionCount - dec;
+
+            expect(converted.unseen).toEqual(expectedCount);
+            expect(subscription.unseen).toEqual(expectedSubscriptionCount);
+
+            converted.decrementSubscriptionUnseen(uuid);
+
+            expect(converted.unseen).toEqual(newExpectedCount);
+            expect(subscription.unseen).toEqual(newExpectedSubscriptionCount);
+        });
+
+        it('should return false for unknown tag', function () {
+            var converted = converter.convertFrom(raw);
+
+            expect(converted.containsTags("unknown")).toBe(false);
+        });
+
+        it('should return true for known tag', function () {
+            var converted = converter.convertFrom(raw);
+
+            expect(converted.containsTags("misc")).toBe(true);
+        });
+
+    });
 
     describe("subscriptionEntryConverter", function() {
         var converter;
@@ -315,6 +698,46 @@ describe('api', function() {
         });
     });
 
+    describe("feedsConverter", function() {
+        var converter;
+
+        var link = {
+            rel: 'next',
+            href: 'nextHref'
+        };
+
+        beforeEach(inject(function (feedsConverter) {
+            converter = feedsConverter;
+        }));
+
+        it('should return empty object', function () {
+            var result = converter.convertFrom({content: undefined, links: undefined});
+
+            expect(result.feeds).toEqual([]);
+            expect(result.links).toEqual([]);
+        });
+
+        it('should return converted object', function () {
+            var result = converter.convertFrom({content: [1], links: [link]});
+
+            expect(result.feeds).toEqual([1]);
+            expect(result.links).toEqual([link]);
+        });
+
+        it('should return href for rel "next"', function () {
+            var result = converter.convertFrom({content: [1], links: [link]});
+
+            expect(result.next()).toEqual(link.href);
+        });
+
+        it('should return undefined href for rel not equal to "next"', function () {
+            var clone = angular.copy(link).rel = 'irrelevant';
+            var result = converter.convertFrom({content: [1], links: [clone]});
+
+            expect(result.next()).toEqual(undefined);
+        });
+    });
+
     describe("searchIndexJobConverter", function() {
         var converter;
 
@@ -355,5 +778,125 @@ describe('api', function() {
         it('should convert data for error callback', function () {
             expect(service.convertError('searchIndexJob', {data: 1})).toEqualData(1);
         });
+    });
+
+    describe("should", function() {
+        var service,
+            http;
+
+        beforeEach(module(function($provide) {
+            $provide.service('mockConverter', function() {
+                return {
+                    convertFrom: function(data) {
+                        return data;
+                    },
+                    convertTo: function(data) {
+                        return data;
+                    },
+                    convertError: function(data) {
+                        return data;
+                    }
+                }
+            })
+        }));
+
+        beforeEach(inject(function (api, $httpBackend) {
+            service = api;
+            http = $httpBackend;
+        }));
+
+        it('GET resource', function() {
+            http.expectGET('testResource').respond({test: 1});
+
+            var promise = service.get('mock', 'testResource');
+
+            promise.then(function(data) {
+                expect(data.test).toBe(1);
+            });
+
+            http.flush();
+        });
+
+        it('PATCH resource', function() {
+            var data = {data: 2};
+            http.expectPATCH('testResource', data).respond(200, {test: 3});
+
+            var promise = service.patch('mock', 'testResource', data);
+
+            promise.then(function(data) {
+                expect(data.test).toBe(3);
+            });
+
+            http.flush();
+        });
+
+        it('POST resource', function() {
+            var data = {data: 2};
+            http.expectPOST('testResource', data).respond(200, {test: 3});
+
+            var promise = service.post('mock', 'testResource', data);
+
+            promise.then(function(data) {
+                expect(data.test).toBe(3);
+            });
+
+            http.flush();
+        });
+
+        it('POST resource and return error', function() {
+            var data = {data: 2};
+            http.expectPOST('testResource', data).respond(401, {test: 3});
+
+            var promise = service.post('mock', 'testResource', data);
+
+            promise.then(function() {
+                expect('success callback').not.toBeCalled();
+            }).catch(function(data) {
+                expect(data.test).toBe(3);
+            });
+
+            http.flush();
+        });
+
+        it('PUT resource', function() {
+            var data = {data: 2};
+            http.expectPUT('testResource', data).respond(200, {test: 3});
+
+            var promise = service.put('mock', 'testResource', data);
+
+            promise.then(function(data) {
+                expect(data.test).toBe(3);
+            });
+
+            http.flush();
+        });
+
+        it('PUT resource and return error', function() {
+            var data = {data: 2};
+            http.expectPUT('testResource', data).respond(401, {test: 3});
+
+            var promise = service.put('mock', 'testResource', data);
+
+            promise.then(function() {
+                expect('success callback').not.toBeCalled();
+            }).catch(function(data) {
+                expect(data.test).toBe(3);
+            });
+
+            http.flush();
+        });
+
+        it('DELETE resource', function() {
+            http.expectDELETE('testResource').respond(201);
+
+            var promise = service.delete('mock', 'testResource');
+
+            promise.then(function(data) {
+                expect(data).toBe(undefined);
+            });
+
+            http.flush();
+        });
+
     });
 });

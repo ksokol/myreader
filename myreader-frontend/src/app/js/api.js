@@ -42,7 +42,7 @@ angular.module('common.api', [])
         };
 
         self.containsTags = function(tag) {
-            return self.getTag(tag) === undefined;
+            return self.getTag(tag) !== undefined;
         };
 
         self.addSubscription = function(subscription) {
@@ -141,17 +141,7 @@ angular.module('common.api', [])
         var self = this;
         self.tags = [];
 
-        self.getBookmark = function(tag) {
-            for(var i=0;i<self.tags.length;i++) {
-                var t = self.tags[i];
-                if(t === tag) {
-                    return t;
-                }
-            }
-        };
-
         self.addTag = function(bookmarkTag) {
-            var theTag = self.getBookmark(bookmarkTag);
             var tag = new Bookmark;
             tag.tag = bookmarkTag;
             tag.title = bookmarkTag;
@@ -184,15 +174,13 @@ angular.module('common.api', [])
 
     var SubscriptionEntries = function(entries, links) {
         var self = this;
-        self.entries = entries;
+        self.entries = angular.isArray(entries) ? links : [];
         self.links = angular.isArray(links) ? links : [];
 
         var getLink = function(rel) {
-            if(rel) {
-                for(var i=0;i<links.length;i++) {
-                    if(links[i].rel === rel) {
-                        return links[i].href;
-                    }
+            for(var i=0;i<self.links.length;i++) {
+                if(self.links[i].rel === rel) {
+                    return self.links[i].href;
                 }
             }
         };
@@ -209,7 +197,20 @@ angular.module('common.api', [])
         convertTo: function(data) {
             var converted = [];
             angular.forEach(data, function(val) {
-                converted.push({uuid: val.uuid, seen: val.seen, tag: val.tag});
+                if(angular.isString(val.uuid) && val.uuid.length > 0) {
+                    var obj = {};
+                    obj["uuid"] = val.uuid;
+
+                    if(val.seen === true || val.seen == false) {
+                        obj["seen"] = val.seen;
+                    }
+
+                    if(angular.isDefined(val.tag)) {
+                        obj["tag"] = val.tag;
+                    }
+
+                    converted.push(obj);
+                }
             });
             return {content: converted};
         }
@@ -304,15 +305,13 @@ angular.module('common.api', [])
 
     var Feeds = function(feeds, links) {
         var self = this;
-        self.feeds = feeds;
+        self.feeds = angular.isArray(feeds) ? feeds : [];
         self.links = angular.isArray(links) ? links : [];
 
         var getLink = function(rel) {
-            if(rel) {
-                for(var i=0;i<links.length;i++) {
-                    if(links[i].rel === rel) {
-                        return links[i].href;
-                    }
+            for(var i=0;i<links.length;i++) {
+                if(links[i].rel === rel) {
+                    return links[i].href;
                 }
             }
         };
