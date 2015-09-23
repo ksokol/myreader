@@ -43,6 +43,10 @@ angular.module('common.directives', [])
             $scope.tags = [];
 
             var _split = function(tags) {
+                if(!tags) {
+                    return [];
+                }
+
                 var splitted = tags === null ? [] : tags.split(/[ ,]+/);
                 var tags = [];
                 for(var i=0;i<splitted.length;i++) {
