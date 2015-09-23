@@ -92,4 +92,61 @@ describe('service', function() {
             expect(promise.$$state.value.entries).toEqualData([1]);
         }));
     });
+
+    describe('settingsService', function() {
+        var cache;
+
+        beforeEach(inject(function (settingsService, CacheFactory) {
+            service = settingsService;
+            cache = CacheFactory.get('settingsCache');
+        }));
+
+        it('should return pageSize equal to 10', function() {
+            var pageSize = service.getPageSize();
+
+            expect(pageSize).toBe(10);
+        });
+
+        it('should return pageSize equal to 20', function() {
+            service.setPageSize(20);
+            var pageSize = service.getPageSize();
+
+            expect(pageSize).toBe(20);
+        });
+
+        it('should return "true" for method call isShowEntryDetails', function() {
+            service.setShowEntryDetails(true);
+            var pageSize = service.isShowEntryDetails();
+
+            expect(pageSize).toBe(true);
+        });
+
+        it('should return "true" for method call isShowEntryDetails', function() {
+            cache.remove('settings-showEntryDetails');
+            var pageSize = service.isShowEntryDetails();
+
+            expect(pageSize).toBe(true);
+        });
+
+        it('should return "true" for method call isShowUnseenEntries', function() {
+            service.setShowUnseenEntries(undefined);
+            var pageSize = service.isShowUnseenEntries();
+
+            expect(pageSize).toBe(true);
+        });
+
+        it('should return "true" for method call isShowUnseenEntries', function() {
+            cache.remove('settings-showUnseenEntries');
+            var pageSize = service.isShowUnseenEntries();
+
+            expect(pageSize).toBe(true);
+        });
+
+        it('should return "true" for method call isShowUnseenEntries', function() {
+            service.setShowUnseenEntries(true);
+            var pageSize = service.isShowUnseenEntries();
+
+            expect(pageSize).toBe(true);
+        });
+    });
 });
