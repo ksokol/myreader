@@ -174,7 +174,7 @@ angular.module('common.api', [])
 
     var SubscriptionEntries = function(entries, links) {
         var self = this;
-        self.entries = angular.isArray(entries) ? links : [];
+        self.entries = angular.isArray(entries) ? entries : [];
         self.links = angular.isArray(links) ? links : [];
 
         var getLink = function(rel) {

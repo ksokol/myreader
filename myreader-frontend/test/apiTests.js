@@ -429,6 +429,14 @@ describe('api', function() {
             var converted = converter.convertFrom({content: undefined, links: [link]});
 
             expect(converted.links).toEqual([link]);
+            expect(converted.entries).toEqual([]);
+        });
+
+        it('should return entries', function () {
+            var converted = converter.convertFrom({content: [1], links: undefined});
+
+            expect(converted.links).toEqual([]);
+            expect(converted.entries).toEqual([1]);
         });
 
         it('should return undefined for rel "next"', function () {
