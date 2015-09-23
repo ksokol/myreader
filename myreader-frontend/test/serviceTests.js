@@ -35,4 +35,61 @@ describe('service', function() {
             expect(service.isAdmin()).toBe(true);
         });
     });
+
+    describe('processingService', function() {
+        var api;
+
+        beforeEach(module(function($provide) {
+            api = {
+                get: jasmine.createSpy(),
+                put: jasmine.createSpy()
+            };
+
+            $provide.service('api', function() {
+                return api;
+            })
+        }));
+
+        beforeEach(inject(function (processingService) {
+            service = processingService;
+        }));
+
+        it('should have been called runningFeedFetches', inject(function($q) {
+            var call = $q.defer();
+            call.resolve({
+                entries: [1]
+            });
+
+            api.get.andReturn(call.promise);
+
+            var promise = service.runningFeedFetches();
+
+            expect(api.get).toHaveBeenCalledWith('feeds', '/myreader/api/2/processing/feeds');
+
+            promise.then(function(data) {
+                expect(data).toBe(undefined);
+            });
+
+            expect(promise.$$state.value.entries).toEqualData([1]);
+        }));
+
+        it('should have been called rebuildSearchIndex', inject(function($q) {
+            var call = $q.defer();
+            call.resolve({
+                entries: [1]
+            });
+
+            api.put.andReturn(call.promise);
+
+            var promise = service.rebuildSearchIndex();
+
+            expect(api.put).toHaveBeenCalledWith('searchIndexJob', '/myreader/api/2/processing', 'indexSyncJob');
+
+            promise.then(function(data) {
+                expect(data).toBe(undefined);
+            });
+
+            expect(promise.$$state.value.entries).toEqualData([1]);
+        }));
+    });
 });
