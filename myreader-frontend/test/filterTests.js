@@ -75,6 +75,10 @@ describe("htmlEntities filter", function() {
     it('should replace "&lt;" with "<"', function () {
         expect(htmlEntities('&lt;')).toBe('<');
     });
+
+    it('should replace "&lt;" with "<"', function () {
+        expect(htmlEntities()).toBe('');
+    });
 });
 
 describe("timeago filter", function() {

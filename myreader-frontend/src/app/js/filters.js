@@ -323,7 +323,7 @@ angular.module('common.filters', ['ngSanitize'])
 
     return function(text) {
         if(text === undefined) {
-            return text;
+            return '';
         }
         for (var i in entityTable) {
             if (i != 38 && entityTable.hasOwnProperty(i)) {
