@@ -39,8 +39,9 @@ describe("targetBlank filter", function() {
         targetBlank = $filter('targetBlank');
     }));
 
-    it('should not modify given a tag with attribute target="_blank"', function () {
+    it('should return empty string when text is null or undefined"', function () {
         expect(targetBlank(null)).toBe('');
+        expect(targetBlank(undefined)).toBe('');
     });
 
     it('should return all a tags with attribute target="_blank" added', function () {
@@ -60,7 +61,7 @@ describe("targetBlank filter", function() {
     });
 
     it('should not modify given a tag with existing target attribute', function () {
-        expect(targetBlank('<a target="different" href="test">test</a>')).toBe('<a target="different" href="test">test</a>');
+        expect(targetBlank('test1 <a target="different" href="test">test</a> test2')).toBe('test1 <a target="different" href="test">test</a> test2');
     });
 });
 

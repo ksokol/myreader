@@ -4,46 +4,41 @@ angular.module('common.filters', ['ngSanitize'])
     var A_TAG_REGEXP = /<a[^>]*>[\s\S]*?<\/a>/i;
     var TARGET_REGEXP = /target="([a-zA-Z_#]{1,})"/i;
 
-    return function(text, target) {
+    var addBlankTarget = function(text) {
+        var match;
+        if((match = text.match(TARGET_REGEXP) )) {
+            if(match[1] === '_blank') {
+                return text;
+            }
+        }
+        return text.substr(0, 2) + ' target="_blank" ' + text.substr(3);
+    };
+
+    return function(text) {
         if (!text) {
             return '';
         }
-        var match;
-        var raw = text;
-        var html = [];
-        var aTag;
-        var i;
+        var match,
+            raw = text;
+
+        var matches = [],
+            i = 0;
+
         while ((match = raw.match(A_TAG_REGEXP))) {
-            aTag = match[0];
-            if(aTag.indexOf("href") > -1) {
-                addBlankTarget(aTag);
-            } else {
-                html.push(aTag);
-            }
+            matches.push(match[0]);
             i = match.index;
-            addText(raw.substr(0, i));
             raw = raw.substring(i + match[0].length);
         }
-        addText(raw);
-        return $sanitize(html.join(" "));
 
-        function addText(text) {
-            if (!text) {
-                return;
+        for(var i=0;i<matches.length;i++) {
+            var regexMatch = matches[i];
+            if(regexMatch.indexOf("href") > -1) {
+                var blank = addBlankTarget(regexMatch);
+                text = text.replace(regexMatch, blank);
             }
-            html.push($sanitize(text));
         }
 
-        function addBlankTarget(text) {
-            var match;
-            if((match = text.match(TARGET_REGEXP) )) {
-                if(match[1] === '_blank') {
-                    html.push(text);
-                    return;
-                }
-            }
-            html.push(text.substr(0, 2) + ' target="_blank" ' + text.substr(3));
-        }
+        return $sanitize(text);
     };
 }])
 
@@ -359,4 +354,4 @@ angular.module('common.filters', ['ngSanitize'])
         }
         return title;
     }
-})
+});
