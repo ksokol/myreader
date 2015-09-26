@@ -36,6 +36,156 @@ describe('service', function() {
         });
     });
 
+    describe('subscriptionsTagService', function() {
+
+        describe('with mocked cache', function() {
+            var service, cache;
+
+            beforeEach(module(function($provide) {
+                cache = {
+                    get: jasmine.createSpy(),
+                    put: jasmine.createSpy()
+                };
+
+                $provide.service('CacheFactory', function() {
+                    return {
+                        createCache: function () {
+                            return cache;
+                        }
+                    }
+                });
+            }));
+
+            beforeEach(inject(function (subscriptionsTagService) {
+                service = subscriptionsTagService;
+            }));
+
+            it('should not update cache', inject(function($rootScope) {
+                $rootScope.$broadcast('subscriptionEntry:updateEntries');
+
+                expect(cache.put).not.toHaveBeenCalled();
+            }));
+
+            it('should update cache', inject(function($rootScope) {
+                cache.get.andReturn([]);
+
+                $rootScope.$broadcast('subscriptionEntry:updateEntries', []);
+
+                expect(cache.put).toHaveBeenCalledWith('subscriptionsTags', []);
+            }));
+
+            it('should decrementSubscriptionUnseen', inject(function($rootScope) {
+                var cachedSubscriptionsTags = {
+                    decrementSubscriptionUnseen: jasmine.createSpy()
+                };
+
+                cache.get.andReturn(cachedSubscriptionsTags);
+                $rootScope.$broadcast('subscriptionEntry:updateEntries', [{seen: true, feedUuid: 1}]);
+
+                expect(cachedSubscriptionsTags.decrementSubscriptionUnseen).toHaveBeenCalledWith(1);
+                expect(cache.put).toHaveBeenCalledWith('subscriptionsTags', cachedSubscriptionsTags);
+            }));
+
+            it('should incrementSubscriptionUnseen', inject(function($rootScope) {
+                var cachedSubscriptionsTags = {
+                    incrementSubscriptionUnseen: jasmine.createSpy()
+                };
+
+                cache.get.andReturn(cachedSubscriptionsTags);
+                $rootScope.$broadcast('subscriptionEntry:updateEntries', [{seen: false, feedUuid: 2}]);
+
+                expect(cachedSubscriptionsTags.incrementSubscriptionUnseen).toHaveBeenCalledWith(2);
+                expect(cache.put).toHaveBeenCalledWith('subscriptionsTags', cachedSubscriptionsTags);
+            }));
+        });
+
+        describe('with real cache', function() {
+            var api, call, cache;
+            var promiseResult = 'success';
+
+            beforeEach(module(function($provide) {
+                api = {
+                    get: jasmine.createSpy()
+                };
+
+                $provide.service('api', function() {
+                    return api;
+                });
+            }));
+
+            beforeEach(inject(function (subscriptionsTagService, $q, CacheFactory) {
+                service = subscriptionsTagService;
+
+                call = $q.defer();
+                call.resolve(promiseResult);
+
+                api.get.andReturn(call.promise);
+
+                cache = CacheFactory.get('subscriptionsTagCache');
+            }));
+
+            it('should return new uncached entries', inject(function($rootScope) {
+                var unseen = true;
+                var promise = service.findAllByUnseen(unseen);
+
+                $rootScope.$digest();
+
+                expect(api.get).toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions?unseenGreaterThan=0', cache);
+                expect(promise.$$state.value).toEqual(promiseResult);
+
+                expect(cache.get('subscriptionsTags')).toEqual(promiseResult);
+                expect(cache.get('subscriptionsTags.unseenFlag')).toEqual(unseen);
+            }));
+
+            it('should return old uncached entries', inject(function($rootScope) {
+                var unseen = false;
+                var promise = service.findAllByUnseen(unseen);
+
+                $rootScope.$digest();
+
+                expect(api.get).toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions', cache);
+                expect(promise.$$state.value).toEqual(promiseResult);
+
+                expect(cache.get('subscriptionsTags')).toEqual(promiseResult);
+                expect(cache.get('subscriptionsTags.unseenFlag')).toEqual(unseen);
+            }));
+
+            it('should return cached entries when called with unseen set to false and cached unseen flag false', inject(function($rootScope) {
+                var unseen = false;
+                var data = {uuid: 50};
+                cache.put('subscriptionsTags', data);
+                cache.put('subscriptionsTags.unseenFlag', unseen);
+
+                var promise = service.findAllByUnseen(unseen);
+
+                $rootScope.$digest();
+
+                expect(api.get).not.toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions', cache);
+                expect(promise.$$state.value).toEqual(data);
+
+                expect(cache.get('subscriptionsTags')).toEqual(data);
+                expect(cache.get('subscriptionsTags.unseenFlag')).toEqual(unseen);
+            }));
+
+            it('should return uncached entries when called with unseen set to false and cached unseen flag true', inject(function($rootScope) {
+                var unseen = false;
+                var data = {uuid: 50};
+                cache.put('subscriptionsTags', data);
+                cache.put('subscriptionsTags.unseenFlag', true);
+
+                var promise = service.findAllByUnseen(unseen);
+
+                $rootScope.$digest();
+
+                expect(api.get).toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions', cache);
+                expect(promise.$$state.value).toEqual(promiseResult);
+
+                expect(cache.get('subscriptionsTags')).toEqual(promiseResult);
+                expect(cache.get('subscriptionsTags.unseenFlag')).toEqual(unseen);
+            }));
+        });
+    });
+
     describe('subscriptionEntryService', function() {
         var api, call;
         var promiseResult = 'success';
