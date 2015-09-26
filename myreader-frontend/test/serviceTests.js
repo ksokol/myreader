@@ -36,6 +36,75 @@ describe('service', function() {
         });
     });
 
+    describe('feedService', function() {
+        var api;
+        var mockUrl = 'mockUrl';
+
+        beforeEach(module(function($provide) {
+            api = {
+                post: jasmine.createSpy()
+            };
+
+            $provide.service('api', function() {
+                return api;
+            });
+        }));
+
+        beforeEach(inject(function (feedService) {
+            service = feedService;
+        }));
+
+        it('should return cached result', inject(function($rootScope, $q) {
+            var call = $q.defer();
+            call.resolve({
+                status: 200
+            });
+
+            api.post.andReturn(call.promise);
+
+            var firstPromise = service.probe(mockUrl);
+
+            $rootScope.$digest();
+
+            expect(api.post).toHaveBeenCalledWith('feedProbe', '/myreader/api/2/feeds/probe', mockUrl);
+            expect(firstPromise.$$state.value.status).toEqual(200);
+
+            api.post = jasmine.createSpy();
+
+            var secondPromise = service.probe(mockUrl);
+
+            $rootScope.$digest();
+
+            expect(api.post).not.toHaveBeenCalledWith('feedProbe', '/myreader/api/2/feeds/probe', mockUrl);
+            expect(secondPromise.$$state.value.status).toEqualData(200);
+        }));
+
+        it('should reject cached status 400', inject(function($rootScope, $q) {
+            var call = $q.defer();
+            call.reject({
+                status: 400
+            });
+
+            api.post.andReturn(call.promise);
+
+            var firstPromise = service.probe(mockUrl);
+
+            $rootScope.$digest();
+
+            expect(api.post).toHaveBeenCalledWith('feedProbe', '/myreader/api/2/feeds/probe', mockUrl);
+            expect(firstPromise.$$state.value.status).toEqual(400);
+
+            api.post = jasmine.createSpy();
+
+            var secondPromise = service.probe(mockUrl);
+
+            $rootScope.$digest();
+
+            expect(api.post).not.toHaveBeenCalledWith('feedProbe', '/myreader/api/2/feeds/probe', mockUrl);
+            expect(secondPromise.$$state.value.status).toEqualData(400);
+        }));
+    });
+
     describe('bookmarkService', function() {
         var api;
 
@@ -60,7 +129,7 @@ describe('service', function() {
             api.get.andReturn(call.promise);
         }));
 
-        it('xx', inject(function($rootScope) {
+        it('should return cached result', inject(function($rootScope) {
             var firstPromise = service.findAll();
 
             $rootScope.$digest();
