@@ -36,6 +36,58 @@ describe('service', function() {
         });
     });
 
+    describe('exclusionService', function() {
+        var api;
+        var promiseResult = 'success';
+
+        beforeEach(module(function($provide) {
+            api = {
+                get: jasmine.createSpy(),
+                post: jasmine.createSpy(),
+                delete: jasmine.createSpy()
+            };
+
+            $provide.service('api', function() {
+                return api;
+            });
+        }));
+
+        beforeEach(inject(function (exclusionService, $q) {
+            service = exclusionService;
+
+            var getCall = $q.defer();
+            getCall.resolve(promiseResult);
+
+            var postPutCall = $q.defer();
+            postPutCall.resolve(promiseResult);
+
+            api.get.andReturn(getCall.promise);
+            api.post.andReturn(postPutCall.promise);
+            api.delete.andReturn(postPutCall.promise);
+        }));
+
+        it('should return ' + promiseResult + " on get call", function() {
+            var promise = service.find('exclusionUuid');
+
+            expect(api.get).toHaveBeenCalledWith('exclusions', '/myreader/api/2/exclusions/exclusionUuid/pattern');
+            expect(promise.$$state.value).toEqual(promiseResult);
+        });
+
+        it('should return ' + promiseResult + " on post call", function() {
+            var promise = service.save('exclusionUuid', 'secondParam');
+
+            expect(api.post).toHaveBeenCalledWith('exclusion', '/myreader/api/2/exclusions/exclusionUuid/pattern', 'secondParam');
+            expect(promise.$$state.value).toEqual(promiseResult);
+        });
+
+        it('should return ' + promiseResult + " on delete call", function() {
+            var promise = service.delete('subscriptionUuid', 'exclusionUuid');
+
+            expect(api.delete).toHaveBeenCalledWith('exclusion', '/myreader/api/2/exclusions/subscriptionUuid/pattern/exclusionUuid');
+            expect(promise.$$state.value).toEqual(promiseResult);
+        });
+    });
+
     describe('subscriptionTagService', function() {
         var api;
 
