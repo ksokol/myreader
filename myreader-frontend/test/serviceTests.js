@@ -36,6 +36,51 @@ describe('service', function() {
         });
     });
 
+    describe('subscriptionEntryTagService', function() {
+        var api;
+
+        beforeEach(module(function($provide) {
+            api = {
+                get: jasmine.createSpy()
+            };
+
+            $provide.service('api', function() {
+                return api;
+            });
+        }));
+
+        beforeEach(inject(function (subscriptionEntryTagService, $q) {
+            service = subscriptionEntryTagService;
+
+            var call = $q.defer();
+            call.resolve({
+                entries: [1]
+            });
+
+            api.get.andReturn(call.promise);
+        }));
+
+        it('should return cached result', inject(function($rootScope) {
+            var firstPromise = service.findAll();
+
+            $rootScope.$digest();
+
+            expect(api.get).toHaveBeenCalledWith('subscriptionEntryTag', '/myreader/api/2/subscriptions/availableTags');
+            expect(firstPromise.$$state.value.entries).toEqualData([1]);
+
+            api.get = jasmine.createSpy();
+
+            var secondPromise = service.findAll();
+
+            $rootScope.$digest();
+
+            expect(api.get).not.toHaveBeenCalledWith('subscriptionEntryTag', '/myreader/api/2/subscriptions/availableTags');
+            expect(secondPromise.$$state.value.entries).toEqualData([1]);
+        }));
+    });
+
+
+
     describe('subscriptionService', function() {
         var api;
         var promiseResult = 'success';
