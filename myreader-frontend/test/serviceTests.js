@@ -36,6 +36,100 @@ describe('service', function() {
         });
     });
 
+    describe('deferService', function() {
+        var q, deferred;
+        var resolvedResult = 'success';
+        var resolvedError = 'error';
+        var promiseResult = 'promise';
+
+        var succeeding = function(fn) {
+            return fn(true);
+        };
+
+        var failing = function(fn) {
+            return fn(false);
+        };
+
+        var callbackWithPromise = function(result) {
+            return function() {
+                return {
+                    $promise : {
+                        then: function(fn) {
+                            if(result === true) {
+                                fn(resolvedResult);
+                            }
+                            return this;
+                        },
+                        catch: function(fn) {
+                            if(result === false) {
+                                fn(resolvedError);
+                            }
+                            return this;
+                        }
+                    }
+                }
+            }
+        };
+
+        beforeEach(module(function($provide) {
+            q = {
+                defer: jasmine.createSpy()
+            };
+
+            deferred = {
+                promise: promiseResult,
+                resolve: jasmine.createSpy(),
+                reject: jasmine.createSpy()
+            };
+
+            q.defer.andReturn(deferred);
+
+            $provide.service('$q', function() {
+                return q;
+            })
+        }));
+
+        beforeEach(inject(function (deferService) {
+            service = deferService;
+        }));
+
+        it('should resolve deferred call with success', function() {
+            var promise = service.deferred(succeeding(callbackWithPromise));
+
+            expect(q.defer).toHaveBeenCalled();
+            expect(deferred.resolve).toHaveBeenCalledWith(resolvedResult);
+            expect(deferred.reject).not.toHaveBeenCalled();
+            expect(promise).toEqual(promiseResult);
+        });
+
+        it('should resolve deferred call with failure', function() {
+            var promise = service.deferred(failing(callbackWithPromise));
+
+            expect(q.defer).toHaveBeenCalled();
+            expect(deferred.resolve).not.toHaveBeenCalled();
+            expect(deferred.reject).toHaveBeenCalledWith(resolvedError);
+            expect(promise).toEqual(promiseResult);
+        });
+
+        it('should call resolve on deferred object', function() {
+            var promise = service.resolved(resolvedResult);
+
+            expect(q.defer).toHaveBeenCalled();
+            expect(deferred.resolve).toHaveBeenCalledWith(resolvedResult);
+            expect(deferred.reject).not.toHaveBeenCalled();
+            expect(promise).toEqual(promiseResult);
+        });
+
+        it('should call reject on deferred object', function() {
+            var promise = service.reject(resolvedError);
+
+            expect(q.defer).toHaveBeenCalled();
+            expect(deferred.resolve).not.toHaveBeenCalled();
+            expect(deferred.reject).toHaveBeenCalledWith(resolvedError);
+            expect(promise).toEqual(promiseResult);
+        });
+    });
+
     describe('processingService', function() {
         var api;
 
