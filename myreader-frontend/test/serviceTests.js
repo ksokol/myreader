@@ -36,6 +36,49 @@ describe('service', function() {
         });
     });
 
+    describe('subscriptionTagService', function() {
+        var api;
+
+        beforeEach(module(function($provide) {
+            api = {
+                get: jasmine.createSpy()
+            };
+
+            $provide.service('api', function() {
+                return api;
+            });
+        }));
+
+        beforeEach(inject(function (subscriptionTagService, $q) {
+            service = subscriptionTagService;
+
+            var call = $q.defer();
+            call.resolve({
+                entries: [1]
+            });
+
+            api.get.andReturn(call.promise);
+        }));
+
+        it('should return cached result', inject(function($rootScope) {
+            var firstPromise = service.findAll();
+
+            $rootScope.$digest();
+
+            expect(api.get).toHaveBeenCalledWith('subscriptionTag', '/myreader/api/2/subscriptions/availableTags');
+            expect(firstPromise.$$state.value.entries).toEqualData([1]);
+
+            api.get = jasmine.createSpy();
+
+            var secondPromise = service.findAll();
+
+            $rootScope.$digest();
+
+            expect(api.get).not.toHaveBeenCalledWith('subscriptionTag', '/myreader/api/2/subscriptions/availableTags');
+            expect(secondPromise.$$state.value.entries).toEqualData([1]);
+        }));
+    });
+
     describe('feedService', function() {
         var api;
         var mockUrl = 'mockUrl';
