@@ -36,6 +36,78 @@ describe('service', function() {
         });
     });
 
+    describe('subscriptionService', function() {
+        var api;
+        var promiseResult = 'success';
+
+        beforeEach(module(function($provide) {
+            api = {
+                get: jasmine.createSpy(),
+                post: jasmine.createSpy(),
+                patch: jasmine.createSpy(),
+                delete: jasmine.createSpy()
+            };
+
+            $provide.service('api', function() {
+                return api;
+            });
+        }));
+
+        beforeEach(inject(function (subscriptionService, $q) {
+            service = subscriptionService;
+
+            var getCall = $q.defer();
+            getCall.resolve(promiseResult);
+
+            var postPatchCall = $q.defer();
+            postPatchCall.resolve(promiseResult);
+
+            api.get.andReturn(getCall.promise);
+            api.post.andReturn(postPatchCall.promise);
+            api.patch.andReturn(postPatchCall.promise);
+            api.delete.andReturn(postPatchCall.promise);
+        }));
+
+        it('should return ' + promiseResult + " on findAll", function() {
+            var promise = service.findAll();
+
+            expect(api.get).toHaveBeenCalledWith('subscriptions', '/myreader/api/2/subscriptions');
+            expect(promise.$$state.value).toEqual(promiseResult);
+        });
+
+        it('should return ' + promiseResult + " on find", function() {
+            var promise = service.find('subscriptionUuid');
+
+            expect(api.get).toHaveBeenCalledWith('subscription', '/myreader/api/2/subscriptions/subscriptionUuid');
+            expect(promise.$$state.value).toEqual(promiseResult);
+        });
+
+        it('should return ' + promiseResult + " on save and call http post on missing uuid", function() {
+            var promise = service.save({});
+
+            expect(api.post).toHaveBeenCalledWith('subscription', '/myreader/api/2/subscriptions', {});
+            expect(api.patch).not.toHaveBeenCalled();
+            expect(promise.$$state.value).toEqual(promiseResult);
+        });
+
+        it('should return ' + promiseResult + " on save and call http patch", function() {
+            var subscription = {uuid: 'subscriptionUuid'};
+            var promise = service.save(subscription);
+
+            expect(api.post).not.toHaveBeenCalled();
+            expect(api.patch).toHaveBeenCalledWith('subscription', '/myreader/api/2/subscriptions/' + subscription.uuid, subscription);
+            expect(promise.$$state.value).toEqual(promiseResult);
+        });
+
+        it('should return ' + promiseResult + " on unsubscribe", function() {
+            var subscription = {uuid: 'subscriptionUuid'};
+            var promise = service.unsubscribe(subscription);
+
+            expect(api.delete).toHaveBeenCalledWith('subscription', '/myreader/api/2/subscriptions/' + subscription.uuid);
+            expect(promise.$$state.value).toEqual(promiseResult);
+        });
+    });
+
     describe('exclusionService', function() {
         var api;
         var promiseResult = 'success';
