@@ -65,7 +65,7 @@ describe('service', function() {
 
             $rootScope.$digest();
 
-            expect(api.get).toHaveBeenCalledWith('subscriptionEntryTag', '/myreader/api/2/subscriptions/availableTags');
+            expect(api.get).toHaveBeenCalledWith('subscriptionEntryTag', '/myreader/api/2/subscriptionEntries/availableTags');
             expect(firstPromise.$$state.value.entries).toEqualData([1]);
 
             api.get = jasmine.createSpy();
@@ -74,7 +74,7 @@ describe('service', function() {
 
             $rootScope.$digest();
 
-            expect(api.get).not.toHaveBeenCalledWith('subscriptionEntryTag', '/myreader/api/2/subscriptions/availableTags');
+            expect(api.get).not.toHaveBeenCalledWith('subscriptionEntryTag', '/myreader/api/2/subscriptionEntries/availableTags');
             expect(secondPromise.$$state.value.entries).toEqualData([1]);
         }));
     });
