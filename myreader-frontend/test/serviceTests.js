@@ -36,6 +36,145 @@ describe('service', function() {
         });
     });
 
+    describe('subscriptionEntryService', function() {
+        var api, call;
+        var promiseResult = 'success';
+
+        beforeEach(module(function($provide) {
+            api = {
+                get: jasmine.createSpy(),
+                patch: jasmine.createSpy()
+            };
+
+            $provide.service('api', function() {
+                return api;
+            });
+        }));
+
+        beforeEach(inject(function (subscriptionEntryService, $q) {
+            service = subscriptionEntryService;
+
+            call = $q.defer();
+            call.resolve(promiseResult);
+
+            api.get.andReturn(call.promise);
+        }));
+
+        it('should return cached result', inject(function($rootScope) {
+            var firstPromise = service.findBy('stringParam');
+
+            $rootScope.$digest();
+
+            expect(api.get).toHaveBeenCalledWith('subscriptionEntries', 'stringParam');
+            expect(firstPromise.$$state.value).toEqual(promiseResult);
+
+            api.get = jasmine.createSpy();
+
+            var secondPromise = service.findBy('stringParam');
+
+            $rootScope.$digest();
+
+            expect(api.get).not.toHaveBeenCalledWith('subscriptionEntries', 'stringParam');
+            expect(secondPromise.$$state.value).toEqual(promiseResult);
+        }));
+
+        it('cache results', inject(function($rootScope, $q, CacheFactory) {
+            var data = [{uuid: 1}, {uuid: 2}];
+            var call = $q.defer();
+
+            call.resolve({entries: data});
+            api.get.andReturn(call.promise);
+
+            service.findBy('stringParam');
+
+            $rootScope.$digest();
+
+            var cache = CacheFactory.get('subscriptionEntryCache');
+
+            expect(cache.get('/myreader/api/2/subscriptionEntries/1')).toEqualData(data[0]);
+            expect(cache.get('/myreader/api/2/subscriptionEntries/2')).toEqualData(data[1]);
+        }));
+
+        it('should return not cached result after refresh event has been triggered', inject(function($rootScope) {
+            service.findBy('stringParam');
+
+            $rootScope.$digest();
+
+            api.get = jasmine.createSpy();
+
+            service.findBy('stringParam');
+
+            $rootScope.$digest();
+
+            expect(api.get).not.toHaveBeenCalledWith('subscriptionEntries', 'stringParam');
+
+            api.get.andReturn(call.promise);
+
+            $rootScope.$broadcast('refresh');
+
+            service.findBy('stringParam');
+
+            $rootScope.$digest();
+
+            expect(api.get).toHaveBeenCalledWith('subscriptionEntries', 'stringParam');
+        }));
+
+        it('should process own properties in params object', function() {
+            var Params = function() {
+                this.param1 = 1;
+                this.param2 = 2;
+            };
+
+            Params.prototype.param3 = 3;
+
+            service.findBy(new Params);
+
+            expect(api.get).toHaveBeenCalledWith('subscriptionEntries', '/myreader/api/2/subscriptionEntries?&param1=1&param2=2');
+        });
+
+        it('should save and cache result', inject(function($rootScope, $q, CacheFactory) {
+            var data = [{uuid: 12}];
+            var call = $q.defer();
+
+            call.resolve({entries: data});
+
+            api.patch.andReturn(call.promise);
+
+            service.save(12);
+
+            expect(api.patch).toHaveBeenCalledWith('subscriptionEntries', '/myreader/api/2/subscriptionEntries?', [12]);
+
+            $rootScope.$digest();
+
+            cache = CacheFactory.get('subscriptionEntryCache');
+
+            expect(cache.get('/myreader/api/2/subscriptionEntries/12')).toEqualData(data[0]);
+        }));
+
+        it('should save and cache result', inject(function($rootScope) {
+            var promise = service.findOne(42);
+
+            $rootScope.$digest();
+
+            expect(api.get).toHaveBeenCalledWith('subscriptionEntry', '/myreader/api/2/subscriptionEntries/42');
+            expect(promise.$$state.value).toEqual(promiseResult);
+        }));
+
+        it('should save and cache result', inject(function($rootScope, CacheFactory) {
+            var data = {uiid: 43};
+            var cache = CacheFactory.get('subscriptionEntryCache');
+
+            cache.put('/myreader/api/2/subscriptionEntries/43', data);
+
+            var promise = service.findOne(43);
+
+            $rootScope.$digest();
+
+            expect(api.get).not.toHaveBeenCalledWith('subscriptionEntry', '/myreader/api/2/subscriptionEntries/43');
+            expect(promise.$$state.value).toEqualData(data);
+        }));
+    });
+
     describe('subscriptionEntryTagService', function() {
         var api;
 
@@ -78,8 +217,6 @@ describe('service', function() {
             expect(secondPromise.$$state.value.entries).toEqualData([1]);
         }));
     });
-
-
 
     describe('subscriptionService', function() {
         var api;
