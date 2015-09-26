@@ -36,6 +36,49 @@ describe('service', function() {
         });
     });
 
+    describe('bookmarkService', function() {
+        var api;
+
+        beforeEach(module(function($provide) {
+            api = {
+                get: jasmine.createSpy()
+            };
+
+            $provide.service('api', function() {
+                return api;
+            });
+        }));
+
+        beforeEach(inject(function (bookmarkService, $q) {
+            service = bookmarkService;
+
+            var call = $q.defer();
+            call.resolve({
+                entries: [1]
+            });
+
+            api.get.andReturn(call.promise);
+        }));
+
+        it('xx', inject(function($rootScope) {
+            var firstPromise = service.findAll();
+
+            $rootScope.$digest();
+
+            expect(api.get).toHaveBeenCalledWith('bookmarkTags', '/myreader/api/2/subscriptionEntries/availableTags');
+            expect(firstPromise.$$state.value.entries).toEqualData([1]);
+
+            api.get = jasmine.createSpy();
+
+            var secondPromise = service.findAll();
+
+            $rootScope.$digest();
+
+            expect(api.get).not.toHaveBeenCalledWith('bookmarkTags', '/myreader/api/2/subscriptionEntries/availableTags');
+            expect(secondPromise.$$state.value.entries).toEqualData([1]);
+        }));
+    });
+
     describe('deferService', function() {
         var q, deferred;
         var resolvedResult = 'success';
@@ -178,11 +221,6 @@ describe('service', function() {
             var promise = service.rebuildSearchIndex();
 
             expect(api.put).toHaveBeenCalledWith('searchIndexJob', '/myreader/api/2/processing', 'indexSyncJob');
-
-            promise.then(function(data) {
-                expect(data).toBe(undefined);
-            });
-
             expect(promise.$$state.value.entries).toEqualData([1]);
         }));
     });
