@@ -199,12 +199,12 @@ angular.module('common.directives', [])
 
     return {
         restrict : "EA",
-        link : function(scope, element, attrs) {
+        link : function(scope, element) {
             scope.$on("loading-started", function() {
-                attrs.$set('disabled', 'disabled');
+                element.attr('disabled', true);
             });
             scope.$on("loading-complete", function() {
-                attrs.$set('disabled', null);
+                element.attr('disabled', false);
             });
         }
     };

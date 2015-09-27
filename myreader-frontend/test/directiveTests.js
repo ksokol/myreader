@@ -160,4 +160,34 @@ describe("directive", function() {
             expect(element.hasClass('hide')).toBeTruthy();
         });
     });
+
+    describe("myDisableLoading", function() {
+        var $compile,
+            $rootScope;
+
+        beforeEach(module('common.directives'));
+
+        beforeEach(inject(function(_$compile_, _$rootScope_){
+            $compile = _$compile_;
+            $rootScope = _$rootScope_;
+        }));
+
+        it('should disable/enable element on specific event', function () {
+            var element = $compile("<div my-disable-loading></div>")($rootScope);
+
+            $rootScope.$digest();
+
+            expect(element.attr('disabled')).toBeFalsy();
+
+            $rootScope.$broadcast('loading-started');
+            $rootScope.$digest();
+
+            expect(element.attr('disabled')).toBeTruthy();
+
+            $rootScope.$broadcast('loading-complete');
+            $rootScope.$digest();
+
+            expect(element.attr('disabled')).toBeFalsy();
+        });
+    });
 });
