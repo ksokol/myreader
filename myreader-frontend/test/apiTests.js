@@ -46,20 +46,7 @@ describe('api', function() {
 
     beforeEach(module('common.api'));
 
-    beforeEach(function(){
-        this.addMatchers({
-            toEqualData: function(expected) {
-                return angular.equals(this.actual, expected);
-            }
-        });
-
-        //TODO remove when fail() in jasmine is available
-        this.addMatchers({
-            toBeCalled: function() {
-                return true;
-            }
-        });
-    });
+    myMatchers();
 
     describe("subscriptionsTagConverter", function() {
         var converter,

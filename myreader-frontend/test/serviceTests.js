@@ -3,13 +3,7 @@ describe('service', function() {
 
     beforeEach(module('common.services'));
 
-    beforeEach(function () {
-        this.addMatchers({
-            toEqualData: function (expected) {
-                return angular.equals(this.actual, expected);
-            }
-        });
-    });
+    myMatchers();
 
     describe('permissionService', function() {
         beforeEach(inject(function (permissionService) {
