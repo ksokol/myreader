@@ -1,9 +1,23 @@
 describe('service', function() {
-    var service;
+    var api, service;
 
     beforeEach(module('common.services'));
 
     myMatchers();
+
+    beforeEach(module(function($provide) {
+        api = {
+            get: jasmine.createSpy(),
+            post: jasmine.createSpy(),
+            delete: jasmine.createSpy(),
+            patch: jasmine.createSpy(),
+            put: jasmine.createSpy()
+        };
+
+        $provide.service('api', function() {
+            return api;
+        });
+    }));
 
     describe('permissionService', function() {
         beforeEach(inject(function (permissionService) {
@@ -32,40 +46,41 @@ describe('service', function() {
 
     describe('subscriptionsTagService', function() {
 
-        describe('with mocked cache', function() {
+        describe('event subscriptionEntry:updateEntries', function() {
             var service, cache;
 
-            beforeEach(module(function($provide) {
-                cache = {
-                    get: jasmine.createSpy(),
-                    put: jasmine.createSpy()
-                };
-
-                $provide.service('CacheFactory', function() {
-                    return {
-                        createCache: function () {
-                            return cache;
-                        }
-                    }
-                });
-            }));
-
-            beforeEach(inject(function (subscriptionsTagService) {
+            beforeEach(inject(function (subscriptionsTagService, _subscriptionsTagCache_) {
                 service = subscriptionsTagService;
+                cache = _subscriptionsTagCache_;
+
+                spyOn(cache, 'get').andCallThrough();
+                spyOn(cache, 'put').andCallThrough();
             }));
 
-            it('should not update cache', inject(function($rootScope) {
+            it('should not update cache when cache is undefined', inject(function($rootScope) {
+                $rootScope.$broadcast('subscriptionEntry:updateEntries');
+
+                expect(cache.put).not.toHaveBeenCalled();
+            }));
+
+            it('should not update cache when subscriptionEntries are empty', inject(function($rootScope) {
+                cache.get.andReturn([]);
+
                 $rootScope.$broadcast('subscriptionEntry:updateEntries');
 
                 expect(cache.put).not.toHaveBeenCalled();
             }));
 
             it('should update cache', inject(function($rootScope) {
-                cache.get.andReturn([]);
+                var cachedSubscriptionsTags = {
+                    decrementSubscriptionUnseen: jasmine.createSpy()
+                };
 
-                $rootScope.$broadcast('subscriptionEntry:updateEntries', []);
+                cache.get.andReturn(cachedSubscriptionsTags);
 
-                expect(cache.put).toHaveBeenCalledWith('subscriptionsTags', []);
+                $rootScope.$broadcast('subscriptionEntry:updateEntries', [{feedUuid: 1, seen: true}]);
+
+                expect(cache.put).toHaveBeenCalledWith('subscriptionsTags', cachedSubscriptionsTags);
             }));
 
             it('should decrementSubscriptionUnseen', inject(function($rootScope) {
@@ -74,6 +89,7 @@ describe('service', function() {
                 };
 
                 cache.get.andReturn(cachedSubscriptionsTags);
+
                 $rootScope.$broadcast('subscriptionEntry:updateEntries', [{seen: true, feedUuid: 1}]);
 
                 expect(cachedSubscriptionsTags.decrementSubscriptionUnseen).toHaveBeenCalledWith(1);
@@ -86,10 +102,11 @@ describe('service', function() {
                 };
 
                 cache.get.andReturn(cachedSubscriptionsTags);
+
                 $rootScope.$broadcast('subscriptionEntry:updateEntries', [{seen: false, feedUuid: 2}]);
 
-                expect(cachedSubscriptionsTags.incrementSubscriptionUnseen).toHaveBeenCalledWith(2);
                 expect(cache.put).toHaveBeenCalledWith('subscriptionsTags', cachedSubscriptionsTags);
+                expect(cachedSubscriptionsTags.incrementSubscriptionUnseen).toHaveBeenCalledWith(2);
             }));
         });
 
@@ -107,15 +124,14 @@ describe('service', function() {
                 });
             }));
 
-            beforeEach(inject(function (subscriptionsTagService, $q, CacheFactory) {
+            beforeEach(inject(function (subscriptionsTagService, $q, _subscriptionsTagCache_) {
                 service = subscriptionsTagService;
+                cache = _subscriptionsTagCache_;
 
                 call = $q.defer();
                 call.resolve(promiseResult);
 
                 api.get.andReturn(call.promise);
-
-                cache = CacheFactory.get('subscriptionsTagCache');
             }));
 
             it('should return new uncached entries', inject(function($rootScope) {
@@ -144,7 +160,7 @@ describe('service', function() {
                 expect(cache.get('subscriptionsTags.unseenFlag')).toEqual(unseen);
             }));
 
-            it('should return cached entries when called with unseen set to false and cached unseen flag false', inject(function($rootScope) {
+            it('should return cached entries when called with unseen set to false and cached unseen flag false', function() {
                 var unseen = false;
                 var data = {uuid: 50};
                 cache.put('subscriptionsTags', data);
@@ -152,14 +168,12 @@ describe('service', function() {
 
                 var promise = service.findAllByUnseen(unseen);
 
-                $rootScope.$digest();
-
                 expect(api.get).not.toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions', cache);
                 expect(promise.$$state.value).toEqual(data);
 
                 expect(cache.get('subscriptionsTags')).toEqual(data);
                 expect(cache.get('subscriptionsTags.unseenFlag')).toEqual(unseen);
-            }));
+            });
 
             it('should return uncached entries when called with unseen set to false and cached unseen flag true', inject(function($rootScope) {
                 var unseen = false;
@@ -181,19 +195,8 @@ describe('service', function() {
     });
 
     describe('subscriptionEntryService', function() {
-        var api, call;
+        var call;
         var promiseResult = 'success';
-
-        beforeEach(module(function($provide) {
-            api = {
-                get: jasmine.createSpy(),
-                patch: jasmine.createSpy()
-            };
-
-            $provide.service('api', function() {
-                return api;
-            });
-        }));
 
         beforeEach(inject(function (subscriptionEntryService, $q) {
             service = subscriptionEntryService;
@@ -320,17 +323,6 @@ describe('service', function() {
     });
 
     describe('subscriptionEntryTagService', function() {
-        var api;
-
-        beforeEach(module(function($provide) {
-            api = {
-                get: jasmine.createSpy()
-            };
-
-            $provide.service('api', function() {
-                return api;
-            });
-        }));
 
         beforeEach(inject(function (subscriptionEntryTagService, $q) {
             service = subscriptionEntryTagService;
@@ -363,21 +355,7 @@ describe('service', function() {
     });
 
     describe('subscriptionService', function() {
-        var api;
         var promiseResult = 'success';
-
-        beforeEach(module(function($provide) {
-            api = {
-                get: jasmine.createSpy(),
-                post: jasmine.createSpy(),
-                patch: jasmine.createSpy(),
-                delete: jasmine.createSpy()
-            };
-
-            $provide.service('api', function() {
-                return api;
-            });
-        }));
 
         beforeEach(inject(function (subscriptionService, $q) {
             service = subscriptionService;
@@ -435,20 +413,7 @@ describe('service', function() {
     });
 
     describe('exclusionService', function() {
-        var api;
         var promiseResult = 'success';
-
-        beforeEach(module(function($provide) {
-            api = {
-                get: jasmine.createSpy(),
-                post: jasmine.createSpy(),
-                delete: jasmine.createSpy()
-            };
-
-            $provide.service('api', function() {
-                return api;
-            });
-        }));
 
         beforeEach(inject(function (exclusionService, $q) {
             service = exclusionService;
@@ -487,17 +452,6 @@ describe('service', function() {
     });
 
     describe('subscriptionTagService', function() {
-        var api;
-
-        beforeEach(module(function($provide) {
-            api = {
-                get: jasmine.createSpy()
-            };
-
-            $provide.service('api', function() {
-                return api;
-            });
-        }));
 
         beforeEach(inject(function (subscriptionTagService, $q) {
             service = subscriptionTagService;
@@ -530,18 +484,7 @@ describe('service', function() {
     });
 
     describe('feedService', function() {
-        var api;
         var mockUrl = 'mockUrl';
-
-        beforeEach(module(function($provide) {
-            api = {
-                post: jasmine.createSpy()
-            };
-
-            $provide.service('api', function() {
-                return api;
-            });
-        }));
 
         beforeEach(inject(function (feedService) {
             service = feedService;
@@ -599,17 +542,6 @@ describe('service', function() {
     });
 
     describe('bookmarkService', function() {
-        var api;
-
-        beforeEach(module(function($provide) {
-            api = {
-                get: jasmine.createSpy()
-            };
-
-            $provide.service('api', function() {
-                return api;
-            });
-        }));
 
         beforeEach(inject(function (bookmarkService, $q) {
             service = bookmarkService;
@@ -642,10 +574,8 @@ describe('service', function() {
     });
 
     describe('deferService', function() {
-        var q, deferred;
         var resolvedResult = 'success';
         var resolvedError = 'error';
-        var promiseResult = 'promise';
 
         var succeeding = function(fn) {
             return fn(true);
@@ -676,24 +606,6 @@ describe('service', function() {
             }
         };
 
-        beforeEach(module(function($provide) {
-            q = {
-                defer: jasmine.createSpy()
-            };
-
-            deferred = {
-                promise: promiseResult,
-                resolve: jasmine.createSpy(),
-                reject: jasmine.createSpy()
-            };
-
-            q.defer.andReturn(deferred);
-
-            $provide.service('$q', function() {
-                return q;
-            })
-        }));
-
         beforeEach(inject(function (deferService) {
             service = deferService;
         }));
@@ -701,53 +613,29 @@ describe('service', function() {
         it('should resolve deferred call with success', function() {
             var promise = service.deferred(succeeding(callbackWithPromise));
 
-            expect(q.defer).toHaveBeenCalled();
-            expect(deferred.resolve).toHaveBeenCalledWith(resolvedResult);
-            expect(deferred.reject).not.toHaveBeenCalled();
-            expect(promise).toEqual(promiseResult);
+            expect(promise.$$state.value).toEqual(resolvedResult);
         });
 
         it('should resolve deferred call with failure', function() {
             var promise = service.deferred(failing(callbackWithPromise));
 
-            expect(q.defer).toHaveBeenCalled();
-            expect(deferred.resolve).not.toHaveBeenCalled();
-            expect(deferred.reject).toHaveBeenCalledWith(resolvedError);
-            expect(promise).toEqual(promiseResult);
+            expect(promise.$$state.value).toEqual(resolvedError);
         });
 
         it('should call resolve on deferred object', function() {
             var promise = service.resolved(resolvedResult);
 
-            expect(q.defer).toHaveBeenCalled();
-            expect(deferred.resolve).toHaveBeenCalledWith(resolvedResult);
-            expect(deferred.reject).not.toHaveBeenCalled();
-            expect(promise).toEqual(promiseResult);
+            expect(promise.$$state.value).toEqual(resolvedResult);
         });
 
         it('should call reject on deferred object', function() {
             var promise = service.reject(resolvedError);
 
-            expect(q.defer).toHaveBeenCalled();
-            expect(deferred.resolve).not.toHaveBeenCalled();
-            expect(deferred.reject).toHaveBeenCalledWith(resolvedError);
-            expect(promise).toEqual(promiseResult);
+            expect(promise.$$state.value).toEqual(resolvedError);
         });
     });
 
     describe('processingService', function() {
-        var api;
-
-        beforeEach(module(function($provide) {
-            api = {
-                get: jasmine.createSpy(),
-                put: jasmine.createSpy()
-            };
-
-            $provide.service('api', function() {
-                return api;
-            })
-        }));
 
         beforeEach(inject(function (processingService) {
             service = processingService;
@@ -790,9 +678,9 @@ describe('service', function() {
     describe('settingsService', function() {
         var cache;
 
-        beforeEach(inject(function (settingsService, CacheFactory) {
+        beforeEach(inject(function (settingsService, _settingsCache_) {
             service = settingsService;
-            cache = CacheFactory.get('settingsCache');
+            cache = _settingsCache_;
         }));
 
         it('should return pageSize equal to 10', function() {

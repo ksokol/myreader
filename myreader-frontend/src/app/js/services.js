@@ -1,16 +1,15 @@
-angular.module('common.services', ['common.api', 'angular-cache'])
+angular.module('common.services', ['common.api', 'common.caches'])
 
-.service('subscriptionsTagService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
-
-    var subscriptionTagCache = CacheFactory.createCache('subscriptionsTagCache', {
-        deleteOnExpire: 'aggressive',
-        maxAge: 60 * 5 * 1000 //5 minutes
-    });
+.service('subscriptionsTagService', ['$rootScope', 'api', 'deferService', 'subscriptionsTagCache', function($rootScope, api, deferService, subscriptionsTagCache) {
 
     $rootScope.$on('subscriptionEntry:updateEntries', function(event, subscriptionEntries) {
-        var cachedSubscriptionsTags = subscriptionTagCache.get('subscriptionsTags');
+        var cachedSubscriptionsTags = subscriptionsTagCache.get('subscriptionsTags');
 
         if(!cachedSubscriptionsTags) {
+            return;
+        }
+
+        if(subscriptionEntries === undefined || subscriptionEntries.length === 0) {
             return;
         }
 
@@ -22,24 +21,24 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             }
         }
 
-        subscriptionTagCache.put('subscriptionsTags', cachedSubscriptionsTags);
+        subscriptionsTagCache.put('subscriptionsTags', cachedSubscriptionsTags);
     });
 
     return {
         findAllByUnseen: function(unseen) {
-            var cachedSubscriptionTags = subscriptionTagCache.get('subscriptionsTags');
-            var cachedUnseenFlag = subscriptionTagCache.get('subscriptionsTags.unseenFlag');
+            var cachedSubscriptionTags = subscriptionsTagCache.get('subscriptionsTags');
+            var cachedUnseenFlag = subscriptionsTagCache.get('subscriptionsTags.unseenFlag');
 
             if(cachedUnseenFlag === unseen && cachedSubscriptionTags) {
                 return deferService.resolved(cachedSubscriptionTags);
             }
 
             var withUnseen = unseen ? '?unseenGreaterThan=0' : '';
-            var promise = api.get('subscriptionsTag', '/myreader/api/2/subscriptions' + withUnseen, subscriptionTagCache);
+            var promise = api.get('subscriptionsTag', '/myreader/api/2/subscriptions' + withUnseen, subscriptionsTagCache);
 
             promise.then(function(data) {
-                subscriptionTagCache.put('subscriptionsTags', data);
-                subscriptionTagCache.put('subscriptionsTags.unseenFlag', unseen);
+                subscriptionsTagCache.put('subscriptionsTags', data);
+                subscriptionsTagCache.put('subscriptionsTags.unseenFlag', unseen);
             });
 
             return promise;
@@ -47,18 +46,9 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     }
 }])
 
-.service('subscriptionEntryService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
+.service('subscriptionEntryService', ['$rootScope', 'api', 'deferService', 'subscriptionEntryCache', 'subscriptionEntriesCache', function($rootScope, api, deferService, subscriptionEntryCache, subscriptionEntriesCache) {
     var url = '/myreader/api/2/subscriptionEntries?';
     var url2 = '/myreader/api/2/subscriptionEntries';
-
-    var subscriptionEntryCache = CacheFactory.createCache('subscriptionEntryCache', {
-        deleteOnExpire: 'aggressive'
-    });
-
-    var subscriptionEntriesCache = CacheFactory.createCache('subscriptionEntriesCache', {
-        deleteOnExpire: 'aggressive',
-        maxAge: 60 * 5 * 1000 //5 minutes
-    });
 
     $rootScope.$on('refresh', function() {
         subscriptionEntriesCache.removeAll();
@@ -120,13 +110,9 @@ angular.module('common.services', ['common.api', 'angular-cache'])
         }
     }
 }])
-.service('subscriptionEntryTagService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
-    var url = '/myreader/api/2/subscriptionEntries/availableTags';
 
-    var subscriptionEntryTagCache = CacheFactory.createCache('subscriptionEntryTagCache', {
-        deleteOnExpire: 'aggressive',
-        maxAge: 60 * 5 * 1000 //5 minutes
-    });
+.service('subscriptionEntryTagService', ['$rootScope', 'api', 'deferService', 'subscriptionEntryTagCache', function($rootScope, api, deferService, subscriptionEntryTagCache) {
+    var url = '/myreader/api/2/subscriptionEntries/availableTags';
 
     return {
         findAll: function() {
@@ -146,8 +132,7 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     }
 }])
 
-
-.service('subscriptionService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
+.service('subscriptionService', ['$rootScope', 'api', function($rootScope, api) {
     var url = '/myreader/api/2/subscriptions';
 
     return {
@@ -185,17 +170,12 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     }
 }])
 
-.service('subscriptionTagService', ['$rootScope', 'api', 'deferService', 'CacheFactory', function($rootScope, api, deferService, CacheFactory) {
+.service('subscriptionTagService', ['$rootScope', 'api', 'deferService', 'subscriptionTagCache', function($rootScope, api, deferService, subscriptionTagCache) {
     var url = '/myreader/api/2/subscriptions/availableTags';
-
-    var subscriptionEntryTagCache = CacheFactory.createCache('subscriptionTagCache', {
-        deleteOnExpire: 'aggressive',
-        maxAge: 60 * 5 * 1000 //5 minutes
-    });
 
     return {
         findAll: function() {
-            var cached = subscriptionEntryTagCache.get('subscriptionTags');
+            var cached = subscriptionTagCache.get('subscriptionTags');
             if(cached) {
                 return deferService.resolved(cached);
             }
@@ -203,7 +183,7 @@ angular.module('common.services', ['common.api', 'angular-cache'])
             var promise = api.get('subscriptionTag', url);
 
             promise.then(function(data) {
-                subscriptionEntryTagCache.put('subscriptionTags', data);
+                subscriptionTagCache.put('subscriptionTags', data);
             });
 
             return promise;
@@ -211,10 +191,8 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     }
 }])
 
-.service('feedService', ['api', 'deferService', 'CacheFactory', function(api, deferService, CacheFactory) {
+.service('feedService', ['api', 'deferService', 'feedProbeCache', function(api, deferService, feedProbeCache) {
     var url = '/myreader/api/2/feeds/probe';
-
-    var feedProbeCache = CacheFactory.createCache('feedProbeCache');
 
     return {
         probe: function(urlToProbe) {
@@ -243,13 +221,8 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     }
 }])
 
-.service('bookmarkService', ['api', 'deferService', 'CacheFactory', function(api, deferService, CacheFactory) {
+.service('bookmarkService', ['api', 'deferService', 'bookmarksCache', function(api, deferService, bookmarksCache) {
     var url = '/myreader/api/2/subscriptionEntries/availableTags';
-
-    var bookmarksCache = CacheFactory.createCache('bookmarks', {
-        deleteOnExpire: 'aggressive',
-        maxAge: 60 * 5 * 1000 //5 minutes
-    });
 
     return {
         findAll: function() {
@@ -342,11 +315,7 @@ angular.module('common.services', ['common.api', 'angular-cache'])
     }
 }])
 
-.service('settingsService', ['CacheFactory', function(CacheFactory) {
-
-    var settingsCache = CacheFactory.createCache('settingsCache', {
-        storageMode : 'localStorage'
-    });
+.service('settingsService', ['settingsCache', function(settingsCache) {
 
     return {
         getPageSize: function() {
