@@ -13,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Slice;
 
+import java.util.Collections;
+
+/**
+ * @author Kamill Sokol
+ */
 public class SubscriptionEntryRepositoryImplTest extends IntegrationTestSupport {
 
     @Autowired
@@ -25,12 +30,12 @@ public class SubscriptionEntryRepositoryImplTest extends IntegrationTestSupport 
     public void findByOwnerIdIsNullTest() throws Exception {
         expectedException.expect(InvalidDataAccessApiUsageException.class);
         expectedException.expectMessage("ownerId is null");
-        subscriptionEntryRepository.findBy(null, null, null, null, null, null, null, null);
+        subscriptionEntryRepository.findBy(Collections.emptyMap(), null);
     }
 
     @Test
     public void findByPageableIsnullTest() throws Exception {
-        final Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBy(null, 1L, null, null, null, null, null, null);
+        final Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBy(Collections.emptyMap(), 1L);
         assertThat(slice.getSize(), is(0));
     }
 }

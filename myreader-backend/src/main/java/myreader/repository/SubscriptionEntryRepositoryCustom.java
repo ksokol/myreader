@@ -1,9 +1,9 @@
 package myreader.repository;
 
 import myreader.entity.SubscriptionEntry;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public interface SubscriptionEntryRepositoryCustom {
 
-    Slice<SubscriptionEntry> findBy(String q, Long ownerId, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, Pageable pageable);
+    Slice<SubscriptionEntry> findBy(Map<String, Object> params, Long ownerId);
 
     Set<String> findDistinctTags(Long userId);
 }

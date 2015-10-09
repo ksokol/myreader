@@ -2,9 +2,6 @@ package spring.hateoas;
 
 import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +18,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import spring.data.domain.Sequence;
-import spring.data.web.SequenceableHandlerMethodArgumentResolver;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Oliver Gierke
@@ -32,13 +29,8 @@ import spring.data.web.SequenceableHandlerMethodArgumentResolver;
 public class PagedResourcesAssembler<T> {
 
     private final HateoasPageableHandlerMethodArgumentResolver pageableResolver = new HateoasPageableHandlerMethodArgumentResolver();
-    private final SequenceableHandlerMethodArgumentResolver sequenceableResolver = new SequenceableHandlerMethodArgumentResolver();
 
     public PagedResources<Resource<T>> toResource(Page<T> entity) {
-        return toResource(entity, new SimpleResourceAssembler<T>());
-    }
-
-    public SequencedResources<Resource<T>> toResource(final Sequence<T> entity) {
         return toResource(entity, new SimpleResourceAssembler<T>());
     }
 
@@ -54,23 +46,6 @@ public class PagedResourcesAssembler<T> {
 
         PagedResources<R> pagedResources = new PagedResources<>(resources, asPageMetadata(page));
         List<Link> links = addPaginationLinks(page, getDefaultUriString());
-
-        pagedResources.add(links);
-        return pagedResources;
-    }
-
-    public <R extends ResourceSupport> SequencedResources<R> toResource(final Sequence<T> sequence, final ResourceAssembler<T, R> assembler) {
-        Assert.notNull(sequence, "Sequence must not be null!");
-        Assert.notNull(assembler, "ResourceAssembler must not be null!");
-
-        List<R> resources = new ArrayList<>(sequence.getSize());
-
-        for (T element : sequence) {
-            resources.add(assembler.toResource(element));
-        }
-
-        SequencedResources<R> pagedResources = new SequencedResources<>(resources);
-        List<Link> links = addPaginationLinks(sequence, getDefaultUriString());
 
         pagedResources.add(links);
         return pagedResources;
@@ -102,26 +77,9 @@ public class PagedResourcesAssembler<T> {
         return links;
     }
 
-    private List<Link> addPaginationLinks(Sequence<?> sequence, String uri) {
-        List<Link> links = new ArrayList<>(2);
-        if (sequence.hasNext()) {
-            links.add(createLink(sequence, uri, Link.REL_NEXT));
-        }
-
-        links.add(new Link(uri));
-
-        return links;
-    }
-
     private Link createLink(Pageable pageable, String uri, String rel) {
         UriComponentsBuilder builder = fromUriString(uri);
         pageableResolver.enhance(builder, null, pageable);
-        return new Link(builder.build().toUriString(), rel);
-    }
-
-    private Link createLink(Sequence sequence, String uri, String rel) {
-        UriComponentsBuilder builder = fromUriString(uri);
-        sequenceableResolver.enhance(builder, null, sequence);
         return new Link(builder.build().toUriString(), rel);
     }
 

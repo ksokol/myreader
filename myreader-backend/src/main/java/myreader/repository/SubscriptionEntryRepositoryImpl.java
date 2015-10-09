@@ -4,6 +4,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
@@ -26,19 +27,18 @@ import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import org.springframework.util.Assert;
 
 /**
-* @author Kamill Sokol
-*/
+ * @author Kamill Sokol
+ */
 @Component
 @Transactional
 public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryRepositoryCustom {
@@ -62,13 +62,21 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
     @SuppressWarnings("unchecked")
     @Override
-    public Slice<SubscriptionEntry> findBy(String q, Long ownerId, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, Pageable pageable) {
+    public Slice<SubscriptionEntry> findBy(Map<String, Object> params, Long ownerId) {
         Assert.notNull(ownerId, "ownerId is null");
 
         final FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         final QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(SubscriptionEntry.class).get();
 
         Query query;
+
+        final String q = (String) params.get("q");
+        final String feedId = (String) params.get("feedUuidEqual");
+        final String seen = (String) params.get("seenEqual");
+        final String feedTagEqual = (String) params.get("feedTagEqual");
+        final String entryTagEqual = (String) params.get("entryTagEqual");
+        final Long next = params.get("next") == null ? null : Long.valueOf((params.get("next").toString()));
+        final Integer size = params.get("size") == null ? 11 : Integer.valueOf(params.get("size").toString()) + 1;
 
         if(isNotEmpty(q)) {
             query =  queryBuilder.bool()
@@ -101,13 +109,13 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
             addFilter(TAG, entryTagEqual, termFilters);
         }
 
-        if(nextId != null) {
-            final NumericRangeFilter<Long> id = NumericRangeFilter.newLongRange(ID, 0L, nextId, true, true);
+        if(next != null) {
+            final NumericRangeFilter<Long> id = NumericRangeFilter.newLongRange(ID, 0L, next, true, true);
             termFilters.add(id);
         }
 
         fullTextQuery.setFilter(new ChainedFilter(termFilters.toArray(new Filter[termFilters.size()]), ChainedFilter.AND));
-        fullTextQuery.setMaxResults(pageable == null ? 0 : pageable.getPageSize());
+        fullTextQuery.setMaxResults(size);
         fullTextQuery.setSort(new Sort(new SortField(ID, SortField.Type.LONG, true)));
 
         return new SliceImpl<>(fullTextQuery.getResultList());

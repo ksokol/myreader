@@ -1,10 +1,5 @@
 {
-  "links": [
-    {
-      "rel": "self",
-      "href": "/api/2/subscriptionEntries"
-    }
-  ],
+  "query": {},
   "content": [
     {
       "uuid": "1021",

@@ -16,7 +16,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import spring.data.web.SequenceableHandlerMethodArgumentResolver;
 import spring.hateoas.PagedResourcesAssembler;
 
 import java.util.List;
@@ -50,7 +49,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         argumentResolvers.clear();
         argumentResolvers.add(new AuthenticationPrincipalArgumentResolver());
         argumentResolvers.add(new PageableHandlerMethodArgumentResolver());
-        argumentResolvers.add(new SequenceableHandlerMethodArgumentResolver());
     }
 
     @Bean

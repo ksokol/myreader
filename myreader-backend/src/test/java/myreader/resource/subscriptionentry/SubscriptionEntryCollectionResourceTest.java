@@ -6,7 +6,6 @@ import static myreader.test.KnownUser.USER109;
 import static myreader.test.KnownUser.USER115;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -17,6 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser4;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,42 +64,51 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     @Test
     public void testPagingStart() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?size=1"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?next=1012&size=1"))))
+                .andExpect(jsonPath("query.size", is("1")))
+                .andExpect(jsonPath("query.next", is("1012")))
                 .andExpect(jsonPath("content[0].uuid", is("1013")));
     }
 
     @Test
     public void testPagingMiddle() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?size=1&next=1012"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?next=1011&size=1"))))
+                .andExpect(jsonPath("query.size", is("1")))
+                .andExpect(jsonPath("query.next", is("1011")))
                 .andExpect(jsonPath("content[0].uuid", is("1012")));
     }
 
     @Test
     public void testPagingEnd() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?size=1&next=1009"))
-                .andExpect(jsonPath("links[?(@.rel=='next')]", emptyIterable()))
+                .andExpect(jsonPath("query.size", is("1")))
+                .andExpect(jsonPath("query.next").doesNotExist())
                 .andExpect(jsonPath("content[0].uuid", is("1009")));
     }
 
     @Test
     public void testSearchPagingStart() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?size=1&q=l*"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=l*&next=1010&size=1"))))
+                .andExpect(jsonPath("query.size", is("1")))
+                .andExpect(jsonPath("query.next", is("1010")))
+                .andExpect(jsonPath("query.q", is("l*")))
                 .andExpect(jsonPath("content[0].uuid", is("1013")));
     }
 
     @Test
     public void testSearchPagingMiddle() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?q=*&size=1&next=1012"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=*&next=1011&size=1"))))
+                .andExpect(jsonPath("query.size", is("1")))
+                .andExpect(jsonPath("query.next", is("1011")))
+                .andExpect(jsonPath("query.q", is("*")))
                 .andExpect(jsonPath("content[0].uuid", is("1012")));
     }
 
     @Test
     public void testSearchPagingEnd() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?q=l*&size=1&next=1010"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", emptyIterable()))
+                .andExpect(jsonPath("query.size", is("1")))
+                .andExpect(jsonPath("query.q", is("l*")))
+                .andExpect(jsonPath("query.next").doesNotExist())
                 .andExpect(jsonPath("content[0].uuid", is("1010")));
     }
 
@@ -112,6 +121,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     @Test
     public void seenEqualTrue() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?seenEqual=true"))
+                .andDo(print())
                 .andExpect(jsonPath("content", hasSize(0)));
     }
 
