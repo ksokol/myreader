@@ -42,7 +42,7 @@ public class SubscriptionEntryGetResponseSliceConverter {
 
         final List<SubscriptionEntry> content = source.getContent();
 
-        int size = params.get("size") == null ? 10 : Integer.valueOf(params.get("size").toString());
+        int size = params.get("size") == null ? 10 : Integer.parseInt(params.get("size").toString());
         int limit = size < 2 ? 1 : size - 1;
 
         content.stream().limit(limit).forEach(subscriptionEntry -> {

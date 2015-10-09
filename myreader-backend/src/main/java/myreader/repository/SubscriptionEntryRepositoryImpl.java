@@ -75,8 +75,8 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         final String seen = (String) params.get("seenEqual");
         final String feedTagEqual = (String) params.get("feedTagEqual");
         final String entryTagEqual = (String) params.get("entryTagEqual");
-        final Long next = params.get("next") == null ? null : Long.valueOf((params.get("next").toString()));
-        final Integer size = params.get("size") == null ? 11 : Integer.valueOf(params.get("size").toString()) + 1;
+        final Long next = params.get("next") == null ? null : Long.parseLong(params.get("next").toString());
+        final Integer size = params.get("size") == null ? 11 : Integer.parseInt(params.get("size").toString()) + 1;
 
         if(isNotEmpty(q)) {
             query =  queryBuilder.bool()
