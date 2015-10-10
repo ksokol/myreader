@@ -52,8 +52,6 @@ npmInstall {
 //    }
 }
 
-
 clean.dependsOn gulpClean
 gulp.dependsOn npmInstall
-jar.dependsOn gulp
 build.dependsOn test
