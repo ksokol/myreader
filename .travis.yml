@@ -2,6 +2,5 @@ sudo: false
 language: java
 jdk:
   - oraclejdk8
-
-after_success:
-   - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew cobertura coveralls -i; fi
+script:
+   - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew cobertura coveralls -i; else ./gradlew test -i; fi
