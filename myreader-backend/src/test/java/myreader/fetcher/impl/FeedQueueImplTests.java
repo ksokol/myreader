@@ -1,10 +1,12 @@
-package myreader.fetcher;
+package myreader.fetcher.impl;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import myreader.fetcher.FeedQueue;
+import myreader.fetcher.impl.FeedQueueImpl;
 import myreader.fetcher.persistence.FetchResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,13 +14,13 @@ import org.junit.Test;
 /**
  * @author Kamill Sokol
  */
-public class FeedQueueTests {
+public class FeedQueueImplTests {
 
     private FeedQueue uut;
 
     @Before
     public void setUp() {
-        uut = new FeedQueue();
+        uut = new FeedQueueImpl();
     }
 
     @Test
