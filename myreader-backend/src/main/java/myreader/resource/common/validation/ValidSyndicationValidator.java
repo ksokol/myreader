@@ -21,7 +21,9 @@ public class ValidSyndicationValidator implements ConstraintValidator<ValidSyndi
     }
 
     @Override
-    public void initialize(ValidSyndication uniqueSubscription) {}
+    public void initialize(ValidSyndication uniqueSubscription) {
+        //not needed
+    }
 
     @Override
     public boolean isValid(String url, ConstraintValidatorContext context) {
