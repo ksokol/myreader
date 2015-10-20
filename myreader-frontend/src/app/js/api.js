@@ -201,7 +201,7 @@ angular.module('common.api', [])
                     var obj = {};
                     obj["uuid"] = val.uuid;
 
-                    if(val.seen === true || val.seen == false) {
+                    if(val.seen === true || val.seen === false) {
                         obj["seen"] = val.seen;
                     }
 

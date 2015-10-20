@@ -341,7 +341,7 @@ angular.module('common.controllers', ['common.services'])
         if(item.type === 'global') {
             return false;
         }
-        if(openItem.tag == item.tag) {
+        if(openItem.tag === item.tag) {
             return true;
         }
         if(item.subscriptions) {

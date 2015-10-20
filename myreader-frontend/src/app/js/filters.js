@@ -321,7 +321,7 @@ angular.module('common.filters', ['ngSanitize'])
             return '';
         }
         for (var i in entityTable) {
-            if (i != 38 && entityTable.hasOwnProperty(i)) {
+            if (i !== 38 && entityTable.hasOwnProperty(i)) {
                 text = text.replace(new RegExp(entityTable[i], "g"), String.fromCharCode(i));
             }
         }

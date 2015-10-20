@@ -42,7 +42,7 @@ public class LinkTest {
 
     class Controller {
         @RequestMapping("before/{id}/after")
-        Object get(@PathVariable("id") String id) {
+        public Object get(@PathVariable("id") String id) {
             return null;
         }
     }
