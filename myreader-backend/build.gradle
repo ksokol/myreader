@@ -54,7 +54,9 @@ dependencies {
     testCompile group: 'net.javacrumbs.json-unit', name: 'json-unit', version: '1.1.5'
     testCompile group: 'org.springframework.test.htmlunit', name: 'spring-test-htmlunit', version: '1.0.0.RC1'
     testCompile group: 'xml-apis', name: 'xml-apis', version: '1.4.01'
-    testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '1.57'
+    testCompile(group: 'com.github.tomakehurst', name: 'wiremock', version: '1.57') {
+        exclude(module: 'servlet-api')
+    }
 }
 
 cobertura {
@@ -75,8 +77,8 @@ tasks.withType(FindBugs) {
     }
 }
 
-
 bootRun {
     /* Lets you pick Spring Boot profile by system properties, e.g. gradle bootRun -Dspring.profiles.active=dev */
     systemProperty "spring.profiles.active", "dev"
 }
+

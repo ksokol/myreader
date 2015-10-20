@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import myreader.fetcher.FeedQueue;
-import myreader.fetcher.impl.FeedQueueImpl;
 import myreader.fetcher.persistence.FetchResult;
 import org.junit.Before;
 import org.junit.Test;

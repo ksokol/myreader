@@ -1,28 +1,23 @@
 package myreader.fetcher;
 
+import com.rometools.rome.feed.WireFeed;
 import myreader.fetcher.converter.WireFeedConverter;
 import myreader.fetcher.persistence.FetchResult;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
-
-import com.rometools.rome.feed.WireFeed;
 
 //TODO introduce an interface
 /**
  * @author Kamill Sokol
  */
-@Component
 public class FeedParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(FeedParser.class);
@@ -30,7 +25,6 @@ public class FeedParser {
     private final RestTemplate syndicationRestTemplate;
     private final WireFeedConverter wireFeedConverter = new WireFeedConverter();
 
-    @Autowired
     public FeedParser(final RestTemplate syndicationRestTemplate) {
         Assert.notNull(syndicationRestTemplate, "syndicationRestTemplate is null");
         this.syndicationRestTemplate = syndicationRestTemplate;
