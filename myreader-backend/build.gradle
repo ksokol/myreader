@@ -82,3 +82,6 @@ bootRun {
     systemProperty "spring.profiles.active", "dev"
 }
 
+springBoot {
+    executable = true
+}
