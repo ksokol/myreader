@@ -72,7 +72,7 @@ gulp.task('process-js', function() {
     return gulp.src(paths.index)
         .pipe(debug({title: 'looking for javascript files in'}))
         .pipe(ghtmlSrc({presets: 'script', getFileName: replaceNodeModulesPath('src')}))
-        .pipe(debug({title: 'found javascript file '}))
+        .pipe(debug({title: 'found javascript file'}))
         .pipe(concat(paths.compress.js))
         .pipe(uglify())
         .pipe(rev())

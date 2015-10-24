@@ -77,7 +77,11 @@ public abstract class IntegrationTestSupport {
         afterTest();
     }
 
-	protected void beforeTest() throws Exception {}
+	protected void beforeTest() throws Exception {
+        //used by child class
+    }
 
-    protected void afterTest() throws Exception {}
+    protected void afterTest() throws Exception {
+        //used by child class
+    }
 }

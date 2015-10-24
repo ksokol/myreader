@@ -25,6 +25,7 @@ public class ValidProcessValidator implements ConstraintValidator<ValidProcess, 
 
     @Override
     public void initialize(ValidProcess validProcess) {
+        //not needed
     }
 
     @Override

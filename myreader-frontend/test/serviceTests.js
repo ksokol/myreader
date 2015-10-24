@@ -293,7 +293,7 @@ describe('service', function() {
 
             $rootScope.$digest();
 
-            cache = CacheFactory.get('subscriptionEntryCache');
+            var cache = CacheFactory.get('subscriptionEntryCache');
 
             expect(cache.get('/myreader/api/2/subscriptionEntries/12')).toEqualData(data[0]);
         }));
