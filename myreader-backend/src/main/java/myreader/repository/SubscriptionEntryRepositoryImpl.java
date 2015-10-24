@@ -67,44 +67,16 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
         final FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         final QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(SubscriptionEntry.class).get();
-
-        Query query;
-
-        if(isNotEmpty(q)) {
-            query =  queryBuilder.bool()
-                        .should(queryBuilder.keyword().wildcard().onField(CONTENT).matching(q).createQuery())
-                        .should(queryBuilder.keyword().wildcard().onField(TITLE).matching(q).createQuery())
-                        .should(queryBuilder.keyword().wildcard().onField(TAG).matching(q).createQuery())
-                     .createQuery();
-        } else {
-            query = queryBuilder.bool().must(queryBuilder.all().createQuery()).createQuery();
-        }
-
+        final Query query = createQuery(q, queryBuilder);
         final FullTextQuery fullTextQuery = fullTextEntityManager.createFullTextQuery(query, SubscriptionEntry.class);
         final ArrayList<Filter> termFilters = new ArrayList<>(5);
 
         addFilter(USER_ID, ownerId.toString(), termFilters);
-
-        if(isNotEmpty(feedId)) {
-            addFilter(SUBSCRIPTION_ID, feedId, termFilters);
-        }
-
-        if(isNotEmpty(seen)) {
-            addFilter(SEEN, seen, termFilters);
-        }
-
-        if(isNotEmpty(feedTagEqual)) {
-            addFilter(SUBSCRIPTION_TAG, feedTagEqual, termFilters);
-        }
-
-        if(isNotEmpty(entryTagEqual)) {
-            addFilter(TAG, entryTagEqual, termFilters);
-        }
-
-        if(nextId != null) {
-            final NumericRangeFilter<Long> id = NumericRangeFilter.newLongRange(ID, 0L, nextId, true, true);
-            termFilters.add(id);
-        }
+        addFilter(SUBSCRIPTION_ID, feedId, termFilters);
+        addFilter(SEEN, seen, termFilters);
+        addFilter(SUBSCRIPTION_TAG, feedTagEqual, termFilters);
+        addFilter(TAG, entryTagEqual, termFilters);
+        addPagination(nextId, termFilters);
 
         fullTextQuery.setFilter(new ChainedFilter(termFilters.toArray(new Filter[termFilters.size()]), ChainedFilter.AND));
         fullTextQuery.setMaxResults(pageable == null ? 0 : pageable.getPageSize());
@@ -130,8 +102,32 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         return distinctTags;
     }
 
-    private void addFilter(final String fieldName, final String fieldValue, final List<Filter> filters) {
-        final TermFilter filter = new TermFilter(new Term(fieldName, fieldValue));
-        filters.add(filter);
+    private Query createQuery(final String q, final QueryBuilder queryBuilder) {
+        Query query;
+
+        if(isNotEmpty(q)) {
+            query =  queryBuilder.bool()
+                    .should(queryBuilder.keyword().wildcard().onField(CONTENT).matching(q).createQuery())
+                    .should(queryBuilder.keyword().wildcard().onField(TITLE).matching(q).createQuery())
+                    .should(queryBuilder.keyword().wildcard().onField(TAG).matching(q).createQuery())
+                    .createQuery();
+        } else {
+            query = queryBuilder.bool().must(queryBuilder.all().createQuery()).createQuery();
+        }
+        return query;
+    }
+
+    private void addFilter(final String fieldName, final Object fieldValue, final List<Filter> filters) {
+        if(fieldValue != null) {
+            final TermFilter filter = new TermFilter(new Term(fieldName, fieldValue.toString()));
+            filters.add(filter);
+        }
+    }
+
+    private void addPagination(final Long nextId, final ArrayList<Filter> termFilters) {
+        if(nextId != null) {
+            final NumericRangeFilter<Long> id = NumericRangeFilter.newLongRange(ID, 0L, nextId, true, true);
+            termFilters.add(id);
+        }
     }
 }
