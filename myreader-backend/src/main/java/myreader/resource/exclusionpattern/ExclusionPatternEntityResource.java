@@ -32,7 +32,7 @@ public class ExclusionPatternEntityResource {
     }
 
     @ModelAttribute("pattern")
-    ExclusionPattern model(@PathVariable("patternId") Long patternId, @PathVariable("subscriptionId") Long subscriptionId, @AuthenticationPrincipal MyReaderUser user) {
+    public ExclusionPattern model(@PathVariable("patternId") Long patternId, @PathVariable("subscriptionId") Long subscriptionId, @AuthenticationPrincipal MyReaderUser user) {
         ExclusionPattern pattern = exclusionRepository.findByIdAndSubscriptionIdAndUserId(patternId, subscriptionId, user.getId());
         if(pattern == null) {
             throw new ResourceNotFoundException();

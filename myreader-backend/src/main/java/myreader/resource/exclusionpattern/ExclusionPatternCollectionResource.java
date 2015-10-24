@@ -1,5 +1,8 @@
 package myreader.resource.exclusionpattern;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
 import myreader.entity.ExclusionPattern;
 import myreader.entity.Subscription;
 import myreader.repository.ExclusionRepository;
@@ -16,7 +19,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
@@ -42,7 +44,7 @@ public class ExclusionPatternCollectionResource {
     }
 
     @ModelAttribute("subscription")
-    Subscription model(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
+    public Subscription model(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
         Subscription subscription = subscriptionRepository.findByIdAndUsername(id, user.getUsername());
         if(subscription == null) {
             throw new ResourceNotFoundException();
@@ -50,13 +52,13 @@ public class ExclusionPatternCollectionResource {
         return subscription;
     }
 
-    @RequestMapping(value="", method = RequestMethod.GET)
+    @RequestMapping(method = GET)
     public PagedResources<ExclusionPatternGetResponse> get(@ModelAttribute("subscription") Subscription subscription, Pageable pageable) {
         Page<ExclusionPattern> exclusionPatternPage = exclusionRepository.findBySubscriptionId(subscription.getId(), pageable);
         return resourceAssemblers.toResource(exclusionPatternPage, ExclusionPatternGetResponse.class);
     }
 
-    @RequestMapping(value="", method = RequestMethod.POST)
+    @RequestMapping(method = POST)
     public ExclusionPatternGetResponse post(@ModelAttribute("subscription") Subscription subscription, @Valid @RequestBody ExclusionPatternPostRequest request) {
 
         ExclusionPattern exclusionPattern = exclusionRepository.findBySubscriptionIdAndPattern(subscription.getId(), request.getPattern());

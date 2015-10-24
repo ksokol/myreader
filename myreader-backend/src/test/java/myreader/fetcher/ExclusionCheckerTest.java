@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class ExclusionCheckerTest {
 
-    private ExclusionChecker exclusionChecker = new ExclusionChecker();
+    private final ExclusionChecker exclusionChecker = new ExclusionChecker();
 
     @Test
     public void testPHPShouldBeExcludedDueToOccurenceInParam1() {
@@ -57,9 +57,6 @@ public class ExclusionCheckerTest {
     @Test
     public void testNullParams() {
         boolean isExcluded = exclusionChecker.isExcluded(".*windows phone.*");
-        assertFalse(isExcluded);
-
-        isExcluded = exclusionChecker.isExcluded(".*windows phone.*", null);
         assertFalse(isExcluded);
 
         isExcluded = exclusionChecker.isExcluded(".*windows phone.*", null, null);

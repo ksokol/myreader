@@ -26,7 +26,9 @@ public class UniqueSubscriptionValidator implements ConstraintValidator<UniqueSu
     }
 
     @Override
-    public void initialize(UniqueSubscription uniqueSubscription) {}
+    public void initialize(UniqueSubscription uniqueSubscription) {
+        //not needed
+    }
 
     @Override
     public boolean isValid(String url, ConstraintValidatorContext context) {

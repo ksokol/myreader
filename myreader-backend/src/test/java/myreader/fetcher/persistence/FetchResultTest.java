@@ -27,8 +27,9 @@ public class FetchResultTest {
     @Test
     public void testEquals3() throws Exception {
         final FetchResult first = new FetchResult("irrelevant");
+        final Object other = null;
 
-        assertThat(first.equals(null), is(false));
+        assertThat(first.equals(other), is(false));
     }
 
     @Test

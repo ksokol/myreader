@@ -30,8 +30,8 @@ angular.module('common.filters', ['ngSanitize'])
             raw = raw.substring(i + match[0].length);
         }
 
-        for(var i=0;i<matches.length;i++) {
-            var regexMatch = matches[i];
+        for(var j=0;j<matches.length;j++) {
+            var regexMatch = matches[j];
             if(regexMatch.indexOf("href") > -1) {
                 var blank = addBlankTarget(regexMatch);
                 text = text.replace(regexMatch, blank);
@@ -321,7 +321,7 @@ angular.module('common.filters', ['ngSanitize'])
             return '';
         }
         for (var i in entityTable) {
-            if (i != 38 && entityTable.hasOwnProperty(i)) {
+            if (i !== 38 && entityTable.hasOwnProperty(i)) {
                 text = text.replace(new RegExp(entityTable[i], "g"), String.fromCharCode(i));
             }
         }

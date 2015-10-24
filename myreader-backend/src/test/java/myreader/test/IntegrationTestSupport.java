@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 import myreader.Starter;
 import myreader.fetcher.FeedParser;
+import myreader.fetcher.FeedQueue;
 import myreader.service.search.jobs.IndexSyncJob;
 import myreader.service.time.TimeService;
 import org.junit.After;
@@ -55,11 +56,12 @@ public abstract class IntegrationTestSupport {
     private FeedParser feedParserMock;
     @Autowired
     private IndexSyncJob indexSyncJob;
+    @Autowired
+    private FeedQueue feedQueueMock;
 
     @Before
     public final void before() throws Exception {
-        reset(timeService);
-        reset(feedParserMock);
+        reset(timeService, feedParserMock, feedQueueMock);
 
         this.mockMvc = webAppContextSetup(this.wac)
                 .defaultRequest(get("/").contentType(MediaType.APPLICATION_JSON))
@@ -75,8 +77,11 @@ public abstract class IntegrationTestSupport {
         afterTest();
     }
 
-	protected void beforeTest() throws Exception {}
+	protected void beforeTest() throws Exception {
+        //used by child class
+    }
 
-    protected void afterTest() throws Exception {}
-
+    protected void afterTest() throws Exception {
+        //used by child class
+    }
 }

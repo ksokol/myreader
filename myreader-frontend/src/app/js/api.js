@@ -201,7 +201,7 @@ angular.module('common.api', [])
                     var obj = {};
                     obj["uuid"] = val.uuid;
 
-                    if(val.seen === true || val.seen == false) {
+                    if(val.seen === true || val.seen === false) {
                         obj["seen"] = val.seen;
                     }
 
@@ -401,7 +401,7 @@ angular.module('common.api', [])
         delete: function(resourceType, url) {
             var deferred = $q.defer();
             $http.delete(url)
-            .success(function (data) {
+            .success(function () {
                 deferred.resolve();
             });
             return deferred.promise;

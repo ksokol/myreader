@@ -274,12 +274,9 @@
 
         <script type="text/ng-template" id="Subscription" data-ignore="true">
             <form name="subscriptionForm">
-                <md-input-container>
+                <md-input-container ng-show="isEditForm()">
                     <label>Title</label>
-                    <input required name="title" ng-model="subscription.title">
-                    <div ng-messages="subscriptionForm.title.$error">
-                        <div ng-message="required">required</div>
-                    </div>
+                    <input name="title" ng-model="subscription.title">
                 </md-input-container>
 
                 <md-input-container ng-hide="isEditForm()">
@@ -303,6 +300,7 @@
                 </md-input-container>
 
                 <md-autocomplete
+                        ng-show="isEditForm()"
                         md-selected-item="subscription.tag"
                         md-search-text="searchText"
                         md-items="item in querySearch(searchText)"

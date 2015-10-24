@@ -32,7 +32,7 @@ public class ExclusionEntityResource {
     }
 
     @ModelAttribute("exclusionSet")
-    ExclusionSet model(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
+    public ExclusionSet model(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
         ExclusionSet exclusionSet = exclusionRepository.findSetByUser(id, user.getId());
         if(exclusionSet == null) {
             throw new ResourceNotFoundException();

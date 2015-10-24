@@ -14,15 +14,15 @@ public final class EntryLinkSanitizer {
 
     private static final Pattern PATTERN = Pattern.compile("^http(s)?://.*");
 
-    public static String sanitize(String entryLink, String feedLink) {
+    public static String sanitize(final String entryLink, final String feedLink) {
         Assert.notNull(entryLink, "entryLink is null");
         Assert.notNull(feedLink, "feedLink is null");
         Assert.isTrue(PATTERN.matcher(feedLink).matches(), "feedLink must start with http(s)?://");
 
-        entryLink = entryLink.replace("\n", "").trim();
+        final String tmp = entryLink.replace("\n", "").trim();
 
-        if (PATTERN.matcher(entryLink).matches()) {
-            return entryLink;
+        if (PATTERN.matcher(tmp).matches()) {
+            return tmp;
         }
 
         UriComponents uriComponents = UriComponentsBuilder.fromUriString(feedLink).build();
@@ -33,10 +33,10 @@ public final class EntryLinkSanitizer {
 
         String sep = StringUtils.EMPTY;
 
-        if(!entryLink.startsWith("/")) {
+        if(!tmp.startsWith("/")) {
             sep = "/";
         }
 
-        return String.format("%s%s%s", baseUrl, sep, entryLink);
+        return String.format("%s%s%s", baseUrl, sep, tmp);
     }
 }

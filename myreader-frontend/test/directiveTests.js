@@ -91,7 +91,7 @@ describe("directive", function() {
         }));
 
         it("shouldn't broadcast any event without a click", function () {
-            var element = $compile('<button my-click-broadcast="navigation-close"></button>')($rootScope);
+            $compile('<button my-click-broadcast="navigation-close"></button>')($rootScope);
             $rootScope.$digest();
 
             expect($rootScope.$broadcast).not.toHaveBeenCalled();

@@ -31,17 +31,6 @@ public abstract class SecurityTestSupport {
 
     public static final String API_2 = "/api/2/irrelevant";
 
-    @Configuration
-    static class AdditionalConfig {
-
-        @RestController
-        static class TestController {
-            @RequestMapping({API_2})
-            public void ok() {
-            }
-        }
-    }
-
     @Autowired
     private FilterChainProxy springSecurityFilterChain;
 
@@ -59,5 +48,17 @@ public abstract class SecurityTestSupport {
 
         webClient = new WebClient(BrowserVersion.FIREFOX_31);
         webClient.setWebConnection(new MockMvcWebConnection(mockMvc));
+    }
+
+    @Configuration
+    static class AdditionalConfig {
+
+        @RestController
+        static class TestController {
+            @RequestMapping({API_2})
+            public void ok() {
+                //returns 200
+            }
+        }
     }
 }

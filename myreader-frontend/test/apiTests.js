@@ -766,7 +766,6 @@ describe('api', function() {
         });
 
         it('should convert data with enclosing process tag', function () {
-            var data = {content: 1};
             expect(service.convertTo('searchIndexJob', 1)).toEqualData({process  : 1});
         });
 

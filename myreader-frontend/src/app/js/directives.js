@@ -48,13 +48,13 @@ angular.module('common.directives', [])
                 }
 
                 var splitted = tags === null ? [] : tags.split(/[ ,]+/);
-                var tags = [];
+                var tmp = [];
                 for(var i=0;i<splitted.length;i++) {
-                    if(tags.indexOf(splitted[i]) === -1) {
-                        tags.push(splitted[i]);
+                    if(tmp.indexOf(splitted[i]) === -1) {
+                        tmp.push(splitted[i]);
                     }
                 }
-                return tags;
+                return tmp;
             };
 
             if($scope.entry.tag !== null) {
