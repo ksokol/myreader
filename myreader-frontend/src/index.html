@@ -78,8 +78,8 @@
                         <div layout="row">
                             <div class="my-list-item-text">
                                 <div>
-                                    <h3 hide-gt-md class="my-entry-title" ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
-                                    <h3 hide show-gt-md class="my-entry-title my-a" ng-click="openOrigin(entry)">{{::entry.title | htmlEntities}}</h3>
+                                    <h3 hide-gt-md ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
+                                    <h3 hide show-gt-md class="my-a" ng-click="openOrigin(entry)">{{::entry.title | htmlEntities}}</h3>
                                     <h4>
                                         <md-icon ng-class="my-a" hide show-gt-md ng-click="toggleRead(entry)" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
                                         {{::entry.createdAt | timeago}} on {{::entry.feedTitle | htmlEntities}}
@@ -260,7 +260,7 @@
                     <div layout="row">
                         <div class="md-list-item-text">
                             <div>
-                                <h3 class="my-entry-title" ng-click="navigateToDetailPage(entry)" tabindex="-1">{{::subscription.title | htmlEntities}}</h3>
+                                <h3 ng-click="navigateToDetailPage(entry)" tabindex="-1">{{::subscription.title | htmlEntities}}</h3>
                                 <h4>
                                     {{::subscription.createdAt | timeago}}
                                 </h4>
@@ -355,7 +355,7 @@
                     <div layout="row">
                         <div class="md-list-item-text">
                             <div>
-                                <h3 class="my-entry-title" tabindex="-1">{{::feed.title | htmlEntities}}</h3>
+                                <h3 tabindex="-1">{{::feed.title | htmlEntities}}</h3>
                                 <h4>
                                     {{::feed.createdAt | timeago}}
                                 </h4>
