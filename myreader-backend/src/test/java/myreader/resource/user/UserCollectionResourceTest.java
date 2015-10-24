@@ -17,14 +17,14 @@ import org.junit.Test;
 public class UserCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
-    public void givenAdminIsAuthenticated_whenCallsCollectionResourceThenAllThreeUsersShouldBeReturned() throws Exception {
+    public void givenAdminIsAuthenticatedWhenCallsCollectionResourceThenAllThreeUsersShouldBeReturned() throws Exception {
        mockMvc.perform(getAsAdmin("/api/2/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements", greaterThanOrEqualTo(5)));
     }
 
     @Test
-    public void givenUser1IsAuthenticated_whenCallsCollectionResourceThenOnlyUser1ShouldBeReturned() throws Exception {
+    public void givenUser1IsAuthenticatedWhenCallsCollectionResourceThenOnlyUser1ShouldBeReturned() throws Exception {
         mockMvc.perform(getAsUser1("/api/2/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements", greaterThanOrEqualTo(1)));
