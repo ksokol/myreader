@@ -4,6 +4,7 @@ package myreader.test;
  * @author Kamill Sokol
  */
 public enum KnownUser {
+
     ADMIN(true),
     USER1,
     USER2,
@@ -26,6 +27,11 @@ public enum KnownUser {
     USER115,
     USER116;
 
+    public final long id;
+    public final String username;
+    public final String password;
+    public final boolean admin;
+
     KnownUser() {
         this(false);
     }
@@ -42,9 +48,4 @@ public enum KnownUser {
         this.admin = admin;
         this.username = "user" + this.id + "@localhost";
     }
-
-    public final long id;
-    public final String username;
-    public final String password;
-    public final boolean admin;
 }
