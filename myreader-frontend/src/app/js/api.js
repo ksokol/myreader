@@ -401,7 +401,7 @@ angular.module('common.api', [])
         delete: function(resourceType, url) {
             var deferred = $q.defer();
             $http.delete(url)
-            .success(function (data) {
+            .success(function () {
                 deferred.resolve();
             });
             return deferred.promise;

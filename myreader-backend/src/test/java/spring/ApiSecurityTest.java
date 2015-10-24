@@ -36,7 +36,6 @@ public class ApiSecurityTest extends SecurityTestSupport {
 
     private static final String USERNAME_INPUT = "username";
     private static final String PASSWORD_INPUT = "password";
-    private static final String CSRF_INPUT = "_csrf";
     private static final String LOGIN_FORM_NAME = "loginForm";
 
     @Test

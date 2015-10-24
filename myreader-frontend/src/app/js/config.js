@@ -201,7 +201,9 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
             if(isBadParse) {
                 $log.warn(exception.message.substr(0,150) + '...');
             }
-            !isBadParse && $delegate(exception, cause);
+            if(!isBadParse) {
+                $delegate(exception, cause);
+            };
         };
     }]);
 }])

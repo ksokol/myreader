@@ -231,7 +231,7 @@ var BookmarkEntryListCtrl = function($window, $rootScope, $scope, $stateParams, 
         }
     };
 
-    $scope.addSeenParam = function(param) {
+    $scope.addSeenParam = function() {
         //don't add param
     };
 
@@ -601,10 +601,10 @@ angular.module('common.controllers', ['common.services'])
             data: encodedString,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         })
-        .success(function(data, status) {
+        .success(function() {
             $state.go('app.entries', {tag: 'all'});
         })
-        .error(function(data, status) {
+        .error(function() {
             $mdToast.show(
                 $mdToast.simple()
                     .content('username or password wrong')
