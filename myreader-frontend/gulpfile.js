@@ -104,7 +104,7 @@ gulp.task('test', function (done) {
             if(error) {
                 throw error;
             }
-            var files = files.map(function(file) {
+            var processedFiles = files.map(function(file) {
                 var relativeFile = file.relative;
                 if(relativeFile.indexOf('../') === 0) {
                     return relativeFile.replace('../', '');
@@ -131,7 +131,7 @@ gulp.task('test', function (done) {
                 coverageReporter: {
                     dir : 'build/reports/istanbul/'
                 },
-                files: files,
+                files: processedFiles,
                 reporters: ['progress', 'junit', 'coverage'],
                 browsers: ['PhantomJS'],
                 captureTimeout: 60000,
