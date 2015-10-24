@@ -10,13 +10,13 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.Properties;
+
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
@@ -49,14 +49,6 @@ public class TestDataSourceConfig {
         return dataSource;
     }
 
-    public JpaVendorAdapter jpaVendorAdapter() {
-        return new HibernateJpaVendorAdapter() {
-            {
-                setDatabasePlatform(HSQLDialect.class.getName());
-            }
-        };
-    }
-
     public Properties jpaProperties() {
         Properties properties = new Properties();
         properties.put("hibernate.hbm2ddl.auto","create");
@@ -70,7 +62,8 @@ public class TestDataSourceConfig {
 
         //TODO
         factoryBean.setPackagesToScan(new String[]{"myreader.entity"});
-        final JpaVendorAdapter vendorAdapter = jpaVendorAdapter();
+        final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setDatabasePlatform(HSQLDialect.class.getName());
 
         factoryBean.setJpaVendorAdapter(vendorAdapter);
         factoryBean.setJpaProperties(jpaProperties());
