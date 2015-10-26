@@ -10,11 +10,11 @@ import javax.validation.constraints.Pattern;
  */
 public class FeedProbeRequest {
 
+    private String url;
+
     @ValidSyndication
     @Pattern(regexp="^https?://.*", message = "must begin with http(s)://")
     @NotNull(message = "may not be null")
-    private String url;
-
     public String getUrl() {
         return url;
     }

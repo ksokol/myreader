@@ -17,11 +17,11 @@ describe("SubscriptionEntryListCtrl", function() {
 
     beforeEach(inject(function($q, $rootScope, $controller){
         subscriptionEntryServiceMock = {
-            findBy: jasmine.createSpy().andReturn($q.defer().promise)
+            findBy: jasmine.createSpy().and.returnValue($q.defer().promise)
         };
 
         subscriptionsTagServiceMock = {
-            findAllByUnseen: jasmine.createSpy().andReturn($q.defer().promise)
+            findAllByUnseen: jasmine.createSpy().and.returnValue($q.defer().promise)
         };
 
         scope = $rootScope.$new();
@@ -42,7 +42,7 @@ describe("SubscriptionEntryListCtrl", function() {
             entries: [1]
         });
 
-        subscriptionEntryServiceMock.findBy.andReturn(firstCall.promise);
+        subscriptionEntryServiceMock.findBy.and.returnValue(firstCall.promise);
 
         scope.$broadcast('refresh');
         scope.$digest();
@@ -54,7 +54,7 @@ describe("SubscriptionEntryListCtrl", function() {
             entries: [2]
         });
 
-        subscriptionEntryServiceMock.findBy.andReturn(secondCall.promise);
+        subscriptionEntryServiceMock.findBy.and.returnValue(secondCall.promise);
 
         scope.$broadcast('refresh');
         scope.$digest();

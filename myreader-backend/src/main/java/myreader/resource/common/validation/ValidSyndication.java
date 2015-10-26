@@ -10,7 +10,7 @@ import javax.validation.Constraint;
 /**
  * @author Kamill Sokol
  */
-@Target({ElementType.FIELD})
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy=ValidSyndicationValidator.class)

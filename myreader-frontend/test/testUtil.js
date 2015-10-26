@@ -29,19 +29,18 @@ var myMock = {
     }
 };
 
-var myMatchers = function() {
-    beforeEach(function(){
-        this.addMatchers({
-            toEqualData: function(expected) {
-                return angular.equals(this.actual, expected);
+beforeEach(function() {
+    jasmine.addMatchers({
+        toEqualData: function () {
+            return {
+                compare: function (actual, expected) {
+                    var passed = angular.equals(actual, expected);
+                    return {
+                        pass: passed,
+                        message: 'Expected ' + actual + (passed ? '' : ' not') + ' to equal ' + expected
+                    };
+                }
             }
-        });
-
-        //TODO remove when fail() in jasmine is available
-        this.addMatchers({
-            toBeCalled: function() {
-                return true;
-            }
-        });
+        }
     });
-};
+});

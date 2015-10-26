@@ -11,12 +11,12 @@ import javax.validation.constraints.Pattern;
  */
 public class SubscribePostRequest {
 
+    private String origin;
+
     @ValidSyndication
     @UniqueSubscription
     @Pattern(regexp="^https?://.*", message = "must begin with http(s)://")
     @NotNull(message = "may not be null")
-    private String origin;
-
     public String getOrigin() {
         return origin;
     }
