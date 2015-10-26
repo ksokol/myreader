@@ -3,5 +3,5 @@ language: java
 jdk:
   - oraclejdk8
 
-after_success:
+script:
    - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew cobertura coveralls -i; else ./gradlew test -i; fi
