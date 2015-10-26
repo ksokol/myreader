@@ -53,7 +53,7 @@ describe("directive", function() {
         }));
 
         it('should set max-width to specific value on small screen', function() {
-            mdMedia.andReturn(true);
+            mdMedia.and.returnValue(true);
 
             var element = $compile("<div my-wrap-entry-content>content</div>")(rootScope);
             window.innerWidth = 1280;
@@ -64,7 +64,7 @@ describe("directive", function() {
         });
 
         it('should set max-width to specific value on big screen', function() {
-            mdMedia.andReturn(false);
+            mdMedia.and.returnValue(false);
 
             var element = $compile("<div my-wrap-entry-content>content</div>")(rootScope);
             window.innerWidth = 1280;
@@ -118,7 +118,8 @@ describe("directive", function() {
             element.triggerHandler('click');
             $rootScope.$digest();
 
-            expect($rootScope.$broadcast.argsForCall).toEqual([['t1'], ['t2']])
+            expect($rootScope.$broadcast.calls.argsFor(0)).toEqual(['t1']);
+            expect($rootScope.$broadcast.calls.argsFor(1)).toEqual(['t2']);
         });
     });
 
@@ -146,7 +147,7 @@ describe("directive", function() {
 
         it('should show inner html for admin', function () {
             var element = $compile("<div my-show-admin><p>show</p></div>")($rootScope);
-            mockPermissionService.isAdmin.andReturn(true);
+            mockPermissionService.isAdmin.and.returnValue(true);
             $rootScope.$digest();
 
             expect(element.hasClass('hide')).toBeFalsy();
@@ -154,7 +155,7 @@ describe("directive", function() {
 
         it('should hide inner html for non admin', function () {
             var element = $compile("<div my-show-admin><p>show</p></div>")($rootScope);
-            mockPermissionService.isAdmin.andReturn(false);
+            mockPermissionService.isAdmin.and.returnValue(false);
             $rootScope.$digest();
 
             expect(element.hasClass('hide')).toBeTruthy();

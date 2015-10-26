@@ -46,8 +46,6 @@ describe('api', function() {
 
     beforeEach(module('common.api'));
 
-    myMatchers();
-
     describe("subscriptionsTagConverter", function() {
         var converter,
             expectedCount = 334;

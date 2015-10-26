@@ -3,8 +3,6 @@ describe('service', function() {
 
     beforeEach(module('common.services'));
 
-    myMatchers();
-
     beforeEach(module(function($provide) {
         api = {
             get: jasmine.createSpy(),
@@ -53,8 +51,8 @@ describe('service', function() {
                 service = subscriptionsTagService;
                 cache = _subscriptionsTagCache_;
 
-                spyOn(cache, 'get').andCallThrough();
-                spyOn(cache, 'put').andCallThrough();
+                spyOn(cache, 'get').and.callThrough();
+                spyOn(cache, 'put').and.callThrough();
             }));
 
             it('should not update cache when cache is undefined', inject(function($rootScope) {
@@ -64,7 +62,7 @@ describe('service', function() {
             }));
 
             it('should not update cache when subscriptionEntries are empty', inject(function($rootScope) {
-                cache.get.andReturn([]);
+                cache.get.and.returnValue([]);
 
                 $rootScope.$broadcast('subscriptionEntry:updateEntries');
 
@@ -76,7 +74,7 @@ describe('service', function() {
                     decrementSubscriptionUnseen: jasmine.createSpy()
                 };
 
-                cache.get.andReturn(cachedSubscriptionsTags);
+                cache.get.and.returnValue(cachedSubscriptionsTags);
 
                 $rootScope.$broadcast('subscriptionEntry:updateEntries', [{feedUuid: 1, seen: true}]);
 
@@ -88,7 +86,7 @@ describe('service', function() {
                     decrementSubscriptionUnseen: jasmine.createSpy()
                 };
 
-                cache.get.andReturn(cachedSubscriptionsTags);
+                cache.get.and.returnValue(cachedSubscriptionsTags);
 
                 $rootScope.$broadcast('subscriptionEntry:updateEntries', [{seen: true, feedUuid: 1}]);
 
@@ -101,7 +99,7 @@ describe('service', function() {
                     incrementSubscriptionUnseen: jasmine.createSpy()
                 };
 
-                cache.get.andReturn(cachedSubscriptionsTags);
+                cache.get.and.returnValue(cachedSubscriptionsTags);
 
                 $rootScope.$broadcast('subscriptionEntry:updateEntries', [{seen: false, feedUuid: 2}]);
 
@@ -131,7 +129,7 @@ describe('service', function() {
                 call = $q.defer();
                 call.resolve(promiseResult);
 
-                api.get.andReturn(call.promise);
+                api.get.and.returnValue(call.promise);
             }));
 
             it('should return new uncached entries', inject(function($rootScope) {
@@ -204,7 +202,7 @@ describe('service', function() {
             call = $q.defer();
             call.resolve(promiseResult);
 
-            api.get.andReturn(call.promise);
+            api.get.and.returnValue(call.promise);
         }));
 
         it('should return cached result', inject(function($rootScope) {
@@ -230,7 +228,7 @@ describe('service', function() {
             var call = $q.defer();
 
             call.resolve({entries: data});
-            api.get.andReturn(call.promise);
+            api.get.and.returnValue(call.promise);
 
             service.findBy('stringParam');
 
@@ -255,7 +253,7 @@ describe('service', function() {
 
             expect(api.get).not.toHaveBeenCalledWith('subscriptionEntries', 'stringParam');
 
-            api.get.andReturn(call.promise);
+            api.get.and.returnValue(call.promise);
 
             $rootScope.$broadcast('refresh');
 
@@ -285,7 +283,7 @@ describe('service', function() {
 
             call.resolve({entries: data});
 
-            api.patch.andReturn(call.promise);
+            api.patch.and.returnValue(call.promise);
 
             service.save(12);
 
@@ -332,7 +330,7 @@ describe('service', function() {
                 entries: [1]
             });
 
-            api.get.andReturn(call.promise);
+            api.get.and.returnValue(call.promise);
         }));
 
         it('should return cached result', inject(function($rootScope) {
@@ -366,10 +364,10 @@ describe('service', function() {
             var postPatchCall = $q.defer();
             postPatchCall.resolve(promiseResult);
 
-            api.get.andReturn(getCall.promise);
-            api.post.andReturn(postPatchCall.promise);
-            api.patch.andReturn(postPatchCall.promise);
-            api.delete.andReturn(postPatchCall.promise);
+            api.get.and.returnValue(getCall.promise);
+            api.post.and.returnValue(postPatchCall.promise);
+            api.patch.and.returnValue(postPatchCall.promise);
+            api.delete.and.returnValue(postPatchCall.promise);
         }));
 
         it('should return ' + promiseResult + " on findAll", function() {
@@ -424,9 +422,9 @@ describe('service', function() {
             var postPutCall = $q.defer();
             postPutCall.resolve(promiseResult);
 
-            api.get.andReturn(getCall.promise);
-            api.post.andReturn(postPutCall.promise);
-            api.delete.andReturn(postPutCall.promise);
+            api.get.and.returnValue(getCall.promise);
+            api.post.and.returnValue(postPutCall.promise);
+            api.delete.and.returnValue(postPutCall.promise);
         }));
 
         it('should return ' + promiseResult + " on get call", function() {
@@ -461,7 +459,7 @@ describe('service', function() {
                 entries: [1]
             });
 
-            api.get.andReturn(call.promise);
+            api.get.and.returnValue(call.promise);
         }));
 
         it('should return cached result', inject(function($rootScope) {
@@ -496,7 +494,7 @@ describe('service', function() {
                 status: 200
             });
 
-            api.post.andReturn(call.promise);
+            api.post.and.returnValue(call.promise);
 
             var firstPromise = service.probe(mockUrl);
 
@@ -521,7 +519,7 @@ describe('service', function() {
                 status: 400
             });
 
-            api.post.andReturn(call.promise);
+            api.post.and.returnValue(call.promise);
 
             var firstPromise = service.probe(mockUrl);
 
@@ -551,7 +549,7 @@ describe('service', function() {
                 entries: [1]
             });
 
-            api.get.andReturn(call.promise);
+            api.get.and.returnValue(call.promise);
         }));
 
         it('should return cached result', inject(function($rootScope) {
@@ -647,7 +645,7 @@ describe('service', function() {
                 entries: [1]
             });
 
-            api.get.andReturn(call.promise);
+            api.get.and.returnValue(call.promise);
 
             var promise = service.runningFeedFetches();
 
@@ -666,7 +664,7 @@ describe('service', function() {
                 entries: [1]
             });
 
-            api.put.andReturn(call.promise);
+            api.put.and.returnValue(call.promise);
 
             var promise = service.rebuildSearchIndex();
 
