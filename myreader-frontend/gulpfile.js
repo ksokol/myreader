@@ -95,7 +95,7 @@ gulp.task('process-css', function() {
         .pipe(memorizeCompressedFilename())
 });
 
-gulp.task('test', function (done) {
+gulp.task('karma', function (done) {
     gulp.src(paths.index)
         .pipe(ghtmlSrc({presets: 'script', getFileName: replaceNodeModulesPath('src')}))
         .pipe(addSrc.append(['node_modules/angular-mocks/angular-mocks.js', 'test/testUtil.js', 'test/**Tests.js'], { base: '.' }))
@@ -148,3 +148,4 @@ gulp.task('clean', function () {
 });
 
 gulp.task('build', gulpSequence('clean', 'process-js', 'process-css', 'process-index-file', 'copy-assets'));
+gulp.task('test', gulpSequence('karma'));
