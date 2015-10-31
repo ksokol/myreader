@@ -83,7 +83,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 }
             })
             .state('app.entries', {
-                url: "/entry/:tag/:uuid",
+                url: "/entries/:tag/:uuid",
                 views: {
                     content: {
                         templateUrl: 'SubscriptionEntries',
@@ -186,7 +186,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                     }
                 }
             });
-        $urlRouterProvider.otherwise('/app/entry//');
+        $urlRouterProvider.otherwise('/app/entries//');
 }])
 
 .config(['localStorageServiceProvider', function(localStorageServiceProvider) {
