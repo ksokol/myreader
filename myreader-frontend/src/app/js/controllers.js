@@ -120,7 +120,6 @@ BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stat
     $scope.refresh = function(param) {
         subscriptionEntryService.findBy(param)
         .then(function(data) {
-            data.entries = $scope.data.entries.concat(data.entries);
             $scope.data = data;
         });
     };

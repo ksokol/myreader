@@ -57,26 +57,53 @@ angular.module('common.services', ['common.api', 'common.caches'])
     return {
         findBy: function(params) {
             var tmp = url;
+            var cacheKey = url;
+            var next = null;
 
             if(angular.isString(params)) {
+                cacheKey = params.replace(/next=([0-9])*/,function(nextParam) {
+                    next = nextParam.substring(5);
+                    return '';
+                });
                 tmp = params;
             } else {
                 for(var key in params) {
                     if (params.hasOwnProperty(key)) {
                         tmp += "&" + key + "=" + params[key];
+
+                        if(key !== 'next') {
+                            cacheKey += "&" + key + "=" + params[key];
+                        } else {
+                            next = params[key];
+                        }
                     }
                 }
             }
 
-            var cached = subscriptionEntriesCache.get(tmp);
-            if(cached) {
-                return deferService.resolved(cached);
+            cacheKey = cacheKey.replace(/&/g,'');
+            var cached = subscriptionEntriesCache.get(cacheKey);
+
+            if(cached !== undefined) {
+                if(cached.contains(next)) {
+                    return deferService.resolved(cached);
+                }
             }
 
             var promise = api.get('subscriptionEntries', tmp);
 
             promise.then(function(data) {
-                subscriptionEntriesCache.put(tmp, data);
+                var newCached = cached;
+                if(cached) {
+                    newCached.merge(data);
+                    data.entries = newCached.entries;
+                    data.links = newCached.links;
+                    data.next = newCached.next;
+                } else {
+                    newCached = data;
+                }
+
+                subscriptionEntriesCache.put(cacheKey, newCached);
+
                 angular.forEach(data.entries, function(item) {
                     subscriptionEntryCache.put(url2 + '/' + item.uuid, item);
                 });

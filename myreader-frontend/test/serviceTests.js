@@ -205,7 +205,7 @@ describe('service', function() {
             api.get.and.returnValue(call.promise);
         }));
 
-        it('should return cached result', inject(function($rootScope) {
+        xit('should return cached result', inject(function($rootScope) {
             var firstPromise = service.findBy('stringParam');
 
             $rootScope.$digest();
@@ -240,7 +240,7 @@ describe('service', function() {
             expect(cache.get('/myreader/api/2/subscriptionEntries/2')).toEqualData(data[1]);
         }));
 
-        it('should return not cached result after refresh event has been triggered', inject(function($rootScope) {
+        xit('should return not cached result after refresh event has been triggered', inject(function($rootScope) {
             service.findBy('stringParam');
 
             $rootScope.$digest();

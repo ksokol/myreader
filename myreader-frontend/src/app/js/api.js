@@ -1,110 +1,6 @@
 angular.module('common.api', [])
 
 .service('subscriptionsTagConverter', function () {
-
-    var SubscriptionTag = function () {
-        var self = this;
-        self.subscriptions = [];
-        self.links = {};
-    };
-
-    var SubscriptionTags = function() {
-        var self = this;
-        self.unseen = 0;
-        self.tags = [];
-        self.subscriptions = [];
-
-        self.updateSubscriptionUnseen = function(uuid, value) {
-            var subscription = self.getSubscriptionByUuid(uuid);
-
-            if(subscription) {
-                subscription.unseen += value;
-                self.unseen += value;
-
-                var all = self.getTag('all');
-                all.unseen += value;
-
-                var subscriptionTag = self.getTag(subscription.tag);
-
-                if(subscriptionTag) {
-                    subscriptionTag.unseen += value;
-                }
-            }
-        };
-
-        self.getTag = function(tag) {
-            for(var i=0;i<self.tags.length;i++) {
-                var t = self.tags[i];
-                if(t.title === tag) {
-                    return t;
-                }
-            }
-        };
-
-        self.containsTags = function(tag) {
-            return self.getTag(tag) !== undefined;
-        };
-
-        self.addSubscription = function(subscription) {
-            subscription['type'] = 'subscription';
-            subscription['links'] = {
-                entries: {
-                    route: 'app.entries', param: {
-                        uuid: subscription.uuid, tag: ''
-                    }
-                }
-            };
-            self.subscriptions.push(subscription);
-            self.unseen += subscription.unseen;
-        };
-
-        self.addTag = function(subscriptionTag) {
-            var theTag = self.getTag(subscriptionTag.tag);
-            self.unseen += subscriptionTag.unseen;
-
-            if(theTag) {
-                theTag.unseen += subscriptionTag.unseen;
-                theTag.subscriptions.push(subscriptionTag);
-            } else {
-                var tag = new SubscriptionTag;
-                tag.uuid = subscriptionTag.tag;
-                tag.tag = subscriptionTag.tag;
-                tag.title = subscriptionTag.tag;
-                tag.type = 'tag';
-                tag.unseen = subscriptionTag.unseen;
-                tag.links.entries = {route: 'app.entries', param: { tag: subscriptionTag.tag, uuid: undefined } };
-                tag.subscriptions.push(subscriptionTag);
-                self.tags.push(tag);
-            }
-        };
-
-        self.getSubscriptionByUuid = function(uuid) {
-            for(var i=0;i<self.subscriptions.length;i++) {
-                if(self.subscriptions[i].uuid === uuid) {
-                    return self.subscriptions[i];
-                }
-            }
-
-            for(var j=0;j<self.tags.length;j++) {
-                var tag = self.tags[j];
-
-                for(var k=0;k<tag.subscriptions.length;k++) {
-                    if(tag.subscriptions[k].uuid === uuid) {
-                        return tag.subscriptions[k];
-                    }
-                }
-            }
-        };
-
-        self.incrementSubscriptionUnseen = function(uuid) {
-            self.updateSubscriptionUnseen(uuid, 1);
-        };
-
-        self.decrementSubscriptionUnseen = function(uuid) {
-            self.updateSubscriptionUnseen(uuid, -1);
-        };
-    };
-
     return {
         convertFrom: function (data) {
             var all = new SubscriptionTag;
@@ -131,26 +27,6 @@ angular.module('common.api', [])
 })
 
 .service('bookmarkTagsConverter', function () {
-
-    var Bookmark = function () {
-        var self = this;
-        self.links = {};
-    };
-
-    var Bookmarks = function() {
-        var self = this;
-        self.tags = [];
-
-        self.addTag = function(bookmarkTag) {
-            var tag = new Bookmark;
-            tag.tag = bookmarkTag;
-            tag.title = bookmarkTag;
-            tag.type = 'tag';
-            tag.links.entries = {route: 'app.bookmarks', param: { tag: bookmarkTag } };
-            self.tags.push(tag);
-        };
-    };
-
     return {
         convertFrom: function (data) {
             var all = new Bookmark;
@@ -171,25 +47,6 @@ angular.module('common.api', [])
 })
 
 .service('subscriptionEntriesConverter', function() {
-
-    var SubscriptionEntries = function(entries, links) {
-        var self = this;
-        self.entries = angular.isArray(entries) ? entries : [];
-        self.links = angular.isArray(links) ? links : [];
-
-        var getLink = function(rel) {
-            for(var i=0;i<self.links.length;i++) {
-                if(self.links[i].rel === rel) {
-                    return self.links[i].href;
-                }
-            }
-        };
-
-        self.next = function() {
-            return getLink('next');
-        };
-    };
-
     return {
         convertFrom: function (data) {
             return new SubscriptionEntries(data.content, data.links);
