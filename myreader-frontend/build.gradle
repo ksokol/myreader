@@ -45,13 +45,8 @@ clean {
     delete "node_modules", "node", "dist"
 }
 
-npmInstall {
-    args
-//    outputs.upToDateWhen {
-//        false
-//    }
-}
-
 clean.dependsOn gulpClean
 gulp.dependsOn npmInstall
 build.dependsOn test
+
+jar.dependsOn gulp
