@@ -209,10 +209,30 @@ var SubscriptionEntryListCtrl = function($window, $rootScope, $scope, $statePara
     BaseEntryCtrl.call(this);
     this.initialize($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, hotkeys);
 
-    subscriptionsTagService.findAllByUnseen(true)
-    .then(function (data) {
-        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+    $scope.$on('navigation-open', function(ev, param) {
+        subscriptionsTagService.findAllByUnseen(true)
+        .then(function (data) {
+            $rootScope.$broadcast('navigation-change', {selected: param.selected, data: data});
+        });
     });
+
+    $scope.$on('refresh', function() {
+        if($mdMedia('gt-md')) {
+            subscriptionsTagService.findAllByUnseen(true)
+            .then(function (data) {
+                $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+            });
+        } else {
+            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: {}});
+        }
+    });
+
+    if($mdMedia('gt-md')) {
+        subscriptionsTagService.findAllByUnseen(true)
+        .then(function (data) {
+            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+        });
+    }
 
     $scope.refresh($scope.params());
 };
@@ -221,6 +241,24 @@ var BookmarkEntryListCtrl = function($window, $rootScope, $scope, $stateParams, 
 
     BaseEntryCtrl.call(this);
     this.initialize($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, hotkeys);
+
+    $scope.$on('navigation-open', function(ev, param) {
+        bookmarkService.findAll()
+        .then(function (data) {
+            $rootScope.$broadcast('navigation-change', {selected: param.selected, data: data});
+        });
+    });
+
+    $scope.$on('refresh', function() {
+        if($mdMedia('gt-md')) {
+            bookmarkService.findAll()
+                .then(function (data) {
+                    $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+                });
+        } else {
+            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: {}});
+        }
+    });
 
     $scope.addTagParam = function(stateParams, param) {
         if(stateParams.tag) {
@@ -234,10 +272,12 @@ var BookmarkEntryListCtrl = function($window, $rootScope, $scope, $stateParams, 
         //don't add param
     };
 
-    bookmarkService.findAll()
-    .then(function (data) {
-        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
-    });
+    if($mdMedia('gt-md')) {
+        bookmarkService.findAll()
+        .then(function (data) {
+            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+        });
+    }
 
     $scope.refresh($scope.params());
 };
@@ -249,14 +289,15 @@ SubscriptionEntryListCtrl.prototype.constructor = SubscriptionEntryListCtrl;
 BookmarkEntryListCtrl.prototype = Object.create(BaseEntryCtrl.prototype);
 BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
 
-angular.module('common.controllers', ['common.services'])
+angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
-.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', '$mdSidenav', '$mdMedia', 'hotkeys', function($rootScope, $scope, $previousState, $mdSidenav, $mdMedia, hotkeys) {
+.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', '$mdSidenav', '$mdMedia', '$stateParams', 'hotkeys', function($rootScope, $scope, $previousState, $mdSidenav, $mdMedia, $stateParams, hotkeys) {
 
     $scope.searchOpen = false;
     $scope.searchKey = "";
 
     $scope.openMenu = function() {
+        $rootScope.$broadcast('navigation-open', {selected: $stateParams});
         $mdSidenav('left').toggle();
     };
 

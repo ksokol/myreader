@@ -4,7 +4,7 @@ describe("SubscriptionEntryListCtrl", function() {
         subscriptionsTagServiceMock;
 
     beforeEach(module('common.controllers', function($provide) {
-        $provide.provider(myMock.provider(['$stateParams', '$state', '$mdMedia']));
+        $provide.provider(myMock.provider(['$stateParams', '$state']));
 
         $provide.provider(myMock.providerWithObj('hotkeys', {
             bindTo: function() {

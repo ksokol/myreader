@@ -24,6 +24,10 @@ angular.module('common.services', ['common.api', 'common.caches'])
         subscriptionsTagCache.put('subscriptionsTags', cachedSubscriptionsTags);
     });
 
+    $rootScope.$on('refresh', function() {
+        subscriptionsTagCache.removeAll();
+    });
+
     return {
         findAllByUnseen: function(unseen) {
             var cachedSubscriptionTags = subscriptionsTagCache.get('subscriptionsTags');
@@ -248,8 +252,12 @@ angular.module('common.services', ['common.api', 'common.caches'])
     }
 }])
 
-.service('bookmarkService', ['api', 'deferService', 'bookmarksCache', function(api, deferService, bookmarksCache) {
+.service('bookmarkService', ['$rootScope', 'api', 'deferService', 'bookmarksCache', function($rootScope, api, deferService, bookmarksCache) {
     var url = '/myreader/api/2/subscriptionEntries/availableTags';
+
+    $rootScope.$on('refresh', function() {
+        bookmarksCache.removeAll();
+    });
 
     return {
         findAll: function() {
