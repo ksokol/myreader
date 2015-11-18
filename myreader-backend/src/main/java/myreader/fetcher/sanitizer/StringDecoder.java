@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public final class StringDecoder {
 
 	private static final Pattern PATTERN_HREF = Pattern.compile("(?:(src|href)=)+\"(/[^\"]*)");
+	private static final Pattern PATTERN_PROTOCOL_RELATIVE_HREF = Pattern.compile("(?:(src|href)=)+\"(//[^\"]*)");
 	private static final Pattern PATTERN_JAVASCRIPT = Pattern.compile("<[\\ ]*script.*>.*<[\\ ]*/[\\ ]*script[\\ ]*>");
 
 	public static String eliminateJavascript(String content) {
@@ -19,19 +20,24 @@ public final class StringDecoder {
 
 	public static String eliminateRelativeUrls(String content, String withUrl) {
 		String url;
+        URL reducedUrl;
 
 		try {
-			URL reducedUrl = new URL(withUrl);
+			reducedUrl = new URL(withUrl);
 			String domain = reducedUrl.getHost();
 			url = reducedUrl.getProtocol()+"://"+domain;
 		} catch (MalformedURLException e) {
 			throw new IllegalArgumentException("second parameter [" + withUrl + "] not a valid url");
 		}
 
-		String replaceStr = "$1="+"\""+url+"$2";
-		Matcher matcher = PATTERN_HREF.matcher(content);
+        String replacementProtocolRelative = "$1="+"\""+reducedUrl.getProtocol()+":$2";
+        Matcher matcherProtocolRelative = PATTERN_PROTOCOL_RELATIVE_HREF.matcher(content);
+        String contentWithoutProtocolRelative = matcherProtocolRelative.replaceAll(replacementProtocolRelative);
 
-		return matcher.replaceAll(replaceStr);
+		String replacementRelative = "$1="+"\""+url+"$2";
+		Matcher matcherRelative = PATTERN_HREF.matcher(contentWithoutProtocolRelative);
+
+		return matcherRelative.replaceAll(replacementRelative);
 	}
 
 	public static String escapeHtmlContent(String unescaped, String url) {

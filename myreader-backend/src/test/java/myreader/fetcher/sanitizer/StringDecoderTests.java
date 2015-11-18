@@ -99,4 +99,10 @@ public class StringDecoderTests {
     public void testEscapeSimpleHtmlWithNull() {
         assertThat(StringDecoder.escapeSimpleHtml(null), isEmptyString());
     }
+
+    @Test
+    public void testProtocolRelativeURLs() {
+        assertThat(StringDecoder.escapeHtmlContent("<a href=\"//ptrace.fefe.de/singapur-schiffe.jpg\">", "http://blog.fefe.de/?ts=a8b5dc25"), is("<a href=\"http://ptrace.fefe.de/singapur-schiffe.jpg\">"));
+    }
+
 }
