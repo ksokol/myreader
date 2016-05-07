@@ -42,8 +42,6 @@ public abstract class IntegrationTestSupport {
 
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         Assert.isTrue("UTF-8".equals(System.getProperty("file.encoding")));
-        Charset charset = Charset.defaultCharset();
-        Assert.isTrue(charset.equals(Charset.forName("UTF-8")));
 	}
 
     protected MockMvc mockMvc;
