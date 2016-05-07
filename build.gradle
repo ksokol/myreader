@@ -6,12 +6,10 @@ wrapper.gradleVersion = '2.6'
 
 buildscript {
     ext.springBootVersion = '1.3.0.RELEASE'
-    ext.springRepo = 'http://repo.spring.io/libs-release'
-    ext.springRepoMilestone = 'http://repo.spring.io/libs-release'
+
 
     repositories {
-        maven { url springRepo }
-        maven { url springRepoMilestone }
+        mavenCentral()
     }
 
     dependencies {
@@ -41,7 +39,7 @@ configure(javaProjects) {
     sourceCompatibility = vJavaLang
 
     repositories {
-        maven { url springRepo }
+        mavenCentral()
     }
 
     // Ensure that all Gradle-compiled classes are available to Eclipse's
