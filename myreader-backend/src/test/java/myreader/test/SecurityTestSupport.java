@@ -46,7 +46,7 @@ public abstract class SecurityTestSupport {
                 .addFilter(springSecurityFilterChain)
                 .build();
 
-        webClient = new WebClient(BrowserVersion.FIREFOX_31);
+        webClient = new WebClient(BrowserVersion.FIREFOX_45);
         webClient.setWebConnection(new MockMvcWebConnection(mockMvc));
     }
 
