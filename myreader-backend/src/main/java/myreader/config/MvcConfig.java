@@ -1,7 +1,6 @@
 package myreader.config;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-
+import org.apache.commons.lang3.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,6 +19,8 @@ import spring.data.web.SequenceableHandlerMethodArgumentResolver;
 import spring.hateoas.PagedResourcesAssembler;
 
 import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * @author Kamill Sokol
@@ -63,9 +64,15 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         if (environment.acceptsProfiles("dev")) {
             final String userDir = environment.getProperty("user.dir");
+            String filePrefix = "file://";
+
+            if(SystemUtils.IS_OS_WINDOWS){
+                filePrefix += "/";
+            }
+
             registry.addResourceHandler("/**")
-                    .addResourceLocations("file://" + userDir + "/../myreader-frontend/")
-                    .addResourceLocations("file://" + userDir + "/../myreader-frontend/src/")
+                    .addResourceLocations(filePrefix + userDir + "/../myreader-frontend/")
+                    .addResourceLocations(filePrefix + userDir + "/../myreader-frontend/src/")
                     .setCachePeriod(0);
         }
     }
