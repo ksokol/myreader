@@ -14,7 +14,8 @@ var uglify = require('gulp-uglify'),
     base64 = require('gulp-base64'),
     gutil = require('gulp-util'),
     addSrc = require('gulp-add-src'),
-    karma = require('karma').server;
+    karma = require('karma').server,
+    path = require('path');
 
 var paths = {
     index: 'src/index.html',
@@ -32,9 +33,9 @@ var paths = {
 
 function memorizeCompressedFilename() {
     return through.obj(function(file, enc, cb) {
-        var revOrigPathComponents = file.revOrigPath.split('/');
+        var revOrigPathComponents = file.revOrigPath.split(path.sep);
         var fileName = revOrigPathComponents[revOrigPathComponents.length -1];
-        var revPathComponents = file.path.split('/');
+        var revPathComponents = file.path.split(path.sep);
         var revFileName = revPathComponents[revPathComponents.length -1];
         paths.compressed[fileName] = revFileName;
         cb();
@@ -42,7 +43,7 @@ function memorizeCompressedFilename() {
 }
 
 function replaceNodeModulesPath(attributeName) {
-    var back = '../';
+    var back = '..' + path.sep;
 
     return function(node) {
         var filenameWithPath = node.attr(attributeName);
@@ -106,8 +107,8 @@ gulp.task('karma', function (done) {
             }
             var processedFiles = files.map(function(file) {
                 var relativeFile = file.relative;
-                if(relativeFile.indexOf('../') === 0) {
-                    return relativeFile.replace('../', '');
+                if(relativeFile.indexOf('..' + path.sep) === 0) {
+                    return relativeFile.replace('..' + path.sep, '');
                 } else if(relativeFile.indexOf('app') === 0) {
                     return 'src/' + relativeFile;
                 }
