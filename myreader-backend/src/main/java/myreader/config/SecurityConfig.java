@@ -1,12 +1,8 @@
 package myreader.config;
 
-import static myreader.config.UrlMappings.LANDING_PAGE;
-import static myreader.config.UrlMappings.LOGIN;
-import static myreader.config.UrlMappings.LOGIN_PROCESSING;
-import static myreader.config.UrlMappings.LOGOUT;
-
 import myreader.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
@@ -26,6 +22,11 @@ import spring.security.CustomFailureAuthenticationSuccessHandler;
 import spring.security.UserRepositoryUserDetailsService;
 import spring.security.XAuthoritiesFilter;
 
+import static myreader.config.UrlMappings.LANDING_PAGE;
+import static myreader.config.UrlMappings.LOGIN;
+import static myreader.config.UrlMappings.LOGIN_PROCESSING;
+import static myreader.config.UrlMappings.LOGOUT;
+
 /**
  * @author Kamill Sokol
  */
@@ -35,6 +36,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Value("{remember-me.key}")
+    private String rememberMeKey;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -76,7 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(new CustomAuthenticationSuccessHandler())
                 .failureHandler(new CustomFailureAuthenticationSuccessHandler())
                 .and()
-                .rememberMe()
+                .rememberMe().key(rememberMeKey)
                 .and()
                 .logout()
                 .logoutUrl(LOGOUT.mapping())
