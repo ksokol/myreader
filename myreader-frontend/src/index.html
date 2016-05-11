@@ -108,18 +108,17 @@
             <h3>{{::entry.title | htmlEntities}}</h3>
             <div layout="row">
                 <div flex="50">
-                    <md-select placeholder="none" ng-model="entry.tag">
-                        <md-option ng-repeat="tag in availableTags" value="{{tag}}">{{tag}}</md-option>
-                    </md-select>
-                </div>
-                <div flex="50">
                     <md-radio-group ng-model="entry.seen">
                         <md-radio-button ng-value="true">true</md-radio-button>
                         <md-radio-button ng-value="false">false</md-radio-button>
                     </md-radio-group>
                 </div>
+
             </div>
             <div ng-bind-html="entry.content | targetBlank" my-wrap-entry-content></div>
+            <div flex="50">
+                <my-entry-tags entry="entry"></my-entry-tags>
+            </div>
         </script>
 
         <script type="text/ng-template" id="SubscriptionEntriesActions" data-ignore="true">

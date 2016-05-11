@@ -410,20 +410,14 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
 .controller('BookmarkEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'hotkeys', BookmarkEntryListCtrl])
 
-.controller('SubscriptionEntryCtrl', ['$window', '$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', 'subscriptionEntryTagService', function($window, $scope, $stateParams, $previousState, $mdToast, subscriptionEntryService, subscriptionEntryTagService) {
+.controller('SubscriptionEntryCtrl', ['$window', '$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', function($window, $scope, $stateParams, $previousState, $mdToast, subscriptionEntryService) {
 
     $scope.entry = {};
-    $scope.availableTags = [];
 
     if($stateParams.uuid) {
         subscriptionEntryService.findOne($stateParams.uuid)
         .then(function(data) {
             $scope.entry = data;
-
-            subscriptionEntryTagService.findAll()
-            .then(function(data) {
-                $scope.availableTags = data;
-            });
         });
     }
 
