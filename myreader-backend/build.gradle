@@ -33,7 +33,7 @@ dependencies {
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.21'
     compile group: 'com.rometools', name: 'rome', version: '1.5.1'
     // wrong apache httpcomponents version referenced in net.sourceforge.htmlunit:htmlunit
-    compile(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4.1') {
+    compile(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2') {
         exclude(module: 'commons-logging')
     }
     compile group: 'joda-time', name: 'joda-time', version: '2.6'
