@@ -191,4 +191,100 @@ describe("directive", function() {
             expect(element.attr('disabled')).toBeFalsy();
         });
     });
+
+    describe("myDeleteKey", function() {
+        var $compile,
+            $rootScope,
+            element;
+
+        beforeEach(module('common.directives'));
+
+        beforeEach(inject(function(_$compile_, _$rootScope_){
+            $compile = _$compile_;
+            $rootScope = _$rootScope_;
+            $rootScope.searchKey = "test";
+            $rootScope.broadcast = function() {};
+            spyOn($rootScope, 'broadcast');
+            element = $compile("<input my-delete-key='broadcast(\"search\", searchKey)' />")($rootScope);
+            $rootScope.$digest();
+        }));
+
+        it('keyup with backspace', function () {
+            var event = {
+                "type": 'keyup',
+                "which": 8
+            };
+
+            element.triggerHandler(event);
+            expect($rootScope.broadcast).toHaveBeenCalledWith('search', 'test')
+        });
+
+        it('keypress with backspace', function () {
+            var event = {
+                "type": 'keypress',
+                "which": 8
+            };
+
+            element.triggerHandler(event);
+            expect($rootScope.broadcast).toHaveBeenCalledWith('search', 'test')
+        });
+
+        it('keypress with A', function () {
+            var event = {
+                "type": 'keypress',
+                "which": 84
+            };
+
+            element.triggerHandler(event);
+            expect($rootScope.broadcast).not.toHaveBeenCalled()
+        });
+    });
+
+    describe("myEnterKey", function() {
+        var $compile,
+            $rootScope,
+            element;
+
+        beforeEach(module('common.directives'));
+
+        beforeEach(inject(function(_$compile_, _$rootScope_){
+            $compile = _$compile_;
+            $rootScope = _$rootScope_;
+            $rootScope.searchKey = "test";
+            $rootScope.broadcast = function() {};
+            spyOn($rootScope, 'broadcast');
+            element = $compile("<input my-enter-key='broadcast(\"search\", searchKey)' />")($rootScope);
+            $rootScope.$digest();
+        }));
+
+        it('keydown with enter', function () {
+            var event = {
+                "type": 'keydown',
+                "which": 13
+            };
+
+            element.triggerHandler(event);
+            expect($rootScope.broadcast).toHaveBeenCalledWith('search', 'test')
+        });
+
+        it('keypress with enter', function () {
+            var event = {
+                "type": 'keypress',
+                "which": 13
+            };
+
+            element.triggerHandler(event);
+            expect($rootScope.broadcast).toHaveBeenCalledWith('search', 'test')
+        });
+
+        it('keypress with A', function () {
+            var event = {
+                "type": 'keypress',
+                "which": 84
+            };
+
+            element.triggerHandler(event);
+            expect($rootScope.broadcast).not.toHaveBeenCalled()
+        });
+    });
 });
