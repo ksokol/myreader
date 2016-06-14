@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("{remember-me.key}")
+    @Value("${remember-me.key}")
     private String rememberMeKey;
 
     @Autowired
