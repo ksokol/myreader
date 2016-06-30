@@ -2,6 +2,8 @@ package myreader.fetcher.resttemplate;
 
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.impl.DefaultFeedParser;
+import myreader.fetcher.impl.HystrixFeedParser;
+import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -19,6 +21,7 @@ import static myreader.fetcher.resttemplate.HttpClientBuilderUtil.customHttpClie
  * @author Kamill Sokol
  */
 @Configuration
+@EnableHystrix
 public class FeedParserConfiguration {
 
     @Bean
@@ -31,12 +34,13 @@ public class FeedParserConfiguration {
 
     @Bean
     public FeedParser parser() {
-        return new DefaultFeedParser(syndicationRestTemplate());
+        return new HystrixFeedParser(new DefaultFeedParser(syndicationRestTemplate()));
     }
 
     private List<ClientHttpRequestInterceptor> interceptors() {
         List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
         interceptors.add(new UserAgentClientHttpRequestInterceptor());
+        interceptors.add(new CleanSyndicationInterceptor());
         return interceptors;
     }
 }
