@@ -1,7 +1,6 @@
 package myreader.fetcher.jobs;
 
 import myreader.entity.Feed;
-import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.persistence.FetchResult;
@@ -36,7 +35,6 @@ public class FeedListFetcherJob extends BaseJob {
 
         List<Feed> feeds = feedRepository.findAll();
         Iterator<Feed> iterator = feeds.iterator();
-        int count = 0;
         int size = feeds.size();
         log.info("checking {} feeds", size);
 
@@ -46,7 +44,7 @@ public class FeedListFetcherJob extends BaseJob {
 
             try {
                 fetchResult = feedParser.parse(f.getUrl(), f.getLastModified());
-            } catch(FeedParseException e) {
+            } catch(Exception e) {
                 continue;
             }
 
@@ -54,15 +52,8 @@ public class FeedListFetcherJob extends BaseJob {
             log.debug("{}/{} call: {}, lastModified: {}, url: {}", new Object[]{i + 1, size, result, f.getLastModified(), f.getUrl()});
 
             if (result) {
-                count++;
                 feedQueue.add(fetchResult);
             }
-        }
-
-        if(alive) {
-            log.info("{} new elements in queue", count);
-        } else {
-            log.info("{} feeds left for check but got stop signal", size - count);
         }
     }
 }
