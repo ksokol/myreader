@@ -1,9 +1,5 @@
 package myreader.test;
 
-import static org.mockito.Mockito.reset;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.get;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
 import myreader.Starter;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
@@ -23,8 +19,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.nio.charset.Charset;
 import java.util.TimeZone;
+
+import static org.mockito.Mockito.reset;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.get;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * @author Kamill Sokol

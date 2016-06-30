@@ -1,18 +1,14 @@
 package myreader.fetcher.impl;
 
 import myreader.fetcher.FeedParseException;
-import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
-import myreader.fetcher.resttemplate.FeedParserConfiguration;
-import myreader.service.time.TimeService;
 import myreader.test.IntegrationTestSupport;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
@@ -20,16 +16,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Date;
-
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.TEXT_XML;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
@@ -43,9 +35,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Kamill Sokol
  */
 @DirtiesContext
-public class FeedParserTest extends IntegrationTestSupport {
-
-    private static final Logger LOG = getLogger(FeedParserTest.class);
+public class DefaultFeedParserTest extends IntegrationTestSupport {
 
     private static final String HTTP_WWW_HEISE_DE_NEWSTICKER_HEISE_ATOM_XML = "http://www.heise.de/newsticker/heise-atom.xml";
     private static final String HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS = "http://www.javaspecialists.eu/archive/tjsn.rss";
@@ -54,25 +44,17 @@ public class FeedParserTest extends IntegrationTestSupport {
     @Autowired
     private RestTemplate syndicationRestTemplate;
 
-    @Autowired
-    private TimeService timeServiceMock;
-
-    @Autowired
-    private FeedParserConfiguration feedParserConfiguration;
-
     private MockRestServiceServer mockServer;
 
-    private FeedParser parser;
+    private DefaultFeedParser parser;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void beforeTest() throws Exception {
-        when(timeServiceMock.getCurrentTime()).thenReturn(new Date(), new Date());
-
         mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
-        parser = feedParserConfiguration.parser();
+        parser = new DefaultFeedParser(syndicationRestTemplate);
     }
 
     @Test

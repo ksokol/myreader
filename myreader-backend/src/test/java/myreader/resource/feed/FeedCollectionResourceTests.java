@@ -1,5 +1,11 @@
 package myreader.resource.feed;
 
+import myreader.fetcher.FeedParseException;
+import myreader.fetcher.FeedParser;
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
@@ -7,13 +13,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import myreader.fetcher.FeedParseException;
-import myreader.fetcher.FeedParser;
-import myreader.test.IntegrationTestSupport;
-
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Kamill Sokol

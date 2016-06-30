@@ -1,7 +1,5 @@
 package myreader.service.feed;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import myreader.entity.Feed;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
@@ -12,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author Kamill Sokol

@@ -40,7 +40,6 @@ public class TaskConfig implements SchedulingConfigurer {
             executor.execute(syndFetcherJob("syndFetcher-1"));
             executor.execute(syndFetcherJob("syndFetcher-2"));
             taskRegistrar.addFixedRateTask(feedListFetcher(), 300000);
-
             /*
                 <!-- TODO deactivated until this job has an unittest -->
                 <!-- <task:scheduled ref="purgerJob" method="run" cron="0 0 3 * * *"/> -->

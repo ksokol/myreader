@@ -1,12 +1,5 @@
 package myreader.service.feed;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Mockito.when;
-
 import myreader.entity.Feed;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
@@ -17,6 +10,13 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Kamill Sokol

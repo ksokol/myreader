@@ -1,6 +1,7 @@
 package myreader.fetcher.resttemplate;
 
 import myreader.fetcher.FeedParser;
+import myreader.fetcher.impl.DefaultFeedParser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -30,7 +31,7 @@ public class FeedParserConfiguration {
 
     @Bean
     public FeedParser parser() {
-        return new FeedParser(syndicationRestTemplate());
+        return new DefaultFeedParser(syndicationRestTemplate());
     }
 
     private List<ClientHttpRequestInterceptor> interceptors() {

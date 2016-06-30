@@ -1,5 +1,13 @@
 package myreader.fetcher.impl;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import myreader.fetcher.FeedParser;
+import myreader.fetcher.persistence.FetchResult;
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -7,16 +15,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-
-import myreader.fetcher.FeedParser;
-import myreader.fetcher.persistence.FetchResult;
-import myreader.test.IntegrationTestSupport;
-
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
-
-import com.github.tomakehurst.wiremock.WireMockServer;
 
 /**
  * @author Kamill Sokol
@@ -37,7 +35,7 @@ public class FeedParserHttpsTests extends IntegrationTestSupport {
     public void beforeTest() {
         wireMockServer = new WireMockServer(wireMockConfig().httpsPort(PORT));
         wireMockServer.start();
-        parser = new FeedParser(syndicationRestTemplate);
+        parser = new DefaultFeedParser(syndicationRestTemplate);
     }
 
     @Override
