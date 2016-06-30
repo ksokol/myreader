@@ -37,8 +37,8 @@ public class TaskConfig implements SchedulingConfigurer {
         final boolean taskEnabled = environment.getProperty("task.enabled", Boolean.class, true);
 
         if(taskEnabled) {
-            taskRegistrar.addFixedRateTask(syndFetcherJob("syndFetcher-1"), 300000);
-            taskRegistrar.addFixedRateTask(syndFetcherJob("syndFetcher-2"), 300000);
+            executor.execute(syndFetcherJob("syndFetcher-1"));
+            executor.execute(syndFetcherJob("syndFetcher-2"));
             taskRegistrar.addFixedRateTask(feedListFetcher(), 300000);
 
             /*

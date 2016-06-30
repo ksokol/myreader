@@ -13,7 +13,7 @@ public interface FeedQueue {
 
     int getSize();
 
-    FetchResult poll();
+    FetchResult take();
 
     List<String> getSnapshot();
 }

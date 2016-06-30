@@ -28,7 +28,7 @@ public class SyndFetcherJob extends BaseJob {
     public void work() {
         FetchResult fetchResult;
 
-        while ((fetchResult = feedQueue.poll()) != null && alive) {
+        while ((fetchResult = feedQueue.take()) != null && alive) {
             try {
                 subscriptionBatchService.updateUserSubscriptions(fetchResult);
             } catch(Exception e) {

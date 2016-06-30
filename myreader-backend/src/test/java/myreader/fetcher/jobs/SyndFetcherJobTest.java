@@ -35,7 +35,7 @@ public class SyndFetcherJobTest {
 
     @Test
     public void shouldNotThrowAnException() throws Exception {
-        when(queueMock.poll()).thenReturn(new FetchResult("url1"), new FetchResult("url2"), null);
+        when(queueMock.take()).thenReturn(new FetchResult("url1"), new FetchResult("url2"), null);
         doThrow(new RuntimeException()).when(serviceMock).updateUserSubscriptions(any(FetchResult.class));
 
         try {
@@ -44,18 +44,18 @@ public class SyndFetcherJobTest {
             fail("shouldn't catch an exception here");
         }
 
-        verify(queueMock, times(3)).poll();
+        verify(queueMock, times(3)).take();
         verify(serviceMock, times(2)).updateUserSubscriptions(any(FetchResult.class));
     }
 
     @Test
     public void shouldNeverCallService() throws Exception {
-        when(queueMock.poll()).thenReturn(new FetchResult("url1"), new FetchResult("url2"), null);
+        when(queueMock.take()).thenReturn(new FetchResult("url1"), new FetchResult("url2"), null);
 
         uut.onApplicationEvent(new ContextClosedEvent(mock(ApplicationContext.class)));
         uut.run();
 
-        verify(queueMock, times(1)).poll();
+        verify(queueMock, times(1)).take();
         verify(serviceMock, never()).updateUserSubscriptions(any(FetchResult.class));
     }
 }

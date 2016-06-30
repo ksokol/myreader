@@ -8,15 +8,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 public class FeedQueueImpl implements FeedQueue {
 
     private static final Logger LOG = LoggerFactory.getLogger(FeedQueueImpl.class);
 
-    private final Queue<FetchResult> queue = new ConcurrentLinkedQueue<>();
+    private final BlockingQueue<FetchResult> queue = new LinkedBlockingQueue<>();
 
     @Override
     public void add(FetchResult fetchResult) {
@@ -30,8 +30,14 @@ public class FeedQueueImpl implements FeedQueue {
     }
 
     @Override
-    public FetchResult poll() {
-        FetchResult fetchResult = queue.poll();
+    public FetchResult take() {
+        FetchResult fetchResult = null;
+        try {
+            fetchResult = queue.take();
+        } catch (InterruptedException exception) {
+            // Restore the interrupted status
+            Thread.currentThread().interrupt();
+        }
         LOG.debug("left in queue: {}", queue.size());
         return fetchResult;
     }
