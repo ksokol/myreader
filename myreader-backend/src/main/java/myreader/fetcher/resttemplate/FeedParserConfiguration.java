@@ -1,12 +1,6 @@
 package myreader.fetcher.resttemplate;
 
-import static myreader.fetcher.resttemplate.HttpClientBuilderUtil.customHttpClient;
-
 import myreader.fetcher.FeedParser;
-import myreader.fetcher.impl.FetchStatisticsMethodInterceptor;
-import myreader.repository.FetchStatisticRepository;
-import myreader.service.time.TimeService;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -17,6 +11,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static myreader.fetcher.resttemplate.HttpClientBuilderUtil.customHttpClient;
 
 /**
  * @author Kamill Sokol
@@ -33,14 +29,8 @@ public class FeedParserConfiguration {
     }
 
     @Bean
-    public FeedParser parser(final FetchStatisticRepository fetchStatisticRepository, final TimeService timeService) {
-        final FeedParser feedParser = new FeedParser(syndicationRestTemplate());
-        final ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
-
-        proxyFactoryBean.setTarget(feedParser);
-        proxyFactoryBean.addAdvice(new FetchStatisticsMethodInterceptor(fetchStatisticRepository, timeService));
-
-        return (FeedParser) proxyFactoryBean.getObject();
+    public FeedParser parser() {
+        return new FeedParser(syndicationRestTemplate());
     }
 
     private List<ClientHttpRequestInterceptor> interceptors() {

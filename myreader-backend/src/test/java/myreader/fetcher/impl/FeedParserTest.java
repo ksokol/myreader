@@ -1,29 +1,10 @@
 package myreader.fetcher.impl;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
-import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.MediaType.TEXT_XML;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
-
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.fetcher.resttemplate.FeedParserConfiguration;
-import myreader.repository.FetchStatisticRepository;
 import myreader.service.time.TimeService;
 import myreader.test.IntegrationTestSupport;
 import org.hamcrest.Matchers;
@@ -34,13 +15,29 @@ import org.junit.rules.ExpectedException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
+
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.MediaType.TEXT_XML;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
  * @author Kamill Sokol
@@ -63,9 +60,6 @@ public class FeedParserTest extends IntegrationTestSupport {
     @Autowired
     private FeedParserConfiguration feedParserConfiguration;
 
-    @Autowired
-    private FetchStatisticRepository fetchStatisticRepository;
-
     private MockRestServiceServer mockServer;
 
     private FeedParser parser;
@@ -75,12 +69,10 @@ public class FeedParserTest extends IntegrationTestSupport {
 
     @Before
     public void beforeTest() throws Exception {
-        fetchStatisticRepository.deleteAll();
-
         when(timeServiceMock.getCurrentTime()).thenReturn(new Date(), new Date());
 
         mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
-        parser = feedParserConfiguration.parser(fetchStatisticRepository, timeServiceMock);
+        parser = feedParserConfiguration.parser();
     }
 
     @Test
@@ -176,80 +168,5 @@ public class FeedParserTest extends IntegrationTestSupport {
                 .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
 
         parser.parse("irrelevant", "lastModified");
-    }
-
-    @Test
-    public void testFeed10() {
-        mockServer.expect(requestTo("irrelevant")).andExpect(method(GET))
-                .andExpect(header("User-Agent", startsWith("Mozilla")))
-                .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
-
-        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
-
-        try {
-            parser.parse("irrelevant", "lastModified");
-            fail("exception 500 Internal Server Error");
-        } catch(FeedParseException exception) {
-            LOG.info("caught expected exception " + exception.getMessage());
-        }
-
-        assertThat(fetchStatisticRepository.findAll(), hasSize(1));
-    }
-
-    @Test
-    public void testFeed11() throws Exception {
-        mockServer.expect(requestTo("http://neusprech.org/feed/")).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed5.xml"), TEXT_XML));
-
-        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
-
-        parser.parse("http://neusprech.org/feed/");
-
-        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
-    }
-
-    @Test
-    public void testFeed12() throws Exception {
-        mockServer.expect(requestTo("https://spring.io/blog.atom")).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed6.xml"), TEXT_XML));
-
-        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
-
-        final FetchResult parse = parser.parse("https://spring.io/blog.atom");
-
-        assertThat(parse.getEntries(), hasSize(10));
-        assertThat(parse.getEntries().get(0).getUrl(), is("https://spring.io/blog/2015/08/10/spring-batch-3-0-5-release-is-now-available"));
-    }
-
-    @Test
-    public void testFeed13() throws Exception {
-        mockServer.expect(requestTo("https://spring.io/blog.atom"))
-                .andExpect(method(GET))
-                .andExpect(header("If-Modified-Since", "yesterday"))
-                .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
-
-        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
-
-        final FetchResult parse = parser.parse("https://spring.io/blog.atom", "yesterday");
-
-        assertThat(parse.getEntries(), hasSize(0));
-    }
-
-    @Test
-    public void testFeed14() throws Exception {
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("last-Modified", "now");
-
-        mockServer.expect(requestTo("https://spring.io/blog.atom"))
-                .andExpect(method(GET))
-                .andExpect(header("If-Modified-Since", "yesterday"))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed6.xml"), TEXT_XML).headers(httpHeaders));
-
-        assertThat(fetchStatisticRepository.findAll(), hasSize(0));
-
-        final FetchResult parse = parser.parse("https://spring.io/blog.atom", "yesterday");
-
-        assertThat(parse.getLastModified(), is("now"));
-        assertThat(parse.getEntries(), hasSize(10));
     }
 }
