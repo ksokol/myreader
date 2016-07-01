@@ -30,7 +30,7 @@ public class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor
         final String cleanedBody;
 
         if(execute.getRawStatusCode() == 200) {
-            final String bodyString = IOUtils.toString(execute.getBody());
+            final String bodyString = IOUtils.toString(execute.getBody(), Charset.forName("UTF-8"));
             cleanedBody = pattern.matcher(bodyString).replaceAll(EMPTY);
         } else {
             cleanedBody = EMPTY;
