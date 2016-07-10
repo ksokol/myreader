@@ -48,6 +48,17 @@ public class CleanSyndicationInterceptorTest {
         assertThat(body, is("ä"));
     }
 
+    @Test
+    public void testReplaceInvalidCharacter() throws Exception {
+        withContentType("text/plain;charset=UTF-8");
+        withBody("\fstring\f", "UTF-8");
+
+        final ClientHttpResponse response = intercept();
+        final String body = body(response);
+
+        assertThat(body, is("string"));
+    }
+
     private String body(ClientHttpResponse response) throws IOException {
         return IOUtils.toString(response.getBody(), "UTF-8");
     }

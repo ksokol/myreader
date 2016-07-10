@@ -20,10 +20,10 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 /**
  * @author Kamill Sokol
  */
-public class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
+class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
 
     // http://stackoverflow.com/questions/5742543/an-invalid-xml-character-unicode-0xc-was-found
-    private final Pattern pattern = Pattern.compile("[^\u0009\u0020-\uD7FF\uE000-\uFFFD\u10000-\u10FFF\\u000D\\u000A]+");
+    private final Pattern pattern = Pattern.compile("[^\u0009\u0020-\uD7FF\uE000-\uFFFD\u10000-\u10FFF]+");
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
@@ -37,7 +37,7 @@ public class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor
         } else {
             cleanedBody = EMPTY;
         }
-        
+
         return new ClientHttpResponse() {
 
             @Override

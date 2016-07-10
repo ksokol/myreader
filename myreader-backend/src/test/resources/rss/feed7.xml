@@ -1,0 +1,1189 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+                                           xmlns:content="http://purl.org/rss/1.0/modules/content/"
+                                           xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+                                           xmlns:dc="http://purl.org/dc/elements/1.1/"
+                                           xmlns:atom="http://www.w3.org/2005/Atom"
+                                           xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+                                           xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+>
+
+    <channel>
+        <title>codecentric Blog</title>
+        <atom:link href="https://blog.codecentric.de/feed/" rel="self" type="application/rss+xml" />
+        <link>https://blog.codecentric.de</link>
+        <description>Expertenwissen rund um agile Softwareentwicklung, Java und Performance Solutions.</description>
+        <lastBuildDate>Fri, 17 Jun 2016 12:21:11 +0000</lastBuildDate>
+        <language>de-DE</language>
+        <sy:updatePeriod>hourly</sy:updatePeriod>
+        <sy:updateFrequency>1</sy:updateFrequency>
+        <generator>https://wordpress.org/?v=4.4.2</generator>
+        <item>
+            <title>Spring Boot &#038; Apache CXF – XML-Validierung und Custom SOAP Faults</title>
+            <link>https://blog.codecentric.de/2016/06/spring-boot-apache-cxf-xml-validierung-custom-soap-faults/</link>
+            <comments>https://blog.codecentric.de/2016/06/spring-boot-apache-cxf-xml-validierung-custom-soap-faults/#respond</comments>
+            <pubDate>Wed, 15 Jun 2016 01:00:16 +0000</pubDate>
+            <dc:creator><![CDATA[Jonas Hecht]]></dc:creator>
+            <category><![CDATA[Java]]></category>
+            <category><![CDATA[Spring]]></category>
+            <category><![CDATA[Spring Boot]]></category>
+
+            <guid isPermaLink="false">https://blog.codecentric.de/?p=36263</guid>
+            <description><![CDATA[<p>XML? Das war doch dieses wunderbar validierbare Datenformat! Einfach gegen das XML-Schema validieren und&#8230; ja, was und? Wie sieht die Reaktion darauf denn aus? In den meisten Fällen wollen oder müssen wir genau diese Reaktion in Form eines Custom SOAP Faults gestalten. Aber wie funktioniert das mit Spring Boot &#038; Apache CXF? Spring Boot &#038;... <a class="view-article" href="https://blog.codecentric.de/2016/06/spring-boot-apache-cxf-xml-validierung-custom-soap-faults/">Weiterlesen</a></p>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/spring-boot-apache-cxf-xml-validierung-custom-soap-faults/">Spring Boot &#038; Apache CXF – XML-Validierung und Custom SOAP Faults</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></description>
+            <content:encoded><![CDATA[<p>XML? Das war doch dieses wunderbar validierbare Datenformat! Einfach gegen das XML-Schema validieren und&#8230; ja, was und? Wie sieht die Reaktion darauf denn aus? In den meisten Fällen wollen oder müssen wir genau diese Reaktion in Form eines Custom SOAP Faults gestalten. Aber wie funktioniert das mit Spring Boot &#038; Apache CXF?   </p>
+<p><span id="more-36263"></span></p>
+<h2>Spring Boot &#038; Apache CXF – Tutorial</h2>
+<p>Part 1: <a href="https://blog.codecentric.de/2016/02/spring-boot-apache-cxf/">Spring Boot &#038; Apache CXF – SOAP ohne XML?</a><br />
+Part 2: <a href="https://blog.codecentric.de/2016/06/spring-boot-apache-cxf-soap-webservices-testen/">Spring Boot &#038; Apache CXF – SOAP-Webservices testen</a><br />
+Part 3: Spring Boot &#038; Apache CXF – XML-Validierung und Custom SOAP Faults</p>
+<p>In den vorangegangenen Artikeln haben wir gelernt, wie man einen SOAP Service mit Spring Boot und Apache CXF bereitstellt und ausführlich testet. Nun wollen wir uns einer eher speziellen Anforderung widmen. So manche 200 Seiten starke Webservice-Spezifikation fordert nämlich (z.B. auch die der <a href="https://www.bipro.net/">BiPro</a>), dass unser Endpoint in jeder Situation mit einer XML-Schema-konformen Antwort reagiert – egal, ob es sich dabei um eine erfolgreiche Verarbeitung des Requests oder um einen Fehler handelt.</p>
+<p>Nun ist der SOAP Response bei einer erfolgreichen Verarbeitung immer 100% XML-Schema-konform, wenn wir wie im ersten Teil der Blogserie beschrieben auf Basis generierter Java-Klassen arbeiten, die von der WSDL und den XSDs abgeleitet sind. Um das auszuprobieren, gibt es natürlich wie immer ein neues <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault">GitHub-Projekt</a> in unserem <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf">Tutorial Repository</a>. <img src="https://blog.codecentric.de/wp-includes/images/smilies/simple-smile.png" alt=":)" class="wp-smiley" style="height: 1em; max-height: 1em;" /></p>
+<p>An dieser Stelle nutzen wir aber vorerst das Projekt des <a href="https://blog.codecentric.de/2016/06/spring-boot-apache-cxf-soap-webservices-testen/">vorangegangenen Tutorial-Parts</a> und starten einfach die <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step4_test/src/main/java/de/jonashackt/tutorial/SimpleBootCxfApplication.java">SimpleBootCxfApplication</a> per &#8222;Run as&#8230;&#8220;. Sobald unser SOAP Endpoint unter <a href="http://localhost:8080/soap-api/WeatherSoapService_1.0">http://localhost:8080/soap-api/WeatherSoapService_1.0</a> läuft, schicken wir per <a href="https://www.soapui.org/">SoapUI</a> einen validen Request dagegen:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Envelope</span> <span style="color: #000066;">xmlns:soapenv</span>=<span style="color: #ff0000;">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</span> <span style="color: #000066;">xmlns:gen</span>=<span style="color: #ff0000;">&quot;http://www.codecentric.de/namespace/weatherservice/general&quot;</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Header</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:GetCityForecastByZIP<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+         <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:ForecastRequest<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:ZIP<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>99998<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:ZIP<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:flagcolor<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>bluewhite<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:flagcolor<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:productName<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>ForecastProfessional<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:productName<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:ForecastCustomer<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:Age<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>30<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:Age<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:Contribution<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>5000<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:Contribution<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:MethodOfPayment<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>Paypal<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:MethodOfPayment<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:ForecastCustomer<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+         <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:ForecastRequest<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:GetCityForecastByZIP<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soapenv:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soapenv:Envelope<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre></td></tr></table></div>
+
+<p>Das Ergebnis ist ein ebenfalls valider SOAP-Response, der in etwa so aussieht:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soap:Envelope</span> <span style="color: #000066;">xmlns:soap</span>=<span style="color: #ff0000;">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soap:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;GetCityForecastByZIPResponse</span> <span style="color: #000066;">xmlns</span>=<span style="color: #ff0000;">&quot;http://www.codecentric.de/namespace/weatherservice/general&quot;</span> <span style="color: #000066;">xmlns:ns2</span>=<span style="color: #ff0000;">&quot;http://www.codecentric.de/namespace/weatherservice/datatypes&quot;</span> <span style="color: #000066;">xmlns:xmime</span>=<span style="color: #ff0000;">&quot;http://www.w3.org/2005/05/xmlmime&quot;</span> <span style="color: #000066;">xmlns:ns4</span>=<span style="color: #ff0000;">&quot;http://www.codecentric.de/namespace/weatherservice/exception&quot;</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+         <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;GetCityForecastByZIPResult<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;Success<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>true<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/Success<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;State<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>Deutschland<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/State<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;City<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>Weimar<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/City<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;WeatherStationCity<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>Weimar<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/WeatherStationCity<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ForecastResult<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+               <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ns2:Forecast<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ns2:Date<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>2016-06-06T17:17:06.903+02:00<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ns2:Date<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ns2:WeatherID<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>0<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ns2:WeatherID<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ns2:Desciption<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>Vorhersage für Weimar<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ns2:Desciption<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ns2:Temperatures<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                     <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ns2:MorningLow<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>0°<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ns2:MorningLow<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                     <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ns2:DaytimeHigh<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>90°<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ns2:DaytimeHigh<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ns2:Temperatures<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ns2:ProbabilityOfPrecipiation<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                     <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ns2:Nighttime<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>5000%<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ns2:Nighttime<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                     <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;ns2:Daytime<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>22%<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ns2:Daytime<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+                  <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ns2:ProbabilityOfPrecipiation<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+               <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ns2:Forecast<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/ForecastResult<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+         <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/GetCityForecastByZIPResult<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/GetCityForecastByZIPResponse<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soap:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soap:Envelope<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre></td></tr></table></div>
+
+<h2>Standard-SOAP-Faults</h2>
+<p>Nähert man sich dem Thema das erste Mal, sucht man sicherlich nach Stichwörtern wie &#8222;Configure XML schema validation Apache CXF&#8220; o.ä. Die Ergebnisse dieser Suche führen aber meist in die Irre, wie z.B. die <a href="http://cxf.apache.org/faq.html#FAQ-HowcanIturnonschemavalidationforjaxwsendpoint?">Apache CXF FAQ</a>. Denn man findet alle möglichen verschiedenen Varianten, wie man die XML-Schema-Validierung in Apache CXF aktiviert. Und das natürlich nahezu ausschließlich per Spring XML-Konfiguration, die wir ja <a href="https://blog.codecentric.de/2016/02/spring-boot-apache-cxf/">CXF schon erfolgreich abgewöhnt haben</a>. Das eigentliche Problem ist aber nicht die Aktivierung, sondern die Reaktion auf die Fehler, die bei der Validierung entstehen können. Denn witzigerweise ist die Valdierung in unserem Setup mit Spring Boot und CXF schon aktiviert und schlägt auch voll zu, sobald wir nicht-valides XML an unseren Endpoint schicken.</p>
+<p>Im Fehlerfall packt CXF unseren Fehler erstmal in einen standardisierten SOAP Fault. Auch das probieren wir gleich aus. Diesmal schicken wir einen Request an unseren Endpoint, der dem XML-Schema nicht entsprechen dürfte – denn das Root-Element unseres SOAP Bodies muss eigentlich <strong>GetCityForecastByZIP</strong> heißen (siehe in die WSDL importierte <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/main/resources/service-api-definition/Weather-Schemes/weather-general.xsd">weather-general.xsd</a>). Da wir aber einen Fehler provozieren wollen, nennen wir das Tag einfach mal <strong>GetCityForecastByZIPfoo</strong> und schicken diese Anfrage gegen unseren Endpoint:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;?xml</span> <span style="color: #000066;">version</span>=<span style="color: #ff0000;">&quot;1.0&quot;</span> <span style="color: #000066;">encoding</span>=<span style="color: #ff0000;">&quot;UTF-8&quot;</span><span style="color: #000000; font-weight: bold;">?&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Envelope</span> <span style="color: #000066;">xmlns:soapenv</span>=<span style="color: #ff0000;">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</span> <span style="color: #000066;">xmlns:gen</span>=<span style="color: #ff0000;">&quot;http://www.codecentric.de/namespace/weatherservice/general&quot;</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Header</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:GetCityForecastByZIPfoo<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+         <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;gen:ZIP<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>99425<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:ZIP<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/gen:GetCityForecastByZIPfoo<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soapenv:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soapenv:Envelope<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre></td></tr></table></div>
+
+<p>Unser gestarteter Endpoint antwortet daraufhin mit folgendem SOAP Response:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soap:Envelope</span> <span style="color: #000066;">xmlns:soap</span>=<span style="color: #ff0000;">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soap:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soap:Fault<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+         <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;faultcode<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>soap:Client<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/faultcode<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+         <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;faultstring<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>Unexpected wrapper element {http://www.codecentric.de/namespace/weatherservice/general}GetCityForecastByZIPfoo found.   Expected {http://www.codecentric.de/namespace/weatherservice/general}GetCityForecastByZIP.<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/faultstring<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+      <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soap:Fault<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soap:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soap:Envelope<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre></td></tr></table></div>
+
+<p>Nun definiert aber unsere Web-Service-Spezifikation einen eigenen Exception-Typ für den Fehlerfall – nämlich die <em>WeatherException</em>, beschrieben in der ebenfalls importierten <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/main/resources/service-api-definition/Weather-Schemes/weather-exception.xsd">weather-exception.xsd</a>. Sie wird mit dem Tag <strong>wsdl:fault</strong> in der <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/main/resources/service-api-definition/Weather1.0.wsdl">WSDL</a> an die Operationen gehängt und definiert folgende Elemente:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;s:element</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">&quot;WeatherException&quot;</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;s:complexType<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+        <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;s:sequence<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;s:element</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">&quot;Uuid&quot;</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">&quot;s:string&quot;</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;s:element</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">&quot;timestamp&quot;</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">&quot;s:dateTime&quot;</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;s:element</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">&quot;businessErrorId&quot;</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">&quot;s:string&quot;</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;s:element</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">&quot;bigBusinessErrorCausingMoneyLoss&quot;</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">&quot;s:boolean&quot;</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+            <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;s:element</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">&quot;exceptionDetails&quot;</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">&quot;s:string&quot;</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+        <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/s:sequence<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+    <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/s:complexType<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/s:element<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre></td></tr></table></div>
+
+<p>Das Element <strong>WeatherException</strong> und seine Unterelemente sollen dabei unter dem <strong>soap:Fault</strong>-Element innerhalb des Tags <strong>detail</strong> auftauchen, sagt unsere Spezifikation. Solche Vorgaben kommen in ähnlicher Form auch gern in &#8222;Enterprise-WSDLs&#8220; vor. Um einen Spezifikations-konformen SOAP Endpoint anbieten zu können, müssen wir die Anforderung umsetzen.</p>
+<h2>Nicht-XML-Schema-valide vs. invalides XML</h2>
+<p>Unsere <em>WeatherException</em> als <strong>soap:Fault/detail</strong> soll übrigens in jedem Fehlerfall zurückgeliefert werden. Es reicht also nicht aus, nur die Fälle abzudecken, in denen es sich bei der Anfrage um nicht-XML-Schema-konforme Requests handelt – sondern eben auch, wenn vollständig kaputtes XML gesendet wird. Beispiele sind hier Anfragen mit defektem XML-Header (fehlende spitze Klammer am Ende):</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;?xml</span> <span style="color: #000066;">version</span>=<span style="color: #ff0000;">&quot;1.0&quot;</span> <span style="color: #000066;">encoding</span>=<span style="color: #ff0000;">&quot;UTF-8&quot;</span>?</span></pre></td></tr></table></div>
+
+<p>&#8230;nicht geschlossene Tags irgendwo im Dokument:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;?xml</span> <span style="color: #000066;">version</span>=<span style="color: #ff0000;">&quot;1.0&quot;</span> <span style="color: #000066;">encoding</span>=<span style="color: #ff0000;">&quot;UTF-8&quot;</span><span style="color: #000000; font-weight: bold;">?&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Envelope</span> <span style="color: #000066;">xmlns:soapenv</span>=<span style="color: #ff0000;">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</span> <span style="color: #000066;">xmlns:gen</span>=<span style="color: #ff0000;">&quot;http://www.codecentric.de/namespace/weatherservice/general&quot;</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Header</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+      notRelevantHere /&gt;
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soapenv:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soapenv:Envelope<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre></td></tr></table></div>
+
+<p>&#8230;kaputte SOAP-Header:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="xml" style="font-family:monospace;"><span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;?xml</span> <span style="color: #000066;">version</span>=<span style="color: #ff0000;">&quot;1.0&quot;</span> <span style="color: #000066;">encoding</span>=<span style="color: #ff0000;">&quot;UTF-8&quot;</span><span style="color: #000000; font-weight: bold;">?&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Envelope</span> <span style="color: #000066;">xmlns:soapenv</span>=<span style="color: #ff0000;">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</span> <span style="color: #000066;">xmlns:gen</span>=<span style="color: #ff0000;">&quot;http://www.codecentric.de/namespace/weatherservice/general&quot;</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Header</span>/</span>
+<span style="color: #009900;">   <span style="color: #000000; font-weight: bold;">&lt;soapenv:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+   ...</pre></td></tr></table></div>
+
+<p>und noch einige mehr.</p>
+<p>Und hier ist die Vorgabe, diese potentiellen Fehlerquellen vernünftig abzufangen, auch wirklich sinnvoll. Vor allem, wenn wir <a href="https://blog.codecentric.de/2016/02/spring-boot-apache-cxf/">den Ideen aus Teil 1 des Tutorials</a> folgen. Denn hier verlassen wir uns darauf, XML-Schema-konforme Nachrichten zu verarbeiten – die natürlich auch valides XML an sich sein müssen. Unser Framework reagiert nämlich mit allen möglichen kryptischen Fehlermeldungen, wenn die Anfragen nicht valide sind.</p>
+<h2>Apache CXF Interceptor Chains</h2>
+<p>O.K. Wie können wir das Problem lösen? Es gibt wie immer mehrere Wege nach Rom. Aber ich will hier eine Möglichkeit vorschlagen, die sich bis jetzt in Projekten sehr gut bewährt hat. Dazu müssen wir uns kurz die Architektur von Apache CXF anschauen. </p>
+<p>In der <a href="https://cxf.apache.org/docs/cxf-architecture.html">Architekturdoku</a> wird gezeigt, dass Apache CXF auf nacheinander ablaufende Interceptors setzt. Diese sind wie in einer Kette aufgereit und in <a href="https://cxf.apache.org/docs/interceptors.html">Phasen</a> organisiert. Es gibt dabei eine <strong>Incoming Interceptor Chain</strong>, die an ihrem Ende die eigentliche Web-Service-Implementierung aufruft, sowie eine <strong>Outgoing Interceptor Chain</strong>, die die Antwortverarbeitung übernimmt. Da ein Bild Konzepte meist viel schneller erklärt, schauen wir uns einfach kurz das folgende an:</p>
+<p><a href="https://blog.codecentric.de/files/2016/06/apache_cxf_interceptor.png" rel="attachment wp-att-36311"><img src="https://blog.codecentric.de/files/2016/06/apache_cxf_interceptor-700x329.png" alt="apache_cxf_interceptor" class="alignnone size-large wp-image-36311" srcset="https://blog.codecentric.de/files/2016/06/apache_cxf_interceptor-250x117.png 250w, https://blog.codecentric.de/files/2016/06/apache_cxf_interceptor-768x361.png 768w, https://blog.codecentric.de/files/2016/06/apache_cxf_interceptor-700x329.png 700w" sizes="(max-width: 700px) 100vw, 700px" /></a></p>
+<p>Die eingehenden Web-Service-Calls durchlaufen immer diese Ketten. Dabei führt ein Fehler in einer Phase (sprich: in einem Interceptor) der Incoming Chain dazu, dass die Outgoing Chain mit den Fehlerinformationen versorgt wird und dann wieder in entgegengesetzter Richtung abgearbeitet wird. Tritt also z.B. ein Fehler in der Phase <strong>UNMARSHAL</strong> auf, werden die nachfolgenden Phasen der Incoming Chain nicht mehr aufgerufen. Für Fehlerfälle gibt es übrigens in CXF eine spezielle <strong>Outgoing Fault Interceptor Chain</strong>, die bei allen Fehlern aufgerufen wird. In alle CXF Interceptor Chains kann man sich &#8222;einhängen&#8220; und auf spezifische Ereignisse reagieren.</p>
+<p>Dieses Wissen können wir uns zu Nutze machen. Denn wenn eine Anfrage kein korrektes XML ist, fliegt die Incoming Chain spätestens in der Phase <strong>UNMARSHAL</strong> auf die Nase und ruft die Outgoing Fault Interceptor Chain auf. Wir müssen also nur einen <a href="https://fisheye6.atlassian.com/browse/cxf/core/src/main/java/org/apache/cxf/interceptor/Interceptor.java?r=3dc89fe00c4e4165fc7b9c25ca0faec4ef097a87">Interceptor</a> implementieren, der möglichst alle Fehler &#8222;mitbekommt&#8220; und darauf reagieren kann. Eine ideale Phase dafür wäre z.B. die <a href="https://fisheye6.atlassian.com/browse/cxf/core/src/main/java/org/apache/cxf/phase/Phase.java?r=3dc89fe00c4e4165fc7b9c25ca0faec4ef097a87">org.apache.cxf.phase.Phase.PRE_STREAM</a> – dann sind wir so weit wie möglich &#8222;vorne&#8220; in der Kette, um praktisch jeden Fehler abzufangen. Unseren Interceptor  müssen wir von <a href="https://fisheye6.atlassian.com/browse/cxf/rt/bindings/soap/src/main/java/org/apache/cxf/binding/soap/interceptor/AbstractSoapInterceptor.java?r=47eee20c1bd51a2a97ad5423069393f1c9b8a2b7">org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor</a> ableiten und die Methode <strong>void handleMessage(T message) throws Fault</strong> überschreiben. Zusätzlich übergeben wir im Konstruktur per <strong>super()</strong>-Methode unsere Phase:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java5" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> CustomSoapFaultInterceptor <span style="color: #000000; font-weight: bold;">extends</span> AbstractSoapInterceptor <span style="color: #009900;">&#123;</span>
+&nbsp;
+    <span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #000000; font-weight: bold;">final</span> SoapFrameworkLogger LOG = SoapFrameworkLogger.<span style="color: #006633;">getLogger</span><span style="color: #009900;">&#40;</span>CustomSoapFaultInterceptor.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+    <span style="color: #000000; font-weight: bold;">public</span> CustomSoapFaultInterceptor<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000000; font-weight: bold;">super</span><span style="color: #009900;">&#40;</span>Phase.<span style="color: #006633;">PRE_STREAM</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+&nbsp;
+    @<span style="color: #003399; font-weight: bold;">Override</span>
+    <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #006600; font-weight: bold;">void</span> handleMessage<span style="color: #009900;">&#40;</span>SoapMessage soapMessage<span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">throws</span> Fault <span style="color: #009900;">&#123;</span>
+        Fault fault = <span style="color: #009900;">&#40;</span>Fault<span style="color: #009900;">&#41;</span> soapMessage.<span style="color: #006633;">getContent</span><span style="color: #009900;">&#40;</span><span style="color: #003399; font-weight: bold;">Exception</span>.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #003399; font-weight: bold;">Throwable</span> faultCause = fault.<span style="color: #006633;">getCause</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #003399; font-weight: bold;">String</span> faultMessage = fault.<span style="color: #006633;">getMessage</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+        <span style="color: #000000;  font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>containsFaultIndicatingNotSchemeCompliantXml<span style="color: #009900;">&#40;</span>faultCause, faultMessage<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+            WeatherSoapFaultHelper.<span style="color: #006633;">buildWeatherFaultAndSet2SoapMessage</span><span style="color: #009900;">&#40;</span>soapMessage, FaultConst.<span style="color: #006633;">SCHEME_VALIDATION_ERROR</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #009900;">&#125;</span>
+        <span style="color: #000000;  font-weight: bold;">else</span> <span style="color: #000000;  font-weight: bold;">if</span> <span style="color: #009900;">&#40;</span>containsFaultIndicatingSyntacticallyIncorrectXml<span style="color: #009900;">&#40;</span>faultCause<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+            WeatherSoapFaultHelper.<span style="color: #006633;">buildWeatherFaultAndSet2SoapMessage</span><span style="color: #009900;">&#40;</span>soapMessage, FaultConst.<span style="color: #006633;">SYNTACTICALLY_INCORRECT_XML_ERROR</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+        <span style="color: #009900;">&#125;</span>
+    <span style="color: #009900;">&#125;</span>
+&nbsp;
+    ...</pre></td></tr></table></div>
+
+<h2>XML-Validierungsfehler erkennen</h2>
+<p>In der überschriebenen Methode <strong>handleMessage(SoapMessage soapMessage)</strong> extrahieren wir uns zuerst den <em>faultCause</em> und die <em>faultMessage</em>. Die letztere ist übrigens 1:1 im Standard SOAP Fault im Tag <strong>faultstring</strong> zu finden. Anhand dieser beiden Variablen können wir erkennen, um welchen Fehler es sich handelt.</p>
+<p>Leider bietet die CXF-API uns hierbei keine Hilfe, und wir müssen die Methoden <strong>containsFaultIndicatingNotSchemeCompliantXml()</strong> und <strong>containsFaultIndicatingSyntacticallyIncorrectXml()</strong> selber implementieren. Um herauszufinden, wie Apache CXF auf nicht XML-Schema-konformes oder invalides XML reagiert, kann man sich alle möglichen Testfälle erstellen und sie gegen den SOAP Endpoint schicken. Das ist natürlich etwas aufwändig und mühselig. Es gibt aber schon eine ganze Reihe an <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/tree/master/step5_custom-soap-fault/src/test/resources/requests/xmlerrors">Testfällen in unserem Beispielprojekt</a>, die wir dazu verwenden können. Probieren wir alle Fälle durch, so kristallisieren sich folgende Muster heraus, die wir in unsere Prüfungsroutinen gießen:</p>
+<h4>1. nicht XML-Schema konform</h4>
+<p>Ist die Anfrage kein dem Schema entsprechendes XML, so enthält der <em>faultCause</em> eine <strong>javax.xml.bind.UnmarshalException</strong>. Zusätzlich prüfen wir noch, ob es ein fehlendes geschlossenes Tag gibt. Dann baut Apache CXF statt der <em>UnmarshalException</em> in die Message ein <strong>&#8222;Unexpected wrapper element&#8220;</strong> ein:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java5" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">private</span> <span style="color: #006600; font-weight: bold;">boolean</span> containsFaultIndicatingNotSchemeCompliantXml<span style="color: #009900;">&#40;</span><span style="color: #003399; font-weight: bold;">Throwable</span> faultCause, <span style="color: #003399; font-weight: bold;">String</span> faultMessage<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    <span style="color: #000000;  font-weight: bold;">if</span><span style="color: #009900;">&#40;</span>faultCause <span style="color: #000000; font-weight: bold;">instanceof</span> <span style="color: #003399; font-weight: bold;">UnmarshalException</span>
+        <span style="color: #666666; font-style: italic;">// 1.) If the root-Element of the SoapBody is syntactically correct, but not scheme-compliant,</span>
+        <span style="color: #666666; font-style: italic;">//      there is no UnmarshalException and we have to look for</span>
+        <span style="color: #666666; font-style: italic;">// 2.) Missing / lead to Faults without Causes, but to Messages like &quot;Unexpected wrapper element XYZ found. Expected&quot;</span>
+        <span style="color: #666666; font-style: italic;">//      One could argue, that this is syntactically incorrect, but here we just take it as Non-Scheme-compliant</span>
+        || isNotNull<span style="color: #009900;">&#40;</span>faultMessage<span style="color: #009900;">&#41;</span> <span style="color: #339933;">&amp;&amp;</span> faultMessage.<span style="color: #006633;">contains</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;Unexpected wrapper element&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #006600; font-weight: bold;">true</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+    <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #006600; font-weight: bold;">false</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<h4>2. generell invalides XML</h4>
+<p>Die Fälle, in denen es sich um invalides XML an sich handelt, sind durch drei mögliche Fehler charakterisiert. Entweder unser <em>faultCause</em> ist eine <strong>com.ctc.wstx.exc.WstxException</strong>, die gewrappte Cause ist eine <strong>com.ctc.wstx.exc.WstxUnexpectedCharException</strong> oder die <em>faultCause</em> enthält eine <strong>IllegalArgumentException</strong>:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java5" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">private</span> <span style="color: #006600; font-weight: bold;">boolean</span> containsFaultIndicatingSyntacticallyIncorrectXml<span style="color: #009900;">&#40;</span><span style="color: #003399; font-weight: bold;">Throwable</span> faultCause<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    <span style="color: #000000;  font-weight: bold;">if</span><span style="color: #009900;">&#40;</span>faultCause <span style="color: #000000; font-weight: bold;">instanceof</span> WstxException
+        <span style="color: #666666; font-style: italic;">// If Xml-Header is invalid, there is a wrapped Cause in the original Cause we have to check</span>
+        || isNotNull<span style="color: #009900;">&#40;</span>faultCause<span style="color: #009900;">&#41;</span> <span style="color: #339933;">&amp;&amp;</span> faultCause.<span style="color: #006633;">getCause</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">instanceof</span> WstxUnexpectedCharException
+        || faultCause <span style="color: #000000; font-weight: bold;">instanceof</span> <span style="color: #003399; font-weight: bold;">IllegalArgumentException</span><span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+        <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #006600; font-weight: bold;">true</span><span style="color: #339933;">;</span>
+    <span style="color: #009900;">&#125;</span>
+    <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #006600; font-weight: bold;">false</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<h2>Custom SOAP Fault bauen</h2>
+<p>So weit, so gut. Die Klasse <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/main/java/de/jonashackt/tutorial/configuration/customsoapfaults/WeatherSoapFaultHelper.java">WeatherSoapFaultHelper</a> baut den SOAP Fault nach unseren Wünschen um. Sie nutzt wiederum die Klasse <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/main/java/de/jonashackt/tutorial/transformation/WeatherOutError.java">WeatherOutError</a> aus dem Package <strong>transformation</strong>, um die eigentliche <em>WeatherException</em> zu erstellen, die sich unsere Spezifikation im detail Tag des <strong>soap:Fault</strong>-Elements wünscht:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java5" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #000000; font-weight: bold;">final</span> de.<span style="color: #006633;">codecentric</span>.<span style="color: #006633;">namespace</span>.<span style="color: #006633;">weatherservice</span>.<span style="color: #006633;">exception</span>.<span style="color: #003399; font-weight: bold;">ObjectFactory</span> objectFactoryDatatypes = <span style="color: #000000; font-weight: bold;">new</span> de.<span style="color: #006633;">codecentric</span>.<span style="color: #006633;">namespace</span>.<span style="color: #006633;">weatherservice</span>.<span style="color: #006633;">exception</span>.<span style="color: #003399; font-weight: bold;">ObjectFactory</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">static</span> WeatherException createWeatherException<span style="color: #009900;">&#40;</span>FaultConst faultContent, <span style="color: #003399; font-weight: bold;">String</span> originalFaultMessage<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+    <span style="color: #666666; font-style: italic;">// Build SOAP-Fault detail &lt;datatypes:WeatherException&gt;</span>
+    WeatherException weatherException = objectFactoryDatatypes.<span style="color: #006633;">createWeatherException</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    weatherException.<span style="color: #006633;">setBigBusinessErrorCausingMoneyLoss</span><span style="color: #009900;">&#40;</span><span style="color: #006600; font-weight: bold;">true</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    weatherException.<span style="color: #006633;">setBusinessErrorId</span><span style="color: #009900;">&#40;</span>faultContent.<span style="color: #006633;">getId</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    weatherException.<span style="color: #006633;">setExceptionDetails</span><span style="color: #009900;">&#40;</span>originalFaultMessage<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    weatherException.<span style="color: #006633;">setUuid</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;ExtremeRandomNumber&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    <span style="color: #000000; font-weight: bold;">return</span> weatherException<span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<p>Ein Detail ist noch interessant zu bemerken: Apache CXF schmeißt aus unerfindlichen Gründen das root-Element der Exception bzw. des Stückchens XML weg, was man ihm in das <em>soap:Fault/detail</em> setzen will. Deshalb schauen wir nochmal kurz in die Klasse <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/main/java/de/jonashackt/tutorial/configuration/customsoapfaults/WeatherSoapFaultHelper.java">WeatherSoapFaultHelper</a> (das Exception-Handling ist hier zur besseren Übersicht entfernt):</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java5" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #006600; font-weight: bold;">void</span> buildWeatherFaultAndSet2SoapMessage<span style="color: #009900;">&#40;</span>SoapMessage message, FaultConst faultContent<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+	Fault exceptionFault = <span style="color: #009900;">&#40;</span>Fault<span style="color: #009900;">&#41;</span> message.<span style="color: #006633;">getContent</span><span style="color: #009900;">&#40;</span><span style="color: #003399; font-weight: bold;">Exception</span>.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+	<span style="color: #003399; font-weight: bold;">String</span> originalFaultMessage = exceptionFault.<span style="color: #006633;">getMessage</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+	exceptionFault.<span style="color: #006633;">setMessage</span><span style="color: #009900;">&#40;</span>faultContent.<span style="color: #006633;">getMessage</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+	exceptionFault.<span style="color: #006633;">setDetail</span><span style="color: #009900;">&#40;</span>createFaultDetailWithWeatherException<span style="color: #009900;">&#40;</span>originalFaultMessage, faultContent<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+	message.<span style="color: #006633;">setContent</span><span style="color: #009900;">&#40;</span><span style="color: #003399; font-weight: bold;">Exception</span>.<span style="color: #000000; font-weight: bold;">class</span>, exceptionFault<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span>
+&nbsp;
+<span style="color: #000000; font-weight: bold;">private</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #003399; font-weight: bold;">Element</span> createFaultDetailWithWeatherException<span style="color: #009900;">&#40;</span><span style="color: #003399; font-weight: bold;">String</span> originalFaultMessage,  FaultConst faultContent<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+	<span style="color: #003399; font-weight: bold;">Document</span> weatherExcecption = XmlUtils.<span style="color: #006633;">marhallJaxbElementIntoDocument</span><span style="color: #009900;">&#40;</span>WeatherOutError.<span style="color: #006633;">createWeatherException</span><span style="color: #009900;">&#40;</span>faultContent, originalFaultMessage<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+	<span style="color: #000000; font-weight: bold;">return</span> XmlUtils.<span style="color: #006633;">appendAsChildElement2NewElement</span><span style="color: #009900;">&#40;</span>weatherExcecption<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<p>Die Methode <strong>buildWeatherFaultAndSet2SoapMessage(SoapMessage message, FaultConst faultContent)</strong> extrahiert sich zuerst den <em>org.apache.cxf.interceptor.Fault</em> aus der <em>org.apache.cxf.binding.soap.SoapMessage</em>. Dem Fault kann man jetzt die gewünschte Message sowie das Detail (also unsere WeatherException) setzen. Da die Methode <em>Fault.setDetail() </em>ein <a href="https://docs.oracle.com/javase/8/docs/api/org/w3c/dom/Element.html">org.w3c.dom.Element</a> erwartet, lassen wir unsere erstellte <em>WeatherException</em> in ein <a href="https://docs.oracle.com/javase/8/docs/api/org/w3c/dom/Document.html">org.w3c.dom.Document</a> marshallen (wieder mithilfe der <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/main/java/de/jonashackt/tutorial/common/XmlUtils.java">XmlUtils</a>, deren Hilfe wir schon im letzten Artikel benötigten). Dem Ergebnis stellen wir ein <em>pseudo root</em>-Element voran, das dann später von CXF wieder weggeworfen werden kann.</p>
+<h2>Können wir Tests mit invaliden XML-Requests bauen?</h2>
+<p>Nun haben wir also eine Implementierung, die invalides XML in all seinen Erscheinungsformen erkennen soll. Außerdem haben wir einen Haufen Testdateien, die wir per Hand gegen die Implementierung (z.B. per SoapUI) schicken können. Doch der Autor kann uns ja ziemlich viel erzählen. <img src="https://blog.codecentric.de/wp-includes/images/smilies/simple-smile.png" alt=":)" class="wp-smiley" style="height: 1em; max-height: 1em;" /> Und wer sagt schon, dass die Implementierung beim nächsten kleinen Versionssprung von CXF oder genutzten Libraries noch funktioniert? Ist ja doch eine Art Sonderlocke.</p>
+<p>Hier kommt das Wissen ins Spiel, das wir im <a href="https://blog.codecentric.de/2016/06/spring-boot-apache-cxf-soap-webservices-testen/">letzten Artikel dieser Serie</a> gewonnen haben – wir schreiben uns einfach automatisiert ausführbare Tests. Am besten Single System Integration Tests, dann wird der Server sogar noch innerhalb der Testausführung hoch- und auch wieder heruntergefahren.</p>
+<p>Und wie wir im Abschnitt <strong>Umgang mit Testfällen</strong> gelesen haben, können wir uns ja sogar die Testdateien laden und direkt in das passende Objekt marshallen lassen. Oder doch nicht?!? Nein, Sie werden es schon erraten haben. Denn wir wollen ja Anfragen verschicken, die kein valides XML enthalten. Gehen wir hier mit JAX-B ran, so fällt uns der Parser mit ähnlichen Exceptions um, wie sie Apache CXF in seinen Outbound Chains im Fehlerfall wirft.</p>
+<p>Trotzdem wollen wir automatisiert testen. Das geht natürlich auch. Wir müssen uns dafür nur bewusst machen, was wir hierfür benötigen. Denn im Grunde senden wir einfach über HTTP per POST unsere SOAP-Textnachrichten an den Endpoint. Und einen <a href="https://hc.apache.org/">ausgereiften HTTP-Client</a> vorausgesetzt, können wir das auch für unsere &#8222;kaputten&#8220; Testfälle verwenden. Also los! Wir erweitern dazu unsere <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/pom.xml">pom</a> um zwei neue Dependencies: <strong>org.apache.httpcomponents.httpclient</strong> und <strong>org.apache.httpcomponents.fluent-hcs</strong>. Bevor wir allerdings unseren HTTP-Client benutzen, schauen wir uns eine SOAP-1.1-konforme Nachricht inklusive aller HTTP-Header an (an die kommen wir z.B. per SoapUI im Reiter &#8222;Raw&#8220;):</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="xml" style="font-family:monospace;">POST http://localhost:8080/soap-api/WeatherSoapService_1.0 HTTP/1.1
+Accept-Encoding: gzip,deflate
+Content-Type: text/xml;charset=UTF-8
+SOAPAction: &quot;http://www.codecentric.de/namespace/weatherservice/GetCityForecastByZIP&quot;
+Content-Length: 289
+Host: localhost:8080
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.1 (java 1.5)
+&nbsp;
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;?xml</span> <span style="color: #000066;">version</span>=<span style="color: #ff0000;">&quot;1.0&quot;</span> <span style="color: #000066;">encoding</span>=<span style="color: #ff0000;">&quot;UTF-8&quot;</span><span style="color: #000000; font-weight: bold;">?&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Envelope</span> <span style="color: #000066;">xmlns:soapenv</span>=<span style="color: #ff0000;">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</span> <span style="color: #000066;">xmlns:gen</span>=<span style="color: #ff0000;">&quot;http://www.codecentric.de/namespace/weatherservice/general&quot;</span><span style="color: #000000; font-weight: bold;">&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Header</span><span style="color: #000000; font-weight: bold;">/&gt;</span></span>
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;soapenv:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+      notRelevantHere /&gt;
+   <span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soapenv:Body<span style="color: #000000; font-weight: bold;">&gt;</span></span></span>
+<span style="color: #009900;"><span style="color: #000000; font-weight: bold;">&lt;/soapenv:Envelope<span style="color: #000000; font-weight: bold;">&gt;</span></span></span></pre></td></tr></table></div>
+
+<p>Neben dem Content-Type ist hier besonders ein Header-Feld wichtig – nämlich die <strong>SOAPAction</strong>. Laut <a href="https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528">SOAP-Spezifikation</a> muss darin die SOAP-Operation beschrieben werden, und unser SOAP Endpoint meckert, wenn wir diese nicht korrekt setzen. Doch welcher Wert muss darin stehen? Das definiert die WSDL im Attribut <strong>soapAction</strong> des Tags <strong>soap:operation</strong> innerhalb der wsdl:operation-Definitionen. Nutzen wir also für unsere Tests den HTTP-Client (z.B. <a href="https://hc.apache.org/httpcomponents-client-ga/tutorial/html/fluent.html">per eleganter Fluent-API</a>), so müssen wir den SOAPAction-HTTP-Header richtig setzen. Dazu gehören auch die Quotes, die wir escapen müssen:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java5" style="font-family:monospace;">Response httpResponseContainer = <span style="color: #003399; font-weight: bold;">Request</span>
+            .<span style="color: #006633;">Post</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;http://localhost:8090/soap-api/WeatherSoapService_1.0&quot;</span><span style="color: #009900;">&#41;</span>
+            .<span style="color: #006633;">bodyStream</span><span style="color: #009900;">&#40;</span>xmlFile, ContentType.<span style="color: #006633;">create</span><span style="color: #009900;">&#40;</span>ContentType.<span style="color: #006633;">TEXT_XML</span>.<span style="color: #006633;">getMimeType</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>, Consts.<span style="color: #006633;">UTF_8</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span>
+            .<span style="color: #006633;">addHeader</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;SOAPAction&quot;</span>, <span style="color: #0000ff;">&quot;<span style="color: #000099; font-weight: bold;">\&quot;</span>http://www.codecentric.de/namespace/weatherservice/GetCityForecastByZIP<span style="color: #000099; font-weight: bold;">\&quot;</span>&quot;</span><span style="color: #009900;">&#41;</span>
+            .<span style="color: #006633;">execute</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+HttpResponse httpResponse = httpResponseContainer.<span style="color: #006633;">returnResponse</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span></pre></td></tr></table></div>
+
+<p>Diese paar Zeilen Code reichen schon aus, damit wir unseren Endpoint mit invaliden XML-Anfragen traktieren können. Etwas erweitert tut das auch die Klasse <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/test/java/de/jonashackt/tutorial/utils/SoapRawClient.java">SoapRawClient</a> in unserem Beispielprojekt. Sie konfigurieren wir in der <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/test/java/de/jonashackt/tutorial/WebServiceSystemTestConfiguration.java">WebServiceSystemTestConfiguration</a> als Spring Bean und übergeben ihr dabei unser generiertes <strong>Service Endpoint Interface (SEI)</strong>. Denn aus dem SEI kann die Klasse den SOAPAction-Header dynamisch ableiten. Außerdem liefert der Aufruf der Methode <strong>callSoapService(InputStream xmlFile)</strong> ein Objekt der Klasse <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/test/java/de/jonashackt/tutorial/utils/SoapRawClientResponse.java">SoapRawClientResponse</a>, das uns die Erstellung der Testfälle nochmals stark vereinfacht.</p>
+<h2>Single System Integration Tests mit invaliden XML-Requests</h2>
+<p>Jetzt haben wir das Werkzeug beisammen, um endlich die ersehnten Testfälle schreiben zu können. Dazu setzen wir auf das Wissen aus dem vorangegangenen Artikel über Single System Integration Tests auf (siehe <a href="https://blog.codecentric.de/2016/06/spring-boot-apache-cxf-soap-webservices-testen/">Part 2</a>) – denn diese fahren unseren SOAP Endpoint für die Dauer der Testausführung automatisiert hoch. Zusätzlich wissen wir, wie wir XML-Testfälle elegant per <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/io/Resource.html">org.springframework.core.io.Resource</a> innerhalb unseres Tests als <em>InputStream</em> bereitstellen können, ohne uns mit dem Filehandling abmühen zu müssen.</p>
+<p>Unser Testfall <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/test/java/de/jonashackt/tutorial/endpoint/WeatherServiceXmlErrorSystemTest.java">WeatherServiceXmlErrorSystemTest</a> verwendet die gleichen Mechanismen wie der <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/test/java/de/jonashackt/tutorial/endpoint/WeatherServiceXmlErrorSystemTest.java">WeatherServiceXmlErrorSystemTest</a> aus dem letzten Tutorial. Neben der Injektion des <em>SoapRawClient</em> laden wir unsere Testfälle:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java5" style="font-family:monospace;">@RunWith<span style="color: #009900;">&#40;</span>SpringJUnit4ClassRunner.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span>
+@SpringApplicationConfiguration<span style="color: #009900;">&#40;</span>classes=SimpleBootCxfSystemTestApplication.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span>
+@WebIntegrationTest<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;server.port:8090&quot;</span><span style="color: #009900;">&#41;</span>
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> WeatherServiceXmlErrorSystemTest <span style="color: #009900;">&#123;</span>
+&nbsp;
+    @Autowired <span style="color: #000000; font-weight: bold;">private</span> SoapRawClient soapRawClient<span style="color: #339933;">;</span>
+&nbsp;
+    @Value<span style="color: #009900;">&#40;</span>value=<span style="color: #0000ff;">&quot;classpath:requests/xmlerrors/xmlErrorNotXmlSchemeCompliantUnderRootElementTest.xml&quot;</span><span style="color: #009900;">&#41;</span>
+    <span style="color: #000000; font-weight: bold;">private</span> Resource xmlErrorNotXmlSchemeCompliantUnderRootElementTestXml<span style="color: #339933;">;</span>
+&nbsp;
+    @Value<span style="color: #009900;">&#40;</span>value=<span style="color: #0000ff;">&quot;classpath:requests/xmlerrors/xmlErrorSoapBodyTagMissingBracketTest.xml&quot;</span><span style="color: #009900;">&#41;</span>
+    <span style="color: #000000; font-weight: bold;">private</span> Resource xmlErrorSoapBodyTagMissingBracketTestXml<span style="color: #339933;">;</span>
+&nbsp;
+    <span style="color: #666666; font-style: italic;">// ... and many more</span></pre></td></tr></table></div>
+
+<p>Danach gönnen wir jedem Test-File auch eine eigene Testmethode, die auf eine generalisierte Methode <strong>checkXmlError()</strong> verweist. Dieser wird das entsprechende Test-File sowie die Art des erwarteten Fehlers übergeben. Der erwartete Fehler wird übrigens in der <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/main/java/de/jonashackt/tutorial/common/FaultConst.java">FaultConst</a> definiert, den wir natürlich auch schon im Abschnitt &#8222;XML-Validierungsfehler erkennen&#8220; verwenden, um unseren SOAP Fault aufzubauen:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java5" style="font-family:monospace;">@Test
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #006600; font-weight: bold;">void</span> xmlErrorNotXmlSchemeCompliantUnderRootElementTest<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">throws</span> InternalBusinessException, <span style="color: #003399; font-weight: bold;">IOException</span> <span style="color: #009900;">&#123;</span>
+    checkXMLError<span style="color: #009900;">&#40;</span>xmlErrorNotXmlSchemeCompliantUnderRootElementTestXml, FaultConst.<span style="color: #006633;">SCHEME_VALIDATION_ERROR</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span>
+&nbsp;
+@Test
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #006600; font-weight: bold;">void</span> xmlErrorSoapBodyTagMissingBracketTest<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">throws</span> InternalBusinessException, <span style="color: #003399; font-weight: bold;">IOException</span> <span style="color: #009900;">&#123;</span>
+    checkXMLError<span style="color: #009900;">&#40;</span>xmlErrorSoapBodyTagMissingBracketTestXml, FaultConst.<span style="color: #006633;">SYNTACTICALLY_INCORRECT_XML_ERROR</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span>
+&nbsp;
+<span style="color: #666666; font-style: italic;">// ... and many more</span></pre></td></tr></table></div>
+
+<p>In der Methode <em>checkXmlError()</em> können wir unseren gewünschten SOAP Fault nun auf Herz und Nieren prüfen. Unter anderem erwarten wir einen HTTP-Status-Code 500 und dass unsere Message aus der <a href="https://github.com/jonashackt/tutorial-soap-spring-boot-cxf/blob/master/step5_custom-soap-fault/src/main/java/de/jonashackt/tutorial/common/FaultConst.java">FaultConst</a> im Tag <strong>faultstring</strong> auftaucht. Hierzu nutzen wir die Hilfsmethode <strong>getFaultstringValue()</strong> unseres <em>SoapRawClientResponse</em>, die uns den Faultstring aus der Http-Message fischt. Außerdem bietet die Klasse noch eine praktische <strong>getUnmarshalledObjectFromSoapMessage(Class<T> jaxbClass)</strong>, die auch noch unsere <em>WeatherException</em> aus der Http-Message holt. Darauf können wir dann alle nötigen <em>assert</em>-Statements loslassen.</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java5" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">private</span> <span style="color: #006600; font-weight: bold;">void</span> checkXmlError<span style="color: #009900;">&#40;</span>Resource testFile, FaultConst faultContent<span style="color: #009900;">&#41;</span> <span style="color: #000000; font-weight: bold;">throws</span> InternalBusinessException, <span style="color: #003399; font-weight: bold;">IOException</span> <span style="color: #009900;">&#123;</span>
+    <span style="color: #666666; font-style: italic;">// When</span>
+    SoapRawClientResponse soapRawResponse = soapRawClient.<span style="color: #006633;">callSoapService</span><span style="color: #009900;">&#40;</span>testFile.<span style="color: #006633;">getInputStream</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+    <span style="color: #666666; font-style: italic;">// Then</span>
+    assertNotNull<span style="color: #009900;">&#40;</span>soapRawResponse<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    assertEquals<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;500 Internal Server Error expected&quot;</span>, <span style="color: #cc66cc;">500</span>, soapRawResponse.<span style="color: #006633;">getHttpStatusCode</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    assertEquals<span style="color: #009900;">&#40;</span>faultContent.<span style="color: #006633;">getMessage</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>, soapRawResponse.<span style="color: #006633;">getFaultstringValue</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+    de.<span style="color: #006633;">codecentric</span>.<span style="color: #006633;">namespace</span>.<span style="color: #006633;">weatherservice</span>.<span style="color: #006633;">exception</span>.<span style="color: #006633;">WeatherException</span> weatherException = soapRawResponse.<span style="color: #006633;">getUnmarshalledObjectFromSoapMessage</span><span style="color: #009900;">&#40;</span>de.<span style="color: #006633;">codecentric</span>.<span style="color: #006633;">namespace</span>.<span style="color: #006633;">weatherservice</span>.<span style="color: #006633;">exception</span>.<span style="color: #006633;">WeatherException</span>.<span style="color: #000000; font-weight: bold;">class</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    assertNotNull<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;&lt;soap:Fault&gt;&lt;detail&gt; has to contain a de.codecentric.namespace.weatherservice.exception.WeatherException&quot;</span>,  weatherException<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+    assertEquals<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;ExtremeRandomNumber&quot;</span>, weatherException.<span style="color: #006633;">getUuid</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+    assertEquals<span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;The correct BusinessId is missing in WeatherException according to XML-scheme.&quot;</span>, faultContent.<span style="color: #006633;">getId</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>, weatherException.<span style="color: #006633;">getBusinessErrorId</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<p>Wichtig hierbei: Es hat sich bewährt, hier den vollqualifizierten Namen der Exception (<strong>de.codecentric.namespace.weatherservice.exception.WeatherException</strong>) anzugeben, da es leicht zu Verwirrung mit der zweiten gleichlautenden Exception (<strong>de.codecentric.namespace.weatherservice.WeatherException</strong>) kommen kann. Jetzt könnte man einwenden, dass man dann doch bitte schön die Exceptions verschieden benennen sollte. Aber genau so findet man es leider auch in den großen Enterprise-Web-Services vor – wie das Beispiel <a href="https://www.bipro.net/">BiPro</a> zeigt.</p>
+<p>Nun haben wir also, was wir brauchen: Unsere Implementierung validiert die XML-Anfragen, und wir bestimmen, was in den SOAP Fault kommt. Gleichzeitig können wir all dies automatisiert testen und sind in der Lage, maschinell beliebig schräge Anfragen gegen unseren SOAP Endpoint zu schicken. Insgesamt ist die Lösung allerdings aus Sicht eines Nutzers von Apache CXF recht komplex. Hier könnten die Entwickler nachlegen und mithilfe einer einfachen Erweiterungsmöglichkeit die Konfiguration und Erstellung von Custom SOAP Faults erleichtern.</p>
+<p>Wer hätte es anders gedacht – es bleiben immer noch offene Punkte übrig. <img src="https://blog.codecentric.de/wp-includes/images/smilies/simple-smile.png" alt=":)" class="wp-smiley" style="height: 1em; max-height: 1em;" /> Seien es Namespaces oder fachliches Monitoring per <a href="https://www.elastic.co/de/">elastic Stack</a> – in den folgenden Posts schauen wir uns diese Themen an.</p>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/spring-boot-apache-cxf-xml-validierung-custom-soap-faults/">Spring Boot &#038; Apache CXF – XML-Validierung und Custom SOAP Faults</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></content:encoded>
+            <wfw:commentRss>https://blog.codecentric.de/2016/06/spring-boot-apache-cxf-xml-validierung-custom-soap-faults/feed/</wfw:commentRss>
+            <slash:comments>0</slash:comments>
+        </item>
+        <item>
+            <title>legacy.org =&gt; agile.org (Teil 2)</title>
+            <link>https://blog.codecentric.de/2016/06/legacy-org-agile-org-teil-2/</link>
+            <comments>https://blog.codecentric.de/2016/06/legacy-org-agile-org-teil-2/#respond</comments>
+            <pubDate>Mon, 13 Jun 2016 04:00:02 +0000</pubDate>
+            <dc:creator><![CDATA[Nino Martincevic]]></dc:creator>
+            <category><![CDATA[Agile Management]]></category>
+            <category><![CDATA[Agilität]]></category>
+            <category><![CDATA[Architektur]]></category>
+            <category><![CDATA[Culture]]></category>
+            <category><![CDATA[DDD]]></category>
+            <category><![CDATA[Microservices]]></category>
+
+            <guid isPermaLink="false">https://blog.codecentric.de/?p=35714</guid>
+            <description><![CDATA[<p>Wie transformiert man zu einer agilen Organisation? Wie macht man träge gewordene Softwaresysteme wieder schnell? Und was haben Legacy-Systeme, DDD (Domain-driven Design), Clean Architecture und Microservices damit zu tun? Im ersten Teil dieser Serie wurden die Nachteile von legacy.org und die Vorteile von agile.org gegenüber gestellt und erste Antworten zur Notwendigkeit einer Transformation bzw. eines Refactorings... <a class="view-article" href="https://blog.codecentric.de/2016/06/legacy-org-agile-org-teil-2/">Weiterlesen</a></p>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/legacy-org-agile-org-teil-2/">legacy.org => agile.org (Teil 2)</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></description>
+            <content:encoded><![CDATA[<p>Wie transformiert man zu einer agilen Organisation?<br />
+<span style="font-weight: 400;">Wie macht man träge gewordene Softwaresysteme wieder schnell?</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Und was haben Legacy-Systeme, DDD (Domain-driven Design), Clean Architecture und Microservices damit zu tun?</span></p>
+<p><span style="font-weight: 400;">Im <a href="https://blog.codecentric.de/2016/06/legacy-org-agile-org/">ersten Teil dieser Serie</a> wurden die Nachteile von legacy.org und die Vorteile von agile.org gegenüber gestellt und erste Antworten zur Notwendigkeit einer Transformation bzw. eines Refactorings gegeben. In diesem Teil geht es darum, einen Anfang und eine Strategie für das weitere Vorgehen zu finden.</span></p>
+<p><span style="font-weight: 400;">1) <a href="https://blog.codecentric.de/2016/06/legacy-org-agile-org/">Warum gibt es legacy.org, will man agile.org und was sind die Voraussetzungen dafür?</a></span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">2) Womit und wie anfangen und welche Strategie verfolgen?</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">3) Wen oder was benötigt man und wie geht man vor?</span></p>
+<p>&nbsp;</p>
+<h2><span style="font-weight: 400;">Womit und wie anfangen?</span></h2>
+<p><span style="font-weight: 400;">Wie in Teil 1 gesehen, kann der Umbau einer legacy.org nur schrittweise erfolgen.</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Doch bei welchem Teil des riesigen Legacy-Systems fängt man an?</span></p>
+<p><span style="font-weight: 400;">Um einen möglichen strategischen Ansatz für diese Entscheidung zu zeigen, schauen wir uns zuerst zwei essentielle strategische Bestandteile des DDD Mindsets an, die solche Fragen beantworten können. Danach könnte die Entscheidung und das weitere Vorgehen etwas klarer sein.<br />
+</span></p>
+<h3>Schnittmuster &#8211; Geschäftsmodelle sind beständiger als ihre Lösungen</h3>
+<p>Jede Organisation besteht aus mindestens einer Domäne. Eine Versicherungsgesellschaft bietet verschiedene Versicherungen an, ein Handelskonzern verkauft Waren.</p>
+<p>Zoomt man tiefer hinein, so erkennt man, dass jede Domäne aus einigen bis sehr vielen <b>Subdomänen (Subdomain)</b> besteht. Der Handelskonzern hat z.B. einen Wareneingang, Verkauf, Online-Shop, Lagerhaltung, Vertrieb, Marketing, Kundenservice uvm. Manche dieser Subdomänen kommen in vielen Organisationen vor, andere sind sehr speziell oder einmalig. Und in allen gilt es, die dort vorhandenen “Probleme” zu kennen und die beste Lösung für die Benutzer oder Kunden zu finden.</p>
+<blockquote><p><b>Domäne (Domain bzw. Subdomain)</b><br />
+(von lateinisch dominium über französisch domaine „Herrschaft, Herrschaftsbereich“)</p>
+<p>Wikipedia: Fachgebiete, also Themenbereiche, die Gegenstand einer inhaltlichen Spezialisierung sind.<br />
+Oder anders gesagt: Der Einflussbereich des Wissens, Einflusses oder der Aktivität. “Was eine Organisation kann und tut und die Welt, in der sie es tut”</p>
+<p><b>Core Domain<br />
+</b>(Mindestens) eine Subdomain, die einer Organisation einen Wettbewerbsvorteil, ein Alleinstellungsmerkmal oder einfach den meisten Nutzen und Ertrag bringt. Sie ist/sind die Legitimation dafür, dass wir die Software überhaupt selbst entwickeln.<br />
+<i>(Wobei anzumerken gibt, dass es in vielen Organisation keinen solchen Grund gibt, weil das Softwaresystem nicht der entscheidende Faktor des Geschäftserfolgs ist. Und dennoch investiert man einen enormen Aufwand in die Entwicklung&#8230;)</i></p>
+<p><b>Domain Model</b><br />
+Das Fachmodell (Domain Model) ist eine Abstraktion und Vereinfachung des Problems (oder eines Teils davon), mit dem es gelöst werden soll.</p></blockquote>
+<p>Die meisten Aufgaben- und Problembereiche der Subdomänen sind relativ stabil.<br />
+Ein Kundenservice wird sich meist um Kundenanfragen und deren Beantwortung kümmern, ein Wareneingang die Korrektheit der Lieferung überprüfen. Einzelne Themen, Abläufe oder Regeln ändern sich natürlich auch dort, die grundlegenden Problemstellungen bleiben jedoch relativ stabil.</p>
+<p>Ungleich vielfältiger sind die Möglichkeiten der Lösung eines fachlichen Problems.<br />
+Ein Kundenservice kann per Telefon, E-Mail oder Facebook die Fragen und Wünsche seiner Kunden entgegen nehmen. Er kann sie nach Datum sortieren oder intelligente Algorithmen verwenden, um die Fragen nach Themen zu clustern. Oder einen automatischen Agenten mit künstlicher Intelligenz zum Beantworten entwickeln. Und vieles mehr.</p>
+<p>Nicht nur, dass die einzelnen Subdomänen unterschiedliche Problemstellungen haben, die sie lösen müssen, sie haben zusätzlich ihre eigenen Mittel und Wege, ihre Fachsprache (Jargon, Ontologie) optimiert und wissen was gemeint ist, wenn sie einen Fachbegriff erwähnen.</p>
+<p>Keine Organisation käme auf die Idee zwei Fachbereiche zusammenzulegen, die völlig unterschiedliche Problembereiche und Lösungsmodelle besitzen. Was macht ein bemitleidenswerter Mitarbeiter eines Kundenservices, wenn er plötzlich im Wareneingang arbeiten muss und kein Wort mehr versteht?</p>
+<p>Umgekehrt ist genau das sehr oft bei Softwaresystemen der Fall. Da wird generalisiert und zentralisiert, bis die Daten aller Domänen in einer Datenbank sind, alle mit den selben Mechanismen kommunizieren und jeder Protokolle aufgezwungen werden, die sie erst mal mühsam verstehen und transformieren muss. Und umgekehrt natürlich genauso.<br />
+Ganz zu schweigen vom enormen Aufwand, dies alles über Domänen hinweg steuern und planen zu müssen, zudem dann noch der unsicherste aller Faktoren hinzukommt: der Mensch.</p>
+<p>Aus diesem Grund wurde in DDD das Konzept des abgegrenzten Kontexts (<strong>Bounded Context [BC]</strong>) als zentrales strategisches Konzept eingeführt. Denn nur wenn es eine klare Abgrenzung der Anwendbarkeit eines Domain Models gibt, kann auch eine konzeptionelle Integrität gewährleistet werden.</p>
+<blockquote><p><span style="font-weight: 400;">DDD ist keine Anweisung, wie etwas architektonisch oder technisch gestaltet werden muss. </span><span style="font-weight: 400;">Es ist vielmehr ein analytischer Ansatz zur Gestaltung von komplexen fachlichen Zusammenhängen mit Hilfe von Modellen.</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;"><strong>Das Hauptziel ist die Gewährleistung <span style="color: #0000ff;">konzeptioneller Integrität</span> von Modellen eines fachlichen Problems.</strong><br />
+</span> <span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Nur wenn diese Integrität sicher gestellt werden kann, d.h. alle Elemente eines Modells “an ihrem Platz sind” und alle Invarianten eingehalten werden, die einen jederzeit gültigen Zustand eines Modells garantieren, dann wird auch eine gute Implementierung möglich sein.</span></p></blockquote>
+<p>Das Konzept Bounded Context<b> </b>beinhaltet aber noch mehr, es <b></b>ist eine <i>eindeutige</i> Begrenzung</p>
+<ul>
+<li>der Fachsprache der Domäne und deren Lösungsimplementierung</li>
+<li>der Anwendbarkeit eines Lösungsmodells (Domain Model)</li>
+<li>der Teamorganisation (<i>Social Architecture around explicit contracts</i>)</li>
+<li>der Benutzung innerhalb spezifischer Teile einer Applikation</li>
+<li>von physikalischen Manifestationen, wie
+<ul>
+<li>Code</li>
+<li>Datenbankschemata</li>
+<li>Frameworks</li>
+<li>…</li>
+</ul>
+</li>
+</ul>
+<div id="attachment_35706" style="width: 534px" class="wp-caption alignnone"><a href="https://blog.codecentric.de/files/2016/05/Domain_BC_DM_Relation.png" rel="attachment wp-att-35706"><img class="wp-image-35706 size-full" src="https://blog.codecentric.de/files/2016/05/Domain_BC_DM_Relation.png" alt="Domain, Bounded Context, Domain Model Relationship" width="524" height="474" srcset="https://blog.codecentric.de/files/2016/05/Domain_BC_DM_Relation-250x226.png 250w, https://blog.codecentric.de/files/2016/05/Domain_BC_DM_Relation.png 524w" sizes="(max-width: 524px) 100vw, 524px" /></a><p class="wp-caption-text">Optimale Ausrichtung von SubDomain, Bounded Context und Domain Model. Die Realität sieht leider meist nicht so schön aus &#8230;</p></div>
+<p>Visualisiert und liest man die Beschreibung eines BC durch, so erkennt man vielleicht schon eine Beschreibung eines “idealen” agilen Teams&#8230;</p>
+<blockquote><p><strong>Grenze um was?</strong><br />
+Wie erwähnt, wird das Konzept Bounded Context oftmals als wichtiges Merkmal von Microservices genannt. Allerdings ist es oftmals nicht klar, um WAS diese Grenze <span style="font-weight: 400;">eigentlich</span> gezogen werden soll.</p>
+<p>Ein BC ist <strong>nicht</strong> die Begrenzung eines beliebigen Teils von Software oder eines besonders kleinen Services. Ein beliebig kleiner und spezieller Service mag sinnvoll und seine Verantwortung und Schnittstellen klar definiert sein. Doch ein Bounded Context ist <strong>immer</strong> die Begrenzung der Anwendbarkeit (mindestens) eines fachlich relevanten Modells (Domain Model). Deshalb sollte man auch hier auf eine klare Terminologie achten. Sonst benutzt man dieses strategisch eminent wichtige Konzept beliebig, und damit wird es beliebig.</p></blockquote>
+<p>Damit sind wir beim Fazit dieses Abschnitts und der Vorgabe für alles folgende:</p>
+<ul>
+<li><b><b>Das </b><b><i>Schnittmuster</i></b><b> von Softwaresystemen können nicht Technologien oder schon bestehende und </b><b><i>schädliche</i></b><b> Strukturen der Kommunikation sein.</b></b></li>
+</ul>
+<ul>
+<li><b>Die benötigte  Aufteilung des Systems sollte (muss?) die Struktur und Dynamik der einzelnen Subdomänen und ihrer Abgrenzung zueinander widerspiegeln. Sie sichern die konzeptionelle Integrität der Fachlichkeiten.<br />
+</b></li>
+</ul>
+<h2></h2>
+<h2>Womit fängt man an?</h2>
+<p><span style="font-weight: 400;">Jetzt können wir die ursprüngliche Frage beantworten: mit der Core Domain.</span></p>
+<p>Wie erwähnt, ist das der Fachbereich der Organisation, der die höchstmögliche Innovation und Sorgfalt und bestmögliche Qualität erfordert. Das bedeutet auch, dass man hier die besten Mitarbeiter, Voraussetzungen und Möglichkeiten der Zusammenarbeit gewährleisten muss. Denn wenn es hier nicht funktioniert, wird der Rest wahrscheinlich auch keinen Erfolg haben.</p>
+<blockquote><p><i>Doch Vorsicht! Mit “Core” werden, v.a. in der Unternehmenswelt, auch gerne Erfolge der Vergangenheit manifestiert, sind in der Sprache der Vergangenheit formuliert und damit leider auch eine Hauptquelle für Trägheit. Ergo sollte man an dieser Stelle auch diesen vermeintlichen “Core” hinterfragen, vielleicht finden sich neue und bessere Kernkompetenzen oder Lösungen.</i></p></blockquote>
+<p><i>Als Gegenargument könnte man einbringen, dass das Risiko zu hoch ist, in einem solch kritischen Bereich anzufangen. Doch warum sollte man einen Unterschied zum gleichen Ansatz beim Umbau von Legacy-Software machen, wo auch “start where it hurts most” empfohlen wird? </i><i><br />
+</i><i>Eine Skalierung bei Erfolg in weniger kritische Bereiche wird dann wahrscheinlich keine größeren Probleme bereiten. Fängt man mit weniger kritischen an, wird es kein Indiz sein, dass es im hoch kritischen funktionieren wird. Das Verfahren ist in beiden gleich, von daher nur Mut, es kann nur einfacher werden!</i></p>
+<p>Nicht immer ist klar, welcher Bereich das tatsächlich ist oder es werden zu viele Elemente dort hinein interpretiert. Es gibt verschiedene Möglichkeiten, dies herauszufinden und auf das absolute Minimum zu destillieren. Letzteres ist extrem wichtig, da alles, was nicht unmittelbar dazu gehört entfernt werden sollte. Natürlich ist auch dies ein iterativer Prozess, und beim Umbau von SW-Systemen als auch Organisationseinheiten macht oft nur ein schrittweises und kontinuierlich überprüfbares Vorgehen Sinn.</p>
+<p>Im Kapitel “Schnittmuster…” habe ich die weitere Klassifizierung von Subdomains übersprungen:  die zwei besonders erwähnenswerten sind <b><i>Supporting</i></b> und <b><i>Generic Subdomain</i></b>.<br />
+Supporting Subdomains sind quasi Zulieferer der Core Domain. Sie sind auch wichtig, aber eben nicht ganz so kritisch, oder auch austauschbar. Generic Subdomains sind Bereiche, die so generisch sind, dass sie eingekauft werden können oder es bereits Standardlösungen dafür gibt, so dass es sich nicht lohnt, hier etwas selbst zu entwickeln.</p>
+<p>Mögliche Werkzeuge zur Identifizierung und Klassifizierung von Subdomains und Bounded Contexts seien hier exemplarisch genannt: <a href="https://en.wikipedia.org/wiki/Business_Model_Canvas" target="_blank">Business Model Canvas</a>, <a href="https://www.impactmapping.org/" target="_blank">Impact Mapping</a>, <a href="http://www.informit.com/articles/article.aspx?p=1384195&amp;seqNum=2" target="_blank">Purpose Alignment Model</a>, <a href="https://de.wikipedia.org/wiki/Cynefin-Framework" target="_blank">Cynefin Framework</a>, <a href="http://ziobrando.blogspot.de/2013/11/introducing-event-storming.html" target="_blank">Event Storming</a>.</p>
+<h3>Was ist wie wichtig?</h3>
+<p>Als Beispiel eine Analyse der Domains mit Hilfe des Purpose Alignment Models. Dieses hilft bei der Priorisierung und Gewichtung von Themen, in dem es auf den zwei Achsen die <em><strong>unternehmerische </strong></em><em><strong>Kritikalität</strong></em><i> </i>(<i>wie wichtig ist das für uns?</i>) und die <em><strong>Marktdifferenzierung</strong> </em>(<i>wie heben wir uns am Markt, vom Wettbewerb, <span style="font-weight: 400;">von bereits bestehenden Lösungen</span> ab?</i>) darstellt und gegeneinander abwägt.</p>
+<div id="attachment_35707" style="width: 515px" class="wp-caption alignnone"><a href="https://blog.codecentric.de/files/2016/05/DDDPAM_de.png" rel="attachment wp-att-35707"><img class="wp-image-35707 size-full" src="https://blog.codecentric.de/files/2016/05/DDDPAM_de.png" alt="DDD Purpose Alignment Model" width="505" height="494" srcset="https://blog.codecentric.de/files/2016/05/DDDPAM_de-250x245.png 250w, https://blog.codecentric.de/files/2016/05/DDDPAM_de.png 505w" sizes="(max-width: 505px) 100vw, 505px" /></a><p class="wp-caption-text">Klassifizierung von Subdomains mit dem Purpose Alignment Model</p></div>
+<p>Je nachdem, wo eine Domäne bzw. deren Lösung (oder Produkt) dann eingestuft wird, bestimmt dies ihre Klassifizierung. Bei der Core Domain wird dies fast ausschließlich der obere linke Quadrant sein, denn sie macht den Unterschied aus. <span style="font-weight: 400;">Deshalb besitzt sie die höchste Priorität und wir sollten auch dort mit dem Umbau anfangen &#8211; und sie selbst entwickeln.</span></p>
+<p>&nbsp;</p>
+<p><span style="font-weight: 400;">Im letzten Teil dieser Serie werden einige mögliche Vorgehensweisen und Werkzeuge vorgestellt, die für die Umsetzung des Vorhabens mit der neuen Sichtweise, einem ersten Kandidaten für den Umbau und der nun klareren Richtung, hilfreich sind.</span></p>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/legacy-org-agile-org-teil-2/">legacy.org => agile.org (Teil 2)</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></content:encoded>
+            <wfw:commentRss>https://blog.codecentric.de/2016/06/legacy-org-agile-org-teil-2/feed/</wfw:commentRss>
+            <slash:comments>0</slash:comments>
+        </item>
+        <item>
+            <title>Kofax Capture Validierungsskripte &#8211; Von SBL zu VB.NET für Dummies</title>
+            <link>https://blog.codecentric.de/2016/06/kofax-capture-validierungsskripte-von-sbl-zu-vb-net-fuer-dummies/</link>
+            <comments>https://blog.codecentric.de/2016/06/kofax-capture-validierungsskripte-von-sbl-zu-vb-net-fuer-dummies/#respond</comments>
+            <pubDate>Thu, 09 Jun 2016 06:00:27 +0000</pubDate>
+            <dc:creator><![CDATA[Jürgen Voss]]></dc:creator>
+            <category><![CDATA[ECM]]></category>
+            <category><![CDATA[Erfassung]]></category>
+            <category><![CDATA[Kofax Capture]]></category>
+
+            <guid isPermaLink="false">https://blog.codecentric.de/?p=36123</guid>
+            <description><![CDATA[<p>Kofax Capture bietet standardmäßig die Möglichkeit, Indexwerte zu einem Dokument in einer Validierungsmaske einzugeben bzw. automatisch erkannte Werte dort zu bestätigen oder zu ändern. Dazu werden alle zu einer Dokumentart definierten Felder angezeigt und man muss jedes Feld einzeln bestätigen/ändern oder einen Wert eingeben. Dies ist bei automatisch erkannten Werten (wie zum Beispiel bei per... <a class="view-article" href="https://blog.codecentric.de/2016/06/kofax-capture-validierungsskripte-von-sbl-zu-vb-net-fuer-dummies/">Weiterlesen</a></p>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/kofax-capture-validierungsskripte-von-sbl-zu-vb-net-fuer-dummies/">Kofax Capture Validierungsskripte &#8211; Von SBL zu VB.NET für Dummies</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></description>
+            <content:encoded><![CDATA[<p>Kofax Capture bietet standardmäßig die Möglichkeit, Indexwerte zu einem Dokument in einer Validierungsmaske einzugeben bzw. automatisch erkannte Werte dort zu bestätigen oder zu ändern. Dazu werden alle zu einer Dokumentart definierten Felder angezeigt und man muss jedes Feld einzeln bestätigen/ändern oder einen Wert eingeben.</p>
+<p>Dies ist bei automatisch erkannten Werten (wie zum Beispiel bei per OCR ausgelesenen Daten oder bei erkannten Barcodes &#8211; siehe dazu auch: &#8222;<a href="https://blog.codecentric.de/2015/01/kc-barcode/">Kofax Capture – Dokumententrennung mit Barcodes&#8220;</a> ) lästig und unnötig, da die Gültigkeit dieser Werte oftmals durch einfache Logiken oder Abgleich gegen vorhandene Datenbestände sichergestellt werden kann.</p>
+<p>Zur Implementierung solcher Logiken hatte Kofax Capture bzw. Ascent Capture von Anfang an eine interne Programmiersprache in die Validerungsanwendung eingebaut: Softbridge Basic Language oder kurz: SBL. Dies ist eine zum alten Visual Basic kompatible Scriptingsprache aus den 90er Jahren des letzten Jahrhunderts.</p>
+<p><span id="more-36123"></span></p>
+<p>Seit einigen Versionen unterstützt Kofax Capture bei den Validierungsskripten aber auch die Programmiersprachen C# und VB.NET.<br />
+Mit der aktuellen Version 10.x von Kofax Capture wurde die Skriptingsprache SBL nun aber als &#8218;deprecated&#8216; gekennzeichnet, so dass sie eventuell im nächsten Hauptrelease von Kofax Capture nicht mehr enthalten sein wird.</p>
+<p>Obwohl viele Entwickler in den letzten Jahren neue Validierskripte meist mit C# oder VB.NET realisiert haben, gibt es noch sehr viele Kofax Capture Installationen in denen SBL-Skripte aktiv sind. Im Rahmen der Umstellung solcher alten Skripte fiel mir auf, dass die offizielle Kofax Dokumentation zur Programmierung von Validerungsskripten in VB.NET nicht sehr umfangreich ist, und auch die Suche im Internet nur Bruchstücke und Teillösungen liefert. Dies brachte mich auf die Idee, in diesem Artikel kurz die wesentlichen Unterschiede der beiden Entwicklungsumgebungen sowie die wichtigsten bzw. meist genutzten Kofax Capture Events darzustellen.</p>
+<p>Ein Vorteil von SBL war und ist noch immer die Out-of-the-box Verfügbarkeit als Bestandteil der Kofax Capture Anwendung. Kurze Validierungslogiken wie Längenprüfungen o.ä. waren damit mit minimalem Aufwand in kürzester Zeit möglich.</p>
+<p>Für die Entwicklung von Validierskripten mit VB.NET (und auch C#) muss dagegen eine Visual Studio Version auf einer Kofax Capture Admin-Workstation installiert sein.<br />
+Die jeweils nutzbaren Versionen von Visual Studio sind im Kofax Capture Developers Guide der verwendeten Kofax Capture Version aufgelistet. Ich habe für Kofax Capture 10.2 und die folgenden Beispiele Microsoft Visual Basic 2010 verwendet.</p>
+<p><strong>Event-Bezeichnungen in SBL und VB.Net</strong></p>
+<p>Die folgende Tabelle zeigt die wichtigsten und meist genutzten Events beim Skripten in der Kofax-Validierung. Sie enthält zu jedem Event den internen Namen in der SBL-Umgebung (Functions) und in der neuen VB.Net-Umgebung (Subs).</p>
+<p>Unser Beispiel hat auf Dokumentebene zwei Felder definiert: Barcode und Status:</p>
+<table border="2">
+<tbody>
+<tr>
+<td><strong>Event</strong></td>
+<td><strong>SBL-Name</strong></td>
+<td><strong>VB.Net-Name</strong></td>
+</tr>
+<tr>
+<td>Stapel öffnen</td>
+<td>KfxLoadValidation</td>
+<td>Validation_BatchLoading</td>
+</tr>
+<tr>
+<td>Stapel schliessen</td>
+<td>KfxUnloadValidation</td>
+<td>Validation_BatchUnloading</td>
+</tr>
+<tr>
+<td>Dokument öffnen</td>
+<td>KfxDocPreProcess</td>
+<td>DocPreProcessing</td>
+</tr>
+<tr>
+<td>Dokument schliessen</td>
+<td>KfxDocPostProcess</td>
+<td>DocPostProcessing</td>
+</tr>
+<tr>
+<td>Feld Barcode öffnen</td>
+<td>Pre<em>Barcode</em></td>
+<td><em>Barcode</em>_FieldPreProcessing</td>
+</tr>
+<tr>
+<td>Feld Barcode schliessen</td>
+<td>Post<em>Barcode</em></td>
+<td><em>Barcode</em>_FieldPostProcessing</td>
+</tr>
+<tr>
+<td>Feld Status öffnen</td>
+<td>Pre<em>Status</em></td>
+<td><em>Status</em>_FieldPreProcessing</td>
+</tr>
+<tr>
+<td>Feld Status schliessen</td>
+<td>Post<em>Status</em></td>
+<td><em>Status</em>_FieldPostProcessing</td>
+</tr>
+</tbody>
+</table>
+<p>Ich spare mir hier das entsprechende Stück SBL-Scripting und zeige direkt das passende Stück Scripting in VB.Net.</p>
+<ul>
+<li>In allen Events wurden Messageboxen zum Testen der Ablaufsequenz eingebaut.</li>
+<li>Beim Feld Barcode wurde beispielhaft eine Prüfung der Länge auf 6 Zeichen eingebaut.</li>
+</ul>
+<div class="wp_syntax">
+<table width="574">
+<tbody>
+<tr>
+<td class="code">
+<pre style="font-family: monospace;" lang="vb">' Class script: Project
+Imports Kofax.AscentCapture.NetScripting
+Imports Kofax.Capture.CaptureModule.InteropServices
+Imports System
+Imports System.Collections.Generic
+Imports System.Text
+
+Namespace ExampleDocClass
+
+   &lt;SuppressFieldEventsOnDocClose(false)&gt;  _
+   Public Class ExampleDocClass
+	Inherits DocumentValidationScript
+
+	&lt;IndexFieldVariableAttribute("Barcode")&gt; _
+	Dim WithEvents Barcode As FieldScript
+
+	&lt;IndexFieldVariableAttribute("Status")&gt; _
+	Dim WithEvents Status As FieldScript
+
+	'--------------------------------------
+        Private Sub Barcode_FieldPostProcessing(ByVal sender As Object, ByVal e As Kofax.AscentCapture.NetScripting.PostFieldEventArgs) Handles Barcode.FieldPostProcessing
+            Try
+                If Len(Barcode.IndexField.Value) &lt;&gt; 6 Then
+                    Throw New Kofax.AscentCapture.NetScripting.ValidationErrorException("Barcode nur 6-stellig!", Barcode.IndexField)
+                End If
+            Finally
+            End Try
+        End Sub
+
+	'--------------------------------------
+        Private Sub Barcode_FieldPreProcessing(ByVal sender As Object, ByVal e As Kofax.AscentCapture.NetScripting.PreFieldEventArgs) Handles Barcode.FieldPreProcessing
+            MsgBox("Barcode_FieldPreProcessing")
+            'This will skip the field
+            'e.SkipMode = PreFieldEventArgs.SkipModeEnum.SaveAndSkipField
+        End Sub
+
+	'--------------------------------------
+        Private Sub Status_FieldPostProcessing(ByVal sender As Object, ByVal e As Kofax.AscentCapture.NetScripting.PostFieldEventArgs) Handles Status.FieldPostProcessing
+            MsgBox(Status.IndexField.Value)
+        End Sub
+
+	'--------------------------------------
+        Private Sub Status_FieldPreProcessing(ByVal sender As Object, ByVal e As Kofax.AscentCapture.NetScripting.PreFieldEventArgs) Handles Status.FieldPreProcessing
+            MsgBox("Status_FieldPreProcessing")
+            'This will skip the field **********************
+            'e.SkipMode = PreFieldEventArgs.SkipModeEnum.SaveAndSkipField
+        End Sub
+
+	'--------------------------------------
+        Private Sub DocPostProcessing(ByVal sender As Object, ByVal e As Kofax.AscentCapture.NetScripting.PostDocumentEventArgs) Handles Me.DocumentPostProcessing
+            MsgBox("DocPostProsessing")
+        End Sub
+
+	'--------------------------------------
+        Private Sub DocPreProcessing(ByVal sender As Object, ByVal e As Kofax.AscentCapture.NetScripting.PreDocumentEventArgs) Handles Me.DocumentPreProcessing
+            MsgBox("DocPreProsessing")
+            'This will SaveAndSkip the document **********************
+            'e.SaveAndSkip = True
+        End Sub
+
+	'--------------------------------------
+        Private Sub Validation_BatchLoading(ByVal sender As Object, ByVal e As Kofax.AscentCapture.NetScripting.BatchEventArgs) Handles Me.BatchLoading
+            MsgBox("Validation_BatchLoading")
+        End Sub
+
+	'--------------------------------------
+        Private Sub Validation_BatchUnloading(ByVal sender As Object, ByVal e As Kofax.AscentCapture.NetScripting.BatchEventArgs) Handles Me.BatchUnloading
+            MsgBox("Validation_BatchUnloading")
+        End Sub
+
+	Sub New(ByVal bIsValidation As Boolean, ByVal strUserID As String, ByVal strLocaleName As String)
+	    MyBase.New(bIsValidation, strUserID, strLocaleName)
+	End Sub
+
+   End Class
+End Namespace
+
+
+</pre>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Schließlich benötigen wir für VB.Net noch die oft genutzte SaveAndSkipField- und SaveAndSkipDocument- Funktionalität zum Überspringen von Feldern oder ganzen Dokumenten. Dies ist im obigen Beispielcode als Kommentar hinterlegt:</p>
+<ul>
+<li>Für Felder im Event Feldname_FieldPreProcessing:<br />
+e.SkipMode = PreFieldEventArgs.SkipModeEnum.SaveAndSkipField</li>
+<li>Für Dokumente im Event DocPreProcessing:<br />
+e.SaveAndSkip = True</li>
+</ul>
+<p>Detaillierte Informationen zum Kofax Capture .NET Scripting finden Sie in der &#8218;Kofax Capture API Reference&#8216;, die Bestandteil der Dokumentation ist.</p>
+<p>Weitere Blog-Artikel über KC und KTM:</p>
+<p><a href="https://blog.codecentric.de/2016/02/kofax-transformation-modules-sepa-mandate-und-handschriftliche-ergaenzungen-oder-wer-hat-etwas-auf-mein-formular-gekritzelt/">Kofax Transformation Modules: SEPA-Mandate und handschriftliche Ergänzungen – oder: wer hat etwas auf mein Formular gekritzelt?</a></p>
+<p><a href="https://blog.codecentric.de/2015/07/kofax-transformation-modules-ktm-freiformerkennung-fuer-handschriftliche-nummern/">Kofax Transformation Modules (KTM): ‘Freiformerkennung’ für handschriftliche Nummern</a></p>
+<p><a href="https://blog.codecentric.de/2015/01/kc-barcode/">Kofax Capture – Dokumententrennung mit Barcodes</a></p>
+<p><a href="https://blog.codecentric.de/2013/11/ktm-im-versicherungseinsatz-heller-grauer-und-dunkler-posteingang/">KTM im Versicherungseinsatz: Heller, grauer und dunkler Posteingang</a></p>
+<p><a href="https://blog.codecentric.de/2013/03/dokumentenklassifizierung-mit-kofax-transformation-modules-ktm/">Dokumentenklassifizierung mit Kofax Transformation Modules (KTM)</a></p>
+<p><a href="https://blog.codecentric.de/2013/02/kofax-transformation-modules-formatlokatoren-und-dynamische-regulare-ausdrucke-teil-2/">Kofax Transformation Modules – Formatlokatoren und dynamische reguläre Ausdrücke – Teil 2</a></p>
+<p><a href="https://blog.codecentric.de/2013/01/kofax-transformation-modules-formatlokatoren-und-dynamische-regulare-ausdrucke/">Kofax Transformation Modules – Formatlokatoren und dynamische reguläre Ausdrücke</a></p>
+<p><a href="https://blog.codecentric.de/2014/07/ibm-content-collector-sap-formerly-known-ibm-commonstore-sap-kofax-capture-10-und-das-ibm-commonstore-release-skript/">IBM Content Collector for SAP (formerly known as IBM CommonStore for SAP), Kofax Capture 10 und das IBM CommonStore Release Skript</a></p>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/kofax-capture-validierungsskripte-von-sbl-zu-vb-net-fuer-dummies/">Kofax Capture Validierungsskripte &#8211; Von SBL zu VB.NET für Dummies</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></content:encoded>
+            <wfw:commentRss>https://blog.codecentric.de/2016/06/kofax-capture-validierungsskripte-von-sbl-zu-vb-net-fuer-dummies/feed/</wfw:commentRss>
+            <slash:comments>0</slash:comments>
+        </item>
+        <item>
+            <title>Neues in Apache Kafka 0.10 und Confluent Platform 3.0.0</title>
+            <link>https://blog.codecentric.de/2016/06/neues-apache-kafka-0-10-und-confluent-platform-3-0-0/</link>
+            <comments>https://blog.codecentric.de/2016/06/neues-apache-kafka-0-10-und-confluent-platform-3-0-0/#respond</comments>
+            <pubDate>Wed, 08 Jun 2016 05:56:37 +0000</pubDate>
+            <dc:creator><![CDATA[Florian Troßbach]]></dc:creator>
+            <category><![CDATA[Big Data]]></category>
+
+            <guid isPermaLink="false">https://blog.codecentric.de/?p=36139</guid>
+            <description><![CDATA[<p>Die im Mai erschienenen neuen Versionen von Apache Kafka und Confluent Platform enthalten einige spannende Neuerungen. Diese werden in diesem Artikel vorgestellt. Was ist Apache Kafka? Kafka ist ein verteilter Message Broker, der nach dem Publish-Subscribe-Prinzip arbeitet. Durch seine spezielle Architektur kann ein Kafka-Cluster immensen Durchsatz bei sehr niedriger Latenz erreichen – und obendrein noch... <a class="view-article" href="https://blog.codecentric.de/2016/06/neues-apache-kafka-0-10-und-confluent-platform-3-0-0/">Weiterlesen</a></p>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/neues-apache-kafka-0-10-und-confluent-platform-3-0-0/">Neues in Apache Kafka 0.10 und Confluent Platform 3.0.0</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></description>
+            <content:encoded><![CDATA[<p>Die im Mai erschienenen neuen Versionen von Apache Kafka und Confluent Platform enthalten einige spannende Neuerungen. Diese werden in diesem Artikel vorgestellt.</p>
+<p><!-- more --></p>
+<h2>Was ist Apache Kafka?</h2>
+<p>Kafka ist ein verteilter Message Broker, der nach dem Publish-Subscribe-Prinzip arbeitet. Durch seine spezielle Architektur kann ein Kafka-Cluster immensen Durchsatz bei sehr niedriger Latenz erreichen – und obendrein noch hervorragend horizontal skalieren. Die offizielle Dokumentation führt die Grundprinzipien <a href="http://kafka.apache.org/documentation.html#introduction">hier</a> sehr gut aus – eine Erläuterung an dieser Stelle würde den Rahmen dieses Artikels sprengen. Seine Eigenschaften machen Kafka zu einem elementaren Bestandteil des <a href="https://www.codecentric.de/leistungen/loesungen/technologie-treibt-veraenderung/big-data/smack/" target="_blank">SMACK-Stack</a>, über den ich schon <a href="https://blog.codecentric.de/2016/05/der-smack-stack-zum-anfassen/" target="_blank">an anderer Stelle</a> geschrieben habe.</p>
+<p>Die Kafka-Distribution von Apache enthält im Wesentlichen drei Hauptkomponenten:</p>
+<ul>
+<li>Kafka-Broker</li>
+<li>Kafka-Java-Client-Bibliotheken
+<ul>
+<li>Producer-API (seit 0.8.1)</li>
+<li>Consumer-API (seit 0.9)</li>
+<li>Kafka Streams (seit 0.10)</li>
+</ul>
+</li>
+<li>Kafka Connect (seit 0.9)
+<ul>
+<li>Verteiltes Werkzeug zur Integration von Kafka und anderen Systemen</li>
+<li>enthält Dateisystem-Connector</li>
+<li>Eine ganze Reihe von Third-Party Connectors sind verfügbar (http://www.confluent.io/product/connectors)</li>
+</ul>
+</li>
+</ul>
+<h2>Confluent Platform</h2>
+<p>Die Firma <a href="http://www.confluent.io" target="_blank">Confluent</a> wurde von den Entwicklern von Kafka gegründet und ist – innerhalb der Regeln der <a href="http://www.apache.org/" target="_blank">Apache Software Foundation</a> – die treibende Kraft der Weiterentwicklung Kafkas. Die “Confluent Platform” ist eine Streaming-Plattform, die auf der Basis von Apache Kafka aufsetzt und diese um zusätzliche Features erweitert.</p>
+<p>Elemente der Plattform in der Version 3.0.0 sind:</p>
+<ul>
+<ul>
+<li>Kafka-Distribution
+<ul>
+<li>Enthält ggf. schon Bugfixes, die in der aktuellsten Apache-Kafka-Distribution noch nicht enthalten sind.</li>
+</ul>
+</li>
+<li>Zusätzliche Kafka Connectors
+<ul>
+<li>JDBC</li>
+<li>HDFS</li>
+</ul>
+</li>
+<li>Kafka-Clients
+<ul>
+<li>Python</li>
+<li>C/C++</li>
+</ul>
+</li>
+<li>REST-Proxy
+<ul>
+<li>Kafka-REST-API für Sprachen, für die es keine nativen Clients gibt</li>
+</ul>
+</li>
+<li>Schema-Registry
+<ul>
+<li>Auf <a href="https://avro.apache.org/" target="_blank">Apache Avro</a> basierendes Tool zur Verwaltung von Avro-Schemata für die Serialisierung und Deserialisierung von Kafka-Nachrichten</li>
+</ul>
+</li>
+<li>Control Center
+<ul>
+<li>Monitoring-Lösung für ein Kafka-Cluster</li>
+<li>Im Gegensatz zu den anderen Teilen der Plattform nicht Open Source und lizenzpflichtig!</li>
+<li>30 Tage kostenfrei evaluierbar</li>
+</ul>
+</li>
+</ul>
+</ul>
+<p>Somit ergibt sich folgendes Bild:</p>
+<div id="attachment_36222" style="width: 510px" class="wp-caption aligncenter"><a href="https://blog.codecentric.de/files/2016/06/confluent-platform.png" rel="attachment wp-att-36222"><img class="wp-image-36222" src="https://blog.codecentric.de/files/2016/06/confluent-platform-250x238.png" alt="Die Confluent Platform besteht aus der Basisdistribution, Erweiterungen wie der Schema Registry sowie dem kommerziellen Confluent Control Center" width="500" height="476" srcset="https://blog.codecentric.de/files/2016/06/confluent-platform-250x238.png 250w, https://blog.codecentric.de/files/2016/06/confluent-platform-768x732.png 768w, https://blog.codecentric.de/files/2016/06/confluent-platform-700x667.png 700w, https://blog.codecentric.de/files/2016/06/confluent-platform.png 1062w" sizes="(max-width: 500px) 100vw, 500px" /></a><p class="wp-caption-text">Die Confluent Platform besteht aus der Basisdistribution, Erweiterungen wie der Schema Registry sowie dem kommerziellen Confluent Control Center</p></div>
+<h2>Wesentliche Neuerungen</h2>
+<p>Dieser Absatz stellt die wichtigsten Neuerungen an den Brokern, Connect und Client-Bibliotheken in Apache Kafka 0.10 sowie das neue Confluent Control Center vor:</p>
+<h3>Kafka-Broker</h3>
+<ul>
+<ul>
+<ul>
+<li>Zeitstempel
+<p>Mit Version 0.10 wurde das Kafka-Protokoll erweitert. Jede Nachricht enthält nun im Header einen Zeitstempel zusätzlich zum Offset der Nachricht (fortlaufende ID einer Nachricht innerhalb eines Topics und einer Partition). Der Zeitstempel zeigt an, wann die Nachricht produziert wurde.</li>
+<li>Rack-Awareness
+<p>Kafka Topics sind in der Regel verteilt. Ein neues Feature stellt sicher, dass Replicas eines Topics über verschiedene Racks in einem Rechenzentrum verteilt werden können, so dass bei einem Ausfall eines Racks nicht sämtliche Replikationen einer Topic-Partition verloren gehen. Ein Beispiel hierfür ist die Verteilung von Brokern über Availability Zones in AWS.</li>
+<li>Neue Security Features
+<p>Die <a href="https://de.wikipedia.org/wiki/Simple_Authentication_and_Security_Layer">SASL</a>-Unterstützung wurde ausgebaut.</li>
+</ul>
+</ul>
+</ul>
+<h3>Kafka-Clients</h3>
+<p>Die wichtigsten funktionalen Neuerungen in Kafka 0.10 liegen im Client-Bereich:</p>
+<ul>
+<ul>
+<ul>
+<li>Kafka Streams
+<p>Kafka Streams ist eine vollkommen neue Kafka-Client-API. Die API enhält eine Streaming-DSL, mit der leichtgewichtig Streaming-Anwendungen implementiert werden können. Sie enthält die aus anderen APIs und Frameworks bekannten Operationen wie <tt>map</tt>, <tt>filter</tt>, <tt>groupBy</tt> etc. Die Verarbeitung von Nachrichten erfolgt pro Event, durch die neuen Zeitstempel in Kafka-Nachrichten können sogar zeitliche Abweichungen in der Verarbeitung von Nachrichten behandelt werden. Zusätzlich skalieren Streaming-Anwendungen &#8222;out of the box&#8220; und können sowohl eigenständig, in Docker-Containern als auch über Resource-Scheduler wie Mesos laufen. Ein konkretes Beispiel einer einfachen Kafka-Streaming-Anwendung folgt weiter unten im Text. Bei Kafka Streams handelt es sich um eine Bibliothek für Kafka-zu-Kafka-Verarbeitung. Für den Austausch von Daten zwischen Kafka und anderen Systemen wie Datenbanken soll Kafka Connect verwendet werden.</li>
+<li>Producer- und Consumer-API
+<p>Es gibt zwei große Änderungen in den APIs. Zum einen kann ein Kafka-Consumer nun definieren, wie viele Nachrichten er pro Polling-Operation maximal erhalten will. In früheren Versionen war dies nicht möglich und konnte dazu führen, dass ein Consumer so viele Nachrichten erhielt, dass die Verarbeitung länger dauerte als das konfigurierte Heartbeat-Intervall. In diesen Fällen wird ein Consumer am Cluster deregistriert, da dieses annimmt, dass er nicht mehr existiert. Der Entwickler bekommt somit mehr Kontrolle.</p>
+<p>Die zweite Neuerung sind Interceptors an Producern und Consumern. Hierbei handelt es sich um Implementierungen der Interfaces <a href="https://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/producer/ProducerInterceptor.html" target="_blank">ProducerInterceptor</a> und <a href="https://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/consumer/ConsumerInterceptor.html" target="_blank">ConsumerInteceptor</a>.<br />
+Diese Interceptoren sind mächtige Tools. Sie können verwendet werden, um Nachrichten vor dem Schreiben oder Lesen durch die Anwendung zu verändern, zum Beispiel zum Zweck einer Verschlüsselung oder Signatur. Anderseits ermöglichen sie ein Ende-zu-Ende-Monitoring, das in Kafka bislang so nicht möglich war. Zum Beispiel ist es somit möglich, Interceptoren zu schreiben, die Kafka-Metadaten an Monitoring-Lösungen wie den ELK Stack schicken. Confluent nutzt Interceptoren für das Confluent Control Center.</li>
+</ul>
+</ul>
+</ul>
+<h3>Kafka Connect</h3>
+<p>Die wichtigste Änderung an Kafka Connect ist die Erweiterung der REST-API um Monitoring-Endpunkte. Damit muss man nicht wie bislang Log-Dateien auswerten, um den Zustand eines Kafka Connectors zu beobachten.</p>
+<h3>Confluent Control Center</h3>
+<p>Auch wenn es sich hierbei um die einzige proprietäre Komponente der Confluent Platform handelt, muss es an dieser Stelle erwähnt werden. Auf Basis der neuen Interceptoren in den Kafka-Client-APIs ist das Control Center ein Schritt zur besseren Monitorbarkeit eines Kafka-Clusters. Da das Control Center auch nur Gebrauch von den Standardmöglichkeiten Kafkas macht, sind freie Tools mit ähnlichen Fähigkeiten durchaus möglich.</p>
+<h2>Ein Beispiel</h2>
+<p>Das folgende Beispiel demonstriert einige der bereits genannten neuen Features. Wir bauen eine Datenpipeline auf, die über Kafka Connect eine Datei ausliest und den Inhalt zeilenweise in ein Kafka Topic schreibt. Dieses Topic dient als Datenquelle für mehrere Kafka Streams, die die Nachrichten auf verschiedene Arten verarbeiten und in weitere Kafka Topics schreiben. Über eine Kafka-Connect-Datensenke werden die Inhalte dieses Topics wieder auf die Festplatte geschrieben. Wir nutzen das Confluent Control Center zur Administration der Pipeline.</p>
+<h3>Aufsetzen der Kafka-Umgebung</h3>
+<p>Ein normal ausgestatteter PC reicht zum Aufsetzen einer Testumgebung.<br />
+Zunächst checken wir ein <a href="https://github.com/ftrossbach/kafka010intro" target="_blank">GitHub-Projekt</a> aus und laden die Confluent Platform herunter.</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;"><span style="color: #c20cb9; font-weight: bold;">git clone</span> https:<span style="color: #000000; font-weight: bold;">//</span>github.com<span style="color: #000000; font-weight: bold;">/</span>ftrossbach<span style="color: #000000; font-weight: bold;">/</span>kafka010intro
+<span style="color: #7a0874; font-weight: bold;">cd</span> kafka010intro
+<span style="color: #c20cb9; font-weight: bold;">wget</span> http:<span style="color: #000000; font-weight: bold;">//</span>packages.confluent.io<span style="color: #000000; font-weight: bold;">/</span>archive<span style="color: #000000; font-weight: bold;">/</span><span style="color: #000000;">3.0</span><span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0-<span style="color: #000000;">2.11</span>.zip
+<span style="color: #c20cb9; font-weight: bold;">unzip</span> confluent-3.0.0-<span style="color: #000000;">2.11</span>.zip</pre></td></tr></table></div>
+
+<p>Die folgenden Schritte starten die einzelnen Infrastrukturbestandteile im Hintergrund und leiten das Output an Logdateien weiter:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;"><span style="color: #666666; font-style: italic;"># Start Zookeeper</span>
+.<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>bin<span style="color: #000000; font-weight: bold;">/</span>zookeeper-server-start .<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>etc<span style="color: #000000; font-weight: bold;">/</span>kafka<span style="color: #000000; font-weight: bold;">/</span>zookeeper.properties <span style="color: #000000; font-weight: bold;">&gt;</span> zk.log <span style="color: #000000; font-weight: bold;">&amp;</span>
+&nbsp;
+<span style="color: #666666; font-style: italic;"># Give Zookeeper some time to start</span>
+<span style="color: #c20cb9; font-weight: bold;">sleep</span> 5s
+&nbsp;
+<span style="color: #666666; font-style: italic;"># Start a single Kafka Broker</span>
+.<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>bin<span style="color: #000000; font-weight: bold;">/</span>kafka-server-start .<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>etc<span style="color: #000000; font-weight: bold;">/</span>kafka<span style="color: #000000; font-weight: bold;">/</span>server.properties <span style="color: #000000; font-weight: bold;">&gt;</span> broker.log <span style="color: #000000; font-weight: bold;">&amp;</span>
+<span style="color: #666666; font-style: italic;"># Give Broker some time to start</span>
+<span style="color: #c20cb9; font-weight: bold;">sleep</span> 5s
+&nbsp;
+<span style="color: #666666; font-style: italic;"># Start Schema Registry</span>
+.<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>bin<span style="color: #000000; font-weight: bold;">/</span>schema-registry-start .<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>etc<span style="color: #000000; font-weight: bold;">/</span>schema-registry<span style="color: #000000; font-weight: bold;">/</span>schema-registry.properties <span style="color: #000000; font-weight: bold;">&gt;</span> registry.log <span style="color: #000000; font-weight: bold;">&amp;</span>
+<span style="color: #666666; font-style: italic;"># Give Schema Registry some time to start</span>
+<span style="color: #c20cb9; font-weight: bold;">sleep</span> 5s
+&nbsp;
+<span style="color: #666666; font-style: italic;"># Start Kafka Connect</span>
+.<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>bin<span style="color: #000000; font-weight: bold;">/</span>connect-distributed connect-distributed.properties <span style="color: #000000; font-weight: bold;">&gt;</span> connect.log <span style="color: #000000; font-weight: bold;">&amp;</span>
+&nbsp;
+<span style="color: #666666; font-style: italic;"># Give Connect some time to start</span>
+<span style="color: #c20cb9; font-weight: bold;">sleep</span> 5s
+&nbsp;
+<span style="color: #666666; font-style: italic;"># Start Confluent Control Center (dauert eine Weile)</span>
+.<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>bin<span style="color: #000000; font-weight: bold;">/</span>control-center-start control-center.properties <span style="color: #000000; font-weight: bold;">&gt;</span> ccc.log <span style="color: #000000; font-weight: bold;">&amp;</span></pre></td></tr></table></div>
+
+<p>Nach dem Start können wir uns unter http://localhost:9021 das Control-Center ansehen:</p>
+<div id="attachment_36158" style="width: 710px" class="wp-caption aligncenter"><a href="https://blog.codecentric.de/files/2016/06/empty-ccc.png" rel="attachment wp-att-36158"><img class="wp-image-36158 size-large" src="https://blog.codecentric.de/files/2016/06/empty-ccc-700x481.png" alt="Die Übersichtsseite des Confluent Control Centers" width="700" height="481" srcset="https://blog.codecentric.de/files/2016/06/empty-ccc-250x172.png 250w, https://blog.codecentric.de/files/2016/06/empty-ccc-768x528.png 768w, https://blog.codecentric.de/files/2016/06/empty-ccc-700x481.png 700w" sizes="(max-width: 700px) 100vw, 700px" /></a><p class="wp-caption-text">Die Übersichtsseite des Confluent Control Centers</p></div>
+<p>Da wir noch keinen Kafka-Producer oder -Consumer gestartet haben, sehen wir auch noch keine Informationen. Dies ändern wir nun aber, indem wir eine Kafka-Connect-Datei-Quelle anlegen, die den Text von <a href="http://www.digbib.org/Johann_Wolfgang_von_Goethe_1749/Faust_I" target="_blank">Goethes Faust</a> aus einer Datei einliest. Zunächst legen wir ein Topic namens &#8222;faust&#8220; an:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;">.<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>bin<span style="color: #000000; font-weight: bold;">/</span>kafka-topics <span style="color: #660033;">--create</span> <span style="color: #660033;">--topic</span> faust <span style="color: #660033;">--zookeeper</span> localhost:<span style="color: #000000;">2181</span> \
+<span style="color: #660033;">--partitions</span> <span style="color: #000000;">1</span> <span style="color: #660033;">--replication-factor</span> <span style="color: #000000;">1</span></pre></td></tr></table></div>
+
+<p>Im Anschluss konfigurieren wir den Connector. Dies kann per REST-API oder per Control Center geschehen. Wir nutzen das Control Center:</p>
+<div id="attachment_36157" style="width: 710px" class="wp-caption aligncenter"><a href="https://blog.codecentric.de/files/2016/06/connect-source.png" rel="attachment wp-att-36157"><img class="wp-image-36157 size-large" src="https://blog.codecentric.de/files/2016/06/connect-source-700x467.png" alt="connect-source" width="700" height="467" srcset="https://blog.codecentric.de/files/2016/06/connect-source-250x167.png 250w, https://blog.codecentric.de/files/2016/06/connect-source-768x512.png 768w, https://blog.codecentric.de/files/2016/06/connect-source-700x467.png 700w, https://blog.codecentric.de/files/2016/06/connect-source-120x80.png 120w" sizes="(max-width: 700px) 100vw, 700px" /></a><p class="wp-caption-text">Die Konfiguration einer Dateiquelle</p></div>
+<p>Der funktional äquivalente REST-Aufruf sähe so aus:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;">curl <span style="color: #660033;">-X</span> POST <span style="color: #660033;">-H</span> <span style="color: #ff0000;">&quot;Content-Type: application/json&quot;</span> <span style="color: #660033;">--data</span> <span style="color: #ff0000;">'{&quot;name&quot;: &quot;faust-quelle&quot;, &quot;config&quot;: {&quot;connector.class&quot;:&quot;org.apache.kafka.connect.file.FileStreamSourceConnector&quot;, &quot;tasks.max&quot;:&quot;1&quot;, &quot;topic&quot;:&quot;faust&quot;, &quot;file&quot;:&quot;/Users/ftr/Projects/kafka010intro/faust.txt&quot; }}'</span> http:<span style="color: #000000; font-weight: bold;">//</span>localhost:<span style="color: #000000;">8083</span><span style="color: #000000; font-weight: bold;">/</span>connectors</pre></td></tr></table></div>
+
+<p>Im Anschluss prüfen wir per Terminal, ob das Topic nun alle Zeilen des Faust als einzelne Nachrichten enthält:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;">.<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>bin<span style="color: #000000; font-weight: bold;">/</span>kafka-console-consumer <span style="color: #660033;">--from-beginning</span> \
+<span style="color: #660033;">--zookeeper</span> localhost:<span style="color: #000000;">2181</span> <span style="color: #660033;">--topic</span> faust</pre></td></tr></table></div>
+
+<p>Den Status des Connectors können wir seit Version 0.10 nun auch per REST prüfen:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;">curl localhost:<span style="color: #000000;">8083</span><span style="color: #000000; font-weight: bold;">/</span>connectors<span style="color: #000000; font-weight: bold;">/</span>faust-quelle<span style="color: #000000; font-weight: bold;">/</span>status
+&nbsp;
+<span style="color: #7a0874; font-weight: bold;">&#123;</span>
+ <span style="color: #ff0000;">&quot;name&quot;</span>: <span style="color: #ff0000;">&quot;faust-quelle&quot;</span>,
+ <span style="color: #ff0000;">&quot;connector&quot;</span>: <span style="color: #7a0874; font-weight: bold;">&#123;</span>
+   <span style="color: #ff0000;">&quot;state&quot;</span>: <span style="color: #ff0000;">&quot;RUNNING&quot;</span>,
+   <span style="color: #ff0000;">&quot;worker_id&quot;</span>: <span style="color: #ff0000;">&quot;192.168.178.23:8083&quot;</span>
+ <span style="color: #7a0874; font-weight: bold;">&#125;</span>,
+ <span style="color: #ff0000;">&quot;tasks&quot;</span>: <span style="color: #7a0874; font-weight: bold;">&#91;</span>
+   <span style="color: #7a0874; font-weight: bold;">&#123;</span>
+     <span style="color: #ff0000;">&quot;state&quot;</span>: <span style="color: #ff0000;">&quot;RUNNING&quot;</span>,
+     <span style="color: #ff0000;">&quot;id&quot;</span>: <span style="color: #000000;">0</span>,
+     <span style="color: #ff0000;">&quot;worker_id&quot;</span>: <span style="color: #ff0000;">&quot;192.168.178.23:8083&quot;</span>
+   <span style="color: #7a0874; font-weight: bold;">&#125;</span>
+ <span style="color: #7a0874; font-weight: bold;">&#93;</span>
+<span style="color: #7a0874; font-weight: bold;">&#125;</span></pre></td></tr></table></div>
+
+<p>Als nächstes starten wir einen Connector, der die Zeilen aus dem Topic “faust” liest und in eine andere Datei schreibt:</p>
+<p><a href="https://blog.codecentric.de/files/2016/06/connect-senke.png" rel="attachment wp-att-36156"><img class="aligncenter size-large wp-image-36156" src="https://blog.codecentric.de/files/2016/06/connect-senke-700x469.png" alt="Die Konfiguration einer Dateisenke" srcset="https://blog.codecentric.de/files/2016/06/connect-senke-768x514.png 768w, https://blog.codecentric.de/files/2016/06/connect-senke-700x469.png 700w" sizes="(max-width: 700px) 100vw, 700px" /></a></p>
+<p>Ein Blick auf das Stream-Monitoring zeigt mittlerweile Bewegung:</p>
+<p><a href="https://blog.codecentric.de/files/2016/06/stream-monitoring.png" rel="attachment wp-att-36155"><img class="aligncenter size-large wp-image-36155" src="https://blog.codecentric.de/files/2016/06/stream-monitoring-700x504.png" alt="Das Stream-Monitoring nach dem ersten Nachrichtenfluss" srcset="https://blog.codecentric.de/files/2016/06/stream-monitoring-250x180.png 250w, https://blog.codecentric.de/files/2016/06/stream-monitoring-768x553.png 768w, https://blog.codecentric.de/files/2016/06/stream-monitoring-700x504.png 700w, https://blog.codecentric.de/files/2016/06/stream-monitoring-50x36.png 50w" sizes="(max-width: 700px) 100vw, 700px" /></a></p>
+<p>Wir können uns nun auf der Festplatte eine Kopie des <em>Faust</em> ansehen, aber das ist natürlich noch ein ziemlich langweiliger Anwendungsfall. Im nächsten Schritt starten wir eine Kafka-Streaming-Anwendung, die die Daten zwischen zwei Kafka Connectors transformiert. Der simpelste Fall ist die Faust-Shout-Anwendung &#8211; jede Zeile wird in Großbuchstaben transformiert. Dazu legen wir zunächst ein Ziel-Topic namens &#8222;faust-shout&#8220; an:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;">.<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>bin<span style="color: #000000; font-weight: bold;">/</span>kafka-topics <span style="color: #660033;">--create</span> <span style="color: #660033;">--topic</span> faust-shout \
+<span style="color: #660033;">--zookeeper</span> localhost:<span style="color: #000000;">2181</span> <span style="color: #660033;">--partitions</span> <span style="color: #000000;">1</span> <span style="color: #660033;">--replication-factor</span> <span style="color: #000000;">1</span></pre></td></tr></table></div>
+
+<p>Die Streaming-Anwendung selbst ist nun ziemlich einfach:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">class</span> Shout <span style="color: #009900;">&#123;</span>
+&nbsp;
+   <span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #000066; font-weight: bold;">void</span> main<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span><span style="color: #009900;">&#91;</span><span style="color: #009900;">&#93;</span> args<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+&nbsp;
+       <span style="color: #003399;">Properties</span> streamsConfiguration <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">Properties</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span>StreamsConfig.<span style="color: #006633;">APPLICATION_ID_CONFIG</span>, <span style="color: #0000ff;">&quot;shout&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span>StreamsConfig.<span style="color: #006633;">BOOTSTRAP_SERVERS_CONFIG</span>, <span style="color: #0000ff;">&quot;localhost:9092&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span>StreamsConfig.<span style="color: #006633;">ZOOKEEPER_CONNECT_CONFIG</span>, <span style="color: #0000ff;">&quot;localhost:2181&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span>StreamsConfig.<span style="color: #006633;">KEY_SERDE_CLASS_CONFIG</span>, Serdes.<span style="color: #003399;">String</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getClass</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getName</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span>StreamsConfig.<span style="color: #006633;">VALUE_SERDE_CLASS_CONFIG</span>, Serdes.<span style="color: #003399;">String</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getClass</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getName</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;auto.offset.reset&quot;</span>, <span style="color: #0000ff;">&quot;earliest&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+&nbsp;
+       <span style="color: #000000; font-weight: bold;">final</span> Serde stringSerde <span style="color: #339933;">=</span> Serdes.<span style="color: #003399;">String</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+       KStreamBuilder builder <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> KStreamBuilder<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       <span style="color: #666666; font-style: italic;">//lese die Key-Value Paare aus dem Topic faust</span>
+       KStream<span style="color: #339933;">&lt;</span><span style="color: #003399;">String</span>, String<span style="color: #339933;">&gt;</span> textLines <span style="color: #339933;">=</span> builder.<span style="color: #006633;">stream</span><span style="color: #009900;">&#40;</span>stringSerde, stringSerde, <span style="color: #0000ff;">&quot;faust&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       <span style="color: #666666; font-style: italic;">//transformiere die Paare, in dem der Value (line) in Großbuchstaben formatiert wird</span>
+       KStream<span style="color: #339933;">&lt;</span><span style="color: #003399;">String</span>, String<span style="color: #339933;">&gt;</span> upperCaseLines <span style="color: #339933;">=</span> textLines.<span style="color: #006633;">map</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#40;</span>key, line<span style="color: #009900;">&#41;</span> <span style="color: #339933;">-&gt;</span> <span style="color: #000000; font-weight: bold;">new</span> KeyValue<span style="color: #339933;">&lt;&gt;</span><span style="color: #009900;">&#40;</span>key, line.<span style="color: #006633;">toUpperCase</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       <span style="color: #666666; font-style: italic;">//schreibe den transformierten Stream in das Topic faust-shout</span>
+       upperCaseLines.<span style="color: #006633;">to</span><span style="color: #009900;">&#40;</span>stringSerde, stringSerde, <span style="color: #0000ff;">&quot;faust-shout&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+&nbsp;
+       KafkaStreams streams <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> KafkaStreams<span style="color: #009900;">&#40;</span>builder, streamsConfiguration<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       <span style="color: #666666; font-style: italic;">//hier startet die Transformations-Pipeline</span>
+       streams.<span style="color: #006633;">start</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   <span style="color: #009900;">&#125;</span>
+<span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<p>Nachdem wir eine weitere Kafka-Connect-Dateisenke angelegt haben, die die Daten aus dem Topic “faust-shout” liest und in eine Datei schreibt, sehen wir den Faust in seiner ganzen schreienden Pracht:</p>
+<pre>ZUEIGNUNG.
+
+IHR NAHT EUCH WIEDER, SCHWANKENDE GESTALTEN,
+DIE FRÜH SICH EINST DEM TRÜBEN BLICK GEZEIGT.
+VERSUCH ICH WOHL, EUCH DIESMAL FESTZUHALTEN?
+FÜHL ICH MEIN HERZ NOCH JENEM WAHN GENEIGT?
+IHR DRÄNGT EUCH ZU! NUN GUT, SO MÖGT IHR WALTEN,
+WIE IHR AUS DUNST UND NEBEL UM MICH STEIGT;
+MEIN BUSEN FÜHLT SICH JUGENDLICH ERSCHÜTTERT
+VOM ZAUBERHAUCH, DER EUREN ZUG UMWITTERT.
+</pre>
+<p>Im Prinzip haben wir somit eine erste ETL-Pipeline umgesetzt – wir haben Daten aus einer Dateiquelle extrahiert, sie mit Kafka Streams transformiert und sie in ein weiteres System geladen, auch wenn es sich bei letzterem nur um das Dateisystem handelt. Kafka Streams kann aber noch mehr! Im letzten Beispiel werden wir zählen, wie oft ein Protagonist im Faust spricht.<br />
+Zunächst legen wir hierfür ein weiteres Topic an:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="bash" style="font-family:monospace;">.<span style="color: #000000; font-weight: bold;">/</span>confluent-3.0.0<span style="color: #000000; font-weight: bold;">/</span>bin<span style="color: #000000; font-weight: bold;">/</span>kafka-topics <span style="color: #660033;">--create</span> <span style="color: #660033;">--topic</span> faust-count \
+<span style="color: #660033;">--zookeeper</span> localhost:<span style="color: #000000;">2181</span> <span style="color: #660033;">--partitions</span> <span style="color: #000000;">1</span> <span style="color: #660033;">--replication-factor</span> <span style="color: #000000;">1</span></pre></td></tr></table></div>
+
+<p>Für die Berechnung kommt uns die Struktur der Quelldatei zu Gute, da man die benötigte Information sehr leicht daraus gewinnen kann:</p>
+<pre>MEPHISTOPHELES:
+Wozu der Lärm? was steht dem Herrn zu Diensten?
+
+FAUST:
+Das also war des Pudels Kern!
+Ein fahrender Skolast? Der Kasus macht mich lachen.
+</pre>
+<p>Wir betrachten also alle Zeilen, die mit mindestens zwei Großbuchstaben beginnen und mit einem Doppelpunkt enden. Die Namen, die wir daraus mit einem regulären Ausdruck extrahieren, benutzen wir als Schlüssel, deren Vorkommen wir im Anschluss zählen.</p>
+<p>In Quellcode sieht dies so aus:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="java" style="font-family:monospace;"><span style="color: #000000; font-weight: bold;">final</span> <span style="color: #000000; font-weight: bold;">static</span> Pattern pattern <span style="color: #339933;">=</span> Pattern.<span style="color: #006633;">compile</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;([A-Z]{2,}<span style="color: #000099; font-weight: bold;">\\</span>s?([A-Z]*)).*:&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #000000; font-weight: bold;">public</span> <span style="color: #000000; font-weight: bold;">static</span> <span style="color: #000066; font-weight: bold;">void</span> main<span style="color: #009900;">&#40;</span><span style="color: #003399;">String</span><span style="color: #009900;">&#91;</span><span style="color: #009900;">&#93;</span> args<span style="color: #009900;">&#41;</span> <span style="color: #009900;">&#123;</span>
+&nbsp;
+   <span style="color: #003399;">Properties</span> streamsConfiguration <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> <span style="color: #003399;">Properties</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span>StreamsConfig.<span style="color: #006633;">APPLICATION_ID_CONFIG</span>, <span style="color: #0000ff;">&quot;count&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span>StreamsConfig.<span style="color: #006633;">BOOTSTRAP_SERVERS_CONFIG</span>, <span style="color: #0000ff;">&quot;localhost:9092&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span>StreamsConfig.<span style="color: #006633;">ZOOKEEPER_CONNECT_CONFIG</span>, <span style="color: #0000ff;">&quot;localhost:2181&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span>StreamsConfig.<span style="color: #006633;">KEY_SERDE_CLASS_CONFIG</span>, Serdes.<span style="color: #003399;">String</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getClass</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getName</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span>StreamsConfig.<span style="color: #006633;">VALUE_SERDE_CLASS_CONFIG</span>, Serdes.<span style="color: #003399;">String</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getClass</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">getName</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   streamsConfiguration.<span style="color: #006633;">put</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;auto.offset.reset&quot;</span>, <span style="color: #0000ff;">&quot;earliest&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+&nbsp;
+   <span style="color: #000000; font-weight: bold;">final</span> Serde stringSerde <span style="color: #339933;">=</span> Serdes.<span style="color: #003399;">String</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   <span style="color: #000000; font-weight: bold;">final</span> Serde longSerde <span style="color: #339933;">=</span> Serdes.<span style="color: #003399;">Long</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+   KStreamBuilder builder <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> KStreamBuilder<span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   <span style="color: #666666; font-style: italic;">//lese die Key-Value Paare aus dem Topic faust</span>
+   KStream<span style="color: #339933;">&lt;</span><span style="color: #003399;">String</span>, String<span style="color: #339933;">&gt;</span> textLines <span style="color: #339933;">=</span> builder.<span style="color: #006633;">stream</span><span style="color: #009900;">&#40;</span>stringSerde, stringSerde, <span style="color: #0000ff;">&quot;faust&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+&nbsp;
+   <span style="color: #666666; font-style: italic;">//filtere nur die Zeilen heraus, die dem Schema &quot;NAME IN GROSSBUCHSTABEN:&quot; folgen</span>
+   KStream<span style="color: #339933;">&lt;</span><span style="color: #003399;">String</span>, String<span style="color: #339933;">&gt;</span> filteredLines <span style="color: #339933;">=</span> textLines.<span style="color: #006633;">filter</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#40;</span>key, value<span style="color: #009900;">&#41;</span> <span style="color: #339933;">-&gt;</span> pattern.<span style="color: #006633;">matcher</span><span style="color: #009900;">&#40;</span>value<span style="color: #009900;">&#41;</span>.<span style="color: #006633;">matches</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+   <span style="color: #666666; font-style: italic;">//extrahiere den Characternamen und schreibe ihn als Schlüssel</span>
+   KStream<span style="color: #339933;">&lt;</span><span style="color: #003399;">String</span>, String<span style="color: #339933;">&gt;</span> characterNameAsKey <span style="color: #339933;">=</span> filteredLines.<span style="color: #006633;">map</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#40;</span>key, value<span style="color: #009900;">&#41;</span> <span style="color: #339933;">-&gt;</span> <span style="color: #009900;">&#123;</span>
+       Matcher matcher <span style="color: #339933;">=</span> pattern.<span style="color: #006633;">matcher</span><span style="color: #009900;">&#40;</span>value<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       matcher.<span style="color: #006633;">find</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+       <span style="color: #000000; font-weight: bold;">return</span> <span style="color: #000000; font-weight: bold;">new</span> KeyValue<span style="color: #339933;">&lt;&gt;</span><span style="color: #009900;">&#40;</span>matcher.<span style="color: #006633;">group</span><span style="color: #009900;">&#40;</span><span style="color: #cc66cc;">1</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">trim</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>, value<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   <span style="color: #009900;">&#125;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+   <span style="color: #666666; font-style: italic;">//Zähle die Vorkommen der Schlüssel (Charakternamen)</span>
+   KTable<span style="color: #339933;">&lt;</span><span style="color: #003399;">String</span>, Long<span style="color: #339933;">&gt;</span> countTable <span style="color: #339933;">=</span> characterNameAsKey.<span style="color: #006633;">countByKey</span><span style="color: #009900;">&#40;</span><span style="color: #0000ff;">&quot;CountTable&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+   <span style="color: #666666; font-style: italic;">//Kombiniere Charaktername (key) und Wert im Wert</span>
+   KStream<span style="color: #339933;">&lt;</span><span style="color: #003399;">String</span>, String<span style="color: #339933;">&gt;</span> countStream <span style="color: #339933;">=</span> countTable.<span style="color: #006633;">toStream</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span>.<span style="color: #006633;">map</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#40;</span>key,value<span style="color: #009900;">&#41;</span> <span style="color: #339933;">-&gt;</span> <span style="color: #000000; font-weight: bold;">new</span> KeyValue<span style="color: #339933;">&lt;&gt;</span><span style="color: #009900;">&#40;</span>key, key <span style="color: #339933;">+</span> <span style="color: #0000ff;">&quot;: &quot;</span> <span style="color: #339933;">+</span> value<span style="color: #009900;">&#41;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+&nbsp;
+   <span style="color: #666666; font-style: italic;">//schreibe den transformierten Stream in das Topic faust-count</span>
+   countStream.<span style="color: #006633;">to</span><span style="color: #009900;">&#40;</span>stringSerde, stringSerde, <span style="color: #0000ff;">&quot;faust-count&quot;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+&nbsp;
+&nbsp;
+   KafkaStreams streams <span style="color: #339933;">=</span> <span style="color: #000000; font-weight: bold;">new</span> KafkaStreams<span style="color: #009900;">&#40;</span>builder, streamsConfiguration<span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+   <span style="color: #666666; font-style: italic;">//hier startet die Transformations-Pipeline</span>
+   streams.<span style="color: #006633;">start</span><span style="color: #009900;">&#40;</span><span style="color: #009900;">&#41;</span><span style="color: #339933;">;</span>
+<span style="color: #009900;">&#125;</span></pre></td></tr></table></div>
+
+<p>Wir können uns den Inhalt des Topics “faust-count” nun über Kafka Connect auf die Festplatte schreiben. Da es sich um Stream-Processing handelt, sehen wir in dieser Datei nicht nur die endgültige Anzahl an Auftritten pro Protagonist, sondern die Entwicklung. So finden wir heraus, dass Mephistopheles ca 250 mal zur Sprache kommt:</p>
+<pre>DIREKTOR: 1
+DICHTER: 1
+LUSTIGE PERSON: 1
+DIREKTOR: 2
+DICHTER: 2
+DIREKTOR: 3
+DICHTER: 3
+LUSTIGE PERSON: 2
+DICHTER: 4
+LUSTIGE PERSON: 3
+DIREKTOR: 4
+RAPHAEL: 1
+GABRIEL: 1
+MICHAEL: 1
+ZU DREI: 1
+MEPHISTOPHELES: 1
+[..]
+MARGARETE: 79
+FAUST: 224
+MARGARETE: 80
+FAUST: 225
+MARGARETE: 81
+FAUST: 226
+MARGARETE: 82
+FAUST: 227
+MEPHISTOPHELES: 253
+MARGARETE: 83
+FAUST: 228
+MARGARETE: 84
+MEPHISTOPHELES: 254
+MARGARETE: 85
+MEPHISTOPHELES: 255
+STIMME: 12
+MEPHISTOPHELES: 256
+STIMME: 13
+MEPHISTOPHELES: 257
+MEPHISTOPHELES: 258
+</pre>
+<h2>Fazit</h2>
+<p>Hiermit beenden wir unseren ersten Einblick in die Neuerungen in Kafka 0.10 und Confluent Platform 3.0.0. Kafka Streams treten an, um Frameworks wie Spark den Rang abzulaufen. Das ist vor allem da möglich, wo es um Transformationen zwischen Kafka-Topics handelt. Die Anbindung an Umsysteme über Connect wurde vor allem um Monitoring-Fähigkeiten erweitert – ob dies genügt, um etabliertere Technologien wie Spark ablösen zu können, hängt vom Anwendungsfall ab. Das Konzept der Interceptors ermöglicht verbessertes Monitoring von Kafka-Clustern. Das Confluent Control Center zeigt hier einen vielversprechenden Ansatz, ist aber kommerziell.</p>
+<h3>Anhänge und Literatur</h3>
+<ul>
+<li><a href="http://docs.confluent.io/3.0.0/" target="_blank">Die Dokumentation der Confluent Platform</a></li>
+<li><a href="http://Die Homepage des Kafka-Projekts" target="_blank">http://kafka.apache.org/</a></li>
+<li><a href="https://github.com/ftrossbach/kafka010intro" target="_blank">Das GitHub-Repository mit den gezeigten Codebeispielen</a></li>
+</ul>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/neues-apache-kafka-0-10-und-confluent-platform-3-0-0/">Neues in Apache Kafka 0.10 und Confluent Platform 3.0.0</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></content:encoded>
+            <wfw:commentRss>https://blog.codecentric.de/2016/06/neues-apache-kafka-0-10-und-confluent-platform-3-0-0/feed/</wfw:commentRss>
+            <slash:comments>0</slash:comments>
+        </item>
+        <item>
+            <title>Accessmanagement mit Keycloak</title>
+            <link>https://blog.codecentric.de/2016/06/accessmanagement-mit-keycloak/</link>
+            <comments>https://blog.codecentric.de/2016/06/accessmanagement-mit-keycloak/#respond</comments>
+            <pubDate>Tue, 07 Jun 2016 10:42:59 +0000</pubDate>
+            <dc:creator><![CDATA[Dieter Dirkes]]></dc:creator>
+            <category><![CDATA[Allgemein]]></category>
+            <category><![CDATA[Security]]></category>
+            <category><![CDATA[Java]]></category>
+            <category><![CDATA[Keycloak]]></category>
+            <category><![CDATA[Microservice Security]]></category>
+            <category><![CDATA[single-sign-on]]></category>
+
+            <guid isPermaLink="false">https://blog.codecentric.de/?p=32830</guid>
+            <description><![CDATA[<p>In diesem Artikel stelle ich das Open-Source Projekt Keycloak vor, ein integriertes Single Sign-On und IDM für RESTful Web Services und Browser Apps. Keycloak wird von Red Hat entwickelt und gefördert. Die Projektseiten befinden sich unter http://keycloak.jboss.org, die Sourcen sind in GitHub unter https://github.com/keycloak/keycloak zu finden. Lead-Entwickler sind im wesentlichen Stian Thorgersen, Bill Burke und... <a class="view-article" href="https://blog.codecentric.de/2016/06/accessmanagement-mit-keycloak/">Weiterlesen</a></p>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/accessmanagement-mit-keycloak/">Accessmanagement mit Keycloak</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></description>
+            <content:encoded><![CDATA[<p>In diesem Artikel stelle ich das Open-Source Projekt Keycloak vor, ein integriertes Single Sign-On und IDM für RESTful Web Services und Browser Apps.</p>
+<p>Keycloak wird von Red Hat entwickelt und gefördert. Die Projektseiten befinden sich unter <a href="http://keycloak.jboss.org" target="_blank">http://keycloak.jboss.org</a>, die Sourcen sind in GitHub unter <a href="https://github.com/keycloak/keycloak" target="_blank">https://github.com/keycloak/keycloak</a> zu finden. Lead-Entwickler sind im wesentlichen Stian Thorgersen, Bill Burke und Marek Posolda. Das Produkt ist komplett in Java beschrieben und bedient sich sehr ausgiebig an Red Hats Java Stack. So wird standardmässig WildFly als Applicationsserver eingesetzt und auch die Clustering- und HA-Funktionen von Wildfly werden genutzt.</p>
+<h2>Warum das Ganze?</h2>
+<p>Im Rahmen eines Kundenprojektes bestand die Aufgabe, eine vorhandene Lösung für das Access-Management abzulösen. Es wird eine zentrale, anwendungsübergreifende Authentifizierungslösung (&#8222;Login&#8220;) mit Single-Sign-On-Funktionalität für alle Web-relevanten Anwendungen des Kunden benötigt. Weiterhin besteht der Ausblick auf Mehr-Faktor-Authentifizierungen und Social-Media-Login. Zielvolumen sind mehrere Millionen Online-Nutzer in allen Kontinenten für diverse Webanwendungen des Kunden.</p>
+<p>Während der Evaluierung möglicher Kandidaten für die Ablösung haben wir uns dabei auch mit Keycloak beschäftigt und dieses Produkt letzendlich auch eingesetzt.</p>
+<h3>Was kann Keycloak?</h3>
+<p>Keycloak ist ein Java-basiertes System für Single-Sign-On. Es geht hier im wesentlichen um die Autorisierung für Web-Anwendungen, mobile Anwendungen und REST-Services. Hierfür bietet Keycloak die zentralen Funktionen wie Login, Logout, Selbstregistrierung und auch Mehr-Faktor Authentifizierung an.</p>
+<p>Das System unterstützt für die Anmeldung alle gängigen Verfahren:</p>
+<ul>
+<li>OAuth und OAuth2</li>
+<li>OpenID-Connect</li>
+<li>JWT</li>
+<li>SAML</li>
+<li>Kerberos</li>
+</ul>
+<h3>Realms</h3>
+<p>Innerhalb von Keycloak arbeitet das System mit sog. Realms, pro Realm gibt es eine eigene Benutzerverwaltung, Berechtigung, Workflows und UI-Themes.</p>
+<p>Als Identity-Provider sind im Keycloak pro Realm LDAP und Kerberos als Provider konfigurierbar und Keycloak kann hier auch ein sog. sufficient login, sprich es werden alle Identity-Provider nach der Priorität befragt bis einer von diesen den anmeldenden User kennt (oder auch nicht). Auf diesem Weg kann man mit Keycloak z.B. auch mehrere Datentöpfe für interne User und Web-User in einem Realm nutzen.</p>
+<p>Wer keine Windows-Domäne o.ä. hat und auch keinen zentralen LDAP kann Keycloak natürlich auch ohne Identity-Provider nutzen und alle Benutzer in Keycloak selbst anlegen und nutzen (hierzu gibt es dann z.B. auch die Selbstregistrierung).</p>
+<p><span style="text-decoration: underline;"><a href="https://blog.codecentric.de/files/2016/06/Realm-Overview.png" rel="attachment wp-att-36131"><img class="alignnone wp-image-36131" src="https://blog.codecentric.de/files/2016/06/Realm-Overview-250x206.png" alt="Realm Overview" width="381" height="314" srcset="https://blog.codecentric.de/files/2016/06/Realm-Overview-250x206.png 250w, https://blog.codecentric.de/files/2016/06/Realm-Overview-120x99.png 120w, https://blog.codecentric.de/files/2016/06/Realm-Overview.png 472w" sizes="(max-width: 381px) 100vw, 381px" /></a></span></p>
+<h3>Wie sieht das aus?</h3>
+<p><a href="https://blog.codecentric.de/files/2016/06/kc01.png" rel="attachment wp-att-36121"><img class="alignnone wp-image-36121" src="https://blog.codecentric.de/files/2016/06/kc01-250x130.png" alt="Keycloak 1.9.5 main screen" width="606" height="315" srcset="https://blog.codecentric.de/files/2016/06/kc01-250x130.png 250w, https://blog.codecentric.de/files/2016/06/kc01-768x399.png 768w, https://blog.codecentric.de/files/2016/06/kc01-700x364.png 700w, https://blog.codecentric.de/files/2016/06/kc01-50x26.png 50w" sizes="(max-width: 606px) 100vw, 606px" /></a></p>
+<h2>Hochverfügbarkeit und Skalierbarkeit</h2>
+<p>Wie in der Einleitung bereits erwähnt setzt Keycloak sehr stark auf den Basisfunktionalitäten von WildFly auf. Hierzu gehört auch die Nutzung von Infinispan als Cache-Subsystem. Dies erlaubt es, alle relevanten Informationen über Benutzersessions zu n Clusternodes zu replizieren. Dies erlaubt es dem Loadbalancer, bei Ausfall des angesprochenen Knotens einfach einen anderen auszuwählen und auch dieser verfügt über alle Sessions. Die Praxis hat gezeigt, dass dies bei einem Cluster mit sechs Knoten und voller Replikation über alle Knoten perfekt funktioniert und wir im laufenden Betrieb einzelne Server ohne Auswirkung auf die Benutzer herunterfahren oder neustarten können.</p>
+<p>Für die Persistenzschicht nutzt Keycloak entweder Hibernate oder aber MongoDB als dokumentenbasierte Datenbank.</p>
+<p>Wir haben uns hier beim Kunden für ein MongoDB-Replikaset mit einem Master und fünf Slaves entschieden, dieses wird vom Mongo-Treiber direkt unterstützt und wir können ohne Arbitrator immer den gerade aktiven Master nutzen (ausserdem ist es extrem einfach installierbar und auch von Ansible gut unterstützt).</p>
+<p>Da Keycloak selbst nur die Benutzerkonten, Realmkonfigurationen etc. aber die SessionInformationen in der Persistenzschicht speichert, kommt hier keine grosse Last auf und dieses Konstrukt funktioniert einwandfrei.</p>
+<p><a href="https://blog.codecentric.de/files/2016/06/keycloak-HA.png" rel="attachment wp-att-36133"><img class="alignnone wp-image-36133" src="https://blog.codecentric.de/files/2016/06/keycloak-HA-250x135.png" alt="keycloak HA" width="669" height="361" srcset="https://blog.codecentric.de/files/2016/06/keycloak-HA-250x135.png 250w, https://blog.codecentric.de/files/2016/06/keycloak-HA.png 700w, https://blog.codecentric.de/files/2016/06/keycloak-HA-50x27.png 50w" sizes="(max-width: 669px) 100vw, 669px" /></a></p>
+<h2>Installation und Konfiguration</h2>
+<p>Ein Vorteil von Keycloak ist es, dass man die gesamte Konfiguration des Servers per Admin-API durchführen kann.<br />
+Wir nutzen <a href="https://blog.codecentric.de/en/2015/04/nicer-ansible-output-for-puppet-tasks/">Ansible</a> für Installation und Konfiguration unserer Umgebung, hierbei kommen sämtliche konfigurative Artefakte aus dem Git des Kunden. Dies bietet uns den Vorteil, dass wir &#8222;nackte&#8220; Keycloak Server per Ansible auspacken und die gesamte Konfiguration aus den Playbooks und Inventories heraus vornehmen können. In Folge dieses Vorgehens machen wir auch keine Updates mehr, sondern löschen die bestehende Installation und setzen diese inklusive der gesamten Konfiguration per Ansible einfach neu auf !</p>
+<p>&nbsp;</p>
+<h3>Ausblick</h3>
+<p>In weiteren Blogartikeln wollen wir folgende Details von und mit Keycloak vorstellen:</p>
+<ul>
+<li>Single Sign On mit Keycloak</li>
+<li>Nutzung von Authenticating Proxies mit Keycloak (mod_saml und mod_openidc)</li>
+<li>API Security mit Keycloak</li>
+<li>Mehr-Faktor-Authentifizierung</li>
+<li>Social-Medial Login</li>
+</ul>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/accessmanagement-mit-keycloak/">Accessmanagement mit Keycloak</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></content:encoded>
+            <wfw:commentRss>https://blog.codecentric.de/2016/06/accessmanagement-mit-keycloak/feed/</wfw:commentRss>
+            <slash:comments>0</slash:comments>
+        </item>
+        <item>
+            <title>legacy.org =&gt; agile.org</title>
+            <link>https://blog.codecentric.de/2016/06/legacy-org-agile-org/</link>
+            <comments>https://blog.codecentric.de/2016/06/legacy-org-agile-org/#respond</comments>
+            <pubDate>Mon, 06 Jun 2016 04:00:56 +0000</pubDate>
+            <dc:creator><![CDATA[Nino Martincevic]]></dc:creator>
+            <category><![CDATA[Agile Management]]></category>
+            <category><![CDATA[Agilität]]></category>
+            <category><![CDATA[Architektur]]></category>
+            <category><![CDATA[DDD]]></category>
+            <category><![CDATA[Microservices]]></category>
+
+            <guid isPermaLink="false">https://blog.codecentric.de/?p=35658</guid>
+            <description><![CDATA[<p>Wie transformiert man zu einer agilen Organisation? Wie macht man träge gewordene Softwaresysteme wieder schnell? Und was haben Legacy-Systeme, DDD (Domain-driven Design), Clean Architecture und Microservices damit zu tun? Wer nun glaubt, dass die ersten beiden Fragen hier endgültig beantwortet wird oder fragt, warum man das überhaupt tun sollte, für den ist dieser Artikel hier... <a class="view-article" href="https://blog.codecentric.de/2016/06/legacy-org-agile-org/">Weiterlesen</a></p>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/legacy-org-agile-org/">legacy.org => agile.org</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></description>
+            <content:encoded><![CDATA[<p>Wie transformiert man zu einer agilen Organisation?<br />
+<span style="font-weight: 400;">Wie macht man träge gewordene Softwaresysteme wieder schnell?</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Und was haben Legacy-Systeme, DDD (Domain-driven Design), Clean Architecture und Microservices damit zu tun?</span></p>
+<p><span style="font-weight: 400;">Wer nun glaubt, dass die ersten beiden Fragen hier endgültig beantwortet wird oder fragt, warum man das überhaupt tun sollte, für den ist dieser Artikel hier bereits zu Ende. </span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Die Antwort auf die letzte Frage vorab: sehr viel.</span></p>
+<p>Was gesagt werden kann: es reicht nicht, solche Vorhaben nur isoliert und ohne Vision oder Zielvorstellung anzufangen, und dennoch muss man nicht gleich alles ändern. Es gibt Möglichkeiten, mit denen man herausfinden kann, welcher Weg der beste sein kann und bereits etliche vorhandene Konzepte und erprobte Erfahrungen, wie es gelingen kann. Und definitiv können Werkzeuge, Prozesse und Prinzipien, die zu der aktuellen Situation geführt haben, nicht die Lösung des Problems sein.</p>
+<p><span style="font-weight: 400;">Diese Artikelserie beantwortet die Fragen<span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">1) <span style="font-weight: 400;">Warum gibt es legacy.org, will man agile.org und was sind die Voraussetzungen dafür?</span></span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">2) <a href="https://blog.codecentric.de/2016/06/legacy-org-agile-org-teil-2/">Womit und wie anfangen und welche Strategie verfolgen?</a><br />
+</span><span style="font-weight: 400;">3) Wen oder was benötigt man und wie geht man vor?</span><br />
+</span><br />
+<span id="more-35658"></span></p>
+<h2><span style="font-weight: 400;">tl;dr &#8211; Zusammenfassung</span></h2>
+<p><strong><br />
+Kommunikation, Kontinuität, Kontext</strong></p>
+<p><span style="font-weight: 400;">Die agile Transformation einer schwerfälligen IT-abhängigen Organisation und der Umbau eines schwer wartbaren Softwaresystems profitieren vom Einsatz der gleichen Mechanismen: einer holistischen Sicht- und Handlungsweise auf Agilität und der Unterstützung bei der Entwicklung komplexer Softwaresysteme durch das strategische Mindset von DDD.</span></p>
+<p><span style="font-weight: 400;">Sie basieren alle darauf, dass nur gemeinsames und kontinuierliches Ausprobieren, Lernen und Anpassen und die Fokussierung auf überprüfbare Ziele und anpassbare Pläne erfolgreich sein können. Und das man Problem- und Lösungsmodelle innerhalb eines fachlichen Kontexts eingrenzen sollte und sie auch ständig Änderungen unterworfen sind, die man iterativ lösen muss.</span></p>
+<p>&nbsp;</p>
+<h2><span style="font-weight: 400;">Was ist legacy.org?</span></h2>
+<p><a href="https://blog.codecentric.de/files/2016/05/Legacy1.png" rel="attachment wp-att-35703"><img class="alignnone size-full wp-image-35703" src="https://blog.codecentric.de/files/2016/05/Legacy1.png" alt="Legacy" srcset="https://blog.codecentric.de/files/2016/05/Legacy1-250x195.png 250w, https://blog.codecentric.de/files/2016/05/Legacy1-50x39.png 50w, https://blog.codecentric.de/files/2016/05/Legacy1.png 561w" sizes="(max-width: 561px) 100vw, 561px" /></a></p>
+<p><span style="font-weight: 400;">Mit legacy.org ist eine Organisation gemeint, die sehr oder vollständig von der IT abhängig ist oder die IT ein elementarer Bestandteil des Geschäftsmodells ist und eine oder mehrere der folgenden Zustände bereits erreicht hat oder kurz davor steht:</span></p>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Praktisch alle Services und Komponenten des Systems sind hart voneinander abhängig, jede Anpassung bedingt Änderungen an vielen gleichzeitig und kostet viel Zeit und Aufwand. </span></li>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Zentrale Datenbanken und Frameworks integrieren viele Komponenten und führen zu noch mehr Abhängigkeiten, die nicht mehr sauber aufgelöst werden können. </span></li>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Dadurch gerät das Unternehmen immer mehr in Schwierigkeiten, da entweder die Mitbewerber oder der Markt selbst eine schnellere Adaption bieten bzw. wollen.</span></li>
+</ul>
+<p>&nbsp;</p>
+<h2><span style="font-weight: 400;">Warum will man eine agile.org?</span></h2>
+<p><span style="font-weight: 400;">Nun, im Prinzip um die meisten oder gar alle obigen negativen Faktoren und Zustände einer legacy.org zu beseitigen. Die Organisation ist zu schwerfällig, komplex, starr und schwer steuerbar und anpassbar geworden, kann nicht mit dem Wettbewerb mithalten oder zumindest besteht akute Gefahr dazu.<br />
+</span><span style="font-weight: 400;">Wegen all dieser Gründe möchte man etwas dagegen unternehmen.</span></p>
+<p><span style="font-weight: 400;">Die Motivationen und Ziele für eine Transformation hin zu agile.org </span><span style="font-weight: 400;">können u.a. sein:</span></p>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Es gibt heutzutage praktisch keine Branche oder Domäne einer IT-getriebenen Organisation mehr, die nicht in einem dynamischen und komplexen Umfeld operiert.</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Von daher sind <a href="https://blog.codecentric.de/2015/08/the-need-for-speed-eine-geschichte-ueber-devops-microservices-continuous-delivery-und-cloud-computing/" target="_blank">Schnelligkeit</a>, Anpassungsfähigkeit und die Möglichkeit seine Ziele relativ einfach ändern zu können, maßgebliche Faktoren für den Erfolg. </span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Oder sogar das Überleben.</span></li>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Der schwerfällige zentralistische und monolithische Ansatz der legacy.org ist kein Modell für die Zukunft, da er keinen der obigen Eigenschaften gewährleisten kann.</span></li>
+<li style="font-weight: 400;"><span style="line-height: 1.5;">Schnelligkeit und damit Anpassungsfähigkeit bedeuten nicht Qualitätseinbußen, weniger Konstanz oder mangelnde Sicherheit in der Planung. Sondern das Gegenteil davon, da man in der Lage ist, schnell und kontinuierlich seine Annahmen überprüfen und darauf reagieren zu können.  </span></li>
+</ul>
+<p>&nbsp;</p>
+<h2><span style="font-weight: 400;">Refactoring legacy.org</span></h2>
+<p><span style="font-weight: 400;">Wie baut man Legacy Software um oder ersetzt sie?</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">(Mit “Legacy Software” [LS] sind hier Softwaresysteme gemeint, die entweder zu schwerfällig, unwartbar oder instabil geworden sind, aus welchen Gründen auch immer).</span></p>
+<p><span style="font-weight: 400;">Grundsätzlich gibt es drei Möglichkeiten:</span><span style="font-weight: 400;"><br />
+</span></p>
+<ol>
+<li><span style="font-weight: 400;"> LS-Entwicklung einstellen und neues System bauen</span></li>
+<li><span style="font-weight: 400;"> LS weiter betreiben, parallel neues System bauen und LS mit einem Release ersetzen</span></li>
+<li>LS weiter betreiben, parallel und schrittweise einzelne Komponenten neu bauen und bestehende austauschen</li>
+</ol>
+<p><span style="font-weight: 400;">Alle Vorgehen haben natürlich Vor-und Nachteile.</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Mit dem Unterschied, dass Vorgehen 1 praktisch unmöglich ist. Außer man kann seine gesamte Organisation mehrere Jahre in bezahlten Urlaub schicken und in dieser Zeit auf Umsatz und Gewinn verzichten. Das dürfte nicht vielen Organisationen gelingen.</span></p>
+<p><span style="font-weight: 400;">Auch Vorgehen 2 ist in der Praxis sehr schwierig umzusetzen. Da das alte System wahrscheinlich weiterhin produktiv ist und ebenso geändert wird, müssen bspw. alle Änderungen parallel berücksichtigt werden und ein immenser Aufwand für den Datenaustausch betrieben werden. Von den benötigten Ressourcen gar nicht zu reden, vor allem können die vorhandenen Fachexperten nicht an beiden Baustellen gleichzeitig arbeiten, und diese lassen sich leider nicht skalieren.</span></p>
+<p><span style="font-weight: 400;">Bleibt also nur Vorgehen 3 als mögliche Lösung.</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Auch hier muss ein hoher Aufwand wie bei Vorgehen 2 betrieben werden, allerdings nur für einen kleinen Teil des ganzen Systems. Und da man hier mit hoher Wahrscheinlichkeit auf viele Unbekannte oder Komplexitäten treffen wird, empfiehlt sich natürlich ein agiles Vorgehen, in kleinen, ständig überprüfbaren Schritten.</span></p>
+<h3><span style="font-weight: 400;">Gut, das geht vielleicht bei Softwaresystemen so &#8211; aber wie funktioniert es auf der Organisationsebene?</span></h3>
+<p><span style="font-weight: 400;">Grundsätzlich gibt es drei Möglichkeiten:</span></p>
+<ol>
+<li><span style="font-weight: 400;"> Organisation komplett neu agil aufstellen</span></li>
+<li><span style="font-weight: 400;"> Fachbereiche parallel neu aufsetzen und mit einem Mal bestehende ersetzen</span></li>
+<li>Parallel und schrittweise einzelne fachliche Fähigkeiten neu aufsetzen und bestehende austauschen oder verkleinern</li>
+</ol>
+<p><span style="font-weight: 400;">Hier kann man Gemeinsamkeiten erkennen</span><span style="line-height: 1.5;">. Analog zu SW-Systemen sind die gleichen Probleme und Herausforderungen zu meistern und genauso sind Vorgehen 1 und 2 nur sehr schwer oder überhaupt nicht durchsetzbar (außer die Organisation wird als Ganzes verkauft und der Käufer entfernt die unrentablen Bereiche…).</span></p>
+<p><span style="font-weight: 400;"></span></p>
+<h2><span style="font-weight: 400;">Kommunikation und Kontext sind die Könige</span></h2>
+<p><i><span style="font-weight: 400;">&#8222;Deine Organisationsstruktur löst deine Probleme nicht. Es ist nur ein Artefakt dessen, wie du es bisher gelöst hast.&#8220;<br />
+(A. Jacob)</span></i></p>
+<p><span style="font-weight: 400;">Warum ein Softwaresystem und damit die davon abhängige Organisation zu einer trägen legacy.org wird, sind verschieden und doch folgt es oft einem gemeinsamen Muster. Nicht erst seit </span><a href="https://de.wikipedia.org/wiki/Gesetz_von_Conway"><span style="font-weight: 400;">Conways Gesetz</span></a><span style="font-weight: 400;"> wissen wir, dass Systeme eine Kopie der Kommunikationsstrukturen des Unternehmens (und damit der “Achsen der Macht”) sind. Demnach sind die Ursachen dafür fast immer die vorhandenen Strukturen, Hierarchien und die Kommunikation (oder Nicht-Kommunikation) untereinander. </span></p>
+<div id="attachment_35704" style="width: 568px" class="wp-caption alignnone"><a href="https://blog.codecentric.de/files/2016/05/conway.png" rel="attachment wp-att-35704"><img class="wp-image-35704 size-full" src="https://blog.codecentric.de/files/2016/05/conway.png" alt="Conway's Law" width="558" height="219" srcset="https://blog.codecentric.de/files/2016/05/conway-250x98.png 250w, https://blog.codecentric.de/files/2016/05/conway-120x47.png 120w, https://blog.codecentric.de/files/2016/05/conway.png 558w" sizes="(max-width: 558px) 100vw, 558px" /></a><p class="wp-caption-text">Wechselwirkung von Conway&#8217;s Law</p></div>
+<p><span style="font-weight: 400;">Ein weiterer Grund sind fehlende oder ungenaue Abgrenzungen der Kontexte von Fachbereichen, -konzepten und -logik. </span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Der lange Zeit vorherrschende Trend zu einer Architektur der Vereinheitlichung, Zentralisierung oder Aufteilung nach technische Aspekten (z.B. DBA, Infrastruktur, Security) kann für die meisten Domänen als nicht mehr zeitgemäß oder sogar gescheitert angesehen werden und wird heute eher als Hauptgründe für das Entstehen träger und nur schwer änderbarer Systeme angesehen.</span></p>
+<p><span style="font-weight: 400;">Die Gründe dafür sind vielfältig:</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Die zuständigen Teams werden nach diesen technischen Kriterien aufgestellt werden, damit in Silos arbeiten und bestrebt sind, möglichst eine Lösung für unterschiedliche Fachbereiche anzubieten. Die dann aus diesem Grund vermischte Daten und sogar Logik enthalten und die Abhängigkeiten von Systemen maximieren. Ein zusätzlicher Grund ist, dass fachliche Anforderungen und Geschäftsmodelle wesentlich stabiler und in der Anzahl geringer sind als deren mögliche technischen Lösungen. Zusätzlich, und das ist ein noch wesentlich kritischerer Punkt, entstehen gefährliche Verständnislücken und Probleme in der bereits angesprochenen Kommunikation zwischen den Fachabteilungen und technischen Teams, was zu einer erheblichen Schwerfälligkeit und einem hohen Aufwand bei der Abstimmung führt.</span></p>
+<p><span style="font-weight: 400;">So wie es beim Refactoring von Legacy-Software und -Komponenten nicht ohne die Mitarbeit aller relevanten “Kräfte” und einer guten Kommunikation untereinander funktionieren wird, verhält es sich mit der (agilen) Transformation einer Organisation.</span></p>
+<p>&nbsp;</p>
+<h3><span style="font-weight: 400;">Holistisches Denken und Handeln ist gefragt</span></h3>
+<p><span style="font-weight: 400;">Agile Transformationen werden meist “experimentell” gestartet. Man traut der Methodik noch nicht und möchte es erst mal mit möglichst wenig Risiko ausprobieren, in dem man ein Team wählt, dass an (hoffentlich nur) einem Projekt arbeitet. Das ist zunächst auch nachvollziehbar und völlig legitim. </span></p>
+<p><span style="font-weight: 400;">Man kann punktuell einem Team von Software-Entwicklern einen Product Owner und einen Scrum Master vorsetzen, den Scrum-Guide lesen und dann glauben, dass in kurzer Zeit eine agile Transformation gelingt. Das kann sogar erfolgreich sein, z.B. bei einer Neuentwicklung, einem relativ autonomen Teil des Ganzen, einem Startup oder einer dazu neu gegründeten Teilorganisation.</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Bei großen Organisationen funktioniert das in der Regel kaum. Ein Hauptgrund ist, dass die relevanten Stakeholder, Fachexperten und auch Endbenutzer gar nicht im Team sind, zu weit weg von diesem oder unterschiedlichsten Kommunikations- und Machtstrukturen ausgesetzt sind. Selbst wenn dort ein punktueller Erfolg erzielt wird, kann das nicht für die gesamte Organisation als Vorlage dienen und den gleichen Erfolg mit anderen Teams erzielen, das wäre ein immenser Zufall.</span></p>
+<p>Allerdings muss nicht unbedingt die ganze Organisation agil transformiert werden, wie auch eine Legacy SW-System nicht vollständig umgebaut werden muss. In einem späteren Kapitel wird aber gezeigt, für welche Bereiche es getan werden sollte.</p>
+<h4><b>Zwei Beispiele für Holistik in der agilen Softwareentwicklung</b></h4>
+<p><em><strong>Scrum ohne kontinuierliche Auslieferung</strong></em></p>
+<blockquote><p><span style="font-weight: 400;">Ohne die Möglichkeit, Software kontinuierlich ausliefern zu können, z.B. mit Continuous Delivery, macht (die Einführung von) Scrum keinen Sinn. </span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Zumindest sollten die ersten Ansätze dafür zur Verfügung stehen und das Mindset bekannt sein, auch das wird iterativ und inkrementell weiterentwickelt. </span></p></blockquote>
+<p>Das erste Prinzip des agilen Manifests besagt, dass das Ziel ist, den Kunden durch eine frühzeitige und kontinuierliche Auslieferung von wertvoller Software zufrieden zu stellen. Denkt man holistisch und nach dem Prinzip “begin with the end in mind”, muss der Prozess primär darauf ausgerichtet sein. Denn was bringt es, nach einem zweiwöchigen Sprint ein Stück Software zu haben, das man nicht ausliefern und damit auch nicht überprüfen kann? Das führt den Kern agilen Vorgehens, den Inspect &amp; Adapt Kreislauf, ad absurdum</p>
+<p><a href="https://blog.codecentric.de/files/2016/05/DeliverInspectAdapt.png" rel="attachment wp-att-35705"><img class="alignnone size-full wp-image-35705" src="https://blog.codecentric.de/files/2016/05/DeliverInspectAdapt.png" alt="Deliver Inspect Adapt" srcset="https://blog.codecentric.de/files/2016/05/DeliverInspectAdapt-250x205.png 250w, https://blog.codecentric.de/files/2016/05/DeliverInspectAdapt-50x41.png 50w, https://blog.codecentric.de/files/2016/05/DeliverInspectAdapt.png 491w" sizes="(max-width: 491px) 100vw, 491px" /></a></p>
+<p><em><strong>Software- und Architekturdesign ohne Fachexperten</strong></em></p>
+<blockquote><p><span style="font-weight: 400;">Die Grundhypothese von DDD ist:</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">“Der wesentliche Sinn von Software, ist die Fähigkeit, Probleme der Domäne für den Benutzer zu lösen.“ </span></p>
+<p><span style="font-weight: 400;">Und es basiert auf zwei Annahmen:</span></p>
+<ul>
+<li>Der Schwerpunkt des Softwaredesigns liegt auf der Fachlichkeit und der Fachlogik.</li>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Der Entwurf komplexer fachlicher Zusammenhänge sollte auf einem Fachmodell basieren.</span></li>
+</ul>
+</blockquote>
+<p><span style="font-weight: 400;">Angefangen von der strategischen Planung von Problemen der Fachlichkeit, über die Gestaltung möglicher Lösungen mit Domänenmodellen, einer Abstraktion des fachlichen Problems, über die taktischen Bausteine der Implementierung: alles in DDD folgt dem praktisch gleichen Kreislauf. </span></p>
+<p><span style="font-weight: 400;">Eine Architektur, Domänenmodelle und alle sonstigen Elemente sind niemals “fertig”, sondern werden kontinuierlich angepasst, sobald sich Rahmenbedingungen ändern. Und es spielt keine Rolle, wo das passiert. Eine neues Szenario in der Fachlichkeit kann zu einer Änderung in den Modellen und der implementierten Software führen. Und anders herum stellen sich in vielen Gründen die ursprünglichen Modelle als suboptimal heraus, sobald sie implementiert werden, was ebenso zu einer Anpassung führt.</span></p>
+<p><span style="font-weight: 400;">DDD geht noch einen Schritt weiter und stellt durch die Ubiquituous Language, einer von allen Beteiligten verstandenen Fachsprache, sicher, dass der kritischen Faktor Kommunikation besser gebändigt wird. </span></p>
+<p>Warum ich das Mindset von DDD als ein wichtiges Element eines holistischen Ansatzes der Agilität oder der Transformation dort hin ansehe, dürfte sich vielleicht hier schon manifestieren. In den nächsten Teilen dieser Artikelserie wird das hoffentlich noch deutlicher.</p>
+<h2><span style="font-weight: 400;">Nur gesamtheitlich erfolgreich</span></h2>
+<p><span style="font-weight: 400;">Weder die Fachexperten noch das Implementierungsteam aus Architekten, Entwicklern, Designern, Administratoren usw. arbeiten isoliert. Ohne kontinuierliche und gemeinverständliche Kommunikation und Abstimmung untereinander, funktioniert es nicht. Gerade bei der Transformation der Organisation sind alle Teile der Wertschöpfungskette gleichermaßen und gleichzeitig an deren Erfolg beteiligt. Die Möglichkeit der schnellen Auslieferung und Änderung von Software ist ein erstrebenswertes und in vielen Organisation sogar ein Überleben rettendes Ziel. </span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">Doch es wird scheitern wenn diejenigen, die es entscheiden können und mitgestalten sollen, nicht parallel mit dem Umsetzungsteam kommunizieren, kooperieren und iterieren.</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;"><br />
+</span><span style="font-weight: 400;">DDD selbst funktioniert überhaupt nicht ohne die permanente Zusammenarbeit aller Beteiligten, insbesondere nicht ohne Fachexperten. Andererseits ermöglicht und erzeugt es eben deshalb ein Verständnis, dass dazu benötigt wird.<br />
+</span><span style="font-weight: 400;">Das Gegenteil davon ist der Grund, warum Organisationen wie legacy.org entstehen.</span></p>
+<p><span style="font-weight: 400;">Im <a href="https://blog.codecentric.de/2016/06/legacy-org-agile-org-teil-2/">nächsten Teil dieser Serie</a> wird die Frage beantwortet, womit man und wie anfangen sollte, wenn die Entscheidung für einen Umbau gefallen ist.</span></p>
+<p>&nbsp;</p>
+<h2></h2>
+<p>The post <a rel="nofollow" href="https://blog.codecentric.de/2016/06/legacy-org-agile-org/">legacy.org => agile.org</a> appeared first on <a rel="nofollow" href="https://blog.codecentric.de">codecentric Blog</a>.</p>
+]]></content:encoded>
+            <wfw:commentRss>https://blog.codecentric.de/2016/06/legacy-org-agile-org/feed/</wfw:commentRss>
+            <slash:comments>0</slash:comments>
+        </item>
+    </channel>
+</rss>
+
+        <!-- Comet Cache is NOT caching this page, because `$_SERVER['REQUEST_URI']` indicates this is a `/feed`; and the configuration of this site says not to cache XML-based feeds. -->

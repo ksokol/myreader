@@ -37,9 +37,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @DirtiesContext
 public class DefaultFeedParserTest extends IntegrationTestSupport {
 
-    private static final String HTTP_WWW_HEISE_DE_NEWSTICKER_HEISE_ATOM_XML = "http://www.heise.de/newsticker/heise-atom.xml";
-    private static final String HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS = "http://www.javaspecialists.eu/archive/tjsn.rss";
-    private static final String HTTP_WWW_VZBV_DE_KLAGENURTEILE_XML = "http://www.vzbv.de/klagenurteile.xml";
+    private static final String HTTP_EXAMPLE_COM = "http://example.com";
 
     @Autowired
     private RestTemplate syndicationRestTemplate;
@@ -59,19 +57,19 @@ public class DefaultFeedParserTest extends IntegrationTestSupport {
 
     @Test
 	public void testFeed1() throws Exception {
-        mockServer.expect(requestTo(HTTP_WWW_HEISE_DE_NEWSTICKER_HEISE_ATOM_XML)).andExpect(method(GET))
+        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed1.xml"), TEXT_XML));
 
-		FetchResult result = parser.parse(HTTP_WWW_HEISE_DE_NEWSTICKER_HEISE_ATOM_XML);
+		FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
 		assertThat(result.getEntries(), hasSize(2));
 	}
 
 	@Test
 	public void testFeed2() throws Exception {
-        mockServer.expect(requestTo(HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS)).andExpect(method(GET))
+        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
 
-		FetchResult result = parser.parse(HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS);
+		FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
 		assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217.html")),
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217b.html"))
@@ -80,13 +78,13 @@ public class DefaultFeedParserTest extends IntegrationTestSupport {
 
 	@Test
 	public void testFeed3() throws Exception {
-        mockServer.expect(requestTo(HTTP_WWW_VZBV_DE_KLAGENURTEILE_XML)).andExpect(method(GET))
+        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed3.xml"), TEXT_XML));
 
-		FetchResult result = parser.parse(HTTP_WWW_VZBV_DE_KLAGENURTEILE_XML);
+		FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
 		assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
-				hasProperty("url", is("http://www.vzbv.de/12539.htm")),
-				hasProperty("url", is("http://www.vzbv.de/12673.htm"))
+				hasProperty("url", is(HTTP_EXAMPLE_COM + "/12539.htm")),
+				hasProperty("url", is(HTTP_EXAMPLE_COM + "/12673.htm"))
 		));
 	}
 
@@ -124,10 +122,10 @@ public class DefaultFeedParserTest extends IntegrationTestSupport {
 
     @Test
     public void testFeed7() throws Exception {
-        mockServer.expect(requestTo(HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS)).andExpect(method(GET))
+        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
 
-        FetchResult result = parser.parse(HTTP_WWW_JAVASPECIALISTS_EU_ARCHIVE_TJSN_RSS);
+        FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
         assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue220b.html"))
         ));
@@ -150,5 +148,15 @@ public class DefaultFeedParserTest extends IntegrationTestSupport {
                 .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
 
         parser.parse("irrelevant", "lastModified");
+    }
+
+    @Test
+    public void testInvalidCharacter() throws Exception {
+        // test [^\u0020-\uD7FF]+
+        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_XML));
+
+        FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
+        assertThat(result.getEntries(), hasSize(6));
     }
 }
