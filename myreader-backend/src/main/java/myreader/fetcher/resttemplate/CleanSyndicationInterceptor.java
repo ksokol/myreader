@@ -4,14 +4,15 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
@@ -27,15 +28,16 @@ public class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
         final ClientHttpResponse execute = execution.execute(request, body);
+        final Charset charset = getCharsetFromResponse(execute);
         final String cleanedBody;
 
-        if(execute.getRawStatusCode() == 200) {
-            final String bodyString = IOUtils.toString(execute.getBody(), Charset.forName("UTF-8"));
+        if (execute.getRawStatusCode() == 200) {
+            final String bodyString = IOUtils.toString(execute.getBody(), charset);
             cleanedBody = pattern.matcher(bodyString).replaceAll(EMPTY);
         } else {
             cleanedBody = EMPTY;
         }
-
+        
         return new ClientHttpResponse() {
 
             @Override
@@ -45,7 +47,7 @@ public class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor
 
             @Override
             public InputStream getBody() throws IOException {
-                return new ByteArrayInputStream(cleanedBody.getBytes(Charset.forName("UTF-8")));
+                return IOUtils.toInputStream(cleanedBody, StandardCharsets.UTF_8);
             }
 
             @Override
@@ -68,5 +70,10 @@ public class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor
                 execute.close();
             }
         };
+    }
+
+    private Charset getCharsetFromResponse(ClientHttpResponse execute) {
+        MediaType contentType = execute.getHeaders().getContentType();
+        return contentType == null ? StandardCharsets.UTF_8 : contentType.getCharSet();
     }
 }
