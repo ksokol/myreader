@@ -12,8 +12,9 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,6 +58,18 @@ public class CleanSyndicationInterceptorTest {
         final String body = body(response);
 
         assertThat(body, is("string"));
+    }
+
+    @Test
+    public void testEmptyBody() throws Exception {
+        withBody("string", "UTF-8");
+
+        when(mockResponse.getRawStatusCode()).thenReturn(302);
+
+        final ClientHttpResponse response = intercept();
+        final String body = body(response);
+
+        assertThat(body, is(EMPTY));
     }
 
     private String body(ClientHttpResponse response) throws IOException {
