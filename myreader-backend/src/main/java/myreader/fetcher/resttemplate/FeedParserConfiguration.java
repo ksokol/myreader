@@ -41,7 +41,6 @@ public class FeedParserConfiguration {
         List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
         interceptors.add(new UserAgentClientHttpRequestInterceptor());
         interceptors.add(new CleanSyndicationInterceptor());
-        interceptors.add(new LoggingClientHttpRequestInterceptor());
         return interceptors;
     }
 }
