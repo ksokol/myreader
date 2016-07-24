@@ -32,6 +32,7 @@ final class HttpClientBuilderUtil {
                 .useSystemProperties()
                 .setMaxConnTotal(30000)
                 .setMaxConnTotal(1)
+                .setKeepAliveStrategy(new CustomConnectionKeepAliveStrategy(30 * 1000L))
                 .evictIdleConnections(60, TimeUnit.SECONDS)
                 .disableAutomaticRetries()
                 .setSSLSocketFactory(sslSocketFactory())
