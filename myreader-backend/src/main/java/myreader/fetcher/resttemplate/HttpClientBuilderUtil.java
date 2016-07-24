@@ -17,6 +17,7 @@ import org.apache.http.impl.cookie.RFC6265CookieSpecProvider;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import javax.net.ssl.SSLContext;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Kamill Sokol
@@ -30,6 +31,9 @@ final class HttpClientBuilderUtil {
         return HttpClientBuilder.create()
                 .useSystemProperties()
                 .setMaxConnTotal(30000)
+                .setMaxConnTotal(1)
+                .evictIdleConnections(60, TimeUnit.SECONDS)
+                .disableAutomaticRetries()
                 .setSSLSocketFactory(sslSocketFactory())
                 .setDefaultCookieSpecRegistry(expiresDatePatterns("EEE, dd-MMM-yy HH:mm:ss z", "EEE, dd MMM yyyy HH:mm:ss z"))
                 .build();
