@@ -7,15 +7,21 @@ import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.apache.http.protocol.HttpContext.RESERVED_PREFIX;
 
 /**
  * @since 2016-07
  */
 class CustomConnectionKeepAliveStrategy implements ConnectionKeepAliveStrategy {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CustomConnectionKeepAliveStrategy.class);
+
     private final long keepAlive;
 
-    public CustomConnectionKeepAliveStrategy(long keepAlive) {
+    CustomConnectionKeepAliveStrategy(long keepAlive) {
         this.keepAlive = keepAlive;
     }
 
@@ -31,6 +37,7 @@ class CustomConnectionKeepAliveStrategy implements ConnectionKeepAliveStrategy {
                 try {
                     return Long.parseLong(value) * 1000;
                 } catch (NumberFormatException ignore) {
+                    LOG.warn("could not parse keep-alive header value '{}' for '{}'", value, context.getAttribute(RESERVED_PREFIX + "target_host"));
                 }
             }
         }
