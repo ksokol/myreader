@@ -1,7 +1,6 @@
 package myreader.fetcher;
 
 import myreader.entity.ExclusionPattern;
-import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
@@ -34,11 +33,11 @@ public class SubscriptionEntryBatch {
         this.timeService = timeService;
     }
 
-    public List<SubscriptionEntry> updateUserSubscriptionEntries(Feed feed, List<FeedEntry> feedEntries) {
+    public List<SubscriptionEntry> updateUserSubscriptionEntries(List<FeedEntry> feedEntries) {
         List<SubscriptionEntry> toIndex = new ArrayList<>();
 
         for (FeedEntry feedEntry : feedEntries) {
-            List<Subscription> subscriptionList = subscriptionRepository.findByUrl(feed.getUrl());
+            List<Subscription> subscriptionList = subscriptionRepository.findByUrl(feedEntry.getFeed().getUrl());
 
             for (Subscription subscription : subscriptionList) {
                 boolean excluded = false;

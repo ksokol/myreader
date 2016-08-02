@@ -55,14 +55,14 @@ public class SubscriptionBatchImplTest extends IntegrationTestSupport {
     public void testUpdateUserSubscriptions1() {
         uut.updateUserSubscriptions(new FetchResult("unknown feed"));
 
-        verify(subscriptionEntryBatchMock, never()).updateUserSubscriptionEntries(any(), any());
+        verify(subscriptionEntryBatchMock, never()).updateUserSubscriptionEntries(any());
     }
 
     @Test
     public void testUpdateUserSubscriptions() {
         uut.updateUserSubscriptions(new FetchResult(emptyList(), "last modified", "title", "unknown feed url"));
 
-        verify(subscriptionEntryBatchMock, never()).updateUserSubscriptionEntries(any(), any());
+        verify(subscriptionEntryBatchMock, never()).updateUserSubscriptionEntries(any());
     }
 
     @Test

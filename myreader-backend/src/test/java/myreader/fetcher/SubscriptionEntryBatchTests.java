@@ -60,7 +60,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
 
         FeedEntry feedEntry = createFeedEntry(beforeFeed);
 
-        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeFeed, Arrays.asList(feedEntry));
+        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(Collections.singletonList(feedEntry));
         assertThat(subscriptionEntries.size(), is(1));
 
         Page<FeedEntry> afterFeedEntries = feedEntryRepository.findByFeedId(100L, new PageRequest(0,10));
@@ -76,14 +76,16 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
     }
 
     @Test
-    public void updateUserSubscriptionEntries2() {
-        Feed beforeFeed = feedRepository.findOne(100L);
+    public void shouldRejectExcludedFeedEntry() {
+        Feed beforeFeed = feedRepository.findOne(5L);
 
         FeedEntry feedEntry1 = createFeedEntry(beforeFeed);
 
         Subscription beforeSubscription = subscriptionRepository.findOne(6L);
 
-        uut.updateUserSubscriptionEntries(beforeSubscription.getFeed(), Collections.singletonList(feedEntry1));
+        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(Collections.singletonList(feedEntry1));
+
+        assertThat(subscriptionEntries, hasSize(0));
 
         subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
                 beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
@@ -95,17 +97,16 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
 
     @Test
     public void noFetcherEntriesGiven() {
-        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(new Feed(), Collections.emptyList());
+        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(Collections.emptyList());
         assertThat(subscriptionEntries, hasSize(0));
     }
 
     @Test
     public void noFeedEntriesGiven() {
-        Feed beforeFeed = feedRepository.findOne(0L);
+        FeedEntry feedEntry = new FeedEntry();
+        feedEntry.setFeed(new Feed());
 
-        FeedEntry feedEntry = createFeedEntry(beforeFeed);
-
-        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(new Feed(), Arrays.asList(feedEntry));
+        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(Collections.singletonList(feedEntry));
         assertThat(subscriptionEntries, hasSize(0));
     }
 
