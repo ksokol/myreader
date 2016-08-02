@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,41 +32,34 @@ public class SubscriptionEntryBatch {
         this.timeService = timeService;
     }
 
-    public List<SubscriptionEntry> updateUserSubscriptionEntries(List<FeedEntry> feedEntries) {
-        List<SubscriptionEntry> toIndex = new ArrayList<>();
+    public void updateUserSubscriptionEntries(FeedEntry feedEntry) {
+        List<Subscription> subscriptionList = subscriptionRepository.findByUrl(feedEntry.getFeed().getUrl());
 
-        for (FeedEntry feedEntry : feedEntries) {
-            List<Subscription> subscriptionList = subscriptionRepository.findByUrl(feedEntry.getFeed().getUrl());
+        for (Subscription subscription : subscriptionList) {
+            boolean excluded = false;
 
-            for (Subscription subscription : subscriptionList) {
-                boolean excluded = false;
+            for (ExclusionPattern ep : subscription.getExclusions()) {
+                excluded = exclusionChecker.isExcluded(ep.getPattern(), feedEntry.getTitle(), feedEntry.getContent());
 
-                for (ExclusionPattern ep : subscription.getExclusions()) {
-                    excluded = exclusionChecker.isExcluded(ep.getPattern(), feedEntry.getTitle(), feedEntry.getContent());
-
-                    if (excluded) {
-                        ep.setHitCount(ep.getHitCount() + 1);
-                        break;
-                    }
+                if (excluded) {
+                    ep.setHitCount(ep.getHitCount() + 1);
+                    break;
                 }
-
-                if (!excluded) {
-                    SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
-                    subscriptionEntry.setFeedEntry(feedEntry);
-                    subscriptionEntry.setSubscription(subscription);
-                    subscriptionEntry.setCreatedAt(timeService.getCurrentTime());
-
-                    subscription.setSum(subscription.getSum() + 1);
-                    subscription.setUnseen(subscription.getUnseen() +1);
-
-                    subscriptionEntryRepository.save(subscriptionEntry);
-                    toIndex.add(subscriptionEntry);
-                }
-
-                subscriptionRepository.save(subscription);
             }
-        }
 
-        return toIndex;
+            if (!excluded) {
+                SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
+                subscriptionEntry.setFeedEntry(feedEntry);
+                subscriptionEntry.setSubscription(subscription);
+                subscriptionEntry.setCreatedAt(timeService.getCurrentTime());
+
+                subscription.setSum(subscription.getSum() + 1);
+                subscription.setUnseen(subscription.getUnseen() +1);
+
+                subscriptionEntryRepository.save(subscriptionEntry);
+            }
+
+            subscriptionRepository.save(subscription);
+        }
     }
 }

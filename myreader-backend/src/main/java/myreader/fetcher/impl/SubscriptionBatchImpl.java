@@ -58,7 +58,9 @@ public class SubscriptionBatchImpl implements SubscriptionBatch {
                 }
             }
 
-            subscriptionBatchService.updateUserSubscriptionEntries(newEntries);
+            for (FeedEntry newEntry : newEntries) {
+                subscriptionBatchService.updateUserSubscriptionEntries(newEntry);
+            }
 
             feed.setLastModified(fetchResult.getLastModified());
             feed.setFetched(feed.getFetched() + newEntries.size());

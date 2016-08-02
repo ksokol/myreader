@@ -17,10 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -45,34 +41,24 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
 
     @Test
     public void updateUserSubscriptionEntries() {
-        Feed beforeFeed = feedRepository.findOne(100L);
-        Subscription beforeSubscription = subscriptionRepository.findOne(100L);
+        Subscription beforeSubscription = subscriptionRepository.findOne(101L);
+        assertThat(beforeSubscription.getUnseen(), is(1));
+        assertThat(beforeSubscription.getSum(), is(15));
 
-        Page<FeedEntry> beforeFeedEntries = feedEntryRepository.findByFeedId(beforeFeed.getId(), new PageRequest(1,10));
         Slice<SubscriptionEntry> beforeSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
                 beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
-
-        assertThat(beforeFeed.getUrl(), is(beforeSubscription.getFeed().getUrl()));
-        assertThat(beforeFeedEntries.getTotalElements(), is(0L));
         assertThat(beforeSubscriptionEntries.getContent(), hasSize(0));
-        assertThat(beforeSubscription.getUnseen(), is(0));
-        assertThat(beforeSubscription.getSum(), is(0));
 
-        FeedEntry feedEntry = createFeedEntry(beforeFeed);
-
-        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(Collections.singletonList(feedEntry));
-        assertThat(subscriptionEntries.size(), is(1));
-
-        Page<FeedEntry> afterFeedEntries = feedEntryRepository.findByFeedId(100L, new PageRequest(0,10));
-        assertThat(afterFeedEntries.getTotalElements(), is(1L));
+        FeedEntry feedEntry = createFeedEntry(beforeSubscription.getFeed());
+        uut.updateUserSubscriptionEntries(feedEntry);
 
         Slice<SubscriptionEntry> afterSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
                 beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
-
-        Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(100L);
         assertThat(afterSubscriptionEntries.getContent(), hasSize(1));
-        assertThat(afterSubscriptionClearedEm.getUnseen(), is(1));
-        assertThat(afterSubscriptionClearedEm.getSum(), is(1));
+
+        Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(beforeSubscription.getId());
+        assertThat(afterSubscriptionClearedEm.getUnseen(), is(2));
+        assertThat(afterSubscriptionClearedEm.getSum(), is(16));
     }
 
     @Test
@@ -83,9 +69,11 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
 
         Subscription beforeSubscription = subscriptionRepository.findOne(6L);
 
-        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(Collections.singletonList(feedEntry1));
+        int expectedSize = subscriptionEntryRepository.findAll().size();
 
-        assertThat(subscriptionEntries, hasSize(0));
+        uut.updateUserSubscriptionEntries(feedEntry1);
+
+        assertThat(subscriptionEntryRepository.findAll(), hasSize(expectedSize));
 
         subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
                 beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
@@ -96,18 +84,15 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
     }
 
     @Test
-    public void noFetcherEntriesGiven() {
-        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(Collections.emptyList());
-        assertThat(subscriptionEntries, hasSize(0));
-    }
-
-    @Test
     public void noFeedEntriesGiven() {
         FeedEntry feedEntry = new FeedEntry();
         feedEntry.setFeed(new Feed());
 
-        List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(Collections.singletonList(feedEntry));
-        assertThat(subscriptionEntries, hasSize(0));
+        int expectedSize = subscriptionEntryRepository.findAll().size();
+
+        uut.updateUserSubscriptionEntries(feedEntry);
+
+        assertThat(subscriptionEntryRepository.findAll(), hasSize(expectedSize));
     }
 
     private FeedEntry createFeedEntry(Feed beforeFeed) {
