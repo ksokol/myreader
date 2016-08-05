@@ -1,5 +1,9 @@
 package myreader.fetcher;
 
+import myreader.entity.ExclusionPattern;
+import myreader.entity.FeedEntry;
+import myreader.entity.Subscription;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +23,16 @@ class ExclusionChecker {
         }
 
         return false;
+    }
+
+    public ExclusionPattern foundExcluded(Subscription subscription, FeedEntry feedEntry) {
+        for (ExclusionPattern ep : subscription.getExclusions()) {
+            if (isExcluded(ep.getPattern(), feedEntry.getTitle(), feedEntry.getContent())) {
+                return ep;
+            }
+        }
+
+        return null;
     }
 
 }

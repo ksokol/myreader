@@ -36,28 +36,22 @@ public class SubscriptionEntryBatch {
         List<Subscription> subscriptionList = subscriptionRepository.findByUrl(feedEntry.getFeed().getUrl());
 
         for (Subscription subscription : subscriptionList) {
-            boolean excluded = false;
+            final ExclusionPattern exclusionPattern = exclusionChecker.foundExcluded(subscription, feedEntry);
 
-            for (ExclusionPattern ep : subscription.getExclusions()) {
-                excluded = exclusionChecker.isExcluded(ep.getPattern(), feedEntry.getTitle(), feedEntry.getContent());
-
-                if (excluded) {
-                    ep.setHitCount(ep.getHitCount() + 1);
-                    break;
-                }
+            if(exclusionPattern != null) {
+                exclusionPattern.setHitCount(exclusionPattern.getHitCount() + 1);
+                break;
             }
 
-            if (!excluded) {
-                SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
-                subscriptionEntry.setFeedEntry(feedEntry);
-                subscriptionEntry.setSubscription(subscription);
-                subscriptionEntry.setCreatedAt(timeService.getCurrentTime());
+            SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
+            subscriptionEntry.setFeedEntry(feedEntry);
+            subscriptionEntry.setSubscription(subscription);
+            subscriptionEntry.setCreatedAt(timeService.getCurrentTime());
 
-                subscription.setSum(subscription.getSum() + 1);
-                subscription.setUnseen(subscription.getUnseen() +1);
+            subscription.setSum(subscription.getSum() + 1);
+            subscription.setUnseen(subscription.getUnseen() +1);
 
-                subscriptionEntryRepository.save(subscriptionEntry);
-            }
+            subscriptionEntryRepository.save(subscriptionEntry);
 
             subscriptionRepository.save(subscription);
         }
