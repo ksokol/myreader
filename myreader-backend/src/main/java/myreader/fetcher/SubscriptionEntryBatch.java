@@ -6,6 +6,7 @@ import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.fetcher.persistence.FetcherEntry;
+import myreader.repository.ExclusionRepository;
 import myreader.repository.FeedEntryRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
@@ -27,14 +28,16 @@ public class SubscriptionEntryBatch {
     private final FeedEntryRepository feedEntryRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
+    private final ExclusionRepository exclusionRepository;
     private final TimeService timeService;
     private ExclusionChecker exclusionChecker = new ExclusionChecker();
 
     @Autowired
-    public SubscriptionEntryBatch(FeedEntryRepository feedEntryRepository, SubscriptionRepository subscriptionRepository, SubscriptionEntryRepository subscriptionEntryRepository, TimeService timeService) {
+    public SubscriptionEntryBatch(FeedEntryRepository feedEntryRepository, SubscriptionRepository subscriptionRepository, SubscriptionEntryRepository subscriptionEntryRepository, ExclusionRepository exclusionRepository, TimeService timeService) {
         this.feedEntryRepository = feedEntryRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
+        this.exclusionRepository = exclusionRepository;
         this.timeService = timeService;
     }
 
@@ -69,11 +72,11 @@ public class SubscriptionEntryBatch {
             for (Subscription subscription : subscriptionList) {
                 boolean excluded = false;
 
-                for (ExclusionPattern ep : subscription.getExclusions()) {
+                for (ExclusionPattern ep : exclusionRepository.findBySubscriptionId(subscription.getId())) {
                     excluded = exclusionChecker.isExcluded(ep.getPattern(), feedEntry.getTitle(), feedEntry.getContent());
 
                     if (excluded) {
-                        ep.setHitCount(ep.getHitCount() + 1);
+                        exclusionRepository.incrementHitCount(ep.getId());
                         break;
                     }
                 }

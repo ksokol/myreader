@@ -2,11 +2,14 @@ package myreader.repository;
 
 import myreader.entity.ExclusionPattern;
 import myreader.entity.ExclusionSet;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -27,4 +30,12 @@ public interface ExclusionRepository extends PagingAndSortingRepository<Exclusio
 
     @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.subscription.id = ?1 and ep.pattern = ?2")
     ExclusionPattern findBySubscriptionIdAndPattern(Long subscriptionId, String pattern);
+
+    @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.subscription.id = ?1")
+    List<ExclusionPattern> findBySubscriptionId(Long subscriptionId);
+
+    @Transactional
+    @Query("update ExclusionPattern set hitCount = hitCount +1 where id = ?1")
+    @Modifying
+    void incrementHitCount(Long exclusionPatternId);
 }
