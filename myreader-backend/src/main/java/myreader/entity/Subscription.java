@@ -39,6 +39,7 @@ public class Subscription implements Identifiable {
     private int unseen = 0;
     private Date createdAt;
     private Feed feed;
+    private Long lastFeedEntryId;
     private Set<SubscriptionEntry> subscriptionEntries;
     private Set<ExclusionPattern> exclusions;
     private long version;
@@ -129,6 +130,15 @@ public class Subscription implements Identifiable {
 
     public void setFeed(Feed feed) {
         this.feed = feed;
+    }
+
+    @Column(name = "last_feed_entry")
+    public Long getLastFeedEntryId() {
+        return lastFeedEntryId;
+    }
+
+    public void setLastFeedEntryId(Long lastFeedEntryId) {
+        this.lastFeedEntryId = lastFeedEntryId;
     }
 
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
