@@ -84,7 +84,7 @@ public class SubscriptionEntryBatch {
                     subscriptionEntry.setSubscription(subscription);
                     subscriptionEntry.setCreatedAt(timeService.getCurrentTime());
 
-                    subscription.setSum(subscription.getSum() + 1);
+                    subscription.setFetchCount(subscription.getFetchCount() + 1);
                     subscription.setUnseen(subscription.getUnseen() +1);
 
                     subscriptionEntryRepository.save(subscriptionEntry);

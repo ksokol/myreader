@@ -23,7 +23,7 @@ public class SubscriptionGetResponseAssemblerSupport extends ResourceAssemblerSu
         target.setUuid(String.valueOf(source.getId()));
         target.setTag(source.getTag());
         target.setCreatedAt(source.getCreatedAt());
-        target.setSum(source.getSum());
+        target.setSum(source.getFetchCount());
         target.setTitle(source.getTitle());
         target.setUnseen(source.getUnseen());
 

@@ -64,7 +64,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         assertThat(beforeFeedEntries.getTotalElements(), is(0L));
         assertThat(beforeSubscriptionEntries.getContent(), hasSize(0));
         assertThat(beforeSubscription.getUnseen(), is(0));
-        assertThat(beforeSubscription.getSum(), is(0));
+        assertThat(beforeSubscription.getFetchCount(), is(0));
 
         List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeFeed, Arrays.asList(fetcherEntry));
         assertThat(subscriptionEntries.size(), is(1));
@@ -78,7 +78,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(100L);
         assertThat(afterSubscriptionEntries.getContent(), hasSize(1));
         assertThat(afterSubscriptionClearedEm.getUnseen(), is(1));
-        assertThat(afterSubscriptionClearedEm.getSum(), is(1));
+        assertThat(afterSubscriptionClearedEm.getFetchCount(), is(1));
     }
 
     @Test
@@ -123,7 +123,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         assertThat(exclusions.iterator().next().getHitCount(), is(1));
 
         assertThat(beforeSubscription.getUnseen(), is(0));
-        assertThat(beforeSubscription.getSum(), is(15));
+        assertThat(beforeSubscription.getFetchCount(), is(15));
 
         List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeSubscription.getFeed(), Arrays.asList(fetcherEntry1, fetcherEntry2));
         assertThat(subscriptionEntries.size(), is(1));
@@ -134,7 +134,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(beforeSubscription.getId());
         assertThat(afterSubscriptionEntries.getContent(), hasSize(1));
         assertThat(afterSubscriptionClearedEm.getUnseen(), is(1));
-        assertThat(afterSubscriptionClearedEm.getSum(), is(16));
+        assertThat(afterSubscriptionClearedEm.getFetchCount(), is(16));
 
         final Page<ExclusionPattern> afterExclusionsClearedEm = exclusionRepository.findBySubscriptionId(afterSubscriptionClearedEm.getId(), new PageRequest(0, 10));
 
