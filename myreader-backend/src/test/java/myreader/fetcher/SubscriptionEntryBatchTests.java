@@ -1,6 +1,7 @@
 package myreader.fetcher;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -65,6 +66,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         assertThat(beforeSubscriptionEntries.getContent(), hasSize(0));
         assertThat(beforeSubscription.getUnseen(), is(0));
         assertThat(beforeSubscription.getFetchCount(), is(0));
+        assertThat(beforeSubscription.getLastFeedEntryId(), nullValue());
 
         List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeFeed, Arrays.asList(fetcherEntry));
         assertThat(subscriptionEntries.size(), is(1));
@@ -79,6 +81,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         assertThat(afterSubscriptionEntries.getContent(), hasSize(1));
         assertThat(afterSubscriptionClearedEm.getUnseen(), is(1));
         assertThat(afterSubscriptionClearedEm.getFetchCount(), is(1));
+        assertThat(afterSubscriptionClearedEm.getLastFeedEntryId(), is(afterSubscriptionEntries.getContent().get(0).getFeedEntry().getId()));
     }
 
     @Test
@@ -121,9 +124,9 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
 
         assertThat(exclusions.getContent(), hasSize(1));
         assertThat(exclusions.iterator().next().getHitCount(), is(1));
-
         assertThat(beforeSubscription.getUnseen(), is(0));
         assertThat(beforeSubscription.getFetchCount(), is(15));
+        assertThat(beforeSubscription.getLastFeedEntryId(), nullValue());
 
         List<SubscriptionEntry> subscriptionEntries = uut.updateUserSubscriptionEntries(beforeSubscription.getFeed(), Arrays.asList(fetcherEntry1, fetcherEntry2));
         assertThat(subscriptionEntries.size(), is(1));
@@ -140,5 +143,6 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
 
         assertThat(afterExclusionsClearedEm.getContent(), hasSize(1));
         assertThat(afterExclusionsClearedEm.iterator().next().getHitCount(), is(2));
+        assertThat(afterSubscriptionClearedEm.getLastFeedEntryId(), is(afterSubscriptionEntries.getContent().get(0).getFeedEntry().getId()));
     }
 }

@@ -84,14 +84,12 @@ public class SubscriptionEntryBatch {
                     subscriptionEntry.setSubscription(subscription);
                     subscriptionEntry.setCreatedAt(timeService.getCurrentTime());
 
-                    subscription.setFetchCount(subscription.getFetchCount() + 1);
-                    subscription.setUnseen(subscription.getUnseen() +1);
-
                     subscriptionEntryRepository.save(subscriptionEntry);
+                    subscriptionRepository.updateLastFeedEntryIdAndIncrementUnseenAndIncrementFetchCount(feedEntry.getId(), subscription.getId());
                     toIndex.add(subscriptionEntry);
+                } else {
+                    subscriptionRepository.updateLastFeedEntryId(feedEntry.getId(), subscription.getId());
                 }
-
-                subscriptionRepository.save(subscription);
             }
         }
 

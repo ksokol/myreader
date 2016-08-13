@@ -1,12 +1,12 @@
 package myreader.repository;
 
-import java.util.List;
-
 import myreader.entity.Subscription;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -42,4 +42,14 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     @Query("select distinct(s.tag) from Subscription as s where s.user.id = ?1 and s.tag is not null")
     List<String> findDistinctTags(long userId);
+
+    @Transactional
+    @Query("update Subscription set lastFeedEntryId = ?1 where id = ?2")
+    @Modifying
+    void updateLastFeedEntryId(Long feedEntryId, Long subscriptionId);
+
+    @Transactional
+    @Query("update Subscription set lastFeedEntryId = ?1, unseen = unseen + 1, fetchCount = fetchCount + 1 where id = ?2")
+    @Modifying
+    void updateLastFeedEntryIdAndIncrementUnseenAndIncrementFetchCount(Long feedEntryId, Long subscriptionId);
 }
