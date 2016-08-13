@@ -7,11 +7,15 @@ import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 2016-07
  */
 class CustomConnectionKeepAliveStrategy implements ConnectionKeepAliveStrategy {
+
+    private static final Logger log = LoggerFactory.getLogger(CustomConnectionKeepAliveStrategy.class);
 
     private final long keepAlive;
 
@@ -31,6 +35,7 @@ class CustomConnectionKeepAliveStrategy implements ConnectionKeepAliveStrategy {
                 try {
                     return Long.parseLong(value) * 1000;
                 } catch (NumberFormatException ignore) {
+                    log.debug("could not parse number from timeout header");
                 }
             }
         }
