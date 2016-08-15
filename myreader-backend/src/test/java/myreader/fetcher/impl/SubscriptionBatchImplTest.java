@@ -2,7 +2,6 @@ package myreader.fetcher.impl;
 
 import myreader.entity.Feed;
 import myreader.fetcher.SubscriptionBatch;
-import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedEntryRepository;
@@ -14,13 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.StreamSupport.stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
 
 /**
  * @author Kamill Sokol
@@ -43,26 +38,26 @@ public class SubscriptionBatchImplTest extends IntegrationTestSupport {
     @Autowired
     private TimeService timeServiceMock;
 
-    private SubscriptionEntryBatch subscriptionEntryBatchMock = mock(SubscriptionEntryBatch.class);
-
     public void beforeTest() {
-        reset(subscriptionEntryBatchMock);
-
-        uut = new SubscriptionBatchImpl(feedRepository, feedEntryRepository, subscriptionEntryBatchMock, timeServiceMock);
+        uut = new SubscriptionBatchImpl(feedRepository, feedEntryRepository, timeServiceMock);
     }
 
     @Test
     public void testUpdateUserSubscriptions1() {
+        long expectedCount = stream(feedEntryRepository.findAll().spliterator(), false).count();
+
         uut.updateUserSubscriptions(new FetchResult("unknown feed"));
 
-        verify(subscriptionEntryBatchMock, never()).updateUserSubscriptionEntries(any());
+        assertThat(stream(feedEntryRepository.findAll().spliterator(), false).count(), is(expectedCount));
     }
 
     @Test
     public void testUpdateUserSubscriptions() {
+        long expectedCount = stream(feedEntryRepository.findAll().spliterator(), false).count();
+
         uut.updateUserSubscriptions(new FetchResult(emptyList(), "last modified", "title", "unknown feed url"));
 
-        verify(subscriptionEntryBatchMock, never()).updateUserSubscriptionEntries(any());
+        assertThat(stream(feedEntryRepository.findAll().spliterator(), false).count(), is(expectedCount));
     }
 
     @Test

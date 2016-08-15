@@ -27,4 +27,6 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
     @Override
     SubscriptionEntry findOne(Long id);
 
+    @Query("select count(se) > 0 from SubscriptionEntry se where se.feedEntry.id = ?1 and se.subscription.id = ?2")
+    boolean contains(Long feedEntryId, Long subscriptionId);
 }

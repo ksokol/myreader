@@ -3,7 +3,6 @@ package myreader.fetcher.impl;
 import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.fetcher.SubscriptionBatch;
-import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedEntryRepository;
@@ -23,14 +22,12 @@ public class SubscriptionBatchImpl implements SubscriptionBatch {
 
     private final FeedRepository feedRepository;
     private final FeedEntryRepository feedEntryRepository;
-    private final SubscriptionEntryBatch subscriptionBatchService;
     private final TimeService timeService;
 
     @Autowired
-    public SubscriptionBatchImpl(FeedRepository feedRepository, FeedEntryRepository feedEntryRepository, SubscriptionEntryBatch subscriptionBatchService, TimeService timeService) {
+    public SubscriptionBatchImpl(FeedRepository feedRepository, FeedEntryRepository feedEntryRepository, TimeService timeService) {
         this.feedRepository = feedRepository;
         this.feedEntryRepository = feedEntryRepository;
-        this.subscriptionBatchService = subscriptionBatchService;
         this.timeService = timeService;
     }
 
@@ -56,10 +53,6 @@ public class SubscriptionBatchImpl implements SubscriptionBatch {
 
                     newEntries.add(feedEntry);
                 }
-            }
-
-            for (FeedEntry newEntry : newEntries) {
-                subscriptionBatchService.updateUserSubscriptionEntries(newEntry);
             }
 
             feed.setLastModified(fetchResult.getLastModified());

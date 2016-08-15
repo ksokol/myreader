@@ -3,7 +3,9 @@ package myreader.config;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
+import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.jobs.FeedListFetcherJob;
+import myreader.fetcher.jobs.SubscriptionJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
 import myreader.repository.FeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ public class TaskConfig implements SchedulingConfigurer {
 
     private FeedRepository feedRepository;
     private SubscriptionBatch subscriptionBatch;
+    private SubscriptionEntryBatch subscriptionEntryBatch;
     private Environment environment;
     private Executor executor;
     private FeedParser feedParser;
@@ -40,11 +43,16 @@ public class TaskConfig implements SchedulingConfigurer {
             executor.execute(syndFetcherJob("syndFetcher-1"));
             executor.execute(syndFetcherJob("syndFetcher-2"));
             taskRegistrar.addFixedRateTask(feedListFetcher(), 300000);
+            taskRegistrar.addFixedRateTask(subscriptionJob(), 300000);
             /*
                 <!-- TODO deactivated until this job has an unittest -->
                 <!-- <task:scheduled ref="purgerJob" method="run" cron="0 0 3 * * *"/> -->
              */
         }
+    }
+
+    private SubscriptionJob subscriptionJob() {
+        return new SubscriptionJob("subscriptionJob", subscriptionEntryBatch);
     }
 
     private FeedListFetcherJob feedListFetcher() {
@@ -67,6 +75,11 @@ public class TaskConfig implements SchedulingConfigurer {
     @Autowired
     public void setSubscriptionBatch(final SubscriptionBatch subscriptionBatch) {
         this.subscriptionBatch = subscriptionBatch;
+    }
+
+    @Autowired
+    public void setSubscriptionEntryBatch(SubscriptionEntryBatch subscriptionEntryBatch) {
+        this.subscriptionEntryBatch = subscriptionEntryBatch;
     }
 
     @Autowired

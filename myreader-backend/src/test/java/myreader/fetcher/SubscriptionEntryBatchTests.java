@@ -44,11 +44,9 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         Subscription beforeSubscription = subscriptionRepository.findOne(101L);
         assertThat(beforeSubscription.getUnseen(), is(1));
         assertThat(beforeSubscription.getFetchCount(), is(15));
-        assertThat(beforeSubscription.getLastFeedEntryId(), nullValue());
 
         FeedEntry feedEntry = createFeedEntry(beforeSubscription.getFeed());
-
-        uut.updateUserSubscriptionEntries(feedEntry);
+        uut.updateUserSubscriptionEntries();
 
         Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne((beforeSubscription.getId()));
         assertThat(afterSubscriptionClearedEm.getUnseen(), is(2));
@@ -59,13 +57,13 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
     @Test
     public void shouldUpdateSubscriptionEntries() {
         Subscription beforeSubscription = subscriptionRepository.findOne(101L);
-        FeedEntry feedEntry = createFeedEntry(beforeSubscription.getFeed());
+        createFeedEntry(beforeSubscription.getFeed());
 
         Slice<SubscriptionEntry> beforeSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
                 beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
         assertThat(beforeSubscriptionEntries.getContent(), hasSize(0));
 
-        uut.updateUserSubscriptionEntries(feedEntry);
+        uut.updateUserSubscriptionEntries();
 
         Slice<SubscriptionEntry> afterSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
                 beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
@@ -75,14 +73,14 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
     @Test
     public void shouldNotUpdateSubscriptionExclusions() {
         Subscription beforeSubscription = subscriptionRepository.findOne(101L);
-        FeedEntry feedEntry = createFeedEntry(beforeSubscription.getFeed());
+        createFeedEntry(beforeSubscription.getFeed());
 
         ExclusionPattern exclusionPattern = new ExclusionPattern();
         exclusionPattern.setSubscription(beforeSubscription);
         exclusionPattern.setPattern("irrelevant");
         exclusionPattern = exclusionRepository.save(exclusionPattern);
 
-        uut.updateUserSubscriptionEntries(feedEntry);
+        uut.updateUserSubscriptionEntries();
 
         final ExclusionPattern afterExclusionsClearedEm = exclusionRepository.findOne(exclusionPattern.getId());
         assertThat(afterExclusionsClearedEm.getHitCount(), is(0));
@@ -97,7 +95,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
 
         FeedEntry feedEntry = createFeedEntry(beforeSubscription.getFeed());
 
-        uut.updateUserSubscriptionEntries(feedEntry);
+        uut.updateUserSubscriptionEntries();
 
         Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(beforeSubscription.getId());
         assertThat(afterSubscriptionClearedEm.getUnseen(), is(0));
@@ -108,13 +106,13 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
     @Test
     public void shouldNotUpdateSubscriptionEntries() {
         Subscription beforeSubscription = subscriptionRepository.findOne(6L);
-        FeedEntry feedEntry = createFeedEntry(beforeSubscription.getFeed());
+        createFeedEntry(beforeSubscription.getFeed());
 
         Slice<SubscriptionEntry> beforeSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
                 beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
         assertThat(beforeSubscriptionEntries.getContent(), hasSize(0));
 
-        uut.updateUserSubscriptionEntries(feedEntry);
+        uut.updateUserSubscriptionEntries();
 
         Slice<SubscriptionEntry> afterSubscriptionEntries = subscriptionEntryRepository.findBySubscriptionAndUser(beforeSubscription.getUser().getId(),
                 beforeSubscription.getId(), Long.MAX_VALUE, new PageRequest(0, 10));
@@ -124,12 +122,12 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
     @Test
     public void shouldUpdateSubscriptionExclusions() {
         Subscription beforeSubscription = subscriptionRepository.findOne(6L);
-        FeedEntry feedEntry = createFeedEntry(beforeSubscription.getFeed());
+        createFeedEntry(beforeSubscription.getFeed());
 
         final Page<ExclusionPattern> exclusions = exclusionRepository.findBySubscriptionId(beforeSubscription.getId(), new PageRequest(0, 10));
         assertThat(exclusions.iterator().next().getHitCount(), is(1));
 
-        uut.updateUserSubscriptionEntries(feedEntry);
+        uut.updateUserSubscriptionEntries();
 
         final Page<ExclusionPattern> afterExclusionsClearedEm = exclusionRepository.findBySubscriptionId(beforeSubscription.getId(), new PageRequest(0, 10));
         assertThat(afterExclusionsClearedEm.iterator().next().getHitCount(), is(2));
@@ -137,13 +135,11 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
 
     @Test
     public void noFeedEntriesGiven() {
-        FeedEntry feedEntry = new FeedEntry();
-        feedEntry.setFeed(new Feed());
+        //TODO should not require this
+        uut.updateUserSubscriptionEntries();
 
         int expectedSize = subscriptionEntryRepository.findAll().size();
-
-        uut.updateUserSubscriptionEntries(feedEntry);
-
+        uut.updateUserSubscriptionEntries();
         assertThat(subscriptionEntryRepository.findAll(), hasSize(expectedSize));
     }
 
