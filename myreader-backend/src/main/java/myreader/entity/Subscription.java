@@ -35,10 +35,11 @@ public class Subscription implements Identifiable {
     private String title;
     private String tag;
     private User user;
-    private int sum;
+    private int fetchCount;
     private int unseen = 0;
     private Date createdAt;
     private Feed feed;
+    private Long lastFeedEntryId;
     private Set<SubscriptionEntry> subscriptionEntries;
     private Set<ExclusionPattern> exclusions;
     private long version;
@@ -78,12 +79,12 @@ public class Subscription implements Identifiable {
     }
 
     @Column(name = "user_feed_sum")
-    public int getSum() {
-        return sum;
+    public int getFetchCount() {
+        return fetchCount;
     }
 
-    public void setSum(int sum) {
-        this.sum = sum;
+    public void setFetchCount(int fetchCount) {
+        this.fetchCount = fetchCount;
     }
 
     @Column(name = "user_feed_unseen", columnDefinition = "INT DEFAULT 0", precision = 0)
@@ -129,6 +130,15 @@ public class Subscription implements Identifiable {
 
     public void setFeed(Feed feed) {
         this.feed = feed;
+    }
+
+    @Column(name = "last_feed_entry")
+    public Long getLastFeedEntryId() {
+        return lastFeedEntryId;
+    }
+
+    public void setLastFeedEntryId(Long lastFeedEntryId) {
+        this.lastFeedEntryId = lastFeedEntryId;
     }
 
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)

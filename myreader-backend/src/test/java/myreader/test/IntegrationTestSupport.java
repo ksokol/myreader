@@ -40,7 +40,7 @@ public abstract class IntegrationTestSupport {
 		System.setProperty("hibernate.search.lucene_version","LUCENE_41");
 
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        Assert.isTrue("UTF-8".equals(System.getProperty("file.encoding")));
+        System.setProperty("file.encoding", "UTF-8");
 	}
 
     protected MockMvc mockMvc;

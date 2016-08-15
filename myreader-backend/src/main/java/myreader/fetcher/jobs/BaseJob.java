@@ -36,8 +36,8 @@ public abstract class BaseJob implements Runnable, ApplicationListener<ContextCl
         try {
             timer.start();
             work();
-        } catch(Exception e) {
-            log.warn("caught ", e.getMessage());
+        } catch(Exception exception) {
+            log.warn(exception.getMessage(), exception);
         } finally {
             timer.stop();
             log.info("total time {} sec", timer.getTotalTimeSeconds());
