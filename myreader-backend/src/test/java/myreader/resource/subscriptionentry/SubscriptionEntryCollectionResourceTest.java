@@ -1,5 +1,10 @@
 package myreader.resource.subscriptionentry;
 
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
+
 import static myreader.test.KnownUser.USER107;
 import static myreader.test.KnownUser.USER108;
 import static myreader.test.KnownUser.USER109;
@@ -20,14 +25,11 @@ import static org.springframework.test.web.servlet.result.ContentResultMatchersJ
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import myreader.test.IntegrationTestSupport;
-import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
-
 /**
  * @author Kamill Sokol
  */
 @Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupport {
 
     @Test

@@ -1,5 +1,5 @@
 plugins {
-    id "net.saliman.cobertura" version "2.2.8"
+    id "jacoco"
     id "com.github.kt3k.coveralls" version "2.4.0"
 }
 
@@ -65,20 +65,16 @@ dependencyManagement {
     }
 }
 
-cobertura {
-    coverageFormats = [ 'html', 'xml']
-    coverageCheckBranchRate = 100
-    coverageCheckLineRate = 100
-    coverageCheckPackageBranchRate = 100
-    coverageCheckPackageLineRate = 100
-    coverageCheckTotalBranchRate = 100
-    coverageCheckTotalLineRate = 100
-    coverageCheckHaltOnFailure = false
-}
-
 tasks.withType(FindBugs) {
     reports {
         xml.enabled = false
+        html.enabled = true
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
         html.enabled = true
     }
 }
