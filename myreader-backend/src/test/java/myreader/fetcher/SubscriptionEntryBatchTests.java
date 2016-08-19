@@ -48,7 +48,7 @@ public class SubscriptionEntryBatchTests extends IntegrationTestSupport {
         FeedEntry feedEntry = createFeedEntry(beforeSubscription.getFeed());
         uut.updateUserSubscriptionEntries();
 
-        Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne((beforeSubscription.getId()));
+        Subscription afterSubscriptionClearedEm = subscriptionRepository.findOne(beforeSubscription.getId());
         assertThat(afterSubscriptionClearedEm.getUnseen(), is(2));
         assertThat(afterSubscriptionClearedEm.getFetchCount(), is(16));
         assertThat(afterSubscriptionClearedEm.getLastFeedEntryId(), is(feedEntry.getId()));
