@@ -1,7 +1,16 @@
-sudo: false
 language: java
 jdk:
   - oraclejdk8
 
-script:
-   - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew cobertura coveralls -i; else ./gradlew test -i; fi
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.m2
+    - $HOME/myreader/myreader-frontend/node_modules/
+
+after_success:
+- ./gradlew cobertura coveralls
