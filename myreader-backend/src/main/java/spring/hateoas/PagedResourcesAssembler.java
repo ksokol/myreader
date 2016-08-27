@@ -1,10 +1,5 @@
 package spring.hateoas;
 
-import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,20 +10,22 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.ResourceSupport;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import spring.data.domain.Sequence;
 import spring.data.web.SequenceableHandlerMethodArgumentResolver;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 /**
  * @author Oliver Gierke
  * @author Kamill Sokol
  */
-@Component
 public class PagedResourcesAssembler<T> {
 
     private final HateoasPageableHandlerMethodArgumentResolver pageableResolver = new HateoasPageableHandlerMethodArgumentResolver();

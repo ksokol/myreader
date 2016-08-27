@@ -16,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.TimeZone;
@@ -35,10 +34,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public abstract class IntegrationTestSupport {
 
 	static {
-        //TODO move to src/test/resources/application.properties
-		System.setProperty("hibernate.search.default.directory_provider","ram");
-		System.setProperty("hibernate.search.lucene_version","LUCENE_41");
-
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         System.setProperty("file.encoding", "UTF-8");
 	}

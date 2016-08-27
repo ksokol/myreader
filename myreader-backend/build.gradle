@@ -25,35 +25,33 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix'
-    compile group: 'org.springframework.security', name: 'spring-security-data', version: '4.0.2.RELEASE'
+    compile group: 'org.springframework.security', name: 'spring-security-data'
     compile group: 'jdom', name: 'jdom', version: '1.0'
-    compile group: 'org.hibernate', name: 'hibernate-search', version: '5.1.2.Final'
-    compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.12.0.RELEASE'
-    compile group: 'org.hsqldb', name: 'hsqldb', version: '2.3.3'
-    compile group: 'org.hibernate', name: 'hibernate-validator', version: '4.3.1.Final'
-    compile group: 'org.freemarker', name: 'freemarker', version: '2.3.21'
+    compile group: 'org.hibernate', name: 'hibernate-search-orm', version: '5.4.0.Final'
+    compile group: 'org.hsqldb', name: 'hsqldb'
+    compile group: 'org.hibernate', name: 'hibernate-validator'
     compile group: 'com.rometools', name: 'rome', version: '1.5.1'
-    // wrong apache httpcomponents version referenced in net.sourceforge.htmlunit:htmlunit
-    compile(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2') {
+    compile(group: 'org.apache.httpcomponents', name: 'httpclient') {
         exclude(module: 'commons-logging')
     }
-    compile group: 'joda-time', name: 'joda-time', version: '2.6'
+    compile group: 'joda-time', name: 'joda-time'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
-    compile group: 'commons-collections', name: 'commons-collections', version: '3.2.1'
+    compile group: 'commons-codec', name: 'commons-codec'
+    compile group: 'commons-collections', name: 'commons-collections'
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'com.google.guava', name: 'guava', version: '18.0'
     compile project(':myreader-frontend')
 
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '4.0.2.RELEASE'
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    testCompile group: 'com.jayway.jsonpath', name: 'json-path', version: '0.8.1'
-    testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '0.8.1'
+    testCompile group: 'org.springframework.security', name: 'spring-security-test'
+    testCompile group: 'com.jayway.jsonpath', name: 'json-path'
+    testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert'
     testCompile group: 'net.javacrumbs.json-unit', name: 'json-unit', version: '1.1.5'
-    testCompile group: 'net.sourceforge.htmlunit', name: 'htmlunit', version: '2.21'
-    testCompile group: 'xml-apis', name: 'xml-apis', version: '1.4.01'
+    testCompile group: 'net.sourceforge.htmlunit', name: 'htmlunit'
+    testCompile group: 'xml-apis', name: 'xml-apis'
     testCompile(group: 'com.github.tomakehurst', name: 'wiremock', version: '1.57') {
         exclude(module: 'servlet-api')
     }
@@ -61,7 +59,7 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Brixton.RELEASE"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Brixton.SR4"
     }
 }
 

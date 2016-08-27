@@ -1,6 +1,7 @@
 package spring.hateoas;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.hateoas.PagedResources;
@@ -24,7 +25,7 @@ public class DelegatingResourceAssemblers implements ResourceAssemblers {
     private final PagedResourcesAssembler pagedResourcesAssembler;
 
     @Autowired
-    public DelegatingResourceAssemblers(List<ResourceAssemblerSupport> delegates, PagedResourcesAssembler pagedResourcesAssembler) {
+    public DelegatingResourceAssemblers(List<ResourceAssemblerSupport> delegates, @Qualifier(value = "customPagedResourcesAssembler") PagedResourcesAssembler pagedResourcesAssembler) {
         Assert.notNull(delegates, "delegates is null");
         Assert.notNull(pagedResourcesAssembler, "pagedResourcesAssembler is null");
         this.delegates = delegates;

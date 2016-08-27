@@ -1,18 +1,5 @@
 package spring;
 
-import static myreader.config.UrlMappings.LANDING_PAGE;
-import static myreader.config.UrlMappings.LOGIN;
-import static myreader.config.UrlMappings.LOGIN_PROCESSING;
-import static myreader.config.UrlMappings.LOGOUT;
-import static myreader.test.KnownUser.USER1;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
@@ -25,9 +12,23 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import javax.servlet.http.Cookie;
+
+import static myreader.config.UrlMappings.LANDING_PAGE;
+import static myreader.config.UrlMappings.LOGIN;
+import static myreader.config.UrlMappings.LOGIN_PROCESSING;
+import static myreader.config.UrlMappings.LOGOUT;
+import static myreader.test.KnownUser.USER1;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.springframework.http.MediaType.TEXT_HTML;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Kamill Sokol
@@ -92,7 +93,24 @@ public class ApiSecurityTest extends SecurityTestSupport {
     }
 
     @Test
-    public void testLogout() throws Exception {
+    public void testLogoutWithBrowser() throws Exception {
+        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", USER1.username)
+                .param("password", USER1.password)
+                .param("remember-me", "on"))
+                .andExpect(status().isNoContent())
+                .andReturn()
+                .getResponse().getCookie("remember-me");
+
+        mockMvc.perform(get(LOGOUT.mapping())
+                .cookie(rememberMeCookie)
+                .accept(TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", LOGIN.mapping()));
+    }
+
+    @Test
+    public void testLogoutWithAjax() throws Exception {
         Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .param("username", USER1.username)
                 .param("password", USER1.password)
@@ -103,8 +121,7 @@ public class ApiSecurityTest extends SecurityTestSupport {
 
         mockMvc.perform(get(LOGOUT.mapping())
                 .cookie(rememberMeCookie))
-                .andExpect(status().isFound())
-                .andExpect(header().string("Location", LOGIN.mapping()));
+                .andExpect(status().isNoContent());
     }
 
     @Ignore
