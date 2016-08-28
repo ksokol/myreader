@@ -1,15 +1,13 @@
 package myreader.fetcher.impl;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.resttemplate.FeedParserConfiguration;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -26,27 +24,16 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = FeedParserConfiguration.class)
-@RestClientTest
 public class FeedParserHttpsTests {
 
     private static final int PORT = 18443;
     private static final String HTTPS_URL = "https://localhost:" + PORT + "/rss";
 
-    private WireMockServer wireMockServer;
-
     @Autowired
     private FeedParser parser;
 
-    @Before
-    public void before() {
-        wireMockServer = new WireMockServer(wireMockConfig().httpsPort(PORT));
-        wireMockServer.start();
-    }
-
-    @After
-    public void after() {
-        wireMockServer.stop();
-    }
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().httpsPort(PORT));
 
     @Test
     public void insecureSslConnection() throws Exception {
