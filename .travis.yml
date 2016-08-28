@@ -10,7 +10,7 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.m2
-    - $HOME/myreader/myreader-frontend/node_modules/
+    - $TRAVIS_BUILD_DIR/myreader-frontend/node_modules/
 
 after_success:
 - ./gradlew jacocoTestReport coveralls
