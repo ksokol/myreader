@@ -33,7 +33,7 @@ public class FeedParserHttpsTests {
     private FeedParser parser;
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().httpsPort(PORT));
+    public final WireMockRule wireMockRule = new WireMockRule(wireMockConfig().httpsPort(PORT));
 
     @Test
     public void insecureSslConnection() throws Exception {
