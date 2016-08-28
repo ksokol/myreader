@@ -729,4 +729,37 @@ describe('service', function() {
             expect(pageSize).toBe(true);
         });
     });
+
+    describe('windowService', function() {
+        var theWindow;
+
+        beforeEach(module('common.services', function($provide) {
+            $provide.provider(myMock.providerWithObj('$window', {
+                open: function() {
+                    theWindow = {
+                        opener: 'theOpener',
+                        location: 'someUrl'
+                    };
+                    return theWindow;
+                }
+            }));
+        }));
+
+        beforeEach(inject(function (windowService) {
+            service = windowService;
+        }));
+
+        it('should remove opener', function() {
+            service.safeOpen('irrelevant');
+
+            expect(theWindow.opener).toBeNull();
+        });
+
+        it('should set location', function() {
+            var urlToOpen = 'irrelevant';
+            service.safeOpen(urlToOpen);
+
+            expect(theWindow.location).toBe(urlToOpen);
+        });
+    });
 });

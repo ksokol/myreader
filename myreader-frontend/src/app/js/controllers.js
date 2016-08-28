@@ -3,7 +3,7 @@
 
 var BaseEntryCtrl = function() {};
 
-BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, hotkeys) {
+BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, windowService, hotkeys) {
     $scope.data = {entries: []};
     $scope.param = $stateParams;
     $scope.search = "";
@@ -163,7 +163,7 @@ BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stat
     };
 
     $scope.openOrigin = function(entry) {
-        $window.open(entry.origin, '_blank');
+        windowService.safeOpen(entry.origin);
     };
 
     $scope.$on('search', function(event, param) {
@@ -204,10 +204,10 @@ BaseEntryCtrl.prototype.initialize = function($window, $rootScope, $scope, $stat
     });
 };
 
-var SubscriptionEntryListCtrl = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, subscriptionsTagService, settingsService, hotkeys) {
+var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, subscriptionsTagService, settingsService, windowService, hotkeys) {
 
     BaseEntryCtrl.call(this);
-    this.initialize($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, hotkeys);
+    this.initialize($rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, windowService, hotkeys);
 
     $scope.$on('navigation-open', function(ev, param) {
         subscriptionsTagService.findAllByUnseen(true)
@@ -237,10 +237,10 @@ var SubscriptionEntryListCtrl = function($window, $rootScope, $scope, $statePara
     $scope.refresh($scope.params());
 };
 
-var BookmarkEntryListCtrl = function($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, bookmarkService, settingsService, hotkeys) {
+var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, bookmarkService, settingsService, windowService, hotkeys) {
 
     BaseEntryCtrl.call(this);
-    this.initialize($window, $rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, hotkeys);
+    this.initialize($rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, windowService, hotkeys);
 
     $scope.$on('navigation-open', function(ev, param) {
         bookmarkService.findAll()
@@ -406,11 +406,12 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     }
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'hotkeys', SubscriptionEntryListCtrl])
+.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'windowService', 'hotkeys', SubscriptionEntryListCtrl])
 
-.controller('BookmarkEntryListCtrl', ['$window', '$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'hotkeys', BookmarkEntryListCtrl])
+.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'windowService', 'hotkeys', BookmarkEntryListCtrl])
 
-.controller('SubscriptionEntryCtrl', ['$window', '$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', function($window, $scope, $stateParams, $previousState, $mdToast, subscriptionEntryService) {
+.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', 'windowService',
+    function($scope, $stateParams, $previousState, $mdToast, subscriptionEntryService, windowService) {
 
     $scope.entry = {};
 
@@ -445,7 +446,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     };
 
     $scope.$on('open', function() {
-        $window.open($scope.entry.origin, '_blank');
+        windowService.safeOpen($scope.entry.origin);
     });
 
     $scope.$on('hide', $scope.markAsRead);
@@ -472,7 +473,8 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
 }])
 
-.controller('SubscriptionCtrl', ['$window', '$scope', '$state', '$mdToast', '$mdDialog', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', function($window, $scope, $state, $mdToast, $mdDialog, $stateParams, $previousState, subscriptionService, subscriptionTagService) {
+.controller('SubscriptionCtrl', ['$scope', '$state', '$mdToast', '$mdDialog', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', 'windowService',
+    function($scope, $state, $mdToast, $mdDialog, $stateParams, $previousState, subscriptionService, subscriptionTagService, windowService) {
 
     $scope.availableTags = [];
 
@@ -532,7 +534,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     });
 
     $scope.$on('open', function() {
-        $window.open($scope.subscription.origin, '_blank');
+        windowService.safeOpen($scope.subscription.origin);
     });
 
     $scope.$on('delete', function(ev) {
@@ -553,7 +555,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
 }])
 
-.controller('AdminCtrl', ['$window', '$scope', '$mdToast', 'processingService', function($window, $scope, $mdToast, processingService) {
+.controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'windowService', function($scope, $mdToast, processingService, windowService) {
 
     $scope.data = [];
 
@@ -570,7 +572,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     };
 
     $scope.openOrigin = function(item) {
-        $window.open(item.origin, '_blank');
+        windowService.safeOpen(item.origin);
     };
 
     $scope.$on('refresh', $scope.refresh);
