@@ -4,7 +4,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
 
 .config(['$httpProvider', function($httpProvider) {
 
-    $httpProvider.interceptors.push(['$q', '$window', '$rootScope', '$injector', function($q, $window, $rootScope, $injector) {
+    $httpProvider.interceptors.push(['$q', '$rootScope', '$injector', function($q, $rootScope, $injector) {
         return {
             'responseError': function(rejection) {
                 if(rejection.status === 401) {

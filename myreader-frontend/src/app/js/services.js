@@ -375,4 +375,15 @@ angular.module('common.services', ['common.api', 'common.caches'])
             settingsCache.put('settings-showUnseenEntries', showUnseenEntries);
         }
     }
+}])
+
+.service('windowService', ['$window', function($window) {
+
+    return {
+        safeOpen: function(url) {
+            var otherWindow = $window.open();
+            otherWindow.opener = null;
+            otherWindow.location = url;
+        }
+    }
 }]);
