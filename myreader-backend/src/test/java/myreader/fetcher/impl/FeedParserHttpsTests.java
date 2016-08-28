@@ -3,10 +3,15 @@ package myreader.fetcher.impl;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
-import myreader.test.IntegrationTestSupport;
+import myreader.fetcher.resttemplate.FeedParserConfiguration;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -19,7 +24,10 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kamill Sokol
  */
-public class FeedParserHttpsTests extends IntegrationTestSupport {
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = FeedParserConfiguration.class)
+@RestClientTest
+public class FeedParserHttpsTests {
 
     private static final int PORT = 18443;
     private static final String HTTPS_URL = "https://localhost:" + PORT + "/rss";
@@ -27,19 +35,16 @@ public class FeedParserHttpsTests extends IntegrationTestSupport {
     private WireMockServer wireMockServer;
 
     @Autowired
-    private RestTemplate syndicationRestTemplate;
-
     private FeedParser parser;
 
-    @Override
-    public void beforeTest() {
+    @Before
+    public void before() {
         wireMockServer = new WireMockServer(wireMockConfig().httpsPort(PORT));
         wireMockServer.start();
-        parser = new DefaultFeedParser(syndicationRestTemplate);
     }
 
-    @Override
-    public void afterTest() {
+    @After
+    public void after() {
         wireMockServer.stop();
     }
 
