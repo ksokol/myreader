@@ -84,6 +84,8 @@ public class SubscriptionEntryBatchTests {
 
         subscriptionEntryBatch.updateUserSubscriptionEntries();
 
+        exclusionPattern = em.refresh(exclusionPattern);
+
         assertThat(exclusionPattern.getHitCount(), is(0));
     }
 
