@@ -3,16 +3,19 @@ package myreader.fetcher.impl;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
-import myreader.test.IntegrationTestSupport;
+import myreader.fetcher.resttemplate.FeedParserConfiguration;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,17 +37,20 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 /**
  * @author Kamill Sokol
  */
-@DirtiesContext
-public class DefaultFeedParserTest extends IntegrationTestSupport {
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = FeedParserConfiguration.class)
+@RestClientTest
+public class DefaultFeedParserTest {
 
     private static final String HTTP_EXAMPLE_COM = "http://example.com";
 
     @Autowired
     private RestTemplate syndicationRestTemplate;
 
-    private MockRestServiceServer mockServer;
-
+    @Autowired
     private DefaultFeedParser parser;
+
+    private MockRestServiceServer mockServer;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -52,7 +58,6 @@ public class DefaultFeedParserTest extends IntegrationTestSupport {
     @Before
     public void beforeTest() throws Exception {
         mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
-        parser = new DefaultFeedParser(syndicationRestTemplate);
     }
 
     @Test

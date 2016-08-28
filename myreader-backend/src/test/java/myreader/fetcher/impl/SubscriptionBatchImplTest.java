@@ -1,15 +1,21 @@
 package myreader.fetcher.impl;
 
 import myreader.entity.Feed;
-import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
 import myreader.service.time.TimeService;
-import myreader.test.IntegrationTestSupport;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -20,14 +26,19 @@ import static org.hamcrest.core.Is.is;
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionBatchImplTest extends IntegrationTestSupport {
+@RunWith(SpringRunner.class)
+@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionBatchImpl.class))
+@TestPropertySource(properties = { "task.enabled = false" })
+@Sql("/test-data.sql")
+public class SubscriptionBatchImplTest {
 
     private static final String KNOWN_FEED_URL = "http://feeds.feedburner.com/javaposse";
     private static final String ENTRY_TITLE = "Party time";
     private static final String ENTRY_GUID = "http://Use-The-Index-Luke.com";
     private static final String ENTRY_URL = "http://Use-The-Index-Luke.com/blog/2013-03/Party-Time";
 
-    private SubscriptionBatch uut;
+    @Autowired
+    private SubscriptionBatchImpl subscriptionBatch;
 
     @Autowired
     private FeedRepository feedRepository;
@@ -35,18 +46,14 @@ public class SubscriptionBatchImplTest extends IntegrationTestSupport {
     @Autowired
     private FeedEntryRepository feedEntryRepository;
 
-    @Autowired
-    private TimeService timeServiceMock;
-
-    public void beforeTest() {
-        uut = new SubscriptionBatchImpl(feedRepository, feedEntryRepository, timeServiceMock);
-    }
+    @MockBean
+    private TimeService timeService;
 
     @Test
     public void testUpdateUserSubscriptions1() {
         long expectedCount = stream(feedEntryRepository.findAll().spliterator(), false).count();
 
-        uut.updateUserSubscriptions(new FetchResult("unknown feed"));
+        subscriptionBatch.updateUserSubscriptions(new FetchResult("unknown feed"));
 
         assertThat(stream(feedEntryRepository.findAll().spliterator(), false).count(), is(expectedCount));
     }
@@ -55,7 +62,7 @@ public class SubscriptionBatchImplTest extends IntegrationTestSupport {
     public void testUpdateUserSubscriptions() {
         long expectedCount = stream(feedEntryRepository.findAll().spliterator(), false).count();
 
-        uut.updateUserSubscriptions(new FetchResult(emptyList(), "last modified", "title", "unknown feed url"));
+        subscriptionBatch.updateUserSubscriptions(new FetchResult(emptyList(), "last modified", "title", "unknown feed url"));
 
         assertThat(stream(feedEntryRepository.findAll().spliterator(), false).count(), is(expectedCount));
     }
@@ -64,7 +71,7 @@ public class SubscriptionBatchImplTest extends IntegrationTestSupport {
     public void testUpdateUserSubscriptions11() {
         FetcherEntry fetcherEntry = createFetcherEntry();
 
-        uut.updateUserSubscriptions(new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL));
+        subscriptionBatch.updateUserSubscriptions(new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL));
 
         Feed feed = feedRepository.findByUrl(KNOWN_FEED_URL);
 
@@ -82,7 +89,7 @@ public class SubscriptionBatchImplTest extends IntegrationTestSupport {
 
         FetchResult fetchResult = new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL);
 
-        uut.updateUserSubscriptions(fetchResult);
+        subscriptionBatch.updateUserSubscriptions(fetchResult);
 
         Feed feed = feedRepository.findByUrl(KNOWN_FEED_URL);
 

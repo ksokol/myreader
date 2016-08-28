@@ -1,9 +1,14 @@
 package myreader.repository;
 
-import myreader.test.IntegrationTestSupport;
+import myreader.entity.ExclusionPattern;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -12,13 +17,19 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kamill Sokol
  */
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class ExclusionRepositoryTest extends IntegrationTestSupport {
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@TestPropertySource(properties = { "task.enabled = false" })
+@Sql("/test-data.sql")
+public class ExclusionRepositoryTest {
 
     private static final long EXCLUSION_PATTERN_ID = 0L;
 
     @Autowired
     private ExclusionRepository exclusionRepository;
+
+    @Autowired
+    private TestEntityManager em;
 
     @Test
     public void findBySubscriptionId() {
@@ -27,11 +38,15 @@ public class ExclusionRepositoryTest extends IntegrationTestSupport {
 
     @Test
     public void incrementHitCount() throws Exception {
-        assertThat(exclusionRepository.findOne(EXCLUSION_PATTERN_ID).getHitCount(), is(1));
+        ExclusionPattern exclusionPattern = em.find(ExclusionPattern.class, EXCLUSION_PATTERN_ID);
+
+        assertThat(exclusionPattern.getHitCount(), is(1));
 
         exclusionRepository.incrementHitCount(EXCLUSION_PATTERN_ID);
 
-        assertThat(exclusionRepository.findOne(EXCLUSION_PATTERN_ID).getHitCount(), is(2));
+        exclusionPattern = em.refresh(exclusionPattern);
+
+        assertThat(exclusionPattern.getHitCount(), is(2));
     }
 
 }

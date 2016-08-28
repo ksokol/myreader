@@ -9,11 +9,21 @@ import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
-import myreader.test.IntegrationTestSupport;
+import myreader.service.feed.FeedServiceImpl;
+import myreader.service.subscription.impl.SubscriptionServiceImpl;
+import myreader.service.time.TimeService;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 
@@ -27,25 +37,31 @@ import static org.mockito.Mockito.when;
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionServiceImplTest extends IntegrationTestSupport {
+@RunWith(SpringRunner.class)
+@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {SubscriptionServiceImpl.class, FeedServiceImpl.class}))
+@TestPropertySource(properties = { "task.enabled = false" })
+@Sql("/test-data.sql")
+public class SubscriptionServiceImplTest {
 
     @Autowired
-    private SubscriptionService uut;
+    private SubscriptionServiceImpl subscriptionService;
     @Autowired
     private FeedRepository feedRepository;
     @Autowired
     private SubscriptionRepository subscriptionRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private FeedParser feedParserMock;
+    @MockBean
+    private FeedParser feedParser;
+    @MockBean
+    private TimeService timeService;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test(expected = SubscriptionExistException.class)
     public void testExpectedSubscriptionExistException() {
-        uut.subscribe(2L, "http://feeds.feedburner.com/SpringSourceTeamBlog");
+        subscriptionService.subscribe(2L, "http://feeds.feedburner.com/SpringSourceTeamBlog");
     }
 
     @Test
@@ -55,11 +71,11 @@ public class SubscriptionServiceImplTest extends IntegrationTestSupport {
         String feedTitle = "feed title";
 
         FetchResult fetchResult = new FetchResult(Collections.<FetcherEntry>emptyList(), "last modified", feedTitle);
-        when(feedParserMock.parse(feedUrl)).thenReturn(fetchResult);
+        when(feedParser.parse(feedUrl)).thenReturn(fetchResult);
 
         assertThat(feedRepository.findByUrl(feedUrl), nullValue());
 
-        Subscription newSubscription = uut.subscribe(user.getId(), feedUrl);
+        Subscription newSubscription = subscriptionService.subscribe(user.getId(), feedUrl);
         Feed newFeed = feedRepository.findByUrl(feedUrl);
 
         assertThat(newFeed, notNullValue());
@@ -83,12 +99,12 @@ public class SubscriptionServiceImplTest extends IntegrationTestSupport {
         String feedTitle = "feed title";
 
         FetchResult fetchResult = new FetchResult(Collections.<FetcherEntry>emptyList(), "last modified", feedTitle);
-        when(feedParserMock.parse(feedUrl)).thenReturn(fetchResult);
+        when(feedParser.parse(feedUrl)).thenReturn(fetchResult);
 
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("user with uuid [-99] not found");
 
-        uut.subscribe(user.getId(), feedUrl);
+        subscriptionService.subscribe(user.getId(), feedUrl);
     }
 
 }

@@ -1,12 +1,15 @@
 package myreader.fetcher.impl;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
-import myreader.test.IntegrationTestSupport;
+import myreader.fetcher.resttemplate.FeedParserConfiguration;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -19,29 +22,18 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kamill Sokol
  */
-public class FeedParserHttpsTests extends IntegrationTestSupport {
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = FeedParserConfiguration.class)
+public class FeedParserHttpsTests {
 
     private static final int PORT = 18443;
     private static final String HTTPS_URL = "https://localhost:" + PORT + "/rss";
 
-    private WireMockServer wireMockServer;
-
     @Autowired
-    private RestTemplate syndicationRestTemplate;
-
     private FeedParser parser;
 
-    @Override
-    public void beforeTest() {
-        wireMockServer = new WireMockServer(wireMockConfig().httpsPort(PORT));
-        wireMockServer.start();
-        parser = new DefaultFeedParser(syndicationRestTemplate);
-    }
-
-    @Override
-    public void afterTest() {
-        wireMockServer.stop();
-    }
+    @Rule
+    public final WireMockRule wireMockRule = new WireMockRule(wireMockConfig().httpsPort(PORT));
 
     @Test
     public void insecureSslConnection() throws Exception {

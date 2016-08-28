@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.web.bind.support.AuthenticationPrincipalArgumentResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -28,7 +27,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 //@EnableWebMvcSecurity
 @ComponentScan(basePackages = {"spring.hateoas"})
 @Configuration
-@EnableSpringDataWebSupport
 @EnableTransactionManagement
 @EnableAsync
 public class MvcConfig extends WebMvcConfigurerAdapter {
@@ -40,7 +38,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
         configurer
                 .defaultContentType(APPLICATION_JSON)
-                .ignoreAcceptHeader(true)
                 .favorParameter(false)
                 .favorPathExtension(false);
     }
@@ -54,8 +51,8 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         argumentResolvers.add(new SequenceableHandlerMethodArgumentResolver());
     }
 
-    @Bean
-    public PagedResourcesAssembler pagedResourcesAssembler() {
+    @Bean(name = "customPagedResourcesAssembler")
+    public PagedResourcesAssembler<?> pagedResourcesAssembler() {
         return new PagedResourcesAssembler();
     }
 
