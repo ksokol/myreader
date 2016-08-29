@@ -2,7 +2,6 @@ package myreader.fetcher.jobs;
 
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
-
 import myreader.fetcher.persistence.FetchResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;

@@ -1,4 +1,4 @@
-package myreader.fetcher.impl;
+package myreader.fetcher;
 
 import myreader.entity.Feed;
 import myreader.fetcher.persistence.FetchResult;
@@ -27,10 +27,10 @@ import static org.hamcrest.core.Is.is;
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionBatchImpl.class))
+@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionBatch.class))
 @TestPropertySource(properties = { "task.enabled = false" })
 @Sql("/test-data.sql")
-public class SubscriptionBatchImplTest {
+public class SubscriptionBatchTest {
 
     private static final String KNOWN_FEED_URL = "http://feeds.feedburner.com/javaposse";
     private static final String ENTRY_TITLE = "Party time";
@@ -38,7 +38,7 @@ public class SubscriptionBatchImplTest {
     private static final String ENTRY_URL = "http://Use-The-Index-Luke.com/blog/2013-03/Party-Time";
 
     @Autowired
-    private SubscriptionBatchImpl subscriptionBatch;
+    private SubscriptionBatch subscriptionBatch;
 
     @Autowired
     private FeedRepository feedRepository;

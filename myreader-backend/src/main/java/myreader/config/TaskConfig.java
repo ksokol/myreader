@@ -2,8 +2,8 @@ package myreader.config;
 
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
-import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.SubscriptionEntryBatch;
+import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.jobs.FeedListFetcherJob;
 import myreader.fetcher.jobs.SubscriptionJob;
 import myreader.fetcher.jobs.SyndFetcherJob;

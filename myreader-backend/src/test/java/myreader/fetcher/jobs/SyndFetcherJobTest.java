@@ -1,5 +1,13 @@
 package myreader.fetcher.jobs;
 
+import myreader.fetcher.FeedQueue;
+import myreader.fetcher.SubscriptionBatch;
+import myreader.fetcher.persistence.FetchResult;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextClosedEvent;
+
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -8,14 +16,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import myreader.fetcher.FeedQueue;
-import myreader.fetcher.SubscriptionBatch;
-import myreader.fetcher.persistence.FetchResult;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.ContextClosedEvent;
 
 /**
  * @author Kamill Sokol
