@@ -10,9 +10,7 @@ import myreader.repository.FeedRepository;
 import myreader.service.time.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Kamill Sokol
@@ -31,36 +29,38 @@ public class SubscriptionBatchImpl implements SubscriptionBatch {
         this.timeService = timeService;
     }
 
+    @Transactional
     @Override
-    public long updateUserSubscriptions(FetchResult fetchResult) {
-        List<FeedEntry> newEntries = new ArrayList<>();
+    public void updateUserSubscriptions(FetchResult fetchResult) {
         final Feed feed = feedRepository.findByUrl(fetchResult.getUrl());
 
-        if (feed != null) {
-            for (FetcherEntry dto : fetchResult.getEntries()) {
-                int result = feedEntryRepository.countByTitleOrGuidOrUrl(dto.getTitle(), dto.getGuid(), dto.getUrl());
-
-                if (result == 0) {
-                    FeedEntry feedEntry = new FeedEntry();
-                    feedEntry.setContent(dto.getContent());
-                    feedEntry.setFeed(feed);
-                    feedEntry.setGuid(dto.getGuid());
-                    feedEntry.setTitle(dto.getTitle());
-                    feedEntry.setUrl(dto.getUrl());
-                    feedEntry.setCreatedAt(timeService.getCurrentTime());
-
-                    feedEntryRepository.save(feedEntry);
-
-                    newEntries.add(feedEntry);
-                }
-            }
-
-            feed.setLastModified(fetchResult.getLastModified());
-            feed.setFetched(feed.getFetched() + newEntries.size());
-
-            feedRepository.save(feed);
+        if (feed == null) {
+            return;
         }
 
-        return newEntries.size();
+        int newCount = 0;
+
+        for (FetcherEntry dto : fetchResult.getEntries()) {
+            int result = feedEntryRepository.countByTitleOrGuidOrUrl(dto.getTitle(), dto.getGuid(), dto.getUrl());
+
+            if (result == 0) {
+                FeedEntry feedEntry = new FeedEntry();
+                feedEntry.setContent(dto.getContent());
+                feedEntry.setFeed(feed);
+                feedEntry.setGuid(dto.getGuid());
+                feedEntry.setTitle(dto.getTitle());
+                feedEntry.setUrl(dto.getUrl());
+                feedEntry.setCreatedAt(timeService.getCurrentTime());
+
+                feedEntryRepository.save(feedEntry);
+
+                newCount++;
+            }
+        }
+
+        feed.setLastModified(fetchResult.getLastModified());
+        feed.setFetched(feed.getFetched() + newCount);
+
+        feedRepository.save(feed);
     }
 }

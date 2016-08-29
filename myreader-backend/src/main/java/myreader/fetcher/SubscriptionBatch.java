@@ -7,5 +7,5 @@ import myreader.fetcher.persistence.FetchResult;
  */
 public interface SubscriptionBatch {
 
-    long updateUserSubscriptions(FetchResult fetchResult);
+    void updateUserSubscriptions(FetchResult fetchResult);
 }
