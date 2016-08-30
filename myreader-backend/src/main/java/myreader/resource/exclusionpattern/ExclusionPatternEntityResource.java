@@ -1,19 +1,16 @@
 package myreader.resource.exclusionpattern;
 
+import myreader.entity.ExclusionPattern;
+import myreader.repository.ExclusionRepository;
+import myreader.resource.exception.ResourceNotFoundException;
+import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import myreader.entity.ExclusionPattern;
-import myreader.repository.ExclusionRepository;
-import myreader.resource.exception.ResourceNotFoundException;
-import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import spring.hateoas.ResourceAssemblers;
-import spring.security.MyReaderUser;
 
 /**
  * @author Kamill Sokol
@@ -32,8 +29,8 @@ public class ExclusionPatternEntityResource {
     }
 
     @ModelAttribute("pattern")
-    public ExclusionPattern model(@PathVariable("patternId") Long patternId, @PathVariable("subscriptionId") Long subscriptionId, @AuthenticationPrincipal MyReaderUser user) {
-        ExclusionPattern pattern = exclusionRepository.findByIdAndSubscriptionIdAndUserId(patternId, subscriptionId, user.getId());
+    public ExclusionPattern model(@PathVariable("patternId") Long patternId, @PathVariable("subscriptionId") Long subscriptionId) {
+        ExclusionPattern pattern = exclusionRepository.findByIdAndSubscriptionIdAndCurrentUser(patternId, subscriptionId);
         if(pattern == null) {
             throw new ResourceNotFoundException();
         }
