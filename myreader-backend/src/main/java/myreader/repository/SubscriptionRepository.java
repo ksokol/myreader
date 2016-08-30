@@ -26,8 +26,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query("select s from Subscription s join fetch s.feed where s.id = ?1 and s.user.email = ?2")
     Subscription findByIdAndUsername(Long id, String username);
 
-    @Query("select s from Subscription s where s.user.email = ?1 and s.feed.url = ?2")
-    Subscription findByUsernameAndFeedUrl(String username, String url);
+    @Query("select s from Subscription s where s.user.id = ?#{principal.id} and s.feed.url = ?1")
+    Subscription findByFeedUrlAndCurrentUser(String url);
 
     @Query("select s from Subscription s where s.user.id = ?1 and s.feed.url = ?2")
     Subscription findByUserIdAndFeedUrl(Long id, String url);
