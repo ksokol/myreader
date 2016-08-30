@@ -1,7 +1,5 @@
 package myreader.resource.subscriptionentry;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-
 import myreader.entity.Identifiable;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
@@ -29,10 +27,12 @@ import spring.hateoas.ResourceAssemblers;
 import spring.hateoas.SequencedResources;
 import spring.security.MyReaderUser;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.validation.Valid;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * @author Kamill Sokol
@@ -76,11 +76,11 @@ public class SubscriptionEntryCollectionResource {
     //TODO remove RequestMethod.PUT after Android 2.x phased out
     @Transactional
     @RequestMapping(method = {RequestMethod.PATCH, RequestMethod.PUT})
-    public Resources<SubscriptionEntryGetResponse> patch(@Valid @RequestBody SubscriptionEntryBatchPatchRequest request, @AuthenticationPrincipal MyReaderUser user) {
+    public Resources<SubscriptionEntryGetResponse> patch(@Valid @RequestBody SubscriptionEntryBatchPatchRequest request) {
         List<SubscriptionEntryGetResponse> subscriptionEntryGetResponses = new ArrayList<>();
 
         for (final SubscriptionEntryPatchRequest subscriptionPatch : request.getContent()) {
-            SubscriptionEntry subscriptionEntry = subscriptionEntryRepository.findByIdAndUsername(Long.valueOf(subscriptionPatch.getUuid()), user.getUsername());
+            SubscriptionEntry subscriptionEntry = subscriptionEntryRepository.findByIdAndCurrentUser(Long.valueOf(subscriptionPatch.getUuid()));
             if(subscriptionEntry == null) {
                 continue;
             }

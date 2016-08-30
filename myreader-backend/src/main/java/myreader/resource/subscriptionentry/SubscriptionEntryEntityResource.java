@@ -1,8 +1,5 @@
 package myreader.resource.subscriptionentry;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
-
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
@@ -10,17 +7,16 @@ import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import spring.hateoas.ResourceAssemblers;
-import spring.security.MyReaderUser;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
 /**
  * @author Kamill Sokol
@@ -44,15 +40,15 @@ public class SubscriptionEntryEntityResource {
     }
 
     @RequestMapping(method = GET)
-    public SubscriptionEntryGetResponse get(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
-        final SubscriptionEntry subscriptionEntry = findOrThrowException(id, user.getUsername());
+    public SubscriptionEntryGetResponse get(@PathVariable("id") Long id) {
+        final SubscriptionEntry subscriptionEntry = findOrThrowException(id);
         return resourceAssemblers.toResource(subscriptionEntry, SubscriptionEntryGetResponse.class);
     }
 
     @Transactional
     @RequestMapping(method = PATCH)
-    public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user, @RequestBody SubscriptionEntryPatchRequest request) {
-        final SubscriptionEntry subscriptionEntry = findOrThrowException(id, user.getUsername());
+    public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @RequestBody SubscriptionEntryPatchRequest request) {
+        final SubscriptionEntry subscriptionEntry = findOrThrowException(id);
 
         if(request.isFieldPatched("seen") && request.getSeen() != subscriptionEntry.isSeen()) {
             if (request.getSeen()) {
@@ -65,11 +61,11 @@ public class SubscriptionEntryEntityResource {
         SubscriptionEntry patched = patchService.patch(request, subscriptionEntry);
         subscriptionEntryRepository.save(patched);
 
-        return get(id, user);
+        return get(id);
     }
 
-    private SubscriptionEntry findOrThrowException(Long id, String username) {
-        SubscriptionEntry entry = subscriptionEntryRepository.findByIdAndUsername(id, username);
+    private SubscriptionEntry findOrThrowException(Long id) {
+        SubscriptionEntry entry = subscriptionEntryRepository.findByIdAndCurrentUser(id);
         if(entry == null) {
             throw new ResourceNotFoundException();
         }
