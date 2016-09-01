@@ -17,11 +17,11 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Override
     Subscription findOne(Long id);
 
-    @Query(value="select s from Subscription s join fetch s.feed where s.user.id = ?1 and s.unseen > ?2")
-    List<Subscription> findAllByUserAndUnseenGreaterThan(Long id, Integer unseenCount);
+    @Query(value="select s from Subscription s join fetch s.feed where s.user.id = ?#{principal.id} and s.unseen > ?1")
+    List<Subscription> findAllByUnseenGreaterThanAndCurrentUser(Integer unseenCount);
 
-    @Query("select s from Subscription s join fetch s.feed where s.id = ?1 and s.user.email = ?2")
-    Subscription findByIdAndUsername(Long id, String username);
+    @Query("select s from Subscription s join fetch s.feed where s.id = ?1 and s.user.id = ?#{principal.id}")
+    Subscription findByIdAndCurrentUser(Long id);
 
     @Query("select s from Subscription s where s.user.id = ?#{principal.id} and s.feed.url = ?1")
     Subscription findByFeedUrlAndCurrentUser(String url);

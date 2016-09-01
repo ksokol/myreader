@@ -1,8 +1,13 @@
 package myreader.resource.subscription;
 
+import myreader.entity.Subscription;
+import myreader.repository.SubscriptionRepository;
+import myreader.resource.exception.ResourceNotFoundException;
+import myreader.resource.service.patch.PatchService;
+import myreader.resource.subscription.beans.SubscriptionGetResponse;
+import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,15 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import myreader.entity.Subscription;
-import myreader.repository.SubscriptionRepository;
-import myreader.resource.exception.ResourceNotFoundException;
-import myreader.resource.service.patch.PatchService;
-import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import spring.hateoas.ResourceAssemblers;
-import spring.security.MyReaderUser;
 
 /**
  * @author Kamill Sokol
@@ -40,28 +37,28 @@ public class SubscriptionEntityResource {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public SubscriptionGetResponse get(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
-        Subscription subscription = findOrThrowException(id, user.getUsername());
+    public SubscriptionGetResponse get(@PathVariable("id") Long id) {
+        Subscription subscription = findOrThrowException(id);
         return resourceAssemblers.toResource(subscription, SubscriptionGetResponse.class);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "", method = RequestMethod.DELETE)
-    public void delete(@PathVariable("id") Long id, @AuthenticationPrincipal MyReaderUser user) {
-        subscriptionRepository.delete(findOrThrowException(id, user.getUsername()));
+    public void delete(@PathVariable("id") Long id) {
+        subscriptionRepository.delete(findOrThrowException(id));
     }
 
     //TODO remove RequestMethod.PUT after Android 2.x phased out
     @RequestMapping(value = "", method = {RequestMethod.PATCH, RequestMethod.PUT})
-    public SubscriptionGetResponse patch(@PathVariable("id") Long id,@RequestBody SubscriptionPatchRequest request, @AuthenticationPrincipal MyReaderUser user) {
-        Subscription subscription = findOrThrowException(id, user.getUsername());
+    public SubscriptionGetResponse patch(@PathVariable("id") Long id, @RequestBody SubscriptionPatchRequest request) {
+        Subscription subscription = findOrThrowException(id);
         Subscription patchedSubscription = patchService.patch(request, subscription);
         subscriptionRepository.save(patchedSubscription);
-        return get(id, user);
+        return get(id);
     }
 
-    public Subscription findOrThrowException(Long id, String username) {
-        Subscription subscription = subscriptionRepository.findByIdAndUsername(id, username);
+    public Subscription findOrThrowException(Long id) {
+        Subscription subscription = subscriptionRepository.findByIdAndCurrentUser(id);
         if(subscription == null) {
             throw new ResourceNotFoundException();
         }

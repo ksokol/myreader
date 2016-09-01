@@ -1,8 +1,5 @@
 package myreader.resource.subscription;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
 import myreader.resource.subscription.beans.SubscribePostRequest;
@@ -17,11 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import spring.hateoas.ResourceAssemblers;
 import spring.security.MyReaderUser;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * @author Kamill Sokol
@@ -48,8 +48,8 @@ public class SubscriptionCollectionResource {
     }
 
     @RequestMapping(method = GET)
-    public Map<String, Object> get(@RequestParam(value = "unseenGreaterThan", required = false, defaultValue = "-1") int unseenCount, @AuthenticationPrincipal MyReaderUser user) {
-        final List<Subscription> source = subscriptionRepository.findAllByUserAndUnseenGreaterThan(user.getId(), unseenCount);
+    public Map<String, Object> get(@RequestParam(value = "unseenGreaterThan", required = false, defaultValue = "-1") int unseenCount) {
+        final List<Subscription> source = subscriptionRepository.findAllByUnseenGreaterThanAndCurrentUser(unseenCount);
         final List<SubscriptionGetResponse> target = new ArrayList<>(source.size());
         for (final Subscription subscription : source) {
             target.add(resourceAssemblers.toResource(subscription, SubscriptionGetResponse.class));
