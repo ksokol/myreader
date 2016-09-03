@@ -3,9 +3,7 @@ package myreader.fetcher;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.resttemplate.FeedParserConfiguration;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
@@ -50,9 +48,6 @@ public class FeedParserTest {
     private FeedParser parser;
 
     private MockRestServiceServer mockServer;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void beforeTest() throws Exception {
