@@ -11,22 +11,30 @@ import myreader.test.SecurityTestSupport;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import static myreader.config.UrlMappings.HYSTRIX_DASHBOARD;
+import static myreader.config.UrlMappings.HYSTRIX_PROXY;
+import static myreader.config.UrlMappings.HYSTRIX_STREAM;
 import static myreader.config.UrlMappings.LANDING_PAGE;
 import static myreader.config.UrlMappings.LOGIN;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
+import static myreader.test.KnownUser.ADMIN;
 import static myreader.test.KnownUser.USER1;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,6 +46,15 @@ public class ApiSecurityTest extends SecurityTestSupport {
     private static final String USERNAME_INPUT = "username";
     private static final String PASSWORD_INPUT = "password";
     private static final String LOGIN_FORM_NAME = "loginForm";
+
+    @Value("${server.context-path}")
+    private String contextPath;
+
+    @Value("${server.port}")
+    private String port;
+
+    @Value("${spring.application.name}")
+    private String applicationName;
 
     @Test
     public void testApiUnauthorized() throws Exception {
@@ -122,6 +139,91 @@ public class ApiSecurityTest extends SecurityTestSupport {
         mockMvc.perform(get(LOGOUT.mapping())
                 .cookie(rememberMeCookie))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testRedirectToHystrixMonitor() throws Exception {
+        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", ADMIN.username)
+                .param("password", ADMIN.password)
+                .param("remember-me", "on"))
+                .andReturn()
+                .getResponse().getCookie("remember-me");
+
+        mockMvc.perform(get(HYSTRIX_DASHBOARD.mapping())
+                .cookie(rememberMeCookie))
+                .andExpect(header().string("Location", "hystrix/monitor?title=" + applicationName + "&stream=http://localhost:" + port + contextPath +"/hystrix.stream"));
+    }
+
+    @Test
+    public void testHystrixDashboard() throws Exception {
+        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", ADMIN.username)
+                .param("password", ADMIN.password)
+                .param("remember-me", "on"))
+                .andReturn()
+                .getResponse().getCookie("remember-me");
+
+        mockMvc.perform(get("/hystrix/monitor")
+                .cookie(rememberMeCookie))
+                .andExpect(content().string(containsString("Hystrix Monitor")))
+                .andExpect(content().contentTypeCompatibleWith(TEXT_HTML));
+    }
+
+    @Test
+    public void testHystrixStream() throws Exception {
+        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", ADMIN.username)
+                .param("password", ADMIN.password)
+                .param("remember-me", "on"))
+                .andReturn()
+                .getResponse().getCookie("remember-me");
+
+        mockMvc.perform(options(HYSTRIX_STREAM.mapping())
+                .cookie(rememberMeCookie))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testRejectAccessToHystrixDashboardWhenUserIsNotAdmin() throws Exception {
+        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", USER1.username)
+                .param("password", USER1.password)
+                .param("remember-me", "on"))
+                .andReturn()
+                .getResponse().getCookie("remember-me");
+
+        mockMvc.perform(get(HYSTRIX_DASHBOARD.mapping())
+                .cookie(rememberMeCookie))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testHystrixProxyStream() throws Exception {
+        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", ADMIN.username)
+                .param("password", ADMIN.password)
+                .param("remember-me", "on"))
+                .andReturn()
+                .getResponse().getCookie("remember-me");
+
+        mockMvc.perform(get(HYSTRIX_PROXY.mapping())
+                .cookie(rememberMeCookie))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testRejectAccessToHystrixProxyStreamWhenUserIsNotAdmin() throws Exception {
+        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", USER1.username)
+                .param("password", USER1.password)
+                .param("remember-me", "on"))
+                .andReturn()
+                .getResponse().getCookie("remember-me");
+
+        mockMvc.perform(options(HYSTRIX_PROXY.mapping())
+                .cookie(rememberMeCookie))
+                .andExpect(status().isForbidden());
     }
 
     @Ignore

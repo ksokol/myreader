@@ -22,6 +22,9 @@ import spring.security.CustomFailureAuthenticationSuccessHandler;
 import spring.security.UserRepositoryUserDetailsService;
 import spring.security.XAuthoritiesFilter;
 
+import static myreader.config.UrlMappings.HYSTRIX_DASHBOARD;
+import static myreader.config.UrlMappings.HYSTRIX_PROXY;
+import static myreader.config.UrlMappings.HYSTRIX_STREAM;
 import static myreader.config.UrlMappings.LANDING_PAGE;
 import static myreader.config.UrlMappings.LOGIN;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
@@ -39,6 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${remember-me.key}")
     private String rememberMeKey;
+
+    @Value("${myreader.hystrix.stream.allowed-ip}")
+    private String hystrixStreamAllowedIp;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -69,6 +75,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .antMatcher("/**")
                 .authorizeRequests()
+                .antMatchers(HYSTRIX_STREAM.mapping())
+                .hasIpAddress(hystrixStreamAllowedIp)
+                .and()
+                .authorizeRequests()
+                .antMatchers(HYSTRIX_DASHBOARD.mapping(), HYSTRIX_PROXY.mapping())
+                .hasRole("ADMIN")
                 .anyRequest()
                 .hasAnyRole("USER", "ADMIN")
                 .and()

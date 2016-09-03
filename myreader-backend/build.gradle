@@ -27,6 +27,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard'
     compile group: 'org.springframework.security', name: 'spring-security-data'
     compile group: 'org.hibernate', name: 'hibernate-search-orm', version: '5.4.0.Final'
     compile group: 'org.hsqldb', name: 'hsqldb'
