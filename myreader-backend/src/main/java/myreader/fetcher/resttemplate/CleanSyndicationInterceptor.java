@@ -1,6 +1,5 @@
 package myreader.fetcher.resttemplate;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -9,10 +8,12 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
@@ -32,7 +33,7 @@ class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
         final String cleanedBody;
 
         if (execute.getRawStatusCode() == 200) {
-            final String bodyString = IOUtils.toString(execute.getBody(), charset);
+            String bodyString = new Scanner(execute.getBody(), charset.name()).useDelimiter("\\A").next();
             cleanedBody = pattern.matcher(bodyString).replaceAll(EMPTY);
         } else {
             cleanedBody = EMPTY;
@@ -47,7 +48,7 @@ class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
 
             @Override
             public InputStream getBody() throws IOException {
-                return IOUtils.toInputStream(cleanedBody, StandardCharsets.UTF_8);
+                return new ByteArrayInputStream(cleanedBody.getBytes(StandardCharsets.UTF_8));
             }
 
             @Override
@@ -72,8 +73,11 @@ class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
         };
     }
 
-    private Charset getCharsetFromResponse(ClientHttpResponse execute) {
+    private static Charset getCharsetFromResponse(ClientHttpResponse execute) {
         MediaType contentType = execute.getHeaders().getContentType();
-        return contentType == null ? StandardCharsets.UTF_8 : contentType.getCharSet();
+        if(contentType == null || contentType.getCharset() == null) {
+            return StandardCharsets.UTF_8;
+        }
+        return contentType.getCharset();
     }
 }

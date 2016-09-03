@@ -26,32 +26,21 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix'
     compile group: 'org.springframework.security', name: 'spring-security-data'
-    compile group: 'jdom', name: 'jdom', version: '1.0'
     compile group: 'org.hibernate', name: 'hibernate-search-orm', version: '5.4.0.Final'
     compile group: 'org.hsqldb', name: 'hsqldb'
-    compile group: 'org.hibernate', name: 'hibernate-validator'
     compile group: 'com.rometools', name: 'rome', version: '1.5.1'
     compile(group: 'org.apache.httpcomponents', name: 'httpclient') {
         exclude(module: 'commons-logging')
     }
-    compile group: 'joda-time', name: 'joda-time'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    compile group: 'commons-codec', name: 'commons-codec'
-    compile group: 'commons-collections', name: 'commons-collections'
-    compile group: 'commons-io', name: 'commons-io', version: '2.4'
-    compile group: 'com.google.guava', name: 'guava', version: '18.0'
     compile project(':myreader-frontend')
 
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
     testCompile group: 'org.springframework.security', name: 'spring-security-test'
-    testCompile group: 'com.jayway.jsonpath', name: 'json-path'
-    testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert'
     testCompile group: 'net.javacrumbs.json-unit', name: 'json-unit', version: '1.1.5'
     testCompile group: 'net.sourceforge.htmlunit', name: 'htmlunit'
-    testCompile group: 'xml-apis', name: 'xml-apis'
     testCompile(group: 'com.github.tomakehurst', name: 'wiremock', version: '1.57') {
         exclude(module: 'servlet-api')
     }

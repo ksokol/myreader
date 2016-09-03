@@ -1,5 +1,15 @@
 package myreader.resource.subscription;
 
+import myreader.service.time.TimeService;
+import myreader.test.IntegrationTestSupport;
+import myreader.test.KnownUser;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+
+import java.time.Instant;
+import java.util.Date;
+
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -12,16 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import myreader.service.time.TimeService;
-import myreader.test.IntegrationTestSupport;
-import myreader.test.KnownUser;
-import org.joda.time.format.ISODateTimeFormat;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-
-import java.util.Date;
 
 /**
  * @author Kamill Sokol
@@ -85,7 +85,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testSuccessWhenPostingNewSubscription() throws Exception {
-        Date now = ISODateTimeFormat.dateTimeNoMillis().parseDateTime("2014-04-30T12:43:46Z").toDate();
+        Date now = Date.from(Instant.parse("2014-04-30T12:43:46Z"));
 
         when(timeServiceMock.getCurrentTime()).thenReturn(now);
 
