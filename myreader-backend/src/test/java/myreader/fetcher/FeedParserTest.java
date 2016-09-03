@@ -1,10 +1,7 @@
-package myreader.fetcher.impl;
+package myreader.fetcher;
 
-import myreader.fetcher.FeedParseException;
 import myreader.fetcher.persistence.FetchResult;
-import myreader.fetcher.persistence.FetcherEntry;
 import myreader.fetcher.resttemplate.FeedParserConfiguration;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,9 +17,11 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpMethod.GET;
@@ -40,7 +39,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = FeedParserConfiguration.class)
 @RestClientTest
-public class DefaultFeedParserTest {
+public class FeedParserTest {
 
     private static final String HTTP_EXAMPLE_COM = "http://example.com";
 
@@ -48,7 +47,7 @@ public class DefaultFeedParserTest {
     private RestTemplate syndicationRestTemplate;
 
     @Autowired
-    private DefaultFeedParser parser;
+    private FeedParser parser;
 
     private MockRestServiceServer mockServer;
 
@@ -75,7 +74,7 @@ public class DefaultFeedParserTest {
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
 
 		FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
-		assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
+		assertThat(result.getEntries(), hasItems(
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217.html")),
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217b.html"))
         ));
@@ -87,7 +86,7 @@ public class DefaultFeedParserTest {
                 .andRespond(withSuccess(new ClassPathResource("rss/feed3.xml"), TEXT_XML));
 
 		FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
-		assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
+		assertThat(result.getEntries(), hasItems(
 				hasProperty("url", is(HTTP_EXAMPLE_COM + "/12539.htm")),
 				hasProperty("url", is(HTTP_EXAMPLE_COM + "/12673.htm"))
 		));
@@ -99,7 +98,7 @@ public class DefaultFeedParserTest {
                 .andRespond(withSuccess(new ClassPathResource("rss/feed4.xml"), TEXT_XML));
 
         FetchResult result = parser.parse("https://github.com/ksokol.private.atom");
-        assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
+        assertThat(result.getEntries(), hasItems(
                 hasProperty("content", startsWith("<!-- issue_comment -->"))
         ));
     }
@@ -110,19 +109,19 @@ public class DefaultFeedParserTest {
                 .andRespond(withSuccess(new ClassPathResource("rss/feed5.xml"), TEXT_XML));
 
         FetchResult result = parser.parse("http://neusprech.org/feed/");
-        assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
+        assertThat(result.getEntries(), hasItems(
                 hasProperty("content", startsWith("Ein Gastbeitrag von Erik W. Ende Juni 2014 sagte"))
         ));
     }
 
     @Test
     public void testFeed6() throws Exception {
-        mockServer.expect(requestTo("irrelevant")).andRespond(withBadRequest());
+        mockServer.expect(requestTo("url")).andRespond(withBadRequest());
 
-        expectedException.expect(FeedParseException.class);
-        expectedException.expectMessage("400 Bad Request");
-
-        parser.parse("irrelevant");
+        FetchResult irrelevant = parser.parse("url", "lastModified");
+        assertThat(irrelevant.getUrl(), is("url"));
+        assertThat(irrelevant.getLastModified(), nullValue());
+        assertThat(irrelevant.getEntries(), hasSize(0));
     }
 
     @Test
@@ -131,7 +130,7 @@ public class DefaultFeedParserTest {
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
 
         FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
-        assertThat(result.getEntries(), Matchers.<FetcherEntry>hasItems(
+        assertThat(result.getEntries(), hasItems(
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue220b.html"))
         ));
     }

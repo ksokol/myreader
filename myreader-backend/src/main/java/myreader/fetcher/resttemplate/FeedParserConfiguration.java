@@ -34,7 +34,7 @@ public class FeedParserConfiguration {
 
     @Bean
     public FeedParser parser() {
-        return new DefaultFeedParser(syndicationRestTemplate());
+        return new HystrixFeedParser(new DefaultFeedParser(syndicationRestTemplate()));
     }
 
     private List<ClientHttpRequestInterceptor> interceptors() {
