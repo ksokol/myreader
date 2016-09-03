@@ -5,7 +5,6 @@ import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.repository.FeedRepository;
-import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.List;
@@ -28,11 +27,6 @@ public class FeedListFetcherJob extends BaseJob {
 
     @Override
     public void work() {
-        if (feedQueue.getSize() > 0) {
-            log.info("queue has {} feeds. aborting", feedQueue.getSize());
-            return;
-        }
-
         List<Feed> feeds = feedRepository.findAll();
         Iterator<Feed> iterator = feeds.iterator();
         int size = feeds.size();
@@ -40,19 +34,13 @@ public class FeedListFetcherJob extends BaseJob {
 
         for(int i=0;i<size && alive;i++) {
             Feed f = iterator.next();
-            FetchResult fetchResult;
 
             try {
-                fetchResult = feedParser.parse(f.getUrl(), f.getLastModified());
-            } catch(Exception e) {
-                continue;
-            }
-
-            final boolean result = CollectionUtils.isNotEmpty(fetchResult.getEntries());
-            log.debug("{}/{} call: {}, lastModified: {}, url: {}", new Object[]{i + 1, size, result, f.getLastModified(), f.getUrl()});
-
-            if (result) {
+                FetchResult fetchResult = feedParser.parse(f.getUrl(), f.getLastModified());
+                log.debug("{}/{} lastModified: {}, url: {}", i + 1, size, f.getLastModified(), f.getUrl());
                 feedQueue.add(fetchResult);
+            } catch(Exception exception) {
+                log.error(exception.getMessage(), exception);
             }
         }
     }
