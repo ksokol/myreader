@@ -44,7 +44,7 @@ public class CleanSyndicationInterceptorTest {
         withBody("ä", "ISO-8859-1");
 
         final ClientHttpResponse response = intercept();
-        final String body = body(response);
+        final String body = body(response, "ISO-8859-1");
 
         assertThat(body, is("ä"));
     }
@@ -55,7 +55,7 @@ public class CleanSyndicationInterceptorTest {
         withBody("\fstring\f", "UTF-8");
 
         final ClientHttpResponse response = intercept();
-        final String body = body(response);
+        final String body = body(response, "UTF-8");
 
         assertThat(body, is("string"));
     }
@@ -67,13 +67,13 @@ public class CleanSyndicationInterceptorTest {
         when(mockResponse.getRawStatusCode()).thenReturn(302);
 
         final ClientHttpResponse response = intercept();
-        final String body = body(response);
+        final String body = body(response, "UTF-8");
 
         assertThat(body, is(EMPTY));
     }
 
-    private String body(ClientHttpResponse response) throws IOException {
-        return IOUtils.toString(response.getBody(), "UTF-8");
+    private String body(ClientHttpResponse response, String charset) throws IOException {
+        return IOUtils.toString(response.getBody(), charset);
     }
 
     private void withContentType(String contentType) {
