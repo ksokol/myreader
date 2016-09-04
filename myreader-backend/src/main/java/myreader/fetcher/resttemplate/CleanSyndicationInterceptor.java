@@ -48,7 +48,7 @@ class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
 
             @Override
             public InputStream getBody() throws IOException {
-                return new ByteArrayInputStream(cleanedBody.getBytes(StandardCharsets.UTF_8));
+                return new ByteArrayInputStream(cleanedBody.getBytes(charset));
             }
 
             @Override
