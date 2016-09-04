@@ -54,7 +54,7 @@ public class DefaultFeedParser implements FeedParser {
 
             return wireFeedConverter.convert(feedUrl, responseEntity);
         } catch (Exception e) {
-            LOG.warn("url: {}, message: {}", feedUrl, e.getMessage());
+            LOG.error("url: {}, message: {}", feedUrl, e.getMessage());
             throw new FeedParseException(e.getMessage(), e);
         }
     }
