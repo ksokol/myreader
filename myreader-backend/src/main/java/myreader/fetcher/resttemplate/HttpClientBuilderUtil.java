@@ -1,19 +1,9 @@
 package myreader.fetcher.resttemplate;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.util.PublicSuffixMatcher;
-import org.apache.http.conn.util.PublicSuffixMatcherLoader;
-import org.apache.http.cookie.CookieSpecProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.cookie.DefaultCookieSpecProvider;
-import org.apache.http.impl.cookie.IgnoreSpecProvider;
-import org.apache.http.impl.cookie.NetscapeDraftSpecProvider;
-import org.apache.http.impl.cookie.RFC6265CookieSpecProvider;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import javax.net.ssl.SSLContext;
@@ -34,21 +24,8 @@ final class HttpClientBuilderUtil {
                 .evictIdleConnections(60, TimeUnit.SECONDS)
                 .disableAutomaticRetries()
                 .setSSLSocketFactory(sslSocketFactory())
-                .setDefaultCookieSpecRegistry(expiresDatePatterns("EEE, dd-MMM-yy HH:mm:ss z", "EEE, dd MMM yyyy HH:mm:ss z"))
+                .disableCookieManagement()
                 .build();
-    }
-
-    private static Registry<CookieSpecProvider> expiresDatePatterns(String... datePatterns) {
-        final PublicSuffixMatcher aDefault = PublicSuffixMatcherLoader.getDefault();
-        final CookieSpecProvider defaultProvider = new DefaultCookieSpecProvider(DefaultCookieSpecProvider.CompatibilityLevel.DEFAULT, aDefault, datePatterns,
-                false);
-        final CookieSpecProvider laxStandardProvider = new RFC6265CookieSpecProvider(RFC6265CookieSpecProvider.CompatibilityLevel.RELAXED, aDefault);
-        final CookieSpecProvider strictStandardProvider = new RFC6265CookieSpecProvider(RFC6265CookieSpecProvider.CompatibilityLevel.STRICT, aDefault);
-
-        return RegistryBuilder.<CookieSpecProvider> create().register(CookieSpecs.DEFAULT, defaultProvider).register("best-match", defaultProvider)
-                .register("compatibility", defaultProvider).register(CookieSpecs.STANDARD, laxStandardProvider)
-                .register(CookieSpecs.STANDARD_STRICT, strictStandardProvider).register(CookieSpecs.NETSCAPE, new NetscapeDraftSpecProvider())
-                .register(CookieSpecs.IGNORE_COOKIES, new IgnoreSpecProvider()).build();
     }
 
     private static SSLConnectionSocketFactory sslSocketFactory() {
