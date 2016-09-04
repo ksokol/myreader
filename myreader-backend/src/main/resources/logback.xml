@@ -16,15 +16,9 @@
         </encoder>
     </appender>
 
-    <logger name="org.hibernate" additivity="false" level="WARN">
-        <appender-ref ref="FILE" />
-    </logger>
-
-    <logger name="myreader" additivity="false" level="INFO">
-        <appender-ref ref="FILE" />
-    </logger>
+    <logger name="org.hibernate" additivity="false" level="WARN" />
 
     <root level="INFO">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
     </root>
 </configuration>
