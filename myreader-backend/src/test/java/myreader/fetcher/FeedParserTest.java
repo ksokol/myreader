@@ -10,11 +10,13 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
@@ -157,5 +159,21 @@ public class FeedParserTest {
 
         FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
         assertThat(result.getEntries(), hasSize(6));
+    }
+
+    @Test
+    public void testAdjustedResponseContentType() {
+        String url = "https://feeds.feedwrench.com/AdventuresInAngular.rss";
+
+        mockServer.expect(requestTo(url)).andExpect(method(GET))
+                .andRespond(
+                        withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_XML)
+                        .contentType(MediaType.TEXT_PLAIN)
+                );
+
+        FetchResult result = parser.parse(url);
+
+        assertThat(result.getEntries(), hasSize(greaterThan(0)));
+
     }
 }

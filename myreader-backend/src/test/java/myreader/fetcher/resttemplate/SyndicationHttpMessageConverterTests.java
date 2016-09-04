@@ -1,20 +1,22 @@
 package myreader.fetcher.resttemplate;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
 import com.rometools.rome.feed.WireFeed;
-import org.junit.Test;
-
 import com.rometools.rome.feed.atom.Feed;
 import com.rometools.rome.feed.rss.Channel;
+import org.junit.Test;
+
+import java.util.Collections;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.http.MediaType.APPLICATION_ATOM_XML;
 
 /**
  * @author Kamill Sokol
  */
 public class SyndicationHttpMessageConverterTests {
 
-    private SyndicationHttpMessageConverter converter = new SyndicationHttpMessageConverter();
+    private SyndicationHttpMessageConverter converter = new SyndicationHttpMessageConverter(Collections.singletonList(APPLICATION_ATOM_XML));
 
     @Test
     public void testSupports1() throws Exception {
