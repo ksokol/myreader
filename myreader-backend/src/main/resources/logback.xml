@@ -20,10 +20,6 @@
         <appender-ref ref="FILE" />
     </logger>
 
-    <logger name="org.apache.http.impl.conn.PoolingHttpClientConnectionManager" additivity="false" level="DEBUG">
-        <appender-ref ref="FILE" />
-    </logger>
-
     <logger name="myreader" additivity="false" level="INFO">
         <appender-ref ref="FILE" />
     </logger>
