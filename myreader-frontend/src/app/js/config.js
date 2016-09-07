@@ -173,6 +173,34 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                     }
                 }
             })
+
+            .state('app.feed', {
+                url: "/feed",
+                views: {
+                    content: {
+                        templateUrl: 'Feeds',
+                        controller: 'FeedsCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'AdminActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
+            })
+            .state('app.feed-detail', {
+                url: "/feed/:uuid",
+                views: {
+                    content: {
+                        templateUrl: 'FeedDetail',
+                        controller: 'FeedDetailCtrl'
+                    },
+                    actions: {
+                        templateUrl: 'FeedDetailActions',
+                        controller: 'TopBarActionsCtrl'
+                    }
+                }
+            })
+
             .state('app.settings', {
                 url: "/settings",
                 views: {

@@ -222,12 +222,18 @@ angular.module('common.services', ['common.api', 'common.caches'])
     }
 }])
 
-.service('feedService', ['api', 'deferService', 'feedProbeCache', function(api, deferService, feedProbeCache) {
-    var url = '/myreader/api/2/feeds/probe';
+.service('feedService', ['$rootScope', 'api', 'deferService', 'feedProbeCache', 'feedCache', function($rootScope, api, deferService, feedProbeCache, feedCache) {
+    var probeUrl = '/myreader/api/2/feeds/probe';
+    var feedUrl = '/myreader/api/2/feeds';
+
+    $rootScope.$on('refresh', function() {
+        feedProbeCache.removeAll();
+        feedCache.removeAll();
+    });
 
     return {
         probe: function(urlToProbe) {
-            var tmp = url + '?url=' + urlToProbe;
+            var tmp = probeUrl + '?url=' + urlToProbe;
             var cached = feedProbeCache.get(tmp);
 
             if(cached) {
@@ -237,7 +243,7 @@ angular.module('common.services', ['common.api', 'common.caches'])
                 return deferService.resolved(cached);
             }
 
-            var promise = api.post('feedProbe', url, urlToProbe);
+            var promise = api.post('feedProbe', probeUrl, urlToProbe);
 
             promise.then(function(data) {
                 feedProbeCache.put(tmp, data);
@@ -248,6 +254,55 @@ angular.module('common.services', ['common.api', 'common.caches'])
             });
 
             return promise;
+        },
+        findAll: function() {
+            var cached = feedCache.get('feeds');
+
+            if(cached) {
+                return deferService.resolved(cached);
+            }
+
+            var promise = api.get('feeds', feedUrl);
+
+            promise.then(function(data) {
+                feedCache.put('feeds', data);
+            });
+
+            return promise;
+        },
+        findOne: function(uuid) {
+            var cached = feedCache.get('feeds');
+            var feed;
+
+            if(cached && cached.feeds) {
+                for(var i=0;i<cached.feeds.length;i++) {
+                    if(cached.feeds[i].uuid === uuid) {
+                        feed = cached.feeds[i];
+                        break;
+                    }
+                }
+            }
+
+            var deferred;
+
+            var fetchErrorFn = function(data) {
+                return api.get('fetchError', feedUrl + '/' + uuid + '/fetchError')
+                    .then(function(errors) {
+                        data.errors = errors.fetchError;
+                        return deferService.resolved(data);
+                    });
+            };
+
+            if(feed) {
+                deferred = deferService.resolved(feed).then(fetchErrorFn);
+            } else {
+                deferred = api.get('feed', feedUrl + '/' + uuid).then(fetchErrorFn)
+            }
+
+            return deferred;
+        },
+        remove: function(feed) {
+            return api.delete('feed',feedUrl + '/' + feed.uuid);
         }
     }
 }])
@@ -342,7 +397,7 @@ angular.module('common.services', ['common.api', 'common.caches'])
 
     return {
         runningFeedFetches: function() {
-            return api.get('feeds', url);
+            return api.get('probeFeeds', url);
         },
         rebuildSearchIndex: function() {
             return api.put('searchIndexJob', rebuildIndex, 'indexSyncJob');

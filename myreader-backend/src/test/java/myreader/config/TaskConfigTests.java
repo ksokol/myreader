@@ -4,8 +4,10 @@ import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.jobs.FeedListFetcherJob;
+import myreader.fetcher.jobs.FetchErrorCleanerJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
 import myreader.repository.FeedRepository;
+import myreader.repository.FetchErrorRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.env.Environment;
@@ -41,6 +43,8 @@ public class TaskConfigTests {
         uut.setFeedRepository(mock(FeedRepository.class));
         uut.setSubscriptionBatch(mock(SubscriptionBatch.class));
         uut.setFeedQueue(mock(FeedQueue.class));
+        uut.setFetchErrorRepository(mock(FetchErrorRepository.class));
+        uut.setFetchErrorRetainInDay(1);
     }
 
     @Test
@@ -57,5 +61,6 @@ public class TaskConfigTests {
 
         verify(executor, times(2)).execute(argThat(instanceOf(SyndFetcherJob.class)));
         verify(scheduledTaskRegistrar, times(1)).addFixedRateTask(argThat(instanceOf(FeedListFetcherJob.class)), eq(300000L));
+        verify(scheduledTaskRegistrar).addCronTask(argThat(instanceOf(FetchErrorCleanerJob.class)), eq("0 30 2 * * *"));
     }
 }

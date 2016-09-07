@@ -158,6 +158,32 @@ angular.module('common.api', [])
         }
     }
 })
+.service('probeFeedsConverter', function() {
+
+    var Feeds = function(feeds, links) {
+        var self = this;
+        self.feeds = angular.isArray(feeds) ? feeds : [];
+        self.links = angular.isArray(links) ? links : [];
+
+        var getLink = function(rel) {
+            for(var i=0;i<links.length;i++) {
+                if(links[i].rel === rel) {
+                    return links[i].href;
+                }
+            }
+        };
+
+        self.next = function() {
+            return getLink('next');
+        };
+    };
+
+    return {
+        convertFrom: function (data) {
+            return new Feeds(data.content, data.links);
+        }
+    }
+})
 .service('feedsConverter', function() {
 
     var Feeds = function(feeds, links) {
@@ -184,6 +210,46 @@ angular.module('common.api', [])
         }
     }
 })
+.service('feedConverter', function() {
+
+    return {
+        convertFrom: function (data) {
+            return data;
+        },
+        convertTo: function(data) {
+            return data;
+        },
+        convertError: function (data, statusCode) {
+            return statusCode === 409 ? 'abort. Feed has subscriptions' : data.message ? data.message : "undefined error occured";
+        }
+    }
+})
+.service('fetchErrorConverter', function() {
+
+    var FetchError = function(fetchError, links) {
+        var self = this;
+        self.fetchError = angular.isArray(fetchError) ? fetchError : [];
+        self.links = angular.isArray(links) ? links : [];
+
+        var getLink = function(rel) {
+            for(var i=0;i<links.length;i++) {
+                if(links[i].rel === rel) {
+                    return links[i].href;
+                }
+            }
+        };
+
+        self.next = function() {
+            return getLink('next');
+        };
+    };
+
+    return {
+        convertFrom: function (data) {
+            return new FetchError(data.content, data.links);
+        }
+    }
+})
 .service('searchIndexJobConverter', function() {
 
     return {
@@ -206,8 +272,8 @@ angular.module('common.api', [])
         convertTo: function (resourceType, data) {
             return $injector.get(resourceType + "Converter").convertTo(data);
         },
-        convertError: function (resourceType, data) {
-            return $injector.get(resourceType + "Converter").convertError(data.data);
+        convertError: function (resourceType, data, statusCode) {
+            return $injector.get(resourceType + "Converter").convertError(data.data, statusCode);
         }
     }
 }])
@@ -260,6 +326,9 @@ angular.module('common.api', [])
             $http.delete(url)
             .success(function () {
                 deferred.resolve();
+            })
+            .error(function(error, statusCode) {
+                deferred.reject(conversionService.convertError(resourceType, error, statusCode));
             });
             return deferred.promise;
         }

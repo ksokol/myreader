@@ -1,30 +1,31 @@
 package myreader.resource.exception.handler;
 
+import myreader.service.subscription.SubscriptionService;
+import myreader.test.IntegrationTestSupport;
+import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser100;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import myreader.service.time.TimeService;
-import myreader.test.IntegrationTestSupport;
-
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
 /**
  * @author Kamill Sokol
  */
 public class ExceptionHandlerTest extends IntegrationTestSupport {
 
-    @Autowired
-    private TimeService timeServiceMock;
+    @SpyBean
+    private SubscriptionService subscriptionService;
 
     @Test
     public void testRuntimeException() throws Exception {
-        when(timeServiceMock.getCurrentTime()).thenThrow(new RuntimeException("exception")) ;
+        willThrow(new RuntimeException("exception")).given(subscriptionService).subscribe(anyLong(), anyString());
 
         mockMvc.perform(postAsUser100("/api/2/subscriptions")
                 .json("{ 'origin': 'http://use-the-index-luke.com/blog/feed' }"))

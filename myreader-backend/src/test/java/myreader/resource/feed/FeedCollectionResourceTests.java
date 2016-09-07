@@ -10,7 +10,9 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser2;
+import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,6 +68,12 @@ public class FeedCollectionResourceTests extends IntegrationTestSupport {
         mockMvc.perform(postAsUser2("/api/2/feeds/probe")
                 .json("{ 'url': '" + url + "' }"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testCollectionResource() throws Exception {
+        mockMvc.perform(getAsUser2("/api/2/feeds"))
+                .andExpect(jsonEquals("json/feeds/getResponse.json"));
     }
 
 }

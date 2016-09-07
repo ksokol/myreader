@@ -4,6 +4,7 @@ import myreader.fetcher.FeedParser;
 import myreader.fetcher.impl.DefaultFeedParser;
 import myreader.fetcher.impl.HystrixFeedParser;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -45,8 +46,8 @@ public class FeedParserConfiguration {
     }
 
     @Bean
-    public FeedParser parser() {
-        return new HystrixFeedParser(new DefaultFeedParser(syndicationRestTemplate()));
+    public FeedParser parser(ApplicationEventPublisher eventPublisher) {
+        return new HystrixFeedParser(new DefaultFeedParser(syndicationRestTemplate(), eventPublisher));
     }
 
     private List<ClientHttpRequestInterceptor> interceptors() {

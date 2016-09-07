@@ -598,6 +598,79 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     $scope.refresh();
 }])
 
+.controller('FeedsCtrl', ['$scope', '$mdToast', '$state', 'feedService', function($scope, $mdToast, $state, feedService) {
+
+    $scope.data = [];
+
+    $scope.refresh = function() {
+        feedService.findAll()
+            .then(function(data) {
+                $scope.data = data;
+            });
+    };
+
+    $scope.open = function(feed) {
+        $state.go('app.feed-detail', {uuid: feed.uuid});
+    };
+
+    $scope.$on('refresh', $scope.refresh);
+
+    $scope.refresh();
+}])
+
+.controller('FeedDetailCtrl', ['$scope', '$mdToast', '$mdDialog', '$state', '$stateParams', '$previousState', 'feedService', 'windowService',
+    function($scope, $mdToast, $mdDialog, $state, $stateParams, $previousState, feedService, windowService) {
+
+    $scope.feed = {};
+
+    $scope.refresh = function() {
+        feedService.findOne($stateParams.uuid)
+            .then(function(data) {
+                $scope.feed = data;
+            });
+    };
+
+    $scope.open = function(feed) {
+        $state.go('app.feed-detail', {uuid: feed.uuid});
+    };
+
+    $scope.$on('refresh', $scope.refresh);
+
+    $scope.$on('open', function() {
+        windowService.safeOpen($scope.feed.url);
+    });
+
+    $scope.$on('delete-feed', function(ev) {
+        var confirm = $mdDialog.confirm()
+            .title('Delete feed?')
+            .ariaLabel('Delete feed dialog')
+            .ok('Yes')
+            .cancel('No')
+            .targetEvent(ev);
+
+        $mdDialog.show(confirm).then(function() {
+            feedService.remove($scope.feed)
+            .then(function() {
+                $mdToast.show(
+                    $mdToast.simple()
+                        .content('Feed deleted')
+                        .position('top right')
+                );
+                $previousState.go();
+            })
+            .catch(function(data) {
+                $mdToast.show(
+                    $mdToast.simple()
+                        .content(data)
+                        .position('top right')
+                );
+            });
+        });
+    });
+
+    $scope.refresh();
+}])
+
 .controller('SettingsCtrl', ['$scope', '$mdToast', 'settingsService', function($scope, $mdToast, settingsService) {
 
     $scope.sizes = [10, 20, 30];

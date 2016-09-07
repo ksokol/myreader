@@ -649,7 +649,7 @@ describe('service', function() {
 
             var promise = service.runningFeedFetches();
 
-            expect(api.get).toHaveBeenCalledWith('feeds', '/myreader/api/2/processing/feeds');
+            expect(api.get).toHaveBeenCalledWith('probeFeeds', '/myreader/api/2/processing/feeds');
 
             promise.then(function(data) {
                 expect(data).toBe(undefined);
