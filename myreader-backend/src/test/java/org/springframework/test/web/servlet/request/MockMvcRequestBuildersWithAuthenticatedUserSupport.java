@@ -1,5 +1,15 @@
 package org.springframework.test.web.servlet.request;
 
+import myreader.test.KnownUser;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+
+import java.util.Collections;
+import java.util.Set;
+
 import static myreader.test.KnownUser.ADMIN;
 import static myreader.test.KnownUser.USER1;
 import static myreader.test.KnownUser.USER100;
@@ -8,16 +18,6 @@ import static myreader.test.KnownUser.USER103;
 import static myreader.test.KnownUser.USER2;
 import static myreader.test.KnownUser.USER3;
 import static myreader.test.KnownUser.USER4;
-
-import myreader.test.KnownUser;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import spring.security.MyReaderUser;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * @author Kamill Sokol
@@ -90,7 +90,7 @@ public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcR
         String role = user.admin ? "ROLE_ADMIN" : "ROLE_USER";
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role);
         Set<SimpleGrantedAuthority> singleton = Collections.singleton(simpleGrantedAuthority);
-        MyReaderUser myReaderUser = new MyReaderUser(user.id, user.username, user.password, true, true, true, true, singleton, user.admin);
+        User myReaderUser = new User(user.username, user.password, true, true, true, true, singleton);
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(myReaderUser,null, singleton);
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
     }

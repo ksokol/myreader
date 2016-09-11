@@ -35,15 +35,15 @@ public class SubscriptionService {
     }
 
     @Transactional
-    public Subscription subscribe(Long userId, String url) {
-        Subscription check = subscriptionRepository.findByUserIdAndFeedUrl(userId, url);
+    public Subscription subscribe(String username, String url) {
+        Subscription check = subscriptionRepository.findByUserEmailAndFeedUrl(username, url);
 
         if(check != null) {
             throw new SubscriptionExistException();
         }
 
         Feed feed = feedService.findByUrl(url);
-        User user = userRepository.findOne(userId);
+        User user = userRepository.findByEmail(username);
 
         Subscription subscription = new Subscription();
         subscription.setTitle(feed.getTitle());

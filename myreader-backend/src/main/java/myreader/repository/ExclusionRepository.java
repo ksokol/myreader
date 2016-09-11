@@ -16,16 +16,16 @@ import java.util.List;
  */
 public interface ExclusionRepository extends PagingAndSortingRepository<ExclusionPattern, Long> {
 
-    @Query("select new myreader.entity.ExclusionSet(count(ep.id), sum(coalesce(ep.hitCount, 0)), s.id) from Subscription s left join s.exclusions ep where s.id = ?1 and s.user.id = ?#{principal.id} group by s")
+    @Query("select new myreader.entity.ExclusionSet(count(ep.id), sum(coalesce(ep.hitCount, 0)), s.id) from Subscription s left join s.exclusions ep where s.id = ?1 and s.user.email = ?#{principal.username} group by s")
     ExclusionSet findSetByCurrentUser(Long subscriptionId);
 
-    @Query("select new myreader.entity.ExclusionSet(count(ep.id), sum(coalesce(ep.hitCount, 0)), s.id) from Subscription s left join s.exclusions ep where s.user.id = ?#{principal.id} group by s")
+    @Query("select new myreader.entity.ExclusionSet(count(ep.id), sum(coalesce(ep.hitCount, 0)), s.id) from Subscription s left join s.exclusions ep where s.user.email = ?#{principal.username} group by s")
     Page<ExclusionSet> findAllSetsByUser(Pageable pageable);
 
     @Query(value = "select ep from ExclusionPattern ep join fetch ep.subscription where ep.subscription.id = ?1", countQuery = "select count(ep) from ExclusionPattern ep where ep.subscription.id = ?1")
     Page<ExclusionPattern> findBySubscriptionId(Long id, Pageable pageable);
 
-    @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.id = ?1 and ep.subscription.id = ?2 and ep.subscription.user.id = ?#{principal.id}")
+    @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.id = ?1 and ep.subscription.id = ?2 and ep.subscription.user.email = ?#{principal.username}")
     ExclusionPattern findByIdAndSubscriptionIdAndCurrentUser(Long id, Long subscriptionId);
 
     @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.subscription.id = ?1 and ep.pattern = ?2")

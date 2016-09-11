@@ -7,7 +7,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.patchAsUser1;
@@ -25,7 +24,7 @@ public class ExceptionHandlerTest extends IntegrationTestSupport {
 
     @Test
     public void testRuntimeException() throws Exception {
-        willThrow(new RuntimeException("exception")).given(subscriptionService).subscribe(anyLong(), anyString());
+        willThrow(new RuntimeException("exception")).given(subscriptionService).subscribe(anyString(), anyString());
 
         mockMvc.perform(postAsUser100("/api/2/subscriptions")
                 .json("{ 'origin': 'http://use-the-index-luke.com/blog/feed' }"))

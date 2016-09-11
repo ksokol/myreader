@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public class UserRepositoryUserDetailsService implements UserDetailsService {
 
     private static final Logger log = LoggerFactory.getLogger(UserRepositoryUserDetailsService.class);
-    private static final String ADMIN_GROUP = "ROLE_ADMIN";
 
     private final UserRepository userRepository;
 
@@ -28,15 +27,11 @@ public class UserRepositoryUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(username);
 
         if (user == null) {
-            log.info(String.format("Query returned no results for user '%s'", username));
+            log.warn(String.format("Query returned no results for user '%s'", username));
             throw new UsernameNotFoundException(String.format("Username %s not found", username));
         }
 
-        return new MyReaderUser(user.getId(), user.getEmail(), user.getPassword(), true /* enabled */,
-                true, true, true, AuthorityUtils.createAuthorityList(user.getRole().split(",")), isAdmin(user));
-    }
-
-    private boolean isAdmin(User user) {
-        return ADMIN_GROUP.contains(user.getRole());
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), true /* enabled */,
+                true, true, true, AuthorityUtils.createAuthorityList(user.getRole().split(",")));
     }
 }

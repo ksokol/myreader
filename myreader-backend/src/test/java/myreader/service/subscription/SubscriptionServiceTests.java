@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class SubscriptionServiceTests {
 
-    private static final Long USER_ID = 1L;
+    private static final String USERNAME = "usernamne";
     private static final String FEED_URL = "feed url";
 
     private SubscriptionService subscriptionService;
@@ -48,9 +48,9 @@ public class SubscriptionServiceTests {
 
     @Test(expected = SubscriptionExistException.class)
     public void shouldRejectSubscriptionWhenSubscriptionAlreadyExists() {
-        given(subscriptionRepository.findByUserIdAndFeedUrl(USER_ID, FEED_URL)).willReturn(new Subscription());
+        given(subscriptionRepository.findByUserEmailAndFeedUrl(USERNAME, FEED_URL)).willReturn(new Subscription());
 
-        subscriptionService.subscribe(USER_ID, FEED_URL);
+        subscriptionService.subscribe(USERNAME, FEED_URL);
     }
 
     @Test
@@ -60,9 +60,9 @@ public class SubscriptionServiceTests {
         feed.setTitle("expected feed title");
 
         given(feedService.findByUrl(FEED_URL)).willReturn(feed);
-        given(userRepository.findOne(USER_ID)).willReturn(user);
+        given(userRepository.findByEmail(USERNAME)).willReturn(user);
 
-        subscriptionService.subscribe(USER_ID, FEED_URL);
+        subscriptionService.subscribe(USERNAME, FEED_URL);
 
         verify(subscriptionRepository).save(Matchers.<Subscription>argThat(allOf(
                 hasProperty("title", is("expected feed title")),
@@ -79,7 +79,7 @@ public class SubscriptionServiceTests {
         Subscription expectedSubscription = new Subscription();
         given(subscriptionRepository.save(Mockito.any(Subscription.class))).willReturn(expectedSubscription);
 
-        Subscription actualSubscription = subscriptionService.subscribe(USER_ID, FEED_URL);
+        Subscription actualSubscription = subscriptionService.subscribe(USERNAME, FEED_URL);
 
         assertThat(actualSubscription, is(expectedSubscription));
     }

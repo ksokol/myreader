@@ -5,6 +5,7 @@ import myreader.repository.UserRepository;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -12,7 +13,9 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Kamill Sokol
@@ -47,9 +50,8 @@ public class UserRepositoryUserDetailsServiceTest {
         user.setEmail("email");
 
         when(userRepositoryMock.findByEmail("email")).thenReturn(user);
-        MyReaderUser userDetails = (MyReaderUser) uut.loadUserByUsername("email");
+        UserDetails userDetails = uut.loadUserByUsername("email");
 
-        assertThat(userDetails, hasProperty("id", is(1L)));
         assertThat(userDetails, hasProperty("password", is("password")));
         assertThat(userDetails, hasProperty("username", is("email")));
         assertThat(userDetails, hasProperty("accountNonExpired", is(true)));

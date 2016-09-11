@@ -87,7 +87,7 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
         Subscription subscription = new Subscription();
         subscription.setTitle("expected title");
 
-        willReturn(subscription).given(subscriptionService).subscribe(USER102.id, "http://use-the-index-luke.com/blog/feed");
+        willReturn(subscription).given(subscriptionService).subscribe(USER102.username, "http://use-the-index-luke.com/blog/feed");
 
         mockMvc.perform(postAsUser102("/api/2/subscriptions")
                 .json("{ 'origin': 'http://use-the-index-luke.com/blog/feed' }"))

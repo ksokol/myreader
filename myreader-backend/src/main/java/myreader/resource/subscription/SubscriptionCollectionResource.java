@@ -2,17 +2,18 @@ package myreader.resource.subscription;
 
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
+import myreader.repository.UserRepository;
 import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import spring.hateoas.ResourceAssemblers;
-import spring.security.MyReaderUser;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -32,18 +33,20 @@ public class SubscriptionCollectionResource {
 
     private final ResourceAssemblers resourceAssemblers;
 	private final SubscriptionService subscriptionService;
+    private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
 
     @Autowired
-    public SubscriptionCollectionResource(final ResourceAssemblers resourceAssemblers, final SubscriptionService subscriptionService, final SubscriptionRepository subscriptionRepository) {
+    public SubscriptionCollectionResource(final ResourceAssemblers resourceAssemblers, final SubscriptionService subscriptionService, UserRepository userRepository, final SubscriptionRepository subscriptionRepository) {
         this.resourceAssemblers = resourceAssemblers;
         this.subscriptionService = subscriptionService;
+        this.userRepository = userRepository;
         this.subscriptionRepository = subscriptionRepository;
     }
 
     @RequestMapping(method = POST)
-    public SubscriptionGetResponse post(@Valid @RequestBody SubscribePostRequest request, @AuthenticationPrincipal MyReaderUser user) {
-        Subscription subscription = subscriptionService.subscribe(user.getId(), request.getOrigin());
+    public SubscriptionGetResponse post(@Valid @RequestBody SubscribePostRequest request, @AuthenticationPrincipal User user) {
+        Subscription subscription = subscriptionService.subscribe(user.getUsername(), request.getOrigin());
         return resourceAssemblers.toResource(subscription, SubscriptionGetResponse.class);
     }
 
@@ -60,8 +63,9 @@ public class SubscriptionCollectionResource {
     }
 
     @RequestMapping(value= "availableTags", method = GET)
-    public List<String> tags(@AuthenticationPrincipal MyReaderUser user) {
-        return subscriptionRepository.findDistinctTags(user.getId());
+    public List<String> tags(@AuthenticationPrincipal User user) {
+        myreader.entity.User myreaderUser = userRepository.findByEmail(user.getUsername());
+        return subscriptionRepository.findDistinctTags(myreaderUser.getId());
     }
 
 }
