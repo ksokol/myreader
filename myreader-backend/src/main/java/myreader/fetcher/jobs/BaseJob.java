@@ -52,6 +52,10 @@ public abstract class BaseJob implements Runnable, ApplicationListener<ContextCl
         alive = false;
     }
 
+    public String getJobName() {
+        return jobName;
+    }
+
     private void toggleCurrentThreadName() {
         Thread thread = Thread.currentThread();
         if(swap == null) {

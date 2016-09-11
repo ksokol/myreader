@@ -4,10 +4,12 @@ import com.rometools.rome.feed.WireFeed;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.converter.WireFeedConverter;
+import myreader.fetcher.event.FetchErrorEvent;
 import myreader.fetcher.persistence.FetchResult;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,11 +26,14 @@ public class DefaultFeedParser implements FeedParser {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultFeedParser.class);
 
     private final RestTemplate syndicationRestTemplate;
+    private final ApplicationEventPublisher eventPublisher;
     private final WireFeedConverter wireFeedConverter = new WireFeedConverter();
 
-    public DefaultFeedParser(final RestTemplate syndicationRestTemplate) {
+    public DefaultFeedParser(final RestTemplate syndicationRestTemplate, ApplicationEventPublisher eventPublisher) {
         Assert.notNull(syndicationRestTemplate, "syndicationRestTemplate is null");
+        Assert.notNull(eventPublisher, "eventPublisher is null");
         this.syndicationRestTemplate = syndicationRestTemplate;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -55,6 +60,7 @@ public class DefaultFeedParser implements FeedParser {
             return wireFeedConverter.convert(feedUrl, responseEntity);
         } catch (Exception e) {
             LOG.error("url: {}, message: {}", feedUrl, e.getMessage());
+            eventPublisher.publishEvent(new FetchErrorEvent(feedUrl, e.getMessage()));
             throw new FeedParseException(e.getMessage(), e);
         }
     }

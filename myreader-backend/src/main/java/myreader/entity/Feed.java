@@ -1,9 +1,8 @@
 package myreader.entity;
 
-import java.util.Date;
-import java.util.Set;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,6 +13,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
+import java.util.Date;
+import java.util.Set;
 
 @Access(AccessType.PROPERTY)
 @Entity
@@ -28,6 +29,7 @@ public class Feed implements Identifiable {
     private Date createdAt;
     private Set<Subscription> subscriptions;
     private Set<FeedEntry> entries;
+    private Set<FetchError> fetchErrors;
     private long version;
 
     public Feed() {
@@ -103,13 +105,22 @@ public class Feed implements Identifiable {
         this.subscriptions = subscriptions;
     }
 
-    @OneToMany(mappedBy = "feed")
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.REMOVE)
     public Set<FeedEntry> getEntries() {
         return entries;
     }
 
     public void setEntries(Set<FeedEntry> entries) {
         this.entries = entries;
+    }
+
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.REMOVE)
+    public Set<FetchError> getFetchErrors() {
+        return fetchErrors;
+    }
+
+    public void setFetchErrors(Set<FetchError> fetchErrors) {
+        this.fetchErrors = fetchErrors;
     }
 
     // TODO

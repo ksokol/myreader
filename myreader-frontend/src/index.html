@@ -50,6 +50,9 @@
                             <md-button my-click-broadcast="navigation-close" ui-sref="app.admin">Admin</md-button>
                         </li>
                         <li my-show-admin>
+                            <md-button my-click-broadcast="navigation-close" ui-sref="app.feed">Feeds</md-button>
+                        </li>
+                        <li my-show-admin>
                             <md-button my-click-broadcast="navigation-close" href="dashboard" target="_blank">Hystrix Dashboard</md-button>
                         </li>
                         <li>
@@ -366,6 +369,76 @@
                     <md-divider></md-divider>
                 </md-list-item>
             </md-list>
+        </script>
+
+        <script type="text/ng-template" id="Feeds" data-ignore="true">
+            <md-list>
+                <md-list-item ng-click="open(feed)" md-no-ink class="md-2-line" ng-repeat="feed in data.feeds">
+                    <div layout="row">
+                        <div class="md-list-item-text">
+                            <div>
+                                <h3 tabindex="-1">{{::feed.title | htmlEntities}}</h3>
+                                <h4>
+                                    <md-icon ng-show="feed.hasErrors" md-font-library="material-icons">error</md-icon>
+                                    {{::feed.createdAt | timeago}}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <md-divider></md-divider>
+                </md-list-item>
+            </md-list>
+        </script>
+
+        <script type="text/ng-template" id="FeedDetail" data-ignore="true">
+            <md-input-container>
+                <label>Title</label>
+                <input name="title" ng-model="feed.title" readonly>
+            </md-input-container>
+
+            <md-input-container>
+                <label>Url</label>
+                <input name="url" ng-model="feed.url" readonly>
+            </md-input-container>
+
+            <h2 ng-hide="feed.errors.length === 0">
+                <span>Fetch errors in the last {{::feed.errors[0].retainDays}} day(s)</span>
+            </h2>
+            <md-list>
+                <md-list-item md-no-ink class="md-2-line" ng-repeat="error in feed.errors">
+                    <div layout="row">
+                        <div class="md-list-item-text">
+                            <div>
+                                <h3 tabindex="-1">{{::error.message}}</h3>
+                                <h4>
+                                    {{::error.createdAt | timeago}}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <md-divider></md-divider>
+                </md-list-item>
+            </md-list>
+        </script>
+
+        <script type="text/ng-template" id="FeedDetailActions" data-ignore="true">
+            <md-button class="md-icon-button" ng-hide="isInvisible('gt-md')" aria-label="Back" ng-click="back()">
+                <md-icon md-font-library="material-icons">arrow_back</md-icon>
+            </md-button>
+            <h2>
+                <span></span>
+            </h2>
+            <span flex></span>
+
+            <md-button ng-hide="isInvisible()" class="md-icon-button" aria-label="Build search index" ng-click="broadcast('delete-feed')">
+                <md-icon md-font-library="material-icons">delete</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="Open" ng-click="broadcast('open')">
+                <md-icon md-font-library="material-icons">open_in_new</md-icon>
+            </md-button>
+            <md-button ng-hide="isInvisible()" class="md-icon-button" aria-label="Refresh" ng-click="broadcast('refresh')">
+                <md-icon md-font-library="material-icons">refresh</md-icon>
+            </md-button>
         </script>
 
         <script type="text/ng-template" id="SettingsActions" data-ignore="true">

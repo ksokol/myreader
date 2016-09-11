@@ -119,3 +119,5 @@ INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_
 INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (7,'user113_subscription1_pattern1',1,1101);
 INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (8,'user114_subscription1_pattern1',1,1102);
 INSERT INTO exclusion_pattern (id,pattern,hit_count,exclusion_pattern_user_feed_id) values (9,'user115_subscription1_pattern1',1,1103);
+
+INSERT INTO fetch_error(FETCH_ERROR_ID, FETCH_ERROR_FEED_ID, FETCH_ERROR_MESSAGE, FETCH_ERROR_CREATED_AT) values (1, 18, 'error message for feed 18', to_timestamp('1970-01-01 00:00:00','YYYY-MM-DD HH:MI:SS'));

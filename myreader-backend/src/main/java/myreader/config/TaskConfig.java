@@ -5,17 +5,21 @@ import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.jobs.FeedListFetcherJob;
+import myreader.fetcher.jobs.FetchErrorCleanerJob;
 import myreader.fetcher.jobs.SubscriptionJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
 import myreader.repository.FeedRepository;
+import myreader.repository.FetchErrorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
+import java.time.Clock;
 import java.util.concurrent.Executor;
 
 /**
@@ -28,10 +32,12 @@ public class TaskConfig implements SchedulingConfigurer {
     private FeedRepository feedRepository;
     private SubscriptionBatch subscriptionBatch;
     private SubscriptionEntryBatch subscriptionEntryBatch;
+    private FetchErrorRepository fetchErrorRepository;
     private Environment environment;
     private Executor executor;
     private FeedParser feedParser;
     private FeedQueue feedQueue;
+    private int fetchErrorRetainInDay;
 
     @Override
     public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
@@ -44,6 +50,7 @@ public class TaskConfig implements SchedulingConfigurer {
             executor.execute(syndFetcherJob("syndFetcher-2"));
             taskRegistrar.addFixedRateTask(feedListFetcher(), 300000);
             taskRegistrar.addFixedRateTask(subscriptionJob(), 300000);
+            taskRegistrar.addCronTask(newFetchErrorCleanerJob(), "0 30 2 * * *");
             /*
                 <!-- TODO deactivated until this job has an unittest -->
                 <!-- <task:scheduled ref="purgerJob" method="run" cron="0 0 3 * * *"/> -->
@@ -67,9 +74,23 @@ public class TaskConfig implements SchedulingConfigurer {
         return new SyndFetcherJob(jobName, feedQueue, subscriptionBatch);
     }
 
+    private FetchErrorCleanerJob newFetchErrorCleanerJob() {
+        return new FetchErrorCleanerJob(Clock.systemDefaultZone(), fetchErrorRetainInDay, fetchErrorRepository);
+    }
+
     @Autowired
     public void setFeedRepository(final FeedRepository feedRepository) {
         this.feedRepository = feedRepository;
+    }
+
+    @Autowired
+    public void setFetchErrorRepository(FetchErrorRepository fetchErrorRepository) {
+        this.fetchErrorRepository = fetchErrorRepository;
+    }
+
+    @Value("${job.fetchError.retainInDays}")
+    public void setFetchErrorRetainInDay(int fetchErrorRetainInDay) {
+        this.fetchErrorRetainInDay = fetchErrorRetainInDay;
     }
 
     @Autowired

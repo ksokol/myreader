@@ -8,15 +8,24 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
@@ -30,6 +39,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -48,6 +58,9 @@ public class FeedParserTest {
 
     @Autowired
     private FeedParser parser;
+
+    @Autowired
+    private TestApplicationEventPublisher eventPublisher;
 
     private MockRestServiceServer mockServer;
 
@@ -174,6 +187,38 @@ public class FeedParserTest {
         FetchResult result = parser.parse(url);
 
         assertThat(result.getEntries(), hasSize(greaterThan(0)));
+    }
 
+    @Test
+    public void testPublishFetchErrorEvent() {
+        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
+                .andRespond(withServerError().body("test"));
+
+        parser.parse(HTTP_EXAMPLE_COM);
+
+        assertThat(eventPublisher.receivedEvents, hasItem(
+                allOf(
+                        hasProperty("source", is(HTTP_EXAMPLE_COM)),
+                        hasProperty("errorMessage", is("500 Internal Server Error")),
+                        hasProperty("timestamp", is(greaterThan(0L)))
+                ))
+        );
+    }
+
+    @Primary
+    @Component
+    static class TestApplicationEventPublisher implements ApplicationEventPublisher {
+
+        private List<ApplicationEvent> receivedEvents = new ArrayList<>();
+
+        @Override
+        public void publishEvent(ApplicationEvent event) {
+            receivedEvents.add(event);
+        }
+
+        @Override
+        public void publishEvent(Object event) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

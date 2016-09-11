@@ -75,3 +75,14 @@ bootRun {
 springBoot {
     executable = true
 }
+
+
+tasks.matching {it instanceof Test}.all {
+    testLogging.events = ["failed", "passed", "skipped"]
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}

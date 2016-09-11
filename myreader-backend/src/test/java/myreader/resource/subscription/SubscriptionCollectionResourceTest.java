@@ -1,20 +1,19 @@
 package myreader.resource.subscription;
 
-import myreader.service.time.TimeService;
+import myreader.entity.Subscription;
+import myreader.service.subscription.SubscriptionService;
 import myreader.test.IntegrationTestSupport;
 import myreader.test.KnownUser;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpMethod;
 
-import java.time.Instant;
-import java.util.Date;
-
+import static myreader.test.KnownUser.USER102;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.willReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.postAsUser102;
@@ -28,8 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
-    @Autowired
-    private TimeService timeServiceMock;
+    @SpyBean
+    private SubscriptionService subscriptionService;
 
     @Test
     public void testCollectionResourceJsonStructureEquality() throws Exception {
@@ -85,14 +84,15 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
 
     @Test
     public void testSuccessWhenPostingNewSubscription() throws Exception {
-        Date now = Date.from(Instant.parse("2014-04-30T12:43:46Z"));
+        Subscription subscription = new Subscription();
+        subscription.setTitle("expected title");
 
-        when(timeServiceMock.getCurrentTime()).thenReturn(now);
+        willReturn(subscription).given(subscriptionService).subscribe(USER102.id, "http://use-the-index-luke.com/blog/feed");
 
         mockMvc.perform(postAsUser102("/api/2/subscriptions")
                 .json("{ 'origin': 'http://use-the-index-luke.com/blog/feed' }"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscription/post-new-response.json"));
+                .andExpect(jsonPath("title", is(subscription.getTitle())));
     }
 
     @Test

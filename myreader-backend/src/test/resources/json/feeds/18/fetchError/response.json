@@ -1,0 +1,23 @@
+{
+  "links": [
+    {
+      "rel": "self",
+      "href": "/api/2/feeds/18/fetchError"
+    }
+  ],
+  "content": [
+    {
+      "uuid": "1",
+      "message": "error message for feed 18",
+      "retainDays": 7,
+      "createdAt": "1970-01-01T00:00:00Z",
+      "links": []
+    }
+  ],
+  "page": {
+    "size": 20,
+    "totalElements": 1,
+    "totalPages": 1,
+    "number": 0
+  }
+}

@@ -2,7 +2,6 @@ package myreader.test;
 
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
-import myreader.service.time.TimeService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -31,12 +30,6 @@ public class TestConfig  {
     @Bean
     public FeedQueue feedQueue() {
         return mock(FeedQueue.class);
-    }
-
-    @Primary
-    @Bean
-    public TimeService timeService() {
-        return mock(TimeService.class);
     }
 
 }

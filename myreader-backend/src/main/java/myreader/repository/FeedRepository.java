@@ -21,4 +21,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     @Query("select f from Feed f where f.url in (?1)")
     Page<Feed> findAllByUrl(Collection<String> url, Pageable pageable);
+
+    @Query("select count(s.id) from Subscription s where s.feed.id = ?1")
+    int countSubscriptionsByFeedId(Long id);
 }

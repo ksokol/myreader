@@ -6,6 +6,7 @@ import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 
+import java.time.Clock;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -30,5 +31,10 @@ public class CommonConfig {
     @Bean
     public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
         return new SecurityEvaluationContextExtension();
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemUTC();
     }
 }
