@@ -1,5 +1,7 @@
 package myreader.fetcher.resttemplate;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -13,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
@@ -33,7 +34,7 @@ class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
         final String cleanedBody;
 
         if (execute.getRawStatusCode() == 200) {
-            String bodyString = new Scanner(execute.getBody(), charset.name()).useDelimiter("\\A").next();
+            String bodyString = IOUtils.toString(new BOMInputStream(execute.getBody()), charset.name());
             cleanedBody = pattern.matcher(bodyString).replaceAll(EMPTY);
         } else {
             cleanedBody = EMPTY;

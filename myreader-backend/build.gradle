@@ -36,6 +36,7 @@ dependencies {
         exclude(module: 'commons-logging')
     }
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile project(':myreader-frontend')
 
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'

@@ -1,5 +1,6 @@
 package myreader.fetcher.resttemplate;
 
+import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,12 +73,26 @@ public class CleanSyndicationInterceptorTest {
         assertThat(body, is(EMPTY));
     }
 
+    @Test
+    public void testRemoveByteOrderMark() throws Exception {
+        withBody(ByteOrderMark.UTF_8.getBytes());
+
+        final ClientHttpResponse response = intercept();
+        byte[] actualBytes = IOUtils.toByteArray(response.getBody());
+
+        assertThat(actualBytes.length, is(0));
+    }
+
     private String body(ClientHttpResponse response, String charset) throws IOException {
         return IOUtils.toString(response.getBody(), charset);
     }
 
     private void withContentType(String contentType) {
         httpHeaders.setContentType(MediaType.parseMediaType(contentType));
+    }
+
+    private void withBody(byte[] byteBody) throws IOException {
+        when(mockResponse.getBody()).thenReturn(new ByteArrayInputStream(byteBody));
     }
 
     private void withBody(String bodyString, String bodyCharset) throws IOException {
