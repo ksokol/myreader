@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.annotation.Rollback;
 
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.willReturn;
@@ -73,7 +73,7 @@ public class FeedResourceTests extends IntegrationTestSupport {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status", is(400)))
                 .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", contains("title", "url", "url")))
+                .andExpect(jsonPath("fieldErrors..field", containsInAnyOrder("title", "url", "url")))
                 .andExpect(jsonPath("fieldErrors..message", hasItems("may not be null", "invalid syndication feed", "may not be null")));
     }
 
