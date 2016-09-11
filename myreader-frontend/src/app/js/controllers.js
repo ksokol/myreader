@@ -668,6 +668,24 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         });
     });
 
+    $scope.$on('save', function() {
+        feedService.save($scope.feed)
+        .then(function() {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content('saved')
+                    .position('top right')
+            );
+        })
+        .catch(function(data) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content(data)
+                    .position('top right')
+            );
+        })
+    });
+
     $scope.refresh();
 }])
 

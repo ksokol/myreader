@@ -768,7 +768,7 @@ describe('api', function() {
         });
 
         it('should convert data for error callback', function () {
-            expect(service.convertError('searchIndexJob', {data: 1})).toEqualData(1);
+            expect(service.convertError('searchIndexJob', {data: 1})).toEqualData({data: 1});
         });
     });
 
@@ -844,7 +844,7 @@ describe('api', function() {
             promise.then(function() {
                 expect('success callback').not.toBeCalled();
             }).catch(function(data) {
-                expect(data.test).toBe(3);
+                expect(data.data.test).toBe(3);
             });
 
             http.flush();
@@ -872,7 +872,7 @@ describe('api', function() {
             promise.then(function() {
                 expect('success callback').not.toBeCalled();
             }).catch(function(data) {
-                expect(data.test).toBe(3);
+                expect(data.data.test).toBe(3);
             });
 
             http.flush();

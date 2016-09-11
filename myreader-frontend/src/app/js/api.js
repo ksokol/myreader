@@ -217,7 +217,7 @@ angular.module('common.api', [])
             return data;
         },
         convertTo: function(data) {
-            return data;
+            return { 'title': data.title, 'url': data.url };
         },
         convertError: function (data, statusCode) {
             return statusCode === 409 ? 'abort. Feed has subscriptions' : data.message ? data.message : "undefined error occured";
@@ -273,7 +273,7 @@ angular.module('common.api', [])
             return $injector.get(resourceType + "Converter").convertTo(data);
         },
         convertError: function (resourceType, data, statusCode) {
-            return $injector.get(resourceType + "Converter").convertError(data.data, statusCode);
+            return $injector.get(resourceType + "Converter").convertError(data, statusCode);
         }
     }
 }])
@@ -294,6 +294,9 @@ angular.module('common.api', [])
             $http.patch(url, converted)
             .success(function (data) {
                 deferred.resolve(conversionService.convertFrom(resourceType, data));
+            })
+            .error(function(error, statusCode) {
+                deferred.reject(conversionService.convertError(resourceType, error, statusCode));
             });
             return deferred.promise;
         },

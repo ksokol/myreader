@@ -391,15 +391,31 @@
         </script>
 
         <script type="text/ng-template" id="FeedDetail" data-ignore="true">
-            <md-input-container>
-                <label>Title</label>
-                <input name="title" ng-model="feed.title" readonly>
-            </md-input-container>
+            <form name="feedForm">
+                <md-input-container>
+                    <label>Title</label>
+                    <input name="title" ng-model="feed.title" required>
 
-            <md-input-container>
-                <label>Url</label>
-                <input name="url" ng-model="feed.url" readonly>
-            </md-input-container>
+                    <div ng-messages="feedForm.title.$error">
+                        <div ng-message="required">required</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container>
+                    <label>Url</label>
+                    <input required
+                           name="url"
+                           ng-model="feed.url"
+                           my-valid-syndication
+                           ng-model-options="{ debounce: 500 }"
+                           ng-disabled="feedForm.url.$pending">
+
+                    <div ng-messages="feedForm.url.$error">
+                        <div ng-message="required">required</div>
+                        <div ng-message="validSyndication">This is not a valid syndication feed</div>
+                    </div>
+                </md-input-container>
+            </form>
 
             <h2 ng-hide="feed.errors.length === 0">
                 <span>Fetch errors in the last {{::feed.errors[0].retainDays}} day(s)</span>
@@ -438,6 +454,9 @@
             </md-button>
             <md-button ng-hide="isInvisible()" class="md-icon-button" aria-label="Refresh" ng-click="broadcast('refresh')">
                 <md-icon md-font-library="material-icons">refresh</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="Save" ng-click="broadcast('save')">
+                <md-icon md-font-library="material-icons">save</md-icon>
             </md-button>
         </script>
 

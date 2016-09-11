@@ -303,6 +303,9 @@ angular.module('common.services', ['common.api', 'common.caches'])
         },
         remove: function(feed) {
             return api.delete('feed',feedUrl + '/' + feed.uuid);
+        },
+        save: function(feed) {
+            return api.patch('feed', feedUrl + '/' + feed.uuid, feed);
         }
     }
 }])
