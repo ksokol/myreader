@@ -5,6 +5,7 @@
     "angular": "1.4.5",
     "angular-sanitize": "1.4.5",
     "angular-messages": "1.4.5",
+    "angular-animate": "1.4.5",
     "angular-ui-router": "0.2.15",
     "ui-router-extras": "0.0.14",
     "angular-material": "0.10.1",
