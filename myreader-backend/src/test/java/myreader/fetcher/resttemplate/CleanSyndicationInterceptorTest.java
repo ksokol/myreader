@@ -83,17 +83,6 @@ public class CleanSyndicationInterceptorTest {
         assertThat(actualBytes.length, is(0));
     }
 
-    @Test
-    public void testReplaceLFAndTabWithSpace() throws IOException {
-        withBody(new byte[]{ '\n', '\t'});
-
-        final ClientHttpResponse response = intercept();
-        byte[] actualBytes = IOUtils.toByteArray(response.getBody());
-
-        assertThat(actualBytes.length, is(1));
-        assertThat(actualBytes[0], is((byte) ' '));
-    }
-
     private String body(ClientHttpResponse response, String charset) throws IOException {
         return IOUtils.toString(response.getBody(), charset);
     }

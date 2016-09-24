@@ -18,16 +18,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
  * @author Kamill Sokol
  */
 class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
 
-    // http://stackoverflow.com/questions/5742543/an-invalid-xml-character-unicode-0xc-was-found
-    private final Pattern pattern1 = Pattern.compile("[^\u0009\u0020-\uD7FF\uE000-\uFFFD\u10000-\u10FFF]+");
-    private final Pattern pattern2 = Pattern.compile("[^\u0020-\uD7FF]+");
+    // http://www.rgagnon.com/javadetails/java-sanitize-xml-string.html
+    private final Pattern invalidXmlCharacters = Pattern.compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\\x{10000}-\\x{10FFFF}]");
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
@@ -37,8 +35,7 @@ class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
 
         if (execute.getRawStatusCode() == 200) {
             String bodyString = IOUtils.toString(new BOMInputStream(execute.getBody()), charset.name());
-            String tmp = pattern1.matcher(bodyString).replaceAll(EMPTY);
-            cleanedBody = pattern2.matcher(tmp).replaceAll(SPACE);
+            cleanedBody = invalidXmlCharacters.matcher(bodyString).replaceAll(EMPTY);
         } else {
             cleanedBody = EMPTY;
         }
