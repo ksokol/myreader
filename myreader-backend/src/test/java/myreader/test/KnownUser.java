@@ -30,6 +30,7 @@ public enum KnownUser {
     public final long id;
     public final String username;
     public final String password;
+    public final String role;
     public final boolean admin;
 
     KnownUser() {
@@ -47,5 +48,6 @@ public enum KnownUser {
         this.password = "0";
         this.admin = admin;
         this.username = "user" + this.id + "@localhost";
+        this.role = this.admin ? "ROLE_ADMIN" : "ROLE_USER";
     }
 }

@@ -291,7 +291,8 @@ BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
 
 angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
-.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$previousState', '$mdSidenav', '$mdMedia', '$stateParams', 'hotkeys', function($rootScope, $scope, $previousState, $mdSidenav, $mdMedia, $stateParams, hotkeys) {
+.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$http', '$state', '$previousState', '$mdSidenav', '$mdMedia', '$stateParams', '$mdToast', 'hotkeys',
+    function($rootScope, $scope, $http, $state, $previousState, $mdSidenav, $mdMedia, $stateParams, $mdToast, hotkeys) {
 
     $scope.searchOpen = false;
     $scope.searchKey = "";
@@ -305,6 +306,31 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         if(!$mdMedia('gt')) {
             $mdSidenav('left').close();
         }
+    });
+
+    $scope.$on('error', function(event, message) {
+        $mdToast.show(
+            $mdToast.simple()
+                .content(message)
+                .position('top right')
+        );
+    });
+
+    $scope.$on('logout', function() {
+        $http({
+            method: 'POST',
+            url: 'logout'
+        })
+        .success(function() {
+            $state.go('login');
+        })
+        .error(function() {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content('Could not log out')
+                    .position('top right')
+            );
+        });
     });
 
     $scope.broadcast = function(eventName, param) {
@@ -358,6 +384,15 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
     $scope.$on('navigation-clear-selection', function() {
         openItem = {tag: null, uuid: null};
+    });
+
+    $scope.$on('logout', function() {
+        $rootScope.$emit('refresh');
+
+        $scope.data = {
+            tags: [],
+            items: []
+        };
     });
 
     $scope.isItemSelected= function(item) {

@@ -1,7 +1,5 @@
 package myreader.test;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
 import myreader.Starter;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -12,7 +10,6 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.htmlunit.MockMvcWebConnection;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,16 +35,12 @@ public abstract class SecurityTestSupport {
     private WebApplicationContext wac;
 
     protected MockMvc mockMvc;
-    protected WebClient webClient;
 
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .addFilter(springSecurityFilterChain)
                 .build();
-
-        webClient = new WebClient(BrowserVersion.FIREFOX_45);
-        webClient.setWebConnection(new MockMvcWebConnection(mockMvc));
     }
 
     @Configuration

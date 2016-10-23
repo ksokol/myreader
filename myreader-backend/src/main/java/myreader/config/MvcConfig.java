@@ -7,6 +7,7 @@ import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboar
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -29,7 +30,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 /**
  * @author Kamill Sokol
  */
-//@EnableWebMvcSecurity
 @ComponentScan(basePackages = {"spring.hateoas"})
 @Configuration
 @EnableTransactionManagement
@@ -67,9 +67,10 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-                registry.addViewController(LANDING_PAGE.mapping()).setViewName("index.html");
-                registry.addRedirectViewController(HYSTRIX_DASHBOARD.mapping(), "hystrix/monitor?title=" + applicationName + "&stream=http://localhost:" + port + contextPath + "/hystrix.stream");
-            }
+        registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        registry.addViewController(LANDING_PAGE.mapping()).setViewName("index.html");
+        registry.addRedirectViewController(HYSTRIX_DASHBOARD.mapping(), "hystrix/monitor?title=" + applicationName + "&stream=http://localhost:" + port + contextPath + "/hystrix.stream");
+    }
 
     @Bean(name = "customPagedResourcesAssembler")
     public PagedResourcesAssembler<?> pagedResourcesAssembler() {

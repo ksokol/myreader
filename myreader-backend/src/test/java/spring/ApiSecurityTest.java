@@ -1,40 +1,29 @@
 package spring;
 
-import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-import myreader.test.KnownUser;
 import myreader.test.SecurityTestSupport;
-import org.apache.commons.codec.binary.Base64;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.http.Cookie;
-import java.io.IOException;
-import java.nio.charset.Charset;
 
+import static myreader.config.UrlMappings.HYSTRIX;
 import static myreader.config.UrlMappings.HYSTRIX_DASHBOARD;
 import static myreader.config.UrlMappings.HYSTRIX_PROXY;
 import static myreader.config.UrlMappings.HYSTRIX_STREAM;
-import static myreader.config.UrlMappings.LANDING_PAGE;
-import static myreader.config.UrlMappings.LOGIN;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
+import static myreader.test.CustomRequestPostProcessors.sessionUser;
+import static myreader.test.CustomRequestPostProcessors.xmlHttpRequest;
 import static myreader.test.KnownUser.ADMIN;
 import static myreader.test.KnownUser.USER1;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,10 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Kamill Sokol
  */
 public class ApiSecurityTest extends SecurityTestSupport {
-
-    private static final String USERNAME_INPUT = "username";
-    private static final String PASSWORD_INPUT = "password";
-    private static final String LOGIN_FORM_NAME = "loginForm";
 
     @Value("${server.context-path}")
     private String contextPath;
@@ -57,25 +42,16 @@ public class ApiSecurityTest extends SecurityTestSupport {
     private String applicationName;
 
     @Test
-    public void testApiUnauthorized() throws Exception {
+    public void testApiUnauthorizedWithRequestWithAjax() throws Exception {
         mockMvc.perform(get(API_2)
-                .header("X-Requested-With", "XMLHttpRequest"))
+                .with(xmlHttpRequest()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void testApiOk() throws Exception {
-        mockMvc.perform(get(API_2)
-                .header("Authorization", basic(USER1)))
-                .andExpect(status().isOk())
-                .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
-    }
-
-    @Test
-    public void testApi2Unauthorized() throws Exception {
+    public void testApiUnauthorized() throws Exception {
         mockMvc.perform(get(API_2))
-                .andExpect(status().isFound())
-                .andExpect(header().string("Location", "http://localhost" + LOGIN.mapping()));
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -91,11 +67,11 @@ public class ApiSecurityTest extends SecurityTestSupport {
         mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .param("username", USER1.username)
                 .param("password", "wrong"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void testRememberMe() throws Exception {
+    public void testRememberMeWithBrowser() throws Exception {
         Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .param("username", USER1.username)
                 .param("password", USER1.password)
@@ -106,239 +82,132 @@ public class ApiSecurityTest extends SecurityTestSupport {
 
         mockMvc.perform(get(API_2)
                 .cookie(rememberMeCookie))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
+    }
+
+    @Test
+    public void testRememberMeWithAjax() throws Exception {
+        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .with(xmlHttpRequest())
+                .param("username", USER1.username)
+                .param("password", USER1.password)
+                .param("remember-me", "on"))
+                .andExpect(status().isNoContent())
+                .andReturn()
+                .getResponse().getCookie("remember-me");
+
+        mockMvc.perform(get(API_2)
+                .cookie(rememberMeCookie))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
+    }
+
+    @Test
+    public void testApiOk() throws Exception {
+        mockMvc.perform(get(API_2)
+                .with(sessionUser(USER1)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
+    }
+
+    @Test
+    public void testLogoutWithBrowserRememberMe() throws Exception {
+        mockMvc.perform(get(LOGOUT.mapping())
+                .with(sessionUser(USER1))
+                .accept(TEXT_HTML))
+                .andExpect(status().isNoContent())
+                .andExpect(cookie().value("JSESSIONID", nullValue()))
+                .andExpect(cookie().value("remember-me", nullValue()));
     }
 
     @Test
     public void testLogoutWithBrowser() throws Exception {
-        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", USER1.username)
-                .param("password", USER1.password)
-                .param("remember-me", "on"))
-                .andExpect(status().isNoContent())
-                .andReturn()
-                .getResponse().getCookie("remember-me");
-
         mockMvc.perform(get(LOGOUT.mapping())
-                .cookie(rememberMeCookie)
+                .with(sessionUser(USER1))
                 .accept(TEXT_HTML))
-                .andExpect(status().isFound())
-                .andExpect(header().string("Location", LOGIN.mapping()));
+                .andExpect(status().isNoContent())
+                .andExpect(cookie().value("JSESSIONID", nullValue()));
     }
 
     @Test
     public void testLogoutWithAjax() throws Exception {
-        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", USER1.username)
-                .param("password", USER1.password)
-                .param("remember-me", "on"))
-                .andExpect(status().isNoContent())
-                .andReturn()
-                .getResponse().getCookie("remember-me");
-
         mockMvc.perform(get(LOGOUT.mapping())
-                .cookie(rememberMeCookie))
-                .andExpect(status().isNoContent());
+                .with(xmlHttpRequest())
+                .with(sessionUser(USER1)))
+                .andExpect(status().isNoContent())
+                .andExpect(cookie().value("JSESSIONID", nullValue()))
+                .andExpect(cookie().value("remember-me", nullValue()));
     }
 
     @Test
     public void testRedirectToHystrixMonitor() throws Exception {
-        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", ADMIN.username)
-                .param("password", ADMIN.password)
-                .param("remember-me", "on"))
-                .andReturn()
-                .getResponse().getCookie("remember-me");
-
         mockMvc.perform(get(HYSTRIX_DASHBOARD.mapping())
-                .cookie(rememberMeCookie))
+                .with(sessionUser(ADMIN)))
                 .andExpect(header().string("Location", "hystrix/monitor?title=" + applicationName + "&stream=http://localhost:" + port + contextPath +"/hystrix.stream"));
     }
 
     @Test
     public void testHystrixDashboard() throws Exception {
-        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", ADMIN.username)
-                .param("password", ADMIN.password)
-                .param("remember-me", "on"))
-                .andReturn()
-                .getResponse().getCookie("remember-me");
-
         mockMvc.perform(get("/hystrix/monitor")
-                .cookie(rememberMeCookie))
+                .with(sessionUser(ADMIN)))
                 .andExpect(content().string(containsString("Hystrix Monitor")))
                 .andExpect(content().contentTypeCompatibleWith(TEXT_HTML));
     }
 
     @Test
     public void testHystrixStream() throws Exception {
-        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", ADMIN.username)
-                .param("password", ADMIN.password)
-                .param("remember-me", "on"))
-                .andReturn()
-                .getResponse().getCookie("remember-me");
-
         mockMvc.perform(options(HYSTRIX_STREAM.mapping())
-                .cookie(rememberMeCookie))
+                .with(sessionUser(ADMIN)))
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    public void testHystrixStreamAccessFromLocalhost() throws Exception {
+        mockMvc.perform(options(HYSTRIX_STREAM.mapping()))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testRejectAccessToHystrixDashboardWhenUserIsNotAdmin() throws Exception {
-        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", USER1.username)
-                .param("password", USER1.password)
-                .param("remember-me", "on"))
-                .andReturn()
-                .getResponse().getCookie("remember-me");
-
         mockMvc.perform(get(HYSTRIX_DASHBOARD.mapping())
-                .cookie(rememberMeCookie))
+                .with(sessionUser(USER1)))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     public void testHystrixProxyStream() throws Exception {
-        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", ADMIN.username)
-                .param("password", ADMIN.password)
-                .param("remember-me", "on"))
-                .andReturn()
-                .getResponse().getCookie("remember-me");
-
         mockMvc.perform(get(HYSTRIX_PROXY.mapping())
-                .cookie(rememberMeCookie))
+                .with(sessionUser(ADMIN)))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testRejectAccessToHystrixProxyStreamWhenUserIsNotAdmin() throws Exception {
-        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", USER1.username)
-                .param("password", USER1.password)
-                .param("remember-me", "on"))
-                .andReturn()
-                .getResponse().getCookie("remember-me");
+    public void testHystrix() throws Exception {
+        mockMvc.perform(get(HYSTRIX_PROXY.mapping())
+                .with(sessionUser(ADMIN)))
+                .andExpect(status().isOk());
+    }
 
-        mockMvc.perform(options(HYSTRIX_PROXY.mapping())
-                .cookie(rememberMeCookie))
+    @Test
+    public void testRejectAccessToHystrix() throws Exception {
+        mockMvc.perform(get(HYSTRIX.mapping())
+                .with(sessionUser(USER1)))
                 .andExpect(status().isForbidden());
     }
 
-    @Ignore
     @Test
-    public void testLoginPage() throws IOException {
-        String loginUrl = "http://localhost" + LOGIN.mapping();
-
-        HtmlPage page = webClient.getPage(loginUrl);
-
-        assertThat(page.getUrl().toString(), is("http://localhost" + LOGIN.mapping()));
-
-        HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
-
-        DomElement username = loginForm.getInputByName(USERNAME_INPUT);
-        DomElement password = loginForm.getInputByName(PASSWORD_INPUT);
-       // HtmlInput csrf = loginForm.getInputByName(CSRF_INPUT);
-        HtmlElement submit = loginForm.getOneHtmlElementByAttribute("button", "type", "submit");
-
-        assertThat(username, notNullValue());
-        assertThat(password, notNullValue());
-       // assertThat(csrf, notNullValue());
-        assertThat(submit, notNullValue());
-        assertThat(loginForm.getAttribute("action"), is("check"));
+    public void testRejectAccessToHystrixWithSubpath() throws Exception {
+        mockMvc.perform(get(HYSTRIX.mapping() + "/subpath")
+                .with(sessionUser(USER1)))
+                .andExpect(status().isForbidden());
     }
 
-    @Ignore
     @Test
-    public void testLoginPageWithWrongCredentials() throws IOException {
-        String loginUrl = "http://localhost" + LOGIN.mapping();
-
-        HtmlPage page = webClient.getPage(loginUrl);
-        HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
-
-        DomElement username = loginForm.getInputByName(USERNAME_INPUT);
-        DomElement password = loginForm.getInputByName(PASSWORD_INPUT);
-        // HtmlInput csrf = loginForm.getInputByName(CSRF_INPUT);
-        HtmlElement submit = loginForm.getOneHtmlElementByAttribute("button", "type", "submit");
-
-        username.setNodeValue("unknown");
-        password.setNodeValue("unknown");
-
-        final HtmlPage afterSubmit = submit.click();
-
-        assertThat(afterSubmit.getUrl().toString(), is("http://localhost" + LOGIN.mapping() + "?result=failed"));
-
-        HtmlForm loginFormAfterSubmit = afterSubmit.getFormByName(LOGIN_FORM_NAME);
-
-        assertThat(loginFormAfterSubmit.getAttribute("action"), is(LOGIN_PROCESSING.mapping()));
-    }
-
-    @Ignore
-    @Test
-    public void testLoginPageWithCorrectCredentials() throws IOException {
-        String loginUrl = "http://localhost" + LOGIN.mapping();
-
-        HtmlPage page = webClient.getPage(loginUrl);
-        HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
-
-        HtmlTextInput username = loginForm.getInputByName(USERNAME_INPUT);
-        HtmlPasswordInput password = loginForm.getInputByName(PASSWORD_INPUT);
-        // HtmlInput csrf = loginForm.getInputByName(CSRF_INPUT);
-        HtmlElement submit = loginForm.getOneHtmlElementByAttribute("button", "type", "submit");
-
-        username.setValueAttribute(USER1.username);
-        password.setValueAttribute(USER1.password);
-
-        final HtmlPage afterSubmit = submit.click();
-
-        assertThat(afterSubmit.getUrl().toString(), is("http://localhost" + LANDING_PAGE.mapping()));
-    }
-
-    @Ignore
-    @Test
-    public void testRedirectAfterLogin() throws IOException {
-        String loginUrl = "http://localhost/";
-
-        HtmlPage page = webClient.getPage(loginUrl);
-        HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
-
-        HtmlTextInput username = loginForm.getInputByName(USERNAME_INPUT);
-        HtmlPasswordInput password = loginForm.getInputByName(PASSWORD_INPUT);
-        // HtmlInput csrf = loginForm.getInputByName(CSRF_INPUT);
-        HtmlElement submit = loginForm.getOneHtmlElementByAttribute("button", "type", "submit");
-
-        username.setValueAttribute(USER1.username);
-        password.setValueAttribute(USER1.password);
-
-        final HtmlPage afterSubmit = submit.click();
-
-        assertThat(afterSubmit.getUrl().toString(), is("http://localhost" + LANDING_PAGE.mapping()));
-    }
-
-    @Ignore
-    @Test
-    public void testRedirectAfterLogin2() throws IOException {
-        String loginUrl = "http://localhost/irrelevant";
-
-        HtmlPage page = webClient.getPage(loginUrl);
-        HtmlForm loginForm = page.getFormByName(LOGIN_FORM_NAME);
-
-        HtmlTextInput username = loginForm.getInputByName(USERNAME_INPUT);
-        HtmlPasswordInput password = loginForm.getInputByName(PASSWORD_INPUT);
-        // HtmlInput csrf = loginForm.getInputByName(CSRF_INPUT);
-        HtmlElement submit = loginForm.getOneHtmlElementByAttribute("button", "type", "submit");
-
-        username.setValueAttribute(USER1.username);
-        password.setValueAttribute(USER1.password);
-
-        final HtmlPage afterSubmit = submit.click();
-
-        assertThat(afterSubmit.getUrl().toString(), is("http://localhost" + LANDING_PAGE.mapping()));
-    }
-
-    private static String basic(KnownUser user) {
-        final byte[] usernamePassword = String.format("%s:%s", user.username, user.password).getBytes(Charset.forName("UTF-8"));
-        return "Basic " + new String(Base64.encodeBase64(usernamePassword), Charset.forName("UTF-8"));
+    public void testRejectAccessToHystrixProxyStreamWhenUserIsNotAdmin() throws Exception {
+        mockMvc.perform(options(HYSTRIX.mapping())
+                .with(sessionUser(USER1)))
+                .andExpect(status().isForbidden());
     }
 }

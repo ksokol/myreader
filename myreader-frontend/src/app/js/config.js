@@ -9,9 +9,10 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
             'responseError': function(rejection) {
                 if(rejection.status === 401) {
                     var $state = $injector.get('$state');
+                    $rootScope.$emit('refresh');
                     $state.go('login');
                 }
-                if(rejection.status >= 500) {
+                if(rejection.status >= 500 || rejection.status === 403) {
                     if(typeof rejection.data === 'string') {
                         $rootScope.$broadcast('error', rejection.data);
                     } else {

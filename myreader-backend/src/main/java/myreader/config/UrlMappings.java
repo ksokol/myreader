@@ -5,13 +5,14 @@ package myreader.config;
  */
 public enum UrlMappings {
 
-    LOGIN("app#/login"),
     LOGOUT("logout"),
     LOGIN_PROCESSING("check"),
     LANDING_PAGE("app"),
     HYSTRIX_STREAM("hystrix.stream"),
     HYSTRIX_PROXY("proxy.stream"),
-    HYSTRIX_DASHBOARD("dashboard");
+    HYSTRIX_DASHBOARD("dashboard"),
+    HYSTRIX("hystrix"),
+    API("api");
 
     private final String mapping;
 
