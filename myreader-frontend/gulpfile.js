@@ -53,7 +53,7 @@ function replaceNodeModulesPath(attributeName) {
 
 gulp.task('copy-assets', function() {
     return gulp.src([paths.img + '/*'])
-        .pipe(gulp.dest(paths.dest.app))
+        .pipe(gulp.dest(paths.dest.app + '/img'))
         .pipe(debug({title: 'copying asset'}));
 });
 
