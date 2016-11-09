@@ -542,6 +542,10 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         return $state.is('app.subscription');
     };
 
+    $scope.setTag = function(tag) {
+        $scope.subscription.tag = tag;
+    };
+
     $scope.$on('save', function() {
         if(!$scope.subscriptionForm.$valid) {
             $mdToast.show(

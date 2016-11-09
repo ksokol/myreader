@@ -22,10 +22,6 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.hide {
-    display: none !important;
-}
-
 ul {
     margin: 0;
     padding: 0;
@@ -212,6 +208,9 @@ my-divider {
     margin: 0;
 }
 
+.md-chips .md-chip .md-chip-content {
+    padding-right: 10px !important;
+}
 .my-tag-chips .md-chip {
     position: relative;
     padding-right: 35px;

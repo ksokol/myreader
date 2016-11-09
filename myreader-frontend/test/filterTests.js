@@ -61,7 +61,7 @@ describe("targetBlank filter", function() {
     });
 
     it('should not modify given a tag with existing target attribute', function () {
-        expect(targetBlank('test1 <a target="different" href="test">test</a> test2')).toBe('test1 <a target="different" href="test">test</a> test2');
+        expect(targetBlank('test1 <a target="different" href="test">test</a> test2')).toBe('test1 <a target="_blank" href="test">test</a> test2');
     });
 });
 

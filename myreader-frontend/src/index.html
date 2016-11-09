@@ -248,9 +248,7 @@
         <script type="text/ng-template" id="Tags" data-ignore="true">
             <md-chips class="my-tag-chips" ng-model="tags" md-on-append="addTag($chip)">
                 <md-chip-template>
-                    <span>
                       <strong>{{$chip}}</strong>
-                    </span>
                 </md-chip-template>
                 <button md-chip-remove ng-click="removeTag($chip)" class="md-primary my-tag-chip">
                     <md-icon md-font-library="material-icons">close</md-icon>
@@ -278,27 +276,30 @@
 
         <script type="text/ng-template" id="Subscription" data-ignore="true">
             <form name="subscriptionForm">
-                <md-input-container ng-show="isEditForm()">
-                    <label>Title</label>
-                    <input name="title" ng-model="subscription.title">
-                </md-input-container>
+                <div layout="row">
+                    <md-input-container ng-show="isEditForm()" flex>
+                        <label>Title</label>
+                        <input name="title" ng-model="subscription.title">
+                    </md-input-container>
+                </div>
+                <div layout="row">
+                    <md-input-container ng-hide="isEditForm()" flex>
+                        <label>Url</label>
+                        <input required
+                               name="origin"
+                               ng-model="subscription.origin"
+                               my-valid-syndication disable="isEditForm()"
+                               ng-model-options="{ debounce: 500 }"
+                               ng-disabled="subscriptionForm.origin.$pending">
 
-                <md-input-container ng-hide="isEditForm()">
-                    <label>Url</label>
-                    <input required
-                           name="origin"
-                           ng-model="subscription.origin"
-                           my-valid-syndication disable="isEditForm()"
-                           ng-model-options="{ debounce: 500 }"
-                           ng-disabled="subscriptionForm.origin.$pending">
+                        <div ng-messages="subscriptionForm.origin.$error">
+                            <div ng-message="required">required</div>
+                            <div ng-message="validSyndication">This is not a valid syndication feed</div>
+                        </div>
+                    </md-input-container>
+                </div>
 
-                    <div ng-messages="subscriptionForm.origin.$error">
-                        <div ng-message="required">required</div>
-                        <div ng-message="validSyndication">This is not a valid syndication feed</div>
-                    </div>
-                </md-input-container>
-
-                <md-input-container ng-show="isEditForm()">
+                <md-input-container ng-show="isEditForm()" flex>
                     <label>Url</label>
                     <input ng-model="subscription.origin" disabled>
                 </md-input-container>
@@ -308,6 +309,7 @@
                         md-selected-item="subscription.tag"
                         md-search-text="searchText"
                         md-items="item in querySearch(searchText)"
+                        md-search-text-change="setTag(searchText)"
                         md-item-text="item"
                         md-min-length="0"
                         md-floating-label="Tag">
@@ -392,44 +394,45 @@
 
         <script type="text/ng-template" id="FeedDetail" data-ignore="true">
             <form name="feedForm">
-                <md-input-container>
-                    <label>Title</label>
-                    <input name="title" ng-model="feed.title" required>
+                <div layout="row">
+                    <md-input-container flex>
+                        <label>Title</label>
+                        <input name="title" ng-model="feed.title" required>
 
-                    <div ng-messages="feedForm.title.$error">
-                        <div ng-message="required">required</div>
-                    </div>
-                </md-input-container>
+                        <div ng-messages="feedForm.title.$error">
+                            <div ng-message="required">required</div>
+                        </div>
+                    </md-input-container>
+                </div>
+                <div layout="row">
+                    <md-input-container flex>
+                        <label>Url</label>
+                        <input required
+                               name="url"
+                               ng-model="feed.url"
+                               my-valid-syndication
+                               ng-model-options="{ debounce: 500 }"
+                               ng-disabled="feedForm.url.$pending">
 
-                <md-input-container>
-                    <label>Url</label>
-                    <input required
-                           name="url"
-                           ng-model="feed.url"
-                           my-valid-syndication
-                           ng-model-options="{ debounce: 500 }"
-                           ng-disabled="feedForm.url.$pending">
-
-                    <div ng-messages="feedForm.url.$error">
-                        <div ng-message="required">required</div>
-                        <div ng-message="validSyndication">This is not a valid syndication feed</div>
-                    </div>
-                </md-input-container>
+                        <div ng-messages="feedForm.url.$error">
+                            <div ng-message="required">required</div>
+                            <div ng-message="validSyndication">This is not a valid syndication feed</div>
+                        </div>
+                    </md-input-container>
+                </div>
             </form>
 
             <h2 ng-hide="feed.errors.length === 0">
                 <span>Fetch errors in the last {{::feed.errors[0].retainDays}} day(s)</span>
             </h2>
             <md-list>
-                <md-list-item md-no-ink class="md-2-line" ng-repeat="error in feed.errors">
-                    <div layout="row">
-                        <div class="md-list-item-text">
-                            <div>
-                                <h3 tabindex="-1">{{::error.message}}</h3>
-                                <h4>
-                                    {{::error.createdAt | timeago}}
-                                </h4>
-                            </div>
+                <md-list-item md-no-ink class="md-3-line" ng-repeat="error in feed.errors">
+                    <div class="md-list-item-text">
+                        <div>
+                            <h3 tabindex="-1">{{::error.message}}</h3>
+                            <h4>
+                                {{::error.createdAt | timeago}}
+                            </h4>
                         </div>
                     </div>
                     <md-divider></md-divider>
@@ -508,21 +511,24 @@
                         <div flex></div>
                         <div flex>
                             <form name="loginForm" ng-submit="login()">
-                                <md-input-container>
-                                    <label>Username</label>
-                                    <input required name="username" ng-model="form.username" my-disable-loading>
-                                    <div ng-messages="loginForm.username.$error">
-                                        <div ng-message="required">required</div>
-                                    </div>
-                                </md-input-container>
-
-                                <md-input-container>
-                                    <label>Password</label>
-                                    <input type="password" required name="password" ng-model="form.password" my-disable-loading>
-                                    <div ng-messages="loginForm.password.$error">
-                                        <div ng-message="required">required</div>
-                                    </div>
-                                </md-input-container>
+                                <div layout="row">
+                                    <md-input-container flex>
+                                        <label>Username</label>
+                                        <input required name="username" ng-model="form.username" my-disable-loading>
+                                        <div ng-messages="loginForm.username.$error">
+                                            <div ng-message="required">required</div>
+                                        </div>
+                                    </md-input-container>
+                                </div>
+                                <div layout="row">
+                                    <md-input-container flex>
+                                        <label>Password</label>
+                                        <input type="password" required name="password" ng-model="form.password" my-disable-loading>
+                                        <div ng-messages="loginForm.password.$error">
+                                            <div ng-message="required">required</div>
+                                        </div>
+                                    </md-input-container>
+                                </div>
 
                                 <md-input-container>
                                     <md-checkbox ng-model="form.rememberMe" aria-label="Remember me" my-disable-loading>
@@ -533,7 +539,7 @@
                                 <div layout="row">
                                     <div flex></div>
                                     <div flex>
-                                        <md-button my-disable-loading class="md-raised">login</md-button>
+                                        <md-button type="submit" my-disable-loading class="md-raised">login</md-button>
                                     </div>
                                     <div flex></div>
                                 </div>
