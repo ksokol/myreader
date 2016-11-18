@@ -1,10 +1,14 @@
 package spring;
 
+import myreader.test.KnownUser;
 import myreader.test.SecurityTestSupport;
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.http.Cookie;
+
+import java.nio.charset.Charset;
 
 import static myreader.config.UrlMappings.HYSTRIX;
 import static myreader.config.UrlMappings.HYSTRIX_DASHBOARD;
@@ -40,6 +44,15 @@ public class ApiSecurityTest extends SecurityTestSupport {
 
     @Value("${spring.application.name}")
     private String applicationName;
+
+    // used by MyReader Android
+    @Test
+    public void testApiAccessByBasicAuthentication() throws Exception {
+        mockMvc.perform(get(API_2)
+                .header("Authorization", basic(USER1)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
+    }
 
     @Test
     public void testApiUnauthorizedWithRequestWithAjax() throws Exception {
@@ -209,5 +222,10 @@ public class ApiSecurityTest extends SecurityTestSupport {
         mockMvc.perform(options(HYSTRIX.mapping())
                 .with(sessionUser(USER1)))
                 .andExpect(status().isForbidden());
+    }
+
+    private static String basic(KnownUser user) {
+        final byte[] usernamePassword = String.format("%s:%s", user.username, user.password).getBytes(Charset.forName("UTF-8"));
+        return "Basic " + new String(Base64.encodeBase64(usernamePassword), Charset.forName("UTF-8"));
     }
 }

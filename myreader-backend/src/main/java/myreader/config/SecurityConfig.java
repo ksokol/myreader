@@ -113,6 +113,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .rememberMe().key(rememberMeKey)
                 .and()
+                .httpBasic().realmName("API")
+                .and()
                 .addFilterAfter(new XAuthoritiesFilter(), FilterSecurityInterceptor.class)
                 .csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Form realm=\"MyReader\""));
