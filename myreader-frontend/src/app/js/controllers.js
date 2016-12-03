@@ -576,13 +576,12 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         windowService.safeOpen($scope.subscription.origin);
     });
 
-    $scope.$on('delete', function(ev) {
+    $scope.$on('delete', function() {
         var confirm = $mdDialog.confirm()
             .title('Delete subscription?')
             .ariaLabel('Delete subscription dialog')
             .ok('Yes')
-            .cancel('No')
-            .targetEvent(ev);
+            .cancel('No');
 
         $mdDialog.show(confirm).then(function() {
             subscriptionService.unsubscribe($scope.subscription)
@@ -679,13 +678,12 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         windowService.safeOpen($scope.feed.url);
     });
 
-    $scope.$on('delete-feed', function(ev) {
+    $scope.$on('delete-feed', function() {
         var confirm = $mdDialog.confirm()
             .title('Delete feed?')
             .ariaLabel('Delete feed dialog')
             .ok('Yes')
-            .cancel('No')
-            .targetEvent(ev);
+            .cancel('No');
 
         $mdDialog.show(confirm).then(function() {
             feedService.remove($scope.feed)
