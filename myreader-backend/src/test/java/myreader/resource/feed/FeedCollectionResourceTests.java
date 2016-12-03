@@ -3,6 +3,7 @@ package myreader.resource.feed;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.test.IntegrationTestSupport;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -70,6 +71,7 @@ public class FeedCollectionResourceTests extends IntegrationTestSupport {
                 .andExpect(status().isOk());
     }
 
+    @Ignore
     @Test
     public void testCollectionResource() throws Exception {
         mockMvc.perform(getAsUser2("/api/2/feeds"))
