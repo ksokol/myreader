@@ -62,7 +62,7 @@ public class SubscriptionBatchTest {
     public void testUpdateUserSubscriptions() {
         long expectedCount = stream(feedEntryRepository.findAll().spliterator(), false).count();
 
-        subscriptionBatch.updateUserSubscriptions(new FetchResult(emptyList(), "last modified", "title", "unknown feed url"));
+        subscriptionBatch.updateUserSubscriptions(new FetchResult(emptyList(), "last modified", "title", "unknown feed url", 0));
 
         assertThat(stream(feedEntryRepository.findAll().spliterator(), false).count(), is(expectedCount));
     }
@@ -71,7 +71,7 @@ public class SubscriptionBatchTest {
     public void testUpdateUserSubscriptions11() {
         FetcherEntry fetcherEntry = createFetcherEntry();
 
-        subscriptionBatch.updateUserSubscriptions(new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL));
+        subscriptionBatch.updateUserSubscriptions(new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL, 0));
 
         Feed feed = feedRepository.findByUrl(KNOWN_FEED_URL);
 
@@ -87,7 +87,7 @@ public class SubscriptionBatchTest {
         fetcherEntry.setGuid("new guid");
         fetcherEntry.setUrl("new url");
 
-        FetchResult fetchResult = new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL);
+        FetchResult fetchResult = new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL, 0);
 
         subscriptionBatch.updateUserSubscriptions(fetchResult);
 

@@ -60,6 +60,7 @@ public class ChannelConverterTests {
         final FetchResult actual = new ChannelConverter(1).convert("http://localhost", new ResponseEntity<>(channel, OK));
 
         assertThat(actual.getEntries(), hasSize(1));
+        assertThat(actual.getResultSizePerFetch(), is(2));
     }
 
 }

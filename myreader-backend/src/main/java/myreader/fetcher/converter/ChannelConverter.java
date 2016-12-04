@@ -54,6 +54,6 @@ final class ChannelConverter {
         Collections.reverse(entries);
 
         final String lastModified = source.getHeaders().getFirst(LAST_MODIFIED);
-        return new FetchResult(entries, lastModified, source.getBody().getTitle(), feedUrl);
+        return new FetchResult(entries, lastModified, source.getBody().getTitle(), feedUrl, items.size());
     }
 }

@@ -65,5 +65,6 @@ public class AtomConverterTests {
         final FetchResult actual = new AtomConverter(1).convert("", new ResponseEntity<>(feed, OK));
 
         assertThat(actual.getEntries(), hasSize(1));
+        assertThat(actual.getResultSizePerFetch(), is(2));
     }
 }

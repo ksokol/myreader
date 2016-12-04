@@ -76,6 +76,7 @@ public class FeedParserTest {
 
 		FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
 		assertThat(result.getEntries(), hasSize(2));
+		assertThat(result.getResultSizePerFetch(), is(2));
 	}
 
 	@Test

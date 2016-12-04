@@ -26,6 +26,7 @@ public class Feed implements Identifiable {
     private String url;
     private String lastModified;
     private Integer fetched = 0;
+    private Integer resultSizePerFetch;
     private Date createdAt;
     private Set<Subscription> subscriptions;
     private Set<FeedEntry> entries;
@@ -84,6 +85,15 @@ public class Feed implements Identifiable {
 
     public void setFetched(Integer fetched) {
         this.fetched = fetched;
+    }
+
+    @Column(name = "result_size_per_fetch")
+    public Integer getResultSizePerFetch() {
+        return resultSizePerFetch == null ? new Integer(1000) : resultSizePerFetch;
+    }
+
+    public void setResultSizePerFetch(Integer resultSizePerFetch) {
+        this.resultSizePerFetch = resultSizePerFetch;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

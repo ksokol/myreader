@@ -12,6 +12,7 @@ public class FetchResult {
     private final String title;
     private String lastModified;
     private String url;
+    private int resultSizePerFetch;
 
     public FetchResult(String url) {
         this(Collections.<FetcherEntry>emptyList(), null, null);
@@ -20,14 +21,15 @@ public class FetchResult {
 
     @Deprecated
     public FetchResult(List<FetcherEntry> entries, String lastModified, String title) {
-        this(entries, lastModified, title, null);
+        this(entries, lastModified, title, null, 0);
     }
 
-    public FetchResult(List<FetcherEntry> entries, String lastModified, String title, String url) {
+    public FetchResult(List<FetcherEntry> entries, String lastModified, String title, String url, int resultSizePerFetch) {
         this.entries = entries;
         this.lastModified = lastModified;
         this.title = title;
         this.url = url;
+        this.resultSizePerFetch = resultSizePerFetch;
     }
 
     public List<FetcherEntry> getEntries() {
@@ -48,6 +50,10 @@ public class FetchResult {
 
     public void setUrl(final String url) {
         this.url = url;
+    }
+
+    public int getResultSizePerFetch() {
+        return resultSizePerFetch;
     }
 
     @Override
