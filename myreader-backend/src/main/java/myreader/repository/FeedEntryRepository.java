@@ -1,8 +1,6 @@
 package myreader.repository;
 
 import myreader.entity.FeedEntry;
-
-import myreader.entity.SubscriptionEntry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -23,4 +21,7 @@ public interface FeedEntryRepository extends PagingAndSortingRepository<FeedEntr
     @Query(value="select fe from FeedEntry fe where fe.id > ?1 and fe.feed.id = ?2 order by fe.id asc")
     Slice<FeedEntry> findByGreaterThanFeedEntryId(Long feedEntry, Long feedId, Pageable pageable);
 
+    long countByFeedId(Long feedId);
+
+    Page<FeedEntry> findByFeedIdOrderByCreatedAtDesc(Long feedId, Pageable pageable);
 }
