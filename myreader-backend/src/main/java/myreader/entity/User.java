@@ -29,6 +29,16 @@ public class User implements Identifiable {
     private String password;
     private Set<Subscription> subscriptions;
 
+    /**
+     * @deprecated Use {@link #User(String)} instead.
+     */
+    @Deprecated
+    public User() {}
+
+    public User(String email) {
+        this.email = email;
+    }
+
     @FieldBridge(impl = LongBridge.class)
     @Field(name = "userId", index = Index.YES)
     @Id

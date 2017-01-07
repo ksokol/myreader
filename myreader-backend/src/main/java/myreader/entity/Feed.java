@@ -33,9 +33,18 @@ public class Feed implements Identifiable {
     private Set<FetchError> fetchErrors;
     private long version;
 
+    /**
+     * @deprecated Use {@link #Feed(String)} instead.
+     */
+    @Deprecated
     public Feed() {
         //TODO
         this.createdAt = new Date();
+    }
+
+    public Feed(String title) {
+        this();
+        this.title = title;
     }
 
     @Id

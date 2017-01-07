@@ -44,6 +44,17 @@ public class Subscription implements Identifiable {
     private Set<ExclusionPattern> exclusions;
     private long version;
 
+    /**
+     * @deprecated Use {@link #Subscription(User, Feed)} instead.
+     */
+    @Deprecated
+    public Subscription() {}
+
+    public Subscription(User user, Feed feed) {
+        this.user = user;
+        this.feed = feed;
+    }
+
     @FieldBridge(impl = LongBridge.class)
     @Field(name = "subscriptionId", index = Index.YES)
     @Id
