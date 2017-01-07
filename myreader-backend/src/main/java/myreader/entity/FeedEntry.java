@@ -4,8 +4,6 @@ import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 
-import java.util.Date;
-import java.util.List;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
@@ -20,6 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.util.Date;
+import java.util.List;
 
 @Access(AccessType.PROPERTY)
 @Entity
@@ -40,6 +40,16 @@ public class FeedEntry implements Identifiable {
     private String content;
     private List<SubscriptionEntry> subscriptionEntries;
     private Date createdAt;
+
+    /**
+     * @deprecated Use {@link #FeedEntry(Feed)} instead.
+     */
+    @Deprecated
+    public FeedEntry() {}
+
+    public FeedEntry(Feed feed) {
+        this.feed = feed;
+    }
 
     @Id
     @GeneratedValue
