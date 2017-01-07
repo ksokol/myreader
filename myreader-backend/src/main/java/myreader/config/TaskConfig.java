@@ -5,6 +5,7 @@ import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.jobs.FeedListFetcherJob;
+import myreader.fetcher.jobs.FeedPurgeJob;
 import myreader.fetcher.jobs.FetchErrorCleanerJob;
 import myreader.fetcher.jobs.SubscriptionJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
@@ -51,6 +52,7 @@ public class TaskConfig implements SchedulingConfigurer {
             taskRegistrar.addFixedRateTask(feedListFetcher(), 300000);
             taskRegistrar.addFixedRateTask(subscriptionJob(), 300000);
             taskRegistrar.addCronTask(newFetchErrorCleanerJob(), "0 30 2 * * *");
+            taskRegistrar.addCronTask(newFeedPurgeJob(), "0 34 1 * * *");
             /*
                 <!-- TODO deactivated until this job has an unittest -->
                 <!-- <task:scheduled ref="purgerJob" method="run" cron="0 0 3 * * *"/> -->
@@ -76,6 +78,10 @@ public class TaskConfig implements SchedulingConfigurer {
 
     private FetchErrorCleanerJob newFetchErrorCleanerJob() {
         return new FetchErrorCleanerJob(Clock.systemDefaultZone(), fetchErrorRetainInDay, fetchErrorRepository);
+    }
+
+    private FeedPurgeJob newFeedPurgeJob() {
+        return new FeedPurgeJob(feedRepository);
     }
 
     @Autowired

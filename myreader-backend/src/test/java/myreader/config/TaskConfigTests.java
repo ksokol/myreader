@@ -4,6 +4,7 @@ import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
 import myreader.fetcher.jobs.FeedListFetcherJob;
+import myreader.fetcher.jobs.FeedPurgeJob;
 import myreader.fetcher.jobs.FetchErrorCleanerJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
 import myreader.repository.FeedRepository;
@@ -62,5 +63,6 @@ public class TaskConfigTests {
         verify(executor, times(2)).execute(argThat(instanceOf(SyndFetcherJob.class)));
         verify(scheduledTaskRegistrar, times(1)).addFixedRateTask(argThat(instanceOf(FeedListFetcherJob.class)), eq(300000L));
         verify(scheduledTaskRegistrar).addCronTask(argThat(instanceOf(FetchErrorCleanerJob.class)), eq("0 30 2 * * *"));
+        verify(scheduledTaskRegistrar).addCronTask(argThat(instanceOf(FeedPurgeJob.class)), eq("0 34 1 * * *"));
     }
 }

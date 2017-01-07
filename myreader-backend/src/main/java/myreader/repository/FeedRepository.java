@@ -1,6 +1,7 @@
 package myreader.repository;
 
 import java.util.Collection;
+import java.util.List;
 
 import myreader.entity.Feed;
 
@@ -24,4 +25,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     @Query("select count(s.id) from Subscription s where s.feed.id = ?1")
     int countSubscriptionsByFeedId(Long id);
+
+    @Query("select f from Feed f where f.id not in (select s.feed.id from Subscription s where s.feed.id = f.id)")
+    List<Feed> findByZeroSubscriptions();
 }
