@@ -34,7 +34,7 @@ public class RetainDateDeterminer {
         Integer feedThreshold = Math.max(feed.getResultSizePerFetch(), minFeedThreshold);
 
         if(feedThreshold >= entryCount) {
-            log.info("skipping. threshold of {} entries not reached for feed '{}' (actual {})", feedThreshold, entryCount, feed.getId());
+            log.info("skipping. threshold of {} entries not reached for feed '{} ({})' (actual {})", feedThreshold, feed.getTitle(), feed.getId(), entryCount);
             return Optional.empty();
         }
 

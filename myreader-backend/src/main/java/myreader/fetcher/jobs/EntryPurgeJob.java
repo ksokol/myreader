@@ -32,9 +32,9 @@ public class EntryPurgeJob extends BaseJob {
         List<Feed> feeds = feedRepository.findAll();
 
         for (Feed feed : feeds) {
-            log.info("start cleaning old entries from feed '{}'", feed.getTitle());
+            log.info("start cleaning old entries from feed '{} ({})'", feed.getTitle(), feed.getId());
             determiner.determine(feed).ifPresent(retainDate -> entryPurger.purge(feed.getId(), retainDate));
-            log.info("finished cleaning old entries from feed '{}'", feed.getTitle());
+            log.info("finished cleaning old entries from feed '{} ({})'", feed.getTitle(), feed.getId());
         }
     }
 }

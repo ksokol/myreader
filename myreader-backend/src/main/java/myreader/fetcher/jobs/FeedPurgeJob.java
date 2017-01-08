@@ -27,8 +27,9 @@ public class FeedPurgeJob extends BaseJob {
         log.info("feeds without subscription: {}", zeroSubscriptionFeeds.size());
 
         zeroSubscriptionFeeds.forEach(feed -> {
-            log.info("deleting feed '{}'", feed.getTitle());
+            log.info("deleting feed '{} ({})'", feed.getTitle(), feed.getId());
             feedRepository.delete(feed);
+            log.info("deleted feed '{} ({})'", feed.getTitle(), feed.getId());
         });
     }
 }
