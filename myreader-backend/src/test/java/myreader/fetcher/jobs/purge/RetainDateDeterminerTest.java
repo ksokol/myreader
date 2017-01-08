@@ -85,7 +85,7 @@ public class RetainDateDeterminerTest {
         Feed feed = new Feed("feed");
         for(int i=0;i<index;i++) {
             FeedEntry feedEntry = new FeedEntry(feed);
-            feedEntry.setCreatedAt(new Date(index * 1000));
+            feedEntry.setCreatedAt(new Date(index * 1000L));
             entries.add(feedEntry);
         }
         return entries;
