@@ -154,6 +154,24 @@ public class FeedEntryRepositoryTest {
     }
 
     @Test
+    public void shouldNotReturnFeedEntryIdWhenAtLeastOneSubscriptionEntryIsUnreadOrIsTagged() throws Exception {
+        FeedEntry entry1 = givenEntry();
+        FeedEntry entry2 = givenEntry();
+        givenUser1SubscriptionEntry(entry1).setSeen(true);
+        givenUser2SubscriptionEntry(entry1);
+        givenUser1SubscriptionEntry(entry2).setSeen(true);
+        givenUser2SubscriptionEntry(entry2).setSeen(true);
+
+
+        Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
+                feed.getId(),
+                toDate(now().plusDays(1)),
+                new PageRequest(0, 2));
+
+        assertThat(actual.getContent(), contains(entry2.getId()));
+    }
+
+    @Test
     public void shouldNotReturnFeedEntryIdWhenRetainDateIsEarlierThanCreatedAtAndSubscriptionEntryHasNoTagAndIsRead() throws Exception {
         FeedEntry entry = givenEntry();
         givenUser1SubscriptionEntry(entry).setSeen(true);
