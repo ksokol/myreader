@@ -6,6 +6,7 @@ import org.hibernate.search.annotations.Field;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -114,7 +115,7 @@ public class FeedEntry implements Identifiable {
     }
 
     @ContainedIn
-    @OneToMany(mappedBy = "feedEntry")
+    @OneToMany(mappedBy = "feedEntry", cascade = CascadeType.REMOVE)
     public List<SubscriptionEntry> getSubscriptionEntries() {
         return subscriptionEntries;
     }

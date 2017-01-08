@@ -3,6 +3,7 @@ package myreader.config;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
+import myreader.fetcher.jobs.EntryPurgeJob;
 import myreader.fetcher.jobs.FeedListFetcherJob;
 import myreader.fetcher.jobs.FeedPurgeJob;
 import myreader.fetcher.jobs.FetchErrorCleanerJob;
@@ -64,5 +65,6 @@ public class TaskConfigTests {
         verify(scheduledTaskRegistrar, times(1)).addFixedRateTask(argThat(instanceOf(FeedListFetcherJob.class)), eq(300000L));
         verify(scheduledTaskRegistrar).addCronTask(argThat(instanceOf(FetchErrorCleanerJob.class)), eq("0 30 2 * * *"));
         verify(scheduledTaskRegistrar).addCronTask(argThat(instanceOf(FeedPurgeJob.class)), eq("0 34 1 * * *"));
+        verify(scheduledTaskRegistrar).addCronTask(argThat(instanceOf(EntryPurgeJob.class)), eq("0 33 3 * * *"));
     }
 }

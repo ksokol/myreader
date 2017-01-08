@@ -7,6 +7,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import java.util.Date;
+
 /**
  * @author Kamill Sokol
  */
@@ -24,4 +26,8 @@ public interface FeedEntryRepository extends PagingAndSortingRepository<FeedEntr
     long countByFeedId(Long feedId);
 
     Page<FeedEntry> findByFeedIdOrderByCreatedAtDesc(Long feedId, Pageable pageable);
+
+    @Query("select distinct se.feedEntry.id from SubscriptionEntry se join se.feedEntry fe " +
+            "where se.feedEntry.feed.id = ?1 and (se.tag is null and se.seen = true) and se.feedEntry.createdAt < ?2")
+    Page<Long> findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(Long id, Date retainDate, Pageable pageable);
 }

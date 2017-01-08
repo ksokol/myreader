@@ -1,0 +1,85 @@
+package myreader.fetcher.jobs.purge;
+
+import myreader.repository.FeedEntryRepository;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import static myreader.fetcher.jobs.purge.EntryPurgerTest.PageBuilder.withElements;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+/**
+ * @author Kamill Sokol
+ */
+@RunWith(MockitoJUnitRunner.class)
+public class EntryPurgerTest {
+
+    private EntryPurger purger;
+    private PageRequest pageRequest;
+    private Date retainDate;
+    private Long feedId;
+
+    @Mock
+    private FeedEntryRepository feedEntryRepository;
+
+    @Before
+    public void setUp() throws Exception {
+        purger = new EntryPurger(feedEntryRepository, 2);
+        pageRequest = new PageRequest(0, 2);
+        retainDate = new Date();
+        feedId = 1L;
+    }
+
+    @Test
+    public void shouldNotDeleteEntriesWhenNoErasableEntriesAvailable() throws Exception {
+        given(feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(feedId, retainDate, pageRequest))
+                .willReturn(withElements().withTotal(0));
+
+        purger.purge(feedId, retainDate);
+
+        verify(feedEntryRepository, never()).delete(anyLong());
+    }
+
+    @Test
+    public void shouldDeleteAllErasableEntries() throws Exception {
+        given(feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(feedId, retainDate, pageRequest))
+                .willReturn(withElements(1L, 2L).withTotal(3))
+                .willReturn(withElements(3L).withTotal(3))
+                .willReturn(withElements().withTotal(3));
+
+        purger.purge(feedId, retainDate);
+
+        verify(feedEntryRepository).delete(1L);
+        verify(feedEntryRepository).delete(2L);
+        verify(feedEntryRepository).delete(3L);
+    }
+
+    static class PageBuilder {
+
+        private final List<Long> ids;
+
+        PageBuilder(List<Long> ids) {
+            this.ids = ids;
+        }
+
+        protected static PageBuilder withElements(Long... ids) {
+            return new PageBuilder(Arrays.asList(ids));
+        }
+
+        protected Page<Long> withTotal(long totalElements) {
+            return new PageImpl<>(ids, null, totalElements);
+        }
+    }
+}

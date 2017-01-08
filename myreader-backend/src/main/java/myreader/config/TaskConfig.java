@@ -2,13 +2,16 @@ package myreader.config;
 
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
-import myreader.fetcher.SubscriptionEntryBatch;
 import myreader.fetcher.SubscriptionBatch;
+import myreader.fetcher.SubscriptionEntryBatch;
+import myreader.fetcher.jobs.EntryPurgeJob;
 import myreader.fetcher.jobs.FeedListFetcherJob;
 import myreader.fetcher.jobs.FeedPurgeJob;
 import myreader.fetcher.jobs.FetchErrorCleanerJob;
 import myreader.fetcher.jobs.SubscriptionJob;
 import myreader.fetcher.jobs.SyndFetcherJob;
+import myreader.fetcher.jobs.purge.EntryPurger;
+import myreader.fetcher.jobs.purge.RetainDateDeterminer;
 import myreader.repository.FeedRepository;
 import myreader.repository.FetchErrorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,8 @@ public class TaskConfig implements SchedulingConfigurer {
     private Executor executor;
     private FeedParser feedParser;
     private FeedQueue feedQueue;
+    private EntryPurger entryPurger;
+    private RetainDateDeterminer retainDateDeterminer;
     private int fetchErrorRetainInDay;
 
     @Override
@@ -53,10 +58,7 @@ public class TaskConfig implements SchedulingConfigurer {
             taskRegistrar.addFixedRateTask(subscriptionJob(), 300000);
             taskRegistrar.addCronTask(newFetchErrorCleanerJob(), "0 30 2 * * *");
             taskRegistrar.addCronTask(newFeedPurgeJob(), "0 34 1 * * *");
-            /*
-                <!-- TODO deactivated until this job has an unittest -->
-                <!-- <task:scheduled ref="purgerJob" method="run" cron="0 0 3 * * *"/> -->
-             */
+            taskRegistrar.addCronTask(newEntryPurgeJob(), "0 33 3 * * *");
         }
     }
 
@@ -82,6 +84,10 @@ public class TaskConfig implements SchedulingConfigurer {
 
     private FeedPurgeJob newFeedPurgeJob() {
         return new FeedPurgeJob(feedRepository);
+    }
+
+    private EntryPurgeJob newEntryPurgeJob() {
+        return new EntryPurgeJob(feedRepository, entryPurger, retainDateDeterminer);
     }
 
     @Autowired
@@ -128,5 +134,15 @@ public class TaskConfig implements SchedulingConfigurer {
     @Autowired
     public void setFeedQueue(final FeedQueue feedQueue) {
         this.feedQueue = feedQueue;
+    }
+
+    @Autowired
+    public void setEntryPurger(EntryPurger entryPurger) {
+        this.entryPurger = entryPurger;
+    }
+
+    @Autowired
+    public void setRetainDateDeterminer(RetainDateDeterminer retainDateDeterminer) {
+        this.retainDateDeterminer = retainDateDeterminer;
     }
 }
