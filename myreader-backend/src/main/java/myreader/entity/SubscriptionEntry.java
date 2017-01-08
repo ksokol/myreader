@@ -40,6 +40,14 @@ public class SubscriptionEntry implements Identifiable {
     private FeedEntry feedEntry;
     private Date createdAt;
 
+    @Deprecated
+    public SubscriptionEntry() {}
+
+    public SubscriptionEntry(Subscription subscription, FeedEntry feedEntry) {
+        this.subscription = subscription;
+        this.feedEntry = feedEntry;
+    }
+
     @DocumentId
     @NumericField(precisionStep = 0)
     @Id
