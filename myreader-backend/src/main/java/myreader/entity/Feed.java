@@ -42,9 +42,17 @@ public class Feed implements Identifiable {
         this.createdAt = new Date();
     }
 
+    /**
+     * @deprecated Use {@link #Feed(String, String)} instead.
+     */
     public Feed(String title) {
         this();
         this.title = title;
+    }
+
+    public Feed(String url, String title) {
+        this(title);
+        this.url = url;
     }
 
     @Id

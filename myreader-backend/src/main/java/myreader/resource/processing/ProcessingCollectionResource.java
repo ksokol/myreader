@@ -54,7 +54,7 @@ public class ProcessingCollectionResource {
         if(CollectionUtils.isEmpty(snapshot)) {
             return resourceAssemblers.toResource(new PageImpl<>(Collections.<ProcessedFeedGetResponse>emptyList()), ProcessedFeedGetResponse.class);
         }
-        final Page<Feed> feeds = feedRepository.findAllByUrl(snapshot, pageable);
+        final Page<Feed> feeds = feedRepository.findByUrlIn(snapshot, pageable);
         return resourceAssemblers.toResource(feeds, ProcessedFeedGetResponse.class);
     }
 
