@@ -2,7 +2,6 @@ package myreader.resource.subscription;
 
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
-import myreader.repository.UserRepository;
 import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.service.subscription.SubscriptionService;
@@ -33,14 +32,12 @@ public class SubscriptionCollectionResource {
 
     private final ResourceAssemblers resourceAssemblers;
 	private final SubscriptionService subscriptionService;
-    private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
 
     @Autowired
-    public SubscriptionCollectionResource(final ResourceAssemblers resourceAssemblers, final SubscriptionService subscriptionService, UserRepository userRepository, final SubscriptionRepository subscriptionRepository) {
+    public SubscriptionCollectionResource(final ResourceAssemblers resourceAssemblers, final SubscriptionService subscriptionService, final SubscriptionRepository subscriptionRepository) {
         this.resourceAssemblers = resourceAssemblers;
         this.subscriptionService = subscriptionService;
-        this.userRepository = userRepository;
         this.subscriptionRepository = subscriptionRepository;
     }
 
@@ -63,9 +60,8 @@ public class SubscriptionCollectionResource {
     }
 
     @RequestMapping(value= "availableTags", method = GET)
-    public List<String> tags(@AuthenticationPrincipal User user) {
-        myreader.entity.User myreaderUser = userRepository.findByEmail(user.getUsername());
-        return subscriptionRepository.findDistinctTags(myreaderUser.getId());
+    public List<String> tags() {
+        return subscriptionRepository.findDistinctTagsByCurrentUser();
     }
 
 }

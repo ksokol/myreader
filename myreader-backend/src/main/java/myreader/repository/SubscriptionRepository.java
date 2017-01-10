@@ -36,8 +36,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query("update Subscription set unseen = unseen+1 where id = ?1")
     void incrementUnseen(Long id);
 
-    @Query("select distinct(s.tag) from Subscription as s where s.user.id = ?1 and s.tag is not null")
-    List<String> findDistinctTags(long userId);
+    @Query("select distinct(s.tag) from Subscription as s where s.user.email = ?#{principal.username} and s.tag is not null")
+    List<String> findDistinctTagsByCurrentUser();
 
     @Transactional
     @Query("update Subscription set lastFeedEntryId = ?1 where id = ?2")
