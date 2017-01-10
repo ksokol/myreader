@@ -50,7 +50,7 @@ public class SubscriptionBatchTest {
     private TimeService timeService;
 
     @Test
-    public void testUpdateUserSubscriptions1() {
+    public void shouldNotSaveFeedEntryWhenRFeedIsUnknown() {
         long expectedCount = stream(feedEntryRepository.findAll().spliterator(), false).count();
 
         subscriptionBatch.updateUserSubscriptions(new FetchResult("unknown feed"));
@@ -59,7 +59,7 @@ public class SubscriptionBatchTest {
     }
 
     @Test
-    public void testUpdateUserSubscriptions() {
+    public void shouldNotSaveFeedEntryWhenResultIsEmpty() {
         long expectedCount = stream(feedEntryRepository.findAll().spliterator(), false).count();
 
         subscriptionBatch.updateUserSubscriptions(new FetchResult(emptyList(), "last modified", "title", "unknown feed url", 0));
@@ -68,7 +68,7 @@ public class SubscriptionBatchTest {
     }
 
     @Test
-    public void testUpdateUserSubscriptions11() {
+    public void shouldNotIncrementFetchedCountWhenNoNewFeedEntrySaved() {
         FetcherEntry fetcherEntry = createFetcherEntry();
 
         subscriptionBatch.updateUserSubscriptions(new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL, 0));
@@ -80,7 +80,7 @@ public class SubscriptionBatchTest {
     }
 
     @Test
-    public void testUpdateUserSubscriptions111() {
+    public void shouldIncrementFetchedCountWhenNewFeedEntrySaved() {
         FetcherEntry fetcherEntry = createFetcherEntry();
 
         fetcherEntry.setTitle("new title");
@@ -95,6 +95,26 @@ public class SubscriptionBatchTest {
 
         assertThat(feed.getLastModified(), is("last modified"));
         assertThat(feed.getFetched(), is(283));
+    }
+
+    @Test
+    public void shouldUpdateResultSizePerFetchWhenCountIsGreaterThanZero() throws Exception {
+        FetchResult fetchResult = new FetchResult(emptyList(), null, null, KNOWN_FEED_URL, 10);
+
+        subscriptionBatch.updateUserSubscriptions(fetchResult);
+        Feed feed = feedRepository.findByUrl(KNOWN_FEED_URL);
+
+        assertThat(feed.getResultSizePerFetch(), is(10));
+    }
+
+    @Test
+    public void shouldNotUpdateResultSizePerFetchWhenCountIsZero() throws Exception {
+        FetchResult fetchResult = new FetchResult(emptyList(), null, null, KNOWN_FEED_URL, 0);
+
+        subscriptionBatch.updateUserSubscriptions(fetchResult);
+        Feed feed = feedRepository.findByUrl(KNOWN_FEED_URL);
+
+        assertThat(feed.getResultSizePerFetch(), is(1000));
     }
 
     private FetcherEntry createFetcherEntry() {

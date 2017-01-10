@@ -58,7 +58,10 @@ public class SubscriptionBatch {
 
         feed.setLastModified(fetchResult.getLastModified());
         feed.setFetched(feed.getFetched() + newCount);
-        feed.setResultSizePerFetch(fetchResult.getResultSizePerFetch());
+
+        if(fetchResult.getResultSizePerFetch() > 0) {
+            feed.setResultSizePerFetch(fetchResult.getResultSizePerFetch());
+        }
 
         feedRepository.save(feed);
     }
