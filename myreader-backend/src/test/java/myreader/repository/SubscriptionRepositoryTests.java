@@ -1,6 +1,8 @@
 package myreader.repository;
 
+import myreader.entity.Feed;
 import myreader.entity.Subscription;
+import myreader.entity.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,4 +65,21 @@ public class SubscriptionRepositoryTests {
         assertThat(subscription.getFetchCount(), is(16));
     }
 
+    @Test
+    public void shouldReturnZeroWhenCountingOverUnknownFeedId() throws Exception {
+        assertThat(subscriptionRepository.countByFeedId(999L), is(0));
+    }
+
+    @Test
+    public void shouldReturnOneWhenCountingOverFeedWithSubscription() throws Exception {
+        User user = new User("email");
+        em.persist(user);
+
+        Feed feed = em.persist(new Feed("http://url1", "feed1"));
+
+        Subscription subscription = new Subscription(user, feed);
+        em.persist(subscription);
+
+        assertThat(subscriptionRepository.countByFeedId(feed.getId()), is(1));
+    }
 }

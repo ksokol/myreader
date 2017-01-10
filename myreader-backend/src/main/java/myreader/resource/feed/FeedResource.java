@@ -4,6 +4,7 @@ import myreader.entity.Feed;
 import myreader.entity.FetchError;
 import myreader.repository.FeedRepository;
 import myreader.repository.FetchErrorRepository;
+import myreader.repository.SubscriptionRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.feed.beans.FeedGetResponse;
 import myreader.resource.feed.beans.FeedPatchRequest;
@@ -36,12 +37,14 @@ public class FeedResource {
 
     private final FetchErrorRepository fetchErrorRepository;
     private final FeedRepository feedRepository;
+    private final SubscriptionRepository subscriptionRepository;
     private final PatchService patchService;
     private final ResourceAssemblers resourceAssemblers;
 
-    public FeedResource(FeedRepository feedRepository, FetchErrorRepository fetchErrorRepository, PatchService patchService, ResourceAssemblers resourceAssemblers) {
+    public FeedResource(FeedRepository feedRepository, FetchErrorRepository fetchErrorRepository, SubscriptionRepository subscriptionRepository, PatchService patchService, ResourceAssemblers resourceAssemblers) {
         this.feedRepository = feedRepository;
         this.fetchErrorRepository = fetchErrorRepository;
+        this.subscriptionRepository = subscriptionRepository;
         this.patchService = patchService;
         this.resourceAssemblers = resourceAssemblers;
     }
@@ -59,7 +62,7 @@ public class FeedResource {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "", method = DELETE)
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        int count = feedRepository.countSubscriptionsByFeedId(id);
+        int count = subscriptionRepository.countByFeedId(id);
 
         if(count > 0) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
