@@ -15,9 +15,6 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface FeedRepository extends JpaRepository<Feed, Long> {
 
-    @Override
-    Feed findOne(Long id);
-
     Feed findByUrl(String url);
 
     @Query("select f from Feed f where f.url in (?1)")
