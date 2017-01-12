@@ -19,7 +19,7 @@ import java.util.Set;
 @Access(AccessType.PROPERTY)
 @Entity
 @Table(name = "feed")
-public class Feed implements Identifiable {
+public class Feed {
 
     private Long id;
     private String title;
@@ -58,12 +58,10 @@ public class Feed implements Identifiable {
     @Id
     @GeneratedValue
     @Column(name = "feed_id")
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }

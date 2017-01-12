@@ -6,7 +6,6 @@ import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.bridge.builtin.LongBridge;
 
-import java.util.Set;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
@@ -17,11 +16,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.Set;
 
 @Access(AccessType.PROPERTY)
 @Entity
 @Table(name = "user")
-public class User implements Identifiable {
+public class User {
 
     private Long id;
     private String email;
@@ -44,12 +44,10 @@ public class User implements Identifiable {
     @Id
     @GeneratedValue
     @Column(name = "user_id")
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }

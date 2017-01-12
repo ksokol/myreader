@@ -32,7 +32,7 @@ import java.util.List;
                 @Index(name = "entry_url_idx", columnList = "entry_url")
         }
 )
-public class FeedEntry implements Identifiable {
+public class FeedEntry {
 
     private Long id;
     private Feed feed;
@@ -56,12 +56,10 @@ public class FeedEntry implements Identifiable {
     @Id
     @GeneratedValue
     @Column(name = "entry_id")
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }

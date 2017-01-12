@@ -1,6 +1,5 @@
 package myreader.resource.subscriptionentry;
 
-import myreader.entity.Identifiable;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
@@ -107,7 +106,7 @@ public class SubscriptionEntryCollectionResource {
         return new Resources<>(subscriptionEntryGetResponses);
     }
 
-    private static <T extends Identifiable> Sequence<T> toSequence(final Sequenceable sequenceable, final List<T> content) {
+    private static Sequence<SubscriptionEntry> toSequence(final Sequenceable sequenceable, final List<SubscriptionEntry> content) {
         Assert.notNull(content, "Content must not be null!");
         Assert.notNull(sequenceable, "Sliceable must not be null!");
         boolean hasNext = content.size() == sequenceable.getPageSize() + 1;
@@ -116,8 +115,8 @@ public class SubscriptionEntryCollectionResource {
             return new SequenceImpl<>(content);
         }
 
-        Identifiable last = content.get(content.size() - 1);
-        List<T> withoutLast = content.subList(0, content.size() - 1);
+        SubscriptionEntry last = content.get(content.size() - 1);
+        List<SubscriptionEntry> withoutLast = content.subList(0, content.size() - 1);
 
         Sequenceable request = new SequenceRequest(sequenceable.getPageSize(), last.getId());
         return new SequenceImpl<>(withoutLast, request);

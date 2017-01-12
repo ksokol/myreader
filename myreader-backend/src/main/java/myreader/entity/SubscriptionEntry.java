@@ -12,7 +12,6 @@ import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Parameter;
 import org.hibernate.search.annotations.TokenizerDef;
 
-import java.util.Date;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
@@ -25,13 +24,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.util.Date;
 
 @Access(AccessType.PROPERTY)
 @AnalyzerDef(name = "tag" , tokenizer = @TokenizerDef(factory = PatternTokenizerFactory.class, params = @Parameter(name = "pattern" , value = "\\ |,")))
 @Indexed
 @Entity
 @Table(name = "user_feed_entry")
-public class SubscriptionEntry implements Identifiable {
+public class SubscriptionEntry {
 
     private Long id;
     private boolean seen;
@@ -53,12 +53,10 @@ public class SubscriptionEntry implements Identifiable {
     @Id
     @GeneratedValue
     @Column(name = "user_feed_entry_id")
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }

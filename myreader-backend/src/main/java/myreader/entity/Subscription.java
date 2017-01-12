@@ -8,8 +8,6 @@ import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.bridge.builtin.LongBridge;
 
-import java.util.Date;
-import java.util.Set;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
@@ -25,11 +23,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
+import java.util.Date;
+import java.util.Set;
 
 @Access(AccessType.PROPERTY)
 @Entity
 @Table(name = "user_feed")
-public class Subscription implements Identifiable {
+public class Subscription {
 
     private Long id;
     private String title;
@@ -60,12 +60,10 @@ public class Subscription implements Identifiable {
     @Id
     @GeneratedValue
     @Column(name = "user_feed_id")
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }
