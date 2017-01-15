@@ -5,6 +5,8 @@ package myreader.resource.subscriptionentry.beans;
  */
 public class SearchRequest {
 
+    private static final int DEFAULT_PAGE_SIZE = 20;
+
     private String q;
     private String feedUuidEqual;
     private String seenEqual;
@@ -14,7 +16,7 @@ public class SearchRequest {
     private String next;
 
     public int getSize() {
-        return size == null ? 21 : Integer.parseInt(size) + 1;
+        return size == null ? DEFAULT_PAGE_SIZE : Integer.parseInt(size);
     }
 
     public void setSize(String size) {

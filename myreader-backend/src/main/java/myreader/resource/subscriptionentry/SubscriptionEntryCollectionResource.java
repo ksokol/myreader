@@ -106,14 +106,13 @@ public class SubscriptionEntryCollectionResource {
     }
 
     private static Sequence<SubscriptionEntry> toSequence(final int pageSize, final List<SubscriptionEntry> content) {
-        boolean hasNext = content.size() == pageSize;
+        boolean hasNext = content.size() >= pageSize;
 
         if (!hasNext) {
             return new SequenceImpl<>(content);
         }
 
-        SubscriptionEntry last = content.get(content.size() - 1);
-        List<SubscriptionEntry> withoutLast = content.subList(0, content.size() - 1);
-        return new SequenceImpl<>(withoutLast, pageSize -1 , last.getId());
+        SubscriptionEntry last = content.get(content.size() -1);
+        return new SequenceImpl<>(content, pageSize , last.getId() - 1);
     }
 }
