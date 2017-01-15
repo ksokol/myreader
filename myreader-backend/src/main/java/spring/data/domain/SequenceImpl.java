@@ -16,35 +16,37 @@ public class SequenceImpl<T> implements Sequence<T >, Serializable {
     private static final long serialVersionUID = 867755909294344406L;
 
     private final List<T> content = new ArrayList<>();
-    private final Sequenceable next;
+    private final long pageSize;
+    private final Long nextId;
 
-    public SequenceImpl(List<T> content, Sequenceable sequenceable) {
+    public SequenceImpl(List<T> content, long pageSize, Long nextId) {
         Assert.notNull(content, "Content must not be null!");
-        Assert.notNull(sequenceable, "Sliceable must not be null!");
         this.content.addAll(content);
-        this.next = sequenceable;
+        this.pageSize = pageSize;
+        this.nextId = nextId;
     }
 
     public SequenceImpl(List<T> content) {
         Assert.notNull(content, "Content must not be null!");
         this.content.addAll(content);
-        this.next = null;
+        this.nextId = null;
+        this.pageSize = content.size();
     }
 
     public SequenceImpl() {
-        Assert.notNull(content, "Content must not be null!");
-        this.next = null;
+        this.nextId = null;
+        this.pageSize = 0;
     }
 
     public Long getNext() {
         if(hasNext()) {
-            return next.getNext();
+            return nextId;
         }
         return null;
     }
 
     public int getSize() {
-        return next == null ? 0 : next.getPageSize();
+        return content.size();
     }
 
     public List<T> getContent() {
@@ -56,12 +58,12 @@ public class SequenceImpl<T> implements Sequence<T >, Serializable {
     }
 
     public boolean hasNext() {
-        return next != null && next.getNext() != null;
+        return nextId != null;
     }
 
     @Override
-    public int getPageSize() {
-        return next == null ? 0 : next.getPageSize();
+    public long getPageSize() {
+        return pageSize;
     }
 
 }

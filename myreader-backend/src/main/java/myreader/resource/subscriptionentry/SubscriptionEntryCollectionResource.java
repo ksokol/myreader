@@ -8,22 +8,19 @@ import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
+import myreader.resource.subscriptionentry.beans.SearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
 import org.springframework.hateoas.Resources;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import spring.data.domain.Sequence;
 import spring.data.domain.SequenceImpl;
-import spring.data.domain.SequenceRequest;
-import spring.data.domain.Sequenceable;
 import spring.hateoas.ResourceAssemblers;
 import spring.hateoas.SequencedResources;
 
@@ -57,21 +54,23 @@ public class SubscriptionEntryCollectionResource {
     }
 
     @RequestMapping(method = GET)
-    public SequencedResources<SubscriptionEntryGetResponse> get(@RequestParam(value = "q", required = false) String q,
-                                                                @RequestParam(value = "feedUuidEqual", required = false) String feedUuidEqual,
-                                                                @RequestParam(value = "seenEqual", required = false) String seenEqual,
-                                                                @RequestParam(value = "feedTagEqual", required = false) String feedTagEqual,
-                                                                @RequestParam(value = "entryTagEqual", required = false) String entryTagEqual,
-                                                                Sequenceable sequenceable,
-                                                                @AuthenticationPrincipal User user) {
-
+    public SequencedResources<SubscriptionEntryGetResponse> get(SearchRequest page, @AuthenticationPrincipal User user) {
         myreader.entity.User myreaderUser = userRepository.findByEmail(user.getUsername());
-        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(q, myreaderUser.getId(), feedUuidEqual, feedTagEqual, entryTagEqual, seenEqual, sequenceable.getNext(), sequenceable.toPageable());
-        return resourceAssemblers.toResource(toSequence(sequenceable, pagedEntries.getContent()), SubscriptionEntryGetResponse.class);
+
+        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(
+                page.getQ(),
+                myreaderUser.getId(),
+                page.getFeedUuidEqual(),
+                page.getFeedTagEqual(),
+                page.getEntryTagEqual(),
+                page.getSeenEqual(),
+                page.getNext(),
+                page.getSize()
+        );
+        return resourceAssemblers.toResource(toSequence(page.getSize(), pagedEntries.getContent()), SubscriptionEntryGetResponse.class);
     }
 
-
-    @RequestMapping(value= "availableTags", method = GET)
+    @RequestMapping(value = "availableTags", method = GET)
     public Set<String> tags(@AuthenticationPrincipal User user) {
         myreader.entity.User myreaderUser = userRepository.findByEmail(user.getUsername());
         return subscriptionEntryRepository.findDistinctTags(myreaderUser.getId());
@@ -85,11 +84,11 @@ public class SubscriptionEntryCollectionResource {
 
         for (final SubscriptionEntryPatchRequest subscriptionPatch : request.getContent()) {
             SubscriptionEntry subscriptionEntry = subscriptionEntryRepository.findByIdAndCurrentUser(Long.valueOf(subscriptionPatch.getUuid()));
-            if(subscriptionEntry == null) {
+            if (subscriptionEntry == null) {
                 continue;
             }
 
-            if(subscriptionPatch.isFieldPatched("seen") && subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
+            if (subscriptionPatch.isFieldPatched("seen") && subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
                 if (subscriptionPatch.getSeen()) {
                     subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
                 } else {
@@ -106,20 +105,15 @@ public class SubscriptionEntryCollectionResource {
         return new Resources<>(subscriptionEntryGetResponses);
     }
 
-    private static Sequence<SubscriptionEntry> toSequence(final Sequenceable sequenceable, final List<SubscriptionEntry> content) {
-        Assert.notNull(content, "Content must not be null!");
-        Assert.notNull(sequenceable, "Sliceable must not be null!");
-        boolean hasNext = content.size() == sequenceable.getPageSize() + 1;
+    private static Sequence<SubscriptionEntry> toSequence(final int pageSize, final List<SubscriptionEntry> content) {
+        boolean hasNext = content.size() == pageSize;
 
-        if(!hasNext) {
+        if (!hasNext) {
             return new SequenceImpl<>(content);
         }
 
         SubscriptionEntry last = content.get(content.size() - 1);
         List<SubscriptionEntry> withoutLast = content.subList(0, content.size() - 1);
-
-        Sequenceable request = new SequenceRequest(sequenceable.getPageSize(), last.getId());
-        return new SequenceImpl<>(withoutLast, request);
+        return new SequenceImpl<>(withoutLast, pageSize -1 , last.getId());
     }
-
 }

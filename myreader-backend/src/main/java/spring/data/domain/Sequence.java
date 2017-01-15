@@ -15,6 +15,6 @@ public interface Sequence<T> extends Iterable<T> {
 
     boolean hasNext();
 
-    int getPageSize();
+    long getPageSize();
 
 }
