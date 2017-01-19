@@ -5,12 +5,12 @@ import myreader.repository.ExclusionRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import spring.hateoas.ResourceAssemblers;
 
 /**
  * @author Kamill Sokol
@@ -19,12 +19,13 @@ import spring.hateoas.ResourceAssemblers;
 @RequestMapping(value = "api/2/exclusions/{subscriptionId}/pattern/{patternId}")
 public class ExclusionPatternEntityResource {
 
-    private final ResourceAssemblers resourceAssemblers;
+    private final ResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler;
     private final ExclusionRepository exclusionRepository;
 
     @Autowired
-    public ExclusionPatternEntityResource(final ResourceAssemblers resourceAssemblers, final ExclusionRepository exclusionRepository) {
-        this.resourceAssemblers = resourceAssemblers;
+    public ExclusionPatternEntityResource(final ResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler,
+                                          final ExclusionRepository exclusionRepository) {
+        this.assembler = assembler;
         this.exclusionRepository = exclusionRepository;
     }
 
@@ -39,7 +40,7 @@ public class ExclusionPatternEntityResource {
 
     @RequestMapping(value="", method = RequestMethod.GET)
     public ExclusionPatternGetResponse get(@ModelAttribute("pattern") ExclusionPattern pattern) {
-        return resourceAssemblers.toResource(pattern, ExclusionPatternGetResponse.class);
+        return assembler.toResource(pattern);
     }
 
     @RequestMapping(value="", method = RequestMethod.DELETE)
