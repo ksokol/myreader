@@ -5,12 +5,13 @@ import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
 import myreader.resource.service.patch.PatchService;
+import myreader.resource.subscriptionentry.beans.SearchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
-import myreader.resource.subscriptionentry.beans.SearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.Resources;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -19,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import spring.data.domain.Sequence;
-import spring.data.domain.SequenceImpl;
 import spring.hateoas.ResourceAssemblers;
 import spring.hateoas.SequencedResources;
 
@@ -43,14 +42,21 @@ public class SubscriptionEntryCollectionResource {
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final UserRepository userRepository;
     private final PatchService patchService;
+    private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
 
     @Autowired
-    public SubscriptionEntryCollectionResource(final ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository, final SubscriptionEntryRepository subscriptionEntryRepository, UserRepository userRepository, final PatchService patchService) {
+    public SubscriptionEntryCollectionResource(final ResourceAssemblers resourceAssemblers,
+                                               final SubscriptionRepository subscriptionRepository,
+                                               final SubscriptionEntryRepository subscriptionEntryRepository,
+                                               final UserRepository userRepository,
+                                               final PatchService patchService,
+                                               final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler) {
         this.resourceAssemblers = resourceAssemblers;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
         this.userRepository = userRepository;
         this.patchService = patchService;
+        this.assembler = assembler;
     }
 
     @RequestMapping(method = GET)
@@ -67,7 +73,13 @@ public class SubscriptionEntryCollectionResource {
                 page.getNext(),
                 page.getSize()
         );
-        return resourceAssemblers.toResource(toSequence(page.getSize(), pagedEntries.getContent()), SubscriptionEntryGetResponse.class);
+
+        List<SubscriptionEntryGetResponse> list = new ArrayList<>(pagedEntries.getSize());
+        for (SubscriptionEntry pagedEntry : pagedEntries) {
+            list.add(assembler.toResource(pagedEntry));
+        }
+
+        return SequencedResourcesUtils.toSequencedResources(page.getSize(), list);
     }
 
     @RequestMapping(value = "availableTags", method = GET)
@@ -103,16 +115,5 @@ public class SubscriptionEntryCollectionResource {
         }
 
         return new Resources<>(subscriptionEntryGetResponses);
-    }
-
-    private static Sequence<SubscriptionEntry> toSequence(final int pageSize, final List<SubscriptionEntry> content) {
-        boolean hasNext = content.size() >= pageSize;
-
-        if (!hasNext) {
-            return new SequenceImpl<>(content);
-        }
-
-        SubscriptionEntry last = content.get(content.size() -1);
-        return new SequenceImpl<>(content, pageSize , last.getId() - 1);
     }
 }

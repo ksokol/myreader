@@ -1,16 +1,5 @@
 package spring.hateoas;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -25,7 +14,16 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import spring.data.domain.Sequence;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Kamill Sokol
@@ -79,12 +77,6 @@ public class DelegatingResourceAssemblersTest {
         Page<Object> page = new PageImpl(Collections.emptyList());
         PagedResources<Object> result = uut.toResource(page, Object.class);
         assertThat(result, instanceOf(PagedResources.class));
-    }
-
-    @Test
-    public void testSequenceToResourceNpe() {
-        SequencedResources<Object> result = uut.toResource((Sequence) null, Object.class);
-        assertThat(result, instanceOf(SequencedResources.class));
     }
 
     @Test
