@@ -7,6 +7,7 @@ import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import spring.hateoas.ResourceAssemblers;
 
 /**
  * @author Kamill Sokol
@@ -25,13 +25,15 @@ import spring.hateoas.ResourceAssemblers;
 @RequestMapping(value = "api/2/subscriptions/{id}")
 public class SubscriptionEntityResource {
 
-    private final ResourceAssemblers resourceAssemblers;
     private final SubscriptionRepository subscriptionRepository;
     private final PatchService patchService;
+    private final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler;
 
     @Autowired
-    public SubscriptionEntityResource(final ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository, final PatchService patchService) {
-        this.resourceAssemblers = resourceAssemblers;
+    public SubscriptionEntityResource(final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler,
+                                      final SubscriptionRepository subscriptionRepository,
+                                      final PatchService patchService) {
+        this.assembler = assembler;
         this.subscriptionRepository = subscriptionRepository;
         this.patchService = patchService;
     }
@@ -39,7 +41,7 @@ public class SubscriptionEntityResource {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public SubscriptionGetResponse get(@PathVariable("id") Long id) {
         Subscription subscription = findOrThrowException(id);
-        return resourceAssemblers.toResource(subscription, SubscriptionGetResponse.class);
+        return assembler.toResource(subscription);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -57,7 +59,7 @@ public class SubscriptionEntityResource {
         return get(id);
     }
 
-    public Subscription findOrThrowException(Long id) {
+    private Subscription findOrThrowException(Long id) {
         Subscription subscription = subscriptionRepository.findByIdAndCurrentUser(id);
         if(subscription == null) {
             throw new ResourceNotFoundException();
