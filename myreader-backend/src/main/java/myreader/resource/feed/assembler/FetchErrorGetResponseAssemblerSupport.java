@@ -3,8 +3,8 @@ package myreader.resource.feed.assembler;
 import myreader.entity.FetchError;
 import myreader.resource.feed.beans.FetchErrorGetResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
-import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol
