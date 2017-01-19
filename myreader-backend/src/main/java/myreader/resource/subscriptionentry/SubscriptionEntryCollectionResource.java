@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import spring.hateoas.ResourceAssemblers;
 import spring.hateoas.SequencedResources;
 
 import javax.validation.Valid;
@@ -37,26 +36,23 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequestMapping(value = "api/2/subscriptionEntries")
 public class SubscriptionEntryCollectionResource {
 
-    private final ResourceAssemblers resourceAssemblers;
+    private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final UserRepository userRepository;
     private final PatchService patchService;
-    private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
 
     @Autowired
-    public SubscriptionEntryCollectionResource(final ResourceAssemblers resourceAssemblers,
+    public SubscriptionEntryCollectionResource(final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
                                                final SubscriptionRepository subscriptionRepository,
                                                final SubscriptionEntryRepository subscriptionEntryRepository,
                                                final UserRepository userRepository,
-                                               final PatchService patchService,
-                                               final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler) {
-        this.resourceAssemblers = resourceAssemblers;
+                                               final PatchService patchService) {
+        this.assembler = assembler;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
         this.userRepository = userRepository;
         this.patchService = patchService;
-        this.assembler = assembler;
     }
 
     @RequestMapping(method = GET)
@@ -110,7 +106,7 @@ public class SubscriptionEntryCollectionResource {
 
             SubscriptionEntry patched = patchService.patch(subscriptionPatch, subscriptionEntry);
             SubscriptionEntry saved = subscriptionEntryRepository.save(patched);
-            SubscriptionEntryGetResponse subscriptionEntryGetResponse = resourceAssemblers.toResource(saved, SubscriptionEntryGetResponse.class);
+            SubscriptionEntryGetResponse subscriptionEntryGetResponse = assembler.toResource(saved);
             subscriptionEntryGetResponses.add(subscriptionEntryGetResponse);
         }
 

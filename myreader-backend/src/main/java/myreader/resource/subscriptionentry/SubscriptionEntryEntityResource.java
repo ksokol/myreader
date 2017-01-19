@@ -8,12 +8,12 @@ import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import spring.hateoas.ResourceAssemblers;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
@@ -26,14 +26,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 @RequestMapping("api/2/subscriptionEntries/{id}")
 public class SubscriptionEntryEntityResource {
 
-    private final ResourceAssemblers resourceAssemblers;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final PatchService patchService;
+    private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
 
     @Autowired
-    public SubscriptionEntryEntityResource(final ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository, final SubscriptionEntryRepository subscriptionEntryRepository, final PatchService patchService) {
-        this.resourceAssemblers = resourceAssemblers;
+    public SubscriptionEntryEntityResource(ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
+                                           final SubscriptionRepository subscriptionRepository,
+                                           final SubscriptionEntryRepository subscriptionEntryRepository,
+                                           final PatchService patchService) {
+        this.assembler = assembler;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
         this.patchService = patchService;
@@ -42,7 +45,7 @@ public class SubscriptionEntryEntityResource {
     @RequestMapping(method = GET)
     public SubscriptionEntryGetResponse get(@PathVariable("id") Long id) {
         final SubscriptionEntry subscriptionEntry = findOrThrowException(id);
-        return resourceAssemblers.toResource(subscriptionEntry, SubscriptionEntryGetResponse.class);
+        return assembler.toResource(subscriptionEntry);
     }
 
     @Transactional
