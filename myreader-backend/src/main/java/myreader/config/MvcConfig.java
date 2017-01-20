@@ -4,7 +4,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
@@ -27,7 +26,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 /**
  * @author Kamill Sokol
  */
-@ComponentScan(basePackages = {"spring.hateoas"})
 @Configuration
 @EnableTransactionManagement
 @EnableAsync
