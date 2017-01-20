@@ -6,13 +6,13 @@ import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import spring.hateoas.ResourceAssemblers;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -30,13 +30,15 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping(value = "api/2/subscriptions")
 public class SubscriptionCollectionResource {
 
-    private final ResourceAssemblers resourceAssemblers;
 	private final SubscriptionService subscriptionService;
     private final SubscriptionRepository subscriptionRepository;
+    private final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler;
 
     @Autowired
-    public SubscriptionCollectionResource(final ResourceAssemblers resourceAssemblers, final SubscriptionService subscriptionService, final SubscriptionRepository subscriptionRepository) {
-        this.resourceAssemblers = resourceAssemblers;
+    public SubscriptionCollectionResource(final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler,
+                                          final SubscriptionService subscriptionService,
+                                          final SubscriptionRepository subscriptionRepository) {
+        this.assembler = assembler;
         this.subscriptionService = subscriptionService;
         this.subscriptionRepository = subscriptionRepository;
     }
@@ -44,7 +46,7 @@ public class SubscriptionCollectionResource {
     @RequestMapping(method = POST)
     public SubscriptionGetResponse post(@Valid @RequestBody SubscribePostRequest request, @AuthenticationPrincipal User user) {
         Subscription subscription = subscriptionService.subscribe(user.getUsername(), request.getOrigin());
-        return resourceAssemblers.toResource(subscription, SubscriptionGetResponse.class);
+        return assembler.toResource(subscription);
     }
 
     @RequestMapping(method = GET)
@@ -52,7 +54,7 @@ public class SubscriptionCollectionResource {
         final List<Subscription> source = subscriptionRepository.findAllByUnseenGreaterThanAndCurrentUser(unseenCount);
         final List<SubscriptionGetResponse> target = new ArrayList<>(source.size());
         for (final Subscription subscription : source) {
-            target.add(resourceAssemblers.toResource(subscription, SubscriptionGetResponse.class));
+            target.add(assembler.toResource(subscription));
         }
         final HashMap<String, Object> body = new HashMap<>(2);
         body.put("content", target);

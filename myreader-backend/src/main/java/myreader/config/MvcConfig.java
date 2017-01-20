@@ -4,12 +4,9 @@ import org.apache.commons.lang3.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.web.bind.support.AuthenticationPrincipalArgumentResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -18,8 +15,6 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import spring.data.web.SequenceableHandlerMethodArgumentResolver;
-import spring.hateoas.PagedResourcesAssembler;
 
 import java.util.List;
 
@@ -30,7 +25,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 /**
  * @author Kamill Sokol
  */
-@ComponentScan(basePackages = {"spring.hateoas"})
 @Configuration
 @EnableTransactionManagement
 @EnableAsync
@@ -61,8 +55,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.clear();
         argumentResolvers.add(new AuthenticationPrincipalArgumentResolver());
-        argumentResolvers.add(new PageableHandlerMethodArgumentResolver());
-        argumentResolvers.add(new SequenceableHandlerMethodArgumentResolver());
     }
 
     @Override
@@ -70,11 +62,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
         registry.addViewController(LANDING_PAGE.mapping()).setViewName("index.html");
         registry.addRedirectViewController(HYSTRIX_DASHBOARD.mapping(), "hystrix/monitor?title=" + applicationName + "&stream=http://localhost:" + port + contextPath + "/hystrix.stream");
-    }
-
-    @Bean(name = "customPagedResourcesAssembler")
-    public PagedResourcesAssembler<?> pagedResourcesAssembler() {
-        return new PagedResourcesAssembler();
     }
 
     //TODO

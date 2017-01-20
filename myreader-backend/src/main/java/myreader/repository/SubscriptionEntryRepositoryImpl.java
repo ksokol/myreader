@@ -1,18 +1,8 @@
 package myreader.repository;
 
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import myreader.entity.SubscriptionEntry;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.ChainedFilter;
 import org.apache.lucene.queries.TermFilter;
@@ -26,15 +16,21 @@ import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 import org.springframework.util.Assert;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
 * @author Kamill Sokol
@@ -62,7 +58,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
     @SuppressWarnings("unchecked")
     @Override
-    public Slice<SubscriptionEntry> findBy(String q, Long ownerId, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, Pageable pageable) {
+    public Slice<SubscriptionEntry> findBy(String q, Long ownerId, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, int pageSize) {
         Assert.notNull(ownerId, "ownerId is null");
 
         final FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
@@ -79,7 +75,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         addPagination(nextId, termFilters);
 
         fullTextQuery.setFilter(new ChainedFilter(termFilters.toArray(new Filter[termFilters.size()]), ChainedFilter.AND));
-        fullTextQuery.setMaxResults(pageable == null ? 0 : pageable.getPageSize());
+        fullTextQuery.setMaxResults(pageSize);
         fullTextQuery.setSort(new Sort(new SortField(ID, SortField.Type.LONG, true)));
 
         return new SliceImpl<>(fullTextQuery.getResultList());

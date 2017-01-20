@@ -11,7 +11,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,12 +21,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import spring.hateoas.ResourceAssemblers;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
-import javax.validation.Valid;
 
 /**
  * @author Kamill Sokol
@@ -37,14 +38,20 @@ public class ProcessingCollectionResource {
     private final FeedRepository feedRepository;
     private final FeedQueue feedQueue;
     private final ApplicationContext applicationContext;
-    private final ResourceAssemblers resourceAssemblers;
+    private final PagedResourcesAssembler<Feed> pagedResourcesAssembler;
+    private final ResourceAssemblerSupport<Feed, ProcessedFeedGetResponse> assembler;
 
     @Autowired
-    public ProcessingCollectionResource(final FeedRepository feedRepository, final FeedQueue feedQueue, final ApplicationContext applicationContext, final ResourceAssemblers resourceAssemblers) {
+    public ProcessingCollectionResource(final FeedRepository feedRepository,
+                                        final FeedQueue feedQueue,
+                                        final ApplicationContext applicationContext,
+                                        final PagedResourcesAssembler<Feed> pagedResourcesAssembler,
+                                        final ResourceAssemblerSupport<Feed, ProcessedFeedGetResponse> assembler) {
         this.feedRepository = feedRepository;
         this.feedQueue = feedQueue;
         this.applicationContext = applicationContext;
-        this.resourceAssemblers = resourceAssemblers;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.assembler = assembler;
     }
 
     //TODO rename mapping
@@ -52,10 +59,10 @@ public class ProcessingCollectionResource {
     public PagedResources<ProcessedFeedGetResponse> feeds(Pageable pageable) {
         final List<String> snapshot = feedQueue.getSnapshot();
         if(CollectionUtils.isEmpty(snapshot)) {
-            return resourceAssemblers.toResource(new PageImpl<>(Collections.<ProcessedFeedGetResponse>emptyList()), ProcessedFeedGetResponse.class);
+            return pagedResourcesAssembler.toResource(new PageImpl<>(Collections.emptyList()), assembler);
         }
         final Page<Feed> feeds = feedRepository.findByUrlIn(snapshot, pageable);
-        return resourceAssemblers.toResource(feeds, ProcessedFeedGetResponse.class);
+        return pagedResourcesAssembler.toResource(feeds, assembler);
     }
 
     //TODO

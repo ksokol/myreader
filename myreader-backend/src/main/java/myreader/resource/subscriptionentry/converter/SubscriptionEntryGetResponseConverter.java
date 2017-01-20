@@ -2,10 +2,9 @@ package myreader.resource.subscriptionentry.converter;
 
 import myreader.entity.SubscriptionEntry;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol

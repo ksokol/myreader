@@ -1,20 +1,30 @@
 package myreader.resource.subscription.beans;
 
-import spring.hateoas.UUIDResourceSupport;
+import org.springframework.hateoas.ResourceSupport;
 
 import java.util.Date;
 
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionGetResponse extends UUIDResourceSupport {
+@SuppressWarnings("PMD.UselessOverridingMethod")
+public class SubscriptionGetResponse extends ResourceSupport {
 
+    private String uuid;
     private String title;
     private String tag;
     private int sum;
     private long unseen;
     private String origin;
     private Date createdAt;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public String getTitle() {
         return title;
@@ -65,23 +75,12 @@ public class SubscriptionGetResponse extends UUIDResourceSupport {
     }
 
     @Override
-    public int hashCode() {
-        return getUuid().hashCode();
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 
     @Override
-    public boolean equals(final Object object) {
-        if (this == object) {
-            return true;
-        }
-
-        if (object == null || !object.getClass().equals(this.getClass())) {
-            return false;
-        }
-
-        SubscriptionGetResponse that = (SubscriptionGetResponse) object;
-
-        return this.getUuid().equals(that.getUuid());
+    public int hashCode() {
+        return super.hashCode();
     }
-
 }

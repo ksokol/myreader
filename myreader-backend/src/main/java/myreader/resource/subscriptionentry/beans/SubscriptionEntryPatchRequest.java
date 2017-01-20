@@ -9,6 +9,7 @@ import static java.lang.Integer.MAX_VALUE;
 /**
  * @author Kamill Sokol
  */
+@SuppressWarnings("PMD.UselessOverridingMethod")
 public class SubscriptionEntryPatchRequest extends PatchSupport {
 
     @Digits(integer = MAX_VALUE, fraction = 0)

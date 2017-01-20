@@ -3,14 +3,14 @@ package myreader.resource.subscription.assembler;
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
-import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class SubscriptionGetResponseAssemblerSupport extends ResourceAssemblerSupport<Subscription,SubscriptionGetResponse> {
+public class SubscriptionGetResponseAssemblerSupport extends ResourceAssemblerSupport<Subscription, SubscriptionGetResponse> {
 
     public SubscriptionGetResponseAssemblerSupport() {
         super(Subscription.class, SubscriptionGetResponse.class);

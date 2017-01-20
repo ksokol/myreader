@@ -76,14 +76,17 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     @Test
     public void testPagingEnd() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?size=1&next=1009"))
-                .andExpect(jsonPath("links[?(@.rel=='next')]", emptyIterable()))
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?next=1008&size=1"))))
                 .andExpect(jsonPath("content[0].uuid", is("1009")));
+
+        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?size=1&next=1008"))
+                .andExpect(jsonPath("content..uuid", emptyIterable()));
     }
 
     @Test
     public void testSearchPagingStart() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?size=1&q=l*"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=l*&next=1010&size=1"))))
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=l*&next=1012&size=1"))))
                 .andExpect(jsonPath("content[0].uuid", is("1013")));
     }
 
@@ -97,7 +100,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     @Test
     public void testSearchPagingEnd() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?q=l*&size=1&next=1010"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", emptyIterable()))
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=l*&next=1009&size=1"))))
                 .andExpect(jsonPath("content[0].uuid", is("1010")));
     }
 

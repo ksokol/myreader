@@ -5,27 +5,22 @@ import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
 import myreader.resource.service.patch.PatchService;
+import myreader.resource.subscriptionentry.beans.SearchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.Resources;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import spring.data.domain.Sequence;
-import spring.data.domain.SequenceImpl;
-import spring.data.domain.SequenceRequest;
-import spring.data.domain.Sequenceable;
-import spring.hateoas.ResourceAssemblers;
-import spring.hateoas.SequencedResources;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -41,15 +36,19 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequestMapping(value = "api/2/subscriptionEntries")
 public class SubscriptionEntryCollectionResource {
 
-    private final ResourceAssemblers resourceAssemblers;
+    private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final UserRepository userRepository;
     private final PatchService patchService;
 
     @Autowired
-    public SubscriptionEntryCollectionResource(final ResourceAssemblers resourceAssemblers, final SubscriptionRepository subscriptionRepository, final SubscriptionEntryRepository subscriptionEntryRepository, UserRepository userRepository, final PatchService patchService) {
-        this.resourceAssemblers = resourceAssemblers;
+    public SubscriptionEntryCollectionResource(final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
+                                               final SubscriptionRepository subscriptionRepository,
+                                               final SubscriptionEntryRepository subscriptionEntryRepository,
+                                               final UserRepository userRepository,
+                                               final PatchService patchService) {
+        this.assembler = assembler;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
         this.userRepository = userRepository;
@@ -57,21 +56,29 @@ public class SubscriptionEntryCollectionResource {
     }
 
     @RequestMapping(method = GET)
-    public SequencedResources<SubscriptionEntryGetResponse> get(@RequestParam(value = "q", required = false) String q,
-                                                                @RequestParam(value = "feedUuidEqual", required = false) String feedUuidEqual,
-                                                                @RequestParam(value = "seenEqual", required = false) String seenEqual,
-                                                                @RequestParam(value = "feedTagEqual", required = false) String feedTagEqual,
-                                                                @RequestParam(value = "entryTagEqual", required = false) String entryTagEqual,
-                                                                Sequenceable sequenceable,
-                                                                @AuthenticationPrincipal User user) {
-
+    public PagedResources<SubscriptionEntryGetResponse> get(SearchRequest page, @AuthenticationPrincipal User user) {
         myreader.entity.User myreaderUser = userRepository.findByEmail(user.getUsername());
-        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(q, myreaderUser.getId(), feedUuidEqual, feedTagEqual, entryTagEqual, seenEqual, sequenceable.getNext(), sequenceable.toPageable());
-        return resourceAssemblers.toResource(toSequence(sequenceable, pagedEntries.getContent()), SubscriptionEntryGetResponse.class);
+
+        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(
+                page.getQ(),
+                myreaderUser.getId(),
+                page.getFeedUuidEqual(),
+                page.getFeedTagEqual(),
+                page.getEntryTagEqual(),
+                page.getSeenEqual(),
+                page.getNext(),
+                page.getSize()
+        );
+
+        List<SubscriptionEntryGetResponse> list = new ArrayList<>(pagedEntries.getSize());
+        for (SubscriptionEntry pagedEntry : pagedEntries) {
+            list.add(assembler.toResource(pagedEntry));
+        }
+
+        return SequencedResourcesUtils.toSequencedResources(page.getSize(), list);
     }
 
-
-    @RequestMapping(value= "availableTags", method = GET)
+    @RequestMapping(value = "availableTags", method = GET)
     public Set<String> tags(@AuthenticationPrincipal User user) {
         myreader.entity.User myreaderUser = userRepository.findByEmail(user.getUsername());
         return subscriptionEntryRepository.findDistinctTags(myreaderUser.getId());
@@ -85,11 +92,11 @@ public class SubscriptionEntryCollectionResource {
 
         for (final SubscriptionEntryPatchRequest subscriptionPatch : request.getContent()) {
             SubscriptionEntry subscriptionEntry = subscriptionEntryRepository.findByIdAndCurrentUser(Long.valueOf(subscriptionPatch.getUuid()));
-            if(subscriptionEntry == null) {
+            if (subscriptionEntry == null) {
                 continue;
             }
 
-            if(subscriptionPatch.isFieldPatched("seen") && subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
+            if (subscriptionPatch.isFieldPatched("seen") && subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
                 if (subscriptionPatch.getSeen()) {
                     subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
                 } else {
@@ -99,27 +106,10 @@ public class SubscriptionEntryCollectionResource {
 
             SubscriptionEntry patched = patchService.patch(subscriptionPatch, subscriptionEntry);
             SubscriptionEntry saved = subscriptionEntryRepository.save(patched);
-            SubscriptionEntryGetResponse subscriptionEntryGetResponse = resourceAssemblers.toResource(saved, SubscriptionEntryGetResponse.class);
+            SubscriptionEntryGetResponse subscriptionEntryGetResponse = assembler.toResource(saved);
             subscriptionEntryGetResponses.add(subscriptionEntryGetResponse);
         }
 
         return new Resources<>(subscriptionEntryGetResponses);
     }
-
-    private static Sequence<SubscriptionEntry> toSequence(final Sequenceable sequenceable, final List<SubscriptionEntry> content) {
-        Assert.notNull(content, "Content must not be null!");
-        Assert.notNull(sequenceable, "Sliceable must not be null!");
-        boolean hasNext = content.size() == sequenceable.getPageSize() + 1;
-
-        if(!hasNext) {
-            return new SequenceImpl<>(content);
-        }
-
-        SubscriptionEntry last = content.get(content.size() - 1);
-        List<SubscriptionEntry> withoutLast = content.subList(0, content.size() - 1);
-
-        Sequenceable request = new SequenceRequest(sequenceable.getPageSize(), last.getId());
-        return new SequenceImpl<>(withoutLast, request);
-    }
-
 }

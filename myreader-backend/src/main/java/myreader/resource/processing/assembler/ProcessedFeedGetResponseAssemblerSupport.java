@@ -2,8 +2,8 @@ package myreader.resource.processing.assembler;
 
 import myreader.entity.Feed;
 import myreader.resource.processing.beans.ProcessedFeedGetResponse;
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
-import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol

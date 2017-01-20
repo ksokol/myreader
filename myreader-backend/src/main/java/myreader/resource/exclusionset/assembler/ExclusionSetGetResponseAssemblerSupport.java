@@ -2,8 +2,8 @@ package myreader.resource.exclusionset.assembler;
 
 import myreader.entity.ExclusionSet;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
-import spring.hateoas.ResourceAssemblerSupport;
 
 /**
  * @author Kamill Sokol

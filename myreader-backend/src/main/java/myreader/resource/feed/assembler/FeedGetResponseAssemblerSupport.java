@@ -4,8 +4,8 @@ import myreader.entity.Feed;
 import myreader.repository.FetchErrorRepository;
 import myreader.resource.feed.beans.FeedGetResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
-import spring.hateoas.ResourceAssemblerSupport;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
