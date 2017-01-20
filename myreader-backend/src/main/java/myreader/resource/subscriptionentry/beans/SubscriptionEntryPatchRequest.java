@@ -1,7 +1,5 @@
 package myreader.resource.subscriptionentry.beans;
 
-import myreader.resource.service.patch.PatchSupport;
-
 import javax.validation.constraints.Digits;
 
 import static java.lang.Integer.MAX_VALUE;
@@ -10,7 +8,7 @@ import static java.lang.Integer.MAX_VALUE;
  * @author Kamill Sokol
  */
 @SuppressWarnings("PMD.UselessOverridingMethod")
-public class SubscriptionEntryPatchRequest extends PatchSupport {
+public class SubscriptionEntryPatchRequest {
 
     @Digits(integer = MAX_VALUE, fraction = 0)
     private String uuid;
@@ -22,7 +20,6 @@ public class SubscriptionEntryPatchRequest extends PatchSupport {
     }
 
     public void setUuid(final String uuid) {
-        this.addPatchedField("uuid");
         this.uuid = uuid;
     }
 
@@ -31,7 +28,6 @@ public class SubscriptionEntryPatchRequest extends PatchSupport {
     }
 
     public void setTag(String tag) {
-        this.addPatchedField("tag");
         this.tag = tag;
     }
 
@@ -40,7 +36,6 @@ public class SubscriptionEntryPatchRequest extends PatchSupport {
     }
 
     public void setSeen(Boolean seen) {
-        this.addPatchedField("seen");
         this.seen = seen;
     }
 }

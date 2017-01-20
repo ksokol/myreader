@@ -4,7 +4,6 @@ import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.UserRepository;
-import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SearchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
@@ -40,19 +39,16 @@ public class SubscriptionEntryCollectionResource {
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final UserRepository userRepository;
-    private final PatchService patchService;
 
     @Autowired
     public SubscriptionEntryCollectionResource(final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
                                                final SubscriptionRepository subscriptionRepository,
                                                final SubscriptionEntryRepository subscriptionEntryRepository,
-                                               final UserRepository userRepository,
-                                               final PatchService patchService) {
+                                               final UserRepository userRepository) {
         this.assembler = assembler;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
         this.userRepository = userRepository;
-        this.patchService = patchService;
     }
 
     @RequestMapping(method = GET)
@@ -88,7 +84,7 @@ public class SubscriptionEntryCollectionResource {
     @Transactional
     @RequestMapping(method = {RequestMethod.PATCH, RequestMethod.PUT})
     public Resources<SubscriptionEntryGetResponse> patch(@Valid @RequestBody SubscriptionEntryBatchPatchRequest request) {
-        List<SubscriptionEntryGetResponse> subscriptionEntryGetResponses = new ArrayList<>();
+        List<SubscriptionEntryGetResponse> subscriptionEntryGetResponses = new ArrayList<>(request.getContent().size());
 
         for (final SubscriptionEntryPatchRequest subscriptionPatch : request.getContent()) {
             SubscriptionEntry subscriptionEntry = subscriptionEntryRepository.findByIdAndCurrentUser(Long.valueOf(subscriptionPatch.getUuid()));
@@ -96,16 +92,17 @@ public class SubscriptionEntryCollectionResource {
                 continue;
             }
 
-            if (subscriptionPatch.isFieldPatched("seen") && subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
+            if (subscriptionPatch.getSeen() != null && subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
                 if (subscriptionPatch.getSeen()) {
                     subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
                 } else {
                     subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
                 }
+                subscriptionEntry.setSeen(subscriptionPatch.getSeen());
             }
+            subscriptionEntry.setTag(subscriptionPatch.getTag());
 
-            SubscriptionEntry patched = patchService.patch(subscriptionPatch, subscriptionEntry);
-            SubscriptionEntry saved = subscriptionEntryRepository.save(patched);
+            SubscriptionEntry saved = subscriptionEntryRepository.save(subscriptionEntry);
             SubscriptionEntryGetResponse subscriptionEntryGetResponse = assembler.toResource(saved);
             subscriptionEntryGetResponses.add(subscriptionEntryGetResponse);
         }

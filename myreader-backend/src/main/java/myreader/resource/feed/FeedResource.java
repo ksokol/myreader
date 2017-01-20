@@ -9,7 +9,6 @@ import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.feed.beans.FeedGetResponse;
 import myreader.resource.feed.beans.FeedPatchRequest;
 import myreader.resource.feed.beans.FetchErrorGetResponse;
-import myreader.resource.service.patch.PatchService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -46,22 +45,19 @@ public class FeedResource {
     private final FetchErrorRepository fetchErrorRepository;
     private final FeedRepository feedRepository;
     private final SubscriptionRepository subscriptionRepository;
-    private final PatchService patchService;
 
     public FeedResource(PagedResourcesAssembler<FetchError> pagedResourcesAssembler,
                         ResourceAssembler<Feed, FeedGetResponse> assembler,
                         ResourceAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler,
                         FeedRepository feedRepository,
                         FetchErrorRepository fetchErrorRepository,
-                        SubscriptionRepository subscriptionRepository,
-                        PatchService patchService) {
+                        SubscriptionRepository subscriptionRepository) {
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.assembler = assembler;
         this.fetchErrorAssembler = fetchErrorAssembler;
         this.feedRepository = feedRepository;
         this.fetchErrorRepository = fetchErrorRepository;
         this.subscriptionRepository = subscriptionRepository;
-        this.patchService = patchService;
     }
 
     @RequestMapping(value = "", method = GET)
@@ -96,8 +92,11 @@ public class FeedResource {
     @RequestMapping(value = "", method = RequestMethod.PATCH)
     public FeedGetResponse patch(@PathVariable("id") Long id, @Valid @RequestBody FeedPatchRequest request) {
         Feed feed = findOrThrowException(id);
-        Feed patchedFeed = patchService.patch(request, feed);
-        feedRepository.save(patchedFeed);
+
+        feed.setUrl(request.getUrl());
+        feed.setTitle(request.getTitle());
+
+        feedRepository.save(feed);
         return get(id);
     }
 

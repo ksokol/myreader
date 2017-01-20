@@ -1,7 +1,9 @@
 package myreader.resource.subscriptionentry;
 
+import myreader.repository.SubscriptionRepository;
 import myreader.test.IntegrationTestSupport;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static myreader.test.KnownUser.USER107;
 import static myreader.test.KnownUser.USER108;
@@ -13,6 +15,8 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
@@ -27,6 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Kamill Sokol
  */
 public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupport {
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
     @Test
     public void testCollectionResourceJsonStructureEquality() throws Exception {
@@ -201,7 +208,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
 
         mockMvc.perform(actionAsUserX(PATCH, USER108, "/api/2/subscriptionEntries")
                 .json("{ 'content': [{ 'uuid': '1018', 'seen': false }, { 'uuid': '1019', 'tag': '1001tag' }]}"))
-                .andExpect(jsonPath("content[0].tag", is("tag3")))
+                .andExpect(jsonPath("content[0].tag", nullValue()))
                 .andExpect(jsonPath("content[1].tag", is("1001tag")))
                 .andExpect(jsonPath("content[0].seen", is(false)))
                 .andExpect(jsonPath("content[1].seen", is(false)));
@@ -209,6 +216,10 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
 
     @Test
     public void testBatchPatch2() throws Exception {
+        //TODO Migrate to WebMvcTest
+        mockMvc.perform(actionAsUserX(PATCH, USER107, "/api/2/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1016', 'seen': true, 'tag': 'tag3' }, { 'uuid': '1017', 'seen': false, 'tag': 'tag3' }]}"));
+
         mockMvc.perform(actionAsUserX(GET, USER107, "/api/2/subscriptionEntries"))
                 .andExpect(jsonEquals("json/subscriptionentry/user107-subscriptionEntries.json"));
 
@@ -248,5 +259,43 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     public void availableTags() throws Exception {
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries/availableTags"))
         .andExpect(jsonPath("$", hasItems("tag1", "tag2-tag3", "tag4", "tag5", "tag6", "tag7", "tag8Tag9")));
+    }
+
+    @Test
+    public void shouldIncrementUnseenCount() throws Exception {
+        //TODO Migrate to WebMvcTest
+        mockMvc.perform(actionAsUserX(PATCH, USER107, "/api/2/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1016', 'seen': false }, { 'uuid': '1017', 'seen': 'true' }]}"));
+
+        assertThat(subscriptionRepository.findOne(105L).getUnseen(), is(1));
+
+        mockMvc.perform(actionAsUserX(PATCH, USER107, "/api/2/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1016', 'seen': false }, { 'uuid': '1017', 'seen': 'false' }]}"));
+
+        assertThat(subscriptionRepository.findOne(105L).getUnseen(), is(2));
+    }
+
+    @Test
+    public void shouldDecrementUnseenCount() throws Exception {
+        //TODO Migrate to WebMvcTest
+        mockMvc.perform(actionAsUserX(PATCH, USER107, "/api/2/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1016', 'seen': false }, { 'uuid': '1017', 'seen': 'true' }]}"));
+
+        int actualCount = subscriptionRepository.findOne(105L).getUnseen();
+
+        mockMvc.perform(actionAsUserX(PATCH, USER107, "/api/2/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1016', 'seen': true }, { 'uuid': '1017', 'seen': 'true' }]}"));
+
+        assertThat(subscriptionRepository.findOne(105L).getUnseen(), is(actualCount - 1));
+    }
+
+    @Test
+    public void shouldNotChangeUnseenCount() throws Exception {
+        int actualCount = subscriptionRepository.findOne(105L).getUnseen();
+
+        mockMvc.perform(actionAsUserX(PATCH, USER107, "/api/2/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1016' }, { 'uuid': '1017' }]}"));
+
+        assertThat(subscriptionRepository.findOne(105L).getUnseen(), is(actualCount));
     }
 }
