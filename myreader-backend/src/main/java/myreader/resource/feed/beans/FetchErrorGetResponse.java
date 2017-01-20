@@ -7,6 +7,7 @@ import java.util.Date;
 /**
  * @author Kamill Sokol
  */
+@SuppressWarnings("PMD.UselessOverridingMethod")
 public class FetchErrorGetResponse extends ResourceSupport {
 
     private String uuid;
@@ -44,5 +45,15 @@ public class FetchErrorGetResponse extends ResourceSupport {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = new Date(createdAt.getTime());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

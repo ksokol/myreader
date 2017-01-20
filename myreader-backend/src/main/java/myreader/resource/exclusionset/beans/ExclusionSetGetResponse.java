@@ -5,6 +5,7 @@ import org.springframework.hateoas.ResourceSupport;
 /**
  * @author Kamill Sokol
  */
+@SuppressWarnings("PMD.UselessOverridingMethod")
 public class ExclusionSetGetResponse extends ResourceSupport {
 
     private String uuid;
@@ -33,5 +34,15 @@ public class ExclusionSetGetResponse extends ResourceSupport {
 
     public void setOverallPatternHits(long overallPatternHits) {
         this.overallPatternHits = overallPatternHits;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

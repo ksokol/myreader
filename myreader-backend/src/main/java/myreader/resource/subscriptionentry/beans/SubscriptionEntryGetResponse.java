@@ -7,6 +7,7 @@ import java.util.Date;
 /**
  * @author Kamill Sokol
  */
+@SuppressWarnings("PMD.UselessOverridingMethod")
 public class SubscriptionEntryGetResponse extends ResourceSupport {
 
     private String uuid;
@@ -98,5 +99,15 @@ public class SubscriptionEntryGetResponse extends ResourceSupport {
 
     public void setCreatedAt(final Date createdAt) {
         this.createdAt = new Date(createdAt.getTime());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }
