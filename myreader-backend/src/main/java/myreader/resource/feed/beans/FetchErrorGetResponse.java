@@ -1,18 +1,26 @@
 package myreader.resource.feed.beans;
 
-import spring.hateoas.UUIDResourceSupport;
+import org.springframework.hateoas.ResourceSupport;
 
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * @author Kamill Sokol
  */
-public class FetchErrorGetResponse extends UUIDResourceSupport {
+public class FetchErrorGetResponse extends ResourceSupport {
 
+    private String uuid;
     private String message;
     private int retainDays;
     private Date createdAt;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public String getMessage() {
         return message;
@@ -36,21 +44,5 @@ public class FetchErrorGetResponse extends UUIDResourceSupport {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = new Date(createdAt.getTime());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FetchErrorGetResponse)) return false;
-        if (!super.equals(o)) return false;
-        FetchErrorGetResponse that = (FetchErrorGetResponse) o;
-        return retainDays == that.retainDays &&
-                Objects.equals(message, that.message) &&
-                Objects.equals(createdAt, that.createdAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), message, retainDays, createdAt);
     }
 }
