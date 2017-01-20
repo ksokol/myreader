@@ -1,7 +1,6 @@
 package myreader.resource.feed.beans;
 
 import myreader.resource.common.validation.ValidSyndication;
-import myreader.resource.service.patch.PatchSupport;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -9,7 +8,7 @@ import javax.validation.constraints.Pattern;
 /**
  * @author Kamill Sokol
  */
-public class FeedPatchRequest extends PatchSupport {
+public class FeedPatchRequest {
 
     @NotNull(message = "may not be null")
     private String title;
@@ -24,7 +23,6 @@ public class FeedPatchRequest extends PatchSupport {
     }
 
     public void setTitle(String title) {
-        this.addPatchedField("title");
         this.title = title;
     }
 
@@ -33,7 +31,6 @@ public class FeedPatchRequest extends PatchSupport {
     }
 
     public void setUrl(String url) {
-        this.addPatchedField("url");
         this.url = url;
     }
 }
