@@ -3,10 +3,10 @@ package myreader.resource.subscriptionentry;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import spring.hateoas.SequencedResources;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,10 @@ final class SequencedResourcesUtils {
     private static final String DEFAULT_NEXT_PARAMETER = "next";
     private static final String DEFAULT_SIZE_PARAMETER = "size";
 
-    protected static SequencedResources<SubscriptionEntryGetResponse> toSequencedResources(final int pageSize, List<SubscriptionEntryGetResponse> entries) {
+    protected static PagedResources<SubscriptionEntryGetResponse> toSequencedResources(final int pageSize, List<SubscriptionEntryGetResponse> entries) {
         Long nextId = getNextId(pageSize, entries);
-        SequencedResources<SubscriptionEntryGetResponse> pagedResources = new SequencedResources<>(entries);
+        // TODO add page metadata
+        PagedResources<SubscriptionEntryGetResponse> pagedResources = new PagedResources<>(entries, null);
         List<Link> links = addPaginationLinks(nextId, pageSize);
 
         pagedResources.add(links);

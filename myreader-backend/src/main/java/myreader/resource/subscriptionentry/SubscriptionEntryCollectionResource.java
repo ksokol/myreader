@@ -11,6 +11,7 @@ import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.Resources;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import spring.hateoas.SequencedResources;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class SubscriptionEntryCollectionResource {
     }
 
     @RequestMapping(method = GET)
-    public SequencedResources<SubscriptionEntryGetResponse> get(SearchRequest page, @AuthenticationPrincipal User user) {
+    public PagedResources<SubscriptionEntryGetResponse> get(SearchRequest page, @AuthenticationPrincipal User user) {
         myreader.entity.User myreaderUser = userRepository.findByEmail(user.getUsername());
 
         Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(
