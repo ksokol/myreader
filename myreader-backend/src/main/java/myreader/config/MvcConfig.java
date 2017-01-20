@@ -7,7 +7,6 @@ import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboar
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.web.bind.support.AuthenticationPrincipalArgumentResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -56,7 +55,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.clear();
         argumentResolvers.add(new AuthenticationPrincipalArgumentResolver());
-        argumentResolvers.add(new PageableHandlerMethodArgumentResolver());
     }
 
     @Override
