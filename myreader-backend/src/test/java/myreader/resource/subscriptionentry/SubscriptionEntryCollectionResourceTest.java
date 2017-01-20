@@ -263,6 +263,10 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
 
     @Test
     public void shouldIncrementUnseenCount() throws Exception {
+        //TODO Migrate to WebMvcTest
+        mockMvc.perform(actionAsUserX(PATCH, USER107, "/api/2/subscriptionEntries")
+                .json("{ 'content': [{ 'uuid': '1016', 'seen': false }, { 'uuid': '1017', 'seen': 'true' }]}"));
+
         assertThat(subscriptionRepository.findOne(105L).getUnseen(), is(1));
 
         mockMvc.perform(actionAsUserX(PATCH, USER107, "/api/2/subscriptionEntries")

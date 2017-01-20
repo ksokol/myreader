@@ -4,7 +4,6 @@ import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.resource.exception.ResourceNotFoundException;
-import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +27,15 @@ public class SubscriptionEntryEntityResource {
 
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
-    private final PatchService patchService;
     private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
 
     @Autowired
     public SubscriptionEntryEntityResource(ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
                                            final SubscriptionRepository subscriptionRepository,
-                                           final SubscriptionEntryRepository subscriptionEntryRepository,
-                                           final PatchService patchService) {
+                                           final SubscriptionEntryRepository subscriptionEntryRepository) {
         this.assembler = assembler;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
-        this.patchService = patchService;
     }
 
     @RequestMapping(method = GET)
@@ -53,16 +49,18 @@ public class SubscriptionEntryEntityResource {
     public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @RequestBody SubscriptionEntryPatchRequest request) {
         final SubscriptionEntry subscriptionEntry = findOrThrowException(id);
 
-        if(request.isFieldPatched("seen") && request.getSeen() != subscriptionEntry.isSeen()) {
+        if(request.getSeen() != null && request.getSeen() != subscriptionEntry.isSeen()) {
             if (request.getSeen()) {
                 subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
             } else {
                 subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
             }
+            subscriptionEntry.setSeen(request.getSeen());
         }
 
-        SubscriptionEntry patched = patchService.patch(request, subscriptionEntry);
-        subscriptionEntryRepository.save(patched);
+        subscriptionEntry.setTag(request.getTag());
+
+        subscriptionEntryRepository.save(subscriptionEntry);
 
         return get(id);
     }
