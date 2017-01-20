@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
@@ -207,7 +208,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
 
         mockMvc.perform(actionAsUserX(PATCH, USER108, "/api/2/subscriptionEntries")
                 .json("{ 'content': [{ 'uuid': '1018', 'seen': false }, { 'uuid': '1019', 'tag': '1001tag' }]}"))
-                .andExpect(jsonPath("content[0].tag", is("tag3")))
+                .andExpect(jsonPath("content[0].tag", nullValue()))
                 .andExpect(jsonPath("content[1].tag", is("1001tag")))
                 .andExpect(jsonPath("content[0].seen", is(false)))
                 .andExpect(jsonPath("content[1].seen", is(false)));
@@ -217,7 +218,7 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
     public void testBatchPatch2() throws Exception {
         //TODO Migrate to WebMvcTest
         mockMvc.perform(actionAsUserX(PATCH, USER107, "/api/2/subscriptionEntries")
-                .json("{ 'content': [{ 'uuid': '1016', 'seen': true }, { 'uuid': '1017', 'seen': false }]}"));
+                .json("{ 'content': [{ 'uuid': '1016', 'seen': true, 'tag': 'tag3' }, { 'uuid': '1017', 'seen': false, 'tag': 'tag3' }]}"));
 
         mockMvc.perform(actionAsUserX(GET, USER107, "/api/2/subscriptionEntries"))
                 .andExpect(jsonEquals("json/subscriptionentry/user107-subscriptionEntries.json"));
