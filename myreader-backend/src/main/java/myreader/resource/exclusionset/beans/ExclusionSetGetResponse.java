@@ -1,14 +1,23 @@
 package myreader.resource.exclusionset.beans;
 
-import spring.hateoas.UUIDResourceSupport;
+import org.springframework.hateoas.ResourceSupport;
 
 /**
  * @author Kamill Sokol
  */
-public class ExclusionSetGetResponse extends UUIDResourceSupport {
+public class ExclusionSetGetResponse extends ResourceSupport {
 
+    private String uuid;
     private long patternCount;
     private long overallPatternHits;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public long getPatternCount() {
         return patternCount;
@@ -24,25 +33,5 @@ public class ExclusionSetGetResponse extends UUIDResourceSupport {
 
     public void setOverallPatternHits(long overallPatternHits) {
         this.overallPatternHits = overallPatternHits;
-    }
-
-    @Override
-    public int hashCode() {
-        return getUuid().hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object object) {
-        if (this == object) {
-            return true;
-        }
-
-        if (object == null || !object.getClass().equals(this.getClass())) {
-            return false;
-        }
-
-        ExclusionSetGetResponse that = (ExclusionSetGetResponse) object;
-
-        return this.getUuid().equals(that.getUuid());
     }
 }
