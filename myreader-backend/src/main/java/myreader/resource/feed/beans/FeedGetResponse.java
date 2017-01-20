@@ -1,21 +1,29 @@
 package myreader.resource.feed.beans;
 
-import spring.hateoas.UUIDResourceSupport;
+import org.springframework.hateoas.ResourceSupport;
 
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * @author Kamill Sokol
  */
-public class FeedGetResponse extends UUIDResourceSupport {
+public class FeedGetResponse extends ResourceSupport {
 
+    private String uuid;
     private String title;
     private String url;
     private String lastModified;
     private Integer fetched;
     private boolean hasErrors;
     private Date createdAt;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public String getTitle() {
         return title;
@@ -67,24 +75,5 @@ public class FeedGetResponse extends UUIDResourceSupport {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = new Date(createdAt.getTime());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FeedGetResponse)) return false;
-        if (!super.equals(o)) return false;
-        FeedGetResponse that = (FeedGetResponse) o;
-        return hasErrors == that.hasErrors &&
-                Objects.equals(title, that.title) &&
-                Objects.equals(url, that.url) &&
-                Objects.equals(lastModified, that.lastModified) &&
-                Objects.equals(fetched, that.fetched) &&
-                Objects.equals(createdAt, that.createdAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), title, url, lastModified, fetched, hasErrors, createdAt);
     }
 }
