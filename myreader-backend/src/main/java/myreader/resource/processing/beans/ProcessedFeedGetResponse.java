@@ -1,19 +1,28 @@
 package myreader.resource.processing.beans;
 
-import spring.hateoas.UUIDResourceSupport;
+import org.springframework.hateoas.ResourceSupport;
 
 import java.util.Date;
 
 /**
  * @author Kamill Sokol
  */
-public class ProcessedFeedGetResponse extends UUIDResourceSupport {
+public class ProcessedFeedGetResponse extends ResourceSupport {
 
+    private String uuid;
     private String title;
     private String origin;
     private String lastModified;
     private Integer fetched;
     private Date createdAt;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public String getTitle() {
         return title;
@@ -53,25 +62,5 @@ public class ProcessedFeedGetResponse extends UUIDResourceSupport {
 
     public void setCreatedAt(final Date createdAt) {
         this.createdAt = new Date(createdAt.getTime());
-    }
-
-    @Override
-    public int hashCode() {
-        return getUuid().hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object object) {
-        if (this == object) {
-            return true;
-        }
-
-        if (object == null || !object.getClass().equals(this.getClass())) {
-            return false;
-        }
-
-        ProcessedFeedGetResponse that = (ProcessedFeedGetResponse) object;
-
-        return this.getUuid().equals(that.getUuid());
     }
 }
