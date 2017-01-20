@@ -3,7 +3,6 @@ package myreader.resource.subscription;
 import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
 import myreader.resource.exception.ResourceNotFoundException;
-import myreader.resource.service.patch.PatchService;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 /**
  * @author Kamill Sokol
  */
@@ -26,16 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class SubscriptionEntityResource {
 
     private final SubscriptionRepository subscriptionRepository;
-    private final PatchService patchService;
     private final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler;
 
     @Autowired
     public SubscriptionEntityResource(final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler,
-                                      final SubscriptionRepository subscriptionRepository,
-                                      final PatchService patchService) {
+                                      final SubscriptionRepository subscriptionRepository) {
         this.assembler = assembler;
         this.subscriptionRepository = subscriptionRepository;
-        this.patchService = patchService;
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -52,10 +50,13 @@ public class SubscriptionEntityResource {
 
     //TODO remove RequestMethod.PUT after Android 2.x phased out
     @RequestMapping(value = "", method = {RequestMethod.PATCH, RequestMethod.PUT})
-    public SubscriptionGetResponse patch(@PathVariable("id") Long id, @RequestBody SubscriptionPatchRequest request) {
+    public SubscriptionGetResponse patch(@PathVariable("id") Long id, @Valid @RequestBody SubscriptionPatchRequest request) {
         Subscription subscription = findOrThrowException(id);
-        Subscription patchedSubscription = patchService.patch(request, subscription);
-        subscriptionRepository.save(patchedSubscription);
+
+        subscription.setTitle(request.getTitle());
+        subscription.setTag(request.getTag());
+
+        subscriptionRepository.save(subscription);
         return get(id);
     }
 

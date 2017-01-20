@@ -1,12 +1,14 @@
 package myreader.resource.subscription.beans;
 
 import myreader.resource.service.patch.PatchSupport;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * @author Kamill Sokol
  */
 public class SubscriptionPatchRequest extends PatchSupport {
 
+    @NotBlank(message = "may not be empty")
     private String title;
     private String tag;
 

@@ -1,8 +1,16 @@
 package myreader.resource.subscription;
 
+import myreader.test.IntegrationTestSupport;
+import myreader.test.KnownUser;
+import org.junit.Test;
+import org.springframework.http.HttpMethod;
+
 import static myreader.test.KnownUser.USER104;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
@@ -14,9 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import myreader.test.IntegrationTestSupport;
-import org.junit.Test;
 
 /**
  * @author Kamill Sokol
@@ -55,7 +60,7 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
     @Test
     public void testNotFoundWhenPatchNotOwnSubscription() throws Exception {
         mockMvc.perform(patchAsUser2("/api/2/subscriptions/1")
-                .json("{ 'tag' : 'irrelevant' }"))
+                .json("{ 'title': 'irrelevant',  'tag' : 'irrelevant' }"))
                 .andExpect(status().isNotFound());
     }
 
@@ -73,12 +78,12 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
                 .andExpect(jsonEquals("json/subscription/101.json"));
 
         mockMvc.perform(patchAsUser103("/api/2/subscriptions/101")
-                .json("{'tag':'test1'}"))
+                .json("{ 'title': 'user103_subscription1', 'tag':'test1'}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/patch1-101.json"));
 
         mockMvc.perform(patchAsUser103("/api/2/subscriptions/101")
-                .json("{'title':null}"))
+                .json("{'title': 'user103_subscription1', 'tag': null}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/patch2-101.json"));
 
@@ -90,5 +95,16 @@ public class SubscriptionEntityResourceTest extends IntegrationTestSupport {
         mockMvc.perform(getAsUser103("/api/2/subscriptions/101"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscription/patch3-101.json"));
+    }
+
+    @Test
+    public void shouldValidatePatchRequest() throws Exception {
+        mockMvc.perform(actionAsUserX(HttpMethod.PATCH, KnownUser.USER103, "/api/2/subscriptions/101")
+                .json("{ 'title': ' '}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("status", is(400)))
+                .andExpect(jsonPath("message", is("validation error")))
+                .andExpect(jsonPath("fieldErrors..field", containsInAnyOrder("title")))
+                .andExpect(jsonPath("fieldErrors..message", hasItems("may not be empty")));
     }
 }
