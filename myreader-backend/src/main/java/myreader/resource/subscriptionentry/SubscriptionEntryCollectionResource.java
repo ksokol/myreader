@@ -75,9 +75,8 @@ public class SubscriptionEntryCollectionResource {
     }
 
     @RequestMapping(value = "availableTags", method = GET)
-    public Set<String> tags(@AuthenticationPrincipal User user) {
-        myreader.entity.User myreaderUser = userRepository.findByEmail(user.getUsername());
-        return subscriptionEntryRepository.findDistinctTags(myreaderUser.getId());
+    public Set<String> tags() {
+        return subscriptionEntryRepository.findDistinctTagsForCurrentUser();
     }
 
     //TODO remove RequestMethod.PUT after Android 2.x phased out

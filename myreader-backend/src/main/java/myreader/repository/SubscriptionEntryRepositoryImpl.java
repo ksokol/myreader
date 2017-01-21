@@ -15,7 +15,6 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Component;
@@ -50,10 +49,11 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     private static final Pattern TAG_SPLIT_PATTERN = Pattern.compile("( |,)");
 
     private final EntityManager em;
+    private final UserRepository userRepository;
 
-    @Autowired
-    public SubscriptionEntryRepositoryImpl(final EntityManager em) {
+    public SubscriptionEntryRepositoryImpl(final EntityManager em, UserRepository userRepository) {
         this.em = em;
+        this.userRepository = userRepository;
     }
 
     @SuppressWarnings("unchecked")
@@ -82,10 +82,10 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     }
 
     @Override
-    public Set<String> findDistinctTags(final Long userId) {
+    public Set<String> findDistinctTagsForCurrentUser() {
         final TypedQuery<String> query = em.createQuery("select distinct(se.tag) from SubscriptionEntry as se where se.subscription.user.id = :id and se.tag is not null", String.class);
 
-        query.setParameter("id", userId);
+        query.setParameter("id", userRepository.findByCurrentUser().getId());
 
         final List<String> resultList = query.getResultList();
         final Set<String> distinctTags = new TreeSet<>();
