@@ -8,12 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static myreader.test.KnownUser.USER107;
 import static myreader.test.KnownUser.USER108;
 import static myreader.test.KnownUser.USER109;
-import static myreader.test.KnownUser.USER115;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -40,30 +38,6 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
         mockMvc.perform(getAsUser1("/api/2/subscriptionEntries"))
                 .andExpect(status().isOk())
                 .andExpect(jsonEquals("json/subscriptionentry/structure.json"));
-    }
-
-    @Test
-    public void testSearchSubscriptionEntryByTitle() throws Exception {
-        mockMvc.perform(getAsUser1("/api/2/subscriptionEntries?q=mysql"))
-                .andExpect(jsonPath("content..uuid", contains("1002")));
-    }
-
-    @Test
-    public void testSearchSubscriptionEntryByContent() throws Exception {
-        mockMvc.perform(getAsUser1("/api/2/subscriptionEntries?q=content"))
-                .andExpect(jsonPath("content", hasSize(2)));
-    }
-
-    @Test
-    public void testSearchSubscriptionEntryByTag() throws Exception {
-        mockMvc.perform(getAsUser1("/api/2/subscriptionEntries?q=tag1"))
-                .andExpect(jsonPath("content", hasSize(2)));
-    }
-
-    @Test
-    public void searchSubscriptionEntryTag() throws Exception {
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?q=help"))
-                .andExpect(jsonPath("content..uuid", contains("1011")));
     }
 
     @Test
@@ -109,89 +83,6 @@ public class SubscriptionEntryCollectionResourceTest extends IntegrationTestSupp
         mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?q=l*&size=1&next=1010"))
                 .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=l*&next=1009&size=1"))))
                 .andExpect(jsonPath("content[0].uuid", is("1010")));
-    }
-
-    @Test
-    public void seenEqualFalse() throws Exception {
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?seenEqual=false"))
-                .andExpect(jsonPath("content", hasSize(5)));
-    }
-
-    @Test
-    public void seenEqualTrue() throws Exception {
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?seenEqual=true"))
-                .andExpect(jsonPath("content", hasSize(0)));
-    }
-
-    @Test
-    public void feedUuidEqual14() throws Exception {
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?feedUuidEqual=14"))
-                .andExpect(jsonPath("content", hasSize(5)));
-    }
-
-    @Test
-    public void feedUuidEqual9114() throws Exception {
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?feedUuidEqual=9114"))
-                .andExpect(jsonPath("content", hasSize(0)));
-    }
-
-    @Test
-    public void feedTagEqualUnknown() throws Exception {
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?feedTagEqual=unknown>"))
-                .andExpect(jsonPath("content", hasSize(0)));
-    }
-
-    @Test
-    public void feedTagEqualTag1() throws Exception {
-        mockMvc.perform(actionAsUserX(GET, USER115, "/api/2/subscriptionEntries?feedTagEqual=tag1"))
-                .andExpect(jsonPath("content", hasSize(2)));
-    }
-
-    @Test
-    public void entryTagEqualTag2Tag3() throws Exception {
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?entryTagEqual=tag2"))
-                .andExpect(jsonPath("content", hasSize(0)));
-
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?entryTagEqual=tag2-tag3"))
-                .andExpect(jsonPath("content", hasSize(1)))
-                .andExpect(jsonPath("content[0].tag", is("tag2-tag3")))
-                .andExpect(jsonPath("content[0].uuid", is("1010")));
-    }
-
-    @Test
-    public void entryTagEqualTag4AndTag5() throws Exception {
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?entryTagEqual=tag4"))
-                .andExpect(jsonPath("content", hasSize(1)))
-                .andExpect(jsonPath("content[0].tag", is("tag4 tag5")))
-                .andExpect(jsonPath("content[0].uuid", is("1011")));
-
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?entryTagEqual=tag5"))
-                .andExpect(jsonPath("content", hasSize(1)))
-                .andExpect(jsonPath("content[0].tag", is("tag4 tag5")))
-                .andExpect(jsonPath("content[0].uuid", is("1011")));
-    }
-
-    @Test
-    public void entryTagEqualTag6AndTag7() throws Exception {
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?entryTagEqual=tag6"))
-                .andExpect(jsonPath("content", hasSize(1)))
-                .andExpect(jsonPath("content[0].tag", is("tag6,tag7")))
-                .andExpect(jsonPath("content[0].uuid", is("1012")));
-
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?entryTagEqual=tag7"))
-                .andExpect(jsonPath("content", hasSize(1)))
-                .andExpect(jsonPath("content[0].tag", is("tag6,tag7")))
-                .andExpect(jsonPath("content[0].uuid", is("1012")));
-    }
-
-    @Test
-    public void entryTagEqualTag8Tag9() throws Exception {
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?entryTagEqual=tag8tag9"))
-                .andExpect(jsonPath("content", hasSize(0)));
-
-        mockMvc.perform(getAsUser4("/api/2/subscriptionEntries?entryTagEqual=tag8Tag9"))
-                .andExpect(jsonPath("content", hasSize(1)))
-                .andExpect(jsonPath("content[0].uuid", is("1013")));
     }
 
     @Test
