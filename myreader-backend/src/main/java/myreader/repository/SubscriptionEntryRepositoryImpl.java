@@ -19,7 +19,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -58,16 +57,14 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
     @SuppressWarnings("unchecked")
     @Override
-    public Slice<SubscriptionEntry> findBy(String q, Long ownerId, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, int pageSize) {
-        Assert.notNull(ownerId, "ownerId is null");
-
+    public Slice<SubscriptionEntry> findByForCurrentUser(String q, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, int pageSize) {
         final FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         final QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(SubscriptionEntry.class).get();
         final Query query = createQuery(q, queryBuilder);
         final FullTextQuery fullTextQuery = fullTextEntityManager.createFullTextQuery(query, SubscriptionEntry.class);
-        final ArrayList<Filter> termFilters = new ArrayList<>(5);
+        final List<Filter> termFilters = new ArrayList<>(5);
 
-        addFilter(USER_ID, ownerId.toString(), termFilters);
+        addFilter(USER_ID, userRepository.findByCurrentUser().getId(), termFilters);
         addFilter(SUBSCRIPTION_ID, feedId, termFilters);
         addFilter(SEEN, seen, termFilters);
         addFilter(SUBSCRIPTION_TAG, feedTagEqual, termFilters);
@@ -120,7 +117,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         }
     }
 
-    private void addPagination(final Long nextId, final ArrayList<Filter> termFilters) {
+    private void addPagination(final Long nextId, final List<Filter> termFilters) {
         if(nextId != null) {
             final NumericRangeFilter<Long> id = NumericRangeFilter.newLongRange(ID, 0L, nextId, true, true);
             termFilters.add(id);

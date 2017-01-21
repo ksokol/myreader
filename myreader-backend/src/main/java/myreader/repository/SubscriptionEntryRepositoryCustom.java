@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public interface SubscriptionEntryRepositoryCustom {
 
-    Slice<SubscriptionEntry> findBy(String q, Long ownerId, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, int pageSize);
+    Slice<SubscriptionEntry> findByForCurrentUser(String q, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, int pageSize);
 
     Set<String> findDistinctTagsForCurrentUser();
 }

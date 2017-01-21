@@ -1,19 +1,28 @@
 package myreader.repository;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
+import myreader.config.CommonConfig;
 import myreader.entity.SubscriptionEntry;
-import myreader.test.IntegrationTestSupport;
-
+import myreader.test.annotation.WithMockUser4;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Slice;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringRunner;
 
-public class SubscriptionEntryRepositoryImplTest extends IntegrationTestSupport {
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+@RunWith(SpringRunner.class)
+@Import(CommonConfig.class)
+@WithMockUser4
+@Sql("classpath:test-data.sql")
+@DataJpaTest
+public class SubscriptionEntryRepositoryImplTest {
 
     @Autowired
     private SubscriptionEntryRepository subscriptionEntryRepository;
@@ -22,15 +31,8 @@ public class SubscriptionEntryRepositoryImplTest extends IntegrationTestSupport 
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void findByOwnerIdIsNullTest() throws Exception {
-        expectedException.expect(InvalidDataAccessApiUsageException.class);
-        expectedException.expectMessage("ownerId is null");
-        subscriptionEntryRepository.findBy(null, null, null, null, null, null, null, 0);
-    }
-
-    @Test
-    public void findByPageableIsnullTest() throws Exception {
-        final Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findBy(null, 1L, null, null, null, null, null, 0);
+    public void findByPageableIsNull() throws Exception {
+        final Slice<SubscriptionEntry> slice = subscriptionEntryRepository.findByForCurrentUser(null, null, null, null, null, null, 0);
         assertThat(slice.getSize(), is(0));
     }
 }

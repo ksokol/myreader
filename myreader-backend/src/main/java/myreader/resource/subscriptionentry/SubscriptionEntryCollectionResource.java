@@ -3,7 +3,6 @@ package myreader.resource.subscriptionentry;
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
-import myreader.repository.UserRepository;
 import myreader.resource.subscriptionentry.beans.SearchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
@@ -13,8 +12,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.Resources;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,26 +35,20 @@ public class SubscriptionEntryCollectionResource {
     private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
-    private final UserRepository userRepository;
 
     @Autowired
     public SubscriptionEntryCollectionResource(final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
                                                final SubscriptionRepository subscriptionRepository,
-                                               final SubscriptionEntryRepository subscriptionEntryRepository,
-                                               final UserRepository userRepository) {
+                                               final SubscriptionEntryRepository subscriptionEntryRepository) {
         this.assembler = assembler;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
-        this.userRepository = userRepository;
     }
 
     @RequestMapping(method = GET)
-    public PagedResources<SubscriptionEntryGetResponse> get(SearchRequest page, @AuthenticationPrincipal User user) {
-        myreader.entity.User myreaderUser = userRepository.findByEmail(user.getUsername());
-
-        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findBy(
+    public PagedResources<SubscriptionEntryGetResponse> get(SearchRequest page) {
+        Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findByForCurrentUser(
                 page.getQ(),
-                myreaderUser.getId(),
                 page.getFeedUuidEqual(),
                 page.getFeedTagEqual(),
                 page.getEntryTagEqual(),
