@@ -19,24 +19,35 @@ public final class EntryLinkSanitizer {
         Assert.notNull(feedLink, "feedLink is null");
         Assert.isTrue(PATTERN.matcher(feedLink).matches(), "feedLink must start with http(s)?://");
 
-        final String tmp = entryLink.replace("\n", "").trim();
+        String entryUrl = entryLink.replace("\n", "").trim();
 
-        if (PATTERN.matcher(tmp).matches()) {
-            return tmp;
+        if (PATTERN.matcher(entryUrl).matches()) {
+            return entryUrl;
         }
 
         UriComponents uriComponents = UriComponentsBuilder.fromUriString(feedLink).build();
         String scheme = uriComponents.getScheme();
+
+        if(isSchemeRelative(entryUrl)) {
+            return String.format("%s:%s", scheme, entryUrl);
+        }
+
         String host = uriComponents.getHost();
         String baseUrl = String.format("%s://%s", scheme, host);
-
-
         String sep = StringUtils.EMPTY;
 
-        if(!tmp.startsWith("/")) {
+        if(isRelative(entryUrl)) {
             sep = "/";
         }
 
-        return String.format("%s%s%s", baseUrl, sep, tmp);
+        return String.format("%s%s%s", baseUrl, sep, entryUrl);
+    }
+
+    private static boolean isRelative(String tmp) {
+        return !tmp.startsWith("/");
+    }
+
+    private static boolean isSchemeRelative(String url) {
+        return url.startsWith("//");
     }
 }

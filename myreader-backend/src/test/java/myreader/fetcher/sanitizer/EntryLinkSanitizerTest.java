@@ -98,4 +98,11 @@ public class EntryLinkSanitizerTest {
         String sanitized = EntryLinkSanitizer.sanitize("/test", HTTP_URL);
         assertThat(sanitized, is(HTTP_URL + "/test"));
     }
+
+    @Test
+    public void test13() throws Exception {
+        String sanitized = EntryLinkSanitizer.sanitize("//sub.example.com/relative", "http://sub.example.com/");
+        assertThat(sanitized, is("http://sub.example.com/relative"));
+
+    }
 }
