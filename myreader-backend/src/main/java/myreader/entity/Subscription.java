@@ -1,5 +1,6 @@
 package myreader.entity;
 
+import org.hibernate.annotations.Formula;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
@@ -36,7 +37,7 @@ public class Subscription {
     private String tag;
     private User user;
     private int fetchCount;
-    private int unseen = 0;
+    private int unseen;
     private Date createdAt;
     private Feed feed;
     private Long lastFeedEntryId;
@@ -96,7 +97,8 @@ public class Subscription {
         this.fetchCount = fetchCount;
     }
 
-    @Column(name = "user_feed_unseen", columnDefinition = "INT DEFAULT 0", precision = 0)
+    @Formula("(select count(ufe.user_feed_entry_id) from user_feed_entry ufe " +
+             "where ufe.user_feed_entry_user_feed_id = user_feed_id and ufe.user_feed_entry_is_read = 0)")
     public int getUnseen() {
         return unseen;
     }

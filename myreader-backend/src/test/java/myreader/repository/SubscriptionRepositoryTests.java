@@ -41,7 +41,6 @@ public class SubscriptionRepositoryTests {
     public void before() {
         subscription = em.find(Subscription.class, SUBSCRIPTION_ID);
         assertThat(subscription.getLastFeedEntryId(), nullValue());
-        assertThat(subscription.getUnseen(), is(1));
         assertThat(subscription.getFetchCount(), is(15));
     }
 
@@ -55,13 +54,12 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void updateLastFeedEntryIdAndIncrementUnseenAndIncrementFetchCount() throws Exception {
-        subscriptionRepository.updateLastFeedEntryIdAndIncrementUnseenAndIncrementFetchCount(FEED_ENTRY_ID, SUBSCRIPTION_ID);
+    public void updateLastFeedEntryIdAndIncrementFetchCount() throws Exception {
+        subscriptionRepository.updateLastFeedEntryIdAndIncrementFetchCount(FEED_ENTRY_ID, SUBSCRIPTION_ID);
 
         subscription = em.refresh(subscription);
 
         assertThat(subscription.getLastFeedEntryId(), is(FEED_ENTRY_ID));
-        assertThat(subscription.getUnseen(), is(2));
         assertThat(subscription.getFetchCount(), is(16));
     }
 
@@ -81,5 +79,17 @@ public class SubscriptionRepositoryTests {
         em.persist(subscription);
 
         assertThat(subscriptionRepository.countByFeedId(feed.getId()), is(1));
+    }
+
+    @Test
+    public void shouldRecalculateSubscriptionUnseenCount() throws Exception {
+        subscription = em.find(Subscription.class, 3L);
+        assertThat(subscription.getUnseen(), is(1));
+
+        subscription.getSubscriptionEntries().stream().forEach(subscriptionEntry -> subscriptionEntry.setSeen(false));
+        em.flush();
+
+        subscription = em.refresh(subscription);
+        assertThat(subscription.getUnseen(), is(2));
     }
 }

@@ -3,7 +3,7 @@
     "title": "user103_subscription1",
     "tag": "test1",
     "sum": 15,
-    "unseen": 1,
+    "unseen": 0,
     "origin": "http://feeds.feedburner.com/javaposse",
     "createdAt": "2011-04-15T19:20:46Z",
     "links": "${json-unit.ignore}"

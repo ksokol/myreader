@@ -17,8 +17,9 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Override
     Subscription findOne(Long id);
 
-    @Query(value="select s from Subscription s join fetch s.feed where s.user.email = ?#{principal.username} and s.unseen > ?1")
-    List<Subscription> findAllByUnseenGreaterThanAndCurrentUser(Integer unseenCount);
+    @Query(value="select s from Subscription s join fetch s.feed where s.user.email = ?#{principal.username} " +
+                 "and (select count(1) from SubscriptionEntry se where se.subscription.id = s.id and se.seen = false) > ?1")
+    List<Subscription> findAllByUnseenGreaterThanAndCurrentUser(long unseenCount);
 
     @Query("select s from Subscription s join fetch s.feed where s.id = ?1 and s.user.email = ?#{principal.username}")
     Subscription findByIdAndCurrentUser(Long id);
@@ -27,14 +28,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     Subscription findByFeedUrlAndCurrentUser(String url);
 
     Subscription findByUserEmailAndFeedUrl(String email, String url);
-
-    @Modifying
-    @Query("update Subscription set unseen = unseen-1 where id = ?1")
-    void decrementUnseen(Long id);
-
-    @Modifying
-    @Query("update Subscription set unseen = unseen+1 where id = ?1")
-    void incrementUnseen(Long id);
 
     @Query("select distinct(s.tag) from Subscription as s where s.user.email = ?#{principal.username} and s.tag is not null")
     List<String> findDistinctTagsByCurrentUser();
@@ -45,9 +38,9 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     void updateLastFeedEntryId(Long feedEntryId, Long subscriptionId);
 
     @Transactional
-    @Query("update Subscription set lastFeedEntryId = ?1, unseen = unseen + 1, fetchCount = fetchCount + 1 where id = ?2")
+    @Query("update Subscription set lastFeedEntryId = ?1, fetchCount = fetchCount + 1 where id = ?2")
     @Modifying
-    void updateLastFeedEntryIdAndIncrementUnseenAndIncrementFetchCount(Long feedEntryId, Long subscriptionId);
+    void updateLastFeedEntryIdAndIncrementFetchCount(Long feedEntryId, Long subscriptionId);
 
     int countByFeedId(Long id);
 }

@@ -45,8 +45,8 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
     }
 
     @Test
-    public void unseenGreaterThanZeroOne() throws Exception {
-        mockMvc.perform(getAsUser2("/api/2/subscriptions?unseenGreaterThan=1"))
+    public void unseenGreaterThanZero() throws Exception {
+        mockMvc.perform(getAsUser2("/api/2/subscriptions?unseenGreaterThan=10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("content..uuid", hasSize(0)));
     }

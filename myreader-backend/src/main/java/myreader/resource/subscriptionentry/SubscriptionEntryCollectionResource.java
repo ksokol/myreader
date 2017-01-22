@@ -2,7 +2,6 @@ package myreader.resource.subscriptionentry;
 
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.repository.SubscriptionRepository;
 import myreader.resource.subscriptionentry.beans.SearchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
@@ -33,15 +32,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class SubscriptionEntryCollectionResource {
 
     private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
-    private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
 
     @Autowired
     public SubscriptionEntryCollectionResource(final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
-                                               final SubscriptionRepository subscriptionRepository,
                                                final SubscriptionEntryRepository subscriptionEntryRepository) {
         this.assembler = assembler;
-        this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
     }
 
@@ -82,12 +78,7 @@ public class SubscriptionEntryCollectionResource {
                 continue;
             }
 
-            if (subscriptionPatch.getSeen() != null && subscriptionPatch.getSeen() != subscriptionEntry.isSeen()) {
-                if (subscriptionPatch.getSeen()) {
-                    subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
-                } else {
-                    subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
-                }
+            if (subscriptionPatch.getSeen() != null) {
                 subscriptionEntry.setSeen(subscriptionPatch.getSeen());
             }
             subscriptionEntry.setTag(subscriptionPatch.getTag());

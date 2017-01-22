@@ -89,7 +89,7 @@ public class SubscriptionEntryBatch {
 
         subscriptionEntryRepository.save(subscriptionEntry);
 
-        subscriptionRepository.updateLastFeedEntryIdAndIncrementUnseenAndIncrementFetchCount(feedEntry.getId(), subscription.getId());
+        subscriptionRepository.updateLastFeedEntryIdAndIncrementFetchCount(feedEntry.getId(), subscription.getId());
 
     }
 }

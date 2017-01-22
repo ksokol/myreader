@@ -2,7 +2,6 @@ package myreader.resource.subscriptionentry;
 
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.repository.SubscriptionRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
@@ -25,16 +24,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 @RequestMapping("api/2/subscriptionEntries/{id}")
 public class SubscriptionEntryEntityResource {
 
-    private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
 
     @Autowired
     public SubscriptionEntryEntityResource(ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
-                                           final SubscriptionRepository subscriptionRepository,
                                            final SubscriptionEntryRepository subscriptionEntryRepository) {
         this.assembler = assembler;
-        this.subscriptionRepository = subscriptionRepository;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
     }
 
@@ -49,12 +45,7 @@ public class SubscriptionEntryEntityResource {
     public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @RequestBody SubscriptionEntryPatchRequest request) {
         final SubscriptionEntry subscriptionEntry = findOrThrowException(id);
 
-        if(request.getSeen() != null && request.getSeen() != subscriptionEntry.isSeen()) {
-            if (request.getSeen()) {
-                subscriptionRepository.decrementUnseen(subscriptionEntry.getSubscription().getId());
-            } else {
-                subscriptionRepository.incrementUnseen(subscriptionEntry.getSubscription().getId());
-            }
+        if(request.getSeen() != null) {
             subscriptionEntry.setSeen(request.getSeen());
         }
 

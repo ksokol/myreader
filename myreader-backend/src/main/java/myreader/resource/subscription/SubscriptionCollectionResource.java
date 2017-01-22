@@ -50,7 +50,7 @@ public class SubscriptionCollectionResource {
     }
 
     @RequestMapping(method = GET)
-    public Map<String, Object> get(@RequestParam(value = "unseenGreaterThan", required = false, defaultValue = "-1") int unseenCount) {
+    public Map<String, Object> get(@RequestParam(value = "unseenGreaterThan", required = false, defaultValue = "-1") long unseenCount) {
         final List<Subscription> source = subscriptionRepository.findAllByUnseenGreaterThanAndCurrentUser(unseenCount);
         final List<SubscriptionGetResponse> target = new ArrayList<>(source.size());
         for (final Subscription subscription : source) {

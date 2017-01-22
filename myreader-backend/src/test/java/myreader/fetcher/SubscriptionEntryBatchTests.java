@@ -43,7 +43,7 @@ public class SubscriptionEntryBatchTests {
     @Test
     public void shouldUpdateSubscriptionStatus() {
         Subscription subscription = em.find(Subscription.class, 101L);
-        assertThat(subscription.getUnseen(), is(1));
+        assertThat(subscription.getUnseen(), is(0));
         assertThat(subscription.getFetchCount(), is(15));
 
         FeedEntry feedEntry =  createFeedEntry(subscription.getFeed());
@@ -52,7 +52,7 @@ public class SubscriptionEntryBatchTests {
 
         subscription = em.refresh(subscription);
 
-        assertThat(subscription.getUnseen(), is(2));
+        assertThat(subscription.getUnseen(), is(1));
         assertThat(subscription.getFetchCount(), is(16));
         assertThat(subscription.getLastFeedEntryId(), is(feedEntry.getId()));
     }
