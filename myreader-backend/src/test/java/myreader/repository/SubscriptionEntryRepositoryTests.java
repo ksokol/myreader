@@ -7,9 +7,7 @@ import myreader.test.annotation.WithMockUser1;
 import myreader.test.annotation.WithMockUser115;
 import myreader.test.annotation.WithMockUser4;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -42,9 +40,6 @@ public class SubscriptionEntryRepositoryTests {
 
     @Autowired
     private IndexSyncJob indexSyncJob;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     private Slice<SubscriptionEntry> slice;
 
