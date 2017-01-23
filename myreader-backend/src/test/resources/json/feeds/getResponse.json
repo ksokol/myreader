@@ -2,7 +2,7 @@
   "links": [
     {
       "rel": "self",
-      "href": "/api/2/feeds"
+      "href": "http://localhost/api/2/feeds"
     }
   ],
   "content": [
