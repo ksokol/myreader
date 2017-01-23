@@ -13,6 +13,7 @@ import java.util.Map;
 /**
  * @author Kamill Sokol
  */
+@Deprecated
 public class MockHttpServletRequestBuilderWithJsonSupport extends MockHttpServletRequestBuilder {
 
     private final ObjectMapper om;
@@ -29,6 +30,7 @@ public class MockHttpServletRequestBuilderWithJsonSupport extends MockHttpServle
      * @return a MockHttpServletRequestBuilder
      * @throws IOException
      */
+    @Deprecated
     public MockHttpServletRequestBuilder json(String content) throws IOException {
         Assert.notNull(content);
         if(content.startsWith("{") ) {
