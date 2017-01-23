@@ -73,7 +73,7 @@ public class SubscriptionEntryBatch {
         List<ExclusionPattern> exclusions = exclusionRepository.findBySubscriptionId(subscription.getId());
 
         for (ExclusionPattern exclusionPattern : exclusions) {
-            final boolean excluded = exclusionChecker.isExcluded(exclusionPattern.getPattern(), feedEntry.getTitle(), feedEntry.getContent());
+            final boolean excluded = exclusionChecker.isExcluded(exclusionPattern.getPattern(), feedEntry.getTitle(), feedEntry.getContent(), feedEntry.getUrl());
 
             if(excluded) {
                 exclusionRepository.incrementHitCount(exclusionPattern.getId());
