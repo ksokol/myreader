@@ -29,7 +29,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,7 +71,6 @@ public class SubscriptionEntryCollectionResourceTest {
     public void testPagingStart() throws Exception {
         mockMvc.perform(get("/api/2/subscriptionEntries?size=1")
                 .contentType(APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?next=1012&size=1"))))
                 .andExpect(jsonPath("content[0].uuid", is("1013")));
     }
