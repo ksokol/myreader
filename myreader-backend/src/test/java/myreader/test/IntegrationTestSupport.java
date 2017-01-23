@@ -3,7 +3,6 @@ package myreader.test;
 import myreader.Starter;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
-import myreader.service.search.jobs.IndexSyncJob;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -42,8 +41,6 @@ public abstract class IntegrationTestSupport {
     @Autowired
     private FeedParser feedParserMock;
     @Autowired
-    private IndexSyncJob indexSyncJob;
-    @Autowired
     private FeedQueue feedQueueMock;
 
     @Before
@@ -54,7 +51,6 @@ public abstract class IntegrationTestSupport {
                 .defaultRequest(get("/").contentType(MediaType.APPLICATION_JSON))
                 .build();
 
-        indexSyncJob.run();
 		beforeTest();
     }
 
