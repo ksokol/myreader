@@ -444,4 +444,14 @@ angular.module('common.services', ['common.api', 'common.caches'])
             otherWindow.location = url;
         }
     }
+}])
+
+.service('applicationPropertyService', ['api', function(api) {
+    var url = '/myreader/info';
+
+    return {
+        getProperties: function() {
+            return api.get('applicationInfo', url);
+        }
+    }
 }]);

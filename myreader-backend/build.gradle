@@ -1,6 +1,7 @@
 plugins {
     id "jacoco"
     id "com.github.kt3k.coveralls" version "2.4.0"
+    id "com.gorylenko.gradle-git-properties" version "1.4.6"
 }
 
 apply plugin: 'java'
@@ -73,6 +74,7 @@ bootRun {
 }
 
 springBoot {
+    buildInfo()
     executable = true
 }
 

@@ -367,7 +367,8 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     });
 }])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', function($rootScope, $scope, $mdMedia, $state) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', '$mdDialog', 'applicationPropertyService',
+    function($rootScope, $scope, $mdMedia, $state, $mdDialog, applicationPropertyService) {
     $scope.data = {
         tags: [],
         items: []
@@ -438,7 +439,26 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
             return item.unseen > 0;
         }
         return true;
-    }
+    };
+
+    $scope.showApplicationProperties = function(event) {
+        applicationPropertyService.getProperties()
+        .then(function(properties) {
+            $mdDialog.show({
+                templateUrl: 'ApplicationProperties',
+                parent: angular.element(document.body),
+                targetEvent: event,
+                clickOutsideToClose: true,
+                fullscreen: $scope.customFullscreen, // Only for -xs, -sm breakpoints.
+                locals: {
+                    properties: properties
+                },
+                controller: function($scope, $mdDialog, properties) {
+                    $scope.properties = properties;
+                }
+            });
+        });
+    };
 }])
 
 .controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'windowService', 'hotkeys', SubscriptionEntryListCtrl])

@@ -336,4 +336,12 @@ angular.module('common.api', [])
             return deferred.promise;
         }
     }
-}]);
+}])
+
+.service('applicationInfoConverter', function() {
+    return {
+        convertFrom: function (data) {
+            return data;
+        }
+    }
+});
