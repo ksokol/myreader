@@ -5,9 +5,9 @@ import myreader.test.SecurityTestSupport;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 
 import javax.servlet.http.Cookie;
-
 import java.nio.charset.Charset;
 
 import static myreader.config.UrlMappings.HYSTRIX;
@@ -222,6 +222,20 @@ public class ApiSecurityTest extends SecurityTestSupport {
         mockMvc.perform(options(HYSTRIX.mapping())
                 .with(sessionUser(USER1)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void shouldRejectAccessToActuatorEndpointsWhenUserIsAnonymous() throws Exception {
+        mockMvc.perform(get("/info"))
+                .andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/"))
+                .andExpect(status().isFound());
+    }
+
+    @Test
+    public void shouldRejectAccessToActuatorEndpointsWhenUserIsAuthenticated() throws Exception {
+        mockMvc.perform(get("/info")
+                .with(sessionUser(USER1)))
+                .andExpect(status().isOk());
     }
 
     private static String basic(KnownUser user) {

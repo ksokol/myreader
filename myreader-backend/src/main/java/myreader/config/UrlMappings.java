@@ -7,7 +7,7 @@ public enum UrlMappings {
 
     LOGOUT("logout"),
     LOGIN_PROCESSING("check"),
-    LANDING_PAGE("app"),
+    LANDING_PAGE(""),
     HYSTRIX_STREAM("hystrix.stream"),
     HYSTRIX_PROXY("proxy.stream"),
     HYSTRIX_DASHBOARD("dashboard"),

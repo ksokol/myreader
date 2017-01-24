@@ -58,13 +58,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .passwordEncoder(passwordEncoder());
     }
 
-    @Override
-    public void configure(WebSecurity webSecurity) throws Exception {
-        webSecurity
-                .ignoring()
-                .antMatchers(LANDING_PAGE.mapping(), "/index.html", "/*.css", "/*.js");
-    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new Md5PasswordEncoder();
@@ -80,10 +73,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     class DefaultSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         @Override
+        public void configure(WebSecurity webSecurity) throws Exception {
+            webSecurity
+                    .ignoring()
+                    .antMatchers(LANDING_PAGE.mapping(), "/node_modules/**","/app/**", "/index.html", "/*.css", "/*.js");
+        }
+
+        @Override
         protected void configure(HttpSecurity http) throws Exception {
             http
-                .authorizeRequests().antMatchers("/**").permitAll()
-                .and()
                 .formLogin().loginPage("/")
                 .loginProcessingUrl(LOGIN_PROCESSING.mapping()).permitAll()
                 .successHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT))
@@ -94,6 +92,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().logoutSuccessHandler((request, response, authentication) -> response.setStatus(SC_NO_CONTENT))
                 .permitAll()
                 .deleteCookies("JSESSIONID")
+                .and()
+                .authorizeRequests().antMatchers("/**").authenticated()
                 .and()
                 .addFilterAfter(new XAuthoritiesFilter(), FilterSecurityInterceptor.class)
                 .csrf().disable()
