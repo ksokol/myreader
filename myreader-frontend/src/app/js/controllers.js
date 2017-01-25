@@ -453,9 +453,9 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                 locals: {
                     properties: properties
                 },
-                controller: function($scope, $mdDialog, properties) {
+                controller: ['$scope', '$mdDialog', 'properties', function($scope, $mdDialog, properties) {
                     $scope.properties = properties;
-                }
+                }]
             });
         });
     };
