@@ -1,0 +1,63 @@
+<md-sidenav layout="column" class="site-sidenav md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+    <md-toolbar>
+        <md-button class="md-icon-button" ng-hide="isInvisible('gt-md')" ng-click="showApplicationProperties()" aria-label="Menu">
+            <md-icon md-font-library="material-icons">help</md-icon>
+        </md-button>
+    </md-toolbar>
+
+    <md-content flex role="navigation">
+        <ul class="subscription-tag-menu">
+            <li class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
+                <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)" my-click-broadcast="navigation-close">{{item | navigationItemTitle}}</md-button>
+                <ul ng-show="isOpen(item)" class="menu-toggle-list">
+                    <li ng-repeat="subscription in item.subscriptions" ng-hide="subscription.unseen < 1">
+                        <md-button md-no-ink
+                                   ng-class="{'active' : isSelected(subscription)}"
+                                   ui-sref="app.entries({tag: subscription.tag, uuid: subscription.uuid})"
+                                   my-click-broadcast="navigation-close">
+                            {{::subscription.title}} ({{subscription.unseen}})
+                        </md-button>
+                    </li>
+                </ul>
+            </li>
+            <li class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
+                <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{item | navigationItemTitle}}</md-button>
+            </li>
+            <li>
+                <md-button my-click-broadcast="navigation-close navigation-clear-selection" ui-sref="app.subscriptions">subscriptions</md-button>
+            </li>
+            <li ui-sref-active="hide">
+                <md-button my-click-broadcast="navigation-close" ui-sref="app.bookmarks">bookmarks</md-button>
+            </li>
+            <li ui-sref-active="hide">
+                <md-button my-click-broadcast="navigation-close" ui-sref="app.entries">Stream</md-button>
+            </li>
+            <li my-show-admin>
+                <md-button my-click-broadcast="navigation-close" ui-sref="app.admin">Admin</md-button>
+            </li>
+            <li my-show-admin>
+                <md-button my-click-broadcast="navigation-close" ui-sref="app.feed">Feeds</md-button>
+            </li>
+            <li my-show-admin>
+                <md-button my-click-broadcast="navigation-close" href="dashboard" target="_blank">Hystrix Dashboard</md-button>
+            </li>
+            <li>
+                <md-button my-click-broadcast="navigation-close" ui-sref="app.settings">Settings</md-button>
+            </li>
+            <li>
+                <md-button my-click-broadcast="logout">logout</md-button>
+            </li>
+        </ul>
+    </md-content>
+</md-sidenav>
+<div layout="column" tabIndex="-1" role="main" flex>
+    <md-toolbar >
+        <div ui-view="actions" class="md-toolbar-tools"></div>
+    </md-toolbar>
+
+    <div hide-gt-md id="md-progress-linear-wrapper">
+        <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
+    </div>
+
+    <md-content ui-view="content" md-scroll-y flex layout-padding ></md-content>
+</div>

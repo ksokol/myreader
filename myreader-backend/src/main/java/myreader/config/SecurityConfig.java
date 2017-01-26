@@ -76,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void configure(WebSecurity webSecurity) throws Exception {
             webSecurity
                     .ignoring()
-                    .antMatchers(LANDING_PAGE.mapping(), "/node_modules/**","/app/**", "/index.html", "/*.css", "/*.js");
+                    .antMatchers(LANDING_PAGE.mapping(), "/node_modules/**", "/app/**", "/templates/**", "/index.html", "/*.css", "/*.js");
         }
 
         @Override

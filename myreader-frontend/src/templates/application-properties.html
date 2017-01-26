@@ -1,0 +1,30 @@
+<md-dialog aria-label="Mango (Fruit)">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>About</h2>
+            <span flex></span>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <table>
+                <tr>
+                    <td>Branch</td>
+                    <td>{{properties.git.branch}}</td>
+                </tr>
+                <tr>
+                    <td>Commit Id</td>
+                    <td>{{properties.git.commit.id}}</td>
+                </tr>
+                <tr>
+                    <td>Version</td>
+                    <td>{{properties.build.version}}</td>
+                </tr>
+                <tr>
+                    <td>Build Time</td>
+                    <td>{{properties.build.time}}</td>
+                </tr>
+            </table>
+        </div>
+    </md-dialog-content>
+</md-dialog>

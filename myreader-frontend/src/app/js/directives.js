@@ -35,7 +35,7 @@ angular.module('common.directives', [])
 .directive('myEntryTags',['subscriptionEntryService', function(subscriptionEntryService) {
     return {
         restrict: 'E',
-        templateUrl: 'Tags',
+        templateUrl: 'templates/tags.html',
         scope: {
             entry: '=entry'
         },
@@ -88,7 +88,7 @@ angular.module('common.directives', [])
 .directive('myExclusions',['exclusionService', function(exclusionService) {
     return {
         restrict: 'E',
-        templateUrl: 'Exclusions',
+        templateUrl: 'templates/exclusions.html',
         scope: {
             subscription: '=subscription'
         },

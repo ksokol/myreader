@@ -1,0 +1,12 @@
+<h2 class="md-title">Subscription entries to ignore</h2>
+<md-chips class="my-tag-chips" ng-model="exclusions" md-on-append="addTag($chip)">
+    <md-chip-template>
+                    <span>
+                      <strong>{{$chip.pattern}}</strong>
+                        <em>({{$chip.hitCount}})</em>
+                    </span>
+    </md-chip-template>
+    <button md-chip-remove ng-click="removeTag($chip.uuid)" class="md-primary my-tag-chip">
+        <md-icon md-font-library="material-icons">close</md-icon>
+    </button>
+</md-chips>

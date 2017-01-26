@@ -1,0 +1,30 @@
+<my-list class="md-default-theme">
+    <my-list-item ng-class="{{isFocused(entry)}}" class="my-2-line" ng-repeat="entry in data.entries | filter: visible">
+        <div class="my-no-style my-list-item-inner">
+            <div layout="row">
+                <div class="my-list-item-text">
+                    <div>
+                        <h3 hide-gt-md ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
+                        <h3 hide show-gt-md class="my-a" ng-click="openOrigin(entry)">{{::entry.title | htmlEntities}}</h3>
+                        <h4>
+                            <md-icon ng-class="my-a" hide show-gt-md ng-click="toggleRead(entry)" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
+                            {{::entry.createdAt | timeago}} on {{::entry.feedTitle | htmlEntities}}
+                        </h4>
+                    </div>
+                    <p hide show-gt-md ng-show="showDetails()" ng-bind-html="entry.content | targetBlank" my-wrap-entry-content></p>
+                    <div hide-gt-md>
+                        <md-checkbox ng-change="markAsReadAndHide(entry)" class="my-secondary" ng-model="entry.seen" aria-label="Mark as seen"></md-checkbox>
+                    </div>
+                    <div>
+                        <my-entry-tags hide show-gt-md entry="entry"></my-entry-tags>
+                    </div>
+                </div>
+            </div>
+
+            <my-divider class="my-default-theme"></my-divider>
+        </div>
+    </my-list-item>
+    <my-list-item align="center" ng-click="loadMore()" ng-show="data.next()">
+        <md-button>load more</md-button>
+    </my-list-item>
+</my-list>

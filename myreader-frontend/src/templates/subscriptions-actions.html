@@ -1,0 +1,25 @@
+<md-button class="md-icon-button" ng-hide="isInvisible('gt-md')" ng-click="openMenu()" aria-label="Menu">
+    <md-icon md-font-library="material-icons">menu</md-icon>
+</md-button>
+<h2>
+    <span></span>
+</h2>
+
+<md-input-container ng-show="isInvisible('gt-md')" class="md-icon-float">
+    <md-icon md-font-library="material-icons">search</md-icon>
+    <input class="my-input"
+           ng-model="searchKey"
+           aria-label="Subscription search"
+           ng-keyup="onKey()"
+           my-enter-key="broadcast('search', searchKey)"
+           my-delete-key="broadcast('search', searchKey)">
+</md-input-container>
+
+<span flex></span>
+
+<md-button ng-hide="isInvisible('gt-md')" tabindex="-1" class="md-icon-button" aria-label="subscription search" ng-click="openSearch()">
+    <md-icon md-font-library="material-icons">search</md-icon>
+</md-button>
+<md-button ng-hide="isInvisible()" tabindex="-1" class="md-icon-button" aria-label="Open" ui-sref="app.subscription-add">
+    <md-icon md-font-library="material-icons">add</md-icon>
+</md-button>

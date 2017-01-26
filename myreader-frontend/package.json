@@ -38,6 +38,7 @@
     "del": "2.0.1",
     "gulp-html-src": "1.0.0",
     "gulp-debug": "*",
+    "gulp-angular-embed-templates": "2.3.0",
     "phantomjs-prebuilt": "2.1.7",
     "through2": "2.0.0",
     "vinyl-paths": "2.0.0",

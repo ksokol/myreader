@@ -1,0 +1,45 @@
+<form name="feedForm">
+    <div layout="row">
+        <md-input-container flex>
+            <label>Title</label>
+            <input name="title" ng-model="feed.title" required>
+
+            <div ng-messages="feedForm.title.$error">
+                <div ng-message="required">required</div>
+            </div>
+        </md-input-container>
+    </div>
+    <div layout="row">
+        <md-input-container flex>
+            <label>Url</label>
+            <input required
+                   name="url"
+                   ng-model="feed.url"
+                   my-valid-syndication
+                   ng-model-options="{ debounce: 500 }"
+                   ng-disabled="feedForm.url.$pending">
+
+            <div ng-messages="feedForm.url.$error">
+                <div ng-message="required">required</div>
+                <div ng-message="validSyndication">This is not a valid syndication feed</div>
+            </div>
+        </md-input-container>
+    </div>
+</form>
+
+<h2 ng-hide="feed.errors.length === 0">
+    <span>Fetch errors in the last {{::feed.errors[0].retainDays}} day(s)</span>
+</h2>
+<md-list>
+    <md-list-item md-no-ink class="md-3-line" ng-repeat="error in feed.errors">
+        <div class="md-list-item-text">
+            <div>
+                <h3 tabindex="-1">{{::error.message}}</h3>
+                <h4>
+                    {{::error.createdAt | timeago}}
+                </h4>
+            </div>
+        </div>
+        <md-divider></md-divider>
+    </md-list-item>
+</md-list>

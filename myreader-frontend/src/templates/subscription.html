@@ -1,0 +1,45 @@
+<form name="subscriptionForm">
+    <div layout="row">
+        <md-input-container ng-show="isEditForm()" flex>
+            <label>Title</label>
+            <input name="title" ng-model="subscription.title">
+        </md-input-container>
+    </div>
+    <div layout="row">
+        <md-input-container ng-hide="isEditForm()" flex>
+            <label>Url</label>
+            <input required
+                   name="origin"
+                   ng-model="subscription.origin"
+                   my-valid-syndication disable="isEditForm()"
+                   ng-model-options="{ debounce: 500 }"
+                   ng-disabled="subscriptionForm.origin.$pending">
+
+            <div ng-messages="subscriptionForm.origin.$error">
+                <div ng-message="required">required</div>
+                <div ng-message="validSyndication">This is not a valid syndication feed</div>
+            </div>
+        </md-input-container>
+    </div>
+
+    <md-input-container ng-show="isEditForm()" flex>
+        <label>Url</label>
+        <input ng-model="subscription.origin" disabled>
+    </md-input-container>
+
+    <md-autocomplete
+            ng-show="isEditForm()"
+            md-selected-item="subscription.tag"
+            md-search-text="searchText"
+            md-items="item in querySearch(searchText)"
+            md-search-text-change="setTag(searchText)"
+            md-item-text="item"
+            md-min-length="0"
+            md-floating-label="Tag">
+        <md-item-template>
+            <span md-highlight-text="searchText" md-highlight-flags="^i">{{item}}</span>
+        </md-item-template>
+    </md-autocomplete>
+
+    <my-exclusions ng-show="subscription.uuid" subscription="subscription"></my-exclusions>
+</form>

@@ -445,7 +445,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         applicationPropertyService.getProperties()
         .then(function(properties) {
             $mdDialog.show({
-                templateUrl: 'ApplicationProperties',
+                templateUrl: 'templates/application-properties.html',
                 parent: angular.element(document.body),
                 targetEvent: event,
                 clickOutsideToClose: true,

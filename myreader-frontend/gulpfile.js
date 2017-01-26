@@ -15,7 +15,8 @@ var uglify = require('gulp-uglify'),
     gutil = require('gulp-util'),
     addSrc = require('gulp-add-src'),
     karma = require('karma').server,
-    path = require('path');
+    path = require('path'),
+    embedTemplates = require('gulp-angular-embed-templates');
 
 var paths = {
     index: 'src/index.html',
@@ -73,6 +74,12 @@ gulp.task('process-js', function() {
     return gulp.src(paths.index)
         .pipe(debug({title: 'looking for javascript files in'}))
         .pipe(ghtmlSrc({presets: 'script', getFileName: replaceNodeModulesPath('src')}))
+        .pipe(embedTemplates({
+            basePath: __dirname + '/src',
+            skipFiles: function(file) {
+                return file.path.includes('/node_modules/');
+            }
+        }))
         .pipe(debug({title: 'found javascript file'}))
         .pipe(concat(paths.compress.js))
         .pipe(uglify())

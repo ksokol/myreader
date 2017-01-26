@@ -1,0 +1,13 @@
+<h3>{{::entry.title | htmlEntities}}</h3>
+<div ng-bind-html="entry.content | targetBlank" my-wrap-entry-content></div>
+<div flex="50">
+    <h3>mark as read</h3>
+    <md-radio-group ng-model="entry.seen">
+        <md-radio-button ng-value="true">true</md-radio-button>
+        <md-radio-button ng-value="false">false</md-radio-button>
+    </md-radio-group>
+</div>
+<div flex="50">
+    <h3>add a tag</h3>
+    <my-entry-tags entry="entry"></my-entry-tags>
+</div>

@@ -1,0 +1,16 @@
+<md-list>
+    <md-list-item ng-click="open(feed)" md-no-ink class="md-2-line" ng-repeat="feed in data.feeds">
+        <div layout="row">
+            <div class="md-list-item-text">
+                <div>
+                    <h3 tabindex="-1">{{::feed.title | htmlEntities}}</h3>
+                    <h4>
+                        <md-icon ng-show="feed.hasErrors" md-font-library="material-icons">error</md-icon>
+                        {{::feed.createdAt | timeago}}
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <md-divider></md-divider>
+    </md-list-item>
+</md-list>
