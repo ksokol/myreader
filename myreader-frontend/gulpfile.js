@@ -123,7 +123,7 @@ gulp.task('karma', function (done) {
             });
             karma.start({
                 preprocessors: {
-                    '**/*.json': 'json2js',
+                    '**/*.json': 'ng-json2js',
                     'src/app/js/**': 'coverage'
                 },
                 frameworks: ['jasmine'],
