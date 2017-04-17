@@ -7,6 +7,7 @@ import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -37,6 +38,12 @@ public class FeedParserConfiguration {
             new MediaType("application", "rss+atom")
     );
 
+    private final Environment environment;
+
+    public FeedParserConfiguration(Environment environment) {
+        this.environment = environment;
+    }
+
     @Bean
     public RestTemplate syndicationRestTemplate() {
         final RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(customHttpClient()));
@@ -47,7 +54,9 @@ public class FeedParserConfiguration {
 
     @Bean
     public FeedParser parser(ApplicationEventPublisher eventPublisher) {
-        return new HystrixFeedParser(new DefaultFeedParser(syndicationRestTemplate(), eventPublisher));
+        DefaultFeedParser defaultFeedParser = new DefaultFeedParser(syndicationRestTemplate(), eventPublisher);
+        Boolean hystrixEnabled = environment.getProperty("hystrix.enabled", Boolean.class, true);
+        return hystrixEnabled ? new HystrixFeedParser(defaultFeedParser) : defaultFeedParser;
     }
 
     private List<ClientHttpRequestInterceptor> interceptors() {
