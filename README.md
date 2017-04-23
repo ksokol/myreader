@@ -1,4 +1,4 @@
-MyReader [![Build Status](https://api.travis-ci.org/ksokol/myreader.png?branch=master)](https://travis-ci.org/ksokol/myreader/) [![Coverage Status](https://coveralls.io/repos/ksokol/myreader/badge.png?branch=master)](https://coveralls.io/r/ksokol/myreader?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/a445b95d9ddb4e33905c29ce3ea0b750)](https://www.codacy.com/app/dev_9/myreader)
+MyReader [![Build Status](https://api.travis-ci.org/ksokol/myreader.png?branch=master)](https://travis-ci.org/ksokol/myreader/) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=MyReader:MyReader)](https://sonarqube.com/dashboard/index/MyReader:MyReader) [![Technical debt ratio](https://sonarqube.com/api/badges/measure?key=MyReader:MyReader&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard/index/MyReader:MyReader) 
 ========
 
 MyReader is a RSS reader written in Java. It provides a REST like API for clients like [MyReader Android](https://github.com/ksokol/myreader-android).
