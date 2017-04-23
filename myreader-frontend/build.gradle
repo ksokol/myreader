@@ -50,3 +50,10 @@ gulp.dependsOn npmInstall
 build.dependsOn test
 
 jar.dependsOn gulp
+
+sonarqube {
+    properties {
+        property "sonar.sources", "src"
+        property "sonar.javascript.lcov.reportPath", "build/reports/istanbul/PhantomJS 2.1.1 (Linux 0.0.0)/lcov.info"
+    }
+}

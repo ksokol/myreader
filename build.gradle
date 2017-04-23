@@ -1,9 +1,3 @@
-def vJavaLang = '1.8'
-def javaProjects = [ project('myreader-backend') ]
-def gradleDir = "${rootProject.rootDir}/gradle"
-
-wrapper.gradleVersion = '2.6'
-
 buildscript {
     ext.springBootVersion = '1.4.0.RELEASE'
 
@@ -16,6 +10,16 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
+
+plugins {
+    id "org.sonarqube" version "2.3"
+}
+
+def vJavaLang = '1.8'
+def javaProjects = [ project('myreader-backend') ]
+def gradleDir = "${rootProject.rootDir}/gradle"
+
+wrapper.gradleVersion = '2.6'
 
 configure(allprojects) {
     apply plugin: 'eclipse'
@@ -60,4 +64,17 @@ configure(javaProjects) {
     apply from: "$gradleDir/integTest.gradle"
 
     springBoot.backupSource = false
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "MyReader"
+        property "sonar.projectDescription", "MyReader is a rss reader written in Java."
+        property "sonar.projectKey", "MyReader:MyReader"
+        property "sonar.links.homepage", "https://github.com/ksokol/myreader"
+        property "sonar.links.ci", "https://travis-ci.org/ksokol/myreader"
+        property "sonar.links.issue", "https://github.com/ksokol/myreader/issues"
+        property "sonar.links.scm", "https://github.com/ksokol/myreader"
+        property "sonar.links.scm_dev", "scm:git:git@github.com:ksokol/myreader.git"
+    }
 }

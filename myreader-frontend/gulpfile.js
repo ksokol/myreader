@@ -137,6 +137,7 @@ gulp.task('karma', function (done) {
                     prependPrefix : 'fixture/'
                 },
                 coverageReporter: {
+                    type: 'lcov',
                     dir : 'build/reports/istanbul/'
                 },
                 files: processedFiles,

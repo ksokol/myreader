@@ -1,6 +1,5 @@
 plugins {
     id "jacoco"
-    id "com.github.kt3k.coveralls" version "2.4.0"
     id "com.gorylenko.gradle-git-properties" version "1.4.6"
 }
 
@@ -63,7 +62,6 @@ tasks.withType(FindBugs) {
 
 jacocoTestReport {
     reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
         html.enabled = true
     }
 }
