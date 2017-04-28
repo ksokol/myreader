@@ -223,7 +223,6 @@ angular.module('common.services', ['common.api', 'common.caches'])
 }])
 
 .service('feedService', ['$rootScope', 'api', 'deferService', 'feedCache', function($rootScope, api, deferService, feedCache) {
-    var probeUrl = '/myreader/api/2/feeds/probe';
     var feedUrl = '/myreader/api/2/feeds';
 
     $rootScope.$on('refresh', function() {

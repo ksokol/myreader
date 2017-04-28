@@ -3,7 +3,6 @@ package myreader.resource.feed;
 import myreader.entity.Feed;
 import myreader.repository.FeedRepository;
 import myreader.resource.feed.beans.FeedGetResponse;
-import org.slf4j.Logger;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author Kamill Sokol
