@@ -118,23 +118,6 @@ angular.module('common.directives', [])
     }
 }])
 
-.directive('myValidSyndication', ['feedService', function(feedService) {
-
-    return {
-        require : 'ngModel',
-        scope: {
-            disable: '=disable'
-        },
-        link : function($scope, element, attrs, ngModel) {
-            if(!$scope.disable) {
-                ngModel.$asyncValidators.validSyndication = function(origin) {
-                    return feedService.probe(origin);
-                };
-            }
-        }
-    }
-}])
-
 .directive('myEnterKey', function () {
     return function (scope, element, attrs) {
         element.bind("keydown keypress", function (event) {

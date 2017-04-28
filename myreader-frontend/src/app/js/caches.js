@@ -39,11 +39,6 @@ angular.module('common.caches', ['angular-cache'])
     });
 }])
 
-.service('feedProbeCache', ['CacheFactory', function(CacheFactory) {
-
-    return CacheFactory.createCache('feedProbeCache');
-}])
-
 .service('bookmarksCache', ['CacheFactory', function(CacheFactory) {
 
     return CacheFactory.createCache('bookmarks', {

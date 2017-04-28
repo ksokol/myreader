@@ -11,7 +11,6 @@ import org.springframework.test.annotation.Rollback;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.willReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
 import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
@@ -73,15 +72,13 @@ public class FeedResourceTests extends IntegrationTestSupport {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status", is(400)))
                 .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", containsInAnyOrder("title", "url", "url")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("may not be null", "invalid syndication feed", "may not be null")));
+                .andExpect(jsonPath("fieldErrors..field", containsInAnyOrder("url", "title")))
+                .andExpect(jsonPath("fieldErrors..message", hasItems("may not be null", "may not be null")));
     }
 
     @Rollback
     @Test
     public void shouldUpdateFeed() throws Exception {
-        willReturn(true).given(feedService).valid("http://feeds.feedburner.com/javaposse");
-
         mockMvc.perform(actionAsUserX(HttpMethod.PATCH, KnownUser.ADMIN, "/api/2/feeds/18")
                 .json("{ 'title': 'expected title', 'url': 'http://feeds.feedburner.com/javaposse' }"))
                 .andExpect(status().isOk())
@@ -91,8 +88,6 @@ public class FeedResourceTests extends IntegrationTestSupport {
 
     @Test
     public void shouldReturnWithNotFoundWhenPatchingUnknownFeed() throws Exception {
-        willReturn(true).given(feedService).valid("http://feeds.feedburner.com/javaposse");
-
         mockMvc.perform(actionAsUserX(HttpMethod.PATCH, KnownUser.ADMIN, "/api/2/feeds/999")
                 .json("{ 'title': 'expected title', 'url': 'http://feeds.feedburner.com/javaposse' }"));
     }

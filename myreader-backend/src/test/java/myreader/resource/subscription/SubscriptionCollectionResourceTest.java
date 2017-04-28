@@ -58,8 +58,8 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status", is(400)))
                 .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", contains("origin", "origin")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("invalid syndication feed", "may not be null")));
+                .andExpect(jsonPath("fieldErrors..field", contains("origin")))
+                .andExpect(jsonPath("fieldErrors..message", hasItems("may not be null")));
     }
 
     @Test
@@ -68,8 +68,8 @@ public class SubscriptionCollectionResourceTest extends IntegrationTestSupport {
                 .json("{'url':'invalid url'}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", contains("origin", "origin")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("invalid syndication feed", "may not be null")));
+                .andExpect(jsonPath("fieldErrors..field", contains("origin")))
+                .andExpect(jsonPath("fieldErrors..message", hasItems("may not be null")));
     }
 
     @Test

@@ -112,6 +112,9 @@ angular.module('common.api', [])
         },
         convertTo: function(data) {
             return data;
+        },
+        convertError: function (data) {
+            return data.data.fieldErrors;
         }
     }
 })
@@ -142,45 +145,6 @@ angular.module('common.api', [])
     return {
         convertFrom: function (data) {
             return data;
-        }
-    }
-})
-.service('feedProbeConverter', function() {
-    return {
-        convertFrom: function () {
-            return {};
-        },
-        convertTo: function(data) {
-            return { url: data };
-        },
-        convertError: function (data) {
-            return data;
-        }
-    }
-})
-.service('probeFeedsConverter', function() {
-
-    var Feeds = function(feeds, links) {
-        var self = this;
-        self.feeds = angular.isArray(feeds) ? feeds : [];
-        self.links = angular.isArray(links) ? links : [];
-
-        var getLink = function(rel) {
-            for(var i=0;i<links.length;i++) {
-                if(links[i].rel === rel) {
-                    return links[i].href;
-                }
-            }
-        };
-
-        self.next = function() {
-            return getLink('next');
-        };
-    };
-
-    return {
-        convertFrom: function (data) {
-            return new Feeds(data.content, data.links);
         }
     }
 })

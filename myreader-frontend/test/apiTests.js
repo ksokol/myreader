@@ -670,27 +670,6 @@ describe('api', function() {
         });
     });
 
-    describe("feedProbeConverter", function() {
-        var converter;
-
-        beforeEach(inject(function (feedProbeConverter) {
-            converter = feedProbeConverter;
-        }));
-
-        it('should return empty json', function () {
-            expect(converter.convertFrom(1)).toEqualData({});
-        });
-
-        it('should convert data with enclosing url tag', function () {
-            var data = {content: 1};
-            expect(converter.convertTo(data)).toEqualData({url  : data});
-        });
-
-        it('should return as is  for error callback as is', function () {
-            expect(converter.convertError(1)).toEqualData(1);
-        });
-    });
-
     describe("feedsConverter", function() {
         var converter;
 

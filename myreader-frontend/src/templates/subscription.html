@@ -11,13 +11,12 @@
             <input required
                    name="origin"
                    ng-model="subscription.origin"
-                   my-valid-syndication disable="isEditForm()"
+                   disable="isEditForm()"
                    ng-model-options="{ debounce: 500 }"
                    ng-disabled="subscriptionForm.origin.$pending">
 
             <div ng-messages="subscriptionForm.origin.$error">
                 <div ng-message="required">required</div>
-                <div ng-message="validSyndication">This is not a valid syndication feed</div>
             </div>
         </md-input-container>
     </div>
