@@ -222,39 +222,14 @@ angular.module('common.services', ['common.api', 'common.caches'])
     }
 }])
 
-.service('feedService', ['$rootScope', 'api', 'deferService', 'feedProbeCache', 'feedCache', function($rootScope, api, deferService, feedProbeCache, feedCache) {
-    var probeUrl = '/myreader/api/2/feeds/probe';
+.service('feedService', ['$rootScope', 'api', 'deferService', 'feedCache', function($rootScope, api, deferService, feedCache) {
     var feedUrl = '/myreader/api/2/feeds';
 
     $rootScope.$on('refresh', function() {
-        feedProbeCache.removeAll();
         feedCache.removeAll();
     });
 
     return {
-        probe: function(urlToProbe) {
-            var tmp = probeUrl + '?url=' + urlToProbe;
-            var cached = feedProbeCache.get(tmp);
-
-            if(cached) {
-                if(cached.status === 400) {
-                    return deferService.reject(cached);
-                }
-                return deferService.resolved(cached);
-            }
-
-            var promise = api.post('feedProbe', probeUrl, urlToProbe);
-
-            promise.then(function(data) {
-                feedProbeCache.put(tmp, data);
-            });
-
-            promise.catch(function(data) {
-                feedProbeCache.put(tmp, data);
-            });
-
-            return promise;
-        },
         findAll: function() {
             var cached = feedCache.get('feeds');
 

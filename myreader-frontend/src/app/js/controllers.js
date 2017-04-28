@@ -589,6 +589,14 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
             } else {
                 $state.go('app.subscription', {uuid: data.uuid});
             }
+        }, function(error) {
+            for(var i=0;i<error.length;i++) {
+                $mdToast.show(
+                    $mdToast.simple()
+                        .content(error[i].message)
+                        .position('top right')
+                );
+            }
         });
     });
 
