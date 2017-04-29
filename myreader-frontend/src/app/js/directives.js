@@ -47,7 +47,7 @@ angular.module('common.directives', [])
                     return [];
                 }
 
-                var splitted = tags === null ? [] : tags.split(/[ ,]+/);
+                var splitted = tags.split(/[ ,]+/);
                 var tmp = [];
                 for(var i=0;i<splitted.length;i++) {
                     if(tmp.indexOf(splitted[i]) === -1) {
