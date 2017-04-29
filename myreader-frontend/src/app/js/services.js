@@ -222,44 +222,15 @@ angular.module('common.services', ['common.api', 'common.caches'])
     }
 }])
 
-.service('feedService', ['$rootScope', 'api', 'deferService', 'feedCache', function($rootScope, api, deferService, feedCache) {
+.service('feedService', ['api', 'deferService', function(api, deferService) {
     var feedUrl = '/myreader/api/2/feeds';
-
-    $rootScope.$on('refresh', function() {
-        feedCache.removeAll();
-    });
 
     return {
         findAll: function() {
-            var cached = feedCache.get('feeds');
+            return api.get('feeds', feedUrl);
 
-            if(cached) {
-                return deferService.resolved(cached);
-            }
-
-            var promise = api.get('feeds', feedUrl);
-
-            promise.then(function(data) {
-                feedCache.put('feeds', data);
-            });
-
-            return promise;
         },
         findOne: function(uuid) {
-            var cached = feedCache.get('feeds');
-            var feed;
-
-            if(cached && cached.feeds) {
-                for(var i=0;i<cached.feeds.length;i++) {
-                    if(cached.feeds[i].uuid === uuid) {
-                        feed = cached.feeds[i];
-                        break;
-                    }
-                }
-            }
-
-            var deferred;
-
             var fetchErrorFn = function(data) {
                 return api.get('fetchError', feedUrl + '/' + uuid + '/fetchError')
                     .then(function(errors) {
@@ -268,13 +239,7 @@ angular.module('common.services', ['common.api', 'common.caches'])
                     });
             };
 
-            if(feed) {
-                deferred = deferService.resolved(feed).then(fetchErrorFn);
-            } else {
-                deferred = api.get('feed', feedUrl + '/' + uuid).then(fetchErrorFn)
-            }
-
-            return deferred;
+            return api.get('feed', feedUrl + '/' + uuid).then(fetchErrorFn);
         },
         remove: function(feed) {
             return api.delete('feed',feedUrl + '/' + feed.uuid);

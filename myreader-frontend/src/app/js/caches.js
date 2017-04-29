@@ -52,12 +52,4 @@ angular.module('common.caches', ['angular-cache'])
     return CacheFactory.createCache('settingsCache', {
         storageMode : 'localStorage'
     });
-}])
-
-.service('feedCache', ['CacheFactory', function(CacheFactory) {
-
-    return CacheFactory.createCache('feedCache', {
-        deleteOnExpire: 'aggressive',
-        maxAge: 60 * 5 * 1000 //5 minutes
-    });
 }]);
