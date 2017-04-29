@@ -39,14 +39,6 @@ angular.module('common.caches', ['angular-cache'])
     });
 }])
 
-.service('bookmarksCache', ['CacheFactory', function(CacheFactory) {
-
-    return CacheFactory.createCache('bookmarks', {
-        deleteOnExpire: 'aggressive',
-        maxAge: 60 * 5 * 1000 //5 minutes
-    });
-}])
-
 .service('settingsCache', ['CacheFactory', function(CacheFactory) {
 
     return CacheFactory.createCache('settingsCache', {

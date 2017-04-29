@@ -250,27 +250,12 @@ angular.module('common.services', ['common.api', 'common.caches'])
     }
 }])
 
-.service('bookmarkService', ['$rootScope', 'api', 'deferService', 'bookmarksCache', function($rootScope, api, deferService, bookmarksCache) {
+.service('bookmarkService', ['api', function(api) {
     var url = '/myreader/api/2/subscriptionEntries/availableTags';
-
-    $rootScope.$on('refresh', function() {
-        bookmarksCache.removeAll();
-    });
 
     return {
         findAll: function() {
-            var cached = bookmarksCache.get('bookmarks');
-            if(cached) {
-                return deferService.resolved(cached);
-            }
-
-            var promise = api.get('bookmarkTags', url);
-
-            promise.then(function(data) {
-                bookmarksCache.put('bookmarks', data);
-            });
-
-            return promise;
+            return api.get('bookmarkTags', url);
         }
     }
 }])
