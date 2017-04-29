@@ -502,22 +502,13 @@ describe('service', function() {
             api.get.and.returnValue(call.promise);
         }));
 
-        it('should return cached result', inject(function($rootScope) {
-            var firstPromise = service.findAll();
+        it('should return result', inject(function($rootScope) {
+            var promise = service.findAll();
 
             $rootScope.$digest();
 
             expect(api.get).toHaveBeenCalledWith('bookmarkTags', '/myreader/api/2/subscriptionEntries/availableTags');
-            expect(firstPromise.$$state.value.entries).toEqualData([1]);
-
-            api.get = jasmine.createSpy();
-
-            var secondPromise = service.findAll();
-
-            $rootScope.$digest();
-
-            expect(api.get).not.toHaveBeenCalledWith('bookmarkTags', '/myreader/api/2/subscriptionEntries/availableTags');
-            expect(secondPromise.$$state.value.entries).toEqualData([1]);
+            expect(promise.$$state.value.entries).toEqualData([1]);
         }));
     });
 
