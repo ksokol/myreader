@@ -2,7 +2,6 @@ package myreader.config;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
@@ -30,12 +29,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
     private Environment environment;
-
-    @Value("${server.context-path}")
-    private String contextPath;
-
-    @Value("${server.port}")
-    private String port;
 
     @Override
     public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {

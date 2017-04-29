@@ -1,11 +1,21 @@
 package spring;
 
+import myreader.Starter;
 import myreader.test.KnownUser;
-import myreader.test.SecurityTestSupport;
+import myreader.test.TestDataSourceConfig;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
@@ -26,13 +36,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author Kamill Sokol
  */
-public class ApiSecurityTest extends SecurityTestSupport {
+@RunWith(SpringRunner.class)
+@AutoConfigureMockMvc
+@SpringBootTest(classes = {Starter.class, ApiSecurityTest.AdditionalConfig.class, TestDataSourceConfig.class})
+@TestPropertySource(properties = { "task.enabled = false" })
+public class ApiSecurityTest {
 
-    @Value("${server.context-path}")
-    private String contextPath;
+    private static final String API_2 = "/api/2/irrelevant";
 
-    @Value("${server.port}")
-    private String port;
+    @Autowired
+    private MockMvc mockMvc;
 
     // used by MyReader Android
     @Test
@@ -159,5 +172,17 @@ public class ApiSecurityTest extends SecurityTestSupport {
     private static String basic(KnownUser user) {
         final byte[] usernamePassword = String.format("%s:%s", user.username, user.password).getBytes(Charset.forName("UTF-8"));
         return "Basic " + new String(Base64.encodeBase64(usernamePassword), Charset.forName("UTF-8"));
+    }
+
+    @Configuration
+    static class AdditionalConfig {
+
+        @RestController
+        static class TestController {
+            @RequestMapping(API_2)
+            public void ok() {
+                //returns 200
+            }
+        }
     }
 }
