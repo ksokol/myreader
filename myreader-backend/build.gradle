@@ -10,7 +10,6 @@ apply plugin: 'pmd'
 apply plugin: 'findbugs'
 
 group = 'myreader'
-version = '0.6'
 
 jar {
     archiveName = 'myreader.jar'
