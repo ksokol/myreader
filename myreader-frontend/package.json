@@ -1,6 +1,11 @@
 {
   "name": "myreader-frontend",
   "description": "Myreader frontend package",
+  "scripts": {
+    "gulpClean": "gulp clean",
+    "test": "gulp test",
+    "build": "gulp build"
+  },
   "dependencies": {
     "angular": "1.5.8",
     "angular-aria": "1.5.8",

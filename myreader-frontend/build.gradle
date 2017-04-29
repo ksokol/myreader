@@ -22,34 +22,33 @@ jar {
     includeEmptyDirs = false
 }
 
-task gulp(type: NodeTask) {
-    script = file('node_modules/gulp/bin/gulp.js')
-    args = ['build']
+task build(type: NpmTask, dependsOn: [npm_install, test]) {
+    outputs.files file('dist')
+    inputs.files file('src')
+
+    args = ['run', 'build']
 }
 
-task gulpClean(type: NodeTask) {
-    script = file('node_modules/gulp/bin/gulp.js')
-    args = ['clean']
+task gulpClean(type: NpmTask) {
+    outputs.files file('dist')
+    inputs.files file('src')
+
+    args = ['run', 'gulpClean']
 }
 
-task npmClean(type: NodeTask) {
-    args = ['clean']
-}
+task test(overwrite:true, type: NpmTask) {
+    inputs.files files('src', 'test')
 
-task test(overwrite:true, type: NodeTask) {
-    script = file('node_modules/gulp/bin/gulp.js')
     args = ['test']
 }
 
 clean {
-    delete "node_modules", "node", "dist"
+    delete "node_modules", "node"
 }
 
 clean.dependsOn gulpClean
-gulp.dependsOn npmInstall
-build.dependsOn test
 
-jar.dependsOn gulp
+jar.dependsOn build
 
 sonarqube {
     properties {
