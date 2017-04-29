@@ -187,7 +187,7 @@ public class FeedParserTest {
         try {
             parser.parse(HTTP_EXAMPLE_COM);
             fail("expected exception not thrown");
-        } catch (FeedParseException exception) {
+        } catch (FeedParseException exception) { // NOPMD
             // expected exception
         }
 
