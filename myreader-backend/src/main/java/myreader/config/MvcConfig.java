@@ -2,13 +2,11 @@ package myreader.config;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.security.web.bind.support.AuthenticationPrincipalArgumentResolver;
+import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -18,7 +16,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import java.util.List;
 
-import static myreader.config.UrlMappings.HYSTRIX_DASHBOARD;
 import static myreader.config.UrlMappings.LANDING_PAGE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -28,20 +25,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Configuration
 @EnableTransactionManagement
 @EnableAsync
-@EnableHystrixDashboard
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
     private Environment environment;
-
-    @Value("${server.context-path}")
-    private String contextPath;
-
-    @Value("${server.port}")
-    private String port;
-
-    @Value("${spring.application.name}")
-    private String applicationName;
 
     @Override
     public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
@@ -61,7 +48,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
         registry.addViewController(LANDING_PAGE.mapping()).setViewName("index.html");
-        registry.addRedirectViewController(HYSTRIX_DASHBOARD.mapping(), "hystrix/monitor?title=" + applicationName + "&stream=http://localhost:" + port + contextPath + "/hystrix.stream");
     }
 
     //TODO

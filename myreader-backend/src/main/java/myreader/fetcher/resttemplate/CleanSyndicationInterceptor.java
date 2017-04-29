@@ -17,8 +17,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-
 /**
  * @author Kamill Sokol
  */
@@ -35,9 +33,9 @@ class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
 
         if (execute.getRawStatusCode() == 200) {
             String bodyString = IOUtils.toString(new BOMInputStream(execute.getBody()), charset.name());
-            cleanedBody = invalidXmlCharacters.matcher(bodyString).replaceAll(EMPTY);
+            cleanedBody = invalidXmlCharacters.matcher(bodyString).replaceAll("");
         } else {
-            cleanedBody = EMPTY;
+            cleanedBody = "";
         }
 
         return new ClientHttpResponse() {

@@ -5,7 +5,6 @@ import myreader.fetcher.FeedQueue;
 import myreader.repository.FeedRepository;
 import myreader.resource.processing.beans.ProcessedFeedGetResponse;
 import myreader.resource.processing.beans.ProcessingPutRequest;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -58,7 +57,7 @@ public class ProcessingCollectionResource {
     @RequestMapping(value = "feeds", method = RequestMethod.GET)
     public PagedResources<ProcessedFeedGetResponse> feeds(Pageable pageable) {
         final List<String> snapshot = feedQueue.getSnapshot();
-        if(CollectionUtils.isEmpty(snapshot)) {
+        if(snapshot.isEmpty()) {
             return pagedResourcesAssembler.toResource(new PageImpl<>(Collections.emptyList()), assembler);
         }
         final Page<Feed> feeds = feedRepository.findByUrlIn(snapshot, pageable);

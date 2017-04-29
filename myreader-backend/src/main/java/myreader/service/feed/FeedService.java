@@ -4,12 +4,9 @@ import myreader.entity.Feed;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.repository.FeedRepository;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author Kamill Sokol
@@ -17,8 +14,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Transactional
 @Service
 public class FeedService {
-
-    private static final Logger LOG = getLogger(FeedService.class);
 
     private final FeedRepository feedRepository;
     private final FeedParser feedParser;

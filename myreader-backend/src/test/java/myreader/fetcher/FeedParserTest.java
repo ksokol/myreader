@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
@@ -30,7 +31,6 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpMethod.GET;
@@ -38,7 +38,6 @@ import static org.springframework.http.MediaType.TEXT_XML;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -126,16 +125,6 @@ public class FeedParserTest {
     }
 
     @Test
-    public void testFeed6() throws Exception {
-        mockServer.expect(requestTo("url")).andRespond(withBadRequest());
-
-        FetchResult irrelevant = parser.parse("url", "lastModified");
-        assertThat(irrelevant.getUrl(), is("url"));
-        assertThat(irrelevant.getLastModified(), nullValue());
-        assertThat(irrelevant.getEntries(), hasSize(0));
-    }
-
-    @Test
     public void testFeed7() throws Exception {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
@@ -195,7 +184,12 @@ public class FeedParserTest {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withServerError().body("test"));
 
-        parser.parse(HTTP_EXAMPLE_COM);
+        try {
+            parser.parse(HTTP_EXAMPLE_COM);
+            fail("expected exception not thrown");
+        } catch (FeedParseException exception) {
+            // expected exception
+        }
 
         assertThat(eventPublisher.receivedEvents, hasItem(
                 allOf(

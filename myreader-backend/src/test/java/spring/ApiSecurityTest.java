@@ -1,32 +1,34 @@
 package spring;
 
+import myreader.Starter;
 import myreader.test.KnownUser;
-import myreader.test.SecurityTestSupport;
+import myreader.test.TestDataSourceConfig;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
 
-import static myreader.config.UrlMappings.HYSTRIX;
-import static myreader.config.UrlMappings.HYSTRIX_DASHBOARD;
-import static myreader.config.UrlMappings.HYSTRIX_PROXY;
-import static myreader.config.UrlMappings.HYSTRIX_STREAM;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
 import static myreader.test.CustomRequestPostProcessors.sessionUser;
 import static myreader.test.CustomRequestPostProcessors.xmlHttpRequest;
-import static myreader.test.KnownUser.ADMIN;
 import static myreader.test.KnownUser.USER1;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,16 +36,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author Kamill Sokol
  */
-public class ApiSecurityTest extends SecurityTestSupport {
+@RunWith(SpringRunner.class)
+@AutoConfigureMockMvc
+@SpringBootTest(classes = {Starter.class, ApiSecurityTest.AdditionalConfig.class, TestDataSourceConfig.class})
+@TestPropertySource(properties = { "task.enabled = false" })
+public class ApiSecurityTest {
 
-    @Value("${server.context-path}")
-    private String contextPath;
+    private static final String API_2 = "/api/2/irrelevant";
 
-    @Value("${server.port}")
-    private String port;
-
-    @Value("${spring.application.name}")
-    private String applicationName;
+    @Autowired
+    private MockMvc mockMvc;
 
     // used by MyReader Android
     @Test
@@ -154,77 +156,6 @@ public class ApiSecurityTest extends SecurityTestSupport {
     }
 
     @Test
-    public void testRedirectToHystrixMonitor() throws Exception {
-        mockMvc.perform(get(HYSTRIX_DASHBOARD.mapping())
-                .with(sessionUser(ADMIN)))
-                .andExpect(header().string("Location", "hystrix/monitor?title=" + applicationName + "&stream=http://localhost:" + port + contextPath +"/hystrix.stream"));
-    }
-
-    @Test
-    public void testHystrixDashboard() throws Exception {
-        mockMvc.perform(get("/hystrix/monitor")
-                .with(sessionUser(ADMIN)))
-                .andExpect(content().string(containsString("Hystrix Monitor")))
-                .andExpect(content().contentTypeCompatibleWith(TEXT_HTML));
-    }
-
-    @Test
-    public void testHystrixStream() throws Exception {
-        mockMvc.perform(options(HYSTRIX_STREAM.mapping())
-                .with(sessionUser(ADMIN)))
-                .andExpect(status().isOk());
-    }
-
-
-    @Test
-    public void testHystrixStreamAccessFromLocalhost() throws Exception {
-        mockMvc.perform(options(HYSTRIX_STREAM.mapping()))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testRejectAccessToHystrixDashboardWhenUserIsNotAdmin() throws Exception {
-        mockMvc.perform(get(HYSTRIX_DASHBOARD.mapping())
-                .with(sessionUser(USER1)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testHystrixProxyStream() throws Exception {
-        mockMvc.perform(get(HYSTRIX_PROXY.mapping())
-                .with(sessionUser(ADMIN)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testHystrix() throws Exception {
-        mockMvc.perform(get(HYSTRIX_PROXY.mapping())
-                .with(sessionUser(ADMIN)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testRejectAccessToHystrix() throws Exception {
-        mockMvc.perform(get(HYSTRIX.mapping())
-                .with(sessionUser(USER1)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testRejectAccessToHystrixWithSubpath() throws Exception {
-        mockMvc.perform(get(HYSTRIX.mapping() + "/subpath")
-                .with(sessionUser(USER1)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testRejectAccessToHystrixProxyStreamWhenUserIsNotAdmin() throws Exception {
-        mockMvc.perform(options(HYSTRIX.mapping())
-                .with(sessionUser(USER1)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
     public void shouldRejectAccessToActuatorEndpointsWhenUserIsAnonymous() throws Exception {
         mockMvc.perform(get("/info"))
                 .andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/"))
@@ -241,5 +172,17 @@ public class ApiSecurityTest extends SecurityTestSupport {
     private static String basic(KnownUser user) {
         final byte[] usernamePassword = String.format("%s:%s", user.username, user.password).getBytes(Charset.forName("UTF-8"));
         return "Basic " + new String(Base64.encodeBase64(usernamePassword), Charset.forName("UTF-8"));
+    }
+
+    @Configuration
+    static class AdditionalConfig {
+
+        @RestController
+        static class TestController {
+            @RequestMapping(API_2)
+            public void ok() {
+                //returns 200
+            }
+        }
     }
 }
