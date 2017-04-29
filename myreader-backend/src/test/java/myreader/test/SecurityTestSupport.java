@@ -24,8 +24,6 @@ import org.springframework.web.context.WebApplicationContext;
 @WebAppConfiguration
 public abstract class SecurityTestSupport {
 
-    private static final String HYSTRIX_PROXY = "/proxy.stream";
-
     protected static final String API_2 = "/api/2/irrelevant";
 
     @Autowired
@@ -48,7 +46,7 @@ public abstract class SecurityTestSupport {
 
         @RestController
         static class TestController {
-            @RequestMapping({API_2, HYSTRIX_PROXY})
+            @RequestMapping({API_2})
             public void ok() {
                 //returns 200
             }

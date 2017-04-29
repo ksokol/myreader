@@ -1,13 +1,10 @@
 package myreader.fetcher.converter;
 
-import static org.springframework.http.HttpHeaders.LAST_MODIFIED;
-
 import com.rometools.rome.feed.atom.Content;
 import com.rometools.rome.feed.atom.Entry;
 import com.rometools.rome.feed.atom.Feed;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
@@ -15,6 +12,8 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.springframework.http.HttpHeaders.LAST_MODIFIED;
 
 /**
  * @author Kamill Sokol
@@ -44,7 +43,7 @@ final class AtomConverter {
 
             final List<Content> contents1 = e.getContents();
 
-            if (CollectionUtils.isNotEmpty(contents1)) {
+            if (!contents1.isEmpty()) {
                 Content contents = contents1.get(0);
                 if(StringUtils.isNotBlank(contents.getValue())) {
                     dto.setContent(contents.getValue());

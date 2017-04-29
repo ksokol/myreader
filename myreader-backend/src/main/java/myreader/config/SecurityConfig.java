@@ -24,10 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT;
 import static myreader.config.UrlMappings.API;
-import static myreader.config.UrlMappings.HYSTRIX;
-import static myreader.config.UrlMappings.HYSTRIX_DASHBOARD;
-import static myreader.config.UrlMappings.HYSTRIX_PROXY;
-import static myreader.config.UrlMappings.HYSTRIX_STREAM;
 import static myreader.config.UrlMappings.LANDING_PAGE;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 
@@ -41,14 +37,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserRepository userRepository;
     private final String rememberMeKey;
-    private final String hystrixStreamAllowedIp;
 
-    public SecurityConfig(UserRepository userRepository,
-                          @Value("${remember-me.key}") String rememberMeKey,
-                          @Value("${myreader.hystrix.stream.allowed-ip}") String hystrixStreamAllowedIp) {
+    public SecurityConfig(UserRepository userRepository, @Value("${remember-me.key}") String rememberMeKey) {
         this.userRepository = userRepository;
         this.rememberMeKey = rememberMeKey;
-        this.hystrixStreamAllowedIp = hystrixStreamAllowedIp;
     }
 
     @Autowired
@@ -63,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new Md5PasswordEncoder();
     }
 
-    @Bean
+    @Override
     public UserDetailsService userDetailsService() {
         return new UserRepositoryUserDetailsService(userRepository);
     }
@@ -118,39 +110,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(new XAuthoritiesFilter(), FilterSecurityInterceptor.class)
                 .csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Form realm=\"MyReader\""));
-        }
-    }
-
-    @Order(98)
-    @Configuration
-    class HystrixStreamSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                .antMatcher(HYSTRIX_STREAM.mapping())
-                .authorizeRequests().anyRequest()
-                .hasIpAddress(hystrixStreamAllowedIp).and()
-                .csrf().disable();
-        }
-    }
-
-    @Order(97)
-    @Configuration
-    class HystrixSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            String urlRegexp = String.format("(%s|%s.*|%s|%s/.*)", HYSTRIX_DASHBOARD.mapping(), HYSTRIX_PROXY.mapping(), HYSTRIX.mapping(), HYSTRIX.mapping());
-
-            http
-                .regexMatcher(urlRegexp)
-                .authorizeRequests().anyRequest()
-                .hasRole("ADMIN")
-                .and()
-                .rememberMe().key(rememberMeKey)
-                .and()
-                .csrf().disable();
         }
     }
 }

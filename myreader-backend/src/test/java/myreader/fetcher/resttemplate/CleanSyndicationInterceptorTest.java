@@ -13,7 +13,6 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -70,7 +69,7 @@ public class CleanSyndicationInterceptorTest {
         final ClientHttpResponse response = intercept();
         final String body = body(response, "UTF-8");
 
-        assertThat(body, is(EMPTY));
+        assertThat(body, is(""));
     }
 
     @Test

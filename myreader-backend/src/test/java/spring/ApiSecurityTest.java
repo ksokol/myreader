@@ -10,23 +10,15 @@ import org.springframework.http.HttpHeaders;
 import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
 
-import static myreader.config.UrlMappings.HYSTRIX;
-import static myreader.config.UrlMappings.HYSTRIX_DASHBOARD;
-import static myreader.config.UrlMappings.HYSTRIX_PROXY;
-import static myreader.config.UrlMappings.HYSTRIX_STREAM;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
 import static myreader.test.CustomRequestPostProcessors.sessionUser;
 import static myreader.test.CustomRequestPostProcessors.xmlHttpRequest;
-import static myreader.test.KnownUser.ADMIN;
 import static myreader.test.KnownUser.USER1;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,9 +33,6 @@ public class ApiSecurityTest extends SecurityTestSupport {
 
     @Value("${server.port}")
     private String port;
-
-    @Value("${spring.application.name}")
-    private String applicationName;
 
     // used by MyReader Android
     @Test
@@ -151,77 +140,6 @@ public class ApiSecurityTest extends SecurityTestSupport {
                 .andExpect(status().isNoContent())
                 .andExpect(cookie().value("JSESSIONID", nullValue()))
                 .andExpect(cookie().value("remember-me", nullValue()));
-    }
-
-    @Test
-    public void testRedirectToHystrixMonitor() throws Exception {
-        mockMvc.perform(get(HYSTRIX_DASHBOARD.mapping())
-                .with(sessionUser(ADMIN)))
-                .andExpect(header().string("Location", "hystrix/monitor?title=" + applicationName + "&stream=http://localhost:" + port + contextPath +"/hystrix.stream"));
-    }
-
-    @Test
-    public void testHystrixDashboard() throws Exception {
-        mockMvc.perform(get("/hystrix/monitor")
-                .with(sessionUser(ADMIN)))
-                .andExpect(content().string(containsString("Hystrix Monitor")))
-                .andExpect(content().contentTypeCompatibleWith(TEXT_HTML));
-    }
-
-    @Test
-    public void testHystrixStream() throws Exception {
-        mockMvc.perform(options(HYSTRIX_STREAM.mapping())
-                .with(sessionUser(ADMIN)))
-                .andExpect(status().isOk());
-    }
-
-
-    @Test
-    public void testHystrixStreamAccessFromLocalhost() throws Exception {
-        mockMvc.perform(options(HYSTRIX_STREAM.mapping()))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testRejectAccessToHystrixDashboardWhenUserIsNotAdmin() throws Exception {
-        mockMvc.perform(get(HYSTRIX_DASHBOARD.mapping())
-                .with(sessionUser(USER1)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testHystrixProxyStream() throws Exception {
-        mockMvc.perform(get(HYSTRIX_PROXY.mapping())
-                .with(sessionUser(ADMIN)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testHystrix() throws Exception {
-        mockMvc.perform(get(HYSTRIX_PROXY.mapping())
-                .with(sessionUser(ADMIN)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testRejectAccessToHystrix() throws Exception {
-        mockMvc.perform(get(HYSTRIX.mapping())
-                .with(sessionUser(USER1)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testRejectAccessToHystrixWithSubpath() throws Exception {
-        mockMvc.perform(get(HYSTRIX.mapping() + "/subpath")
-                .with(sessionUser(USER1)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testRejectAccessToHystrixProxyStreamWhenUserIsNotAdmin() throws Exception {
-        mockMvc.perform(options(HYSTRIX.mapping())
-                .with(sessionUser(USER1)))
-                .andExpect(status().isForbidden());
     }
 
     @Test
