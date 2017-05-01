@@ -29,7 +29,8 @@ task check(dependsOn: test)
 
 sonarqube {
     properties {
-        property "sonar.sources", "src"
-        property "sonar.javascript.lcov.reportPath", "build/reports/istanbul/PhantomJS 2.1.1 (Linux 0.0.0)/lcov.info"
+        property "sonar.sources", "${projectDir}/src"
+        property "sonar.tests", "${projectDir}/test"
+        property "sonar.javascript.lcov.reportPath", "{buildDir}/reports/istanbul/PhantomJS 2.1.1 (Linux 0.0.0)/lcov.info"
     }
 }
