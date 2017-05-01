@@ -1,3 +1,7 @@
+var angular = require('angular');
+var angularSanitize = require('angular-sanitize');
+var moment = require('moment');
+
 angular.module('common.filters', ['ngSanitize'])
 
 .filter('targetBlank', ['$sanitize', function($sanitize) {
@@ -355,3 +359,5 @@ angular.module('common.filters', ['ngSanitize'])
         return title;
     }
 });
+
+module.exports = 'filters';

@@ -1,3 +1,6 @@
+var angular = require('angular');
+var models = require('./models');
+
 angular.module('common.api', [])
 
 .service('subscriptionsTagConverter', function () {
@@ -336,3 +339,5 @@ angular.module('common.api', [])
         }
     }
 });
+
+module.exports = 'api';

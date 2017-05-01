@@ -1,3 +1,5 @@
+var angular = require('angular');
+
 angular.module('common.directives', [])
 .directive("loadingIndicator", function() {
     return {
@@ -35,7 +37,7 @@ angular.module('common.directives', [])
 .directive('myEntryTags',['subscriptionEntryService', function(subscriptionEntryService) {
     return {
         restrict: 'E',
-        templateUrl: 'templates/tags.html',
+        template: require('../../templates/tags.html'),
         scope: {
             entry: '=entry'
         },
@@ -88,7 +90,7 @@ angular.module('common.directives', [])
 .directive('myExclusions',['exclusionService', function(exclusionService) {
     return {
         restrict: 'E',
-        templateUrl: 'templates/exclusions.html',
+        template: require('../../templates/exclusions.html'),
         scope: {
             subscription: '=subscription'
         },
@@ -192,3 +194,5 @@ angular.module('common.directives', [])
         }
     };
 }]);
+
+module.exports = 'directives';

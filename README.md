@@ -20,3 +20,8 @@ Installation
 **TODO**
 
 - add initial admin user
+
+Developer notes
+---------------
+
+- Split CSS into vendor and app files in [webpack](https://github.com/vuejs-templates/webpack/issues/598#issuecomment-286680721)

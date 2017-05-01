@@ -2,7 +2,6 @@ plugins {
     id 'com.moowork.node' version '1.1.1'
 }
 
-apply plugin: 'java'
 apply plugin: 'com.moowork.node'
 
 node {
@@ -11,44 +10,22 @@ node {
     download = true
 }
 
-jar {
-    from 'dist'
-    eachFile { details ->
-        details.path = details.path.startsWith('META-INF') ?: 'static/' + details.path
-    }
-    // Jar contains duplicate empty folders, see Gradle issue:
-    // http://issues.gradle.org/browse/GRADLE-1830
-    // so we need to set includeEmptyDirs to false
-    includeEmptyDirs = false
+task test(overwrite: true,dependsOn: npm_test) {
+    inputs.files files('src', 'test', 'webpack.config.js', 'src/tests.webpack.js', 'package.json', 'karma.conf.js')
 }
 
 task build(type: NpmTask, dependsOn: [npm_install, test]) {
     outputs.files file('dist')
-    inputs.files file('src')
+    inputs.files files('src')
 
     args = ['run', 'build']
 }
 
-task gulpClean(type: NpmTask) {
-    outputs.files file('dist')
-    inputs.files file('src')
-
-    args = ['run', 'gulpClean']
+task clean() {
+    delete "dist"
 }
 
-task test(overwrite:true, type: NpmTask) {
-    inputs.files files('src', 'test')
-
-    args = ['test']
-}
-
-clean {
-    delete "node_modules", "node"
-}
-
-clean.dependsOn gulpClean
-
-jar.dependsOn build
+task check(dependsOn: test)
 
 sonarqube {
     properties {

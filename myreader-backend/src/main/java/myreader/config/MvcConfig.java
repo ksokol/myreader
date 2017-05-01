@@ -1,16 +1,12 @@
 package myreader.config;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -26,9 +22,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @EnableTransactionManagement
 @EnableAsync
 public class MvcConfig extends WebMvcConfigurerAdapter {
-
-    @Autowired
-    private Environment environment;
 
     @Override
     public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
@@ -48,24 +41,5 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
         registry.addViewController(LANDING_PAGE.mapping()).setViewName("index.html");
-    }
-
-    //TODO
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        if (environment.acceptsProfiles("dev")) {
-            final String userDir = environment.getProperty("user.dir");
-            String filePrefix = "file://";
-
-            if(SystemUtils.IS_OS_WINDOWS){
-                filePrefix += "/";
-            }
-
-            registry.addResourceHandler("/**")
-                    .addResourceLocations(filePrefix + userDir + "/../myreader-frontend/")
-                    .addResourceLocations(filePrefix + userDir + "/../myreader-frontend/src/")
-                    .addResourceLocations("classpath:/static/")
-                    .setCachePeriod(0);
-        }
     }
 }

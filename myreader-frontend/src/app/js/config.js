@@ -1,5 +1,7 @@
 window.write = function() {};
 
+var angular = require('angular');
+
 angular.module('myreader', ['common.filters', 'common.services', 'common.controllers', 'common.directives', 'ui.router', 'ct.ui.router.extras.previous', 'ngMaterial', 'LocalStorageModule', 'angular-cache', 'ngMessages', 'cfp.hotkeys'])
 
 .config(['$httpProvider', function($httpProvider) {
@@ -68,7 +70,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/login",
                 views: {
                     body: {
-                        templateUrl: 'templates/login.html',
+                        template: require('../../templates/login.html'),
                         controller: 'LoginCtrl'
                     }
                 }
@@ -78,7 +80,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/app",
                 views: {
                     body: {
-                        templateUrl: 'templates/subscription-tags.html',
+                        template: require('../../templates/subscription-tags.html'),
                         controller: 'SubscriptionNavigationCtrl'
                     }
                 }
@@ -87,11 +89,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/entries/:tag/:uuid",
                 views: {
                     content: {
-                        templateUrl: 'templates/subscription-entries.html',
+                        template: require('../../templates/subscription-entries.html'),
                         controller: 'SubscriptionEntryListCtrl'
                     },
                     actions: {
-                        templateUrl: 'templates/subscription-entries-actions.html',
+                        template: require('../../templates/subscription-entries-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -100,11 +102,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/bookmark/:tag",
                 views: {
                     content: {
-                        templateUrl: 'templates/subscription-entries.html',
+                        template: require('../../templates/subscription-entries.html'),
                         controller: 'BookmarkEntryListCtrl'
                     },
                     actions: {
-                        templateUrl: 'templates/subscription-entries-actions.html',
+                        template: require('../../templates/subscription-entries-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -113,11 +115,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/entry/:uuid",
                 views: {
                     content: {
-                        templateUrl: 'templates/subscription-entry.html',
+                        template: require('../../templates/subscription-entry.html'),
                         controller: 'SubscriptionEntryCtrl'
                     },
                     actions: {
-                        templateUrl: 'templates/subscription-entry-actions.html',
+                        template: require('../../templates/subscription-entry-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -126,11 +128,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/subscriptions",
                 views: {
                     content: {
-                        templateUrl: 'templates/subscriptions.html',
+                        template: require('../../templates/subscriptions.html'),
                         controller: 'SubscriptionsCtrl'
                     },
                     actions: {
-                        templateUrl: 'templates/subscriptions-actions.html',
+                        template: require('../../templates/subscriptions-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -139,11 +141,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/subscriptions/add",
                 views: {
                     content: {
-                        templateUrl: 'templates/subscription.html',
+                        template: require('../../templates/subscription.html'),
                         controller: 'SubscriptionCtrl'
                     },
                     actions: {
-                        templateUrl: 'templates/subscription-add-actions.html',
+                        template: require('../../templates/subscription-add-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -152,11 +154,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/subscriptions/:uuid",
                 views: {
                     content: {
-                        templateUrl: 'templates/subscription.html',
+                        template: require('../../templates/subscription.html'),
                         controller: 'SubscriptionCtrl'
                     },
                     actions: {
-                        templateUrl: 'templates/subscription-actions.html',
+                        template: require('../../templates/subscription-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -165,11 +167,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/admin",
                 views: {
                     content: {
-                        templateUrl: 'templates/admin.html',
+                        template: require('../../templates/admin.html'),
                         controller: 'AdminCtrl'
                     },
                     actions: {
-                        templateUrl: 'templates/admin-actions.html',
+                        template: require('../../templates/admin-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -179,11 +181,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/feed",
                 views: {
                     content: {
-                        templateUrl: 'templates/feeds.html',
+                        template: require('../../templates/feeds.html'),
                         controller: 'FeedsCtrl'
                     },
                     actions: {
-                        templateUrl: 'templates/admin-actions.html',
+                        template: require('../../templates/admin-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -192,11 +194,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/feed/:uuid",
                 views: {
                     content: {
-                        templateUrl: 'templates/feed-detail.html',
+                        template: require('../../templates/feed-detail.html'),
                         controller: 'FeedDetailCtrl'
                     },
                     actions: {
-                        templateUrl: 'templates/feed-detail-actions.html',
+                        template: require('../../templates/feed-detail-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -206,11 +208,11 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/settings",
                 views: {
                     content: {
-                        templateUrl: 'templates/settings.html',
+                        template: require('../../templates/settings.html'),
                         controller: 'SettingsCtrl'
                     },
                     actions: {
-                        templateUrl: 'templates/settings-actions.html',
+                        template: require('../../templates/settings-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
