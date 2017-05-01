@@ -10,7 +10,7 @@ node {
     download = true
 }
 
-task test(overwrite: true,dependsOn: npm_test) {
+task test(overwrite: true,dependsOn: [npm_install, npm_test]) {
     inputs.files files('src', 'test', 'webpack.config.js', 'src/tests.webpack.js', 'package.json', 'karma.conf.js')
 }
 
