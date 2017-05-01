@@ -1,5 +1,4 @@
-(function() {
-"use strict";
+var angular = require('angular');
 
 var BaseEntryCtrl = function() {};
 
@@ -445,7 +444,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         applicationPropertyService.getProperties()
         .then(function(properties) {
             $mdDialog.show({
-                templateUrl: 'templates/application-properties.html',
+                template: require('../../templates/application-properties.html'),
                 parent: angular.element(document.body),
                 targetEvent: event,
                 clickOutsideToClose: true,
@@ -804,6 +803,6 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
             );
         });
     }
-}])
+}]);
 
-})();
+module.exports = 'controllers';

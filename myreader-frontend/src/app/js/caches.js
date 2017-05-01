@@ -1,3 +1,5 @@
+var angular = require('angular');
+
 angular.module('common.caches', ['angular-cache'])
 
 .service('subscriptionsTagCache', ['CacheFactory', function(CacheFactory) {
@@ -45,3 +47,5 @@ angular.module('common.caches', ['angular-cache'])
         storageMode : 'localStorage'
     });
 }]);
+
+module.exports = 'caches';

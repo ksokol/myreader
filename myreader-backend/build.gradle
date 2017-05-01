@@ -1,6 +1,7 @@
 plugins {
     id "jacoco"
     id "com.gorylenko.gradle-git-properties" version "1.4.6"
+    id "com.wiredforcode.spawn" version "0.8.2"
 }
 
 apply plugin: 'java'
@@ -35,7 +36,6 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'com.google.guava', name: 'guava', version: '21.0'
-    compile project(':myreader-frontend')
 
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
     testCompile group: 'org.springframework.security', name: 'spring-security-test'
@@ -64,16 +64,17 @@ jacocoTestReport {
     }
 }
 
-bootRun {
-    /* Lets you pick Spring Boot profile by system properties, e.g. gradle bootRun -Dspring.profiles.active=dev */
-    systemProperty "spring.profiles.active", "dev"
-}
-
 springBoot {
     buildInfo()
     executable = true
 }
 
+task startServer(type: SpawnProcessTask) {
+    command "java -jar $jar.archivePath"
+    ready 'Tomcat started on port(s): 19340 (http)'
+}
+
+task stopServer(type: KillProcessTask)
 
 tasks.matching {it instanceof Test}.all {
     testLogging.events = ["failed", "passed", "skipped"]

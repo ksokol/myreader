@@ -66,6 +66,24 @@ configure(javaProjects) {
     springBoot.backupSource = false
 }
 
+task devRun() {
+    doFirst {
+        project(':myreader-backend').tasks.startServer.execute()
+        project(':myreader-frontend').tasks['npm_start'].execute()
+    }
+
+    finalizedBy {
+        project(':myreader-backend').tasks.stopServer.execute()
+    }
+}
+
+task copyFrontend(type: Sync) {
+    from project(':myreader-frontend').file('dist')
+    into project(':myreader-backend').buildDir.absolutePath + '/classes/main/static'
+}
+
+project(':myreader-backend').tasks.jar.dependsOn copyFrontend
+
 sonarqube {
     properties {
         property "sonar.projectName", "MyReader"

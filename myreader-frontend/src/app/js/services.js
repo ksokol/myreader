@@ -1,3 +1,8 @@
+var angular = require('angular');
+var api = require('./api');
+var caches = require('./caches');
+var models = require('./models');
+
 angular.module('common.services', ['common.api', 'common.caches'])
 
 .service('subscriptionsTagService', ['$rootScope', 'api', 'deferService', 'subscriptionsTagCache', function($rootScope, api, deferService, subscriptionsTagCache) {
@@ -380,3 +385,5 @@ angular.module('common.services', ['common.api', 'common.caches'])
         }
     }
 }]);
+
+module.exports = 'services';
