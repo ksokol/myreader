@@ -1,8 +1,10 @@
-<h3>{{::entry.title | htmlEntities}}</h3>
+<h3 hide-gt-md>{{entry.title | htmlEntities}}<md-icon md-font-library="material-icons" ng-click="open($event)">open_in_new</md-icon></h3>
+<h3 hide show-gt-md><a ng-href="{{entry.origin}}" ng-click="open($event)">{{entry.title | htmlEntities}}</a></h3>
+
 <div ng-bind-html="entry.content | targetBlank" my-wrap-entry-content></div>
 <div flex="50">
     <h3>mark as read</h3>
-    <md-radio-group ng-model="entry.seen">
+    <md-radio-group ng-model="entry.seen" ng-change="save()">
         <md-radio-button ng-value="true">true</md-radio-button>
         <md-radio-button ng-value="false">false</md-radio-button>
     </md-radio-group>

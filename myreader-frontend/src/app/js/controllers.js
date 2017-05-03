@@ -499,12 +499,10 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         });
     };
 
-    $scope.$on('open', function() {
+    $scope.open = function(event) {
+        event.preventDefault();
         windowService.safeOpen($scope.entry.origin);
-    });
-
-    $scope.$on('hide', $scope.markAsRead);
-    $scope.$on('save', $scope.save);
+    };
 
 }])
 
