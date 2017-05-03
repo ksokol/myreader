@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -40,14 +38,5 @@ public class FeedQueueImpl implements FeedQueue {
         }
         LOG.debug("left in queue: {}", queue.size());
         return fetchResult;
-    }
-
-    @Override
-    public List<String> getSnapshot() {
-        final List<String> snapshots = new ArrayList<>();
-        for (final FetchResult fetchResult : queue) {
-            snapshots.add(fetchResult.getUrl());
-        }
-        return snapshots;
     }
 }

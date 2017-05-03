@@ -325,13 +325,9 @@ angular.module('common.services', ['common.api', 'common.caches'])
 })
 
 .service('processingService', ['api', function(api) {
-    var url = '/myreader/api/2/processing/feeds';
     var rebuildIndex = '/myreader/api/2/processing';
 
     return {
-        runningFeedFetches: function() {
-            return api.get('probeFeeds', url);
-        },
         rebuildSearchIndex: function() {
             return api.put('searchIndexJob', rebuildIndex, 'indexSyncJob');
         }

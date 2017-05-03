@@ -616,27 +616,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
 .controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'windowService', function($scope, $mdToast, processingService, windowService) {
 
-    $scope.data = [];
-
     $scope.refresh = function() {
-        processingService.runningFeedFetches()
-        .then(function(data) {
-            $scope.data = data;
-        });
-    };
-
-    $scope.loadMore = function() {
-        //TODO
-        $scope.refresh($scope.data.next());
-    };
-
-    $scope.openOrigin = function(item) {
-        windowService.safeOpen(item.origin);
-    };
-
-    $scope.$on('refresh', $scope.refresh);
-
-    $scope.$on('build-search-index', function() {
         processingService.rebuildSearchIndex()
         .then(function() {
             $mdToast.show(
@@ -652,9 +632,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                     .position('top right')
             );
         })
-    });
-
-    $scope.refresh();
+    };
 }])
 
 .controller('FeedsCtrl', ['$scope', '$mdToast', '$state', 'feedService', function($scope, $mdToast, $state, feedService) {

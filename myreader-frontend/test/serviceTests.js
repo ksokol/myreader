@@ -580,25 +580,6 @@ describe('service', function() {
             service = processingService;
         }));
 
-        it('should have been called runningFeedFetches', inject(function($q) {
-            var call = $q.defer();
-            call.resolve({
-                entries: [1]
-            });
-
-            api.get.and.returnValue(call.promise);
-
-            var promise = service.runningFeedFetches();
-
-            expect(api.get).toHaveBeenCalledWith('probeFeeds', '/myreader/api/2/processing/feeds');
-
-            promise.then(function(data) {
-                expect(data).toBe(undefined);
-            });
-
-            expect(promise.$$state.value.entries).toEqualData([1]);
-        }));
-
         it('should have been called rebuildSearchIndex', inject(function($q) {
             var call = $q.defer();
             call.resolve({

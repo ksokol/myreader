@@ -171,7 +171,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'AdminCtrl'
                     },
                     actions: {
-                        template: require('../../templates/admin-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -185,7 +185,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'FeedsCtrl'
                     },
                     actions: {
-                        template: require('../../templates/admin-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
