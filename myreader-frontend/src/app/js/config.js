@@ -212,7 +212,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'SettingsCtrl'
                     },
                     actions: {
-                        template: require('../../templates/settings-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }

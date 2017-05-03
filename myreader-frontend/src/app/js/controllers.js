@@ -755,7 +755,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     $scope.showEntryDetails = settingsService.isShowEntryDetails();
 
 
-    $scope.$on('save', function() {
+    $scope.save = function() {
         settingsService.setPageSize($scope.currentSize);
         settingsService.setShowUnseenEntries($scope.showUnseenEntries);
         settingsService.setShowEntryDetails($scope.showEntryDetails);
@@ -765,7 +765,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                 .content('saved')
                 .position('top right')
         );
-    });
+    };
 }])
 
 .controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$mdToast', '$state', function($rootScope, $scope, $http, $mdToast, $state) {
