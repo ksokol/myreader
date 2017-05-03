@@ -59,24 +59,23 @@ angular.module('common.directives', [])
                 return tmp;
             };
 
-            if($scope.entry.tag !== null) {
-                $scope.tags = _split($scope.entry.tag);
-            }
+            $scope.$watch("entry", function(entry) {
+                if(entry.tag !== null) {
+                    $scope.tags = _split(entry.tag);
+                }
+            });
 
-            $scope.addTag = function($chip) {
+            $scope.addTag = function() {
                 var tmp = angular.copy($scope.tags);
-                tmp.push($chip);
                 $scope.entry.tag = tmp.join(", ");
                 subscriptionEntryService.save($scope.entry)
                 .then(function(data) {
                     $scope.tags = _split(data.entries[0].tag)
                 });
-                return $chip;
             };
 
-            $scope.removeTag = function($chip) {
+            $scope.removeTag = function() {
                 var tmp = angular.copy($scope.tags);
-                tmp.splice(tmp.indexOf($chip), 1);
                 $scope.entry.tag = tmp.length === 0 ? null : tmp.join(", ");
                 subscriptionEntryService.save($scope.entry)
                 .then(function(data) {
@@ -108,13 +107,13 @@ angular.module('common.directives', [])
 
             $scope.$watch('subscription', _fetch);
 
-            $scope.addTag = function($chip) {
-                exclusionService.save($scope.subscription.uuid, $chip).then(_fetch);
-                return { pattern: $chip, hitCount: 0 };
+            $scope.removeTag = function($chip) {
+                exclusionService.delete($scope.subscription.uuid, $chip.uuid).then(_fetch);
             };
 
-            $scope.removeTag = function(uuid) {
-                exclusionService.delete($scope.subscription.uuid, uuid).then(_fetch);
+            $scope.transform = function($chip) {
+                exclusionService.save($scope.subscription.uuid, $chip).then(_fetch);
+                return null;
             }
         }]
     }

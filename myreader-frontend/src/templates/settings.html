@@ -1,17 +1,17 @@
 <form name="settingsForm">
     <label>Page size</label>
-    <md-select ng-model="currentSize" placeholder="Page Size">
+    <md-select ng-model="currentSize" placeholder="Page Size" ng-change="save()">
         <md-option ng-repeat="size in sizes" value="{{size}}">{{size}}</md-option>
     </md-select>
 
     <label>Unseen entries only</label>
-    <md-radio-group ng-model="showUnseenEntries">
+    <md-radio-group ng-model="showUnseenEntries" ng-change="save()">
         <md-radio-button ng-value="true">true</md-radio-button>
         <md-radio-button ng-value="false">false</md-radio-button>
     </md-radio-group>
 
     <label>Show entry details</label>
-    <md-radio-group ng-model="showEntryDetails">
+    <md-radio-group ng-model="showEntryDetails" ng-change="save()">
         <md-radio-button ng-value="true">true</md-radio-button>
         <md-radio-button ng-value="false">false</md-radio-button>
     </md-radio-group>

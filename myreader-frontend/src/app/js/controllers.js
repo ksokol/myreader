@@ -499,12 +499,10 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         });
     };
 
-    $scope.$on('open', function() {
+    $scope.open = function(event) {
+        event.preventDefault();
         windowService.safeOpen($scope.entry.origin);
-    });
-
-    $scope.$on('hide', $scope.markAsRead);
-    $scope.$on('save', $scope.save);
+    };
 
 }])
 
@@ -557,15 +555,11 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         return filtered.length === 0 ? [query] : filtered;
     };
 
-    $scope.isEditForm = function() {
-        return $state.is('app.subscription');
-    };
-
     $scope.setTag = function(tag) {
         $scope.subscription.tag = tag;
     };
 
-    $scope.$on('save', function() {
+    $scope.save = function() {
         if(!$scope.subscriptionForm.$valid) {
             $mdToast.show(
                 $mdToast.simple()
@@ -597,13 +591,13 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                 );
             }
         });
-    });
+    };
 
-    $scope.$on('open', function() {
+    $scope.open = function() {
         windowService.safeOpen($scope.subscription.origin);
-    });
+    };
 
-    $scope.$on('delete', function() {
+    $scope.delete = function() {
         var confirm = $mdDialog.confirm()
             .title('Delete subscription?')
             .ariaLabel('Delete subscription dialog')
@@ -616,7 +610,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                 $previousState.go();
             });
         });
-    });
+    };
 
 }])
 
@@ -761,7 +755,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     $scope.showEntryDetails = settingsService.isShowEntryDetails();
 
 
-    $scope.$on('save', function() {
+    $scope.save = function() {
         settingsService.setPageSize($scope.currentSize);
         settingsService.setShowUnseenEntries($scope.showUnseenEntries);
         settingsService.setShowEntryDetails($scope.showEntryDetails);
@@ -771,7 +765,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                 .content('saved')
                 .position('top right')
         );
-    });
+    };
 }])
 
 .controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$mdToast', '$state', function($rootScope, $scope, $http, $mdToast, $state) {

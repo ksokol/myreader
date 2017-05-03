@@ -1,33 +1,32 @@
 <form name="subscriptionForm">
-    <div layout="row">
-        <md-input-container ng-show="isEditForm()" flex>
-            <label>Title</label>
-            <input name="title" ng-model="subscription.title">
-        </md-input-container>
-    </div>
-    <div layout="row">
-        <md-input-container ng-hide="isEditForm()" flex>
-            <label>Url</label>
-            <input required
-                   name="origin"
-                   ng-model="subscription.origin"
-                   disable="isEditForm()"
-                   ng-model-options="{ debounce: 500 }"
-                   ng-disabled="subscriptionForm.origin.$pending">
+    <md-input-container ng-show="subscription.uuid" class="md-block">
+        <label>Title</label>
+        <input name="title" ng-model="subscription.title">
+    </md-input-container>
 
-            <div ng-messages="subscriptionForm.origin.$error">
-                <div ng-message="required">required</div>
-            </div>
-        </md-input-container>
-    </div>
+    <md-input-container ng-hide="subscription.uuid" class="md-block">
+        <label>Url</label>
+        <input required
+               name="origin"
+               ng-model="subscription.origin"
+               disable="subscription.uuid"
+               ng-model-options="{ debounce: 500 }"
+               ng-disabled="subscriptionForm.origin.$pending">
 
-    <md-input-container ng-show="isEditForm()" flex>
+        <div ng-messages="subscriptionForm.origin.$error">
+            <div ng-message="required">required</div>
+        </div>
+
+    </md-input-container>
+
+    <md-input-container ng-show="subscription.uuid" md-no-float class="md-icon-float md-icon-right">
         <label>Url</label>
         <input ng-model="subscription.origin" disabled>
+        <md-icon md-font-library="material-icons" ng-click="open()">open_in_new</md-icon>
     </md-input-container>
 
     <md-autocomplete
-            ng-show="isEditForm()"
+            ng-show="subscription.uuid"
             md-selected-item="subscription.tag"
             md-search-text="searchText"
             md-items="item in querySearch(searchText)"
@@ -41,4 +40,9 @@
     </md-autocomplete>
 
     <my-exclusions ng-show="subscription.uuid" subscription="subscription"></my-exclusions>
+    <br>
+    <div layout="row" layout-align="end center">
+        <div><md-button flex="50" class="md-primary md-raised" ng-click="save()">Save</md-button></div>
+        <div><md-button flex="50" class="md-primary md-raised md-warn" ng-show="subscription.uuid" ng-click="delete()">Delete</md-button></div>
+    </div>
 </form>
