@@ -145,7 +145,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'SubscriptionCtrl'
                     },
                     actions: {
-                        template: require('../../templates/subscription-add-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }

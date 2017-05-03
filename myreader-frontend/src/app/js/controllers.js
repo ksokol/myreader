@@ -557,10 +557,6 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         return filtered.length === 0 ? [query] : filtered;
     };
 
-    $scope.isEditForm = function() {
-        return $state.is('app.subscription');
-    };
-
     $scope.setTag = function(tag) {
         $scope.subscription.tag = tag;
     };
