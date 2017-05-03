@@ -1,8 +1,5 @@
-<md-chips class="my-tag-chips" ng-model="tags" md-on-append="addTag($chip)">
+<md-chips class="my-tag-chips" ng-model="tags" md-on-add="addTag()" md-on-remove="removeTag()">
     <md-chip-template>
         <strong>{{$chip}}</strong>
     </md-chip-template>
-    <button md-chip-remove ng-click="removeTag($chip)" class="md-primary my-tag-chip">
-        <md-icon md-font-library="material-icons">close</md-icon>
-    </button>
 </md-chips>
