@@ -44,12 +44,6 @@ angular.module('common.directives', [])
         controller: ['$scope', function ($scope) {
             $scope.tags = [];
 
-            $scope.$watch("entry", function(entry) {
-                if(entry.tag !== null) {
-                    $scope.tags = _split(entry.tag);
-                }
-            });
-
             var _split = function(tags) {
                 if(!tags) {
                     return [];
@@ -64,6 +58,12 @@ angular.module('common.directives', [])
                 }
                 return tmp;
             };
+
+            $scope.$watch("entry", function(entry) {
+                if(entry.tag !== null) {
+                    $scope.tags = _split(entry.tag);
+                }
+            });
 
             $scope.addTag = function() {
                 var tmp = angular.copy($scope.tags);
