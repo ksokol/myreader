@@ -565,7 +565,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         $scope.subscription.tag = tag;
     };
 
-    $scope.$on('save', function() {
+    $scope.save = function() {
         if(!$scope.subscriptionForm.$valid) {
             $mdToast.show(
                 $mdToast.simple()
@@ -597,13 +597,13 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                 );
             }
         });
-    });
+    };
 
-    $scope.$on('open', function() {
+    $scope.open = function() {
         windowService.safeOpen($scope.subscription.origin);
-    });
+    };
 
-    $scope.$on('delete', function() {
+    $scope.delete = function() {
         var confirm = $mdDialog.confirm()
             .title('Delete subscription?')
             .ariaLabel('Delete subscription dialog')
@@ -616,7 +616,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                 $previousState.go();
             });
         });
-    });
+    };
 
 }])
 
