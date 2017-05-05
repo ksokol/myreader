@@ -179,6 +179,24 @@ angular.module('common.directives', [])
     }
 }])
 
+.directive('myHideAdmin', ['permissionService', function(permissionService) {
+
+    return {
+        restrict: 'A',
+        link : function(scope, element) {
+            scope.$watch(function() {
+                return permissionService.isAdmin();
+            }, function(newVal) {
+                if(!newVal) {
+                    element.removeClass('hide');
+                } else {
+                    element.addClass('hide')
+                }
+            });
+        }
+    }
+}])
+
 .directive('myDisableLoading', [function() {
 
     return {

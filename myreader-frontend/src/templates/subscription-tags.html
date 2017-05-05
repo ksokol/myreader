@@ -7,7 +7,7 @@
 
     <md-content flex role="navigation">
         <ul class="subscription-tag-menu">
-            <li class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
+            <li my-hide-admin class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
                 <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)" my-click-broadcast="navigation-close">{{item | navigationItemTitle}}</md-button>
                 <ul ng-show="isOpen(item)" class="menu-toggle-list">
                     <li ng-repeat="subscription in item.subscriptions" ng-hide="subscription.unseen < 1">
@@ -20,16 +20,16 @@
                     </li>
                 </ul>
             </li>
-            <li class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
+            <li my-hide-admin class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
                 <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{item | navigationItemTitle}}</md-button>
             </li>
-            <li>
+            <li my-hide-admin>
                 <md-button my-click-broadcast="navigation-close navigation-clear-selection" ui-sref="app.subscriptions">subscriptions</md-button>
             </li>
-            <li ui-sref-active="hide">
+            <li my-hide-admin>
                 <md-button my-click-broadcast="navigation-close" ui-sref="app.bookmarks">bookmarks</md-button>
             </li>
-            <li ui-sref-active="hide">
+            <li my-hide-admin>
                 <md-button my-click-broadcast="navigation-close" ui-sref="app.entries">Stream</md-button>
             </li>
             <li my-show-admin>
@@ -38,7 +38,7 @@
             <li my-show-admin>
                 <md-button my-click-broadcast="navigation-close" ui-sref="app.feed">Feeds</md-button>
             </li>
-            <li>
+            <li my-hide-admin>
                 <md-button my-click-broadcast="navigation-close" ui-sref="app.settings">Settings</md-button>
             </li>
             <li>
