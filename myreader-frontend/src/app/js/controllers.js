@@ -366,8 +366,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     });
 }])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', '$mdDialog', 'applicationPropertyService',
-    function($rootScope, $scope, $mdMedia, $state, $mdDialog, applicationPropertyService) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', function($rootScope, $scope, $mdMedia, $state) {
     $scope.data = {
         tags: [],
         items: []
@@ -439,25 +438,6 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         }
         return true;
     };
-
-    $scope.showApplicationProperties = function(event) {
-        applicationPropertyService.getProperties()
-        .then(function(properties) {
-            $mdDialog.show({
-                template: require('../../templates/application-properties.html'),
-                parent: angular.element(document.body),
-                targetEvent: event,
-                clickOutsideToClose: true,
-                fullscreen: $scope.customFullscreen, // Only for -xs, -sm breakpoints.
-                locals: {
-                    properties: properties
-                },
-                controller: ['$scope', '$mdDialog', 'properties', function($scope, $mdDialog, properties) {
-                    $scope.properties = properties;
-                }]
-            });
-        });
-    };
 }])
 
 .controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'windowService', 'hotkeys', SubscriptionEntryListCtrl])
@@ -510,19 +490,19 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
     $scope.data.subscriptions = [];
 
-    subscriptionService.findAll()
-    .then(function(data) {
-        $scope.data.subscriptions = data;
-    });
+    $scope.refresh = function() {
+        subscriptionService.findAll()
+        .then(function(data) {
+            $scope.searchKey = null;
+            $scope.data.subscriptions = data;
+        });
+    };
 
     $scope.open = function(subscription) {
         $state.go('app.subscription', {uuid: subscription.uuid});
     };
 
-    $scope.$on('search', function(event, param) {
-        $scope.search = param;
-    });
-
+    $scope.refresh();
 }])
 
 .controller('SubscriptionCtrl', ['$scope', '$state', '$mdToast', '$mdDialog', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', 'windowService',
@@ -614,29 +594,9 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
 }])
 
-.controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'windowService', function($scope, $mdToast, processingService, windowService) {
+.controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'applicationPropertyService', function($scope, $mdToast, processingService, applicationPropertyService) {
 
-    $scope.data = [];
-
-    $scope.refresh = function() {
-        processingService.runningFeedFetches()
-        .then(function(data) {
-            $scope.data = data;
-        });
-    };
-
-    $scope.loadMore = function() {
-        //TODO
-        $scope.refresh($scope.data.next());
-    };
-
-    $scope.openOrigin = function(item) {
-        windowService.safeOpen(item.origin);
-    };
-
-    $scope.$on('refresh', $scope.refresh);
-
-    $scope.$on('build-search-index', function() {
+    $scope.refreshIndex = function() {
         processingService.rebuildSearchIndex()
         .then(function() {
             $mdToast.show(
@@ -652,9 +612,12 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                     .position('top right')
             );
         })
-    });
+    };
 
-    $scope.refresh();
+    applicationPropertyService.getProperties()
+    .then(function(properties) {
+        $scope.properties = properties;
+    });
 }])
 
 .controller('FeedsCtrl', ['$scope', '$mdToast', '$state', 'feedService', function($scope, $mdToast, $state, feedService) {
@@ -664,6 +627,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     $scope.refresh = function() {
         feedService.findAll()
             .then(function(data) {
+                $scope.searchKey = null;
                 $scope.data = data;
             });
     };
@@ -671,8 +635,6 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     $scope.open = function(feed) {
         $state.go('app.feed-detail', {uuid: feed.uuid});
     };
-
-    $scope.$on('refresh', $scope.refresh);
 
     $scope.refresh();
 }])
@@ -689,17 +651,11 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
             });
     };
 
-    $scope.open = function(feed) {
-        $state.go('app.feed-detail', {uuid: feed.uuid});
+    $scope.open = function() {
+        windowService.safeOpen($scope.feed.url);
     };
 
-    $scope.$on('refresh', $scope.refresh);
-
-    $scope.$on('open', function() {
-        windowService.safeOpen($scope.feed.url);
-    });
-
-    $scope.$on('delete-feed', function() {
+    $scope.deleteFeed = function() {
         var confirm = $mdDialog.confirm()
             .title('Delete feed?')
             .ariaLabel('Delete feed dialog')
@@ -724,9 +680,9 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                 );
             });
         });
-    });
+    };
 
-    $scope.$on('save', function() {
+    $scope.save = function() {
         feedService.save($scope.feed)
         .then(function() {
             $mdToast.show(
@@ -742,7 +698,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                     .position('top right')
             );
         })
-    });
+    };
 
     $scope.refresh();
 }])

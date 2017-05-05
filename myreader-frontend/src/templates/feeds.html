@@ -1,5 +1,15 @@
+<md-input-container class="md-block">
+    <md-icon md-font-library="material-icons">search</md-icon>
+    <input class="my-input"
+           name="searchKey"
+           ng-model-options="{ debounce: 250 }"
+           ng-model="searchKey"
+           aria-label="search">
+    <md-icon md-font-library="material-icons" ng-click="refresh()" class="my-pointer">refresh</md-icon>
+</md-input-container>
+
 <md-list>
-    <md-list-item ng-click="open(feed)" md-no-ink class="md-2-line" ng-repeat="feed in data.feeds">
+    <md-list-item ng-click="open(feed)" md-no-ink class="md-2-line" ng-repeat="feed in data.feeds | filter:searchKey">
         <div layout="row">
             <div class="md-list-item-text">
                 <div>

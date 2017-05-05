@@ -132,7 +132,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'SubscriptionsCtrl'
                     },
                     actions: {
-                        template: require('../../templates/subscriptions-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -171,7 +171,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'AdminCtrl'
                     },
                     actions: {
-                        template: require('../../templates/admin-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -185,7 +185,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'FeedsCtrl'
                     },
                     actions: {
-                        template: require('../../templates/admin-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -198,7 +198,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'FeedDetailCtrl'
                     },
                     actions: {
-                        template: require('../../templates/feed-detail-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }

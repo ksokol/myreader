@@ -1,15 +1,28 @@
-<md-list>
-    <md-list-item ng-click="openOrigin(feed)" md-no-ink class="md-2-line" ng-repeat="feed in data.feeds">
-        <div layout="row">
-            <div class="md-list-item-text">
-                <div>
-                    <h3 tabindex="-1">{{::feed.title | htmlEntities}}</h3>
-                    <h4>
-                        {{::feed.createdAt | timeago}}
-                    </h4>
-                </div>
-            </div>
-        </div>
-        <md-divider></md-divider>
-    </md-list-item>
-</md-list>
+<md-subheader class="md-no-sticky">Admin actions</md-subheader>
+<md-list-item class="secondary-button-padding">
+    <md-button class="md-primary md-raised" ng-click="refreshIndex()">Refresh index</md-button>
+</md-list-item>
+
+<md-divider></md-divider>
+<md-subheader class="md-no-sticky">About</md-subheader>
+
+<md-list-item>
+    <table>
+        <tr>
+            <td>Branch</td>
+            <td>{{properties.git.branch}}</td>
+        </tr>
+        <tr>
+            <td>Commit ID</td>
+            <td>{{properties.git.commit.id}}</td>
+        </tr>
+        <tr>
+            <td>Version</td>
+            <td>{{properties.build.version}}</td>
+        </tr>
+        <tr>
+            <td>Build Time</td>
+            <td>{{properties.build.time}}</td>
+        </tr>
+    </table>
+</md-list-item>

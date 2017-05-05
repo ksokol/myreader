@@ -261,3 +261,17 @@ md-input-container.md-default-theme > .my-input {
 my-list-item[ng-class="my-focused"] {
     background-color: rgba(158, 158, 158, 0.2);
 }
+
+.my-pointer {
+    cursor: pointer;
+}
+
+.my-raised {
+    background-color: rgb(63,81,181);
+    color: rgb(255,255,255);
+}
+
+.my-warn {
+    background-color: rgb(255,87,34);
+    color: rgb(255,255,255);
+}

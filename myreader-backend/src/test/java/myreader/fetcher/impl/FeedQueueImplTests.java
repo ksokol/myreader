@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static junit.framework.Assert.assertTrue;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -65,12 +64,6 @@ public class FeedQueueImplTests {
         assertThreadStaysAlive(t);
         t.interrupt();
         awaitTermination(t);
-    }
-
-    @Test
-    public void getSnapshot() {
-        uut.add(new FetchResult("url"));
-        assertThat(uut.getSnapshot(), hasItems("url"));
     }
 
     /**
