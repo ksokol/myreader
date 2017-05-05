@@ -2,3 +2,27 @@
 <md-list-item class="secondary-button-padding">
     <md-button class="md-primary md-raised" ng-click="refreshIndex()">Refresh index</md-button>
 </md-list-item>
+
+<md-divider></md-divider>
+<md-subheader class="md-no-sticky">About</md-subheader>
+
+<md-list-item>
+    <table>
+        <tr>
+            <td>Branch</td>
+            <td>{{properties.git.branch}}</td>
+        </tr>
+        <tr>
+            <td>Commit ID</td>
+            <td>{{properties.git.commit.id}}</td>
+        </tr>
+        <tr>
+            <td>Version</td>
+            <td>{{properties.build.version}}</td>
+        </tr>
+        <tr>
+            <td>Build Time</td>
+            <td>{{properties.build.time}}</td>
+        </tr>
+    </table>
+</md-list-item>

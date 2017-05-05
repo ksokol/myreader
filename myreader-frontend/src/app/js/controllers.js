@@ -366,8 +366,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     });
 }])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', '$mdDialog', 'applicationPropertyService',
-    function($rootScope, $scope, $mdMedia, $state, $mdDialog, applicationPropertyService) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', function($rootScope, $scope, $mdMedia, $state) {
     $scope.data = {
         tags: [],
         items: []
@@ -438,25 +437,6 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
             return item.unseen > 0;
         }
         return true;
-    };
-
-    $scope.showApplicationProperties = function(event) {
-        applicationPropertyService.getProperties()
-        .then(function(properties) {
-            $mdDialog.show({
-                template: require('../../templates/application-properties.html'),
-                parent: angular.element(document.body),
-                targetEvent: event,
-                clickOutsideToClose: true,
-                fullscreen: $scope.customFullscreen, // Only for -xs, -sm breakpoints.
-                locals: {
-                    properties: properties
-                },
-                controller: ['$scope', '$mdDialog', 'properties', function($scope, $mdDialog, properties) {
-                    $scope.properties = properties;
-                }]
-            });
-        });
     };
 }])
 
@@ -614,7 +594,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
 }])
 
-.controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'windowService', function($scope, $mdToast, processingService, windowService) {
+.controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'applicationPropertyService', function($scope, $mdToast, processingService, applicationPropertyService) {
 
     $scope.refreshIndex = function() {
         processingService.rebuildSearchIndex()
@@ -633,6 +613,11 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
             );
         })
     };
+
+    applicationPropertyService.getProperties()
+    .then(function(properties) {
+        $scope.properties = properties;
+    });
 }])
 
 .controller('FeedsCtrl', ['$scope', '$mdToast', '$state', 'feedService', function($scope, $mdToast, $state, feedService) {
