@@ -616,7 +616,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
 .controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'windowService', function($scope, $mdToast, processingService, windowService) {
 
-    $scope.refresh = function() {
+    $scope.refreshIndex = function() {
         processingService.rebuildSearchIndex()
         .then(function() {
             $mdToast.show(
