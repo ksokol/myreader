@@ -490,19 +490,19 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
     $scope.data.subscriptions = [];
 
-    subscriptionService.findAll()
-    .then(function(data) {
-        $scope.data.subscriptions = data;
-    });
+    $scope.refresh = function() {
+        subscriptionService.findAll()
+        .then(function(data) {
+            $scope.searchKey = null;
+            $scope.data.subscriptions = data;
+        });
+    };
 
     $scope.open = function(subscription) {
         $state.go('app.subscription', {uuid: subscription.uuid});
     };
 
-    $scope.$on('search', function(event, param) {
-        $scope.search = param;
-    });
-
+    $scope.refresh();
 }])
 
 .controller('SubscriptionCtrl', ['$scope', '$state', '$mdToast', '$mdDialog', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', 'windowService',

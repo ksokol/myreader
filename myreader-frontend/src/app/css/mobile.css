@@ -265,3 +265,13 @@ my-list-item[ng-class="my-focused"] {
 .my-pointer {
     cursor: pointer;
 }
+
+.my-raised {
+    background-color: rgb(63,81,181);
+    color: rgb(255,255,255);
+}
+
+.my-warn {
+    background-color: rgb(255,87,34);
+    color: rgb(255,255,255);
+}

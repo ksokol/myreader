@@ -37,7 +37,10 @@
             <li my-hide-admin>
                 <md-button my-click-broadcast="navigation-close" ui-sref="app.settings">Settings</md-button>
             </li>
-            <li>
+            <li class="my-raised" my-hide-admin>
+                <md-button my-click-broadcast="navigation-close navigation-clear-selection" ui-sref="app.subscription-add">Add subscription</md-button>
+            </li>
+            <li class="my-warn">
                 <md-button my-click-broadcast="logout">logout</md-button>
             </li>
         </ul>
