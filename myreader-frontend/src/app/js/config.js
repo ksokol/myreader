@@ -198,7 +198,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'FeedDetailCtrl'
                     },
                     actions: {
-                        template: require('../../templates/feed-detail-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }

@@ -651,17 +651,11 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
             });
     };
 
-    $scope.open = function(feed) {
-        $state.go('app.feed-detail', {uuid: feed.uuid});
+    $scope.open = function() {
+        windowService.safeOpen($scope.feed.url);
     };
 
-    $scope.$on('refresh', $scope.refresh);
-
-    $scope.$on('open', function() {
-        windowService.safeOpen($scope.feed.url);
-    });
-
-    $scope.$on('delete-feed', function() {
+    $scope.deleteFeed = function() {
         var confirm = $mdDialog.confirm()
             .title('Delete feed?')
             .ariaLabel('Delete feed dialog')
@@ -686,9 +680,9 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                 );
             });
         });
-    });
+    };
 
-    $scope.$on('save', function() {
+    $scope.save = function() {
         feedService.save($scope.feed)
         .then(function() {
             $mdToast.show(
@@ -704,7 +698,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                     .position('top right')
             );
         })
-    });
+    };
 
     $scope.refresh();
 }])
