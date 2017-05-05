@@ -627,6 +627,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     $scope.refresh = function() {
         feedService.findAll()
             .then(function(data) {
+                $scope.searchKey = null;
                 $scope.data = data;
             });
     };
@@ -634,8 +635,6 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
     $scope.open = function(feed) {
         $state.go('app.feed-detail', {uuid: feed.uuid});
     };
-
-    $scope.$on('refresh', $scope.refresh);
 
     $scope.refresh();
 }])
