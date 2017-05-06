@@ -288,8 +288,8 @@ BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
 
 angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
-.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$http', '$state', '$previousState', '$mdSidenav', '$mdMedia', '$stateParams', '$mdToast', 'hotkeys',
-    function($rootScope, $scope, $http, $state, $previousState, $mdSidenav, $mdMedia, $stateParams, $mdToast, hotkeys) {
+.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$http', '$state', '$mdSidenav', '$mdMedia', '$stateParams', '$mdToast', 'hotkeys',
+    function($rootScope, $scope, $http, $state, $mdSidenav, $mdMedia, $stateParams, $mdToast, hotkeys) {
 
     $scope.searchOpen = false;
     $scope.searchKey = "";
@@ -332,10 +332,6 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
     $scope.broadcast = function(eventName, param) {
         $rootScope.$broadcast(eventName, param);
-    };
-
-    $scope.back = function() {
-        $previousState.go();
     };
 
     $scope.isInvisible = function(media) {
@@ -442,8 +438,8 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
 .controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'windowService', 'hotkeys', BookmarkEntryListCtrl])
 
-.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$previousState', '$mdToast', 'subscriptionEntryService', 'windowService',
-    function($scope, $stateParams, $previousState, $mdToast, subscriptionEntryService, windowService) {
+.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$mdToast', 'subscriptionEntryService', 'windowService',
+    function($scope, $stateParams, $mdToast, subscriptionEntryService, windowService) {
 
     $scope.entry = {};
 
@@ -465,15 +461,6 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
                     .content('saved')
                     .position('top right')
                 );
-        });
-    };
-
-    $scope.markAsRead = function() {
-        $scope.entry.seen = true;
-        $scope.entry.visible = false;
-        subscriptionEntryService.save($scope.entry)
-        .then(function() {
-            $previousState.go();
         });
     };
 
