@@ -605,7 +605,7 @@ describe('service', function() {
             cache.remove('settings-pageSize');
         }));
 
-        fit('should return pageSize equal to 10', function() {
+        it('should return pageSize equal to 10', function() {
             var pageSize = service.getPageSize();
 
             expect(pageSize).toBe(10);
