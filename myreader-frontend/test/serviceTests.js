@@ -601,6 +601,8 @@ describe('service', function() {
         beforeEach(inject(function (settingsService, _settingsCache_) {
             service = settingsService;
             cache = _settingsCache_;
+
+            cache.remove('settings-pageSize');
         }));
 
         it('should return pageSize equal to 10', function() {

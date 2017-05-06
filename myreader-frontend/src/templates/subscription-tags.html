@@ -16,7 +16,7 @@
                     </li>
                 </ul>
             </li>
-            <li my-hide-admin class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
+            <li my-hide-admin class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)" my-click-broadcast="navigation-close">
                 <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item)">{{item | navigationItemTitle}}</md-button>
             </li>
             <li my-hide-admin>
@@ -51,9 +51,7 @@
         <div ui-view="actions" class="md-toolbar-tools"></div>
     </md-toolbar>
 
-    <div hide-gt-md id="md-progress-linear-wrapper">
-        <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
-    </div>
+    <my-loading-indicator></my-loading-indicator>
 
     <md-content ui-view="content" md-scroll-y flex layout-padding ></md-content>
 </div>
