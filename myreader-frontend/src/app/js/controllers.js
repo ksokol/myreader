@@ -226,12 +226,10 @@ var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $stat
         }
     });
 
-    if($mdMedia('gt-md')) {
-        subscriptionsTagService.findAllByUnseen(true)
-        .then(function (data) {
-            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
-        });
-    }
+    subscriptionsTagService.findAllByUnseen(true)
+    .then(function (data) {
+        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+    });
 
     $scope.refresh($scope.params());
 };
