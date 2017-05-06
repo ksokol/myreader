@@ -1,17 +1,19 @@
 var angular = require('angular');
 
 angular.module('common.directives', [])
-.directive("loadingIndicator", function() {
+.directive("myLoadingIndicator", function() {
     return {
-        restrict : "EA",
-        link : function(scope, element) {
-            element.addClass("hide");
+        restrict : "E",
+        template: require('../../templates/loading-indicator.html'),
+        replace: true,
+        link : function(scope) {
+            scope.isDisabled = true;
 
             scope.$on("loading-started", function() {
-                element.removeClass("hide");
+                scope.isDisabled = false;
             });
             scope.$on("loading-complete", function() {
-                element.addClass("hide");
+                scope.isDisabled = true
             });
         }
     };
@@ -195,21 +197,6 @@ angular.module('common.directives', [])
             });
         }
     }
-}])
-
-.directive('myDisableLoading', [function() {
-
-    return {
-        restrict : "EA",
-        link : function(scope, element) {
-            scope.$on("loading-started", function() {
-                element.attr('disabled', true);
-            });
-            scope.$on("loading-complete", function() {
-                element.attr('disabled', false);
-            });
-        }
-    };
 }]);
 
 module.exports = 'directives';

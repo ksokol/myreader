@@ -1,9 +1,7 @@
 <div layout="column" tabIndex="-1" role="main" flex>
     <md-toolbar></md-toolbar>
 
-    <div id="md-progress-linear-wrapper">
-        <md-progress-linear loading-indicator md-mode="indeterminate"></md-progress-linear>
-    </div>
+    <my-loading-indicator></my-loading-indicator>
 
     <md-content ui-view="content" md-scroll-y flex layout-padding>
         <div layout="row">
@@ -13,7 +11,7 @@
                     <div layout="row">
                         <md-input-container flex>
                             <label>Username</label>
-                            <input required name="username" ng-model="form.username" my-disable-loading>
+                            <input required name="username" ng-model="form.username">
                             <div ng-messages="loginForm.username.$error">
                                 <div ng-message="required">required</div>
                             </div>
@@ -22,7 +20,7 @@
                     <div layout="row">
                         <md-input-container flex>
                             <label>Password</label>
-                            <input type="password" required name="password" ng-model="form.password" my-disable-loading>
+                            <input type="password" required name="password" ng-model="form.password">
                             <div ng-messages="loginForm.password.$error">
                                 <div ng-message="required">required</div>
                             </div>
@@ -30,7 +28,7 @@
                     </div>
 
                     <md-input-container>
-                        <md-checkbox ng-model="form.rememberMe" aria-label="Remember me" my-disable-loading>
+                        <md-checkbox ng-model="form.rememberMe" aria-label="Remember me">
                             Remember me
                         </md-checkbox>
                     </md-input-container>
@@ -38,7 +36,7 @@
                     <div layout="row">
                         <div flex></div>
                         <div flex>
-                            <md-button type="submit" my-disable-loading class="md-raised">login</md-button>
+                            <md-button type="submit" class="md-raised">login</md-button>
                         </div>
                         <div flex></div>
                     </div>
