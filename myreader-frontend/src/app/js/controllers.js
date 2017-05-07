@@ -402,7 +402,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
 }])
 
-.controller('SubscriptionsCtrl', ['$scope', '$state', 'subscriptionService', function($scope, $state, subscriptionService) {
+.controller('SubscriptionsCtrl', ['$rootScope', '$scope', '$state', 'subscriptionService', function($rootScope, $scope, $state, subscriptionService) {
 
     $scope.data.subscriptions = [];
 
@@ -410,6 +410,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         subscriptionService.findAll()
         .then(function(data) {
             $scope.searchKey = null;
+            $scope.data = {}; // overlaps with data from SubscriptionEntryCtrl and BookmarkEntryListCtrl
             $scope.data.subscriptions = data;
         });
     };
