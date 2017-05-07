@@ -251,47 +251,8 @@ BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
 
 angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
-.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$http', '$state', '$mdSidenav', '$mdMedia', '$stateParams', '$mdToast',
-    function($rootScope, $scope, $http, $state, $mdSidenav, $mdMedia, $stateParams, $mdToast) {
-
-    $scope.openMenu = function() {
-        $rootScope.$broadcast('navigation-open', {selected: $stateParams});
-        $mdSidenav('left').toggle();
-    };
-
-    $scope.$on('navigation-close', function() {
-        if(!$mdMedia('gt')) {
-            $mdSidenav('left').close();
-        }
-    });
-
-    $scope.$on('error', function(event, message) {
-        $mdToast.show(
-            $mdToast.simple()
-                .content(message)
-                .position('top right')
-        );
-    });
-
-    $scope.$on('logout', function() {
-        $http({
-            method: 'POST',
-            url: 'logout'
-        })
-        .success(function() {
-            $state.go('login');
-        })
-        .error(function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('Could not log out')
-                    .position('top right')
-            );
-        });
-    });
-}])
-
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$mdMedia', '$stateParams', '$mdToast',
+function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, $mdToast) {
     $scope.data = {
         tags: [],
         items: []
@@ -363,6 +324,42 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         }
         return true;
     };
+
+    $scope.openMenu = function() {
+        $rootScope.$broadcast('navigation-open', {selected: $stateParams});
+        $mdSidenav('left').toggle();
+    };
+
+    $scope.$on('navigation-close', function() {
+        if(!$mdMedia('gt')) {
+            $mdSidenav('left').close();
+        }
+    });
+
+    $scope.$on('error', function(event, message) {
+        $mdToast.show(
+            $mdToast.simple()
+                .content(message)
+                .position('top right')
+        );
+    });
+
+    $scope.$on('logout', function() {
+        $http({
+            method: 'POST',
+            url: 'logout'
+        })
+        .success(function() {
+            $state.go('login');
+        })
+        .error(function() {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content('Could not log out')
+                    .position('top right')
+            );
+        });
+    });
 }])
 
 .controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'windowService', 'hotkeys', SubscriptionEntryListCtrl])
