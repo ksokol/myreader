@@ -279,17 +279,17 @@ my-list-item[ng-class="my-focused"] {
     padding: 0;
 }
 
-.my-search-input-container {
+.my-input-container {
     margin: 0;
 }
 
-.my-search-input-container > div[class="md-errors-spacer"] {
+.my-input-container > div[class="md-errors-spacer"] {
     min-height: 0;
 }
 
-.my-search-subheader {
+.my-subheader {
     padding: 2px;
 }
-.my-search-subheader div:first-child {
+.my-subheader div:first-child {
     padding: 0;
 }
