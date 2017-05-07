@@ -93,7 +93,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'SubscriptionEntryListCtrl'
                     },
                     actions: {
-                        template: require('../../templates/subscription-entries-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }
@@ -106,7 +106,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                         controller: 'BookmarkEntryListCtrl'
                     },
                     actions: {
-                        template: require('../../templates/subscription-entries-actions.html'),
+                        template: require('../../templates/default-actions.html'),
                         controller: 'TopBarActionsCtrl'
                     }
                 }

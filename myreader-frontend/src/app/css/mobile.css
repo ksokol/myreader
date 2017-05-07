@@ -274,3 +274,22 @@ my-list-item[ng-class="my-focused"] {
     background-color: rgb(255,87,34);
     color: rgb(255,255,255);
 }
+
+.my-content {
+    padding: 0;
+}
+
+.my-search-input-container {
+    margin: 0;
+}
+
+.my-search-input-container > div[class="md-errors-spacer"] {
+    min-height: 0;
+}
+
+.my-search-subheader {
+    padding: 2px;
+}
+.my-search-subheader div:first-child {
+    padding: 0;
+}

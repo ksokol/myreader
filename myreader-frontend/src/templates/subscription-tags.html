@@ -47,11 +47,11 @@
     </md-content>
 </md-sidenav>
 <div layout="column" tabIndex="-1" role="main" flex>
-    <md-toolbar >
+    <md-toolbar hide-gt-md>
         <div ui-view="actions" class="md-toolbar-tools"></div>
     </md-toolbar>
 
     <my-loading-indicator></my-loading-indicator>
 
-    <md-content ui-view="content" md-scroll-y flex layout-padding ></md-content>
+    <md-content class="my-content" ui-view="content" md-scroll-y flex layout-padding></md-content>
 </div>

@@ -44,7 +44,7 @@ describe("SubscriptionEntryListCtrl", function() {
 
         subscriptionEntryServiceMock.findBy.and.returnValue(firstCall.promise);
 
-        scope.$broadcast('refresh');
+        scope.forceRefresh();
         scope.$digest();
 
         expect(scope.data.entries).toEqual([1]);
@@ -56,7 +56,7 @@ describe("SubscriptionEntryListCtrl", function() {
 
         subscriptionEntryServiceMock.findBy.and.returnValue(secondCall.promise);
 
-        scope.$broadcast('refresh');
+        scope.forceRefresh();
         scope.$digest();
 
         expect(scope.data.entries).toEqual([2]);
