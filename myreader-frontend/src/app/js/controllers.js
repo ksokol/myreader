@@ -399,7 +399,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
 
 }])
 
-.controller('SubscriptionsCtrl', ['$rootScope', '$scope', '$state', 'subscriptionService', function($rootScope, $scope, $state, subscriptionService) {
+.controller('SubscriptionsCtrl', ['$scope', '$state', 'subscriptionService', function($scope, $state, subscriptionService) {
 
     $scope.data.subscriptions = [];
 
