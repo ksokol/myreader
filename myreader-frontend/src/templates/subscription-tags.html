@@ -47,11 +47,15 @@
     </md-content>
 </md-sidenav>
 <div layout="column" tabIndex="-1" role="main" flex>
-    <md-toolbar >
-        <div ui-view="actions" class="md-toolbar-tools"></div>
+    <md-toolbar hide-gt-md>
+        <div class="md-toolbar-tools">
+            <md-button class="md-icon-button" hide-gt-md ng-click="openMenu()" aria-label="Menu">
+                <md-icon md-font-library="material-icons">menu</md-icon>
+            </md-button>
+        </div>
     </md-toolbar>
 
     <my-loading-indicator></my-loading-indicator>
 
-    <md-content ui-view="content" md-scroll-y flex layout-padding ></md-content>
+    <md-content class="my-content" ui-view="content" md-scroll-y flex layout-padding></md-content>
 </div>

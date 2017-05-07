@@ -25,6 +25,12 @@ module.exports = function karmaConfig (config) {
         webpack: require('./webpack.config'),
         webpackMiddleware: {
             noInfo: 'errors-only'
+        },
+        logLevel: config.LOG_INFO,
+        browserConsoleLogOptions: {
+            level: 'log',
+            format: '%b %T: %m',
+            terminal: true
         }
     });
 };

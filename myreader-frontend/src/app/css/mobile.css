@@ -274,3 +274,22 @@ my-list-item[ng-class="my-focused"] {
     background-color: rgb(255,87,34);
     color: rgb(255,255,255);
 }
+
+.my-content {
+    padding: 0;
+}
+
+.my-input-container {
+    margin: 0;
+}
+
+.my-input-container > div[class="md-errors-spacer"] {
+    min-height: 0;
+}
+
+.my-subheader {
+    padding: 2px;
+}
+.my-subheader div:first-child {
+    padding: 0;
+}

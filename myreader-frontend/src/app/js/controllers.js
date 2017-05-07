@@ -2,7 +2,7 @@ var angular = require('angular');
 
 var BaseEntryCtrl = function() {};
 
-BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, windowService, hotkeys) {
+BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, windowService, hotkeys) {
     $scope.data = {entries: []};
     $scope.param = $stateParams;
     $scope.search = "";
@@ -52,25 +52,7 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
         return param;
     };
 
-    var _update = function() {
-        var selected = [];
-        angular.forEach($scope.data.entries, function(entry) {
-            if(entry.seen && (entry.visible === undefined || entry.visible) ) {
-                selected.push(entry);
-            }
-        });
-
-        if(selected.length > 0) {
-            subscriptionEntryService.updateEntries(selected)
-            .then(function() {
-                angular.forEach(selected, function(entry) {
-                    entry.visible = false;
-                });
-            });
-        }
-    };
-
-    var _down = function() {
+    $scope.down = function() {
         var focused;
         for(var i=0;i<$scope.data.entries.length;i++) {
             var entry = $scope.data.entries[i];
@@ -100,7 +82,7 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
         }
     };
 
-    var _up = function() {
+    $scope.up = function() {
         for(var i=0;i<$scope.data.entries.length;i++) {
             var entry = $scope.data.entries[i];
             if(entry.focused) {
@@ -117,7 +99,7 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
     };
 
     $scope.refresh = function(param) {
-        subscriptionEntryService.findBy(param)
+        subscriptionEntryService.findBy(param || $scope.params())
         .then(function(data) {
             $scope.data = data;
         });
@@ -132,9 +114,6 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
     };
 
     $scope.markAsReadAndHide = function(entry) {
-        if(!$mdMedia('gt-md')) {
-            return;
-        }
         subscriptionEntryService.save(entry);
     };
 
@@ -165,35 +144,26 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
         windowService.safeOpen(entry.origin);
     };
 
-    $scope.$on('search', function(event, param) {
-        $scope.search = param;
-        $scope.data = {entries: []};
-        $scope.refresh($scope.params());
-    });
-
     $scope.isFocused = function(item) {
         return item.focused ? 'my-focused' : '';
     };
 
-    $scope.$on('move-down', _down);
-    $scope.$on('move-up', _up);
-    $scope.$on('update', _update);
-
-    $scope.$on('refresh', function() {
+    $scope.forceRefresh = function() {
         $scope.data = {entries: []};
+        $rootScope.$broadcast('refresh');
         $scope.refresh($scope.params());
-    });
+    };
 
     hotkeys.bindTo($scope)
     .add({
         combo: 'down',
-        callback: _down
+        callback: $scope.down
     });
 
     hotkeys.bindTo($scope)
     .add({
         combo: 'up',
-        callback: _up
+        callback: $scope.up
     });
 
     hotkeys.bindTo($scope)
@@ -201,12 +171,19 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
         combo: 'enter',
         callback: $scope.toggleReadFromEnter
     });
+
+    $scope.$watch('search', function() {
+        $scope.data = {entries: []};
+        $scope.refresh($scope.params());
+    });
+
+    $scope.isOpen = true;
 };
 
-var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, subscriptionsTagService, settingsService, windowService, hotkeys) {
+var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, subscriptionsTagService, settingsService, windowService, hotkeys) {
 
     BaseEntryCtrl.call(this);
-    this.initialize($rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, windowService, hotkeys);
+    this.initialize($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, windowService, hotkeys);
 
     $scope.$on('navigation-open', function(ev, param) {
         subscriptionsTagService.findAllByUnseen(true)
@@ -216,28 +193,22 @@ var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $stat
     });
 
     $scope.$on('refresh', function() {
-        if($mdMedia('gt-md')) {
-            subscriptionsTagService.findAllByUnseen(true)
-            .then(function (data) {
-                $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
-            });
-        } else {
-            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: {}});
-        }
+        subscriptionsTagService.findAllByUnseen(true)
+        .then(function (data) {
+            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+        });
     });
 
     subscriptionsTagService.findAllByUnseen(true)
     .then(function (data) {
         $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
     });
-
-    $scope.refresh($scope.params());
 };
 
-var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, bookmarkService, settingsService, windowService, hotkeys) {
+var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, bookmarkService, settingsService, windowService, hotkeys) {
 
     BaseEntryCtrl.call(this);
-    this.initialize($rootScope, $scope, $stateParams, $state, $mdMedia, subscriptionEntryService, settingsService, windowService, hotkeys);
+    this.initialize($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, windowService, hotkeys);
 
     $scope.$on('navigation-open', function(ev, param) {
         bookmarkService.findAll()
@@ -247,14 +218,10 @@ var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, $
     });
 
     $scope.$on('refresh', function() {
-        if($mdMedia('gt-md')) {
-            bookmarkService.findAll()
-                .then(function (data) {
-                    $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
-                });
-        } else {
-            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: {}});
-        }
+        bookmarkService.findAll()
+        .then(function (data) {
+            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+        });
     });
 
     $scope.addTagParam = function(stateParams, param) {
@@ -269,14 +236,10 @@ var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, $
         //don't add param
     };
 
-    if($mdMedia('gt-md')) {
-        bookmarkService.findAll()
-        .then(function (data) {
-            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
-        });
-    }
-
-    $scope.refresh($scope.params());
+    bookmarkService.findAll()
+    .then(function (data) {
+        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+    });
 };
 
 
@@ -288,79 +251,8 @@ BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
 
 angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
-.controller('TopBarActionsCtrl', ['$rootScope', '$scope', '$http', '$state', '$mdSidenav', '$mdMedia', '$stateParams', '$mdToast', 'hotkeys',
-    function($rootScope, $scope, $http, $state, $mdSidenav, $mdMedia, $stateParams, $mdToast, hotkeys) {
-
-    $scope.searchOpen = false;
-    $scope.searchKey = "";
-
-    $scope.openMenu = function() {
-        $rootScope.$broadcast('navigation-open', {selected: $stateParams});
-        $mdSidenav('left').toggle();
-    };
-
-    $scope.$on('navigation-close', function() {
-        if(!$mdMedia('gt')) {
-            $mdSidenav('left').close();
-        }
-    });
-
-    $scope.$on('error', function(event, message) {
-        $mdToast.show(
-            $mdToast.simple()
-                .content(message)
-                .position('top right')
-        );
-    });
-
-    $scope.$on('logout', function() {
-        $http({
-            method: 'POST',
-            url: 'logout'
-        })
-        .success(function() {
-            $state.go('login');
-        })
-        .error(function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('Could not log out')
-                    .position('top right')
-            );
-        });
-    });
-
-    $scope.broadcast = function(eventName, param) {
-        $rootScope.$broadcast(eventName, param);
-    };
-
-    $scope.isInvisible = function(media) {
-        if(media) {
-            return $mdMedia(media) || $scope.searchOpen;
-        }
-        return $scope.searchOpen;
-    };
-
-    $scope.openSearch = function() {
-        $scope.searchOpen = true;
-    };
-
-    $scope.onKey = function() {
-        if($scope.searchKey.length === 0) {
-            $scope.searchOpen = false;
-        }
-    };
-
-    hotkeys.bindTo($scope)
-    .add({
-        combo: 'r',
-        callback: function() {
-            $scope.broadcast('refresh');
-        }
-    });
-}])
-
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$mdMedia', '$state', function($rootScope, $scope, $mdMedia, $state) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$mdMedia', '$stateParams', '$mdToast',
+function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, $mdToast) {
     $scope.data = {
         tags: [],
         items: []
@@ -432,11 +324,47 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         }
         return true;
     };
+
+    $scope.openMenu = function() {
+        $rootScope.$broadcast('navigation-open', {selected: $stateParams});
+        $mdSidenav('left').toggle();
+    };
+
+    $scope.$on('navigation-close', function() {
+        if(!$mdMedia('gt')) {
+            $mdSidenav('left').close();
+        }
+    });
+
+    $scope.$on('error', function(event, message) {
+        $mdToast.show(
+            $mdToast.simple()
+                .content(message)
+                .position('top right')
+        );
+    });
+
+    $scope.$on('logout', function() {
+        $http({
+            method: 'POST',
+            url: 'logout'
+        })
+        .success(function() {
+            $state.go('login');
+        })
+        .error(function() {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content('Could not log out')
+                    .position('top right')
+            );
+        });
+    });
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'windowService', 'hotkeys', SubscriptionEntryListCtrl])
+.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'windowService', 'hotkeys', SubscriptionEntryListCtrl])
 
-.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', '$mdMedia', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'windowService', 'hotkeys', BookmarkEntryListCtrl])
+.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'windowService', 'hotkeys', BookmarkEntryListCtrl])
 
 .controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$mdToast', 'subscriptionEntryService', 'windowService',
     function($scope, $stateParams, $mdToast, subscriptionEntryService, windowService) {
@@ -479,6 +407,7 @@ angular.module('common.controllers', ['common.services', 'ngMaterial'])
         subscriptionService.findAll()
         .then(function(data) {
             $scope.searchKey = null;
+            $scope.data = {}; // overlaps with data from SubscriptionEntryCtrl and BookmarkEntryListCtrl
             $scope.data.subscriptions = data;
         });
     };
