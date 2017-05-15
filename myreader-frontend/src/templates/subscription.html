@@ -41,8 +41,23 @@
 
     <my-exclusions ng-show="subscription.uuid" subscription="subscription"></my-exclusions>
     <br>
-    <div layout="row" layout-align="end center">
-        <div><md-button flex="50" class="md-primary md-raised" ng-click="save()">Save</md-button></div>
-        <div><md-button flex="50" class="md-primary md-raised md-warn" ng-show="subscription.uuid" ng-click="delete()">Delete</md-button></div>
-    </div>
+    <my-button-group>
+        <my-button
+                my-type="primary"
+                my-text="Save"
+                my-disabled="subscriptionForm.$invalid"
+                my-on-click="onSave()"
+                my-on-success="onSuccessSave(data)"
+                my-on-error="onErrorSave(error)">
+        </my-button>
+        <my-button
+                my-type="warn"
+                my-text="Delete"
+                my-confirm="true"
+                my-on-click="onDelete()"
+                my-on-success="onSuccessDelete()"
+                my-on-error="onError(error)"
+                ng-show="subscription.uuid">
+        </my-button>
+    </my-button-group>
 </form>

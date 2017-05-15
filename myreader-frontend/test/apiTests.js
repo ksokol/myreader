@@ -823,7 +823,7 @@ describe('api', function() {
             promise.then(function() {
                 expect('success callback').not.toBeCalled();
             }).catch(function(data) {
-                expect(data.data.test).toBe(3);
+                expect(data.test).toBe(3);
             });
 
             http.flush();

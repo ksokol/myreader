@@ -1,0 +1,15 @@
+.my-button-confirm-left {
+    margin-right: -2px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    min-width: 44px;
+    max-width: 44px;
+}
+
+.my-button-confirm-right {
+    margin-left: -2px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    min-width: 44px;
+    max-width: 44px;
+}
