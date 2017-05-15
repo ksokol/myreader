@@ -422,8 +422,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     $scope.refresh();
 }])
 
-.controller('SubscriptionCtrl', ['$scope', '$state', '$mdToast', '$mdDialog', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', 'windowService',
-    function($scope, $state, $mdToast, $mdDialog, $stateParams, $previousState, subscriptionService, subscriptionTagService, windowService) {
+.controller('SubscriptionCtrl', ['$scope', '$state', '$mdToast', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', 'windowService',
+    function($scope, $state, $mdToast, $stateParams, $previousState, subscriptionService, subscriptionTagService, windowService) {
 
     $scope.availableTags = [];
 
@@ -456,59 +456,53 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
         $scope.subscription.tag = tag;
     };
 
-    $scope.save = function() {
-        if(!$scope.subscriptionForm.$valid) {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('Can not subscribe to feed yet')
-                    .position('top right')
-            );
-            return;
-        }
-
-        subscriptionService.save($scope.subscription)
-        .then(function(data) {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('saved')
-                    .position('top right')
-            );
-
-            if($scope.subscription.uuid) {
-                $scope.subscription = data;
-            } else {
-                $state.go('app.subscription', {uuid: data.uuid});
-            }
-        }, function(error) {
-            for(var i=0;i<error.length;i++) {
-                $mdToast.show(
-                    $mdToast.simple()
-                        .content(error[i].message)
-                        .position('top right')
-                );
-            }
-        });
-    };
-
     $scope.open = function() {
         windowService.safeOpen($scope.subscription.origin);
     };
 
-    $scope.delete = function() {
-        var confirm = $mdDialog.confirm()
-            .title('Delete subscription?')
-            .ariaLabel('Delete subscription dialog')
-            .ok('Yes')
-            .cancel('No');
-
-        $mdDialog.show(confirm).then(function() {
-            subscriptionService.unsubscribe($scope.subscription)
-            .then(function() {
-                $previousState.go();
-            });
-        });
+    $scope.onSave = function() {
+        return subscriptionService.save($scope.subscription);
     };
 
+    $scope.onSuccessSave = function(data) {
+        $mdToast.show(
+            $mdToast.simple()
+                .content('saved')
+                .position('top right')
+        );
+
+        if($scope.subscription.uuid) {
+            $scope.subscription = data;
+        } else {
+            $state.go('app.subscription', {uuid: data.uuid});
+        }
+    };
+
+    $scope.onErrorSave = function(error) {
+        for(var i=0;i<error.length;i++) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content(error[i].message)
+                    .position('top right')
+            );
+        }
+    };
+
+    $scope.onDelete = function() {
+        return subscriptionService.unsubscribe($scope.subscription);
+    };
+
+    $scope.onSuccessDelete = function() {
+        $previousState.go();
+    };
+
+    $scope.onError = function(error) {
+        $mdToast.show(
+            $mdToast.simple()
+                .content(error)
+                .position('top right')
+        );
+    }
 }])
 
 .controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'applicationPropertyService', function($scope, $mdToast, processingService, applicationPropertyService) {
