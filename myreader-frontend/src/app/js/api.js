@@ -117,7 +117,7 @@ angular.module('common.api', [])
             return data;
         },
         convertError: function (data) {
-            return data.data.fieldErrors;
+            return data.fieldErrors;
         }
     }
 })
