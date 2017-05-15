@@ -274,8 +274,8 @@ angular.module('common.api', [])
             .success(function (data) {
                 deferred.resolve(conversionService.convertFrom(resourceType, data));
             })
-            .catch(function(error) {
-                deferred.reject(conversionService.convertError(resourceType, error));
+            .error(function(error, statusCode) {
+                deferred.reject(conversionService.convertError(resourceType, error, statusCode));
             });
             return deferred.promise;
         },
