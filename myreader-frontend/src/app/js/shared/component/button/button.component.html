@@ -1,0 +1,19 @@
+<md-button
+        class="md-raised"
+        ng-class="$ctrl.myType ? 'md-' + $ctrl.myType : ''"
+        ng-if="!$ctrl.showConfirmButton"
+        ng-click="$ctrl.onClick()"
+        ng-disabled="$ctrl.isDisabled()">{{$ctrl.myText}}</md-button>
+
+<md-button
+        class="md-raised my-button-confirm-left"
+        ng-class="$ctrl.myType ? 'md-' + $ctrl.myType : ''"
+        ng-if="$ctrl.showConfirmButton"
+        ng-click="$ctrl.processOnClick()"
+        ng-disabled="$ctrl.isDisabled()">Yes</md-button>
+
+<md-button
+        class="md-primary md-raised my-button-confirm-right"
+        ng-if="$ctrl.showConfirmButton"
+        ng-click="$ctrl.reset()"
+        ng-disabled="$ctrl.isDisabled()">No</md-button>
