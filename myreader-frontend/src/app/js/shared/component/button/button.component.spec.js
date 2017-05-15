@@ -138,20 +138,23 @@ describe('button', function () {
                     return deferred.promise;
                 };
 
-                scope.onSuccessFn = function () {
-                    expected.onSuccessFn = true;
+                scope.onSuccessFn = function (data) {
+                    expected.onSuccessFn = data;
                 };
 
                 scope.onErrorFn = function (error) {
                     expected.onErrorFn = error;
                 };
 
+                scope.disableButton = false;
+
                 var element = $compile('<my-button-group>' +
                     '                   <my-button my-type="warn" ' +
                     '                              my-text="Test" ' +
                     '                              my-confirm="' + myConfirm + '" ' +
+                    '                              my-disabled="disableButton" ' +
                     '                              my-on-click="onClickFn()" ' +
-                    '                              my-on-success="onSuccessFn()" ' +
+                    '                              my-on-success="onSuccessFn(data)" ' +
                     '                              my-on-error="onErrorFn(error)">' +
                     '                   </my-button>' +
                     '                  </my-button-group>')(scope);
@@ -159,6 +162,10 @@ describe('button', function () {
                 scope.$digest();
 
                 return {
+                    disableButton: function() {
+                        scope.disableButton = true;
+                        $rootScope.$digest();
+                    },
                     button: function () {
                         return new Button(element.find('button')[0]);
                     },
@@ -169,7 +176,7 @@ describe('button', function () {
                         return new Button(element.find('button')[1]);
                     },
                     onClickSuccess: function () {
-                        deferred.resolve();
+                        deferred.resolve('onClickSuccess');
                     },
                     onClickError: function () {
                         deferred.reject('onClickError');
@@ -190,7 +197,6 @@ describe('button', function () {
             };
         }));
 
-
         it('should throw error when required buttonGroupCtrl unavailable', inject(function ($rootScope, $compile) {
             expect(function () {
                 return $compile('<my-button></my-button>')($rootScope.$new());
@@ -202,6 +208,15 @@ describe('button', function () {
 
             expect(page.button().classes()).toContain('md-warn');
             expect(page.button().title()).toEqual('Test');
+        });
+
+        it('blub', function () {
+            var page = Page(withoutConfirmation);
+
+            expect(page.button().disabled()).toEqual(false);
+            page.disableButton();
+
+            expect(page.button().disabled()).toEqual(true);
         });
 
         it('should call myOnClick function when button clicked', function () {
@@ -298,7 +313,7 @@ describe('button', function () {
             page.confirm().click();
 
             expect(page.onClickFn()).toEqual(true);
-            expect(page.onSuccessFn()).toEqual(true);
+            expect(page.onSuccessFn()).toEqual('onClickSuccess');
             expect(page.onErrorFn()).toEqual(false);
         });
 

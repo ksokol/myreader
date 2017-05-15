@@ -52,8 +52,8 @@
         ctrl.processOnClick = function () {
             isPending = true;
 
-            processMyOnClick().then(function () {
-                ctrl.myOnSuccess();
+            processMyOnClick().then(function (data) {
+                ctrl.myOnSuccess({data: data});
             }).catch(function (data) {
                 ctrl.myOnError({error: data});
             }).finally(function () {
@@ -62,7 +62,7 @@
         };
 
         ctrl.isDisabled = function () {
-            return isPending || disableConfirmButtons;
+            return isPending || disableConfirmButtons || ctrl.myDisabled;
         };
 
         ctrl.disable = function () {
@@ -86,6 +86,7 @@
             myText: '@',
             myType: '@',
             myConfirm: '@',
+            myDisabled: '<',
             myOnClick: '&',
             myOnSuccess: '&',
             myOnError: '&'
