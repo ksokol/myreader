@@ -187,7 +187,7 @@ angular.module('common.api', [])
             return { 'title': data.title, 'url': data.url };
         },
         convertError: function (data, statusCode) {
-            return statusCode === 409 ? 'abort. Feed has subscriptions' : data.message ? data.message : "undefined error occured";
+            return statusCode === 409 ? 'abort. Feed has subscriptions' : data && data.message ? data.message : "undefined error occurred";
         }
     }
 })
