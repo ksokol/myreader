@@ -24,10 +24,24 @@
     </md-input-container>
 
     <br>
-    <div layout="row" layout-align="end center">
-        <div><md-button flex="50" class="md-primary md-raised" ng-click="save()">Save</md-button></div>
-        <div><md-button flex="50" class="md-primary md-raised md-warn" ng-click="deleteFeed()">Delete</md-button></div>
-    </div>
+
+    <my-button-group>
+        <my-button
+                my-type="primary"
+                my-text="Save"
+                my-on-click="onSave()"
+                my-on-success="onSuccessSave()"
+                my-on-error="onError(error)">
+        </my-button>
+        <my-button
+                my-type="warn"
+                my-text="Delete"
+                my-confirm="true"
+                my-on-click="onDelete()"
+                my-on-success="onSuccessDelete()"
+                my-on-error="onError(error)">
+        </my-button>
+    </my-button-group>
 </form>
 
 <h2 ng-hide="feed.errors.length === 0">

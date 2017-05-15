@@ -1,5 +1,8 @@
 var angular = require('angular');
 
+require('./shared/component/button-group/button-group.component');
+require('./shared/component/button/button.component');
+
 var BaseEntryCtrl = function() {};
 
 BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, windowService, hotkeys) {
@@ -553,8 +556,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     $scope.refresh();
 }])
 
-.controller('FeedDetailCtrl', ['$scope', '$mdToast', '$mdDialog', '$state', '$stateParams', '$previousState', 'feedService', 'windowService',
-    function($scope, $mdToast, $mdDialog, $state, $stateParams, $previousState, feedService, windowService) {
+.controller('FeedDetailCtrl', ['$scope', '$mdToast', '$state', '$stateParams', '$previousState', 'feedService', 'windowService',
+    function($scope, $mdToast, $state, $stateParams, $previousState, feedService, windowService) {
 
     $scope.feed = {};
 
@@ -569,49 +572,32 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
         windowService.safeOpen($scope.feed.url);
     };
 
-    $scope.deleteFeed = function() {
-        var confirm = $mdDialog.confirm()
-            .title('Delete feed?')
-            .ariaLabel('Delete feed dialog')
-            .ok('Yes')
-            .cancel('No');
-
-        $mdDialog.show(confirm).then(function() {
-            feedService.remove($scope.feed)
-            .then(function() {
-                $mdToast.show(
-                    $mdToast.simple()
-                        .content('Feed deleted')
-                        .position('top right')
-                );
-                $previousState.go();
-            })
-            .catch(function(data) {
-                $mdToast.show(
-                    $mdToast.simple()
-                        .content(data)
-                        .position('top right')
-                );
-            });
-        });
+    $scope.onDelete = function() {
+        return feedService.remove($scope.feed);
     };
 
-    $scope.save = function() {
-        feedService.save($scope.feed)
-        .then(function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('saved')
-                    .position('top right')
-            );
-        })
-        .catch(function(data) {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content(data)
-                    .position('top right')
-            );
-        })
+    $scope.onSuccessDelete = function() {
+        $previousState.go();
+    };
+
+    $scope.onSave = function() {
+        return feedService.save($scope.feed);
+    };
+
+    $scope.onSuccessSave = function() {
+        $mdToast.show(
+            $mdToast.simple()
+                .content('saved')
+                .position('top right')
+        );
+    };
+
+    $scope.onError = function(error) {
+        $mdToast.show(
+            $mdToast.simple()
+                .content(error)
+                .position('top right')
+        );
     };
 
     $scope.refresh();
