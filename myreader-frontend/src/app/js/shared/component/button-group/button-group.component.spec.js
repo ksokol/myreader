@@ -7,15 +7,8 @@ describe('button-group', function () {
     beforeEach(inject(function(_$componentController_) {
         component = _$componentController_('myButtonGroup');
 
-        button1 = {
-            enable: jasmine.createSpy('button1.enable()'),
-            disable: jasmine.createSpy('button1.disable()')
-        };
-
-        button2 = {
-            enable: jasmine.createSpy('button2.enable()'),
-            disable: jasmine.createSpy('button2.disable()')
-        };
+        button1 = jasmine.createSpyObj('button1', ['enable', 'disable']);
+        button2 = jasmine.createSpyObj('button2', ['enable', 'disable']);
 
         component.addButton(button1);
         component.addButton(button2);

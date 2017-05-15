@@ -5,11 +5,7 @@ describe('button', function () {
     beforeEach(require('angular').mock.module('myreader'));
 
     beforeEach(function () {
-        buttonGroupCtrl = {
-            addButton: jasmine.createSpy('buttonGroupCtrl.addButton()'),
-            enableButtons: jasmine.createSpy('buttonGroupCtrl.enableButtons()'),
-            disableButtons: jasmine.createSpy('buttonGroupCtrl.disableButtons()')
-        };
+        buttonGroupCtrl = jasmine.createSpyObj('buttonGroupCtrl', ['addButton', 'enableButtons', 'disableButtons']);
 
         myOnClick = jasmine.createSpy('myOnClick');
 
