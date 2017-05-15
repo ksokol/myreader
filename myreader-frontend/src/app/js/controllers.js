@@ -507,22 +507,24 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
 
 .controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'applicationPropertyService', function($scope, $mdToast, processingService, applicationPropertyService) {
 
-    $scope.refreshIndex = function() {
-        processingService.rebuildSearchIndex()
-        .then(function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('started')
-                    .position('top right')
-            );
-        })
-        .catch(function(data) {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content(data)
-                    .position('top right')
-            );
-        })
+    $scope.onRefreshIndex = function() {
+        processingService.rebuildSearchIndex();
+    };
+
+    $scope.onSuccessRefreshIndex = function() {
+        $mdToast.show(
+            $mdToast.simple()
+                .content('started')
+                .position('top right')
+        );
+    };
+
+    $scope.onErrorRefreshIndex = function() {
+        $mdToast.show(
+            $mdToast.simple()
+                .content(data)
+                .position('top right')
+        );
     };
 
     applicationPropertyService.getProperties()

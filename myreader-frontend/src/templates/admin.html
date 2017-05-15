@@ -1,6 +1,15 @@
 <md-subheader class="md-no-sticky">Admin actions</md-subheader>
+
 <md-list-item class="secondary-button-padding">
-    <md-button class="md-primary md-raised" ng-click="refreshIndex()">Refresh index</md-button>
+    <my-button-group>
+        <my-button
+                my-type="primary"
+                my-text="Refresh index"
+                my-on-click="onRefreshIndex()"
+                my-on-success="onSuccessRefreshIndex()"
+                my-on-error="onErrorRefreshIndex(error)">
+        </my-button>
+    </my-button-group>
 </md-list-item>
 
 <md-divider></md-divider>
