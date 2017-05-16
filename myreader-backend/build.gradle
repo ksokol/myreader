@@ -70,11 +70,17 @@ springBoot {
 }
 
 task startServer(type: SpawnProcessTask) {
-    command "java -jar $jar.archivePath"
-    ready 'Tomcat started on port(s): 19340 (http)'
+    def withAppTasks = project.hasProperty('withAppTasks') as String
+
+    environmentVariables << ['TASK_ENABLED' : withAppTasks]
+    command "$projectDir/../gradlew bootRun"
+    ready 'Tomcat started on port(s):'
+    pidLockFileName 'build/.pid.lock'
 }
 
-task stopServer(type: KillProcessTask)
+task stopServer(type: KillProcessTask) {
+    pidLockFileName 'build/.pid.lock'
+}
 
 tasks.matching {it instanceof Test}.all {
     testLogging.events = ["failed", "passed", "skipped"]
