@@ -7,9 +7,7 @@
                 <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item.links.entries.route, item.tag)">{{item | navigationItemTitle}}</md-button>
                 <ul ng-show="isOpen(item)" class="menu-toggle-list">
                     <li ng-repeat="subscription in item.subscriptions" ng-hide="subscription.unseen < 1">
-                        <md-button md-no-ink
-                                   ng-class="{'active' : isSelected(subscription)}"
-                                   ng-click="toggleOpen('app.entries', subscription.tag, subscription.uuid)">
+                        <md-button md-no-ink ng-click="toggleOpen('app.entries', subscription.tag, subscription.uuid)">
                             {{::subscription.title}} ({{subscription.unseen}})
                         </md-button>
                     </li>
