@@ -41,8 +41,9 @@
                 <md-button my-click-broadcast="navigation-close navigation-clear-selection" ui-sref="app.subscription-add">Add subscription</md-button>
             </li>
             <li class="my-warn">
-                <md-button my-click-broadcast="logout">logout</md-button>
+                <md-button ng-click="logout()">logout</md-button>
             </li>
+            <my-notification-panel layout="row" my-message="message"></my-notification-panel>
         </ul>
     </md-content>
 </md-sidenav>

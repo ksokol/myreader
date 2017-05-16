@@ -80,6 +80,9 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
             subscriptionEntryService.save(focused)
             .then(function() {
                 focused.focused = true;
+            })
+            .catch(function (error) {
+                $scope.message = { type: 'error', message: error};
             });
         } else {
             focused.focused = true;
@@ -106,6 +109,9 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
         subscriptionEntryService.findBy(param || $scope.params())
         .then(function(data) {
             $scope.data = data;
+        })
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error };
         });
     };
 
@@ -118,12 +124,18 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
     };
 
     $scope.markAsReadAndHide = function(entry) {
-        subscriptionEntryService.save(entry);
+        subscriptionEntryService.save(entry)
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
+        });
     };
 
     $scope.toggleRead = function(entry) {
         entry.seen = !entry.seen;
-        subscriptionEntryService.save(entry);
+        subscriptionEntryService.save(entry)
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
+        });
     };
 
     $scope.toggleReadFromEnter = function() {
@@ -141,7 +153,7 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
     };
 
     $scope.loadMore = function() {
-        $scope.refresh($scope.data.next());
+        $scope.refresh($scope.data.next())
     };
 
     $scope.openOrigin = function(entry) {
@@ -193,6 +205,9 @@ var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $stat
         subscriptionsTagService.findAllByUnseen(true)
         .then(function (data) {
             $rootScope.$broadcast('navigation-change', {selected: param.selected, data: data});
+        })
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
         });
     });
 
@@ -200,12 +215,18 @@ var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $stat
         subscriptionsTagService.findAllByUnseen(true)
         .then(function (data) {
             $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+        })
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
         });
     });
 
     subscriptionsTagService.findAllByUnseen(true)
     .then(function (data) {
         $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+    })
+    .catch(function (error) {
+        $scope.message = { type: 'error', message: error};
     });
 };
 
@@ -218,6 +239,9 @@ var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, s
         bookmarkService.findAll()
         .then(function (data) {
             $rootScope.$broadcast('navigation-change', {selected: param.selected, data: data});
+        })
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
         });
     });
 
@@ -225,6 +249,9 @@ var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, s
         bookmarkService.findAll()
         .then(function (data) {
             $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+        })
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
         });
     });
 
@@ -255,8 +282,8 @@ BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
 
 angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$mdMedia', '$stateParams', '$mdToast',
-function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, $mdToast) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$mdMedia', '$stateParams',
+function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) {
     $scope.data = {
         tags: [],
         items: []
@@ -340,30 +367,19 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
         }
     });
 
-    $scope.$on('error', function(event, message) {
-        $mdToast.show(
-            $mdToast.simple()
-                .content(message)
-                .position('top right')
-        );
-    });
-
-    $scope.$on('logout', function() {
+    $scope.logout = function() {
         $http({
             method: 'POST',
             url: 'logout'
         })
         .success(function() {
+            $rootScope.$broadcast('logout');
             $state.go('login');
         })
         .error(function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('Could not log out')
-                    .position('top right')
-            );
+            $scope.message = { type: 'error', message: 'Could not log out'};
         });
-    });
+    };
 }])
 
 .controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'windowService', 'hotkeys', SubscriptionEntryListCtrl])
@@ -517,10 +533,13 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
 
     $scope.refresh = function() {
         feedService.findAll()
-            .then(function(data) {
-                $scope.searchKey = null;
-                $scope.data = data;
-            });
+        .then(function(data) {
+            $scope.searchKey = null;
+            $scope.data = data;
+        })
+        .catch (function(error) {
+            $scope.message = { type: 'error', message: error };
+        });
     };
 
     $scope.open = function(feed) {
