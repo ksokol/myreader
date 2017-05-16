@@ -606,7 +606,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     };
 }])
 
-.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$mdToast', '$state', function($rootScope, $scope, $http, $mdToast, $state) {
+.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$state', function($rootScope, $scope, $http, $state) {
 
     $scope.form = {};
 
@@ -628,11 +628,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
             $state.go('app.entries', {tag: 'all'});
         })
         .error(function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('username or password wrong')
-                    .position('top right')
-            );
+            $scope.message = { type: 'error', message: 'username or password wrong' };
         });
     }
 }]);
