@@ -534,7 +534,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     });
 }])
 
-.controller('FeedsCtrl', ['$scope', '$mdToast', '$state', 'feedService', function($scope, $mdToast, $state, feedService) {
+.controller('FeedsCtrl', ['$scope', '$state', 'feedService', function($scope, $state, feedService) {
 
     $scope.data = [];
 
