@@ -121,22 +121,6 @@ angular.module('common.directives', [])
     }
 }])
 
-.directive('myClickBroadcast', ['$rootScope', function($rootScope) {
-
-    return {
-        link : function(scope, element, attrs) {
-            element.bind("click", function() {
-                var splitted = attrs.myClickBroadcast.split(' ');
-                angular.forEach(splitted, function(eventName) {
-                    if(eventName.length > 0) {
-                        $rootScope.$broadcast(eventName);
-                    }
-                });
-            });
-        }
-    }
-}])
-
 .directive('myShowAdmin', ['permissionService', function(permissionService) {
 
     return {
