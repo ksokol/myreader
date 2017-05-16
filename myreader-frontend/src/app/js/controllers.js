@@ -506,26 +506,18 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     }
 }])
 
-.controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'applicationPropertyService', function($scope, $mdToast, processingService, applicationPropertyService) {
+.controller('AdminCtrl', ['$scope', 'processingService', 'applicationPropertyService', function($scope, processingService, applicationPropertyService) {
 
     $scope.onRefreshIndex = function() {
-        processingService.rebuildSearchIndex();
+        return processingService.rebuildSearchIndex();
     };
 
     $scope.onSuccessRefreshIndex = function() {
-        $mdToast.show(
-            $mdToast.simple()
-                .content('started')
-                .position('top right')
-        );
+        $scope.message = { type: 'success', message: 'started' };
     };
 
     $scope.onErrorRefreshIndex = function() {
-        $mdToast.show(
-            $mdToast.simple()
-                .content(data)
-                .position('top right')
-        );
+        $scope.message = { type: 'error', message: data };
     };
 
     applicationPropertyService.getProperties()
