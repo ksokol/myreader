@@ -370,8 +370,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
 
 .controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'windowService', 'hotkeys', BookmarkEntryListCtrl])
 
-.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$mdToast', 'subscriptionEntryService', 'windowService',
-    function($scope, $stateParams, $mdToast, subscriptionEntryService, windowService) {
+.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', 'subscriptionEntryService', 'windowService',
+    function($scope, $stateParams, subscriptionEntryService, windowService) {
 
     $scope.entry = {};
 
@@ -386,14 +386,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
         if($scope.entry.seen) {
             $scope.entry.visible = false;
         }
-        subscriptionEntryService.save($scope.entry)
-        .then(function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('saved')
-                    .position('top right')
-                );
-        });
+        subscriptionEntryService.save($scope.entry);
     };
 
     $scope.open = function(event) {
