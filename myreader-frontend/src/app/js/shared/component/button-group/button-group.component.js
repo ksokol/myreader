@@ -23,7 +23,7 @@
     }
 
     require('angular').module('myreader').component('myButtonGroup', {
-        template: '<div layout="row" layout-align="end center" ng-transclude></div>',
+        template: '<div ng-transclude></div>',
         transclude: true,
         controller: ButtonGroupComponent
     });
