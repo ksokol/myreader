@@ -297,15 +297,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
         $state.go(state);
     };
 
-    $scope.$on('logout', function() {
-        $rootScope.$emit('refresh');
-
-        $scope.data = {
-            tags: [],
-            items: []
-        };
-    });
-
     $scope.isItemSelected = function(item) {
         var openedSection = $state.params;
         if(openedSection.tag === item.tag) {
@@ -368,7 +359,13 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
             url: 'logout'
         })
         .success(function() {
-            $rootScope.$broadcast('logout');
+            $rootScope.$emit('refresh');
+
+            $scope.data = {
+                tags: [],
+                items: []
+            };
+
             $state.go('login');
         })
         .error(function() {
