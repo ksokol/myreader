@@ -2,6 +2,7 @@ var angular = require('angular');
 
 require('./shared/component/button-group/button-group.component');
 require('./shared/component/button/button.component');
+require('./shared/component/notification-panel/notification-panel.component');
 
 var BaseEntryCtrl = function() {};
 
@@ -552,8 +553,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     $scope.refresh();
 }])
 
-.controller('FeedDetailCtrl', ['$scope', '$mdToast', '$state', '$stateParams', '$previousState', 'feedService', 'windowService',
-    function($scope, $mdToast, $state, $stateParams, $previousState, feedService, windowService) {
+.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$previousState', 'feedService', 'windowService',
+    function($scope, $stateParams, $previousState, feedService, windowService) {
 
     $scope.feed = {};
 
@@ -581,19 +582,11 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     };
 
     $scope.onSuccessSave = function() {
-        $mdToast.show(
-            $mdToast.simple()
-                .content('saved')
-                .position('top right')
-        );
+        $scope.message = { type: 'success', message: 'saved' };
     };
 
     $scope.onError = function(error) {
-        $mdToast.show(
-            $mdToast.simple()
-                .content(error)
-                .position('top right')
-        );
+        $scope.message = { type: 'error', message: error };
     };
 
     $scope.refresh();
