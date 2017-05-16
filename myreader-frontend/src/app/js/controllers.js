@@ -279,8 +279,8 @@ BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
 
 angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$mdMedia', '$stateParams',
-function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$stateParams',
+function($rootScope, $scope, $state, $http, $mdSidenav, $stateParams) {
     $scope.data = {
         tags: [],
         items: []
@@ -348,9 +348,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
     };
 
     $scope.closeSidenav = function () {
-        if(!$mdMedia('gt')) {
-            $mdSidenav('left').close();
-        }
+        $mdSidenav('left').close();
     };
 
     $scope.logout = function() {
