@@ -206,7 +206,7 @@ describe('button', function () {
             expect(page.button().title()).toEqual('Test');
         });
 
-        it('blub', function () {
+        it('should disable button', function () {
             var page = Page(withoutConfirmation);
 
             expect(page.button().disabled()).toEqual(false);
