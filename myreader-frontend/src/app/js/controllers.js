@@ -592,24 +592,17 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     $scope.refresh();
 }])
 
-.controller('SettingsCtrl', ['$scope', '$mdToast', 'settingsService', function($scope, $mdToast, settingsService) {
+.controller('SettingsCtrl', ['$scope', 'settingsService', function($scope, settingsService) {
 
     $scope.sizes = [10, 20, 30];
     $scope.currentSize = settingsService.getPageSize();
     $scope.showUnseenEntries = settingsService.isShowUnseenEntries();
     $scope.showEntryDetails = settingsService.isShowEntryDetails();
 
-
     $scope.save = function() {
         settingsService.setPageSize($scope.currentSize);
         settingsService.setShowUnseenEntries($scope.showUnseenEntries);
         settingsService.setShowEntryDetails($scope.showEntryDetails);
-
-        $mdToast.show(
-            $mdToast.simple()
-                .content('saved')
-                .position('top right')
-        );
     };
 }])
 
