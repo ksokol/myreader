@@ -14,13 +14,6 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                     $rootScope.$emit('refresh');
                     $state.go('login');
                 }
-                if(rejection.status >= 500 || rejection.status === 403) {
-                    if(typeof rejection.data === 'string') {
-                        $rootScope.$broadcast('error', rejection.data);
-                    } else {
-                        $rootScope.$broadcast('error', rejection.data.message);
-                    }
-                }
 
                 return $q.reject(rejection);
             }

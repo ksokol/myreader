@@ -1,0 +1,7 @@
+<div class="my-notification-panel">
+    <div ng-if="$ctrl.message" class="my-notification-panel__message" ng-class="$ctrl.type ? 'my-notification-panel__message-' + $ctrl.type : ''">
+        <span>{{$ctrl.message}}</span>
+        <md-icon md-font-library="material-icons" class="my-pointer" ng-click="$ctrl.onClose()">close</md-icon>
+    </div>
+</div>
+

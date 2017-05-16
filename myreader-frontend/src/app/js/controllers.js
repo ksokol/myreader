@@ -2,6 +2,7 @@ var angular = require('angular');
 
 require('./shared/component/button-group/button-group.component');
 require('./shared/component/button/button.component');
+require('./shared/component/notification-panel/notification-panel.component');
 
 var BaseEntryCtrl = function() {};
 
@@ -79,6 +80,9 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
             subscriptionEntryService.save(focused)
             .then(function() {
                 focused.focused = true;
+            })
+            .catch(function (error) {
+                $scope.message = { type: 'error', message: error};
             });
         } else {
             focused.focused = true;
@@ -105,6 +109,9 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
         subscriptionEntryService.findBy(param || $scope.params())
         .then(function(data) {
             $scope.data = data;
+        })
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error };
         });
     };
 
@@ -117,12 +124,18 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
     };
 
     $scope.markAsReadAndHide = function(entry) {
-        subscriptionEntryService.save(entry);
+        subscriptionEntryService.save(entry)
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
+        });
     };
 
     $scope.toggleRead = function(entry) {
         entry.seen = !entry.seen;
-        subscriptionEntryService.save(entry);
+        subscriptionEntryService.save(entry)
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
+        });
     };
 
     $scope.toggleReadFromEnter = function() {
@@ -140,7 +153,7 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
     };
 
     $scope.loadMore = function() {
-        $scope.refresh($scope.data.next());
+        $scope.refresh($scope.data.next())
     };
 
     $scope.openOrigin = function(entry) {
@@ -192,6 +205,9 @@ var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $stat
         subscriptionsTagService.findAllByUnseen(true)
         .then(function (data) {
             $rootScope.$broadcast('navigation-change', {selected: param.selected, data: data});
+        })
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
         });
     });
 
@@ -199,12 +215,18 @@ var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $stat
         subscriptionsTagService.findAllByUnseen(true)
         .then(function (data) {
             $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+        })
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
         });
     });
 
     subscriptionsTagService.findAllByUnseen(true)
     .then(function (data) {
         $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+    })
+    .catch(function (error) {
+        $scope.message = { type: 'error', message: error};
     });
 };
 
@@ -217,6 +239,9 @@ var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, s
         bookmarkService.findAll()
         .then(function (data) {
             $rootScope.$broadcast('navigation-change', {selected: param.selected, data: data});
+        })
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
         });
     });
 
@@ -224,6 +249,9 @@ var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, s
         bookmarkService.findAll()
         .then(function (data) {
             $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+        })
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
         });
     });
 
@@ -254,8 +282,8 @@ BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
 
 angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$mdMedia', '$stateParams', '$mdToast',
-function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, $mdToast) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$mdMedia', '$stateParams',
+function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) {
     $scope.data = {
         tags: [],
         items: []
@@ -339,38 +367,27 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
         }
     });
 
-    $scope.$on('error', function(event, message) {
-        $mdToast.show(
-            $mdToast.simple()
-                .content(message)
-                .position('top right')
-        );
-    });
-
-    $scope.$on('logout', function() {
+    $scope.logout = function() {
         $http({
             method: 'POST',
             url: 'logout'
         })
         .success(function() {
+            $rootScope.$broadcast('logout');
             $state.go('login');
         })
         .error(function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('Could not log out')
-                    .position('top right')
-            );
+            $scope.message = { type: 'error', message: 'Could not log out'};
         });
-    });
+    };
 }])
 
 .controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'windowService', 'hotkeys', SubscriptionEntryListCtrl])
 
 .controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'windowService', 'hotkeys', BookmarkEntryListCtrl])
 
-.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', '$mdToast', 'subscriptionEntryService', 'windowService',
-    function($scope, $stateParams, $mdToast, subscriptionEntryService, windowService) {
+.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', 'subscriptionEntryService', 'windowService',
+    function($scope, $stateParams, subscriptionEntryService, windowService) {
 
     $scope.entry = {};
 
@@ -385,14 +402,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
         if($scope.entry.seen) {
             $scope.entry.visible = false;
         }
-        subscriptionEntryService.save($scope.entry)
-        .then(function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('saved')
-                    .position('top right')
-                );
-        });
+        subscriptionEntryService.save($scope.entry);
     };
 
     $scope.open = function(event) {
@@ -422,8 +432,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     $scope.refresh();
 }])
 
-.controller('SubscriptionCtrl', ['$scope', '$state', '$mdToast', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', 'windowService',
-    function($scope, $state, $mdToast, $stateParams, $previousState, subscriptionService, subscriptionTagService, windowService) {
+.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', 'windowService',
+    function($scope, $state, $stateParams, $previousState, subscriptionService, subscriptionTagService, windowService) {
 
     $scope.availableTags = [];
 
@@ -465,11 +475,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     };
 
     $scope.onSuccessSave = function(data) {
-        $mdToast.show(
-            $mdToast.simple()
-                .content('saved')
-                .position('top right')
-        );
+        $scope.message = { type: 'success', message: 'saved' };
 
         if($scope.subscription.uuid) {
             $scope.subscription = data;
@@ -479,13 +485,13 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     };
 
     $scope.onErrorSave = function(error) {
+        var errorMessage = '';
+
         for(var i=0;i<error.length;i++) {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content(error[i].message)
-                    .position('top right')
-            );
+            errorMessage += ' "' + error[i].field + '" ' + error[i].message;
         }
+
+        $scope.message = { type: 'error', message: errorMessage };
     };
 
     $scope.onDelete = function() {
@@ -497,34 +503,22 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     };
 
     $scope.onError = function(error) {
-        $mdToast.show(
-            $mdToast.simple()
-                .content(error)
-                .position('top right')
-        );
+        $scope.message = { type: 'error', message: error };
     }
 }])
 
-.controller('AdminCtrl', ['$scope', '$mdToast', 'processingService', 'applicationPropertyService', function($scope, $mdToast, processingService, applicationPropertyService) {
+.controller('AdminCtrl', ['$scope', 'processingService', 'applicationPropertyService', function($scope, processingService, applicationPropertyService) {
 
     $scope.onRefreshIndex = function() {
-        processingService.rebuildSearchIndex();
+        return processingService.rebuildSearchIndex();
     };
 
     $scope.onSuccessRefreshIndex = function() {
-        $mdToast.show(
-            $mdToast.simple()
-                .content('started')
-                .position('top right')
-        );
+        $scope.message = { type: 'success', message: 'started' };
     };
 
     $scope.onErrorRefreshIndex = function() {
-        $mdToast.show(
-            $mdToast.simple()
-                .content(data)
-                .position('top right')
-        );
+        $scope.message = { type: 'error', message: data };
     };
 
     applicationPropertyService.getProperties()
@@ -533,16 +527,19 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     });
 }])
 
-.controller('FeedsCtrl', ['$scope', '$mdToast', '$state', 'feedService', function($scope, $mdToast, $state, feedService) {
+.controller('FeedsCtrl', ['$scope', '$state', 'feedService', function($scope, $state, feedService) {
 
     $scope.data = [];
 
     $scope.refresh = function() {
         feedService.findAll()
-            .then(function(data) {
-                $scope.searchKey = null;
-                $scope.data = data;
-            });
+        .then(function(data) {
+            $scope.searchKey = null;
+            $scope.data = data;
+        })
+        .catch (function(error) {
+            $scope.message = { type: 'error', message: error };
+        });
     };
 
     $scope.open = function(feed) {
@@ -552,8 +549,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     $scope.refresh();
 }])
 
-.controller('FeedDetailCtrl', ['$scope', '$mdToast', '$state', '$stateParams', '$previousState', 'feedService', 'windowService',
-    function($scope, $mdToast, $state, $stateParams, $previousState, feedService, windowService) {
+.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$previousState', 'feedService', 'windowService',
+    function($scope, $stateParams, $previousState, feedService, windowService) {
 
     $scope.feed = {};
 
@@ -581,46 +578,31 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     };
 
     $scope.onSuccessSave = function() {
-        $mdToast.show(
-            $mdToast.simple()
-                .content('saved')
-                .position('top right')
-        );
+        $scope.message = { type: 'success', message: 'saved' };
     };
 
     $scope.onError = function(error) {
-        $mdToast.show(
-            $mdToast.simple()
-                .content(error)
-                .position('top right')
-        );
+        $scope.message = { type: 'error', message: error };
     };
 
     $scope.refresh();
 }])
 
-.controller('SettingsCtrl', ['$scope', '$mdToast', 'settingsService', function($scope, $mdToast, settingsService) {
+.controller('SettingsCtrl', ['$scope', 'settingsService', function($scope, settingsService) {
 
     $scope.sizes = [10, 20, 30];
     $scope.currentSize = settingsService.getPageSize();
     $scope.showUnseenEntries = settingsService.isShowUnseenEntries();
     $scope.showEntryDetails = settingsService.isShowEntryDetails();
 
-
     $scope.save = function() {
         settingsService.setPageSize($scope.currentSize);
         settingsService.setShowUnseenEntries($scope.showUnseenEntries);
         settingsService.setShowEntryDetails($scope.showEntryDetails);
-
-        $mdToast.show(
-            $mdToast.simple()
-                .content('saved')
-                .position('top right')
-        );
     };
 }])
 
-.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$mdToast', '$state', function($rootScope, $scope, $http, $mdToast, $state) {
+.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$state', function($rootScope, $scope, $http, $state) {
 
     $scope.form = {};
 
@@ -642,11 +624,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
             $state.go('app.entries', {tag: 'all'});
         })
         .error(function() {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content('username or password wrong')
-                    .position('top right')
-            );
+            $scope.message = { type: 'error', message: 'username or password wrong' };
         });
     }
 }]);

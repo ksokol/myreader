@@ -25,6 +25,9 @@ angular.module('common.api', [])
             all.unseen = subscriptionTags.unseen;
             subscriptionTags.tags.unshift(all);
             return subscriptionTags;
+        },
+        convertError: function (error) {
+            return error;
         }
     }
 })
@@ -73,6 +76,9 @@ angular.module('common.api', [])
                 }
             });
             return {content: converted};
+        },
+        convertError: function(error) {
+            return error;
         }
     }
 })
@@ -174,6 +180,9 @@ angular.module('common.api', [])
     return {
         convertFrom: function (data) {
             return new Feeds(data.content, data.links);
+        },
+        convertError: function(error) {
+            return error;
         }
     }
 })
@@ -252,6 +261,9 @@ angular.module('common.api', [])
             $http.get(url)
             .success(function (data) {
                 deferred.resolve(conversionService.convertFrom(resourceType, data));
+            })
+            .error(function(error, statusCode) {
+                deferred.reject(conversionService.convertError(resourceType, error, statusCode));
             });
             return deferred.promise;
         },
