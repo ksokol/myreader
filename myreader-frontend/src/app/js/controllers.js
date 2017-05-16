@@ -423,8 +423,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     $scope.refresh();
 }])
 
-.controller('SubscriptionCtrl', ['$scope', '$state', '$mdToast', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', 'windowService',
-    function($scope, $state, $mdToast, $stateParams, $previousState, subscriptionService, subscriptionTagService, windowService) {
+.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', 'windowService',
+    function($scope, $state, $stateParams, $previousState, subscriptionService, subscriptionTagService, windowService) {
 
     $scope.availableTags = [];
 
@@ -466,11 +466,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     };
 
     $scope.onSuccessSave = function(data) {
-        $mdToast.show(
-            $mdToast.simple()
-                .content('saved')
-                .position('top right')
-        );
+        $scope.message = { type: 'success', message: 'saved' };
 
         if($scope.subscription.uuid) {
             $scope.subscription = data;
@@ -480,13 +476,13 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     };
 
     $scope.onErrorSave = function(error) {
+        var errorMessage = '';
+
         for(var i=0;i<error.length;i++) {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content(error[i].message)
-                    .position('top right')
-            );
+            errorMessage += ' "' + error[i].field + '" ' + error[i].message;
         }
+
+        $scope.message = { type: 'error', message: errorMessage };
     };
 
     $scope.onDelete = function() {
@@ -498,11 +494,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams, 
     };
 
     $scope.onError = function(error) {
-        $mdToast.show(
-            $mdToast.simple()
-                .content(error)
-                .position('top right')
-        );
+        $scope.message = { type: 'error', message: error };
     }
 }])
 
