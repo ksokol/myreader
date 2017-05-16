@@ -286,18 +286,16 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
         items: []
     };
 
-    var openItem = {tag: null, uuid: null};
-
     $scope.$on('navigation-change', function(ev, param) {
         if(param.data) {
             $scope.data = param.data;
         }
-        openItem = param.selected;
     });
 
-    $scope.$on('navigation-clear-selection', function() {
-        openItem = {tag: null, uuid: null};
-    });
+    $scope.navigateTo = function (state) {
+        $scope.closeSidenav();
+        $state.go(state);
+    };
 
     $scope.$on('logout', function() {
         $rootScope.$emit('refresh');
@@ -308,8 +306,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
         };
     });
 
-    $scope.isItemSelected= function(item) {
-        var openedSection = openItem;
+    $scope.isItemSelected = function(item) {
+        var openedSection = $state.params;
         if(openedSection.tag === item.tag) {
             return true;
         } else if(item.subscriptions) {
@@ -329,21 +327,21 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
         if(item.type === 'global') {
             return false;
         }
-        if(openItem.tag === item.tag) {
+        if($state.params.tag === item.tag) {
             return true;
         }
         if(item.subscriptions) {
             for(var i=0;i<item.subscriptions.length;i++) {
-                if(item.subscriptions[i].uuid === openItem.uuid) {
+                if(item.subscriptions[i].uuid === $state.params.uuid) {
                     return true;
                 }
             }
         }
     };
 
-    $scope.toggleOpen = function(item) {
-        var link = item.links.entries;
-        $state.go(link.route, link.param);
+    $scope.toggleOpen = function(state, tag, uuid) {
+        $scope.closeSidenav();
+        $state.go(state, {tag: tag, uuid: uuid});
     };
 
     $scope.visible = function(item) {
@@ -358,11 +356,11 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
         $mdSidenav('left').toggle();
     };
 
-    $scope.$on('navigation-close', function() {
+    $scope.closeSidenav = function () {
         if(!$mdMedia('gt')) {
             $mdSidenav('left').close();
         }
-    });
+    };
 
     $scope.logout = function() {
         $http({

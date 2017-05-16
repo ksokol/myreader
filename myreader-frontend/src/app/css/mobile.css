@@ -74,7 +74,7 @@ ul li {
     background-color: #f6f6f6;
 }
 
-.subscription-tag-menu .menu-toggle-list a.md-button {
+.subscription-tag-menu .menu-toggle-list span {
     display: block;
     font-weight: 400;
     padding: 0 16px 0 32px;
