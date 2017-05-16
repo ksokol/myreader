@@ -39,7 +39,7 @@
                 <div class="my-list-item-text">
                     <div>
                         <h3 hide-gt-md ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
-                        <h3 hide show-gt-md class="my-a" ng-click="openOrigin(entry)">{{::entry.title | htmlEntities}}</h3>
+                        <h3 hide show-gt-md class="my-a" ng-if="entry.origin" my-safe-opener url="{{entry.origin}}">{{::entry.title | htmlEntities}}</h3>
                         <h4>
                             <md-icon ng-class="my-a" hide show-gt-md ng-click="toggleRead(entry)" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
                             {{::entry.createdAt | timeago}} on {{::entry.feedTitle | htmlEntities}}

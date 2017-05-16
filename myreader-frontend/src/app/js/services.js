@@ -361,17 +361,6 @@ angular.module('common.services', ['common.api', 'common.caches'])
     }
 }])
 
-.service('windowService', ['$window', function($window) {
-
-    return {
-        safeOpen: function(url) {
-            var otherWindow = $window.open();
-            otherWindow.opener = null;
-            otherWindow.location = url;
-        }
-    }
-}])
-
 .service('applicationPropertyService', ['api', function(api) {
     var url = '/myreader/info';
 

@@ -3,10 +3,11 @@ var angular = require('angular');
 require('./shared/component/button-group/button-group.component');
 require('./shared/component/button/button.component');
 require('./shared/component/notification-panel/notification-panel.component');
+require('./shared/directive/safe-opener/safe-opener.directive');
 
 var BaseEntryCtrl = function() {};
 
-BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, windowService, hotkeys) {
+BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, hotkeys) {
     $scope.data = {entries: []};
     $scope.param = $stateParams;
     $scope.search = "";
@@ -156,10 +157,6 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
         $scope.refresh($scope.data.next())
     };
 
-    $scope.openOrigin = function(entry) {
-        windowService.safeOpen(entry.origin);
-    };
-
     $scope.isFocused = function(item) {
         return item.focused ? 'my-focused' : '';
     };
@@ -196,10 +193,10 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
     $scope.isOpen = true;
 };
 
-var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, subscriptionsTagService, settingsService, windowService, hotkeys) {
+var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, subscriptionsTagService, settingsService, hotkeys) {
 
     BaseEntryCtrl.call(this);
-    this.initialize($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, windowService, hotkeys);
+    this.initialize($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, hotkeys);
 
     $scope.$on('navigation-open', function(ev, param) {
         subscriptionsTagService.findAllByUnseen(true)
@@ -230,10 +227,10 @@ var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $stat
     });
 };
 
-var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, bookmarkService, settingsService, windowService, hotkeys) {
+var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, bookmarkService, settingsService, hotkeys) {
 
     BaseEntryCtrl.call(this);
-    this.initialize($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, windowService, hotkeys);
+    this.initialize($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, hotkeys);
 
     $scope.$on('navigation-open', function(ev, param) {
         bookmarkService.findAll()
@@ -382,12 +379,12 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
     };
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'windowService', 'hotkeys', SubscriptionEntryListCtrl])
+.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'hotkeys', SubscriptionEntryListCtrl])
 
-.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'windowService', 'hotkeys', BookmarkEntryListCtrl])
+.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'hotkeys', BookmarkEntryListCtrl])
 
-.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', 'subscriptionEntryService', 'windowService',
-    function($scope, $stateParams, subscriptionEntryService, windowService) {
+.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', 'subscriptionEntryService',
+    function($scope, $stateParams, subscriptionEntryService) {
 
     $scope.entry = {};
 
@@ -403,11 +400,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
             $scope.entry.visible = false;
         }
         subscriptionEntryService.save($scope.entry);
-    };
-
-    $scope.open = function(event) {
-        event.preventDefault();
-        windowService.safeOpen($scope.entry.origin);
     };
 
 }])
@@ -432,8 +424,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
     $scope.refresh();
 }])
 
-.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService', 'windowService',
-    function($scope, $state, $stateParams, $previousState, subscriptionService, subscriptionTagService, windowService) {
+.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService',
+    function($scope, $state, $stateParams, $previousState, subscriptionService, subscriptionTagService) {
 
     $scope.availableTags = [];
 
@@ -464,10 +456,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
 
     $scope.setTag = function(tag) {
         $scope.subscription.tag = tag;
-    };
-
-    $scope.open = function() {
-        windowService.safeOpen($scope.subscription.origin);
     };
 
     $scope.onSave = function() {
@@ -549,8 +537,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
     $scope.refresh();
 }])
 
-.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$previousState', 'feedService', 'windowService',
-    function($scope, $stateParams, $previousState, feedService, windowService) {
+.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$previousState', 'feedService',
+    function($scope, $stateParams, $previousState, feedService) {
 
     $scope.feed = {};
 
@@ -559,10 +547,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $mdMedia, $stateParams) 
             .then(function(data) {
                 $scope.feed = data;
             });
-    };
-
-    $scope.open = function() {
-        windowService.safeOpen($scope.feed.url);
     };
 
     $scope.onDelete = function() {
