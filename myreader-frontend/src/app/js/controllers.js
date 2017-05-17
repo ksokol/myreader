@@ -198,16 +198,6 @@ var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $stat
     BaseEntryCtrl.call(this);
     this.initialize($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, hotkeys);
 
-    $scope.$on('navigation-open', function(ev, param) {
-        subscriptionsTagService.findAllByUnseen(true)
-        .then(function (data) {
-            $rootScope.$broadcast('navigation-change', {selected: param.selected, data: data});
-        })
-        .catch(function (error) {
-            $scope.message = { type: 'error', message: error};
-        });
-    });
-
     $scope.$on('refresh', function() {
         subscriptionsTagService.findAllByUnseen(true)
         .then(function (data) {
@@ -231,16 +221,6 @@ var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, s
 
     BaseEntryCtrl.call(this);
     this.initialize($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, hotkeys);
-
-    $scope.$on('navigation-open', function(ev, param) {
-        bookmarkService.findAll()
-        .then(function (data) {
-            $rootScope.$broadcast('navigation-change', {selected: param.selected, data: data});
-        })
-        .catch(function (error) {
-            $scope.message = { type: 'error', message: error};
-        });
-    });
 
     $scope.$on('refresh', function() {
         bookmarkService.findAll()
@@ -279,8 +259,8 @@ BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
 
 angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$stateParams',
-function($rootScope, $scope, $state, $http, $mdSidenav, $stateParams) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav',
+function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.data = {
         tags: [],
         items: []
@@ -343,7 +323,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $stateParams) {
     };
 
     $scope.openMenu = function() {
-        $rootScope.$broadcast('navigation-open', {selected: $stateParams});
         $mdSidenav('left').toggle();
     };
 
