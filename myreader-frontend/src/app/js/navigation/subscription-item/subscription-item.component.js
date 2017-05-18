@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    require('../item-title-pipe/item-title.pipe');
+
     function NavigationSubscriptionItemComponent() {
         var ctrl = this;
 

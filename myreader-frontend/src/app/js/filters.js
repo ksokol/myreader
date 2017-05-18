@@ -343,21 +343,6 @@ angular.module('common.filters', ['ngSanitize'])
         }
         return "sometime";
     }
-})
-
-.filter('navigationItemTitle', function() {
-
-    return function(item) {
-        if(!item) {
-            return '';
-        }
-        var unseen = item.unseen;
-        var title = item.title || '';
-        if(unseen && unseen > 0) {
-            title += " (" + unseen + ")";
-        }
-        return title;
-    }
 });
 
 module.exports = 'filters';

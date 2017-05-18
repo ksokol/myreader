@@ -1,7 +1,7 @@
 <li ng-class="{'my-navigation-dynamic__item': $ctrl.isSelected($ctrl.item)}"
     ng-hide="$ctrl.isInvisible($ctrl.item)">
 
-    <md-button md-no-ink ng-click="$ctrl.onSelect($ctrl.item.tag, $ctrl.item.uuid)">{{$ctrl.item | navigationItemTitle}}</md-button>
+    <md-button md-no-ink ng-click="$ctrl.onSelect($ctrl.item.tag, $ctrl.item.uuid)">{{$ctrl.item | myNavigationItemTitle}}</md-button>
 </li>
 
 <ul class="my-navigation-dynamic__sub-menu" ng-show="$ctrl.isOpen()">
@@ -9,6 +9,6 @@
         ng-hide="$ctrl.isInvisible(subscription)"
         ng-class="{'my-navigation-dynamic__item': $ctrl.isSelected(subscription)}">
 
-        <md-button md-no-ink ng-click="$ctrl.onSelect(subscription.tag, subscription.uuid)">{{subscription | navigationItemTitle}}</md-button>
+        <md-button md-no-ink ng-click="$ctrl.onSelect(subscription.tag, subscription.uuid)">{{subscription | myNavigationItemTitle}}</md-button>
     </li>
 </ul>

@@ -127,11 +127,11 @@ describe('navigationSubscriptionItem', function () {
         };
 
         beforeEach(require('angular').mock.module('myreader', function($provide) {
-            navigationItemTitleFilter = jasmine.createSpy('navigationItemTitle');
+            navigationItemTitleFilter = jasmine.createSpy('myNavigationItemTitle');
             navigationItemTitleFilter.and.callFake(function (item) {
-                return 'called navigationItemTitleFilter with ' + item.tag + '/' + item.uuid;
+                return 'called myNavigationItemTitlePipe with ' + item.tag + '/' + item.uuid;
             });
-            $provide.value('navigationItemTitleFilter', navigationItemTitleFilter);
+            $provide.value('myNavigationItemTitleFilter', navigationItemTitleFilter);
         }));
 
         beforeEach(inject(function ($rootScope, $compile) {
@@ -186,7 +186,7 @@ describe('navigationSubscriptionItem', function () {
 
             it('should render title with pipe', function () {
                 expect(navigationItemTitleFilter).toHaveBeenCalledWith(jasmine.objectContaining({ tag: 'tag', uuid: 'uuid' }));
-                expect(element.find('span')[0].innerText).toEqual('called navigationItemTitleFilter with tag/uuid');
+                expect(element.find('span')[0].innerText).toEqual('called myNavigationItemTitlePipe with tag/uuid');
             });
         });
 
@@ -250,8 +250,8 @@ describe('navigationSubscriptionItem', function () {
                 expect(navigationItemTitleFilter.calls.allArgs()[1]).toContain(jasmine.objectContaining({ tag: 'tag', uuid: 'uuid1' }));
                 expect(navigationItemTitleFilter.calls.allArgs()[2]).toContain(jasmine.objectContaining({ tag: 'tag', uuid: 'uuid2' }));
 
-                expect(element.find('ul').find('li').find('button')[0].innerText).toEqual('called navigationItemTitleFilter with tag/uuid1');
-                expect(element.find('ul').find('li').find('button')[1].innerText).toEqual('called navigationItemTitleFilter with tag/uuid2');
+                expect(element.find('ul').find('li').find('button')[0].innerText).toEqual('called myNavigationItemTitlePipe with tag/uuid1');
+                expect(element.find('ul').find('li').find('button')[1].innerText).toEqual('called myNavigationItemTitlePipe with tag/uuid2');
             });
         });
     });
