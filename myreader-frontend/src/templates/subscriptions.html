@@ -27,7 +27,7 @@
         <div layout="row">
             <div class="md-list-item-text">
                 <div>
-                    <h3 ng-click="navigateToDetailPage(entry)" tabindex="-1">{{::subscription.title | htmlEntities}}</h3>
+                    <h3 ng-click="navigateToDetailPage(entry)" tabindex="-1" ng-bind-html="subscription.title"></h3>
                     <h4>
                         {{::subscription.createdAt | timeago}}
                     </h4>

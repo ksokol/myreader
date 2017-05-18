@@ -28,7 +28,7 @@
         <div layout="row">
             <div class="md-list-item-text">
                 <div>
-                    <h3 tabindex="-1">{{::feed.title | htmlEntities}}</h3>
+                    <h3 tabindex="-1" ng-bind-html="feed.title"></h3>
                     <h4>
                         <md-icon ng-show="feed.hasErrors" md-font-library="material-icons">error</md-icon>
                         {{::feed.createdAt | timeago}}

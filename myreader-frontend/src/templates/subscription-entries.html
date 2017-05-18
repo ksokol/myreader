@@ -38,11 +38,11 @@
             <div layout="row">
                 <div class="my-list-item-text">
                     <div>
-                        <h3 hide-gt-md ng-click="navigateToDetailPage(entry)">{{::entry.title | htmlEntities}}</h3>
-                        <h3 hide show-gt-md class="my-a" ng-if="entry.origin" my-safe-opener url="{{entry.origin}}">{{::entry.title | htmlEntities}}</h3>
+                        <h3 hide-gt-md ng-click="navigateToDetailPage(entry)" ng-bind-html="entry.title"></h3>
+                        <h3 hide show-gt-md class="my-a" ng-if="entry.origin" my-safe-opener url="{{entry.origin}}" ng-bind-html="entry.title"></h3>
                         <h4>
                             <md-icon ng-class="my-a" hide show-gt-md ng-click="toggleRead(entry)" md-font-library="material-icons">{{seenIcon(entry)}}</md-icon>
-                            {{::entry.createdAt | timeago}} on {{::entry.feedTitle | htmlEntities}}
+                            {{::entry.createdAt | timeago}} on <span ng-bind-html="entry.feedTitle"></span>
                         </h4>
                     </div>
                     <p hide show-gt-md ng-show="showDetails()" ng-bind-html="entry.content | targetBlank" my-wrap-entry-content></p>

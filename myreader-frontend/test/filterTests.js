@@ -32,23 +32,6 @@ describe("targetBlank filter", function() {
     });
 });
 
-describe("htmlEntities filter", function() {
-    var htmlEntities;
-
-    beforeEach(module('common.filters'));
-    beforeEach(inject(function ($filter) {
-        htmlEntities = $filter('htmlEntities');
-    }));
-
-    it('should replace "&lt;" with "<"', function () {
-        expect(htmlEntities('&lt;')).toBe('<');
-    });
-
-    it('should replace "&lt;" with "<"', function () {
-        expect(htmlEntities()).toBe('');
-    });
-});
-
 describe("timeago filter", function() {
     var timeago;
 

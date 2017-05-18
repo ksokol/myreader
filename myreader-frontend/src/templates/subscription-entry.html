@@ -1,8 +1,8 @@
 <h3 hide-gt-md>
-    <span>{{entry.title | htmlEntities}}</span>
+    <span ng-bind-html="entry.title"></span>
     <md-icon md-font-library="material-icons" class="my-pointer" ng-if="entry.origin" my-safe-opener url="{{entry.origin}}">open_in_new</md-icon>
 </h3>
-<h3 hide show-gt-md><a ng-href="{{entry.origin}}" ng-click="open($event)">{{entry.title | htmlEntities}}</a></h3>
+<h3 hide show-gt-md><a ng-href="{{entry.origin}}" ng-click="open($event)" ng-bind-html="entry.title"></a></h3>
 
 <div ng-bind-html="entry.content | targetBlank" my-wrap-entry-content></div>
 <div flex="50">
