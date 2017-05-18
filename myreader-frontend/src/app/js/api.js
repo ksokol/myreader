@@ -119,6 +119,7 @@ angular.module('common.api', [])
             return data;
         },
         convertTo: function(data) {
+            data.tag = data.tag === "" ? null : data.tag;
             return data;
         },
         convertError: function (data) {
