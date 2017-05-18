@@ -8,10 +8,10 @@ angular.module('common.api', [])
         convertFrom: function (data) {
             var all = new SubscriptionTag;
             all.title = "all";
-            all.uuid = "all";
+            all.uuid = "";
+            all.tag = "all";
             all.subscriptions = [];
             all.type = 'global';
-            all.links.entries = {route: 'app.entries', param: {tag: 'all', uuid: undefined }};
 
             var subscriptionTags = new SubscriptionTags;
 
@@ -38,7 +38,6 @@ angular.module('common.api', [])
             var all = new Bookmark;
             all.title = "all";
             all.type = 'global';
-            all.links.entries = {route: 'app.bookmarks', param: {tag: 'all' }};
 
             var subscriptionTags = new Bookmarks;
 

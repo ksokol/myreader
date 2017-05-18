@@ -1,50 +1,54 @@
 describe('api', function() {
 
-    var tag1 = {
-        "uuid": "35",
-        "title": "tag1",
-        "tag": "news",
-        "unseen": 106,
-        "links": []
-    };
-
-    var tag2 = {
-        "uuid": "36",
-        "title": "tag2",
-        "tag": "misc",
-        "unseen": 102,
-        "links": []
-    };
-
-    var tag3 = {
-        "uuid": "1309597895632",
-        "title": "tag3",
-        "tag": "misc",
-        "unseen": 32,
-        "links": []
-    };
-
-    var untagged1 = {
-        "uuid": "52",
-        "title": "untagged",
-        "tag": null,
-        "unseen": 94,
-        "links": []
-    };
-
-    var untagged2 = {
-        "uuid": "53",
-        "title": "untagged",
-        "tag": "",
-        "unseen": 0,
-        "links": []
-    };
-
-    var raw = {
-        "content": [tag1, tag2, tag3, untagged1, untagged2]
-    };
+    var tag1, tag2, tag3, untagged1, untagged2, raw;
 
     beforeEach(module('common.api'));
+
+    beforeEach(function () {
+        tag1 = {
+            "uuid": "35",
+            "title": "tag1",
+            "tag": "news",
+            "unseen": 106,
+            "links": []
+        };
+
+        tag2 = {
+            "uuid": "36",
+            "title": "tag2",
+            "tag": "misc",
+            "unseen": 102,
+            "links": []
+        };
+
+        tag3 = {
+            "uuid": "1309597895632",
+            "title": "tag3",
+            "tag": "misc",
+            "unseen": 32,
+            "links": []
+        };
+
+        untagged1 = {
+            "uuid": "52",
+            "title": "untagged",
+            "tag": null,
+            "unseen": 94,
+            "links": []
+        };
+
+        untagged2 = {
+            "uuid": "53",
+            "title": "untagged",
+            "tag": "",
+            "unseen": 0,
+            "links": []
+        };
+
+        raw = {
+           "content": [tag1, tag2, tag3, untagged1, untagged2]
+        };
+    });
 
     describe("subscriptionsTagConverter", function() {
         var converter,
@@ -63,14 +67,12 @@ describe('api', function() {
             var expectedTags = [
                 {
                     subscriptions : [],
-                    links : {
-                        entries : {
-                            route : 'app.entries', param : {
-                                tag : 'all', uuid : undefined
-                            }
-                        }
-                    },
-                    title : 'all', uuid : 'all', type : 'global', unseen : 334
+                    links : { },
+                    title : 'all',
+                    uuid : '',
+                    tag : 'all',
+                    type : 'global',
+                    unseen : 334
                 },
                 {
                     subscriptions : [
@@ -82,17 +84,8 @@ describe('api', function() {
                             links : [  ]
                         }
                     ],
-                    links : {
-                        entries :
-                        {
-                            route : 'app.entries',
-                            param : {
-                                tag : 'news',
-                                uuid : undefined
-                            }
-                        }
-                    },
-                    uuid : 'news',
+                    links : { },
+                    uuid : '',
                     tag : 'news',
                     title : 'news',
                     type : 'tag',
@@ -115,17 +108,8 @@ describe('api', function() {
                             links : [  ]
                         }
                     ],
-                    links :
-                    {
-                        entries : {
-                            route : 'app.entries',
-                            param : {
-                                tag : 'misc',
-                                uuid : undefined
-                            }
-                        }
-                    },
-                    uuid : 'misc',
+                    links : { },
+                    uuid : '',
                     tag : 'misc',
                     title : 'misc',
                     type : 'tag',
@@ -137,16 +121,9 @@ describe('api', function() {
                 {
                     uuid : '52',
                     title : 'untagged',
-                    tag : null,
+                    tag : '',
                     unseen : 94,
-                    links : {
-                        entries : {
-                            route : 'app.entries',
-                            param : {
-                                uuid : '52',
-                                tag : '' }
-                        }
-                    },
+                    links : [],
                     type : 'subscription'
                 },
                 {
@@ -154,14 +131,7 @@ describe('api', function() {
                     title : 'untagged',
                     tag : '',
                     unseen : 0,
-                    links : {
-                        entries : {
-                            route : 'app.entries',
-                            param : {
-                                uuid : '53',
-                                tag : '' }
-                        }
-                    },
+                    links : [],
                     type : 'subscription'
                 }
             ];
@@ -190,80 +160,12 @@ describe('api', function() {
             var expectedTags = {
                 tags: [
                     {
-                        links: {
-                            entries: {
-                                route: 'app.bookmarks',
-                                param: {
-                                    tag: 'all'
-                                }
-                            }
-                        },
+                        links: {},
                         title: 'all',
                         type: 'global'
                     },
                     {
-                        links: {
-                            entries: {
-                                route: 'app.bookmarks',
-                                param: {
-                                    tag: [
-                                        {
-                                            uuid: '35',
-                                            title: 'tag1',
-                                            tag: 'news',
-                                            unseen: 106,
-                                            links: []
-                                        },
-                                        {
-                                            uuid: '36',
-                                            title: 'tag2',
-                                            tag: 'misc',
-                                            unseen: 102,
-                                            links: []
-                                        },
-                                        {
-                                            uuid: '1309597895632',
-                                            title: 'tag3',
-                                            tag: 'misc',
-                                            unseen: 32,
-                                            links: []
-                                        },
-                                        {
-                                            uuid: '52',
-                                            title: 'untagged',
-                                            tag: null,
-                                            unseen: 94,
-                                            links: {
-                                                entries: {
-                                                    route: 'app.entries',
-                                                    param: {
-                                                        uuid: '52',
-                                                        tag: ''
-                                                    }
-                                                }
-                                            },
-                                            type: 'subscription'
-                                        },
-                                        {
-                                            uuid: '53',
-                                            title: 'untagged',
-                                            tag: '',
-                                            unseen: 0,
-                                            links: {
-                                                entries: {
-                                                    route: 'app.entries',
-                                                    param: {
-                                                        uuid: '53',
-                                                        tag: ''
-                                                    }
-                                                }
-                                            },
-                                            type: 'subscription'
-                                        }
-                                    ]
-                                }
-                            }
-                        },
+                        links: {},
                         tag: [
                             {
                                 uuid: '35',
@@ -291,32 +193,14 @@ describe('api', function() {
                                 title: 'untagged',
                                 tag: null,
                                 unseen: 94,
-                                links: {
-                                    entries: {
-                                        route: 'app.entries',
-                                        param: {
-                                            uuid: '52',
-                                            tag: ''
-                                        }
-                                    }
-                                },
-                                type: 'subscription'
+                                links: []
                             },
                             {
                                 uuid: '53',
                                 title: 'untagged',
                                 tag: '',
                                 unseen: 0,
-                                links: {
-                                    entries: {
-                                        route: 'app.entries',
-                                        param: {
-                                            uuid: '53',
-                                            tag: ''
-                                        }
-                                    }
-                                },
-                                type: 'subscription'
+                                links: []
                             }
                         ],
                         title: [
@@ -346,32 +230,14 @@ describe('api', function() {
                                 title: 'untagged',
                                 tag: null,
                                 unseen: 94,
-                                links: {
-                                    entries: {
-                                        route: 'app.entries',
-                                        param: {
-                                            uuid: '52',
-                                            tag: ''
-                                        }
-                                    }
-                                },
-                                type: 'subscription'
+                                links: []
                             },
                             {
                                 uuid: '53',
                                 title: 'untagged',
                                 tag: '',
                                 unseen: 0,
-                                links: {
-                                    entries: {
-                                        route: 'app.entries',
-                                        param: {
-                                            uuid: '53',
-                                            tag: ''
-                                        }
-                                    }
-                                },
-                                type: 'subscription'
+                                links: []
                             }
                         ],
                         type: 'tag'
@@ -508,7 +374,7 @@ describe('api', function() {
             var subscription = converted.getSubscriptionByUuid(uuid);
 
             expect(subscription.uuid).toEqual(uuid);
-            expect(subscription.tag).toEqual(null);
+            expect(subscription.tag).toEqual('');
 
             var inc = 1;
             var expectedCount = converted.unseen;
@@ -533,7 +399,7 @@ describe('api', function() {
             var subscription = converted.getSubscriptionByUuid(uuid);
 
             expect(subscription.uuid).toEqual(uuid);
-            expect(subscription.tag).toEqual(null);
+            expect(subscription.tag).toEqual('');
 
             var dec = 1;
             var expectedCount = converted.unseen;
