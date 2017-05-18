@@ -66,21 +66,6 @@ ul li {
     width: 100%;
 }
 
-.subscription-tag-menu button.md-button::-moz-focus-inner {
-    padding: 0;
-}
-
-.subscription-tag-menu li.parentActive, .subscription-tag-menu li.parentActive .menu-toggle-list {
-    background-color: #f6f6f6;
-}
-
-.subscription-tag-menu .menu-toggle-list span {
-    display: block;
-    font-weight: 400;
-    padding: 0 16px 0 32px;
-    text-transform: none;
-}
-
 /* remove dotted outline on buttons in firefox */
 :focus {
     outline:none;

@@ -4,6 +4,7 @@ require('./shared/component/button-group/button-group.component');
 require('./shared/component/button/button.component');
 require('./shared/component/notification-panel/notification-panel.component');
 require('./shared/directive/safe-opener/safe-opener.directive');
+require('./navigation/subscription-item/subscription-item.component');
 
 var BaseEntryCtrl = function() {};
 
@@ -198,20 +199,10 @@ var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $stat
     BaseEntryCtrl.call(this);
     this.initialize($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, hotkeys);
 
-    $scope.$on('navigation-open', function(ev, param) {
-        subscriptionsTagService.findAllByUnseen(true)
-        .then(function (data) {
-            $rootScope.$broadcast('navigation-change', {selected: param.selected, data: data});
-        })
-        .catch(function (error) {
-            $scope.message = { type: 'error', message: error};
-        });
-    });
-
     $scope.$on('refresh', function() {
         subscriptionsTagService.findAllByUnseen(true)
         .then(function (data) {
-            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data, state: 'app.entries'});
         })
         .catch(function (error) {
             $scope.message = { type: 'error', message: error};
@@ -220,7 +211,7 @@ var SubscriptionEntryListCtrl = function($rootScope, $scope, $stateParams, $stat
 
     subscriptionsTagService.findAllByUnseen(true)
     .then(function (data) {
-        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data, state: 'app.entries'});
     })
     .catch(function (error) {
         $scope.message = { type: 'error', message: error};
@@ -232,20 +223,10 @@ var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, s
     BaseEntryCtrl.call(this);
     this.initialize($rootScope, $scope, $stateParams, $state, subscriptionEntryService, settingsService, hotkeys);
 
-    $scope.$on('navigation-open', function(ev, param) {
-        bookmarkService.findAll()
-        .then(function (data) {
-            $rootScope.$broadcast('navigation-change', {selected: param.selected, data: data});
-        })
-        .catch(function (error) {
-            $scope.message = { type: 'error', message: error};
-        });
-    });
-
     $scope.$on('refresh', function() {
         bookmarkService.findAll()
         .then(function (data) {
-            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data, state: 'app.bookmarks'});
         })
         .catch(function (error) {
             $scope.message = { type: 'error', message: error};
@@ -266,7 +247,7 @@ var BookmarkEntryListCtrl = function($rootScope, $scope, $stateParams, $state, s
 
     bookmarkService.findAll()
     .then(function (data) {
-        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data});
+        $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data, state: 'app.bookmarks'});
     });
 };
 
@@ -279,14 +260,18 @@ BookmarkEntryListCtrl.prototype.constructor = BookmarkEntryListCtrl;
 
 angular.module('common.controllers', ['common.services', 'ngMaterial'])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$stateParams',
-function($rootScope, $scope, $state, $http, $mdSidenav, $stateParams) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav',
+function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.data = {
         tags: [],
         items: []
     };
 
+    var currentState;
+    $scope.currentSelected = $state.params;
+
     $scope.$on('navigation-change', function(ev, param) {
+        currentState = param.state;
         if(param.data) {
             $scope.data = param.data;
         }
@@ -297,53 +282,13 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $stateParams) {
         $state.go(state);
     };
 
-    $scope.isItemSelected = function(item) {
-        var openedSection = $state.params;
-        if(openedSection.tag === item.tag) {
-            return true;
-        } else if(item.subscriptions) {
-            if(item.type === 'global') {
-                return false;
-            }
-            for(var i=0;i<item.subscriptions.length;i++) {
-                if(item.subscriptions[i].uuid === openedSection.uuid) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    };
-
-    $scope.isOpen = function(item) {
-        if(item.type === 'global') {
-            return false;
-        }
-        if($state.params.tag === item.tag) {
-            return true;
-        }
-        if(item.subscriptions) {
-            for(var i=0;i<item.subscriptions.length;i++) {
-                if(item.subscriptions[i].uuid === $state.params.uuid) {
-                    return true;
-                }
-            }
-        }
-    };
-
-    $scope.toggleOpen = function(state, tag, uuid) {
+    $scope.onSelect = function (selected) {
+        $scope.currentSelected = selected;
         $scope.closeSidenav();
-        $state.go(state, {tag: tag, uuid: uuid});
-    };
-
-    $scope.visible = function(item) {
-        if(item.unseen) {
-            return item.unseen > 0;
-        }
-        return true;
+        $state.go(currentState, {tag: selected.tag, uuid: selected.uuid});
     };
 
     $scope.openMenu = function() {
-        $rootScope.$broadcast('navigation-open', {selected: $stateParams});
         $mdSidenav('left').toggle();
     };
 

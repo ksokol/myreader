@@ -1,0 +1,10 @@
+.my-navigation-dynamic__item {
+    background-color: #e5e5e5;
+}
+
+.my-navigation-dynamic__sub-menu span {
+    display: block;
+    font-weight: 400;
+    padding: 0 16px 0 32px;
+    text-transform: none;
+}

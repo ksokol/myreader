@@ -78,7 +78,6 @@ module.exports = function models() {
             tag.tag = bookmarkTag;
             tag.title = bookmarkTag;
             tag.type = 'tag';
-            tag.links.entries = {route: 'app.bookmarks', param: {tag: bookmarkTag}};
             self.tags.push(tag);
         };
     };
@@ -128,13 +127,7 @@ module.exports = function models() {
 
         self.addSubscription = function (subscription) {
             subscription['type'] = 'subscription';
-            subscription['links'] = {
-                entries: {
-                    route: 'app.entries', param: {
-                        uuid: subscription.uuid, tag: ''
-                    }
-                }
-            };
+            subscription.tag = subscription.tag === null ? '' : subscription.tag;
             self.subscriptions.push(subscription);
             self.unseen += subscription.unseen;
         };
@@ -148,12 +141,11 @@ module.exports = function models() {
                 theTag.subscriptions.push(subscriptionTag);
             } else {
                 var tag = new SubscriptionTag;
-                tag.uuid = subscriptionTag.tag;
+                tag.uuid = '';
                 tag.tag = subscriptionTag.tag;
                 tag.title = subscriptionTag.tag;
                 tag.type = 'tag';
                 tag.unseen = subscriptionTag.unseen;
-                tag.links.entries = {route: 'app.entries', param: {tag: subscriptionTag.tag, uuid: undefined}};
                 tag.subscriptions.push(subscriptionTag);
                 self.tags.push(tag);
             }

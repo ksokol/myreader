@@ -3,19 +3,21 @@
 
     <md-content flex role="navigation">
         <ul class="subscription-tag-menu">
-            <li my-hide-admin class="md-2-line" ng-repeat="item in data.tags" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
-                <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item.links.entries.route, item.tag)">{{item | navigationItemTitle}}</md-button>
-                <ul ng-show="isOpen(item)" class="menu-toggle-list">
-                    <li ng-repeat="subscription in item.subscriptions" ng-hide="subscription.unseen < 1">
-                        <md-button md-no-ink ng-click="toggleOpen('app.entries', subscription.tag, subscription.uuid)">
-                            {{::subscription.title}} ({{subscription.unseen}})
-                        </md-button>
-                    </li>
-                </ul>
-            </li>
-            <li my-hide-admin class="md-2-line" ng-repeat="item in data.subscriptions" class="parent-list-item" ng-class="{'parentActive' : isItemSelected(item)}" ng-show="visible(item)">
-                <md-button md-no-ink class="md-button-toggle" ng-click="toggleOpen(item.links.entries.route, item.tag, item.uuid)">{{item | navigationItemTitle}}</md-button>
-            </li>
+
+            <my-navigation-subscription-item my-hide-admin
+                                        ng-repeat="item in data.tags"
+                                        my-item="item"
+                                        my-on-select="onSelect(selected)"
+                                        my-selected="currentSelected">
+            </my-navigation-subscription-item>
+
+            <my-navigation-subscription-item my-hide-admin
+                                        ng-repeat="item in data.subscriptions"
+                                        my-item="item"
+                                        my-on-select="onSelect(selected)"
+                                        my-selected="currentSelected">
+            </my-navigation-subscription-item>
+
             <li my-hide-admin>
                 <md-button ng-click="navigateTo('app.subscriptions')">subscriptions</md-button>
             </li>
