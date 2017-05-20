@@ -2,7 +2,6 @@ require('angular');
 require('angular-ui-router');
 require('ui-router-extras');
 require('angular-material');
-require('angular-local-storage');
 require('angular-messages');
 require('angular-hotkeys');
 require('mousetrap');
