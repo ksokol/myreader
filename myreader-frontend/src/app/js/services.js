@@ -39,7 +39,7 @@ angular.module('common.services', ['common.api'])
     }
 }])
 
-.service('subscriptionEntryService', ['$rootScope', '$q', 'api', 'deferService', function($rootScope, $q, api) {
+.service('subscriptionEntryService', ['$rootScope', '$q', 'api', function($rootScope, $q, api) {
     var url = '/myreader/api/2/subscriptionEntries?';
 
     return {
@@ -131,7 +131,7 @@ angular.module('common.services', ['common.api'])
     }
 }])
 
-.service('feedService', ['api', 'deferService', function(api, deferService) {
+.service('feedService', ['api', '$q', function(api, $q) {
     var feedUrl = '/myreader/api/2/feeds';
 
     return {
@@ -144,7 +144,9 @@ angular.module('common.services', ['common.api'])
                 return api.get('fetchError', feedUrl + '/' + uuid + '/fetchError')
                     .then(function(errors) {
                         data.errors = errors.fetchError;
-                        return deferService.resolved(data);
+                        var deferred = $q.defer();
+                        deferred.resolve(data);
+                        return deferred.promise;
                     });
             };
 
@@ -166,39 +168,6 @@ angular.module('common.services', ['common.api'])
         findAll: function() {
             return api.get('bookmarkTags', url);
         }
-    }
-}])
-
-.service('deferService', ['$q', function($q) {
-
-    var _deferred = function(fn, params) {
-        var deferred = $q.defer();
-        fn(params).$promise
-            .then(function(result) {
-                deferred.resolve(result);
-            })
-            .catch(function(error) {
-                deferred.reject(error);
-            });
-        return deferred.promise;
-    };
-
-    var _resolved = function(params) {
-        var deferred = $q.defer();
-        deferred.resolve(params);
-        return deferred.promise;
-    };
-
-    var _reject = function(params) {
-        var deferred = $q.defer();
-        deferred.reject(params);
-        return deferred.promise;
-    };
-
-    return {
-        deferred: _deferred,
-        resolved: _resolved,
-        reject: _reject
     }
 }])
 

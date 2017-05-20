@@ -271,68 +271,6 @@ describe('service', function() {
         }));
     });
 
-    describe('deferService', function() {
-        var resolvedResult = 'success';
-        var resolvedError = 'error';
-
-        var succeeding = function(fn) {
-            return fn(true);
-        };
-
-        var failing = function(fn) {
-            return fn(false);
-        };
-
-        var callbackWithPromise = function(result) {
-            return function() {
-                return {
-                    $promise : {
-                        then: function(fn) {
-                            if(result === true) {
-                                fn(resolvedResult);
-                            }
-                            return this;
-                        },
-                        catch: function(fn) {
-                            if(result === false) {
-                                fn(resolvedError);
-                            }
-                            return this;
-                        }
-                    }
-                }
-            }
-        };
-
-        beforeEach(inject(function (deferService) {
-            service = deferService;
-        }));
-
-        it('should resolve deferred call with success', function() {
-            var promise = service.deferred(succeeding(callbackWithPromise));
-
-            expect(promise.$$state.value).toEqual(resolvedResult);
-        });
-
-        it('should resolve deferred call with failure', function() {
-            var promise = service.deferred(failing(callbackWithPromise));
-
-            expect(promise.$$state.value).toEqual(resolvedError);
-        });
-
-        it('should call resolve on deferred object', function() {
-            var promise = service.resolved(resolvedResult);
-
-            expect(promise.$$state.value).toEqual(resolvedResult);
-        });
-
-        it('should call reject on deferred object', function() {
-            var promise = service.reject(resolvedError);
-
-            expect(promise.$$state.value).toEqual(resolvedError);
-        });
-    });
-
     describe('processingService', function() {
 
         beforeEach(inject(function (processingService) {
