@@ -4,10 +4,11 @@ describe('notificationPanel', function () {
 
     describe('controller', function () {
 
-        var component;
+        var component, myOnDismiss;
 
         beforeEach(inject(function (_$componentController_) {
-            component = _$componentController_('myNotificationPanel');
+            myOnDismiss = jasmine.createSpy('myOnDismiss');
+            component = _$componentController_('myNotificationPanel', null, { myOnDismiss: myOnDismiss });
         }));
 
         it('should not set type and message when currentValue has no type and message properties', function () {
@@ -36,6 +37,16 @@ describe('notificationPanel', function () {
             expect(component.message).toBeNull();
         }));
 
+        it('should call myOnDismiss after a predefined amount of time', inject(function ($timeout) {
+            component.$onChanges({ myMessage: { currentValue: { type: 'a', message: 'b' }}});
+
+            $timeout.flush(4999);
+            expect(myOnDismiss).not.toHaveBeenCalled();
+
+            $timeout.flush(1);
+            expect(myOnDismiss).toHaveBeenCalled();
+        }));
+
         it('should reset timeout when new type and message arrived', inject(function ($timeout) {
             component.$onChanges({ myMessage: { currentValue: { type: 'a', message: 'b' }}});
 
@@ -53,17 +64,35 @@ describe('notificationPanel', function () {
             expect(component.type).toBeNull();
             expect(component.message).toBeNull();
         }));
+
+        it('should call myOnDismiss only once when new type and message arrived', inject(function ($timeout) {
+            component.$onChanges({ myMessage: { currentValue: { type: 'a', message: 'b' }}});
+
+            $timeout.flush(4999);
+            expect(myOnDismiss).not.toHaveBeenCalled();
+
+            component.$onChanges({ myMessage: { currentValue: { type: 'c', message: 'd' }}});
+
+            $timeout.flush(4999);
+            expect(myOnDismiss).not.toHaveBeenCalled();
+
+            $timeout.flush(1);
+            expect(myOnDismiss).toHaveBeenCalled();
+        }));
     });
 
     describe('with html', function () {
 
-        var scope, element, message;
+        var scope, element, message, myOnDismiss;
         var aMessage = { type: 'success', message: 'expected message' };
 
         beforeEach(inject(function ($rootScope, $compile) {
+            myOnDismiss = jasmine.createSpy('myOnDismiss');
             scope = $rootScope.$new();
-            element = $compile('<my-notification-panel my-message="message"></my-notification-panel>')(scope);
             scope.message = aMessage;
+            scope.onDismiss = myOnDismiss;
+
+            element = $compile('<my-notification-panel my-message="message" my-on-dismiss="onDismiss()"></my-notification-panel>')(scope);
             scope.$digest();
         }));
 
@@ -90,6 +119,12 @@ describe('notificationPanel', function () {
             element.find('md-icon')[0].click();
 
             expect(element.find('div').children().length).toEqual(0);
+        });
+
+        it('should call myOnDismiss when close icon clicked', function () {
+            element.find('md-icon')[0].click();
+
+            expect(myOnDismiss).toHaveBeenCalled();
         });
 
         it('should hide notification after a predefined amount of time', inject(function ($timeout) {
