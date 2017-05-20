@@ -1,0 +1,36 @@
+<div class="my-list-item-text"> <!-- TODO remove class my-list-item-text after redesign -->
+
+    <div layout="row">
+        <my-entry-title flex="100"
+                        my-item="$ctrl.item">
+        </my-entry-title>
+
+        <div flex="noshrink" layout-xs="column">
+            <my-entry-actions my-item="$ctrl.item"
+                              my-on-more="$ctrl.toggleMore(showMore)"
+                              my-on-check="$ctrl.onCheck(item)">
+            </my-entry-actions>
+        </div>
+    </div>
+
+    <div layout="row" ng-if="$ctrl.message">
+        <my-notification-panel my-message="$ctrl.message"
+                               my-on-dismiss="$ctrl.onDismissMessage()">
+        </my-notification-panel>
+    </div>
+
+    <div layout="row">
+        <my-entry-tags class="my-entry__entry-tags"
+                       my-item="$ctrl.item"
+                       my-hide="$ctrl.showMore"
+                       my-on-select="$ctrl.onTagUpdate(item)">
+        </my-entry-tags>
+    </div>
+
+    <div layout="row">
+        <my-entry-content class="my-entry__entry-content"
+                          my-item="$ctrl.item"
+                          my-show="$ctrl.showMore">
+        </my-entry-content>
+    </div>
+</div>

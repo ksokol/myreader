@@ -1,0 +1,10 @@
+.my-entry-content img {
+    max-width: 100%;
+}
+
+.my-entry-content pre {
+    max-width: 100%;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background-color: #EBECE4;
+}

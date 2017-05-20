@@ -431,27 +431,6 @@ describe('api', function() {
 
     });
 
-    describe("subscriptionEntryConverter", function() {
-        var converter;
-
-        beforeEach(inject(function (subscriptionEntryConverter) {
-            converter = subscriptionEntryConverter;
-        }));
-
-        it('should return data as is', function () {
-            var data = {content: 1};
-            expect(converter.convertFrom(data)).toBe(data);
-        });
-
-        it('should convert data as is', function () {
-            var data = {
-                tag: 'tag',
-                seen: 'seen'
-            };
-            expect(converter.convertTo(data)).toEqualData({content: data});
-        });
-    });
-
     describe("subscriptionsConverter", function() {
         var converter;
 

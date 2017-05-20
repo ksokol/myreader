@@ -1,4 +1,4 @@
-<md-chips class="my-tag-chips" ng-model="tags" md-on-add="addTag()" md-on-remove="removeTag()">
+<md-chips placeholder="Enter a tag..." ng-if="hide" ng-model="tags" md-on-add="addTag()" md-on-remove="removeTag()">
     <md-chip-template>
         <strong>{{$chip}}</strong>
     </md-chip-template>

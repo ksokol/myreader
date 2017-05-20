@@ -5,6 +5,7 @@ require('./shared/component/button/button.component');
 require('./shared/component/notification-panel/notification-panel.component');
 require('./shared/directive/safe-opener/safe-opener.directive');
 require('./navigation/subscription-item/subscription-item.component');
+require('./entry/entry.component');
 
 var BaseEntryCtrl = function() {};
 
@@ -41,10 +42,6 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
         }
     };
 
-    $scope.showDetails = function() {
-        return settingsService.isShowEntryDetails();
-    };
-
     $scope.params = function() {
         var param = {};
 
@@ -59,7 +56,7 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
     };
 
     $scope.down = function() {
-        var focused;
+        var focused, idx;
         for(var i=0;i<$scope.data.entries.length;i++) {
             var entry = $scope.data.entries[i];
             if(entry.focused) {
@@ -68,6 +65,7 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
                 var j = i + 1;
                 if(j < $scope.data.entries.length) {
                     focused = $scope.data.entries[j];
+                    idx = j;
                 }
                 break;
             }
@@ -75,13 +73,15 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
 
         if(!focused) {
             focused = $scope.data.entries[0];
+            idx = 0;
         }
 
         if(focused.seen === false) {
             focused.seen = true;
             subscriptionEntryService.save(focused)
-            .then(function() {
-                focused.focused = true;
+            .then(function(updatedEntry) {
+                $scope.data.entries[idx] = updatedEntry;
+                $scope.data.entries[idx].focused = true;
             })
             .catch(function (error) {
                 $scope.message = { type: 'error', message: error};
@@ -121,25 +121,6 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
         return item.visible !== undefined ? item.visible : true;
     };
 
-    $scope.seenIcon = function(item) {
-        return item.seen ? 'visibility_on' : 'visibility_off';
-    };
-
-    $scope.markAsReadAndHide = function(entry) {
-        subscriptionEntryService.save(entry)
-        .catch(function (error) {
-            $scope.message = { type: 'error', message: error};
-        });
-    };
-
-    $scope.toggleRead = function(entry) {
-        entry.seen = !entry.seen;
-        subscriptionEntryService.save(entry)
-        .catch(function (error) {
-            $scope.message = { type: 'error', message: error};
-        });
-    };
-
     $scope.toggleReadFromEnter = function() {
         for(var i=0;i<$scope.data.entries.length;i++) {
             var entry = $scope.data.entries[i];
@@ -148,10 +129,6 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
                 return;
             }
         }
-    };
-
-    $scope.navigateToDetailPage = function(item) {
-        $state.go('app.entry', {uuid: item.uuid});
     };
 
     $scope.loadMore = function() {
@@ -320,27 +297,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 .controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'hotkeys', SubscriptionEntryListCtrl])
 
 .controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService', 'settingsService', 'hotkeys', BookmarkEntryListCtrl])
-
-.controller('SubscriptionEntryCtrl', ['$scope', '$stateParams', 'subscriptionEntryService',
-    function($scope, $stateParams, subscriptionEntryService) {
-
-    $scope.entry = {};
-
-    if($stateParams.uuid) {
-        subscriptionEntryService.findOne($stateParams.uuid)
-        .then(function(data) {
-            $scope.entry = data;
-        });
-    }
-
-    $scope.save = function() {
-        if($scope.entry.seen) {
-            $scope.entry.visible = false;
-        }
-        subscriptionEntryService.save($scope.entry);
-    };
-
-}])
 
 .controller('SubscriptionsCtrl', ['$scope', '$state', 'subscriptionService', function($scope, $state, subscriptionService) {
 

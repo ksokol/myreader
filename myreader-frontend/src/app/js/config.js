@@ -96,15 +96,6 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                     }
                 }
             })
-            .state('app.entry', {
-                url: "/entry/:uuid",
-                views: {
-                    content: {
-                        template: require('../../templates/subscription-entry.html'),
-                        controller: 'SubscriptionEntryCtrl'
-                    }
-                }
-            })
             .state('app.subscriptions', {
                 url: "/subscriptions",
                 views: {

@@ -295,29 +295,6 @@ describe('service', function() {
 
             expect(cache.get('/myreader/api/2/subscriptionEntries/12')).toEqualData(data[0]);
         }));
-
-        it('should save and cache result', inject(function($rootScope) {
-            var promise = service.findOne(42);
-
-            $rootScope.$digest();
-
-            expect(api.get).toHaveBeenCalledWith('subscriptionEntry', '/myreader/api/2/subscriptionEntries/42');
-            expect(promise.$$state.value).toEqual(promiseResult);
-        }));
-
-        it('should save and cache result', inject(function($rootScope, CacheFactory) {
-            var data = {uiid: 43};
-            var cache = CacheFactory.get('subscriptionEntryCache');
-
-            cache.put('/myreader/api/2/subscriptionEntries/43', data);
-
-            var promise = service.findOne(43);
-
-            $rootScope.$digest();
-
-            expect(api.get).not.toHaveBeenCalledWith('subscriptionEntry', '/myreader/api/2/subscriptionEntries/43');
-            expect(promise.$$state.value).toEqualData(data);
-        }));
     });
 
     describe('subscriptionEntryTagService', function() {
