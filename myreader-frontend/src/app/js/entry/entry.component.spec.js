@@ -55,13 +55,13 @@ describe('myEntry', function () {
             entryActions.bindings.myOnMore({showMore: true});
             rootScope.$digest();
 
-            expect(entryTags.scope.hide).toEqual(true);
+            expect(entryTags.scope.show).toEqual(true);
             expect(entryContent.bindings.myShow).toEqual(true);
 
             entryActions.bindings.myOnMore({showMore: false});
             rootScope.$digest();
 
-            expect(entryTags.scope.hide).toEqual(false);
+            expect(entryTags.scope.show).toEqual(false);
             expect(entryContent.bindings.myShow).toEqual(false);
         });
 

@@ -24,7 +24,7 @@ angular.module('common.directives', [])
         template: require('../../templates/tags.html'),
         scope: {
             entry: '=myItem',
-            hide: '=myHide',
+            show: '=myShow',
             onSelect: '&myOnSelect'
         },
         controller: ['$scope', function ($scope) {
