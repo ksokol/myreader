@@ -342,22 +342,13 @@ describe('service', function() {
             api.get.and.returnValue(call.promise);
         }));
 
-        it('should return cached result', inject(function($rootScope) {
+        it('should return tags', inject(function($rootScope) {
             var firstPromise = service.findAll();
 
             $rootScope.$digest();
 
             expect(api.get).toHaveBeenCalledWith('subscriptionTag', '/myreader/api/2/subscriptions/availableTags');
             expect(firstPromise.$$state.value.entries).toEqualData([1]);
-
-            api.get = jasmine.createSpy();
-
-            var secondPromise = service.findAll();
-
-            $rootScope.$digest();
-
-            expect(api.get).not.toHaveBeenCalledWith('subscriptionTag', '/myreader/api/2/subscriptions/availableTags');
-            expect(secondPromise.$$state.value.entries).toEqualData([1]);
         }));
     });
 
