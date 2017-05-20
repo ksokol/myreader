@@ -164,10 +164,6 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
         $urlRouterProvider.otherwise('/app/entries//');
 }])
 
-.config(['localStorageServiceProvider', function(localStorageServiceProvider) {
-    localStorageServiceProvider.setPrefix('myreader').setStorageType('sessionStorage');
-}])
-
 .config(['$provide', function($provide) {
 
     $provide.decorator("$exceptionHandler", ['$delegate', '$log', function($delegate, $log){

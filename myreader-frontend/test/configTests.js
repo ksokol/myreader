@@ -13,20 +13,6 @@ describe('config', function() {
         beforeEach(inject());
     };
 
-    describe('localStorageServiceProvider', function() {
-        withProvider("localStorageServiceProvider");
-
-        describe('configuration property ', function() {
-            it('storageType', function() {
-                expect(provider.storageType).toBe("sessionStorage");
-            });
-
-            it('prefix', function() {
-                expect(provider.prefix).toBe("myreader");
-            });
-        });
-    });
-
     describe('hotkeysProvider', function() {
         withProvider("hotkeysProvider");
 
