@@ -3,7 +3,6 @@ require('angular-ui-router');
 require('angular-material');
 require('angular-messages');
 require('angular-hotkeys');
-require('mousetrap');
 
 require('./config');
 require('./filters');
