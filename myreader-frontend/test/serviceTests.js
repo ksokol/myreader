@@ -355,13 +355,10 @@ describe('service', function() {
     });
 
     describe('settingsService', function() {
-        var cache;
 
-        beforeEach(inject(function (settingsService, _settingsCache_) {
+        beforeEach(inject(function (settingsService) {
             service = settingsService;
-            cache = _settingsCache_;
-
-            cache.remove('settings-pageSize');
+            localStorage.clear();
         }));
 
         it('should return pageSize equal to 10', function() {
@@ -384,25 +381,17 @@ describe('service', function() {
             expect(pageSize).toBe(true);
         });
 
-        it('should return "true" for method call isShowEntryDetails', function() {
-            cache.remove('settings-showEntryDetails');
-            var pageSize = service.isShowEntryDetails();
-
-            expect(pageSize).toBe(true);
+        it('should return "false" for method call isShowEntryDetails', function() {
+            expect(service.isShowEntryDetails()).toBe(false);
         });
 
-        it('should return "true" for method call isShowUnseenEntries', function() {
+        it('should return "false" for method call isShowUnseenEntries', function() {
             service.setShowUnseenEntries(undefined);
-            var pageSize = service.isShowUnseenEntries();
-
-            expect(pageSize).toBe(true);
+            expect(service.isShowUnseenEntries()).toBe(false);
         });
 
-        it('should return "true" for method call isShowUnseenEntries', function() {
-            cache.remove('settings-showUnseenEntries');
-            var pageSize = service.isShowUnseenEntries();
-
-            expect(pageSize).toBe(true);
+        it('should return "false" for method call isShowUnseenEntries', function() {
+            expect(service.isShowUnseenEntries()).toBe(false);
         });
 
         it('should return "true" for method call isShowUnseenEntries', function() {

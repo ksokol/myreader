@@ -239,32 +239,32 @@ angular.module('common.services', ['common.api', 'common.caches'])
     }
 }])
 
-.service('settingsService', ['settingsCache', function(settingsCache) {
+.service('settingsService', function() {
 
     return {
         getPageSize: function() {
-            var pageSize = settingsCache.get('settings-pageSize');
-            return pageSize || 10;
+            var pageSize = parseInt(localStorage.getItem('settings-pageSize'));
+            return isNaN(pageSize) ? 10 : pageSize;
         },
         setPageSize: function(pageSize) {
-            settingsCache.put('settings-pageSize', pageSize);
+            localStorage.setItem('settings-pageSize', pageSize);
         },
         isShowEntryDetails: function() {
-            var showEntryDetails = settingsCache.get('settings-showEntryDetails');
-            return angular.isDefined(showEntryDetails) ? showEntryDetails : true;
+            var showEntryDetails = localStorage.getItem('settings-showEntryDetails');
+            return showEntryDetails === 'true';
         },
         setShowEntryDetails: function(showEntryDetails) {
-            settingsCache.put('settings-showEntryDetails', showEntryDetails);
+            localStorage.setItem('settings-showEntryDetails', showEntryDetails);
         },
         isShowUnseenEntries: function() {
-            var showUnseenEntries = settingsCache.get('settings-showUnseenEntries');
-            return angular.isDefined(showUnseenEntries) ? showUnseenEntries : true;
+            var showUnseenEntries = localStorage.getItem('settings-showUnseenEntries');
+            return showUnseenEntries === 'true';
         },
         setShowUnseenEntries: function(showUnseenEntries) {
-            settingsCache.put('settings-showUnseenEntries', showUnseenEntries);
+            localStorage.setItem('settings-showUnseenEntries', showUnseenEntries);
         }
     }
-}])
+})
 
 .service('applicationPropertyService', ['api', function(api) {
     var url = '/myreader/info';
