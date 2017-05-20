@@ -10,14 +10,6 @@ angular.module('common.caches', ['angular-cache'])
     });
 }])
 
-.service('subscriptionEntryTagCache', ['CacheFactory', function(CacheFactory) {
-
-    return CacheFactory.createCache('subscriptionEntryTagCache', {
-        deleteOnExpire: 'aggressive',
-        maxAge: 60 * 5 * 1000 //5 minutes
-    });
-}])
-
 .service('subscriptionTagCache', ['CacheFactory', function(CacheFactory) {
 
     return CacheFactory.createCache('subscriptionTagCache', {

@@ -99,27 +99,6 @@ angular.module('common.services', ['common.api', 'common.caches'])
     }
 }])
 
-.service('subscriptionEntryTagService', ['$rootScope', 'api', 'deferService', 'subscriptionEntryTagCache', function($rootScope, api, deferService, subscriptionEntryTagCache) {
-    var url = '/myreader/api/2/subscriptionEntries/availableTags';
-
-    return {
-        findAll: function() {
-            var cached = subscriptionEntryTagCache.get('subscriptionEntryTags');
-            if(cached) {
-                return deferService.resolved(cached);
-            }
-
-            var promise = api.get('subscriptionEntryTag', url);
-
-            promise.then(function(data) {
-                subscriptionEntryTagCache.put('subscriptionEntryTags', data);
-            });
-
-            return promise;
-        }
-    }
-}])
-
 .service('subscriptionService', ['$rootScope', 'api', function($rootScope, api) {
     var url = '/myreader/api/2/subscriptions';
 
