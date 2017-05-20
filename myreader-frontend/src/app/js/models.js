@@ -13,54 +13,8 @@ module.exports = function models() {
             }
         };
 
-        self.extractNext = function () {
-            var string = self.next();
-
-            if (string) {
-                var matches = string.match(/next=[0-9]*/);
-                if (matches) {
-                    return parseInt(matches[0].substring(5));
-                }
-            }
-
-            return null;
-        };
-
         self.next = function () {
             return getLink('next');
-        };
-
-        self.contains = function (uuid) {
-            for (var i = 0; i < self.entries.length; i++) {
-                if (self.entries[i].uuid === uuid) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        self.merge = function (other) {
-            for (var i = 0; i < other.entries.length; i++) {
-                var entryOthers = other.entries[i];
-                var newOne = true;
-
-                for (var j = 0; j < self.entries.length; j++) {
-                    var entrySelf = self.entries[j];
-
-                    if (entryOthers.uuid === entrySelf.uuid) {
-                        newOne = false;
-                        break;
-                    }
-                }
-
-                if (newOne) {
-                    self.entries.push(entryOthers);
-                }
-            }
-
-            if (other.extractNext() < self.extractNext()) {
-                self.links = other.links;
-            }
         };
     };
 
