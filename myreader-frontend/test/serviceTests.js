@@ -44,72 +44,8 @@ describe('service', function() {
 
     describe('subscriptionsTagService', function() {
 
-        describe('event subscriptionEntry:updateEntries', function() {
-            var service, cache;
-
-            beforeEach(inject(function (subscriptionsTagService, _subscriptionsTagCache_) {
-                service = subscriptionsTagService;
-                cache = _subscriptionsTagCache_;
-
-                spyOn(cache, 'get').and.callThrough();
-                spyOn(cache, 'put').and.callThrough();
-            }));
-
-            it('should not update cache when cache is undefined', inject(function($rootScope) {
-                $rootScope.$broadcast('subscriptionEntry:updateEntries');
-
-                expect(cache.put).not.toHaveBeenCalled();
-            }));
-
-            it('should not update cache when subscriptionEntries are empty', inject(function($rootScope) {
-                cache.get.and.returnValue([]);
-
-                $rootScope.$broadcast('subscriptionEntry:updateEntries');
-
-                expect(cache.put).not.toHaveBeenCalled();
-            }));
-
-            it('should update cache', inject(function($rootScope) {
-                var cachedSubscriptionsTags = {
-                    decrementSubscriptionUnseen: jasmine.createSpy()
-                };
-
-                cache.get.and.returnValue(cachedSubscriptionsTags);
-
-                $rootScope.$broadcast('subscriptionEntry:updateEntries', [{feedUuid: 1, seen: true}]);
-
-                expect(cache.put).toHaveBeenCalledWith('subscriptionsTags', cachedSubscriptionsTags);
-            }));
-
-            it('should decrementSubscriptionUnseen', inject(function($rootScope) {
-                var cachedSubscriptionsTags = {
-                    decrementSubscriptionUnseen: jasmine.createSpy()
-                };
-
-                cache.get.and.returnValue(cachedSubscriptionsTags);
-
-                $rootScope.$broadcast('subscriptionEntry:updateEntries', [{seen: true, feedUuid: 1}]);
-
-                expect(cachedSubscriptionsTags.decrementSubscriptionUnseen).toHaveBeenCalledWith(1);
-                expect(cache.put).toHaveBeenCalledWith('subscriptionsTags', cachedSubscriptionsTags);
-            }));
-
-            it('should incrementSubscriptionUnseen', inject(function($rootScope) {
-                var cachedSubscriptionsTags = {
-                    incrementSubscriptionUnseen: jasmine.createSpy()
-                };
-
-                cache.get.and.returnValue(cachedSubscriptionsTags);
-
-                $rootScope.$broadcast('subscriptionEntry:updateEntries', [{seen: false, feedUuid: 2}]);
-
-                expect(cache.put).toHaveBeenCalledWith('subscriptionsTags', cachedSubscriptionsTags);
-                expect(cachedSubscriptionsTags.incrementSubscriptionUnseen).toHaveBeenCalledWith(2);
-            }));
-        });
-
         describe('with real cache', function() {
-            var api, call, cache;
+            var api, call;
             var promiseResult = 'success';
 
             beforeEach(module(function($provide) {
@@ -122,9 +58,8 @@ describe('service', function() {
                 });
             }));
 
-            beforeEach(inject(function (subscriptionsTagService, $q, _subscriptionsTagCache_) {
+            beforeEach(inject(function (subscriptionsTagService, $q) {
                 service = subscriptionsTagService;
-                cache = _subscriptionsTagCache_;
 
                 call = $q.defer();
                 call.resolve(promiseResult);
@@ -132,62 +67,15 @@ describe('service', function() {
                 api.get.and.returnValue(call.promise);
             }));
 
-            it('should return new uncached entries', inject(function($rootScope) {
-                var unseen = true;
-                var promise = service.findAllByUnseen(unseen);
-
-                $rootScope.$digest();
-
-                expect(api.get).toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions?unseenGreaterThan=0', cache);
-                expect(promise.$$state.value).toEqual(promiseResult);
-
-                expect(cache.get('subscriptionsTags')).toEqual(promiseResult);
-                expect(cache.get('subscriptionsTags.unseenFlag')).toEqual(unseen);
-            }));
-
-            it('should return old uncached entries', inject(function($rootScope) {
+            it('should return entries when called with unseen set to false', inject(function($rootScope) {
                 var unseen = false;
-                var promise = service.findAllByUnseen(unseen);
-
-                $rootScope.$digest();
-
-                expect(api.get).toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions', cache);
-                expect(promise.$$state.value).toEqual(promiseResult);
-
-                expect(cache.get('subscriptionsTags')).toEqual(promiseResult);
-                expect(cache.get('subscriptionsTags.unseenFlag')).toEqual(unseen);
-            }));
-
-            it('should return cached entries when called with unseen set to false and cached unseen flag false', function() {
-                var unseen = false;
-                var data = {uuid: 50};
-                cache.put('subscriptionsTags', data);
-                cache.put('subscriptionsTags.unseenFlag', unseen);
-
-                var promise = service.findAllByUnseen(unseen);
-
-                expect(api.get).not.toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions', cache);
-                expect(promise.$$state.value).toEqual(data);
-
-                expect(cache.get('subscriptionsTags')).toEqual(data);
-                expect(cache.get('subscriptionsTags.unseenFlag')).toEqual(unseen);
-            });
-
-            it('should return uncached entries when called with unseen set to false and cached unseen flag true', inject(function($rootScope) {
-                var unseen = false;
-                var data = {uuid: 50};
-                cache.put('subscriptionsTags', data);
-                cache.put('subscriptionsTags.unseenFlag', true);
 
                 var promise = service.findAllByUnseen(unseen);
 
                 $rootScope.$digest();
 
-                expect(api.get).toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions', cache);
+                expect(api.get).toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions');
                 expect(promise.$$state.value).toEqual(promiseResult);
-
-                expect(cache.get('subscriptionsTags')).toEqual(promiseResult);
-                expect(cache.get('subscriptionsTags.unseenFlag')).toEqual(unseen);
             }));
         });
     });

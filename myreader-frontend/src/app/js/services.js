@@ -5,49 +5,34 @@ var models = require('./models');
 
 angular.module('common.services', ['common.api', 'common.caches'])
 
-.service('subscriptionsTagService', ['$rootScope', 'api', 'deferService', 'subscriptionsTagCache', function($rootScope, api, deferService, subscriptionsTagCache) {
+.service('subscriptionsTagService', ['$rootScope', 'api', function($rootScope, api) {
+
+    var cache = {
+        decrementSubscriptionUnseen: function () {},
+        incrementSubscriptionUnseen: function () {}
+    };
 
     $rootScope.$on('subscriptionEntry:updateEntries', function(event, subscriptionEntries) {
-        var cachedSubscriptionsTags = subscriptionsTagCache.get('subscriptionsTags');
-
-        if(!cachedSubscriptionsTags) {
-            return;
-        }
-
         if(subscriptionEntries === undefined || subscriptionEntries.length === 0) {
             return;
         }
 
         for(var i=0;i<subscriptionEntries.length;i++) {
             if(subscriptionEntries[i].seen) {
-                cachedSubscriptionsTags.decrementSubscriptionUnseen(subscriptionEntries[i].feedUuid);
+                cache.decrementSubscriptionUnseen(subscriptionEntries[i].feedUuid);
             } else {
-                cachedSubscriptionsTags.incrementSubscriptionUnseen(subscriptionEntries[i].feedUuid)
+                cache.incrementSubscriptionUnseen(subscriptionEntries[i].feedUuid)
             }
         }
-
-        subscriptionsTagCache.put('subscriptionsTags', cachedSubscriptionsTags);
-    });
-
-    $rootScope.$on('refresh', function() {
-        subscriptionsTagCache.removeAll();
     });
 
     return {
         findAllByUnseen: function(unseen) {
-            var cachedSubscriptionTags = subscriptionsTagCache.get('subscriptionsTags');
-            var cachedUnseenFlag = subscriptionsTagCache.get('subscriptionsTags.unseenFlag');
-
-            if(cachedUnseenFlag === unseen && cachedSubscriptionTags) {
-                return deferService.resolved(cachedSubscriptionTags);
-            }
-
             var withUnseen = unseen ? '?unseenGreaterThan=0' : '';
-            var promise = api.get('subscriptionsTag', '/myreader/api/2/subscriptions' + withUnseen, subscriptionsTagCache);
+            var promise = api.get('subscriptionsTag', '/myreader/api/2/subscriptions' + withUnseen);
 
             promise.then(function(data) {
-                subscriptionsTagCache.put('subscriptionsTags', data);
-                subscriptionsTagCache.put('subscriptionsTags.unseenFlag', unseen);
+                cache = data;
             });
 
             return promise;
