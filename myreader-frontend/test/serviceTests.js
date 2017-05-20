@@ -205,65 +205,6 @@ describe('service', function() {
             api.get.and.returnValue(call.promise);
         }));
 
-        xit('should return cached result', inject(function($rootScope) {
-            var firstPromise = service.findBy('stringParam');
-
-            $rootScope.$digest();
-
-            expect(api.get).toHaveBeenCalledWith('subscriptionEntries', 'stringParam');
-            expect(firstPromise.$$state.value).toEqual(promiseResult);
-
-            api.get = jasmine.createSpy();
-
-            var secondPromise = service.findBy('stringParam');
-
-            $rootScope.$digest();
-
-            expect(api.get).not.toHaveBeenCalledWith('subscriptionEntries', 'stringParam');
-            expect(secondPromise.$$state.value).toEqual(promiseResult);
-        }));
-
-        it('cache results', inject(function($rootScope, $q, CacheFactory) {
-            var data = [{uuid: 1}, {uuid: 2}];
-            var call = $q.defer();
-
-            call.resolve({entries: data});
-            api.get.and.returnValue(call.promise);
-
-            service.findBy('stringParam');
-
-            $rootScope.$digest();
-
-            var cache = CacheFactory.get('subscriptionEntryCache');
-
-            expect(cache.get('/myreader/api/2/subscriptionEntries/1')).toEqualData(data[0]);
-            expect(cache.get('/myreader/api/2/subscriptionEntries/2')).toEqualData(data[1]);
-        }));
-
-        xit('should return not cached result after refresh event has been triggered', inject(function($rootScope) {
-            service.findBy('stringParam');
-
-            $rootScope.$digest();
-
-            api.get = jasmine.createSpy();
-
-            service.findBy('stringParam');
-
-            $rootScope.$digest();
-
-            expect(api.get).not.toHaveBeenCalledWith('subscriptionEntries', 'stringParam');
-
-            api.get.and.returnValue(call.promise);
-
-            $rootScope.$broadcast('refresh');
-
-            service.findBy('stringParam');
-
-            $rootScope.$digest();
-
-            expect(api.get).toHaveBeenCalledWith('subscriptionEntries', 'stringParam');
-        }));
-
         it('should process own properties in params object', function() {
             var Params = function() {
                 this.param1 = 1;
@@ -277,7 +218,7 @@ describe('service', function() {
             expect(api.get).toHaveBeenCalledWith('subscriptionEntries', '/myreader/api/2/subscriptionEntries?&param1=1&param2=2');
         });
 
-        it('should save and cache result', inject(function($rootScope, $q, CacheFactory) {
+        it('should save entries', inject(function($rootScope, $q) {
             var data = [{uuid: 12}];
             var call = $q.defer();
 
@@ -288,12 +229,6 @@ describe('service', function() {
             service.save(12);
 
             expect(api.patch).toHaveBeenCalledWith('subscriptionEntries', '/myreader/api/2/subscriptionEntries?', [12]);
-
-            $rootScope.$digest();
-
-            var cache = CacheFactory.get('subscriptionEntryCache');
-
-            expect(cache.get('/myreader/api/2/subscriptionEntries/12')).toEqualData(data[0]);
         }));
     });
 

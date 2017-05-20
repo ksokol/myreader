@@ -110,7 +110,8 @@ BaseEntryCtrl.prototype.initialize = function($rootScope, $scope, $stateParams, 
     $scope.refresh = function(param) {
         subscriptionEntryService.findBy(param || $scope.params())
         .then(function(data) {
-            $scope.data = data;
+            var entries = $scope.data.entries.concat(data.entries);
+            $scope.data = new SubscriptionEntries(entries, data.links)
         })
         .catch(function (error) {
             $scope.message = { type: 'error', message: error };
