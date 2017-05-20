@@ -82,18 +82,6 @@ angular.module('common.api', [])
     }
 })
 
-.service('subscriptionEntryConverter', function() {
-
-    return {
-        convertFrom: function (data) {
-            return data;
-        },
-        convertTo: function(data) {
-            return {content: {tag: data.tag, seen: data.seen}};
-        }
-    }
-})
-
 .service('subscriptionEntryTagConverter', function() {
 
     return {

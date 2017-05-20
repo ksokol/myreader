@@ -30,51 +30,6 @@ describe("directive", function() {
         });
     });
 
-    describe("myWrapEntryContent", function() {
-        var $compile,
-            window,
-            mdMedia,
-            rootScope;
-
-        beforeEach(module('common.directives', function($provide) {
-            window = {
-                innerWidth: jasmine.createSpy()
-            };
-
-            mdMedia = jasmine.createSpy();
-
-            $provide.provider(myMock.providerWithObj('$window', window));
-            $provide.provider(myMock.providerWithObj('$mdMedia', mdMedia));
-        }));
-
-        beforeEach(inject(function(_$compile_, $rootScope){
-            $compile = _$compile_;
-            rootScope = $rootScope
-        }));
-
-        it('should set max-width to specific value on small screen', function() {
-            mdMedia.and.returnValue(true);
-
-            var element = $compile("<div my-wrap-entry-content>content</div>")(rootScope);
-            window.innerWidth = 1280;
-
-            rootScope.$digest();
-
-            expect(element[0].style.cssText.trim()).toEqual('max-width: 914px;');
-        });
-
-        it('should set max-width to specific value on big screen', function() {
-            mdMedia.and.returnValue(false);
-
-            var element = $compile("<div my-wrap-entry-content>content</div>")(rootScope);
-            window.innerWidth = 1280;
-
-            rootScope.$digest();
-
-            expect(element[0].style.cssText.trim()).toEqual('max-width: 1264px;');
-        });
-    });
-
     describe("myShowAdmin", function() {
         var $compile,
             $rootScope,

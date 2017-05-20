@@ -8,6 +8,7 @@
         var reset = function () {
             ctrl.type = null;
             ctrl.message = null;
+            ctrl.myOnDismiss();
         };
 
         ctrl.$onChanges = function (obj) {
@@ -35,7 +36,8 @@
         template: require('./notification-panel.component.html'),
         controller: ['$timeout', NotificationPanelComponent],
         bindings: {
-            myMessage: '<'
+            myMessage: '<',
+            myOnDismiss: '&'
         }
     });
 

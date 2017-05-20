@@ -125,7 +125,6 @@ my-list.my-default-theme my-list-item.my-2-line .my-list-item-text h3, my-list.m
 }
 
 my-list-item.my-2-line .my-list-item-text h3, my-list-item.my-2-line > .my-no-style .my-list-item-text h3, my-list-item.my-3-line .my-list-item-text h3, my-list-item.my-3-line > .my-no-style .my-list-item-text h3 {
-    line-height: 0.75em;
     margin: 0 0 6px;
 }
 
@@ -144,7 +143,7 @@ my-list-item.my-2-line .my-list-item-text h3, my-list-item.my-2-line > .my-no-st
 
 my-list-item.my-2-line .my-list-item-text h4, my-list-item.my-2-line > .my-no-style .my-list-item-text h4, my-list-item.my-3-line .my-list-item-text h4, my-list-item.my-3-line > .my-no-style .my-list-item-text h4 {
     font-weight: 400;
-    line-height: 0.75em;
+    line-height: 1rem;
     margin: 10px 0 5px;
 }
 
@@ -167,14 +166,6 @@ my-list-item > div.my-primary > md-checkbox, my-list-item > div.my-secondary > m
     align-self: center;
 }
 
-my-list-item .my-secondary-container, my-list-item .my-secondary, my-list-item .my-list-item-inner .my-secondary-container, my-list-item .my-list-item-inner .my-secondary {
-    margin-left: 16px;
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translate3d(0px, -50%, 0px);
-}
-
 my-divider.my-default-theme {
     border-top-color: rgba(0, 0, 0, 0.12);
 }
@@ -190,51 +181,6 @@ my-divider {
     border-top: 1px solid;
     display: block;
     margin: 0;
-}
-
-.md-chips .md-chip .md-chip-content {
-    padding-right: 10px !important;
-}
-.my-tag-chips .md-chip {
-    position: relative;
-    padding-right: 35px;
-}
-
-.my-tag-chips .md-chip .md-chip-remove-container {
-    position: absolute;
-    right: 4px;
-    top: 4px;
-    margin-right: 0;
-    height: 24px;
-}
-
-.my-tag-chips .md-chip .md-chip-remove-container button.my-tag-chip {
-    position: relative;
-    height: 24px;
-    width: 24px;
-    line-height: 30px;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 50%;
-    border: none;
-    box-shadow: none;
-    padding: 0;
-    margin: 0;
-    transition: background 0.15s linear;
-    display: block;
-}
-
-.my-tag-chips .md-chip .md-chip-remove-container button.my-tag-chip md-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-50%, -50%, 0) scale(0.7);
-    color: white;
-    fill: white;
-}
-
-.my-tag-chips .md-chip .md-chip-remove-container button.my-tag-chip:hover, .my-tag-chips .md-chip .md-chip-remove-container button.my-tag-chip:focus {
-    background: rgba(255, 0, 0, 0.8);
 }
 
 md-input-container.md-default-theme > .my-input {

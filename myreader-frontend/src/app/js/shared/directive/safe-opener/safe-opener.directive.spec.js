@@ -1,29 +1,24 @@
 describe('safeOpener', function() {
 
-    var theWindow, element;
+    var testUtils = require('../../test-utils');
 
-    beforeEach(require('angular').mock.module('myreader', function($provide) {
-        $provide.provider(myMock.providerWithObj('$window', {
-            open: function() {
-                theWindow = {
-                    opener: 'theOpener',
-                    location: 'someUrl'
-                };
-                return theWindow;
-            }
-        }));
-    }));
+    var windowAttributes;
 
-    beforeEach(inject(function ($compile, $rootScope) {
-        element = $compile("<div my-safe-opener url='http//example.com/feed'></div>")($rootScope);
+    beforeEach(require('angular').mock.module('myreader', testUtils.mock('$window')));
+
+    beforeEach(inject(function ($compile, $rootScope, $window) {
+        $window.open = jasmine.createSpy('open');
+        $window.open.and.returnValue(windowAttributes = {});
+
+        var element = $compile("<div my-safe-opener url='http//example.com/feed'></div>")($rootScope);
         element[0].click();
     }));
 
     it('should remove opener', function () {
-        expect(theWindow.opener).toBeNull();
+        expect(windowAttributes.opener).toBeNull();
     });
 
     it('should set location', function () {
-        expect(theWindow.location).toBe('http//example.com/feed');
+        expect(windowAttributes.location).toBe('http//example.com/feed');
     });
 });

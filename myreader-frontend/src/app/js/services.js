@@ -55,7 +55,7 @@ angular.module('common.services', ['common.api', 'common.caches'])
     }
 }])
 
-.service('subscriptionEntryService', ['$rootScope', 'api', 'deferService', 'subscriptionEntryCache', 'subscriptionEntriesCache', function($rootScope, api, deferService, subscriptionEntryCache, subscriptionEntriesCache) {
+.service('subscriptionEntryService', ['$rootScope', '$q', 'api', 'deferService', 'subscriptionEntryCache', 'subscriptionEntriesCache', function($rootScope, $q, api, deferService, subscriptionEntryCache, subscriptionEntriesCache) {
     var url = '/myreader/api/2/subscriptionEntries?';
     var url2 = '/myreader/api/2/subscriptionEntries';
 
@@ -132,17 +132,18 @@ angular.module('common.services', ['common.api', 'common.caches'])
 
             return promise;
         },
-        findOne: function(id) {
-            var url = url2 + '/' + id;
-            var cached = subscriptionEntryCache.get(url);
-            if(cached) {
-                return deferService.resolved(cached);
-            }
-
-            return api.get('subscriptionEntry', url);
-        },
         save: function(entry) {
-            return this.updateEntries([entry]);
+            var deferred = $q.defer();
+
+            this.updateEntries([entry])
+            .then(function (data) {
+                deferred.resolve(data.entries[0]);
+            })
+            .catch(function (error) {
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
         }
     }
 }])

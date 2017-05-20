@@ -18,30 +18,14 @@ angular.module('common.directives', [])
         }
     };
 })
-.directive("myWrapEntryContent", ['$window', '$mdMedia', function($window, $mdMedia) {
-    return {
-        restrict : "A",
-        link : function($scope, $element, attrs) {
-            $scope.$watch(function() {
-                return $window.innerWidth;
-            }, function(value) {
-                var big = $mdMedia('gt-md');
-                var substract = 16;
-                //TODO
-                if(big) {
-                    substract += 350;
-                }
-                attrs.$set('style', 'max-width: ' + (value - substract) + 'px');
-            });
-        }
-    };
-}])
-.directive('myEntryTags',['subscriptionEntryService', function(subscriptionEntryService) {
+.directive('myEntryTags', function() {
     return {
         restrict: 'E',
         template: require('../../templates/tags.html'),
         scope: {
-            entry: '=entry'
+            entry: '=myItem',
+            show: '=myShow',
+            onSelect: '&myOnSelect'
         },
         controller: ['$scope', function ($scope) {
             $scope.tags = [];
@@ -68,25 +52,18 @@ angular.module('common.directives', [])
             });
 
             $scope.addTag = function() {
-                var tmp = angular.copy($scope.tags);
-                $scope.entry.tag = tmp.join(", ");
-                subscriptionEntryService.save($scope.entry)
-                .then(function(data) {
-                    $scope.tags = _split(data.entries[0].tag)
-                });
+                var tags = angular.copy($scope.tags).join(", ");
+                $scope.onSelect({ item: { tag: tags }});
             };
 
             $scope.removeTag = function() {
-                var tmp = angular.copy($scope.tags);
-                $scope.entry.tag = tmp.length === 0 ? null : tmp.join(", ");
-                subscriptionEntryService.save($scope.entry)
-                .then(function(data) {
-                    $scope.tags = _split(data.entries[0].tag)
-                });
+                var copy = angular.copy($scope.tags);
+                var tags = copy.length === 0 ? null : copy.join(", ");
+                $scope.onSelect({ item: { tag: tags }});
             }
         }]
     }
-}])
+})
 
 .directive('myExclusions',['exclusionService', function(exclusionService) {
     return {
