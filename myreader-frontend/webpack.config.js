@@ -32,7 +32,6 @@ module.exports = function makeWebpackConfig() {
             'ui-router-extras',
             'angular-material',
             'angular-local-storage',
-            'angular-cache',
             'angular-hotkeys',
             'moment'
          ]

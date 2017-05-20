@@ -1,9 +1,8 @@
 var angular = require('angular');
 var api = require('./api');
-var caches = require('./caches');
 var models = require('./models');
 
-angular.module('common.services', ['common.api', 'common.caches'])
+angular.module('common.services', ['common.api'])
 
 .service('subscriptionsTagService', ['$rootScope', 'api', function($rootScope, api) {
 
