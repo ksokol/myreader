@@ -1,6 +1,5 @@
 require('angular');
 require('angular-ui-router');
-require('ui-router-extras');
 require('angular-material');
 require('angular-messages');
 require('angular-hotkeys');
