@@ -29,9 +29,7 @@ module.exports = function makeWebpackConfig() {
             'angular-sanitize',
             'angular-messages',
             'angular-ui-router',
-            'ui-router-extras',
             'angular-material',
-            'angular-local-storage',
             'angular-hotkeys',
             'moment'
          ]
