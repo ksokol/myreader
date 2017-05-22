@@ -1,4 +1,4 @@
-describe('myEntryTitle', function () {
+describe('src/app/js/entry/entry-title/entry-title.component.spec.js', function () {
 
     var testUtils = require('../../shared/test-utils');
 

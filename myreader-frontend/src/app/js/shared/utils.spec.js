@@ -1,4 +1,4 @@
-describe('utils', function () {
+describe('src/app/js/shared/utils.spec.js', function () {
 
     var utils = require('./utils');
 

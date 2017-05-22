@@ -1,4 +1,4 @@
-describe("directive", function() {
+describe("test/directiveTests.js", function() {
 
     describe("loadingIndicator", function() {
         var $compile,

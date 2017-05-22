@@ -1,4 +1,4 @@
-describe('button', function () {
+describe('src/app/js/shared/component/button/button.component.spec.js', function () {
 
     var component, bindings, buttonGroupCtrl, myOnClick;
 

@@ -1,4 +1,4 @@
-describe('config', function() {
+describe('test/configTests.js', function() {
 
     var provider = undefined;
 

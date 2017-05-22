@@ -1,4 +1,4 @@
-describe("SubscriptionEntryListCtrl", function() {
+describe("test/controllerTests.js", function() {
     var scope,
         subscriptionEntryServiceMock,
         subscriptionsTagServiceMock;
@@ -63,7 +63,7 @@ describe("SubscriptionEntryListCtrl", function() {
     }));
 });
 
-describe("SubscriptionCtrl", function() {
+describe("test/controllerTests.js", function() {
     var scope;
 
     beforeEach(module('common.controllers', function($provide) {

@@ -1,4 +1,4 @@
-describe('button-group', function () {
+describe('src/app/js/shared/component/button-group/button-group.component.spec.js', function () {
 
     var component, button1, button2;
 

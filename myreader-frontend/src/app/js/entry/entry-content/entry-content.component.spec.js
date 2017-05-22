@@ -1,4 +1,4 @@
-describe('myEntryContent', function () {
+describe('src/app/js/entry/entry-content/entry-content.component.spec.js', function () {
 
     describe('controller', function () {
 

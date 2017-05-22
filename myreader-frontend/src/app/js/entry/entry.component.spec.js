@@ -1,4 +1,4 @@
-describe('myEntry', function () {
+describe('src/app/js/entry/entry.component.spec.js', function () {
 
     describe('with html', function () {
 

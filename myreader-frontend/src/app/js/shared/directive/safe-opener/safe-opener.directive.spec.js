@@ -1,4 +1,4 @@
-describe('safeOpener', function() {
+describe('src/app/js/shared/directive/safe-opener/safe-opener.directive.spec.js', function() {
 
     var testUtils = require('../../test-utils');
 

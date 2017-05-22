@@ -1,4 +1,4 @@
-describe("targetBlank filter", function() {
+describe("test/filterTests.js", function() {
     var targetBlank;
 
     beforeEach(module('common.filters'));
@@ -32,7 +32,7 @@ describe("targetBlank filter", function() {
     });
 });
 
-describe("timeago filter", function() {
+describe("test/filterTests.js", function() {
     var timeago;
 
     beforeEach(module('common.filters'));

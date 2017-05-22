@@ -1,4 +1,4 @@
-describe('api', function() {
+describe('test/apiTests.js', function() {
 
     var tag1, tag2, tag3, untagged1, untagged2, raw;
 

@@ -1,4 +1,4 @@
-describe("navigationItemTitle filter", function() {
+describe("src/app/js/navigation/item-title-pipe/item-title.pipe.spec.js", function() {
     var tenCharacters = 'abcdefghij';
     var navigationItemTitle;
 

@@ -1,4 +1,4 @@
-describe('myEntryActions', function () {
+describe('src/app/js/entry/entry-actions/entry-actions.component.spec.js', function () {
 
     var item;
 

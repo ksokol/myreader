@@ -1,4 +1,4 @@
-describe('navigationSubscriptionItem', function () {
+describe('src/app/js/navigation/subscription-item/subscription-item.component.spec.js', function () {
 
     beforeEach(require('angular').mock.module('myreader'));
 

@@ -1,4 +1,4 @@
-describe('service', function() {
+describe('test/serviceTests.js', function() {
     var api, service;
 
     beforeEach(module('common.services'));

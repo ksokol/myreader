@@ -5,6 +5,7 @@ module.exports = function karmaConfig (config) {
         ],
         reporters: [
             'coverage',
+            'sonarqubeUnit',
             'spec'
         ],
         files: [
@@ -21,6 +22,11 @@ module.exports = function karmaConfig (config) {
         coverageReporter: {
             type: 'lcov',
             dir : 'build/reports/istanbul/'
+        },
+        sonarQubeUnitReporter: {
+            sonarQubeVersion: 'LATEST',
+            outputFile: 'build/TESTS.xml',
+            useBrowserName: false
         },
         webpack: require('./webpack.config'),
         webpackMiddleware: {
