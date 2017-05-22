@@ -4,7 +4,8 @@ module.exports = function karmaConfig (config) {
             'jasmine'
         ],
         reporters: [
-            'coverage'
+            'coverage',
+            'spec'
         ],
         files: [
             'src/tests.webpack.js',
