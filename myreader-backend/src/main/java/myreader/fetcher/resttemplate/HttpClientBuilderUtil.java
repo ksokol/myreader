@@ -1,6 +1,7 @@
 package myreader.fetcher.resttemplate;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -18,9 +19,16 @@ final class HttpClientBuilderUtil {
     }
 
     public static HttpClient customHttpClient() {
+        int timeout = 30;
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(timeout * 1000)
+                .setConnectionRequestTimeout(timeout * 1000)
+                .setSocketTimeout(timeout * 1000).build();
+
         return HttpClientBuilder.create()
                 .useSystemProperties()
-                .setMaxConnTotal(30000)
+                .setDefaultRequestConfig(requestConfig)
+                .setMaxConnTotal(timeout * 1000)
                 .evictIdleConnections(60, TimeUnit.SECONDS)
                 .disableAutomaticRetries()
                 .setSSLSocketFactory(sslSocketFactory())
