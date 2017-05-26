@@ -210,14 +210,6 @@ my-list-item[ng-class="my-focused"] {
     padding: 0;
 }
 
-.my-input-container {
-    margin: 0;
-}
-
-.my-input-container > div[class="md-errors-spacer"] {
-    min-height: 0;
-}
-
 .my-subheader {
     padding: 2px;
 }

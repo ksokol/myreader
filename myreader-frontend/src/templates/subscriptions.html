@@ -1,14 +1,11 @@
 <md-subheader class="md-primary my-subheader">
     <div layout="row" layout-align="center end" layout-wrap>
         <div flex="90">
-            <md-input-container class="md-block my-input-container">
-                <md-icon md-font-library="material-icons">search</md-icon>
-                <input class="my-input"
-                       name="searchKey"
-                       ng-model-options="{ debounce: 250 }"
-                       ng-model="searchKey"
-                       aria-label="search">
-            </md-input-container>
+            <my-search-input
+                    my-value="searchKey"
+                    my-on-change="onSearchChange(value)"
+                    my-on-clear="onSearchClear()">
+            </my-search-input>
         </div>
         <div flex>
             <div layout="row" layout-align="end center">
