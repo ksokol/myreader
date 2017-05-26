@@ -91,7 +91,7 @@ angular.module('myreader', ['common.filters', 'common.services', 'common.control
                 url: "/bookmark/:tag",
                 views: {
                     content: {
-                        template: require('../../templates/subscription-entries.html'),
+                        template: require('../../templates/bookmark-entries.html'),
                         controller: 'BookmarkEntryListCtrl'
                     }
                 }

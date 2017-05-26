@@ -1,0 +1,27 @@
+<md-subheader class="md-primary my-subheader">
+    <div layout="row" layout-align="center end" layout-wrap>
+        <div flex>
+            <md-input-container class="md-block my-input-container">
+                <md-icon md-font-library="material-icons">search</md-icon>
+                <input class="my-input"
+                       name="search"
+                       ng-model-options="{ debounce: 250 }"
+                       ng-model="search"
+                       aria-label="search">
+            </md-input-container>
+        </div>
+    </div>
+    <my-notification-panel layout="row" layout-align="center center" my-message="message"></my-notification-panel>
+</md-subheader>
+
+<my-list class="md-default-theme">
+    <my-list-item class="my-2-line" ng-repeat="entry in data.entries">
+        <div class="my-no-style my-list-item-inner">
+            <my-entry my-item="entry"></my-entry>
+            <my-divider class="my-default-theme"></my-divider>
+        </div>
+    </my-list-item>
+    <my-list-item align="center" ng-click="loadMore()" ng-show="data.next()">
+        <md-button>load more</md-button>
+    </my-list-item>
+</my-list>
