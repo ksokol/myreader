@@ -250,12 +250,12 @@ angular.module('common.services', ['common.api'])
     }
 })
 
-.service('applicationPropertyService', ['api', function(api) {
+.service('applicationPropertyService', ['$http', function($http) {
     var url = '/myreader/info';
 
     return {
         getProperties: function() {
-            return api.get('applicationInfo', url);
+            return $http.get(url);
         }
     }
 }]);

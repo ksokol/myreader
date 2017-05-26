@@ -451,7 +451,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     applicationPropertyService.getProperties()
-    .then(function(properties) {
+    .success(function(properties) {
         $scope.properties = properties;
     });
 }])
