@@ -35,17 +35,12 @@ angular.module('common.api', [])
 .service('bookmarkTagsConverter', function () {
     return {
         convertFrom: function (data) {
-            var all = new Bookmark;
-            all.title = "all";
-            all.type = 'global';
-
             var subscriptionTags = new Bookmarks;
 
             angular.forEach(data, function (value) {
                 subscriptionTags.addTag(value);
             });
 
-            subscriptionTags.tags.unshift(all);
             return subscriptionTags;
         }
     }

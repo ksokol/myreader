@@ -161,11 +161,6 @@ describe('test/apiTests.js', function() {
                 tags: [
                     {
                         links: {},
-                        title: 'all',
-                        type: 'global'
-                    },
-                    {
-                        links: {},
                         tag: [
                             {
                                 uuid: '35',
