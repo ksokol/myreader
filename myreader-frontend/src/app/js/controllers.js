@@ -319,8 +319,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.refresh();
 }])
 
-.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', '$previousState', 'subscriptionService', 'subscriptionTagService',
-    function($scope, $state, $stateParams, $previousState, subscriptionService, subscriptionTagService) {
+.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', 'subscriptionService', 'subscriptionTagService',
+    function($scope, $state, $stateParams, subscriptionService, subscriptionTagService) {
 
     $scope.availableTags = [];
 
@@ -382,7 +382,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     $scope.onSuccessDelete = function() {
-        $previousState.go();
+        $state.go('app.subscriptions');
+
     };
 
     $scope.onError = function(error) {
@@ -432,8 +433,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.refresh();
 }])
 
-.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$previousState', 'feedService',
-    function($scope, $stateParams, $previousState, feedService) {
+.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$state', 'feedService',
+    function($scope, $stateParams, $state, feedService) {
 
     $scope.feed = {};
 
@@ -449,7 +450,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     $scope.onSuccessDelete = function() {
-        $previousState.go();
+        $state.go('app.feed');
     };
 
     $scope.onSave = function() {
