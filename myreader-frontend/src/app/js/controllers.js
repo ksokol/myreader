@@ -446,7 +446,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         $scope.message = { type: 'success', message: 'started' };
     };
 
-    $scope.onErrorRefreshIndex = function() {
+    $scope.onErrorRefreshIndex = function(data) {
         $scope.message = { type: 'error', message: data };
     };
 

@@ -307,23 +307,23 @@ describe('test/serviceTests.js', function() {
 
     describe('processingService', function() {
 
-        beforeEach(inject(function (processingService) {
+        var httpBackend;
+
+        beforeEach(inject(function (processingService, $httpBackend) {
             service = processingService;
+            httpBackend = $httpBackend;
         }));
 
-        it('should have been called rebuildSearchIndex', inject(function($q) {
-            var call = $q.defer();
-            call.resolve({
-                entries: [1]
+        it('should have been called rebuildSearchIndex', function(done) {
+            httpBackend.expectPUT('/myreader/api/2/processing').respond({});
+
+            service.rebuildSearchIndex()
+            .success(function () {
+                done();
             });
 
-            api.put.and.returnValue(call.promise);
-
-            var promise = service.rebuildSearchIndex();
-
-            expect(api.put).toHaveBeenCalledWith('searchIndexJob', '/myreader/api/2/processing', 'indexSyncJob');
-            expect(promise.$$state.value.entries).toEqualData([1]);
-        }));
+            httpBackend.flush();
+        });
     });
 
     describe('settingsService', function() {

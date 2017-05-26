@@ -213,12 +213,12 @@ angular.module('common.services', ['common.api'])
     }
 })
 
-.service('processingService', ['api', function(api) {
-    var rebuildIndex = '/myreader/api/2/processing';
+.service('processingService', ['$http', function($http) {
+    var url = '/myreader/api/2/processing';
 
     return {
         rebuildSearchIndex: function() {
-            return api.put('searchIndexJob', rebuildIndex, 'indexSyncJob');
+            return $http.put(url, { process: 'indexSyncJob' });
         }
     }
 }])

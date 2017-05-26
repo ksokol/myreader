@@ -453,47 +453,6 @@ describe('test/apiTests.js', function() {
         });
     });
 
-    describe("searchIndexJobConverter", function() {
-        var converter;
-
-        beforeEach(inject(function (searchIndexJobConverter) {
-            converter = searchIndexJobConverter;
-        }));
-
-        it('should return empty json', function () {
-            expect(converter.convertFrom(1)).toEqualData({});
-        });
-
-        it('should convert data with enclosing url tag', function () {
-            var data = {content: 1};
-            expect(converter.convertTo(data)).toEqualData({process  : data});
-        });
-
-        it('should return as is for error callback as is', function () {
-            expect(converter.convertError(1)).toEqualData(1);
-        });
-    });
-
-    describe("conversionService", function() {
-        var service;
-
-        beforeEach(inject(function (conversionService) {
-            service = conversionService;
-        }));
-
-        it('should return empty json', function () {
-            expect(service.convertFrom('searchIndexJob', 1)).toEqualData({});
-        });
-
-        it('should convert data with enclosing process tag', function () {
-            expect(service.convertTo('searchIndexJob', 1)).toEqualData({process  : 1});
-        });
-
-        it('should convert data for error callback', function () {
-            expect(service.convertError('searchIndexJob', {data: 1})).toEqualData({data: 1});
-        });
-    });
-
     describe("should", function() {
         var service,
             http;

@@ -195,20 +195,6 @@ angular.module('common.api', [])
         }
     }
 })
-.service('searchIndexJobConverter', function() {
-
-    return {
-        convertFrom: function() {
-            return {};
-        },
-        convertTo: function (data) {
-            return {process: data};
-        },
-        convertError: function (data) {
-            return data;
-        }
-    }
-})
 .service('conversionService', ['$injector', function ($injector) {
     return {
         convertFrom: function (resourceType, data) {
