@@ -118,14 +118,6 @@ angular.module('common.api', [])
     }
 })
 
-.service('subscriptionTagConverter', function() {
-
-    return {
-        convertFrom: function (data) {
-            return data;
-        }
-    }
-})
 .service('feedsConverter', function() {
 
     var Feeds = function(feeds, links) {

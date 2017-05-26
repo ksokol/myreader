@@ -219,25 +219,24 @@ describe('test/serviceTests.js', function() {
 
     describe('subscriptionTagService', function() {
 
-        beforeEach(inject(function (subscriptionTagService, $q) {
-            service = subscriptionTagService;
+        var httpBackend;
 
-            var call = $q.defer();
-            call.resolve({
-                entries: [1]
+        beforeEach(inject(function (subscriptionTagService, $httpBackend) {
+            service = subscriptionTagService;
+            httpBackend = $httpBackend;
+        }));
+
+        it('should return tags', function(done) {
+            httpBackend.expectGET('/myreader/api/2/subscriptions/availableTags').respond(["","tag1","tag2"]);
+
+            service.findAll()
+            .then(function (data) {
+                expect(data).toEqual(["","tag1","tag2"]);
+                done();
             });
 
-            api.get.and.returnValue(call.promise);
-        }));
-
-        it('should return tags', inject(function($rootScope) {
-            var firstPromise = service.findAll();
-
-            $rootScope.$digest();
-
-            expect(api.get).toHaveBeenCalledWith('subscriptionTag', '/myreader/api/2/subscriptions/availableTags');
-            expect(firstPromise.$$state.value.entries).toEqualData([1]);
-        }));
+            httpBackend.flush();
+        });
     });
 
     describe('feedService', function() {

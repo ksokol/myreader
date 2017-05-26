@@ -401,18 +401,6 @@ describe('test/apiTests.js', function() {
         });
     });
 
-    describe("subscriptionTagConverter", function() {
-        var converter;
-
-        beforeEach(inject(function (subscriptionTagConverter) {
-            converter = subscriptionTagConverter;
-        }));
-
-        it('should return data as is', function () {
-            expect(converter.convertFrom(1)).toBe(1);
-        });
-    });
-
     describe("feedsConverter", function() {
         var converter;
 

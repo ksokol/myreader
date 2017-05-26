@@ -121,12 +121,15 @@ angular.module('common.services', ['common.api'])
     }
 }])
 
-.service('subscriptionTagService', ['api', function(api) {
+.service('subscriptionTagService', ['$http', function($http) {
     var url = '/myreader/api/2/subscriptions/availableTags';
 
     return {
         findAll: function() {
-            return api.get('subscriptionTag', url);
+            return $http.get(url)
+            .then(function (response) {
+                return response.data;
+            });
         }
     }
 }])
