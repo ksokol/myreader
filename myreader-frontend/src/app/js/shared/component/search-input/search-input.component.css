@@ -1,0 +1,11 @@
+.my-search-input-container {
+    margin: 0 !important;
+}
+
+.my-search-input-container > div[class="md-errors-spacer"] {
+    min-height: 0 !important;
+}
+
+.my-search-input-container__button-clear {
+    cursor: pointer;
+}

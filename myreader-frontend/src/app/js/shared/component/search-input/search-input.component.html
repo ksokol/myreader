@@ -1,0 +1,13 @@
+<md-input-container class="md-block my-search-input-container">
+    <md-icon md-font-library="material-icons">search</md-icon>
+    <input name="search"
+           ng-model-options="{ debounce: 250 }"
+           ng-change="$ctrl.onChange()"
+           ng-model="$ctrl.value">
+    <md-icon class="my-search-input-container__button-clear"
+             md-font-library="material-icons"
+             ng-hide="$ctrl.isEmpty()"
+             ng-click="$ctrl.onClear()">clear</md-icon>
+</md-input-container>
+
+
