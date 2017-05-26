@@ -161,12 +161,28 @@ angular.module('common.services', ['common.api'])
     }
 }])
 
-.service('bookmarkService', ['api', function(api) {
+.service('bookmarkService', ['$http', '$q', function($http, $q) {
     var url = '/myreader/api/2/subscriptionEntries/availableTags';
 
     return {
         findAll: function() {
-            return api.get('bookmarkTags', url);
+            var deferred = $q.defer();
+
+            $http.get(url)
+                .success(function (data) {
+                    var subscriptionTags = new Bookmarks;
+
+                    angular.forEach(data, function (value) {
+                        subscriptionTags.addTag(value);
+                    });
+
+                    deferred.resolve(subscriptionTags);
+                })
+                .error(function(error) {
+                    deferred.reject(error);
+                });
+
+            return deferred.promise;
         }
     }
 }])

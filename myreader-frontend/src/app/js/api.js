@@ -32,20 +32,6 @@ angular.module('common.api', [])
     }
 })
 
-.service('bookmarkTagsConverter', function () {
-    return {
-        convertFrom: function (data) {
-            var subscriptionTags = new Bookmarks;
-
-            angular.forEach(data, function (value) {
-                subscriptionTags.addTag(value);
-            });
-
-            return subscriptionTags;
-        }
-    }
-})
-
 .service('subscriptionEntriesConverter', function() {
     return {
         convertFrom: function (data) {

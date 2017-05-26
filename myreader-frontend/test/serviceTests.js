@@ -250,25 +250,59 @@ describe('test/serviceTests.js', function() {
 
     describe('bookmarkService', function() {
 
-        beforeEach(inject(function (bookmarkService, $q) {
-            service = bookmarkService;
+        var httpBackend;
 
-            var call = $q.defer();
-            call.resolve({
-                entries: [1]
+        beforeEach(inject(function ($rootScope, bookmarkService, $httpBackend) {
+            service = bookmarkService;
+            httpBackend = $httpBackend;
+        }));
+
+        it('should return converted result', function(done) {
+            var tag1 = {
+                "uuid": "35",
+                "title": "tag1",
+                "tag": "news",
+                "unseen": 106,
+                "links": []
+            };
+
+            var expectedTags = {
+                tags: [
+                    {
+                        links: {},
+                        tag: [
+                            {
+                                uuid: '35',
+                                title: 'tag1',
+                                tag: 'news',
+                                unseen: 106,
+                                links: []
+                            }
+                        ],
+                        title: [
+                            {
+                                uuid: '35',
+                                title: 'tag1',
+                                tag: 'news',
+                                unseen: 106,
+                                links: []
+                            }
+                        ],
+                        type: 'tag'
+                    }
+                ]
+            };
+
+            httpBackend.expectGET('/myreader/api/2/subscriptionEntries/availableTags').respond({content: [tag1]});
+
+            service.findAll()
+            .then(function (data) {
+                expect(data).toEqualData(expectedTags);
+                done();
             });
 
-            api.get.and.returnValue(call.promise);
-        }));
-
-        it('should return result', inject(function($rootScope) {
-            var promise = service.findAll();
-
-            $rootScope.$digest();
-
-            expect(api.get).toHaveBeenCalledWith('bookmarkTags', '/myreader/api/2/subscriptionEntries/availableTags');
-            expect(promise.$$state.value.entries).toEqualData([1]);
-        }));
+            httpBackend.flush();
+        });
     });
 
     describe('processingService', function() {
