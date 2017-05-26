@@ -1,6 +1,7 @@
 require('./shared/component/button-group/button-group.component');
 require('./shared/component/button/button.component');
 require('./shared/component/notification-panel/notification-panel.component');
+require('./shared/component/search-input/search-input.component');
 require('./shared/directive/safe-opener/safe-opener.directive');
 require('./navigation/subscription-item/subscription-item.component');
 require('./entry/entry.component');
@@ -71,6 +72,12 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.param = $stateParams;
     $scope.search = "";
     $scope.isOpen = true;
+
+    var onSearch = function (value) {
+        $scope.search = value;
+        $scope.data = {entries: []};
+        $scope.refresh($scope.params());
+    };
 
     $scope.addUuidParam = function(stateParams, param) {
         if(stateParams.uuid) {
@@ -190,6 +197,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         }
     };
 
+    $scope.refresh();
+
     $scope.loadMore = function() {
         $scope.refresh($scope.data.next())
     };
@@ -222,10 +231,15 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
             callback: $scope.toggleReadFromEnter
         });
 
-    $scope.$watch('search', function() {
-        $scope.data = {entries: []};
-        $scope.refresh($scope.params());
-    });
+
+
+    $scope.onSearchChange = function (value) {
+        onSearch(value);
+    };
+
+    $scope.onSearchClear = function () {
+        onSearch('');
+    };
 
     $scope.$on('refresh', function() {
         subscriptionsTagService.findAllByUnseen(true)
@@ -253,6 +267,12 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.param = $stateParams;
     $scope.search = "";
     $scope.isOpen = true;
+
+    var onSearch = function (value) {
+        $scope.search = value;
+        $scope.data = {entries: []};
+        $scope.refresh($scope.params());
+    };
 
     $scope.addSearchParam = function(param) {
         if($scope.search !== "") {
@@ -298,10 +318,15 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         $scope.refresh($scope.data.next())
     };
 
-    $scope.$watch('search', function() {
-        $scope.data = {entries: []};
-        $scope.refresh($scope.params());
-    });
+    $scope.onSearchChange = function (value) {
+        onSearch(value);
+    };
+
+    $scope.onSearchClear = function () {
+        onSearch('');
+    };
+
+    $scope.refresh();
 
     bookmarkService.findAll()
         .then(function (data) {
@@ -326,6 +351,14 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 
     $scope.open = function(subscription) {
         $state.go('app.subscription', {uuid: subscription.uuid});
+    };
+
+    $scope.onSearchChange = function (value) {
+        $scope.searchKey = value;
+    };
+
+    $scope.onSearchClear = function () {
+        $scope.searchKey = '';
     };
 
     $scope.refresh();
@@ -440,6 +473,14 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 
     $scope.open = function(feed) {
         $state.go('app.feed-detail', {uuid: feed.uuid});
+    };
+
+    $scope.onSearchChange = function (value) {
+        $scope.searchKey = value;
+    };
+
+    $scope.onSearchClear = function () {
+        $scope.searchKey = '';
     };
 
     $scope.refresh();
