@@ -1,5 +1,5 @@
 var angular = require('angular');
-var moment = require('moment');
+var timeago = require('timeago.js');
 
 angular.module('common.filters', [])
 
@@ -8,7 +8,7 @@ angular.module('common.filters', [])
     return function(date) {
         if(date) {
             try {
-                return moment(date).fromNow();
+                return timeago().format(date);
             } catch(e) {}
         }
         return "sometime";

@@ -31,7 +31,7 @@ module.exports = function makeWebpackConfig() {
             'angular-ui-router',
             'angular-material',
             'angular-hotkeys',
-            'moment'
+            'timeago.js'
          ]
     };
 
@@ -122,9 +122,7 @@ module.exports = function makeWebpackConfig() {
      * Reference: http://webpack.github.io/docs/configuration.html#plugins
      * List: http://webpack.github.io/docs/list-of-plugins.html
      */
-    config.plugins = [
-        new webpack.IgnorePlugin(/^\.\/lang$/, /moment$/)
-    ];
+    config.plugins = [];
 
     // Skip rendering index.html in test mode
     if (!isTest) {
