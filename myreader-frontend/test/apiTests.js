@@ -1,107 +1,15 @@
 describe('test/apiTests.js', function() {
 
-    var tag1, tag2, tag3, untagged1, untagged2, raw;
-
     beforeEach(module('common.api'));
 
-    beforeEach(function () {
-        tag1 = {
-            "uuid": "35",
-            "title": "tag1",
-            "tag": "news",
-            "unseen": 106,
-            "links": []
-        };
-
-        tag2 = {
-            "uuid": "36",
-            "title": "tag2",
-            "tag": "misc",
-            "unseen": 102,
-            "links": []
-        };
-
-        tag3 = {
-            "uuid": "1309597895632",
-            "title": "tag3",
-            "tag": "misc",
-            "unseen": 32,
-            "links": []
-        };
-
-        untagged1 = {
-            "uuid": "52",
-            "title": "untagged",
-            "tag": null,
-            "unseen": 94,
-            "links": []
-        };
-
-        untagged2 = {
-            "uuid": "53",
-            "title": "untagged",
-            "tag": "",
-            "unseen": 0,
-            "links": []
-        };
-
-        raw = {
-           "content": [tag1, tag2, tag3, untagged1, untagged2]
-        };
-    });
-
     describe("subscriptionEntriesConverter", function() {
-        var converter,
-            link = {
-                rel: 'next',
-                href: 'nextHref'
-            };
+        var converter;
 
         beforeEach(inject(function (subscriptionEntriesConverter) {
             converter = subscriptionEntriesConverter;
         }));
 
-        it('should return empty object', function () {
-            var converted = converter.convertFrom({content: [], links: []});
-
-            expect(converted.entries).toEqual([]);
-            expect(converted.links).toEqual([]);
-        });
-
-        it('should return empty object', function () {
-            var converted = converter.convertFrom({content: undefined, links: undefined});
-
-            expect(converted.entries).toEqual([]);
-            expect(converted.links).toEqual([]);
-        });
-
-        it('should return links', function () {
-            var converted = converter.convertFrom({content: undefined, links: [link]});
-
-            expect(converted.links).toEqual([link]);
-            expect(converted.entries).toEqual([]);
-        });
-
-        it('should return entries', function () {
-            var converted = converter.convertFrom({content: [1], links: undefined});
-
-            expect(converted.links).toEqual([]);
-            expect(converted.entries).toEqual([1]);
-        });
-
-        it('should return undefined for rel "next"', function () {
-            var converted = converter.convertFrom({content: undefined, links: [{ rel: "unknown" }]});
-
-            expect(converted.next()).toEqual(undefined);
-        });
-
-        it('should return link for rel "next"', function () {
-            var converted = converter.convertFrom({content: undefined, links: [link]});
-
-            expect(converted.next()).toEqual('nextHref');
-        });
-
-        it('should return empty array', function () {
+         it('should return empty array', function () {
             var converted = converter.convertTo([]);
 
             expect(converted).toEqualData({content: []});
