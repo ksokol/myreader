@@ -131,4 +131,22 @@ module.exports = function models() {
             self.updateSubscriptionUnseen(uuid, -1);
         };
     };
+
+    this.FetchError = function(fetchError, links) {
+        var self = this;
+        self.fetchError = angular.isArray(fetchError) ? fetchError : [];
+        self.links = angular.isArray(links) ? links : [];
+
+        var getLink = function(rel) {
+            for(var i=0;i<links.length;i++) {
+                if(links[i].rel === rel) {
+                    return links[i].href;
+                }
+            }
+        };
+
+        self.next = function() {
+            return getLink('next');
+        };
+    };
 }();

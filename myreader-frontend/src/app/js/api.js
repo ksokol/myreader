@@ -106,32 +106,7 @@ angular.module('common.api', [])
         }
     }
 })
-.service('fetchErrorConverter', function() {
 
-    var FetchError = function(fetchError, links) {
-        var self = this;
-        self.fetchError = angular.isArray(fetchError) ? fetchError : [];
-        self.links = angular.isArray(links) ? links : [];
-
-        var getLink = function(rel) {
-            for(var i=0;i<links.length;i++) {
-                if(links[i].rel === rel) {
-                    return links[i].href;
-                }
-            }
-        };
-
-        self.next = function() {
-            return getLink('next');
-        };
-    };
-
-    return {
-        convertFrom: function (data) {
-            return new FetchError(data.content, data.links);
-        }
-    }
-})
 .service('conversionService', ['$injector', function ($injector) {
     return {
         convertFrom: function (resourceType, data) {

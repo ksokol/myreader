@@ -164,23 +164,26 @@ angular.module('common.services', ['common.api'])
 
         },
         findOne: function(uuid) {
-            var fetchErrorFn = function(data) {
-                return api.get('fetchError', feedUrl + '/' + uuid + '/fetchError')
-                    .then(function(errors) {
-                        data.errors = errors.fetchError;
-                        var deferred = $q.defer();
-                        deferred.resolve(data);
-                        return deferred.promise;
-                    });
-            };
-
-            return api.get('feed', feedUrl + '/' + uuid).then(fetchErrorFn);
+            return api.get('feed', feedUrl + '/' + uuid);
         },
         remove: function(feed) {
             return api.delete('feed',feedUrl + '/' + feed.uuid);
         },
         save: function(feed) {
             return api.patch('feed', feedUrl + '/' + feed.uuid, feed);
+        }
+    }
+}])
+
+.service('feedFetchErrorService', ['$http', function($http) {
+    var feedUrl = '/myreader/api/2/feeds';
+
+    return {
+        findAll: function(feedUuid) {
+            return $http.get(feedUrl + '/' + feedUuid + '/fetchError')
+                .then(function (response) {
+                    return new FetchError(response.data.content, response.data.links);
+                });
         }
     }
 }])

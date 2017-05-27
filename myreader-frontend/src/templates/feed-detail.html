@@ -52,7 +52,7 @@
     <md-icon md-font-library="material-icons" class="my-pointer" ng-click="refresh()">refresh</md-icon>
 </h2>
 <md-list>
-    <md-list-item md-no-ink class="md-3-line" ng-repeat="error in feed.errors">
+    <md-list-item md-no-ink class="md-3-line" ng-repeat="error in errors">
         <div class="md-list-item-text">
             <div>
                 <p>{{::error.message}}</p>

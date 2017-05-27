@@ -487,16 +487,22 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.refresh();
 }])
 
-.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$state', 'feedService',
-    function($scope, $stateParams, $state, feedService) {
+.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$state', 'feedService', 'feedFetchErrorService',
+    function($scope, $stateParams, $state, feedService, feedFetchErrorService) {
 
     $scope.feed = {};
+    $scope.error = [];
 
     $scope.refresh = function() {
         feedService.findOne($stateParams.uuid)
             .then(function(data) {
                 $scope.feed = data;
             });
+
+        feedFetchErrorService.findAll($stateParams.uuid)
+            .then(function (errors) {
+                $scope.errors = errors.fetchError;
+            })
     };
 
     $scope.onDelete = function() {
