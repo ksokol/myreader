@@ -1,10 +1,9 @@
 var angular = require('angular');
-var api = require('./api');
 var models = require('./models');
 
-angular.module('common.services', ['common.api'])
+angular.module('common.services', [])
 
-.service('subscriptionsTagService', ['$rootScope', 'api', function($rootScope, api) {
+.service('subscriptionsTagService', ['$rootScope', '$http', function($rootScope, $http) {
 
     var cache = {
         decrementSubscriptionUnseen: function () {},
@@ -28,18 +27,17 @@ angular.module('common.services', ['common.api'])
     return {
         findAllByUnseen: function(unseen) {
             var withUnseen = unseen ? '?unseenGreaterThan=0' : '';
-            var promise = api.get('subscriptionsTag', '/myreader/api/2/subscriptions' + withUnseen);
 
-            promise.then(function(data) {
-                cache = data;
-            });
-
-            return promise;
+            return $http.get('/myreader/api/2/subscriptions' + withUnseen)
+                .then(function(response) {
+                    cache = new SubscriptionTags(response.data.content);
+                    return cache;
+                });
         }
     }
 }])
 
-.service('subscriptionEntryService', ['$rootScope', '$q', 'api', function($rootScope, $q, api) {
+.service('subscriptionEntryService', ['$rootScope', '$http', '$q', function($rootScope, $http, $q) {
     var url = '/myreader/api/2/subscriptionEntries?';
 
     return {
@@ -56,16 +54,36 @@ angular.module('common.services', ['common.api'])
                 }
             }
 
-            return api.get('subscriptionEntries', tmp);
+            return $http.get(tmp)
+                .then(function (response) {
+                    return new SubscriptionEntries(response.data.content, response.data.links);
+                });
         },
         updateEntries: function(entries) {
-            var promise =  api.patch('subscriptionEntries', url, entries);
+            var converted = [];
+            angular.forEach(entries, function(val) {
+                if(angular.isString(val.uuid) && val.uuid.length > 0) {
+                    var obj = {};
+                    obj["uuid"] = val.uuid;
 
-            promise.then(function(data) {
-                $rootScope.$broadcast('subscriptionEntry:updateEntries', data.entries);
+                    if(val.seen === true || val.seen === false) {
+                        obj["seen"] = val.seen;
+                    }
+
+                    if(angular.isDefined(val.tag)) {
+                        obj["tag"] = val.tag;
+                    }
+
+                    converted.push(obj);
+                }
             });
 
-            return promise;
+            return $http.patch(url, {content: converted})
+                .then(function (response) {
+                    var subscriptionEntries = new SubscriptionEntries(response.data.content, response.data.links);
+                    $rootScope.$broadcast('subscriptionEntry:updateEntries', subscriptionEntries.entries);
+                    return subscriptionEntries;
+                });
         },
         save: function(entry) {
             var deferred = $q.defer();
@@ -83,90 +101,128 @@ angular.module('common.services', ['common.api'])
     }
 }])
 
-.service('subscriptionService', ['$rootScope', 'api', function($rootScope, api) {
+.service('subscriptionService', ['$http', function($http) {
     var url = '/myreader/api/2/subscriptions';
 
     return {
         findAll: function() {
-            return api.get('subscriptions', url);
+            return $http.get(url)
+                .then(function (response) {
+                    return response.data.content;
+                });
         },
         find: function(uuid) {
-            return api.get('subscription', url + '/' + uuid);
+            return $http.get(url + '/' + uuid)
+                .then(function (response) {
+                    return response.data;
+                });
         },
         save: function(subscription) {
+            subscription.tag = subscription.tag === "" ? null : subscription.tag;
+
             if(subscription.uuid) {
-                return api.patch('subscription', url + '/' + subscription.uuid, subscription);
+                return $http.patch(url + '/' + subscription.uuid, subscription)
+                    .then(function (response) {
+                        return response.data;
+                    });
             }
-            return api.post('subscription', url, subscription);
+
+            return $http.post(url, subscription)
+                .then(function (response) {
+                    return response.data;
+                });
         },
         unsubscribe: function(subscription) {
-            return api.delete('subscription', url + '/' + subscription.uuid);
+            return $http.delete(url + '/' + subscription.uuid);
         }
     }
 }])
 
-.service('exclusionService', ['$rootScope', 'api', function($rootScope, api) {
+.service('exclusionService', ['$http', function($http) {
     var url = '/myreader/api/2/exclusions';
 
     return {
         find: function(uuid) {
-            return api.get('exclusions', url + '/' + uuid + '/pattern');
+            return $http.get(url + '/' + uuid + '/pattern')
+                .then(function (response) {
+                    return response.data.content;
+                });
         },
         save: function(uuid, exclusion) {
-            return api.post('exclusion', url + '/' + uuid + '/pattern', exclusion);
+            return $http.post(url + '/' + uuid + '/pattern', { pattern: exclusion })
+                .then(function (response) {
+                    return response.data.content;
+                });
         },
         delete: function(subscriptionUuid, uuid) {
-            return api.delete('exclusion', url + '/' + subscriptionUuid + '/pattern/' + uuid);
+            return $http.delete(url + '/' + subscriptionUuid + '/pattern/' + uuid);
         }
     }
 }])
 
-.service('subscriptionTagService', ['api', function(api) {
+.service('subscriptionTagService', ['$http', function($http) {
     var url = '/myreader/api/2/subscriptions/availableTags';
 
     return {
         findAll: function() {
-            return api.get('subscriptionTag', url);
+            return $http.get(url)
+            .then(function (response) {
+                return response.data;
+            });
         }
     }
 }])
 
-.service('feedService', ['api', '$q', function(api, $q) {
+.service('feedService', ['$http', function($http) {
     var feedUrl = '/myreader/api/2/feeds';
 
     return {
         findAll: function() {
-            return api.get('feeds', feedUrl);
-
+            return $http.get(feedUrl)
+                .then(function (response) {
+                    return new Feeds(response.data.content, response.data.links);
+                });
         },
         findOne: function(uuid) {
-            var fetchErrorFn = function(data) {
-                return api.get('fetchError', feedUrl + '/' + uuid + '/fetchError')
-                    .then(function(errors) {
-                        data.errors = errors.fetchError;
-                        var deferred = $q.defer();
-                        deferred.resolve(data);
-                        return deferred.promise;
-                    });
-            };
-
-            return api.get('feed', feedUrl + '/' + uuid).then(fetchErrorFn);
+            return $http.get(feedUrl + '/' + uuid)
+                .then(function (response) {
+                    return response.data;
+                });
         },
         remove: function(feed) {
-            return api.delete('feed',feedUrl + '/' + feed.uuid);
+            return $http.delete(feedUrl + '/' + feed.uuid);
         },
         save: function(feed) {
-            return api.patch('feed', feedUrl + '/' + feed.uuid, feed);
+            return $http.patch(feedUrl + '/' + feed.uuid, { 'title': feed.title, 'url': feed.url })
+                .then(function (response) {
+                    return response.data;
+                });
         }
     }
 }])
 
-.service('bookmarkService', ['api', function(api) {
+.service('feedFetchErrorService', ['$http', function($http) {
+    var feedUrl = '/myreader/api/2/feeds';
+
+    return {
+        findAll: function(feedUuid) {
+            return $http.get(feedUrl + '/' + feedUuid + '/fetchError')
+                .then(function (response) {
+                    return new FetchError(response.data.content, response.data.links);
+                });
+        }
+    }
+}])
+
+.service('bookmarkService', ['$http', function($http) {
     var url = '/myreader/api/2/subscriptionEntries/availableTags';
 
     return {
         findAll: function() {
-            return api.get('bookmarkTags', url);
+            return $http.get(url)
+                .then(function (response) {
+                    return new Bookmarks(response.data);
+                });
         }
     }
 }])
@@ -197,12 +253,12 @@ angular.module('common.services', ['common.api'])
     }
 })
 
-.service('processingService', ['api', function(api) {
-    var rebuildIndex = '/myreader/api/2/processing';
+.service('processingService', ['$http', function($http) {
+    var url = '/myreader/api/2/processing';
 
     return {
         rebuildSearchIndex: function() {
-            return api.put('searchIndexJob', rebuildIndex, 'indexSyncJob');
+            return $http.put(url, { process: 'indexSyncJob' });
         }
     }
 }])
@@ -234,12 +290,12 @@ angular.module('common.services', ['common.api'])
     }
 })
 
-.service('applicationPropertyService', ['api', function(api) {
+.service('applicationPropertyService', ['$http', function($http) {
     var url = '/myreader/info';
 
     return {
         getProperties: function() {
-            return api.get('applicationInfo', url);
+            return $http.get(url);
         }
     }
 }]);

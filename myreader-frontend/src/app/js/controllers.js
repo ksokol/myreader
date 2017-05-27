@@ -414,9 +414,10 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 
     $scope.onErrorSave = function(error) {
         var errorMessage = '';
+        var fieldErrors = error.data.fieldErrors;
 
-        for(var i=0;i<error.length;i++) {
-            errorMessage += ' "' + error[i].field + '" ' + error[i].message;
+        for(var i=0;i<fieldErrors.length;i++) {
+            errorMessage += ' "' + fieldErrors[i].field + '" ' + fieldErrors[i].message;
         }
 
         $scope.message = { type: 'error', message: errorMessage };
@@ -446,12 +447,12 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         $scope.message = { type: 'success', message: 'started' };
     };
 
-    $scope.onErrorRefreshIndex = function() {
+    $scope.onErrorRefreshIndex = function(data) {
         $scope.message = { type: 'error', message: data };
     };
 
     applicationPropertyService.getProperties()
-    .then(function(properties) {
+    .success(function(properties) {
         $scope.properties = properties;
     });
 }])
@@ -486,16 +487,22 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.refresh();
 }])
 
-.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$state', 'feedService',
-    function($scope, $stateParams, $state, feedService) {
+.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$state', 'feedService', 'feedFetchErrorService',
+    function($scope, $stateParams, $state, feedService, feedFetchErrorService) {
 
     $scope.feed = {};
+    $scope.error = [];
 
     $scope.refresh = function() {
         feedService.findOne($stateParams.uuid)
             .then(function(data) {
                 $scope.feed = data;
             });
+
+        feedFetchErrorService.findAll($stateParams.uuid)
+            .then(function (errors) {
+                $scope.errors = errors.fetchError;
+            })
     };
 
     $scope.onDelete = function() {
@@ -515,7 +522,11 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     $scope.onError = function(error) {
-        $scope.message = { type: 'error', message: error };
+        if(error.status === 409) {
+            $scope.message = { type: 'error', message: 'abort. Feed has subscriptions' };
+        } else {
+            $scope.message = { type: 'error', message: error.data };
+        }
     };
 
     $scope.refresh();

@@ -18,22 +18,21 @@ module.exports = function models() {
         };
     };
 
-    this.Bookmark = function () {
-        var self = this;
-        self.links = {};
-    };
-
-    this.Bookmarks = function () {
+    this.Bookmarks = function (data) {
         var self = this;
         self.tags = [];
 
         self.addTag = function (bookmarkTag) {
-            var tag = new Bookmark;
+            var tag = {};
             tag.tag = bookmarkTag;
             tag.title = bookmarkTag;
             tag.type = 'tag';
             self.tags.push(tag);
         };
+
+        for(var i=0;i<data.length;i++) {
+            self.addTag(data[i]);
+        }
     };
 
     this.SubscriptionTag = function () {
@@ -42,7 +41,7 @@ module.exports = function models() {
         self.links = {};
     };
 
-    this.SubscriptionTags = function () {
+    this.SubscriptionTags = function (data) {
         var self = this;
         self.unseen = 0;
         self.tags = [];
@@ -129,6 +128,65 @@ module.exports = function models() {
 
         self.decrementSubscriptionUnseen = function (uuid) {
             self.updateSubscriptionUnseen(uuid, -1);
+        };
+
+        var all = new SubscriptionTag;
+        all.title = "all";
+        all.uuid = "";
+        all.tag = "all";
+        all.subscriptions = [];
+        all.type = 'global';
+
+        for(var i=0;i<data.length;i++) {
+            var value = data[i];
+            if(!value.tag) {
+                self.addSubscription(value);
+            } else {
+                self.addTag(value);
+            }
+        }
+
+        all.unseen = self.unseen;
+        self.tags.unshift(all);
+    };
+
+    this.FetchError = function(fetchError, links) {
+        var self = this;
+        self.fetchError = angular.isArray(fetchError) ? fetchError : [];
+        self.links = angular.isArray(links) ? links : [];
+
+        var getLink = function(rel) {
+            var link;
+            for(var i=0;i<links.length;i++) {
+                if(links[i].rel === rel && link === undefined) {
+                    link = links[i].href;
+                }
+            }
+            return link;
+        };
+
+        self.next = function() {
+            return getLink('next');
+        };
+    };
+
+    this.Feeds = function(feeds, links) {
+        var self = this;
+        self.feeds = angular.isArray(feeds) ? feeds : [];
+        self.links = angular.isArray(links) ? links : [];
+
+        var getLink = function(rel) {
+            var link;
+            for(var i=0;i<links.length;i++) {
+                if(links[i].rel === rel && link === undefined) {
+                    link = links[i].href;
+                }
+            }
+            return link;
+        };
+
+        self.next = function() {
+            return getLink('next');
         };
     };
 }();
