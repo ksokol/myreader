@@ -83,24 +83,39 @@ angular.module('common.services', ['common.api'])
     }
 }])
 
-.service('subscriptionService', ['$rootScope', 'api', function($rootScope, api) {
+.service('subscriptionService', ['$http', function($http) {
     var url = '/myreader/api/2/subscriptions';
 
     return {
         findAll: function() {
-            return api.get('subscriptions', url);
+            return $http.get(url)
+                .then(function (response) {
+                    return response.data.content;
+                });
         },
         find: function(uuid) {
-            return api.get('subscription', url + '/' + uuid);
+            return $http.get(url + '/' + uuid)
+                .then(function (response) {
+                    return response.data;
+                });
         },
         save: function(subscription) {
+            subscription.tag = subscription.tag === "" ? null : subscription.tag;
+
             if(subscription.uuid) {
-                return api.patch('subscription', url + '/' + subscription.uuid, subscription);
+                return $http.patch(url + '/' + subscription.uuid, subscription)
+                    .then(function (response) {
+                        return response.data;
+                    });
             }
-            return api.post('subscription', url, subscription);
+
+            return $http.post(url, subscription)
+                .then(function (response) {
+                    return response.data;
+                });
         },
         unsubscribe: function(subscription) {
-            return api.delete('subscription', url + '/' + subscription.uuid);
+            return $http.delete(url + '/' + subscription.uuid);
         }
     }
 }])

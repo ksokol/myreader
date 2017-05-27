@@ -121,60 +121,86 @@ describe('test/serviceTests.js', function() {
     });
 
     describe('subscriptionService', function() {
-        var promiseResult = 'success';
+        var httpBackend;
 
-        beforeEach(inject(function (subscriptionService, $q) {
+        beforeEach(inject(function ($httpBackend, subscriptionService) {
+            httpBackend = $httpBackend;
             service = subscriptionService;
-
-            var getCall = $q.defer();
-            getCall.resolve(promiseResult);
-
-            var postPatchCall = $q.defer();
-            postPatchCall.resolve(promiseResult);
-
-            api.get.and.returnValue(getCall.promise);
-            api.post.and.returnValue(postPatchCall.promise);
-            api.patch.and.returnValue(postPatchCall.promise);
-            api.delete.and.returnValue(postPatchCall.promise);
         }));
 
-        it('should return ' + promiseResult + " on findAll", function() {
-            var promise = service.findAll();
+        it('should return expected body', function(done) {
+            httpBackend.expectGET('/myreader/api/2/subscriptions').respond({ content: 'expected' });
 
-            expect(api.get).toHaveBeenCalledWith('subscriptions', '/myreader/api/2/subscriptions');
-            expect(promise.$$state.value).toEqual(promiseResult);
+            service.findAll()
+                .then(function (data) {
+                    expect(data).toEqual('expected');
+                    done();
+                });
+
+            httpBackend.flush();
         });
 
-        it('should return ' + promiseResult + " on find", function() {
-            var promise = service.find('subscriptionUuid');
+        it('should return expected body', function(done) {
+            httpBackend.expectGET('/myreader/api/2/subscriptions/subscriptionUuid').respond('expected');
 
-            expect(api.get).toHaveBeenCalledWith('subscription', '/myreader/api/2/subscriptions/subscriptionUuid');
-            expect(promise.$$state.value).toEqual(promiseResult);
+            service.find('subscriptionUuid')
+            .then(function (data) {
+                expect(data).toEqual('expected');
+                done();
+            });
+
+            httpBackend.flush();
         });
 
-        it('should return ' + promiseResult + " on save and call http post on missing uuid", function() {
-            var promise = service.save({});
+        it('should post subscription when uuid is missing', function(done) {
+            var subscription = { tag: 'tag' };
 
-            expect(api.post).toHaveBeenCalledWith('subscription', '/myreader/api/2/subscriptions', {});
-            expect(api.patch).not.toHaveBeenCalled();
-            expect(promise.$$state.value).toEqual(promiseResult);
+            httpBackend.expectPOST('/myreader/api/2/subscriptions', subscription).respond('expected');
+
+            service.save(subscription)
+                .then(function (data) {
+                    expect(data).toEqual('expected');
+                    done();
+                });
+
+            httpBackend.flush();
         });
 
-        it('should return ' + promiseResult + " on save and call http patch", function() {
-            var subscription = {uuid: 'subscriptionUuid'};
-            var promise = service.save(subscription);
+        it('should convert empty tag to null', function(done) {
+            httpBackend.expectPOST('/myreader/api/2/subscriptions', { tag: null }).respond('expected');
 
-            expect(api.post).not.toHaveBeenCalled();
-            expect(api.patch).toHaveBeenCalledWith('subscription', '/myreader/api/2/subscriptions/' + subscription.uuid, subscription);
-            expect(promise.$$state.value).toEqual(promiseResult);
+            service.save({ tag: '' })
+                .then(function (data) {
+                    expect(data).toEqual('expected');
+                    done();
+                });
+
+            httpBackend.flush();
         });
 
-        it('should return ' + promiseResult + " on unsubscribe", function() {
-            var subscription = {uuid: 'subscriptionUuid'};
-            var promise = service.unsubscribe(subscription);
+        it('should patch existing subscription when uuid exists', function(done) {
+            var subscription = { uuid: '1' };
 
-            expect(api.delete).toHaveBeenCalledWith('subscription', '/myreader/api/2/subscriptions/' + subscription.uuid);
-            expect(promise.$$state.value).toEqual(promiseResult);
+            httpBackend.expectPATCH('/myreader/api/2/subscriptions/1', subscription).respond('expected');
+
+            service.save(subscription)
+                .then(function (data) {
+                    expect(data).toEqual('expected');
+                    done();
+                });
+
+            httpBackend.flush();
+        });
+
+        it('should delete subscription', function(done) {
+            httpBackend.expectDELETE('/myreader/api/2/subscriptions/1').respond();
+
+            service.unsubscribe({ uuid: '1' })
+                .then(function () {
+                    done()
+                });
+
+            httpBackend.flush();
         });
     });
 

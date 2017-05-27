@@ -414,9 +414,10 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 
     $scope.onErrorSave = function(error) {
         var errorMessage = '';
+        var fieldErrors = error.data.fieldErrors;
 
-        for(var i=0;i<error.length;i++) {
-            errorMessage += ' "' + error[i].field + '" ' + error[i].message;
+        for(var i=0;i<fieldErrors.length;i++) {
+            errorMessage += ' "' + fieldErrors[i].field + '" ' + fieldErrors[i].message;
         }
 
         $scope.message = { type: 'error', message: errorMessage };

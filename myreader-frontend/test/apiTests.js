@@ -329,36 +329,6 @@ describe('test/apiTests.js', function() {
 
     });
 
-    describe("subscriptionsConverter", function() {
-        var converter;
-
-        beforeEach(inject(function (subscriptionsConverter) {
-            converter = subscriptionsConverter;
-        }));
-
-        it('should return body without enclosing content tag', function () {
-            expect(converter.convertFrom({content: 1})).toBe(1);
-        });
-    });
-
-    describe("subscriptionConverter", function() {
-        var converter;
-
-        beforeEach(inject(function (subscriptionConverter) {
-            converter = subscriptionConverter;
-        }));
-
-        it('should return data as is', function () {
-            var data = {content: 1};
-            expect(converter.convertFrom(data)).toBe(data);
-        });
-
-        it('should convert data as is', function () {
-            var data = {content: 1};
-            expect(converter.convertTo(data)).toBe(data);
-        });
-    });
-
     describe("feedsConverter", function() {
         var converter;
 

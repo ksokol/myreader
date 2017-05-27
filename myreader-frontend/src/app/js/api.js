@@ -63,31 +63,6 @@ angular.module('common.api', [])
     }
 })
 
-.service('subscriptionsConverter', function() {
-
-    return {
-        convertFrom: function (data) {
-            return data.content;
-        }
-    }
-})
-
-.service('subscriptionConverter', function() {
-
-    return {
-        convertFrom: function (data) {
-            return data;
-        },
-        convertTo: function(data) {
-            data.tag = data.tag === "" ? null : data.tag;
-            return data;
-        },
-        convertError: function (data) {
-            return data.fieldErrors;
-        }
-    }
-})
-
 .service('feedsConverter', function() {
 
     var Feeds = function(feeds, links) {
