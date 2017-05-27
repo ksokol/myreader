@@ -150,36 +150,12 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', funct
 
             expect(element.find('div')[0]).toBeUndefined();
         });
-    });
 
-    describe('with targetBlank filter', function () {
-
-        var element;
-
-        beforeEach(require('angular').mock.module('myreader', function($provide) {
-            var targetBlankFilter = jasmine.createSpy('targetBlankFilter');
-            targetBlankFilter.and.callFake(function (value) {
-                return 'targetBlank("' + value + '")';
-            });
-            $provide.value('targetBlankFilter', targetBlankFilter);
-        }));
-
-        beforeEach(inject(function ($rootScope, $compile) {
-            var settingsService = jasmine.createSpyObj('settingsService', ['isShowEntryDetails']);
-            var $mdMedia = jasmine.createSpy('$mdMedia');
-            var scope = $rootScope.$new();
-
-            scope.item = {
-                content: 'entry content'
-            };
-            scope.show = true;
-
-            element = $compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope);
+        it('should contain myEntryContentSanitizer directive', function () {
+            element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope);
             scope.$digest();
-        }));
 
-        it('should render entry content with targetBlank filter', function () {
-            expect(element.find('div')[0].innerText).toEqual('targetBlank("entry content")');
-        });
+            expect(element.children()[0].hasAttribute('my-entry-content-sanitizer')).toEqual(true);
+        })
     });
 });
