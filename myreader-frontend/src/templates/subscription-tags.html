@@ -4,39 +4,33 @@
     <md-content flex role="navigation">
         <ul class="subscription-tag-menu">
 
-            <my-navigation-subscription-item my-hide-admin
+            <my-navigation-subscription-item
                                         ng-repeat="item in data.tags"
                                         my-item="item"
                                         my-on-select="onSelect(selected)"
                                         my-selected="currentSelected">
             </my-navigation-subscription-item>
 
-            <my-navigation-subscription-item my-hide-admin
+            <my-navigation-subscription-item
                                         ng-repeat="item in data.subscriptions"
                                         my-item="item"
                                         my-on-select="onSelect(selected)"
                                         my-selected="currentSelected">
             </my-navigation-subscription-item>
 
-            <li my-hide-admin>
+            <li>
                 <md-button ng-click="navigateTo('app.subscriptions')">subscriptions</md-button>
             </li>
-            <li my-hide-admin>
+            <li>
                 <md-button ng-click="navigateTo('app.bookmarks')">bookmarks</md-button>
             </li>
-            <li my-hide-admin>
+            <li>
                 <md-button ng-click="navigateTo('app.entries')">Stream</md-button>
             </li>
-            <li my-show-admin>
-                <md-button ng-click="navigateTo('app.admin')">Admin</md-button>
-            </li>
-            <li my-show-admin>
-                <md-button ng-click="navigateTo('app.feed')">Feeds</md-button>
-            </li>
-            <li my-hide-admin>
+            <li>
                 <md-button ng-click="navigateTo('app.settings')">Settings</md-button>
             </li>
-            <li class="my-raised" my-hide-admin>
+            <li class="my-raised">
                 <md-button ng-click="navigateTo('app.subscription-add')">Add subscription</md-button>
             </li>
             <li class="my-warn">

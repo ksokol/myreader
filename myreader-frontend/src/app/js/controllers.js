@@ -474,7 +474,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     $scope.open = function(feed) {
-        $state.go('app.feed-detail', {uuid: feed.uuid});
+        $state.go('admin.feed-detail', {uuid: feed.uuid});
     };
 
     $scope.onSearchChange = function (value) {
@@ -565,10 +565,13 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
             data: encodedString,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         })
-        .success(function() {
-            $state.go('app.entries', {tag: 'all'});
-        })
-        .error(function() {
+        .then(function(response) {
+            if(response.headers('X-MY-AUTHORITIES').indexOf('ROLE_ADMIN') !== -1) {
+                $state.go('admin.overview');
+            } else {
+                $state.go('app.entries', {tag: 'all'});
+            }
+        }, function () {
             $scope.message = { type: 'error', message: 'username or password wrong' };
         });
     }

@@ -96,42 +96,6 @@ angular.module('common.directives', [])
             }
         }]
     }
-}])
-
-.directive('myShowAdmin', ['permissionService', function(permissionService) {
-
-    return {
-        restrict: 'A',
-        link : function(scope, element) {
-            scope.$watch(function() {
-                return permissionService.isAdmin();
-            }, function(newVal) {
-                if(!newVal) {
-                    element.addClass('hide');
-                } else {
-                    element.removeClass('hide')
-                }
-            });
-        }
-    }
-}])
-
-.directive('myHideAdmin', ['permissionService', function(permissionService) {
-
-    return {
-        restrict: 'A',
-        link : function(scope, element) {
-            scope.$watch(function() {
-                return permissionService.isAdmin();
-            }, function(newVal) {
-                if(!newVal) {
-                    element.removeClass('hide');
-                } else {
-                    element.addClass('hide')
-                }
-            });
-        }
-    }
 }]);
 
 module.exports = 'directives';

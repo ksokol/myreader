@@ -78,6 +78,16 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                     }
                 }
             })
+            .state('admin', {
+                abstract: true,
+                url: "/admin",
+                views: {
+                    body: {
+                        template: require('../../templates/navigation-admin.html'),
+                        controller: 'SubscriptionNavigationCtrl'
+                    }
+                }
+            })
             .state('app.entries', {
                 url: "/entries/:tag/:uuid",
                 views: {
@@ -123,8 +133,8 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                     }
                 }
             })
-            .state('app.admin', {
-                url: "/admin",
+            .state('admin.overview', {
+                url: "/overview",
                 views: {
                     content: {
                         template: require('../../templates/admin.html'),
@@ -132,8 +142,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                     }
                 }
             })
-
-            .state('app.feed', {
+            .state('admin.feed', {
                 url: "/feed",
                 views: {
                     content: {
@@ -142,7 +151,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                     }
                 }
             })
-            .state('app.feed-detail', {
+            .state('admin.feed-detail', {
                 url: "/feed/:uuid",
                 views: {
                     content: {

@@ -29,43 +29,4 @@ describe("test/directiveTests.js", function() {
             expect(scope.isDisabled).toEqual(true);
         });
     });
-
-    describe("myShowAdmin", function() {
-        var $compile,
-            $rootScope,
-            mockPermissionService;
-
-        beforeEach(function() {
-            module('common.directives');
-
-            mockPermissionService = {
-                isAdmin: jasmine.createSpy()
-            };
-
-            module(function($provide) {
-                $provide.value('permissionService', mockPermissionService)
-            });
-        });
-
-        beforeEach(inject(function(_$compile_, _$rootScope_){
-            $compile = _$compile_;
-            $rootScope = _$rootScope_;
-        }));
-
-        it('should show inner html for admin', function () {
-            var element = $compile("<div my-show-admin><p>show</p></div>")($rootScope);
-            mockPermissionService.isAdmin.and.returnValue(true);
-            $rootScope.$digest();
-
-            expect(element.hasClass('hide')).toBeFalsy();
-        });
-
-        it('should hide inner html for non admin', function () {
-            var element = $compile("<div my-show-admin><p>show</p></div>")($rootScope);
-            mockPermissionService.isAdmin.and.returnValue(false);
-            $rootScope.$digest();
-
-            expect(element.hasClass('hide')).toBeTruthy();
-        });
-    });
 });
