@@ -38,7 +38,7 @@ angular.module('common.services', ['common.api'])
     }
 }])
 
-.service('subscriptionEntryService', ['$rootScope', '$q', 'api', function($rootScope, $q, api) {
+.service('subscriptionEntryService', ['$rootScope', '$http', '$q', 'api', function($rootScope, $http, $q, api) {
     var url = '/myreader/api/2/subscriptionEntries?';
 
     return {
@@ -55,7 +55,10 @@ angular.module('common.services', ['common.api'])
                 }
             }
 
-            return api.get('subscriptionEntries', tmp);
+            return $http.get(tmp)
+                .then(function (response) {
+                    return new SubscriptionEntries(response.data.content, response.data.links);
+                });
         },
         updateEntries: function(entries) {
             var promise =  api.patch('subscriptionEntries', url, entries);

@@ -5,9 +5,6 @@ angular.module('common.api', [])
 
 .service('subscriptionEntriesConverter', function() {
     return {
-        convertFrom: function (data) {
-            return new SubscriptionEntries(data.content, data.links);
-        },
         convertTo: function(data) {
             var converted = [];
             angular.forEach(data, function(val) {

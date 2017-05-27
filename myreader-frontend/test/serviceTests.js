@@ -70,10 +70,12 @@ describe('test/serviceTests.js', function() {
     });
 
     describe('subscriptionEntryService', function() {
+        var httpBackend;
         var call;
         var promiseResult = 'success';
 
-        beforeEach(inject(function (subscriptionEntryService, $q) {
+        beforeEach(inject(function ($httpBackend, subscriptionEntryService, $q) {
+            httpBackend = $httpBackend;
             service = subscriptionEntryService;
 
             call = $q.defer();
@@ -82,7 +84,9 @@ describe('test/serviceTests.js', function() {
             api.get.and.returnValue(call.promise);
         }));
 
-        it('should process own properties in params object', function() {
+        it('should process own properties in params object', function(done) {
+            httpBackend.expectGET('/myreader/api/2/subscriptionEntries?&param1=1&param2=2').respond({ content: 'expected' });
+
             var Params = function() {
                 this.param1 = 1;
                 this.param2 = 2;
@@ -90,9 +94,13 @@ describe('test/serviceTests.js', function() {
 
             Params.prototype.param3 = 3;
 
-            service.findBy(new Params);
+            service.findBy(new Params)
+                .then(function (data) {
+                    expect(data.entries).toEqual([]);
+                    done();
+                });
 
-            expect(api.get).toHaveBeenCalledWith('subscriptionEntries', '/myreader/api/2/subscriptionEntries?&param1=1&param2=2');
+            httpBackend.flush();
         });
 
         it('should save entries', inject(function($rootScope, $q) {
