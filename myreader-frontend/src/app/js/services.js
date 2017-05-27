@@ -4,7 +4,7 @@ var models = require('./models');
 
 angular.module('common.services', ['common.api'])
 
-.service('subscriptionsTagService', ['$rootScope', 'api', function($rootScope, api) {
+.service('subscriptionsTagService', ['$rootScope', '$http', function($rootScope, $http) {
 
     var cache = {
         decrementSubscriptionUnseen: function () {},
@@ -28,13 +28,12 @@ angular.module('common.services', ['common.api'])
     return {
         findAllByUnseen: function(unseen) {
             var withUnseen = unseen ? '?unseenGreaterThan=0' : '';
-            var promise = api.get('subscriptionsTag', '/myreader/api/2/subscriptions' + withUnseen);
 
-            promise.then(function(data) {
-                cache = data;
-            });
-
-            return promise;
+            return $http.get('/myreader/api/2/subscriptions' + withUnseen)
+                .then(function(response) {
+                    cache = new SubscriptionTags(response.data.content);
+                    return cache;
+                });
         }
     }
 }])

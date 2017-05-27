@@ -45,38 +45,27 @@ describe('test/serviceTests.js', function() {
     describe('subscriptionsTagService', function() {
 
         describe('with real cache', function() {
-            var api, call;
-            var promiseResult = 'success';
 
-            beforeEach(module(function($provide) {
-                api = {
-                    get: jasmine.createSpy()
-                };
+            var httpBackend;
 
-                $provide.service('api', function() {
-                    return api;
-                });
-            }));
-
-            beforeEach(inject(function (subscriptionsTagService, $q) {
+            beforeEach(inject(function ($httpBackend, subscriptionsTagService) {
+                httpBackend = $httpBackend;
                 service = subscriptionsTagService;
-
-                call = $q.defer();
-                call.resolve(promiseResult);
-
-                api.get.and.returnValue(call.promise);
             }));
 
-            it('should return entries when called with unseen set to false', inject(function($rootScope) {
-                var unseen = false;
+            it('should return entries when called with unseen set to false', function(done) {
+                httpBackend.expectGET('/myreader/api/2/subscriptions').respond({ content: [] });
 
-                var promise = service.findAllByUnseen(unseen);
+                service.findAllByUnseen(false)
+                    .then(function (data) {
+                        expect(data.unseen).toEqual(0);
+                        expect(data.tags.length).toEqual(1);
+                        expect(data.subscriptions.length).toEqual(0);
+                        done();
+                    });
 
-                $rootScope.$digest();
-
-                expect(api.get).toHaveBeenCalledWith('subscriptionsTag', '/myreader/api/2/subscriptions');
-                expect(promise.$$state.value).toEqual(promiseResult);
-            }));
+                httpBackend.flush();
+            });
         });
     });
 

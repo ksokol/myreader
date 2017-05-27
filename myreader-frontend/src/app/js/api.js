@@ -3,17 +3,6 @@ var models = require('./models');
 
 angular.module('common.api', [])
 
-.service('subscriptionsTagConverter', function () {
-    return {
-        convertFrom: function (data) {
-            return new SubscriptionTags(data.content);
-        },
-        convertError: function (error) {
-            return error;
-        }
-    }
-})
-
 .service('subscriptionEntriesConverter', function() {
     return {
         convertFrom: function (data) {
