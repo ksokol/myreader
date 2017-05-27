@@ -6,7 +6,7 @@ apply plugin: 'com.moowork.node'
 
 node {
     version = '6.9.1'
-    npmVersion = '3.10.8'
+    npmVersion = '4.6.1'
     download = true
 }
 
