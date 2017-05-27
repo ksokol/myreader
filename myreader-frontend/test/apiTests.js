@@ -329,46 +329,6 @@ describe('test/apiTests.js', function() {
 
     });
 
-    describe("feedsConverter", function() {
-        var converter;
-
-        var link = {
-            rel: 'next',
-            href: 'nextHref'
-        };
-
-        beforeEach(inject(function (feedsConverter) {
-            converter = feedsConverter;
-        }));
-
-        it('should return empty object', function () {
-            var result = converter.convertFrom({content: undefined, links: undefined});
-
-            expect(result.feeds).toEqual([]);
-            expect(result.links).toEqual([]);
-        });
-
-        it('should return converted object', function () {
-            var result = converter.convertFrom({content: [1], links: [link]});
-
-            expect(result.feeds).toEqual([1]);
-            expect(result.links).toEqual([link]);
-        });
-
-        it('should return href for rel "next"', function () {
-            var result = converter.convertFrom({content: [1], links: [link]});
-
-            expect(result.next()).toEqual(link.href);
-        });
-
-        it('should return undefined href for rel not equal to "next"', function () {
-            var clone = angular.copy(link).rel = 'irrelevant';
-            var result = converter.convertFrom({content: [1], links: [clone]});
-
-            expect(result.next()).toEqual(undefined);
-        });
-    });
-
     describe("should", function() {
         var service,
             http;

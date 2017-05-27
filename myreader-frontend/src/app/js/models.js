@@ -149,4 +149,22 @@ module.exports = function models() {
             return getLink('next');
         };
     };
+
+    this.Feeds = function(feeds, links) {
+        var self = this;
+        self.feeds = angular.isArray(feeds) ? feeds : [];
+        self.links = angular.isArray(links) ? links : [];
+
+        var getLink = function(rel) {
+            for(var i=0;i<links.length;i++) {
+                if(links[i].rel === rel) {
+                    return links[i].href;
+                }
+            }
+        };
+
+        self.next = function() {
+            return getLink('next');
+        };
+    };
 }();

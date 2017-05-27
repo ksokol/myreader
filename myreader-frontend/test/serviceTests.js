@@ -273,11 +273,60 @@ describe('test/serviceTests.js', function() {
     });
 
     describe('feedService', function() {
-        var mockUrl = 'mockUrl';
+        var httpBackend;
 
-        beforeEach(inject(function (feedService) {
+        beforeEach(inject(function ($httpBackend, feedService) {
+            httpBackend = $httpBackend;
             service = feedService;
         }));
+
+        it('should return converted feeds', function(done) {
+            var actual = {
+                "links": [{
+                    "rel": "next",
+                    "href": "next url"
+                }],
+                "content": [{
+                    "uuid": "1",
+                    "title": "a title",
+                    "url": "a feed url",
+                    "lastModified": null,
+                    "fetched": 80,
+                    "hasErrors": false,
+                    "createdAt": "2015-08-01T18:54:05Z",
+                    "links": []
+                }],
+                "page": {
+                    "size": 0,
+                    "totalElements": 1,
+                    "totalPages": 1,
+                    "number": 0
+                }
+            };
+
+            var expectedFeeds = [{
+                "uuid": "1",
+                "title": "a title",
+                "url": "a feed url",
+                "lastModified": null,
+                "fetched": 80,
+                "hasErrors": false,
+                "createdAt": "2015-08-01T18:54:05Z",
+                "links": []
+            }];
+
+            httpBackend.expectGET('/myreader/api/2/feeds').respond(actual);
+
+            service.findAll()
+                .then(function (data) {
+                    expect(data.next()).toEqual('next url');
+                    expect(data.feeds).toEqualData(expectedFeeds);
+                    done();
+                });
+
+            httpBackend.flush();
+        });
+
     });
 
     describe('bookmarkService', function() {

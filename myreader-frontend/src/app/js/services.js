@@ -155,13 +155,15 @@ angular.module('common.services', ['common.api'])
     }
 }])
 
-.service('feedService', ['api', '$q', function(api, $q) {
+.service('feedService', ['$http', 'api', function($http, api) {
     var feedUrl = '/myreader/api/2/feeds';
 
     return {
         findAll: function() {
-            return api.get('feeds', feedUrl);
-
+            return $http.get(feedUrl)
+                .then(function (response) {
+                    return new Feeds(response.data.content, response.data.links);
+                });
         },
         findOne: function(uuid) {
             return api.get('feed', feedUrl + '/' + uuid);

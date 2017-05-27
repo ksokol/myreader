@@ -63,35 +63,6 @@ angular.module('common.api', [])
     }
 })
 
-.service('feedsConverter', function() {
-
-    var Feeds = function(feeds, links) {
-        var self = this;
-        self.feeds = angular.isArray(feeds) ? feeds : [];
-        self.links = angular.isArray(links) ? links : [];
-
-        var getLink = function(rel) {
-            for(var i=0;i<links.length;i++) {
-                if(links[i].rel === rel) {
-                    return links[i].href;
-                }
-            }
-        };
-
-        self.next = function() {
-            return getLink('next');
-        };
-    };
-
-    return {
-        convertFrom: function (data) {
-            return new Feeds(data.content, data.links);
-        },
-        convertError: function(error) {
-            return error;
-        }
-    }
-})
 .service('feedConverter', function() {
 
     return {
