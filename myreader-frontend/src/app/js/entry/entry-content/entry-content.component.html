@@ -1,4 +1,5 @@
 <div class="my-entry-content"
      ng-if="$ctrl.showEntryContent()"
-     ng-bind-html="$ctrl.item.content | targetBlank">
+     ng-bind-html="$ctrl.item.content"
+     my-entry-content-sanitizer>
 </div>

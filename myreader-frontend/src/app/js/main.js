@@ -1,4 +1,5 @@
 require('angular');
+require('angular-sanitize');
 require('angular-ui-router');
 require('angular-material');
 require('angular-messages');

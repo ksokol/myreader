@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    require('./entry-content-sanitizer/entry-content-sanitizer.directive');
+
     function EntryContentComponent($mdMedia, settingsService) {
         var ctrl = this;
 

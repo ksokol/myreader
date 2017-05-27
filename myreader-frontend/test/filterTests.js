@@ -1,38 +1,4 @@
 describe("test/filterTests.js", function() {
-    var targetBlank;
-
-    beforeEach(module('common.filters'));
-    beforeEach(inject(function ($filter) {
-        targetBlank = $filter('targetBlank');
-    }));
-
-    it('should return empty string when text is null or undefined"', function () {
-        expect(targetBlank(null)).toBe('');
-        expect(targetBlank(undefined)).toBe('');
-    });
-
-    it('should return all a tags with attribute target="_blank" added', function () {
-        expect(targetBlank('<a href="test">test</a>')).toBe('<a target="_blank" href="test">test</a>');
-    });
-
-    it('should not modify given a tag with attribute target="_blank"', function () {
-        expect(targetBlank('<a target="_blank" href="test">test</a>')).toBe('<a target="_blank" href="test">test</a>');
-    });
-
-    it('should not modify given text"', function () {
-        expect(targetBlank('text without a tag')).toBe('text without a tag');
-    });
-
-    it('should not modify given a tag without attribute href', function () {
-        expect(targetBlank('<a>test</a>')).toBe('<a>test</a>');
-    });
-
-    it('should set target to "_blank" for given a tag with existing target attribute', function () {
-        expect(targetBlank('test1 <a target="different" href="test">test</a> test2')).toBe('test1 <a target="_blank" href="test">test</a> test2');
-    });
-});
-
-describe("test/filterTests.js", function() {
     var timeago;
 
     beforeEach(module('common.filters'));
