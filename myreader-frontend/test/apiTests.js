@@ -341,19 +341,6 @@ describe('test/apiTests.js', function() {
         });
     });
 
-    describe("subscriptionEntryTagConverter", function() {
-        var converter;
-
-        beforeEach(inject(function (subscriptionEntryTagConverter) {
-            converter = subscriptionEntryTagConverter;
-        }));
-
-        it('should return data as is', function () {
-            var data = {content: 1};
-            expect(converter.convertFrom(data)).toBe(data);
-        });
-    });
-
     describe("subscriptionConverter", function() {
         var converter;
 
