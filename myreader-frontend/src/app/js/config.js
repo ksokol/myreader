@@ -164,21 +164,6 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
         $urlRouterProvider.otherwise('/app/entries//');
 }])
 
-.config(['$provide', function($provide) {
-
-    $provide.decorator("$exceptionHandler", ['$delegate', '$log', function($delegate, $log){
-        return function(exception, cause) {
-            var isBadParse = exception.message.indexOf('[$sanitize:badparse]') === 0;
-            if(isBadParse) {
-                $log.warn(exception.message.substr(0,150) + '...');
-            }
-            if(!isBadParse) {
-                $delegate(exception, cause);
-            };
-        };
-    }]);
-}])
-
 .config(['hotkeysProvider', function(hotkeysProvider) {
     hotkeysProvider.includeCheatSheet = false;
     hotkeysProvider.useNgRoute = false;
