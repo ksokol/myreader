@@ -5,8 +5,8 @@ module.exports = function karmaConfig (config) {
         ],
         reporters: [
             'coverage',
-            'sonarqubeUnit',
-            'spec'
+            'progress',
+            'sonarqubeUnit'
         ],
         files: [
             'src/tests.webpack.js',
