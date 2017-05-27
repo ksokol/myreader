@@ -227,32 +227,6 @@ angular.module('common.services', [])
     }
 }])
 
-.service('permissionService', function() {
-
-    var authorities = [];
-
-    return {
-        setAuthorities: function(roles) {
-            if(angular.isString(roles)) {
-                var splitted = roles.split(',');
-                var tmp = [];
-                angular.forEach(splitted, function (value) {
-                    tmp.push(value);
-                });
-                authorities = tmp;
-            }
-        },
-        isAdmin: function() {
-            for(var i=0;i<authorities.length;i++) {
-                if (authorities[i] === "ROLE_ADMIN") {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-})
-
 .service('processingService', ['$http', function($http) {
     var url = '/myreader/api/2/processing';
 
