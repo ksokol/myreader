@@ -155,7 +155,7 @@ angular.module('common.services', ['common.api'])
     }
 }])
 
-.service('feedService', ['$http', 'api', function($http, api) {
+.service('feedService', ['$http', function($http) {
     var feedUrl = '/myreader/api/2/feeds';
 
     return {
@@ -166,13 +166,19 @@ angular.module('common.services', ['common.api'])
                 });
         },
         findOne: function(uuid) {
-            return api.get('feed', feedUrl + '/' + uuid);
+            return $http.get(feedUrl + '/' + uuid)
+                .then(function (response) {
+                    return response.data;
+                });
         },
         remove: function(feed) {
-            return api.delete('feed',feedUrl + '/' + feed.uuid);
+            return $http.delete(feedUrl + '/' + feed.uuid);
         },
         save: function(feed) {
-            return api.patch('feed', feedUrl + '/' + feed.uuid, feed);
+            return $http.patch(feedUrl + '/' + feed.uuid, { 'title': feed.title, 'url': feed.url })
+                .then(function (response) {
+                    return response.data;
+                });
         }
     }
 }])

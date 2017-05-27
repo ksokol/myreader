@@ -63,21 +63,6 @@ angular.module('common.api', [])
     }
 })
 
-.service('feedConverter', function() {
-
-    return {
-        convertFrom: function (data) {
-            return data;
-        },
-        convertTo: function(data) {
-            return { 'title': data.title, 'url': data.url };
-        },
-        convertError: function (data, statusCode) {
-            return statusCode === 409 ? 'abort. Feed has subscriptions' : data && data.message ? data.message : "undefined error occurred";
-        }
-    }
-})
-
 .service('conversionService', ['$injector', function ($injector) {
     return {
         convertFrom: function (resourceType, data) {

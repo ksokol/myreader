@@ -327,6 +327,47 @@ describe('test/serviceTests.js', function() {
             httpBackend.flush();
         });
 
+        it('should find one', function(done) {
+            httpBackend.expectGET('/myreader/api/2/feeds/1').respond('expected');
+
+            service.findOne('1')
+                .then(function (data) {
+                    expect(data).toEqual('expected');
+                    done();
+                });
+
+            httpBackend.flush();
+        });
+
+        it('should patch existing feed', function(done) {
+            var feed = {
+                uuid: '1',
+                title: 'new title',
+                url: 'new url',
+                prop1: 'prop1'
+            };
+
+            httpBackend.expectPATCH('/myreader/api/2/feeds/1', { title: 'new title', url: 'new url'}).respond('expected');
+
+            service.save(feed)
+                .then(function (data) {
+                    expect(data).toEqual('expected');
+                    done();
+                });
+
+            httpBackend.flush();
+        });
+
+        it('should delete feed', function(done) {
+            httpBackend.expectDELETE('/myreader/api/2/feeds/1').respond();
+
+            service.remove({ uuid: '1'})
+                .then(function () {
+                    done();
+                });
+
+            httpBackend.flush();
+        });
     });
 
     describe('bookmarkService', function() {

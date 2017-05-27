@@ -522,7 +522,11 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     $scope.onError = function(error) {
-        $scope.message = { type: 'error', message: error };
+        if(error.status === 409) {
+            $scope.message = { type: 'error', message: 'abort. Feed has subscriptions' };
+        } else {
+            $scope.message = { type: 'error', message: error.data };
+        }
     };
 
     $scope.refresh();
