@@ -42,7 +42,7 @@ module.exports = function models() {
         self.links = {};
     };
 
-    this.SubscriptionTags = function () {
+    this.SubscriptionTags = function (data) {
         var self = this;
         self.unseen = 0;
         self.tags = [];
@@ -130,6 +130,25 @@ module.exports = function models() {
         self.decrementSubscriptionUnseen = function (uuid) {
             self.updateSubscriptionUnseen(uuid, -1);
         };
+
+        var all = new SubscriptionTag;
+        all.title = "all";
+        all.uuid = "";
+        all.tag = "all";
+        all.subscriptions = [];
+        all.type = 'global';
+
+        for(var i=0;i<data.length;i++) {
+            var value = data[i];
+            if(!value.tag) {
+                self.addSubscription(value);
+            } else {
+                self.addTag(value);
+            }
+        }
+
+        all.unseen = self.unseen;
+        self.tags.unshift(all);
     };
 
     this.FetchError = function(fetchError, links) {

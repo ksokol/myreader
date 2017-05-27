@@ -6,25 +6,7 @@ angular.module('common.api', [])
 .service('subscriptionsTagConverter', function () {
     return {
         convertFrom: function (data) {
-            var all = new SubscriptionTag;
-            all.title = "all";
-            all.uuid = "";
-            all.tag = "all";
-            all.subscriptions = [];
-            all.type = 'global';
-
-            var subscriptionTags = new SubscriptionTags;
-
-            angular.forEach(data.content, function (value) {
-                if(!value.tag) {
-                    subscriptionTags.addSubscription(value);
-                } else {
-                    subscriptionTags.addTag(value);
-                }
-            });
-            all.unseen = subscriptionTags.unseen;
-            subscriptionTags.tags.unshift(all);
-            return subscriptionTags;
+            return new SubscriptionTags(data.content);
         },
         convertError: function (error) {
             return error;
