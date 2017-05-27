@@ -179,41 +179,48 @@ describe('test/serviceTests.js', function() {
     });
 
     describe('exclusionService', function() {
-        var promiseResult = 'success';
+        var httpBackend;
 
-        beforeEach(inject(function (exclusionService, $q) {
+        beforeEach(inject(function ($httpBackend, exclusionService) {
+            httpBackend = $httpBackend;
             service = exclusionService;
-
-            var getCall = $q.defer();
-            getCall.resolve(promiseResult);
-
-            var postPutCall = $q.defer();
-            postPutCall.resolve(promiseResult);
-
-            api.get.and.returnValue(getCall.promise);
-            api.post.and.returnValue(postPutCall.promise);
-            api.delete.and.returnValue(postPutCall.promise);
         }));
 
-        it('should return ' + promiseResult + " on get call", function() {
-            var promise = service.find('exclusionUuid');
+        it('should return expected body', function(done) {
+            httpBackend.expectGET('/myreader/api/2/exclusions/exclusionUuid/pattern').respond({ content: 'expected' });
 
-            expect(api.get).toHaveBeenCalledWith('exclusions', '/myreader/api/2/exclusions/exclusionUuid/pattern');
-            expect(promise.$$state.value).toEqual(promiseResult);
+            service.find('exclusionUuid')
+                .then(function (data) {
+                    expect(data).toEqual('expected');
+                    done();
+                });
+
+            httpBackend.flush();
         });
 
-        it('should return ' + promiseResult + " on post call", function() {
-            var promise = service.save('exclusionUuid', 'secondParam');
+        it('should post expected body', function(done) {
+            httpBackend
+                .expectPOST('/myreader/api/2/exclusions/exclusionUuid/pattern', { pattern: 'secondParam' })
+                .respond({ content: 'expected' });
 
-            expect(api.post).toHaveBeenCalledWith('exclusion', '/myreader/api/2/exclusions/exclusionUuid/pattern', 'secondParam');
-            expect(promise.$$state.value).toEqual(promiseResult);
+            service.save('exclusionUuid', 'secondParam')
+                .then(function (data) {
+                    expect(data).toEqual('expected');
+                    done();
+                });
+
+            httpBackend.flush();
         });
 
-        it('should return ' + promiseResult + " on delete call", function() {
-            var promise = service.delete('subscriptionUuid', 'exclusionUuid');
+        it('should delete', function(done) {
+            httpBackend
+                .expectDELETE('/myreader/api/2/exclusions/subscriptionUuid/pattern/exclusionUuid')
+                .respond();
 
-            expect(api.delete).toHaveBeenCalledWith('exclusion', '/myreader/api/2/exclusions/subscriptionUuid/pattern/exclusionUuid');
-            expect(promise.$$state.value).toEqual(promiseResult);
+            service.delete('subscriptionUuid', 'exclusionUuid')
+                .then(done);
+
+            httpBackend.flush();
         });
     });
 

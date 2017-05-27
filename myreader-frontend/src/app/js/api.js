@@ -88,27 +88,6 @@ angular.module('common.api', [])
     }
 })
 
-.service('exclusionsConverter', function() {
-
-    return {
-        convertFrom: function (data) {
-            return data.content;
-        }
-    }
-})
-
-.service('exclusionConverter', function() {
-
-    return {
-        convertFrom: function(data) {
-            return data;
-        },
-        convertTo: function (data) {
-            return { pattern: data };
-        }
-    }
-})
-
 .service('feedsConverter', function() {
 
     var Feeds = function(feeds, links) {

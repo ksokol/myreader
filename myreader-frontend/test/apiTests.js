@@ -359,35 +359,6 @@ describe('test/apiTests.js', function() {
         });
     });
 
-    describe("exclusionsConverter", function() {
-        var converter;
-
-        beforeEach(inject(function (exclusionsConverter) {
-            converter = exclusionsConverter;
-        }));
-
-        it('should return body without enclosing content tag', function () {
-            expect(converter.convertFrom({content: 1})).toBe(1);
-        });
-    });
-
-    describe("exclusionConverter", function() {
-        var converter;
-
-        beforeEach(inject(function (exclusionConverter) {
-            converter = exclusionConverter;
-        }));
-
-        it('should return data as is', function () {
-            expect(converter.convertFrom(1)).toBe(1);
-        });
-
-        it('should convert data with enclosing pattern tag', function () {
-            var data = {content: 1};
-            expect(converter.convertTo(data)).toEqualData({pattern: data});
-        });
-    });
-
     describe("feedsConverter", function() {
         var converter;
 
