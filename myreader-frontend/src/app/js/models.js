@@ -156,11 +156,13 @@ module.exports = function models() {
         self.links = angular.isArray(links) ? links : [];
 
         var getLink = function(rel) {
+            var link;
             for(var i=0;i<links.length;i++) {
-                if(links[i].rel === rel) {
-                    return links[i].href;
+                if(links[i].rel === rel && link === undefined) {
+                    link = links[i].href;
                 }
             }
+            return link;
         };
 
         self.next = function() {
@@ -174,11 +176,13 @@ module.exports = function models() {
         self.links = angular.isArray(links) ? links : [];
 
         var getLink = function(rel) {
+            var link;
             for(var i=0;i<links.length;i++) {
-                if(links[i].rel === rel) {
-                    return links[i].href;
+                if(links[i].rel === rel && link === undefined) {
+                    link = links[i].href;
                 }
             }
+            return link;
         };
 
         self.next = function() {
