@@ -74,7 +74,8 @@ public class ApiSecurityTest {
         mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .param("username", USER1.username)
                 .param("password", USER1.password))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andExpect(header().string("X-MY-AUTHORITIES","ROLE_USER"));
     }
 
     @Test

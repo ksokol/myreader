@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import spring.security.UserRepositoryUserDetailsService;
 import spring.security.XAuthoritiesFilter;
+import spring.security.XAuthoritiesFilterUtils;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,6 +27,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT;
 import static myreader.config.UrlMappings.API;
 import static myreader.config.UrlMappings.LANDING_PAGE;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
+import static spring.security.SecurityConstants.MY_AUTHORITIES;
 
 /**
  * @author Kamill Sokol
@@ -76,7 +78,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             http
                 .formLogin().loginPage("/")
                 .loginProcessingUrl(LOGIN_PROCESSING.mapping()).permitAll()
-                .successHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT))
+                .successHandler((request, response, authentication) -> {
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                    response.addHeader(MY_AUTHORITIES, XAuthoritiesFilterUtils.buildAuthorities(authentication));
+                })
                 .failureHandler((request, response, exception) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                 .rememberMe().key(rememberMeKey)
@@ -87,7 +92,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests().antMatchers("/**").authenticated()
                 .and()
-                .addFilterAfter(new XAuthoritiesFilter(), FilterSecurityInterceptor.class)
                 .csrf().disable()
                 .headers().frameOptions().disable();
         }
