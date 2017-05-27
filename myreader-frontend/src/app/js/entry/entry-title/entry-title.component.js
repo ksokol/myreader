@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    require('../../shared/timeago/timeago.filter');
+
     function EntryTitleComponent() {
         var ctrl = this;
 

@@ -1,7 +1,9 @@
-describe("test/filterTests.js", function() {
+describe("src/app/js/shared/timeago/timeago.filter.spec.js", function() {
+
     var timeago;
 
-    beforeEach(module('common.filters'));
+    beforeEach(require('angular').mock.module('myreader'));
+
     beforeEach(inject(function ($filter) {
         timeago = $filter('timeago');
     }));

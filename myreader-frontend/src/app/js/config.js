@@ -2,7 +2,7 @@ window.write = function() {};
 
 var angular = require('angular');
 
-angular.module('myreader', ['ngSanitize', 'common.filters', 'common.services', 'common.controllers', 'common.directives', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
+angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers', 'common.directives', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
 
 .config(['$httpProvider', function($httpProvider) {
 

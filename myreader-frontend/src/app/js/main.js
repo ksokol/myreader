@@ -6,7 +6,6 @@ require('angular-messages');
 require('angular-hotkeys');
 
 require('./config');
-require('./filters');
 require('./services');
 require('./controllers');
 require('./directives');

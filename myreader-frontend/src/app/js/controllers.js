@@ -5,6 +5,7 @@ require('./shared/component/search-input/search-input.component');
 require('./shared/safe-opener/safe-opener.directive');
 require('./navigation/subscription-item/subscription-item.component');
 require('./entry/entry.component');
+require('./shared/timeago/timeago.filter');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
