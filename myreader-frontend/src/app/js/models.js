@@ -18,22 +18,21 @@ module.exports = function models() {
         };
     };
 
-    this.Bookmark = function () {
-        var self = this;
-        self.links = {};
-    };
-
-    this.Bookmarks = function () {
+    this.Bookmarks = function (data) {
         var self = this;
         self.tags = [];
 
         self.addTag = function (bookmarkTag) {
-            var tag = new Bookmark;
+            var tag = {};
             tag.tag = bookmarkTag;
             tag.title = bookmarkTag;
             tag.type = 'tag';
             self.tags.push(tag);
         };
+
+        for(var i=0;i<data.length;i++) {
+            self.addTag(data[i]);
+        }
     };
 
     this.SubscriptionTag = function () {

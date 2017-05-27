@@ -214,28 +214,15 @@ angular.module('common.services', [])
     }
 }])
 
-.service('bookmarkService', ['$http', '$q', function($http, $q) {
+.service('bookmarkService', ['$http', function($http) {
     var url = '/myreader/api/2/subscriptionEntries/availableTags';
 
     return {
         findAll: function() {
-            var deferred = $q.defer();
-
-            $http.get(url)
-                .success(function (data) {
-                    var subscriptionTags = new Bookmarks;
-
-                    angular.forEach(data, function (value) {
-                        subscriptionTags.addTag(value);
-                    });
-
-                    deferred.resolve(subscriptionTags);
-                })
-                .error(function(error) {
-                    deferred.reject(error);
+            return $http.get(url)
+                .then(function (response) {
+                    return new Bookmarks(response.data);
                 });
-
-            return deferred.promise;
         }
     }
 }])

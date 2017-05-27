@@ -399,45 +399,21 @@ describe('test/serviceTests.js', function() {
 
         it('should return converted result', function(done) {
             var tag1 = {
-                "uuid": "35",
                 "title": "tag1",
-                "tag": "news",
-                "unseen": 106,
-                "links": []
+                "tag": "tag1",
+                "type": "tag"
+            };
+            var tag2 = {
+                "title": "tag2",
+                "tag": "tag2",
+                "type": "tag"
             };
 
-            var expectedTags = {
-                tags: [
-                    {
-                        links: {},
-                        tag: [
-                            {
-                                uuid: '35',
-                                title: 'tag1',
-                                tag: 'news',
-                                unseen: 106,
-                                links: []
-                            }
-                        ],
-                        title: [
-                            {
-                                uuid: '35',
-                                title: 'tag1',
-                                tag: 'news',
-                                unseen: 106,
-                                links: []
-                            }
-                        ],
-                        type: 'tag'
-                    }
-                ]
-            };
-
-            httpBackend.expectGET('/myreader/api/2/subscriptionEntries/availableTags').respond({content: [tag1]});
+            httpBackend.expectGET('/myreader/api/2/subscriptionEntries/availableTags').respond([ 'tag1', 'tag2']);
 
             service.findAll()
             .then(function (data) {
-                expect(data).toEqualData(expectedTags);
+                expect(data.tags).toEqualData([ tag1, tag2 ]);
                 done();
             });
 
