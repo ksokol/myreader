@@ -1,7 +1,9 @@
 (function () {
     'use strict';
 
-    require('angular').module('myreader').directive('mySafeOpener', ['$window', function ($window) {
+    require('./safe-opener.service');
+
+    require('angular').module('myreader').directive('mySafeOpener', ['safeOpenerService', function (safeOpenerService) {
         return {
             restrict: 'A',
             scope: {
@@ -9,9 +11,7 @@
             },
             link: function(scope, element) {
                 element.on('click', function () {
-                    var otherWindow = $window.open();
-                    otherWindow.opener = null;
-                    otherWindow.location = scope.url;
+                    safeOpenerService.openSafely(scope.url);
                 });
             }
         }

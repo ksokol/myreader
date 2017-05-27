@@ -2,23 +2,20 @@ describe('src/app/js/shared/safe-opener/safe-opener.directive.spec.js', function
 
     var testUtils = require('../test-utils');
 
-    var windowAttributes;
+    var safeOpenerService;
 
-    beforeEach(require('angular').mock.module('myreader', testUtils.mock('$window')));
+    beforeEach(require('angular').mock.module('myreader', testUtils.mock('safeOpenerService')));
 
-    beforeEach(inject(function ($compile, $rootScope, $window) {
-        $window.open = jasmine.createSpy('open');
-        $window.open.and.returnValue(windowAttributes = {});
+    beforeEach(inject(function ($compile, $rootScope, _safeOpenerService_) {
+        safeOpenerService = _safeOpenerService_;
+        safeOpenerService['openSafely']  = jasmine.createSpy('safeOpenerService.openSafely');
 
         var element = $compile("<div my-safe-opener url='http//example.com/feed'></div>")($rootScope);
         element[0].click();
     }));
 
-    it('should remove opener', function () {
-        expect(windowAttributes.opener).toBeNull();
+    it('should delegate to safeOpenerService', function () {
+        expect(safeOpenerService.openSafely).toHaveBeenCalledWith('http//example.com/feed');
     });
 
-    it('should set location', function () {
-        expect(windowAttributes.location).toBe('http//example.com/feed');
-    });
 });
