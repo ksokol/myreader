@@ -2,7 +2,7 @@ require('./shared/component/button-group/button-group.component');
 require('./shared/component/button/button.component');
 require('./shared/component/notification-panel/notification-panel.component');
 require('./shared/component/search-input/search-input.component');
-require('./shared/directive/safe-opener/safe-opener.directive');
+require('./shared/safe-opener/safe-opener.directive');
 require('./navigation/subscription-item/subscription-item.component');
 require('./entry/entry.component');
 
