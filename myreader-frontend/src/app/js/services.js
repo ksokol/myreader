@@ -38,7 +38,7 @@ angular.module('common.services', ['common.api'])
     }
 }])
 
-.service('subscriptionEntryService', ['$rootScope', '$http', '$q', 'api', function($rootScope, $http, $q, api) {
+.service('subscriptionEntryService', ['$rootScope', '$http', '$q', function($rootScope, $http, $q) {
     var url = '/myreader/api/2/subscriptionEntries?';
 
     return {
@@ -61,13 +61,30 @@ angular.module('common.services', ['common.api'])
                 });
         },
         updateEntries: function(entries) {
-            var promise =  api.patch('subscriptionEntries', url, entries);
+            var converted = [];
+            angular.forEach(entries, function(val) {
+                if(angular.isString(val.uuid) && val.uuid.length > 0) {
+                    var obj = {};
+                    obj["uuid"] = val.uuid;
 
-            promise.then(function(data) {
-                $rootScope.$broadcast('subscriptionEntry:updateEntries', data.entries);
+                    if(val.seen === true || val.seen === false) {
+                        obj["seen"] = val.seen;
+                    }
+
+                    if(angular.isDefined(val.tag)) {
+                        obj["tag"] = val.tag;
+                    }
+
+                    converted.push(obj);
+                }
             });
 
-            return promise;
+            return $http.patch(url, {content: converted})
+                .then(function (response) {
+                    var subscriptionEntries = new SubscriptionEntries(response.data.content, response.data.links);
+                    $rootScope.$broadcast('subscriptionEntry:updateEntries', subscriptionEntries.entries);
+                    return subscriptionEntries;
+                });
         },
         save: function(entry) {
             var deferred = $q.defer();

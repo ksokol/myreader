@@ -71,17 +71,10 @@ describe('test/serviceTests.js', function() {
 
     describe('subscriptionEntryService', function() {
         var httpBackend;
-        var call;
-        var promiseResult = 'success';
 
-        beforeEach(inject(function ($httpBackend, subscriptionEntryService, $q) {
+        beforeEach(inject(function ($httpBackend, subscriptionEntryService) {
             httpBackend = $httpBackend;
             service = subscriptionEntryService;
-
-            call = $q.defer();
-            call.resolve(promiseResult);
-
-            api.get.and.returnValue(call.promise);
         }));
 
         it('should process own properties in params object', function(done) {
@@ -103,18 +96,46 @@ describe('test/serviceTests.js', function() {
             httpBackend.flush();
         });
 
-        it('should save entries', inject(function($rootScope, $q) {
-            var data = [{uuid: 12}];
-            var call = $q.defer();
+        it('should save entries', function(done) {
+            var entry = {
+               uuid: '1',
+               seen: true,
+               tag: 'tag'
+            };
 
-            call.resolve({entries: data});
+            httpBackend
+                .expectPATCH('/myreader/api/2/subscriptionEntries?', { content: [ entry ]})
+                .respond({ content: [ entry ] });
 
-            api.patch.and.returnValue(call.promise);
+            service.save(entry)
+                .then(function (data) {
+                    expect(data).toEqualData(entry);
+                    done();
+                });
 
-            service.save(12);
+            httpBackend.flush();
+        });
 
-            expect(api.patch).toHaveBeenCalledWith('subscriptionEntries', '/myreader/api/2/subscriptionEntries?', [12]);
-        }));
+        it('should return empty array', function () {
+            httpBackend
+                .expectPATCH('/myreader/api/2/subscriptionEntries?', { content: [] })
+                .respond({ content: [] });
+
+            service.updateEntries([]);
+            httpBackend.flush();
+        });
+
+        it('should return empty array', function () {
+            var entries = [{uuid: "1", seen: true, ignore: "me"}, {uuid: "2", tag: "tag", ignoreMeTwo: true}, {uuid: "3", seen: "true", tag : ""}, {seen: true}];
+            var expected = { content : [ { uuid : "1", seen : true }, { uuid : "2", tag : 'tag' }, { uuid : '3', tag : '' } ] };
+
+            httpBackend
+                .expectPATCH('/myreader/api/2/subscriptionEntries?', expected)
+                .respond({ content: [] });
+
+            service.updateEntries(entries);
+            httpBackend.flush();
+        });
     });
 
     describe('subscriptionService', function() {

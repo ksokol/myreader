@@ -3,34 +3,6 @@ var models = require('./models');
 
 angular.module('common.api', [])
 
-.service('subscriptionEntriesConverter', function() {
-    return {
-        convertTo: function(data) {
-            var converted = [];
-            angular.forEach(data, function(val) {
-                if(angular.isString(val.uuid) && val.uuid.length > 0) {
-                    var obj = {};
-                    obj["uuid"] = val.uuid;
-
-                    if(val.seen === true || val.seen === false) {
-                        obj["seen"] = val.seen;
-                    }
-
-                    if(angular.isDefined(val.tag)) {
-                        obj["tag"] = val.tag;
-                    }
-
-                    converted.push(obj);
-                }
-            });
-            return {content: converted};
-        },
-        convertError: function(error) {
-            return error;
-        }
-    }
-})
-
 .service('conversionService', ['$injector', function ($injector) {
     return {
         convertFrom: function (resourceType, data) {

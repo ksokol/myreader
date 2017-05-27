@@ -2,28 +2,6 @@ describe('test/apiTests.js', function() {
 
     beforeEach(module('common.api'));
 
-    describe("subscriptionEntriesConverter", function() {
-        var converter;
-
-        beforeEach(inject(function (subscriptionEntriesConverter) {
-            converter = subscriptionEntriesConverter;
-        }));
-
-         it('should return empty array', function () {
-            var converted = converter.convertTo([]);
-
-            expect(converted).toEqualData({content: []});
-        });
-
-        it('should return empty array', function () {
-            var converted = converter.convertTo([{uuid: "1", seen: true, ignore: "me"}, {uuid: "2", tag: "tag", ignoreMeTwo: true}, {uuid: "3", seen: "true", tag : ""}, {seen: true}]);
-
-            expect(converted).toEqualData({ content : [ { uuid : "1", seen : true }, { uuid : "2", tag : 'tag' }, { uuid : '3', tag : '' } ] });
-        });
-
-
-    });
-
     describe("should", function() {
         var service,
             http;
