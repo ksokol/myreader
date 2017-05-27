@@ -13,7 +13,7 @@
                     $timeout(function () {
                         element.find('a').on('click', function ($event) {
                             $event.preventDefault();
-                            safeOpenerService.openSafely($event.target.href);
+                            safeOpenerService.openSafely(this.href);
                         })
                     }, 0);
                 }
