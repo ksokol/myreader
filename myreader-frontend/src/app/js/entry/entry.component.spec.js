@@ -6,7 +6,7 @@ describe('src/app/js/entry/entry.component.spec.js', function () {
 
         var entryTitle = testUtils.componentMock('myEntryTitle');
         var entryActions = testUtils.componentMock('myEntryActions');
-        var entryTags = testUtils.directiveMock('myEntryTags');
+        var entryTags = testUtils.componentMock('myEntryTags');
         var entryContent = testUtils.componentMock('myEntryContent');
         var notificationPanel = testUtils.componentMock('myNotificationPanel');
 
@@ -46,7 +46,7 @@ describe('src/app/js/entry/entry.component.spec.js', function () {
         it('should propagate item to child components', function () {
             expect(entryTitle.bindings.myItem).toEqual(item);
             expect(entryActions.bindings.myItem).toEqual(item);
-            expect(entryTags.scope.entry).toEqual(item);
+            expect(entryTags.bindings.myItem).toEqual(item);
             expect(entryContent.bindings.myItem).toEqual(item);
             expect(notificationPanel.bindings.myMessage).toBeUndefined();
         });
@@ -55,13 +55,13 @@ describe('src/app/js/entry/entry.component.spec.js', function () {
             entryActions.bindings.myOnMore({showMore: true});
             rootScope.$digest();
 
-            expect(entryTags.scope.show).toEqual(true);
+            expect(entryTags.bindings.myShow).toEqual(true);
             expect(entryContent.bindings.myShow).toEqual(true);
 
             entryActions.bindings.myOnMore({showMore: false});
             rootScope.$digest();
 
-            expect(entryTags.scope.show).toEqual(false);
+            expect(entryTags.bindings.myShow).toEqual(false);
             expect(entryContent.bindings.myShow).toEqual(false);
         });
 
@@ -91,21 +91,21 @@ describe('src/app/js/entry/entry.component.spec.js', function () {
         });
 
         it('should update tag when entryTags component fired onSelect event', function () {
-            entryTags.scope.onSelect({ item: {tag: 'tag1' }});
+            entryTags.bindings.myOnChange({ tag: 'tag1' });
 
             expect(subscriptionEntryService.save).toHaveBeenCalledWith({ uuid: 'uuid', seen: false, tag: 'tag1' });
         });
 
-        it('should propagate iupdated tem to child components', function () {
+        it('should propagate updated tem to child components', function () {
             var updatedItem = { uuid: 'uuid', seen: false, tag: 'tag1' };
             deferred.resolve(updatedItem);
 
-            entryTags.scope.onSelect({ item: {tag: 'tag1' }});
+            entryTags.bindings.myOnChange({ tag: 'tag1' });
             rootScope.$digest();
 
             expect(entryTitle.bindings.myItem).toEqual(updatedItem);
             expect(entryActions.bindings.myItem).toEqual(updatedItem);
-            expect(entryTags.scope.entry).toEqual(updatedItem);
+            expect(entryTags.bindings.myItem).toEqual(updatedItem);
             expect(entryContent.bindings.myItem).toEqual(updatedItem);
         })
     });
