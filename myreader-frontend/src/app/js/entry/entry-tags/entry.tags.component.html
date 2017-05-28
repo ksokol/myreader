@@ -1,0 +1,9 @@
+<md-chips placeholder="Enter a tag..."
+          ng-if="$ctrl.myShow"
+          ng-model="$ctrl.tags"
+          md-on-add="$ctrl.onTagChange()"
+          md-on-remove="$ctrl.onTagChange()">
+    <md-chip-template>
+        <strong>{{$chip}}</strong>
+    </md-chip-template>
+</md-chips>

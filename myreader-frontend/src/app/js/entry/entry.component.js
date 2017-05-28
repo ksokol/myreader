@@ -4,6 +4,7 @@
     require('./entry-title/entry-title.component');
     require('./entry-actions/entry-actions.component');
     require('./entry-content/entry-content.component');
+    require('./entry-tags/entry-tags.component');
 
     function EntryComponent(subscriptionEntryService) {
         var ctrl = this;
@@ -38,11 +39,11 @@
             });
         };
 
-        ctrl.onTagUpdate = function (item) {
+        ctrl.onTagUpdate = function (tag) {
             updateItem({
                 uuid: ctrl.item.uuid,
                 seen: ctrl.item.seen,
-                tag: item.tag
+                tag: tag
             });
         };
 

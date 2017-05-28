@@ -18,52 +18,6 @@ angular.module('common.directives', [])
         }
     };
 })
-.directive('myEntryTags', function() {
-    return {
-        restrict: 'E',
-        template: require('../../templates/tags.html'),
-        scope: {
-            entry: '=myItem',
-            show: '=myShow',
-            onSelect: '&myOnSelect'
-        },
-        controller: ['$scope', function ($scope) {
-            $scope.tags = [];
-
-            var _split = function(tags) {
-                if(!tags) {
-                    return [];
-                }
-
-                var splitted = tags.split(/[ ,]+/);
-                var tmp = [];
-                for(var i=0;i<splitted.length;i++) {
-                    if(tmp.indexOf(splitted[i]) === -1) {
-                        tmp.push(splitted[i]);
-                    }
-                }
-                return tmp;
-            };
-
-            $scope.$watch("entry", function(entry) {
-                if(entry.tag !== null) {
-                    $scope.tags = _split(entry.tag);
-                }
-            });
-
-            $scope.addTag = function() {
-                var tags = angular.copy($scope.tags).join(", ");
-                $scope.onSelect({ item: { tag: tags }});
-            };
-
-            $scope.removeTag = function() {
-                var copy = angular.copy($scope.tags);
-                var tags = copy.length === 0 ? null : copy.join(", ");
-                $scope.onSelect({ item: { tag: tags }});
-            }
-        }]
-    }
-})
 
 .directive('myExclusions',['exclusionService', function(exclusionService) {
     return {
