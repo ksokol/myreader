@@ -62,29 +62,3 @@ describe("test/controllerTests.js", function() {
         expect(scope.data.entries).toEqual([2]);
     }));
 });
-
-describe("test/controllerTests.js", function() {
-    var scope;
-
-    beforeEach(module('common.controllers', function($provide) {
-        $provide.provider(myMock.provider(['$stateParams', '$state', '$mdToast', '$mdDialog', '$previousState']));
-    }));
-
-    beforeEach(inject(function($rootScope, $controller){
-        scope = $rootScope.$new();
-        $controller('SubscriptionCtrl', {
-            $scope: scope
-        });
-    }));
-
-    it('should return unknown tag as array when calling querySearch with "unknownTag"', function() {
-        var queryResult = scope.querySearch('unknownTag');
-        expect(queryResult).toEqual(['unknownTag']);
-    });
-
-    it('should return known tags as array when calling querySearch with "tagt"', function() {
-        scope.availableTags = ['tag', 'tagte', 'tagtest5', 'unknown'];
-        var queryResult = scope.querySearch('tagt');
-        expect(queryResult).toEqual(['tagte', 'tagtest5']);
-    });
-});

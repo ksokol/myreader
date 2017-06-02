@@ -2,6 +2,7 @@ require('./shared/component/button-group/button-group.component');
 require('./shared/component/button/button.component');
 require('./shared/component/notification-panel/notification-panel.component');
 require('./shared/component/search-input/search-input.component');
+require('./shared/component/autocomplete-input/autocomplete-input.component');
 require('./shared/safe-opener/safe-opener.directive');
 require('./navigation/subscription-item/subscription-item.component');
 require('./entry/entry.component');
@@ -368,19 +369,12 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 .controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', 'subscriptionService', 'subscriptionTagService',
     function($scope, $state, $stateParams, subscriptionService, subscriptionTagService) {
 
-    $scope.availableTags = [];
-
-    function createFilterFor(query) {
-        var lowercaseQuery = angular.lowercase(query);
-        return function filterFn(value) {
-            return (value.indexOf(lowercaseQuery) === 0);
-        };
-    }
+    $scope.subscription = {};
 
     if($stateParams.uuid) {
         subscriptionTagService.findAll()
         .then(function(data) {
-            $scope.availableTags = data;
+            $scope.tags = data;
         })
         .then(function() {
             subscriptionService.find($stateParams.uuid)
@@ -390,13 +384,12 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         });
     }
 
-    $scope.querySearch = function(query) {
-        var filtered = $scope.availableTags.filter(createFilterFor(query));
-        return filtered.length === 0 ? [query] : filtered;
+    $scope.onSelectTag = function (value) {
+        $scope.subscription.tag = value;
     };
 
-    $scope.setTag = function(tag) {
-        $scope.subscription.tag = tag;
+    $scope.onClearTag = function () {
+        $scope.subscription.tag = null;
     };
 
     $scope.onSave = function() {
