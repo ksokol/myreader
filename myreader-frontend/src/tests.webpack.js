@@ -4,5 +4,6 @@
 var angular = require('angular');
 var context = require.context('./app/js', true, /\.js$/);
 require('angular-mocks');
+require('../node_modules/angular-material/angular-material-mocks');
 
 context.keys().forEach(context);

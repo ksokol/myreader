@@ -25,19 +25,13 @@
         <md-icon md-font-library="material-icons" class="my-pointer" ng-if="subscription.origin" my-safe-opener url="{{subscription.origin}}">open_in_new</md-icon>
     </md-input-container>
 
-    <md-autocomplete
-            ng-show="subscription.uuid"
-            md-selected-item="subscription.tag"
-            md-search-text="searchText"
-            md-items="item in querySearch(searchText)"
-            md-search-text-change="setTag(searchText)"
-            md-item-text="item"
-            md-min-length="0"
-            md-floating-label="Tag">
-        <md-item-template>
-            <span md-highlight-text="searchText" md-highlight-flags="^i">{{item}}</span>
-        </md-item-template>
-    </md-autocomplete>
+    <my-autocomplete-input my-label="Tag"
+                           my-show="subscription.uuid"
+                           my-values="tags"
+                           my-selected-item="subscription.tag"
+                           my-on-select="onSelectTag(value)"
+                           my-on-clear="onClearTag()">
+    </my-autocomplete-input>
 
     <my-exclusions ng-show="subscription.uuid" subscription="subscription"></my-exclusions>
     <br>

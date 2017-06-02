@@ -1,6 +1,10 @@
 (function () {
     'use strict';
 
+    function isString (value) {
+        return typeof value === 'string';
+    }
+
     function isDefined(value) {
         return typeof value !== 'undefined';
     }
@@ -24,8 +28,19 @@
         && isFunction(value.finally));
     };
 
+    var isEmptyString = function (value) {
+        if(!value) {
+            return true;
+        }
+        if(!isString(value)) {
+            throw new Error('value is not a string');
+        }
+        return value.length === 0;
+    };
+
     module.exports = {
-        'isPromise': isPromise
+        'isPromise': isPromise,
+        'isEmptyString': isEmptyString
     };
 
 })();
