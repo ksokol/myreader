@@ -151,7 +151,7 @@ angular.module('common.services', [])
         save: function(uuid, exclusion) {
             return $http.post(url + '/' + uuid + '/pattern', { pattern: exclusion })
                 .then(function (response) {
-                    return response.data.content;
+                    return response.data;
                 });
         },
         delete: function(subscriptionUuid, uuid) {
