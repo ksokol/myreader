@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    require('./exclusion.service');
+
     function SubscriptionExclusionComponent (exclusionService) {
         var ctrl = this;
 
