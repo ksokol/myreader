@@ -7,6 +7,7 @@ require('./shared/safe-opener/safe-opener.directive');
 require('./navigation/subscription-item/subscription-item.component');
 require('./entry/entry.component');
 require('./shared/timeago/timeago.filter');
+require('./subscription/subscription-exclusion/subscription-exclusion.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -366,8 +367,18 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.refresh();
 }])
 
-.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', 'subscriptionService', 'subscriptionTagService',
-    function($scope, $state, $stateParams, subscriptionService, subscriptionTagService) {
+.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', 'subscriptionService', 'subscriptionTagService', 'exclusionService',
+    function($scope, $state, $stateParams, subscriptionService, subscriptionTagService, exclusionService) {
+
+    var fetchExclusions = function () {
+        return exclusionService.find($stateParams.uuid)
+            .then(function (data) {
+                $scope.exclusions = data;
+            })
+            .catch(function (error) {
+                $scope.message = { type: 'error', message: error };
+            });
+    };
 
     $scope.subscription = {};
 
@@ -376,6 +387,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         .then(function(data) {
             $scope.tags = data;
         })
+        .then(fetchExclusions)
         .then(function() {
             subscriptionService.find($stateParams.uuid)
             .then(function(data) {
@@ -428,6 +440,14 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 
     $scope.onError = function(error) {
         $scope.message = { type: 'error', message: error };
+    };
+
+    $scope.onExclusionAdd = function (value) {
+        exclusionService.save($scope.subscription.uuid, value).then(fetchExclusions);
+    };
+
+    $scope.onExclusionDelete = function (value) {
+        exclusionService.delete($scope.subscription.uuid, value.uuid).then(fetchExclusions);
     }
 }])
 
