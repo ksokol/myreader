@@ -1,0 +1,11 @@
+<md-chips class="my-tag-chips"
+          ng-model="$ctrl.exclusions"
+          md-on-remove="$ctrl.onRemove($chip)"
+          md-transform-chip="$ctrl.onTransform($chip)">
+    <md-chip-template>
+        <span>
+          <strong>{{$chip.pattern}}</strong>
+            <em>({{$chip.hitCount}})</em>
+        </span>
+    </md-chip-template>
+</md-chips>
