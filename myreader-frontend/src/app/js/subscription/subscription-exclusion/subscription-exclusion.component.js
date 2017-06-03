@@ -38,7 +38,7 @@
 
         var initExclusions = function (exclusions) {
             ctrl.exclusions = exclusions;
-            sortExclusions()
+            sortExclusions();
         };
 
         var addExclusion = function (exclusion) {
