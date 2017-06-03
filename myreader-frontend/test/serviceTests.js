@@ -224,7 +224,7 @@ describe('test/serviceTests.js', function() {
 
             service.save('exclusionUuid', 'secondParam')
                 .then(function (data) {
-                    expect(data).toEqual('expected');
+                    expect(data).toEqual({ content: 'expected' });
                     done();
                 });
 

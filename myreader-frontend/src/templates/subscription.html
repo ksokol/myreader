@@ -35,9 +35,8 @@
 
     <h2 class="md-title">Patterns to ignore</h2>
     <my-subscription-exclusion ng-show="subscription.uuid"
-                               my-exclusions="exclusions"
-                               my-on-add="onExclusionAdd(value)"
-                               my-on-delete="onExclusionDelete(value)">
+                               my-id="subscription.uuid"
+                               my-on-error="onError(error)">
     </my-subscription-exclusion>
 
     <br>

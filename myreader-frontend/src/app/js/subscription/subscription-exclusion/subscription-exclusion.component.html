@@ -1,4 +1,9 @@
-<md-chips ng-model="$ctrl.exclusions"
+<p ng-if="$ctrl.loading">Loading exclusion patterns...</p>
+
+<md-chips placeholder="{{$ctrl.placeholder()}}"
+          ng-if="!$ctrl.loading"
+          readonly="$ctrl.isDisabled()"
+          ng-model="$ctrl.exclusions"
           md-on-remove="$ctrl.onRemove($chip)"
           md-transform-chip="$ctrl.onTransform($chip)">
     <md-chip-template>
