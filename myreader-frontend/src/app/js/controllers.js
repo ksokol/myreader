@@ -7,7 +7,7 @@ require('./shared/safe-opener/safe-opener.directive');
 require('./navigation/subscription-item/subscription-item.component');
 require('./entry/entry.component');
 require('./shared/timeago/timeago.filter');
-require('./subscription/subscription-exclusion/subscription-exclusion.component');
+require('./subscription/subscription-exclusion-panel/subscription-exclusion-panel.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 

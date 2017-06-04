@@ -33,11 +33,10 @@
                            my-on-clear="onClearTag()">
     </my-autocomplete-input>
 
-    <h2 class="md-title">Patterns to ignore</h2>
-    <my-subscription-exclusion ng-show="subscription.uuid"
-                               my-id="subscription.uuid"
-                               my-on-error="onError(error)">
-    </my-subscription-exclusion>
+    <my-subscription-exclusion-panel ng-show="subscription.uuid"
+                                     my-id="subscription.uuid"
+                                     my-on-error="onError(error)">
+    </my-subscription-exclusion-panel>
 
     <br>
     <my-button-group layout="row" layout-align="end center">

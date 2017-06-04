@@ -1,0 +1,16 @@
+<h2 class="md-title">Patterns to ignore
+    <md-icon md-font-library="material-icons"
+             ng-click="$ctrl.close()"
+             ng-if="$ctrl.showExclusions">expand_less</md-icon>
+
+    <md-icon md-font-library="material-icons"
+             ng-click="$ctrl.open()"
+             ng-if="!$ctrl.showExclusions">expand_more</md-icon>
+</h2>
+
+<my-subscription-exclusion ng-if="$ctrl.firstOpen"
+                           ng-show="$ctrl.showExclusions"
+                           my-id="$ctrl.myId"
+                           my-disabled="$ctrl.myDisabled"
+                           my-on-error="$ctrl.myOnError({error: error})">
+</my-subscription-exclusion>

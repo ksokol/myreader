@@ -1,4 +1,4 @@
-describe('src/app/js/subscription/subscription-exclusion/exclusion.service.spec.js', function() {
+describe('src/app/js/subscription/subscription-exclusion-panel/subscription-exclusion/exclusion.service.spec.js', function() {
 
     var httpBackend;
 
