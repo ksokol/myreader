@@ -1,6 +1,6 @@
-describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.component.spec.js', function () {
+describe('src/app/js/subscription/subscription-exclusion-panel/subscription-exclusion/subscription-exclusion.component.spec.js', function () {
 
-    var testUtils = require('../../shared/test-utils');
+    var testUtils = require('../../../shared/test-utils');
 
     beforeEach(require('angular').mock.module('myreader', testUtils.mock('exclusionService')));
 
