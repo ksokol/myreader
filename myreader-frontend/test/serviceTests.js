@@ -197,28 +197,6 @@ describe('test/serviceTests.js', function() {
         });
     });
 
-    describe('subscriptionTagService', function() {
-
-        var httpBackend;
-
-        beforeEach(inject(function (subscriptionTagService, $httpBackend) {
-            service = subscriptionTagService;
-            httpBackend = $httpBackend;
-        }));
-
-        it('should return tags', function(done) {
-            httpBackend.expectGET('/myreader/api/2/subscriptions/availableTags').respond(["","tag1","tag2"]);
-
-            service.findAll()
-            .then(function (data) {
-                expect(data).toEqual(["","tag1","tag2"]);
-                done();
-            });
-
-            httpBackend.flush();
-        });
-    });
-
     describe('feedService', function() {
         var httpBackend;
 

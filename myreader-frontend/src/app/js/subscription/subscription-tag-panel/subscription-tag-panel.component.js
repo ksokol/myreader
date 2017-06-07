@@ -2,6 +2,7 @@
     'use strict';
 
     require('../../shared/component/autocomplete-input/autocomplete-input.component');
+    require('./subscription-tag.service');
 
     function SubscriptionTagPanelComponent (subscriptionTagService) {
         var ctrl = this;
