@@ -1,10 +1,37 @@
 (function () {
     'use strict';
 
-    var utils = require('../../utils');
+    var utils = require('../../../shared/utils');
 
-    function AutoCompleteInputComponent() {
+    function AutoCompleteInputComponent($q) {
         var ctrl = this;
+
+        ctrl.valuesLoaded = false;
+        ctrl.values = [];
+
+        var cachedValues = function () {
+            var deferred = $q.defer();
+            deferred.resolve(ctrl.values);
+            return deferred.promise;
+        };
+
+        var fetchValues = function () {
+            if(ctrl.valuesLoaded) {
+                return cachedValues();
+            }
+
+            var result = ctrl.myAsyncValues();
+
+            if(!utils.isPromise(result)) {
+                return cachedValues();
+            }
+
+            return result.then(function (data) {
+                ctrl.valuesLoaded = true;
+                ctrl.values = ctrl.values.concat(data);
+                return ctrl.values;
+            });
+        };
 
         ctrl.$onInit = function () {
             if(!ctrl.myLabel) {
@@ -14,17 +41,20 @@
 
         ctrl.$onChanges = function (obj) {
             if(obj.myValues) {
+                ctrl.valuesLoaded = false;
                 ctrl.values = obj.myValues.currentValue || [];
             }
-            if(obj.mySelectedItem && !utils.isEmptyString(obj.mySelectedItem.currentValue)) {
+            if(obj.mySelectedItem && obj.mySelectedItem.isFirstChange()) {
                 ctrl.selectedItem = obj.mySelectedItem.currentValue;
             }
         };
 
         ctrl.filterValues = function(term) {
-            var lowerCaseTerm = term.toLowerCase();
-            var filteredValues = ctrl.values.filter(function (value) { return value.indexOf(lowerCaseTerm) === 0; });
-            return filteredValues.length === 0 ? [term] : filteredValues;
+            return fetchValues().then(function (values) {
+                var lowerCaseTerm = term.toLowerCase();
+                var filteredValues = values.filter(function (value) { return value.indexOf(lowerCaseTerm) === 0; });
+                return filteredValues.length === 0 ? [term] : filteredValues;
+            });
         };
 
         ctrl.onSelect = function (selectedValue) {
@@ -34,12 +64,13 @@
 
     require('angular').module('myreader').component('myAutocompleteInput', {
         template: require('./autocomplete-input.component.html'),
-        controller: AutoCompleteInputComponent,
+        controller: ['$q', AutoCompleteInputComponent],
         bindings: {
             myLabel: '@',
-            myShow: '<',
+            myDisabled: '<',
             mySelectedItem: '<',
             myValues: '<',
+            myAsyncValues: '&',
             myOnSelect: '&',
             myOnClear: '&'
         }

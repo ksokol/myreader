@@ -2,12 +2,12 @@ require('./shared/component/button-group/button-group.component');
 require('./shared/component/button/button.component');
 require('./shared/component/notification-panel/notification-panel.component');
 require('./shared/component/search-input/search-input.component');
-require('./shared/component/autocomplete-input/autocomplete-input.component');
 require('./shared/safe-opener/safe-opener.directive');
 require('./navigation/subscription-item/subscription-item.component');
 require('./entry/entry.component');
 require('./shared/timeago/timeago.filter');
 require('./subscription/subscription-exclusion-panel/subscription-exclusion-panel.component');
+require('./subscription/subscription-tag-panel/subscription-tag-panel.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -367,21 +367,15 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.refresh();
 }])
 
-.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', 'subscriptionService', 'subscriptionTagService',
-    function($scope, $state, $stateParams, subscriptionService, subscriptionTagService) {
+.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', 'subscriptionService',
+    function($scope, $state, $stateParams, subscriptionService) {
 
     $scope.subscription = {};
 
     if($stateParams.uuid) {
-        subscriptionTagService.findAll()
+        subscriptionService.find($stateParams.uuid)
         .then(function(data) {
-            $scope.tags = data;
-        })
-        .then(function() {
-            subscriptionService.find($stateParams.uuid)
-            .then(function(data) {
-                $scope.subscription = data;
-            });
+            $scope.subscription = data;
         });
     }
 
