@@ -49,25 +49,4 @@ describe('src/app/js/shared/utils.spec.js', function () {
             });
         });
     });
-
-    describe('isEmptyString()', function () {
-
-        it('should return true when string is empty', function () {
-           expect(utils.isEmptyString('')).toEqual(true);
-        });
-
-        it('should return true when value is null', function () {
-            expect(utils.isEmptyString(null)).toEqual(true);
-        });
-
-        it('should return false when value is not an empty string', function () {
-            expect(utils.isEmptyString('string')).toEqual(false);
-        });
-
-        it('should throw an error when value is not of type string', function () {
-            expect(function () {
-                return utils.isEmptyString({});
-            }).toThrowError('value is not a string');
-        });
-    })
 });

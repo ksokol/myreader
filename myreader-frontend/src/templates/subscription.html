@@ -25,13 +25,12 @@
         <md-icon md-font-library="material-icons" class="my-pointer" ng-if="subscription.origin" my-safe-opener url="{{subscription.origin}}">open_in_new</md-icon>
     </md-input-container>
 
-    <my-autocomplete-input my-label="Tag"
-                           my-show="subscription.uuid"
-                           my-values="tags"
-                           my-selected-item="subscription.tag"
-                           my-on-select="onSelectTag(value)"
-                           my-on-clear="onClearTag()">
-    </my-autocomplete-input>
+    <my-subscription-tag-panel
+            ng-if="subscription.uuid"
+            my-selected-item="subscription.tag"
+            my-on-select="onSelectTag(value)"
+            my-on-clear="onClearTag()">
+    </my-subscription-tag-panel>
 
     <my-subscription-exclusion-panel ng-show="subscription.uuid"
                                      my-id="subscription.uuid"

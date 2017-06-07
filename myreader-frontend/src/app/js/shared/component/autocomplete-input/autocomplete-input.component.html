@@ -1,12 +1,12 @@
 <md-autocomplete
+        ng-disabled="$ctrl.myDisabled"
         md-floating-label="{{$ctrl.myLabel}}"
-        ng-if="$ctrl.myShow"
         md-selected-item="$ctrl.selectedItem"
         md-search-text="term"
         md-item-text="selectedValue"
         md-items="selectedValue in $ctrl.filterValues(term)"
-        md-selected-item-change  ="$ctrl.onSelect(term)"
-        md-search-text-change ="$ctrl.onSelect(term)"
+        md-selected-item-change="$ctrl.onSelect(term)"
+        md-search-text-change="$ctrl.onSelect(term)"
         md-delay="250"
         md-min-length="0"
         md-clear-button="true">
