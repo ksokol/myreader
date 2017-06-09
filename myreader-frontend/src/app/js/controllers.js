@@ -8,6 +8,7 @@ require('./entry/entry.component');
 require('./shared/timeago/timeago.filter');
 require('./subscription/subscription-exclusion-panel/subscription-exclusion-panel.component');
 require('./subscription/subscription-tag-panel/subscription-tag-panel.component');
+require('./subscription/subscription.service');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
