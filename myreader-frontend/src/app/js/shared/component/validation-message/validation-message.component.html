@@ -1,0 +1,3 @@
+<div ng-if="!$ctrl.myFormControl.$pristine" ng-messages="$ctrl.myFormControl.$error" multiple>
+    <div ng-repeat="(key, ignore) in $ctrl.myFormControl.$error" class="md-input-message-animation">{{key}}</div>
+</div>

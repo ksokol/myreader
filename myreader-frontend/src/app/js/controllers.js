@@ -8,6 +8,9 @@ require('./entry/entry.component');
 require('./shared/timeago/timeago.filter');
 require('./subscription/subscription-exclusion-panel/subscription-exclusion-panel.component');
 require('./subscription/subscription-tag-panel/subscription-tag-panel.component');
+require('./subscription/subscription.service');
+require('./shared/component/validation-message/validation-message.component');
+require('./shared/directive/backend-validation/backend-validation.directive');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -402,14 +405,11 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     $scope.onErrorSave = function(error) {
-        var errorMessage = '';
-        var fieldErrors = error.data.fieldErrors;
-
-        for(var i=0;i<fieldErrors.length;i++) {
-            errorMessage += ' "' + fieldErrors[i].field + '" ' + fieldErrors[i].message;
+        if(error.data.status === 400) {
+            $scope.validations = error.data.fieldErrors
+        } else {
+            $scope.message = { type: 'error', message: error };
         }
-
-        $scope.message = { type: 'error', message: errorMessage };
     };
 
     $scope.onDelete = function() {

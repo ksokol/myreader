@@ -1,25 +1,25 @@
 <form name="subscriptionForm">
-    <md-input-container ng-show="subscription.uuid" class="md-block">
+    <md-input-container ng-if="subscription.uuid" class="md-block">
         <label>Title</label>
-        <input name="title" ng-model="subscription.title">
+        <input name="title"
+               my-backend-validation my-validations="validations"
+               ng-model="subscription.title">
+        <my-validation-message my-form-control="subscriptionForm.title"></my-validation-message>
     </md-input-container>
 
     <md-input-container ng-hide="subscription.uuid" class="md-block">
         <label>Url</label>
-        <input required
+        <input autocomplete="off"
                name="origin"
                ng-model="subscription.origin"
-               disable="subscription.uuid"
-               ng-model-options="{ debounce: 500 }"
-               ng-disabled="subscriptionForm.origin.$pending">
-
-        <div ng-messages="subscriptionForm.origin.$error">
-            <div ng-message="required">required</div>
+               my-backend-validation my-validations="validations"
+               ng-if="!subscription.uuid">
+            <my-validation-message my-form-control="subscriptionForm.origin"></my-validation-message>
         </div>
 
     </md-input-container>
 
-    <md-input-container ng-show="subscription.uuid" md-no-float class="md-icon-float md-icon-right">
+    <md-input-container ng-if="subscription.uuid" md-no-float class="md-icon-float md-icon-right">
         <label>Url</label>
         <input ng-model="subscription.origin" disabled>
         <md-icon md-font-library="material-icons" class="my-pointer" ng-if="subscription.origin" my-safe-opener url="{{subscription.origin}}">open_in_new</md-icon>
@@ -32,7 +32,7 @@
             my-on-clear="onClearTag()">
     </my-subscription-tag-panel>
 
-    <my-subscription-exclusion-panel ng-show="subscription.uuid"
+    <my-subscription-exclusion-panel ng-if="subscription.uuid"
                                      my-id="subscription.uuid"
                                      my-on-error="onError(error)">
     </my-subscription-exclusion-panel>
@@ -54,7 +54,7 @@
                 my-on-click="onDelete()"
                 my-on-success="onSuccessDelete()"
                 my-on-error="onError(error)"
-                ng-show="subscription.uuid">
+                ng-if="subscription.uuid">
         </my-button>
     </my-button-group>
     <my-notification-panel layout="row" layout-align="end center" my-message="message"></my-notification-panel>
