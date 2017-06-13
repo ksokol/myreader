@@ -10,9 +10,9 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static myreader.fetcher.resttemplate.FeedParserConfiguration.SUPPORTED_TYPES;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -20,6 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_ATOM_XML;
+import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 
 /**
@@ -35,7 +36,8 @@ public class ContentTypeAdjusterInterceptorTest {
     private HttpHeaders httpHeaders = new HttpHeaders();
     private MockClientHttpRequest httpRequest;
 
-    private ContentTypeAdjusterInterceptor interceptor = new ContentTypeAdjusterInterceptor(SUPPORTED_TYPES);
+    private ContentTypeAdjusterInterceptor interceptor =
+            new ContentTypeAdjusterInterceptor(Arrays.asList(APPLICATION_XML, APPLICATION_ATOM_XML));
 
     @Before
     public void setUp() throws Exception {

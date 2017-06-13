@@ -1,15 +1,17 @@
 package myreader.fetcher;
 
+import myreader.fetcher.impl.DefaultFeedParser;
 import myreader.fetcher.persistence.FetchResult;
-import myreader.fetcher.resttemplate.FeedParserConfiguration;
+import myreader.fetcher.resttemplate.SyndicationRestTemplateConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
@@ -46,8 +48,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = FeedParserConfiguration.class)
-@RestClientTest
+@SpringBootTest(classes = SyndicationRestTemplateConfiguration.class)
+@Import(FeedParserTest.TestConfiguration.class)
 public class FeedParserTest {
 
     private static final String HTTP_EXAMPLE_COM = "http://example.com";
@@ -59,7 +61,7 @@ public class FeedParserTest {
     private FeedParser parser;
 
     @Autowired
-    private TestApplicationEventPublisher eventPublisher;
+    private TestConfiguration.TestApplicationEventPublisher eventPublisher;
 
     private MockRestServiceServer mockServer;
 
@@ -200,20 +202,28 @@ public class FeedParserTest {
         );
     }
 
-    @Primary
-    @Component
-    static class TestApplicationEventPublisher implements ApplicationEventPublisher {
+    static class TestConfiguration {
 
-        private List<ApplicationEvent> receivedEvents = new ArrayList<>();
-
-        @Override
-        public void publishEvent(ApplicationEvent event) {
-            receivedEvents.add(event);
+        @Bean
+        public FeedParser feedParser(RestTemplate syndicationRestTemplate, TestApplicationEventPublisher testApplicationEventPublisher) {
+            return new DefaultFeedParser(syndicationRestTemplate, testApplicationEventPublisher);
         }
 
-        @Override
-        public void publishEvent(Object event) {
-            throw new UnsupportedOperationException();
+        @Primary
+        @Component
+        static class TestApplicationEventPublisher implements ApplicationEventPublisher {
+
+            private List<ApplicationEvent> receivedEvents = new ArrayList<>();
+
+            @Override
+            public void publishEvent(ApplicationEvent event) {
+                receivedEvents.add(event);
+            }
+
+            @Override
+            public void publishEvent(Object event) {
+                throw new UnsupportedOperationException();
+            }
         }
     }
 }
