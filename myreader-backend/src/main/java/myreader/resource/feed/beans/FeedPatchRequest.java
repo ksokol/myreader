@@ -1,6 +1,8 @@
 package myreader.resource.feed.beans;
 
-import javax.validation.constraints.NotNull;
+import myreader.resource.common.validation.ValidSyndication;
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.validation.constraints.Pattern;
 
 /**
@@ -8,11 +10,11 @@ import javax.validation.constraints.Pattern;
  */
 public class FeedPatchRequest {
 
-    @NotNull(message = "may not be null")
+    @NotBlank(message = "may not be empty")
     private String title;
 
+    @ValidSyndication
     @Pattern(regexp="^https?://.*", message = "must begin with http(s)://")
-    @NotNull(message = "may not be null")
     private String url;
 
     public String getTitle() {

@@ -1,6 +1,7 @@
 package myreader.service.feed;
 
 import myreader.entity.Feed;
+import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.repository.FeedRepository;
@@ -82,5 +83,28 @@ public class FeedServiceTests {
         Feed actualFeed = feedService.findByUrl(FEED_URL);
 
         assertThat(actualFeed, is(expectedFeed));
+    }
+
+
+    @Test
+    public void shouldRejectUrlWhenUrlIsEmpty() {
+        assertThat(feedService.valid(null), is(false));
+    }
+
+    @Test
+    public void shouldAcceptUrlWhenCorrespondingFeedFound() {
+        given(feedRepository.findByUrl(FEED_URL)).willReturn(new Feed());
+        assertThat(feedService.valid(FEED_URL), is(true));
+    }
+
+    @Test
+    public void shouldRejectUrlWhenFetchCausesAnException() {
+        given(feedParser.parse(FEED_URL)).willThrow(new FeedParseException());
+        assertThat(feedService.valid(FEED_URL), is(false));
+    }
+
+    @Test
+    public void shouldAcceptUrl() {
+        assertThat(feedService.valid(FEED_URL), is(true));
     }
 }

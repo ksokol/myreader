@@ -8,6 +8,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import javax.net.ssl.SSLContext;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,7 +21,14 @@ final class HttpClientBuilderUtil {
         // util class
     }
 
-    public static HttpClient customHttpClient() {
+    /**
+     * Cookie management has to be enabled. For instance, Cloudflare rejects any subsequent calls within some milliseconds
+     * when __cfduid cookie is missing.
+     *
+     * @see <a href="https://support.cloudflare.com/hc/en-us/articles/200170156-What-does-the-CloudFlare-cfduid-cookie-do-">
+     *     What does the Cloudflare cfduid cookie do?</a>
+     */
+    static HttpClient customHttpClient() {
         int timeout = 30;
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(timeout * 1000)
@@ -32,7 +42,6 @@ final class HttpClientBuilderUtil {
                 .evictIdleConnections(60, TimeUnit.SECONDS)
                 .disableAutomaticRetries()
                 .setSSLSocketFactory(sslSocketFactory())
-                .disableCookieManagement()
                 .build();
     }
 
@@ -40,10 +49,10 @@ final class HttpClientBuilderUtil {
         // provide SSLContext that allows self-signed certificate
 
         try {
-            SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (x509Certificates, s) -> true).build();
+            SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial((chain, authType) -> true).build();
             return new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier());
-        } catch (Exception exception) {
-            throw new RuntimeException(exception.getMessage(), exception);
+        } catch (NoSuchAlgorithmException|KeyStoreException|KeyManagementException exception) {
+            throw new IllegalArgumentException("error while build ssl connection socket factory ", exception);
         }
     }
 }

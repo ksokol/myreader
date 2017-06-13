@@ -1,8 +1,8 @@
 package myreader.resource.subscription.beans;
 
+import myreader.resource.common.validation.ValidSyndication;
 import myreader.resource.subscription.validation.UniqueSubscription;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -12,9 +12,9 @@ public class SubscribePostRequest {
 
     private String origin;
 
+    @ValidSyndication
     @UniqueSubscription
     @Pattern(regexp="^https?://.*", message = "must begin with http(s)://")
-    @NotNull(message = "may not be null")
     public String getOrigin() {
         return origin;
     }

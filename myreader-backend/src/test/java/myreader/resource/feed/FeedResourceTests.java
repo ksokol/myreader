@@ -73,7 +73,7 @@ public class FeedResourceTests extends IntegrationTestSupport {
                 .andExpect(jsonPath("status", is(400)))
                 .andExpect(jsonPath("message", is("validation error")))
                 .andExpect(jsonPath("fieldErrors..field", containsInAnyOrder("url", "title")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("may not be null", "may not be null")));
+                .andExpect(jsonPath("fieldErrors..message", hasItems("invalid syndication feed", "may not be empty")));
     }
 
     @Rollback
