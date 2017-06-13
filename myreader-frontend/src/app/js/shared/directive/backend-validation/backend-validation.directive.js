@@ -23,7 +23,7 @@
                         });
                 });
 
-                element.on('keypress', function () {
+                element.on('keydown', function () {
                     Object.keys(modelCtrl.$error).forEach(function (k) {
                         modelCtrl.$setValidity(k, true);
                     });

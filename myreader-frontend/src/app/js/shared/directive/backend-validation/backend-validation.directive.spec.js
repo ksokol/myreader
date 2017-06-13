@@ -49,14 +49,14 @@ describe('src/app/js/shared/directive/backend-validation/backend-validation.dire
             expect(model.$error).toEqual({});
         });
 
-        it('should clear validation messages on keypress', function () {
+        it('should clear validation messages on keydown', function () {
             scope.validations = [{
                 field: 'modelField',
                 message: 'validation message'
             }];
             scope.$digest();
 
-            element.find('input').triggerHandler({ type: 'keypress', keyCode: 65 });
+            element.find('input').triggerHandler({ type: 'keydown', keyCode: 65 });
 
             expect(model.$error).toEqual({});
             expect(model.$valid).toEqual(true);
