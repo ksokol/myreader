@@ -1,26 +1,23 @@
 <form name="feedForm">
     <md-input-container class="md-block">
         <label>Title</label>
-        <input name="title" autocomplete="off" ng-model="feed.title" required>
+        <input name="title"
+               autocomplete="off"
+               my-backend-validation my-validations="validations"
+               ng-model="feed.title">
 
-        <div ng-messages="feedForm.title.$error">
-            <div ng-message="required">required</div>
-        </div>
+        <my-validation-message my-form-control="feedForm.title"></my-validation-message>
     </md-input-container>
 
     <md-input-container class="md-block">
         <label>Url</label>
-        <input required
-               name="url"
+        <input name="url"
                autocomplete="off"
                ng-model="feed.url"
-               ng-model-options="{ debounce: 500 }"
-               ng-disabled="feedForm.url.$pending">
+               my-backend-validation my-validations="validations">
         <md-icon md-font-library="material-icons" class="my-pointer" ng-if="feed.url" my-safe-opener url="{{feed.url}}">open_in_new</md-icon>
-        <div ng-messages="feedForm.url.$error">
-            <div ng-message="required">required</div>
-            <div ng-message="validSyndication">This is not a valid syndication feed</div>
-        </div>
+
+        <my-validation-message my-form-control="feedForm.url"></my-validation-message>
     </md-input-container>
 
     <br>

@@ -512,6 +512,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.onError = function(error) {
         if(error.status === 409) {
             $scope.message = { type: 'error', message: 'abort. Feed has subscriptions' };
+        } else if (error.status === 400) {
+            $scope.validations = error.data.fieldErrors;
         } else {
             $scope.message = { type: 'error', message: error.data };
         }
