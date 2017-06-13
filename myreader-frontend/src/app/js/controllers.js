@@ -498,7 +498,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     $scope.onSuccessDelete = function() {
-        $state.go('app.feed');
+        $state.go('admin.feed');
     };
 
     $scope.onSave = function() {
