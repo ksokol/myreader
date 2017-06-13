@@ -32,8 +32,8 @@
                         return response.data;
                     });
             },
-            unsubscribe: function(subscription) {
-                return $http.delete(url + '/' + subscription.uuid);
+            remove: function(uuid) {
+                return $http.delete(url + '/' + uuid);
             }
         }
     }]);

@@ -1,0 +1,58 @@
+<form name="subscriptionForm" ng-if="$ctrl.subscription">
+    <md-input-container class="md-block">
+        <label>Title</label>
+        <input name="title"
+               ng-model="$ctrl.subscription.title"
+               ng-disabled="$ctrl.pendingAction"
+               my-backend-validation my-validations="$ctrl.validations">
+        <my-validation-message my-form-control="subscriptionForm.title"></my-validation-message>
+    </md-input-container>
+
+    <md-input-container md-no-float class="md-icon-float md-icon-right md-block">
+        <label>Url</label>
+        <input disabled
+               ng-model="$ctrl.subscription.origin">
+
+        <md-icon class="my-subscription__origin-link"
+                 md-font-library="material-icons"
+                 my-safe-opener url="{{$ctrl.subscription.origin}}">open_in_new
+        </md-icon>
+    </md-input-container>
+
+    <my-subscription-tag-panel my-disabled="$ctrl.pendingAction"
+                               my-selected-item="$ctrl.subscription.tag"
+                               my-on-select="$ctrl.onSelectTag(value)"
+                               my-on-clear="$ctrl.onClearTag()">
+    </my-subscription-tag-panel>
+
+    <my-subscription-exclusion-panel my-id="$ctrl.subscription.uuid"
+                                     my-disabled="$ctrl.pendingAction"
+                                     my-on-error="$ctrl.onError(error)">
+    </my-subscription-exclusion-panel>
+
+    <br>
+
+    <my-button-group layout="row" layout-align="end center">
+        <my-button
+                my-type="primary"
+                my-text="Save"
+                my-disabled="subscriptionForm.$invalid"
+                my-on-click="$ctrl.onSave()"
+                my-on-success="$ctrl.onSuccessSave(data)"
+                my-on-error="$ctrl.onErrorSave(error)">
+        </my-button>
+        <my-button
+                my-type="warn"
+                my-text="Delete"
+                my-confirm="true"
+                my-on-click="$ctrl.onDelete()"
+                my-on-success="$ctrl.onSuccessDelete()"
+                my-on-error="$ctrl.onError(error)">
+        </my-button>
+    </my-button-group>
+
+    <my-notification-panel layout="row"
+                           layout-align="end center"
+                           my-message="$ctrl.message">
+    </my-notification-panel>
+</form>

@@ -76,7 +76,7 @@ describe('src/app/js/subscription/subscription.service.spec.js', function () {
     it('should delete subscription', function(done) {
         httpBackend.expectDELETE('/myreader/api/2/subscriptions/1').respond();
 
-        service.unsubscribe({ uuid: '1' })
+        service.remove('1')
             .then(function () {
                 done()
             });
