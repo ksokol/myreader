@@ -371,8 +371,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.refresh();
 }])
 
-.controller('SubscriptionCtrl', ['$scope', '$stateParams', 'subscriptionService',
-    function($scope, $stateParams, subscriptionService) {
+.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', 'subscriptionService',
+    function($scope, $state, $stateParams, subscriptionService) {
 
     $scope.subscription = {};
 
