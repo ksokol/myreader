@@ -110,8 +110,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                 url: "/subscriptions/add",
                 views: {
                     content: {
-                        template: require('../../templates/subscription.html'),
-                        controller: 'SubscriptionCtrl'
+                        template: '<div><my-subscribe></my-subscribe></div>'
                     }
                 }
             })

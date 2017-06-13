@@ -11,6 +11,7 @@ require('./subscription/subscription-tag-panel/subscription-tag-panel.component'
 require('./subscription/subscription.service');
 require('./shared/component/validation-message/validation-message.component');
 require('./shared/directive/backend-validation/backend-validation.directive');
+require('./subscription/subscribe/subscribe.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -370,8 +371,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.refresh();
 }])
 
-.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', 'subscriptionService',
-    function($scope, $state, $stateParams, subscriptionService) {
+.controller('SubscriptionCtrl', ['$scope', '$stateParams', 'subscriptionService',
+    function($scope, $stateParams, subscriptionService) {
 
     $scope.subscription = {};
 
@@ -396,12 +397,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 
     $scope.onSuccessSave = function(data) {
         $scope.message = { type: 'success', message: 'saved' };
-
-        if($scope.subscription.uuid) {
-            $scope.subscription = data;
-        } else {
-            $state.go('app.subscription', {uuid: data.uuid});
-        }
+        $scope.subscription = data;
     };
 
     $scope.onErrorSave = function(error) {
