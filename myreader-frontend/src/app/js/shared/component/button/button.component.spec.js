@@ -11,6 +11,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', function
 
         bindings = {
             buttonGroupCtrl: buttonGroupCtrl,
+            myButtonType: 'submit',
             myOnClick: myOnClick,
             myOnSuccess: jasmine.createSpy('myOnSuccess'),
             myOnError: jasmine.createSpy('myOnError')
@@ -45,6 +46,10 @@ describe('src/app/js/shared/component/button/button.component.spec.js', function
 
             expect(buttonGroupCtrl.enableButtons).toHaveBeenCalled();
         }));
+
+        it('should use provided myButtonType value', function () {
+            expect(component.myButtonType).toBe('submit');
+        });
     });
 
     describe('with confirmation', function () {
@@ -111,6 +116,9 @@ describe('src/app/js/shared/component/button/button.component.spec.js', function
                 },
                 classes: function () {
                     return button.classList;
+                },
+                type: function () {
+                    return button.type;
                 }
             }
         };
@@ -201,8 +209,8 @@ describe('src/app/js/shared/component/button/button.component.spec.js', function
 
         it('should set my-type and my-text', function () {
             var page = Page(withoutConfirmation);
-
             expect(page.button().classes()).toContain('md-warn');
+            expect(page.button().type()).toContain('button');
             expect(page.button().title()).toEqual('Test');
         });
 

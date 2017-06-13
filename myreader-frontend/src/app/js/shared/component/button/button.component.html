@@ -1,5 +1,6 @@
 <md-button
         class="md-raised"
+        type="{{$ctrl.myButtonType}}"
         ng-class="$ctrl.myType ? 'md-' + $ctrl.myType : ''"
         ng-if="!$ctrl.showConfirmButton"
         ng-click="$ctrl.onClick()"
