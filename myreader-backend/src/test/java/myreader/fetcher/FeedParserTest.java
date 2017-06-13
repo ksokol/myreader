@@ -1,6 +1,5 @@
 package myreader.fetcher;
 
-import myreader.fetcher.impl.DefaultFeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.resttemplate.SyndicationRestTemplateConfiguration;
 import org.junit.Before;
@@ -206,7 +205,7 @@ public class FeedParserTest {
 
         @Bean
         public FeedParser feedParser(RestTemplate syndicationRestTemplate, TestApplicationEventPublisher testApplicationEventPublisher) {
-            return new DefaultFeedParser(syndicationRestTemplate, testApplicationEventPublisher);
+            return new FeedParser(syndicationRestTemplate, testApplicationEventPublisher);
         }
 
         @Primary
