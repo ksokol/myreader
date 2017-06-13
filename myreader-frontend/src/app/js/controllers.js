@@ -12,6 +12,7 @@ require('./subscription/subscription.service');
 require('./shared/component/validation-message/validation-message.component');
 require('./shared/directive/backend-validation/backend-validation.directive');
 require('./subscription/subscribe/subscribe.component');
+require('./subscription/subscription.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -369,56 +370,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     $scope.refresh();
-}])
-
-.controller('SubscriptionCtrl', ['$scope', '$state', '$stateParams', 'subscriptionService',
-    function($scope, $state, $stateParams, subscriptionService) {
-
-    $scope.subscription = {};
-
-    if($stateParams.uuid) {
-        subscriptionService.find($stateParams.uuid)
-        .then(function(data) {
-            $scope.subscription = data;
-        });
-    }
-
-    $scope.onSelectTag = function (value) {
-        $scope.subscription.tag = value;
-    };
-
-    $scope.onClearTag = function () {
-        $scope.subscription.tag = null;
-    };
-
-    $scope.onSave = function() {
-        return subscriptionService.save($scope.subscription);
-    };
-
-    $scope.onSuccessSave = function(data) {
-        $scope.message = { type: 'success', message: 'saved' };
-        $scope.subscription = data;
-    };
-
-    $scope.onErrorSave = function(error) {
-        if(error.data.status === 400) {
-            $scope.validations = error.data.fieldErrors
-        } else {
-            $scope.message = { type: 'error', message: error };
-        }
-    };
-
-    $scope.onDelete = function() {
-        return subscriptionService.unsubscribe($scope.subscription);
-    };
-
-    $scope.onSuccessDelete = function() {
-        $state.go('app.subscriptions');
-    };
-
-    $scope.onError = function(error) {
-        $scope.message = { type: 'error', message: error };
-    };
 }])
 
 .controller('AdminCtrl', ['$scope', 'processingService', 'applicationPropertyService', function($scope, processingService, applicationPropertyService) {
