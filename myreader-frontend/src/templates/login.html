@@ -12,7 +12,7 @@
                     <div layout="row">
                         <md-input-container flex>
                             <label>Username</label>
-                            <input required name="username" ng-model="form.username">
+                            <input name="username" ng-model="form.username">
                             <div ng-messages="loginForm.username.$error">
                                 <div ng-message="required">required</div>
                             </div>
@@ -21,7 +21,7 @@
                     <div layout="row">
                         <md-input-container flex>
                             <label>Password</label>
-                            <input type="password" required name="password" ng-model="form.password">
+                            <input type="password" name="password" ng-model="form.password">
                             <div ng-messages="loginForm.password.$error">
                                 <div ng-message="required">required</div>
                             </div>
