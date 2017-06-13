@@ -1,15 +1,38 @@
 package myreader.fetcher;
 
 import myreader.fetcher.persistence.FetchResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-/**
- * @author Kamill Sokol
- */
-public interface FeedQueue {
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-    void add(FetchResult fetchResult);
+@Component
+public class FeedQueue {
 
-    int getSize();
+    private static final Logger LOG = LoggerFactory.getLogger(FeedQueue.class);
 
-    FetchResult take();
+    private final BlockingQueue<FetchResult> queue = new LinkedBlockingQueue<>();
+
+    public void add(FetchResult fetchResult) {
+        if (!queue.contains(fetchResult))
+            queue.add(fetchResult);
+    }
+
+    public int getSize() {
+        return queue.size();
+    }
+
+    public FetchResult take() {
+        FetchResult fetchResult = null;
+        try {
+            fetchResult = queue.take();
+        } catch (InterruptedException exception) {
+            // Restore the interrupted status
+            Thread.currentThread().interrupt();
+        }
+        LOG.debug("left in queue: {}", queue.size());
+        return fetchResult;
+    }
 }

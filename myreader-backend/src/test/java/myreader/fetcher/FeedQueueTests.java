@@ -1,8 +1,7 @@
-package myreader.fetcher.impl;
+package myreader.fetcher;
 
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
-import myreader.fetcher.FeedQueue;
 import myreader.fetcher.persistence.FetchResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +18,7 @@ import static org.junit.Assert.fail;
 /**
  * @author Kamill Sokol
  */
-public class FeedQueueImplTests {
+public class FeedQueueTests {
 
     private static final long SHORT_DELAY_MS  = 50;
     private static final long LONG_DELAY_MS = SHORT_DELAY_MS * 200;
@@ -33,7 +32,7 @@ public class FeedQueueImplTests {
 
     @Before
     public void setUp() {
-        uut = new FeedQueueImpl();
+        uut = new FeedQueue();
     }
 
     @Test
