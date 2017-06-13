@@ -7,18 +7,6 @@
         <my-validation-message my-form-control="subscriptionForm.title"></my-validation-message>
     </md-input-container>
 
-    <md-input-container ng-hide="subscription.uuid" class="md-block">
-        <label>Url</label>
-        <input autocomplete="off"
-               name="origin"
-               ng-model="subscription.origin"
-               my-backend-validation my-validations="validations"
-               ng-if="!subscription.uuid">
-            <my-validation-message my-form-control="subscriptionForm.origin"></my-validation-message>
-        </div>
-
-    </md-input-container>
-
     <md-input-container ng-if="subscription.uuid" md-no-float class="md-icon-float md-icon-right">
         <label>Url</label>
         <input ng-model="subscription.origin" disabled>

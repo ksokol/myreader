@@ -1,0 +1,25 @@
+<form name="subscriptionForm">
+    <md-input-container class="md-block">
+        <label>Url</label>
+        <input autocomplete="off"
+               name="origin"
+               ng-model="$ctrl.origin"
+               my-backend-validation my-validations="$ctrl.validations">
+        <my-validation-message my-form-control="subscriptionForm.origin"></my-validation-message>
+    </md-input-container>
+
+    <br>
+
+    <my-button-group layout="row" layout-align="end center">
+        <my-button
+                my-type="primary"
+                my-text="Save"
+                my-disabled="subscriptionForm.$invalid"
+                my-on-click="$ctrl.onSave()"
+                my-on-success="$ctrl.onSuccessSave(data)"
+                my-on-error="$ctrl.onErrorSave(error)">
+        </my-button>
+    </my-button-group>
+
+    <my-notification-panel layout="row" layout-align="end center" my-message="$ctrl.message"></my-notification-panel>
+</form>
