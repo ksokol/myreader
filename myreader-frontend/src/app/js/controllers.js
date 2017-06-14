@@ -13,6 +13,7 @@ require('./shared/component/validation-message/validation-message.component');
 require('./shared/directive/backend-validation/backend-validation.directive');
 require('./subscription/subscribe/subscribe.component');
 require('./subscription/subscription.component');
+require('./login/login.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -481,36 +482,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         settingsService.setShowUnseenEntries($scope.showUnseenEntries);
         settingsService.setShowEntryDetails($scope.showEntryDetails);
     };
-}])
-
-.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$state', function($rootScope, $scope, $http, $state) {
-
-    $scope.form = {};
-
-    $scope.login = function() {
-        var rememberMe = "remember-me=";
-        if($scope.form.rememberMe === true) {
-            rememberMe = rememberMe + "on";
-        }
-
-        var encodedString = "username=" + encodeURIComponent($scope.form.username)+ '&password=' + encodeURIComponent($scope.form.password) + "&" + rememberMe;
-
-        $http({
-            method: 'POST',
-            url: 'check',
-            data: encodedString,
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        })
-        .then(function(response) {
-            if(response.headers('X-MY-AUTHORITIES').indexOf('ROLE_ADMIN') !== -1) {
-                $state.go('admin.overview');
-            } else {
-                $state.go('app.entries', {tag: 'all'});
-            }
-        }, function () {
-            $scope.message = { type: 'error', message: 'username or password wrong' };
-        });
-    }
 }]);
 
 module.exports = 'controllers';

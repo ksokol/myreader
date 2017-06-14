@@ -36,6 +36,7 @@
 
         ctrl.$onInit = function () {
             ctrl.buttonGroupCtrl.addButton(this);
+            ctrl.myButtonType = ctrl.myButtonType || 'button';
         };
 
         ctrl.reset = function () {
@@ -85,6 +86,7 @@
         bindings: {
             myText: '@',
             myType: '@',
+            myButtonType: '@',
             myConfirm: '@',
             myDisabled: '<',
             myOnClick: '&',

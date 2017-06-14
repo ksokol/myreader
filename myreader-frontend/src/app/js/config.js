@@ -54,8 +54,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                 url: "/login",
                 views: {
                     body: {
-                        template: require('../../templates/login.html'),
-                        controller: 'LoginCtrl'
+                        template: '<my-login flex></my-login>'
                     }
                 }
             })
