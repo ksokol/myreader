@@ -5,7 +5,7 @@
     "build": "rimraf dist && webpack --bail --progress --profile",
     "server": "webpack-dev-server --history-api-fallback --inline --progress",
     "test": "karma start",
-    "test-watch": "karma start --auto-watch --no-single-run",
+    "test-watch": "npm test -- --single-run=false --reporters=progress,coverage",
     "start": "npm run server"
   },
   "dependencies": {
