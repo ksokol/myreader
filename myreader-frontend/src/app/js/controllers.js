@@ -6,8 +6,6 @@ require('./shared/safe-opener/safe-opener.directive');
 require('./navigation/subscription-item/subscription-item.component');
 require('./entry/entry.component');
 require('./shared/timeago/timeago.filter');
-require('./subscription/subscription-exclusion-panel/subscription-exclusion-panel.component');
-require('./subscription/subscription-tag-panel/subscription-tag-panel.component');
 require('./subscription/subscription.service');
 require('./shared/component/validation-message/validation-message.component');
 require('./shared/directive/backend-validation/backend-validation.directive');

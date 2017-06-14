@@ -1,6 +1,10 @@
 (function () {
     'use strict';
 
+    require('./subscription-exclusion-panel/subscription-exclusion-panel.component');
+    require('./subscription-tag-panel/subscription-tag-panel.component');
+    require('./subscription.service');
+
     function SubscriptionComponent($state, $stateParams, subscriptionService) {
         var ctrl = this;
 
