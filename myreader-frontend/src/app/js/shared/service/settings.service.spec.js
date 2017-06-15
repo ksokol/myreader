@@ -27,6 +27,11 @@ describe('src/app/js/shared/service/settings.service.spec.js', function() {
             expect(service.getPageSize()).toBe(10);
         });
 
+        it('should return default pageSize 10 when given pageSize is zero', function() {
+            service.setPageSize(0);
+            expect(service.getPageSize()).toBe(10);
+        });
+
         it('should return true for showEntryDetails setting', function() {
             service.setShowEntryDetails(true);
             expect(service.isShowEntryDetails()).toBe(true);
