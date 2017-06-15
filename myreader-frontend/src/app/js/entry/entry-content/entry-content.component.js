@@ -33,6 +33,4 @@
         }
     });
 
-    module.exports = 'myreader.entry.entry-content.component';
-
 })();

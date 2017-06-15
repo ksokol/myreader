@@ -44,6 +44,4 @@
         }
     }]);
 
-    module.exports = 'myreader.exclusion.service';
-
 })();

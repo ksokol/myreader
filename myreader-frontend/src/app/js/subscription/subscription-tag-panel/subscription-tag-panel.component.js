@@ -23,6 +23,4 @@
         }
     });
 
-    module.exports = 'myreader.subscription-tag-panel.component';
-
 })();

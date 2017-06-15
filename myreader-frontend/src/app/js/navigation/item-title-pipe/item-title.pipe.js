@@ -24,6 +24,4 @@
         }
     });
 
-    module.exports = 'myreader.navigation.item-title.pipe';
-
 })();

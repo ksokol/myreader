@@ -20,6 +20,4 @@
             }
         }]);
 
-    module.exports = 'myreader.entry-content-sanitizer.directive';
-
 })();

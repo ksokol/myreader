@@ -38,6 +38,4 @@
         }
     }]);
 
-    module.exports = 'myreader.subscription.service';
-
 })();

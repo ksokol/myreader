@@ -95,6 +95,4 @@
         }
     });
 
-    module.exports = 'myreader.button.component';
-
 })();

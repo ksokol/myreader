@@ -58,6 +58,4 @@
         }
     });
 
-    module.exports = 'myreader.entry.component';
-
 })();

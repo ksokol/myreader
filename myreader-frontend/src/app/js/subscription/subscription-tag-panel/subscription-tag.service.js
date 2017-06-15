@@ -14,6 +14,4 @@
         }
     }]);
 
-    module.exports = 'myreader.subscription-tag.service';
-
 })();

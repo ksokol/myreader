@@ -40,6 +40,4 @@
         controller: ['$http', '$state', LoginComponent]
     });
 
-    module.exports = 'myreader.login.component';
-
 })();

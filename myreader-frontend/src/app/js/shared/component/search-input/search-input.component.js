@@ -42,6 +42,4 @@
         }
     });
 
-    module.exports = 'myreader.search-input.component';
-
 })();

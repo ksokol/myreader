@@ -76,6 +76,4 @@
         }
     });
 
-    module.exports = 'myreader.autocomplete-input.component';
-
 })();

@@ -30,6 +30,4 @@
         controller: [ '$state', 'subscriptionService', SubscribeComponent ]
     });
 
-    module.exports = 'myreader.subscription.subscribe.component';
-
 })();

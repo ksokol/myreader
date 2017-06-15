@@ -15,6 +15,4 @@
         }
     });
 
-    module.exports = 'myreader.timeago.filter';
-
 })();

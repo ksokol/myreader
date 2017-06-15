@@ -32,6 +32,4 @@
         }
     });
 
-    module.exports = 'myreader.entry.entry-actions.component';
-
 })();

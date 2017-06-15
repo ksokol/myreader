@@ -28,6 +28,4 @@
         controller: ButtonGroupComponent
     });
 
-    module.exports = 'myreader.button-group.component';
-
 })();

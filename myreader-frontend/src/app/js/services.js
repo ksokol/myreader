@@ -174,5 +174,3 @@ angular.module('common.services', [])
         }
     }
 }]);
-
-module.exports = 'services';

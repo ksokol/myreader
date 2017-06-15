@@ -18,5 +18,3 @@ angular.module('common.directives', [])
         }
     };
 });
-
-module.exports = 'directives';

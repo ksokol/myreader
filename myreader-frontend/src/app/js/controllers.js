@@ -469,5 +469,3 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 
     $scope.refresh();
 }]);
-
-module.exports = 'controllers';

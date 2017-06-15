@@ -44,6 +44,4 @@
         }
     });
 
-    module.exports = 'myreader.navigation.subscription-item.component';
-
 })();

@@ -28,6 +28,4 @@
         }
     });
 
-    module.exports = 'myreader.subscription-exclusion-panel.component';
-
 })();

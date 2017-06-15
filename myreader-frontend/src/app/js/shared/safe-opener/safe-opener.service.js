@@ -11,6 +11,4 @@
         }
     }]);
 
-    module.exports = 'myreader.safe-opener.service';
-
 })();

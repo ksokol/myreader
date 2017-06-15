@@ -32,6 +32,4 @@
         }
     });
 
-    module.exports = 'myreader.backend-validation.directive';
-
 })();

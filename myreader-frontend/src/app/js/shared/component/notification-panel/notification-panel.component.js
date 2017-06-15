@@ -41,6 +41,4 @@
         }
     });
 
-    module.exports = 'myreader.notification-panel.component';
-
 })();

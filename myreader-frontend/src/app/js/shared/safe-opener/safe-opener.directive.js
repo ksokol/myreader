@@ -17,6 +17,4 @@
         }
     }]);
 
-    module.exports = 'myreader.safe-opener.directive';
-
 })();

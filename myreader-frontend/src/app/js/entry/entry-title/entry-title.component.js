@@ -21,6 +21,4 @@
         }
     });
 
-    module.exports = 'myreader.entry.entry-title.component';
-
 })();

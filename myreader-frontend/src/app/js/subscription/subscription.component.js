@@ -67,6 +67,4 @@
         controller: ['$state', '$stateParams', 'subscriptionService', SubscriptionComponent]
     });
 
-    module.exports = 'myreader.subscription.component';
-
 })();
