@@ -1,0 +1,20 @@
+<div class="settings">
+    <label for="pageSize">Entry page size</label>
+    <md-select id="pageSize" ng-model="$ctrl.currentSize" ng-change="$ctrl.save()">
+        <md-option ng-value="10">10</md-option>
+        <md-option ng-value="20">20</md-option>
+        <md-option ng-value="30">30</md-option>
+    </md-select>
+
+    <div layout="row">
+        <md-input-container>
+            <md-checkbox ng-model="$ctrl.showUnseenEntries" ng-change="$ctrl.save()">Hide old entries</md-checkbox>
+        </md-input-container>
+    </div>
+
+    <div layout="row">
+        <md-input-container>
+            <md-checkbox ng-model="$ctrl.showEntryDetails" ng-change="$ctrl.save()">Show entry content</md-checkbox>
+        </md-input-container>
+    </div>
+</div>
