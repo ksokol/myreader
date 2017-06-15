@@ -24,8 +24,13 @@
         && isFunction(value.finally));
     };
 
+    function isBoolean(value) {
+        return typeof value === 'boolean';
+    }
+
     module.exports = {
-        'isPromise': isPromise
+        isPromise: isPromise,
+        isBoolean: isBoolean
     };
 
 })();

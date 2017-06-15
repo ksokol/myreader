@@ -12,6 +12,8 @@ require('./shared/directive/backend-validation/backend-validation.directive');
 require('./subscription/subscribe/subscribe.component');
 require('./subscription/subscription.component');
 require('./login/login.component');
+require('./settings/settings.component');
+require('./shared/service/settings.service');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -466,20 +468,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     $scope.refresh();
-}])
-
-.controller('SettingsCtrl', ['$scope', 'settingsService', function($scope, settingsService) {
-
-    $scope.sizes = [10, 20, 30];
-    $scope.currentSize = settingsService.getPageSize();
-    $scope.showUnseenEntries = settingsService.isShowUnseenEntries();
-    $scope.showEntryDetails = settingsService.isShowEntryDetails();
-
-    $scope.save = function() {
-        settingsService.setPageSize($scope.currentSize);
-        settingsService.setShowUnseenEntries($scope.showUnseenEntries);
-        settingsService.setShowEntryDetails($scope.showEntryDetails);
-    };
 }]);
 
 module.exports = 'controllers';

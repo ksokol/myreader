@@ -165,33 +165,6 @@ angular.module('common.services', [])
     }
 }])
 
-.service('settingsService', function() {
-
-    return {
-        getPageSize: function() {
-            var pageSize = parseInt(localStorage.getItem('settings-pageSize'));
-            return isNaN(pageSize) ? 10 : pageSize;
-        },
-        setPageSize: function(pageSize) {
-            localStorage.setItem('settings-pageSize', pageSize);
-        },
-        isShowEntryDetails: function() {
-            var showEntryDetails = localStorage.getItem('settings-showEntryDetails');
-            return showEntryDetails === 'true';
-        },
-        setShowEntryDetails: function(showEntryDetails) {
-            localStorage.setItem('settings-showEntryDetails', showEntryDetails);
-        },
-        isShowUnseenEntries: function() {
-            var showUnseenEntries = localStorage.getItem('settings-showUnseenEntries');
-            return showUnseenEntries === 'true';
-        },
-        setShowUnseenEntries: function(showUnseenEntries) {
-            localStorage.setItem('settings-showUnseenEntries', showUnseenEntries);
-        }
-    }
-})
-
 .service('applicationPropertyService', ['$http', function($http) {
     var url = '/myreader/info';
 

@@ -153,8 +153,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                 url: "/settings",
                 views: {
                     content: {
-                        template: require('../../templates/settings.html'),
-                        controller: 'SettingsCtrl'
+                        template: '<div><my-settings></my-settings></div>'
                     }
                 }
             });

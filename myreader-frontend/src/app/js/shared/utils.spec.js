@@ -3,7 +3,9 @@ describe('src/app/js/shared/utils.spec.js', function () {
     var utils = require('./utils');
 
     describe('isPromise() should return', function () {
+
         describe('false when parameter', function () {
+
             it('is undefined or null', function () {
                 expect(utils.isPromise()).toEqual(false);
                 expect(utils.isPromise(null)).toEqual(false);
@@ -47,6 +49,21 @@ describe('src/app/js/shared/utils.spec.js', function () {
                 };
                 expect(utils.isPromise(obj)).toEqual(true);
             });
+        });
+    });
+
+    describe('isBoolean() should return', function () {
+
+        it('false when parameter is of type string', function () {
+           expect(utils.isBoolean('true')).toBe(false);
+        });
+
+        it('true when parameter is of type boolean', function () {
+            expect(utils.isBoolean(true)).toBe(true);
+        });
+
+        it('true when parameter is of type boolean and value is false', function () {
+            expect(utils.isBoolean(false)).toBe(true);
         });
     });
 });
