@@ -129,19 +129,6 @@ angular.module('common.services', [])
     }
 }])
 
-.service('feedFetchErrorService', ['$http', function($http) {
-    var feedUrl = '/myreader/api/2/feeds';
-
-    return {
-        findAll: function(feedUuid) {
-            return $http.get(feedUrl + '/' + feedUuid + '/fetchError')
-                .then(function (response) {
-                    return new FetchError(response.data.content, response.data.links);
-                });
-        }
-    }
-}])
-
 .service('bookmarkService', ['$http', function($http) {
     var url = '/myreader/api/2/subscriptionEntries/availableTags';
 
