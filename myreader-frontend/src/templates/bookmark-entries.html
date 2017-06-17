@@ -18,7 +18,7 @@
             <my-divider class="my-default-theme"></my-divider>
         </div>
     </my-list-item>
-    <my-list-item align="center" ng-click="loadMore()" ng-show="data.next()">
-        <md-button>load more</md-button>
+    <my-list-item>
+        <my-load-more my-next="data.next()" my-on-more="loadMore(more)"></my-load-more>
     </my-list-item>
 </my-list>
