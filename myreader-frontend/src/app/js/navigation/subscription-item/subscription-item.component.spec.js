@@ -115,7 +115,9 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
 
     describe('with html', function () {
 
-        var scope, element, myOnSelect, navigationItemTitleFilter;
+        var testUtils = require('../../shared/test-utils');
+
+        var scope, element, myOnSelect;
 
         var item = {
             tag: 'tag',
@@ -126,13 +128,7 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
             ]
         };
 
-        beforeEach(require('angular').mock.module('myreader', function($provide) {
-            navigationItemTitleFilter = jasmine.createSpy('myNavigationItemTitle');
-            navigationItemTitleFilter.and.callFake(function (item) {
-                return 'called myNavigationItemTitlePipe with ' + item.tag + '/' + item.uuid;
-            });
-            $provide.value('myNavigationItemTitleFilter', navigationItemTitleFilter);
-        }));
+        beforeEach(require('angular').mock.module('myreader', testUtils.filterMock('myNavigationItemTitle')));
 
         beforeEach(inject(function ($rootScope, $compile) {
             myOnSelect = jasmine.createSpy('myOnSelect');
@@ -185,8 +181,8 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
             });
 
             it('should render title with pipe', function () {
-                expect(navigationItemTitleFilter).toHaveBeenCalledWith(jasmine.objectContaining({ tag: 'tag', uuid: 'uuid' }));
-                expect(element.find('span')[0].innerText).toEqual('called myNavigationItemTitlePipe with tag/uuid');
+                expect(element.find('span')[0].innerText)
+                    .toEqual('myNavigationItemTitle({"tag":"tag","uuid":"uuid","subscriptions":[{"tag":"tag","uuid":"uuid1"},{"tag":"tag","uuid":"uuid2"}]})');
             });
         });
 
@@ -247,11 +243,10 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
             });
 
             it('should render title with pipe', function () {
-                expect(navigationItemTitleFilter.calls.allArgs()[1]).toContain(jasmine.objectContaining({ tag: 'tag', uuid: 'uuid1' }));
-                expect(navigationItemTitleFilter.calls.allArgs()[2]).toContain(jasmine.objectContaining({ tag: 'tag', uuid: 'uuid2' }));
-
-                expect(element.find('ul').find('li').find('button')[0].innerText).toEqual('called myNavigationItemTitlePipe with tag/uuid1');
-                expect(element.find('ul').find('li').find('button')[1].innerText).toEqual('called myNavigationItemTitlePipe with tag/uuid2');
+                expect(element.find('ul').find('li').find('button')[0].innerText)
+                    .toEqual('myNavigationItemTitle({"tag":"tag","uuid":"uuid1","unseen":0})');
+                expect(element.find('ul').find('li').find('button')[1].innerText)
+                    .toEqual('myNavigationItemTitle({"tag":"tag","uuid":"uuid2"})');
             });
         });
     });

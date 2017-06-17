@@ -2,17 +2,9 @@ describe('src/app/js/entry/entry-title/entry-title.component.spec.js', function 
 
     var testUtils = require('../../shared/test-utils');
 
-    var item, timeAgoFilter;
+    var item;
 
-    beforeEach(require('angular').mock.module('myreader', function($provide) {
-        testUtils.mock('$window')($provide);
-
-        timeAgoFilter = jasmine.createSpy('timeAgoFilter');
-        timeAgoFilter.and.callFake(function (value) {
-            return 'timeago("' + value + '")';
-        });
-        $provide.value('timeagoFilter', timeAgoFilter);
-    }));
+    beforeEach(require('angular').mock.module('myreader', testUtils.mock('$window'), testUtils.filterMock('timeago')));
 
     beforeEach(function () {
         item = {
@@ -72,7 +64,7 @@ describe('src/app/js/entry/entry-title/entry-title.component.spec.js', function 
         it('should open entry url safely', inject(function ($window) {
             var windowAttributes = {};
             $window.open = jasmine.createSpy('open');
-            $window.open.and.returnValue(windowAttributes = {});
+            $window.open.and.returnValue(windowAttributes);
 
             element.find('h3')[0].click();
 
