@@ -1,0 +1,19 @@
+<p ng-if="$ctrl.loading">loading...</p>
+
+<div ng-if="!$ctrl.loading">
+    <p ng-if="!$ctrl.hasErrors()">no errors</p>
+    <p class="fetch-errors__information" ng-if="$ctrl.hasErrors()">
+        {{::$ctrl.totalElements}} error(s) in the last {{::$ctrl.retainDays}} day(s)
+    </p>
+
+    <md-list>
+        <ng-repeat ng-repeat="item in $ctrl.errors">
+            <my-feed-fetch-error-list-item my-item="item"></my-feed-fetch-error-list-item>
+            <md-divider></md-divider>
+        </ng-repeat>
+
+        <md-list-item>
+            <my-load-more my-next="$ctrl.next" my-on-more="$ctrl.onMore(more)"></my-load-more>
+        </md-list-item>
+    </md-list>
+</div>

@@ -14,6 +14,7 @@ require('./subscription/subscription.component');
 require('./login/login.component');
 require('./settings/settings.component');
 require('./shared/service/settings.service');
+require('./feed/feed-fetch-error-panel/feed-fetch-error-panel.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -423,22 +424,16 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     $scope.refresh();
 }])
 
-.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$state', 'feedService', 'feedFetchErrorService',
-    function($scope, $stateParams, $state, feedService, feedFetchErrorService) {
+.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$state', 'feedService',
+    function($scope, $stateParams, $state, feedService) {
 
     $scope.feed = {};
-    $scope.error = [];
 
     $scope.refresh = function() {
         feedService.findOne($stateParams.uuid)
             .then(function(data) {
                 $scope.feed = data;
             });
-
-        feedFetchErrorService.findAll($stateParams.uuid)
-            .then(function (errors) {
-                $scope.errors = errors.fetchError;
-            })
     };
 
     $scope.onDelete = function() {

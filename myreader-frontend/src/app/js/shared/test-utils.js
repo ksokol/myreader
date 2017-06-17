@@ -40,6 +40,23 @@
         return _directiveMock;
     }
 
+    function filterMock(name) {
+        function _filterMock($provide) {
+            var filter = jasmine.createSpy(name + 'Filter');
+            filter.and.callFake(function (value) {
+                if (typeof value === 'object') {
+                    // remove Angular specific attributes
+                    delete value.$$hashKey;
+                    delete value.object;
+                }
+                return name + '(' + JSON.stringify(value) + ')';
+            });
+            $provide.value(name + 'Filter', filter);
+        }
+
+        return _filterMock;
+    }
+
     function mock(name) {
         function _mock($provide) {
             $provide.value(name, {});
@@ -50,6 +67,7 @@
     module.exports = {
         'componentMock': componentMock,
         'directiveMock': directiveMock,
+        'filterMock': filterMock,
         'mock': mock
     };
 

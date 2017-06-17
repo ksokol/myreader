@@ -150,26 +150,6 @@ module.exports = function models() {
         self.tags.unshift(all);
     };
 
-    this.FetchError = function(fetchError, links) {
-        var self = this;
-        self.fetchError = angular.isArray(fetchError) ? fetchError : [];
-        self.links = angular.isArray(links) ? links : [];
-
-        var getLink = function(rel) {
-            var link;
-            for(var i=0;i<links.length;i++) {
-                if(links[i].rel === rel && link === undefined) {
-                    link = links[i].href;
-                }
-            }
-            return link;
-        };
-
-        self.next = function() {
-            return getLink('next');
-        };
-    };
-
     this.Feeds = function(feeds, links) {
         var self = this;
         self.feeds = angular.isArray(feeds) ? feeds : [];

@@ -1,0 +1,17 @@
+<h2 class="md-title">Fetch errors
+    <md-icon class="fetch-errors-panel__pointer"
+             md-font-library="material-icons"
+             ng-click="$ctrl.close()"
+             ng-if="$ctrl.showErrors">expand_less</md-icon>
+
+    <md-icon class="fetch-errors-panel__pointer"
+             md-font-library="material-icons"
+             ng-click="$ctrl.open()"
+             ng-if="!$ctrl.showErrors">expand_more</md-icon>
+</h2>
+
+<my-feed-fetch-error ng-if="$ctrl.firstOpen"
+                     ng-show="$ctrl.showErrors"
+                     my-id="$ctrl.myId"
+                     my-on-error="$ctrl.myOnError({error: error})">
+</my-feed-fetch-error>
