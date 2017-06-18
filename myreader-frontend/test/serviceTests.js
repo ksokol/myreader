@@ -243,25 +243,4 @@ describe('test/serviceTests.js', function() {
             httpBackend.flush();
         });
     });
-
-    describe('processingService', function() {
-
-        var httpBackend;
-
-        beforeEach(inject(function (processingService, $httpBackend) {
-            service = processingService;
-            httpBackend = $httpBackend;
-        }));
-
-        it('should have been called rebuildSearchIndex', function(done) {
-            httpBackend.expectPUT('/myreader/api/2/processing').respond({});
-
-            service.rebuildSearchIndex()
-            .success(function () {
-                done();
-            });
-
-            httpBackend.flush();
-        });
-    });
 });

@@ -16,6 +16,7 @@ require('./settings/settings.component');
 require('./shared/service/settings.service');
 require('./feed/feed-fetch-error-panel/feed-fetch-error-panel.component');
 require('./shared/component/load-more/load-more.component');
+require('./maintenance/maintenance.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -373,26 +374,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 
     $scope.refresh();
-}])
-
-.controller('AdminCtrl', ['$scope', 'processingService', 'applicationPropertyService', function($scope, processingService, applicationPropertyService) {
-
-    $scope.onRefreshIndex = function() {
-        return processingService.rebuildSearchIndex();
-    };
-
-    $scope.onSuccessRefreshIndex = function() {
-        $scope.message = { type: 'success', message: 'started' };
-    };
-
-    $scope.onErrorRefreshIndex = function(data) {
-        $scope.message = { type: 'error', message: data };
-    };
-
-    applicationPropertyService.getProperties()
-    .success(function(properties) {
-        $scope.properties = properties;
-    });
 }])
 
 .controller('FeedsCtrl', ['$scope', '$state', 'feedService', function($scope, $state, feedService) {

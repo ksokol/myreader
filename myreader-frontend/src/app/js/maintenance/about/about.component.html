@@ -1,0 +1,23 @@
+<h4>About</h4>
+
+<p ng-if="$ctrl.loading">loading...</p>
+<p ng-if="$ctrl.propertiesMissing">Properties missing</p>
+
+<table ng-if="!$ctrl.loading && !$ctrl.propertiesMissing">
+    <tr>
+        <td>Branch</td>
+        <td>{{$ctrl.properties.branch}}</td>
+    </tr>
+    <tr>
+        <td>Commit ID</td>
+        <td>{{$ctrl.properties.commitId}}</td>
+    </tr>
+    <tr>
+        <td>Version</td>
+        <td>{{$ctrl.properties.version}}</td>
+    </tr>
+    <tr>
+        <td>Build Time</td>
+        <td>{{$ctrl.properties.buildTime | timeago}}</td>
+    </tr>
+</table>
