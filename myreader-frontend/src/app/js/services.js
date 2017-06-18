@@ -140,24 +140,4 @@ angular.module('common.services', [])
                 });
         }
     }
-}])
-
-.service('processingService', ['$http', function($http) {
-    var url = '/myreader/api/2/processing';
-
-    return {
-        rebuildSearchIndex: function() {
-            return $http.put(url, { process: 'indexSyncJob' });
-        }
-    }
-}])
-
-.service('applicationPropertyService', ['$http', function($http) {
-    var url = '/myreader/info';
-
-    return {
-        getProperties: function() {
-            return $http.get(url);
-        }
-    }
 }]);

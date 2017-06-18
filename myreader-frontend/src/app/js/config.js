@@ -125,8 +125,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                 url: "/overview",
                 views: {
                     content: {
-                        template: require('../../templates/admin.html'),
-                        controller: 'AdminCtrl'
+                        template: '<div><my-maintenance></my-maintenance></div>'
                     }
                 }
             })
