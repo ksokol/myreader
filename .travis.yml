@@ -24,5 +24,8 @@ cache:
     - $TRAVIS_BUILD_DIR/myreader-frontend/node_modules/
     - $HOME/.sonar/cache
 
+# skip installation step
+install: true
+
 script:
   - ./gradlew check sonarqube
