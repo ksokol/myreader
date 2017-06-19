@@ -2,7 +2,7 @@ window.write = function() {};
 
 var angular = require('angular');
 
-angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers', 'common.directives', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
+angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
 
 .config(['$httpProvider', function($httpProvider) {
 
@@ -25,23 +25,6 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
             'request': function (config) {
                 config.headers["X-Requested-With"] = "XMLHttpRequest";
                 return config || $q.when(config);
-            }
-        };
-    }]);
-
-    $httpProvider.interceptors.push(['$q', '$rootScope', function($q, $rootScope) {
-        return {
-            'request': function(config) {
-                $rootScope.$broadcast('loading-started');
-                return $q.when(config);
-            },
-            'response': function(response) {
-                $rootScope.$broadcast('loading-complete');
-                return $q.when(response);
-            },
-            'responseError': function(response) {
-                $rootScope.$broadcast('loading-complete');
-                return $q.reject(response);
             }
         };
     }]);
