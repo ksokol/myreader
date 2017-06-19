@@ -23,16 +23,8 @@ module.exports = function makeWebpackConfig() {
      * Karma will set this when it's a test build
      */
     config.entry = isTest ? void 0 : {
-        app: './src/app/js/main.js',
-        vendors: [
-            'angular',
-            'angular-sanitize',
-            'angular-messages',
-            'angular-ui-router',
-            'angular-material',
-            'angular-hotkeys',
-            'timeago.js'
-         ]
+        vendor: './src/app/js/vendor.js',
+        app: './src/app/js/main.js'
     };
 
     /**
@@ -50,11 +42,11 @@ module.exports = function makeWebpackConfig() {
 
         // Filename for entry points
         // Only adds hash in build mode
-        filename: isProd ? 'app/[name].[hash].js' : '[name].bundle.js',
+        filename: isProd ? 'app/[name].[chunkhash].js' : '[name].bundle.js',
 
         // Filename for non-entry points
         // Only adds hash in build mode
-        chunkFilename: isProd ? 'app/[name].[hash].js' : '[name].bundle.js'
+        chunkFilename: isProd ? 'app/[name].[chunkhash].js' : '[name].bundle.js'
     };
 
     /**
@@ -138,18 +130,20 @@ module.exports = function makeWebpackConfig() {
 
             // Reference: https://github.com/webpack/extract-text-webpack-plugin
             // Disabled when in test mode or not in build mode
-            new ExtractTextPlugin({filename: 'app/[name].[hash].css', disable: !isProd, allChunks: true}),
+            new ExtractTextPlugin({filename: 'app/[name].[contenthash].css', disable: !isProd, allChunks: true}),
 
+            // https://angular.io/guide/webpack#inside-webpackcommonjs
+            // Define entry points in hierarchical order. Webpack removes dependencies from 'app' chunk which
+            // are part of 'vendor' chunk
             new webpack.optimize.CommonsChunkPlugin({
-                name: 'vendor',
-                minChunks: function (module, count) {
-                    // any required modules inside node_modules are extracted to vendor
-                    return (
-                        module.resource &&
-                        (/\.js$/.test(module.resource) || /\.css$/.test(module.resource)) &&
-                        module.resource.indexOf(path.join(__dirname, 'node_modules')) === 0
-                    )
-                }
+                name: ['app', 'vendor']
+            }),
+
+            // https://webpack.js.org/plugins/commons-chunk-plugin/#manifest-file
+            // Extract Webpack bootstrap logic into manifest.js otherwise it gets written into vendor.js
+            new webpack.optimize.CommonsChunkPlugin({
+                name: "manifest",
+                minChunks: Infinity
             }),
 
             new OptimizeCssAssetsPlugin({
