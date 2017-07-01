@@ -17,6 +17,7 @@ require('./shared/service/settings.service');
 require('./feed/feed-fetch-error-panel/feed-fetch-error-panel.component');
 require('./shared/component/load-more/load-more.component');
 require('./maintenance/maintenance.component');
+require('./shared/component/icon/icon.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 

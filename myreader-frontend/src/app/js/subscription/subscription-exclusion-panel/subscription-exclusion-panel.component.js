@@ -2,6 +2,7 @@
     'use strict';
 
     require('./subscription-exclusion/subscription-exclusion.component');
+    require('../../shared/component/icon/icon.component');
 
     function SubscriptionExclusionPanelComponent () {
         var ctrl = this;

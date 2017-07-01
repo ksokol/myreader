@@ -9,13 +9,18 @@
         <my-validation-message my-form-control="feedForm.title"></my-validation-message>
     </md-input-container>
 
-    <md-input-container class="md-block">
+    <md-input-container md-no-float class="md-icon-float md-icon-right md-block">
         <label>Url</label>
         <input name="url"
                autocomplete="off"
                ng-model="feed.url"
                my-backend-validation my-validations="validations">
-        <md-icon md-font-library="material-icons" class="my-pointer" ng-if="feed.url" my-safe-opener url="{{feed.url}}">open_in_new</md-icon>
+
+        <my-icon class="my-feed-detail-url-icon"
+                 my-type="open-in-new"
+                 ng-if="feed.url"
+                 my-safe-opener url="{{feed.url}}">
+        </my-icon>
 
         <my-validation-message my-form-control="feedForm.url"></my-validation-message>
     </md-input-container>

@@ -64,7 +64,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', function () {
             expect(element.find('input')[0].value).toEqual('expected title');
             expect(element.find('input')[1].value).toEqual('expected origin');
             expect(element.find('input')[1].disabled).toEqual(true);
-            expect(mySafeOpener.scope.url).toEqual('expected origin');
+            expect(mySafeOpener.scope.ctrl.url).toEqual('expected origin');
             expect(mySubscriptionTagPanel.bindings.mySelectedItem).toEqual('expected tag');
             expect(mySubscriptionExclusionPanel.bindings.myId).toEqual('expected uuid');
             expect(mySubscriptionTagPanel.bindings.myDisabled).toBeUndefined();

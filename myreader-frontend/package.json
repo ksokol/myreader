@@ -17,7 +17,8 @@
     "angular-messages": "1.5.8",
     "angular-sanitize": "1.5.8",
     "angular-ui-router": "0.2.15",
-    "timeago.js": "3.0.1"
+    "timeago.js": "3.0.1",
+    "material-design-icons": "3.0.1"
   },
   "devDependencies": {
     "angular-mocks": "1.5.8",
@@ -45,7 +46,8 @@
     "rimraf": "2.6.1",
     "style-loader": "0.16.1",
     "webpack": "2.4.1",
-    "webpack-dev-server": "2.4.1"
+    "webpack-dev-server": "2.4.1",
+    "svg-url-loader": "2.1.1"
   },
   "directories": {
     "test": "test"

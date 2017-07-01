@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    require('../../shared/component/icon/icon.component');
+
     function EntryActionsComponent() {
         var ctrl = this;
 

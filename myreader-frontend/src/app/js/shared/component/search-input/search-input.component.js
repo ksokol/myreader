@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    require('../icon/icon.component');
+
     function SearchInputComponent() {
         var ctrl = this;
 

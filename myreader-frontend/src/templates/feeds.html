@@ -1,19 +1,19 @@
 <md-subheader class="md-primary my-subheader">
-    <div layout="row" layout-align="center end" layout-wrap>
-        <div flex="90">
+    <div layout="row" layout-align="end">
+        <div flex="85" flex-md="95" flex-sm="95" flex-xs="92">
             <my-search-input
                     my-value="searchKey"
                     my-on-change="onSearchChange(value)"
                     my-on-clear="onSearchClear()">
             </my-search-input>
         </div>
-        <div flex>
-            <div layout="row" layout-align="end center">
-                <div>
-                    <md-button aria-label="label" class="md-icon-button" ng-click="down()">
-                        <md-icon md-font-library="material-icons" ng-click="refresh()" class="my-pointer">refresh</md-icon>
-                    </md-button>
-                </div>
+        <div flex="15" flex-md="5" flex-sm="5" flex-xs="8">
+            <div layout="row" layout-align="end">
+                <md-button
+                        aria-label="Refresh"
+                        class="md-icon-button">
+                    <my-icon my-type="refresh" ng-click="refresh()"></my-icon>
+                </md-button>
             </div>
         </div>
     </div>
@@ -27,7 +27,7 @@
                 <div>
                     <h3 tabindex="-1" ng-bind-html="feed.title"></h3>
                     <h4>
-                        <md-icon ng-show="feed.hasErrors" md-font-library="material-icons">error</md-icon>
+                        <my-icon my-type="error" ng-show="feed.hasErrors"></my-icon>
                         {{::feed.createdAt | timeago}}
                     </h4>
                 </div>

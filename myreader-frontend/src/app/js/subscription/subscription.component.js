@@ -4,6 +4,7 @@
     require('./subscription-exclusion-panel/subscription-exclusion-panel.component');
     require('./subscription-tag-panel/subscription-tag-panel.component');
     require('./subscription.service');
+    require('../shared/component/icon/icon.component');
 
     function SubscriptionComponent($state, $stateParams, subscriptionService) {
         var ctrl = this;

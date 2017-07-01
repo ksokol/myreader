@@ -83,8 +83,31 @@ describe('src/app/js/shared/component/notification-panel/notification-panel.comp
 
     describe('with html', function () {
 
-        var scope, element, message, myOnDismiss;
+        var scope, message, myOnDismiss;
         var aMessage = { type: 'success', message: 'expected message' };
+
+        var Icon = function (el) {
+            return {
+                click: function () {
+                    el.triggerHandler('click');
+                }
+            }
+        };
+
+        var PageObject = function (el) {
+            return {
+                clearIcon: function () {
+                    var icons = el.find('my-icon');
+                    return new Icon(angular.element(icons[0]));
+                },
+                notificationArea: function () {
+                    return el.find('div').children();
+                },
+                notificationMessage: function () {
+                    return el.find('span')[0];
+                }
+            }
+        };
 
         beforeEach(inject(function ($rootScope, $compile) {
             myOnDismiss = jasmine.createSpy('myOnDismiss');
@@ -92,37 +115,38 @@ describe('src/app/js/shared/component/notification-panel/notification-panel.comp
             scope.message = aMessage;
             scope.onDismiss = myOnDismiss;
 
-            element = $compile('<my-notification-panel my-message="message" my-on-dismiss="onDismiss()"></my-notification-panel>')(scope);
+            var element = $compile('<my-notification-panel my-message="message" my-on-dismiss="onDismiss()"></my-notification-panel>')(scope);
             scope.$digest();
+            page = new PageObject(element);
         }));
 
         it('should hide notification when message is empty', function () {
             scope.message = {};
             scope.$digest();
 
-            expect(element.find('div').children().length).toEqual(0);
+            expect(page.notificationArea().length).toEqual(0);
         });
 
         it('should show notification when message is not empty', function () {
-            expect(element.find('div').children().length).toBeGreaterThan(0);
+            expect(page.notificationArea().length).toBeGreaterThan(0);
         });
 
         it('should render message', function () {
-            expect(element.find('span')[0].innerText).toEqual('expected message');
+            expect(page.notificationMessage().innerText).toEqual('expected message');
         });
 
         it('should append notification type to classList', function () {
-            expect(element.find('div').children()[0].classList).toContain('my-notification-panel__message-success');
+            expect(page.notificationArea()[0].classList).toContain('my-notification-panel__message-success');
         });
 
         it('should hide notification when close icon clicked', function () {
-            element.find('md-icon')[0].click();
+            page.clearIcon().click();
 
-            expect(element.find('div').children().length).toEqual(0);
+            expect(page.notificationArea().length).toEqual(0);
         });
 
         it('should call myOnDismiss when close icon clicked', function () {
-            element.find('md-icon')[0].click();
+            page.clearIcon().click();
 
             expect(myOnDismiss).toHaveBeenCalled();
         });
@@ -130,7 +154,7 @@ describe('src/app/js/shared/component/notification-panel/notification-panel.comp
         it('should hide notification after a predefined amount of time', inject(function ($timeout) {
             $timeout.flush(5000);
 
-            expect(element.find('div').children().length).toEqual(0);
+            expect(page.notificationArea().length).toEqual(0);
         }));
     });
 });
