@@ -1,5 +1,6 @@
 .my-search-input-container {
     margin: 0 !important;
+    padding-left: 36px;
 }
 
 .my-search-input-container > div[class="md-errors-spacer"] {
@@ -8,4 +9,17 @@
 
 .my-search-input-container__button-clear {
     cursor: pointer;
+    margin: 0;
+    right: 2px;
+    left: auto;
+    position: absolute;
+    top: 8px;
+}
+
+.my-search-input-container__search-icon {
+    position: absolute;
+    top: 8px;
+    left: 2px;
+    right: auto;
+    width: 24px;
 }

@@ -6,7 +6,37 @@ describe('src/app/js/feed/feed-fetch-error-panel/feed-fetch-error-panel.componen
 
         var myFeedFetchError = testUtils.componentMock('myFeedFetchError');
 
-        var scope, compile, element, myOnError;
+        var scope, compile, myOnError, page;
+
+        var Icon = function (el) {
+            return {
+                el: el,
+                iconType: function () {
+                    return el.attr('my-type');
+                },
+                click: function () {
+                    el.triggerHandler('click');
+                }
+            }
+        };
+
+        var PageObject = function (el) {
+            return {
+                title: function () {
+                    return el.find('h2')[0];
+                },
+                expandIcon: function () {
+                    var icons = el.find('my-icon');
+                    return new Icon(angular.element(icons[0]));
+                },
+                errorExclusion: function () {
+                    return el.find('my-error-exclusion')[0];
+                },
+                feedFetchError: function () {
+                    return el.find('my-feed-fetch-error')[0];
+                }
+            }
+        };
 
         beforeEach(require('angular').mock.module('myreader', myFeedFetchError));
 
@@ -19,39 +49,42 @@ describe('src/app/js/feed/feed-fetch-error-panel/feed-fetch-error-panel.componen
             scope.id = '2';
             scope.myOnError = myOnError;
 
-            element = compile('<my-feed-fetch-error-panel ' +
+            var element = compile('<my-feed-fetch-error-panel ' +
                 'my-id="id" ' +
                 'my-on-error="myOnError(error)">' +
                 '</my-feed-fetch-error-panel>')(scope);
 
             scope.$digest();
-            element.find('md-icon')[0].click();
+            page = new PageObject(element);
+            page.expandIcon().click();
         }));
 
         it('should render title', function () {
-            expect(element.find('h2')[0].innerText).toContain('Fetch errors');
+            expect(page.title().innerText).toContain('Fetch errors');
         });
 
         it('should show expand icon', function () {
-            element = compile('<my-feed-fetch-error-panel></my-feed-fetch-error-panel>')(scope);
+            var element = compile('<my-feed-fetch-error-panel></my-feed-fetch-error-panel>')(scope);
             scope.$digest();
+            page = new PageObject(element);
 
-            expect(element.find('md-icon')[0].innerText).toContain('expand_more');
+            expect(page.expandIcon().iconType()).toEqual('expand-more');
         });
 
         it('should not render feed fetch error component when panel initialized', function () {
-            element = compile('<my-feed-fetch-error-panel></my-feed-fetch-error-panel>')(scope);
+            var element = compile('<my-feed-fetch-error-panel></my-feed-fetch-error-panel>')(scope);
             scope.$digest();
+            page = new PageObject(element);
 
-            expect(element.find('my-error-exclusion').length).toEqual(0);
+            expect(page.errorExclusion()).toBeUndefined();
         });
 
         it('should show less icon', function () {
-            expect(element.find('md-icon')[0].innerText).toContain('expand_less');
+            expect(page.expandIcon().iconType()).toEqual('expand-less');
         });
 
         it('should render feed fetch error component when show more icon clicked', function () {
-            expect(element.find('my-feed-fetch-error').length).toEqual(1);
+            expect(page.feedFetchError()).toBeDefined();
         });
 
         it('should forward bindings to feed fetch error component', function () {
@@ -65,10 +98,10 @@ describe('src/app/js/feed/feed-fetch-error-panel/feed-fetch-error-panel.componen
         });
 
         it('should hide feed fetch error component when show less icon clicked', function () {
-            element.find('md-icon')[0].click();
+            page.expandIcon().click();
 
-            expect(element.find('md-icon')[0].innerText).toContain('expand_more');
-            expect(element.find('my-feed-fetch-error')[0].classList).toContain('ng-hide');
+            expect(page.expandIcon().iconType()).toEqual('expand-more');
+            expect(page.feedFetchError().classList).toContain('ng-hide');
         });
     });
 });

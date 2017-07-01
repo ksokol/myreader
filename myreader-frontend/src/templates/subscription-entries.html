@@ -1,5 +1,5 @@
 <md-subheader class="md-primary my-subheader">
-    <div layout="row" layout-align="center end" layout-wrap>
+    <div layout="row" layout-align="end">
         <div flex="85" flex-md="95" flex-sm="95" flex-xs="92">
             <my-search-input
                     my-value="search"
@@ -7,23 +7,30 @@
                     my-on-clear="onSearchClear()">
             </my-search-input>
         </div>
-        <div flex="15" flex-md="5" flex-sm="5" flex-xs="8" layout-wrap>
-            <div layout="row" layout-align="end center">
-                <div>
-                    <md-button hide show-gt-md aria-label="photo" class="md-icon-button" ng-click="up()">
-                        <md-icon md-font-library="material-icons" class="my-pointer">navigate_before</md-icon>
-                    </md-button>
-                </div>
-                <div>
-                    <md-button hide show-gt-md aria-label="label" class="md-icon-button" ng-click="down()">
-                        <md-icon md-font-library="material-icons" class="my-pointer">navigate_next</md-icon>
-                    </md-button>
-                </div>
-                <div>
-                    <md-button aria-label="comment" class="md-icon-button" ng-click="forceRefresh()">
-                        <md-icon md-font-library="material-icons" class="my-pointer">refresh</md-icon>
-                    </md-button>
-                </div>
+        <div flex="15" flex-md="5" flex-sm="5" flex-xs="8">
+            <div layout="row" layout-align="end">
+                <md-button
+                        aria-label="Previous entry"
+                        hide
+                        show-gt-md
+                        class="md-icon-button"
+                        ng-click="up()">
+                    <my-icon my-type="navigate-before"></my-icon>
+                </md-button>
+                <md-button
+                        aria-label="Next entry"
+                        hide
+                        show-gt-md
+                        class="md-icon-button"
+                        ng-click="down()">
+                    <my-icon my-type="navigate-next"></my-icon>
+                </md-button>
+                <md-button
+                        aria-label="Refresh"
+                        class="md-icon-button"
+                        ng-click="forceRefresh()">
+                    <my-icon my-type="refresh"></my-icon>
+                </md-button>
             </div>
         </div>
     </div>

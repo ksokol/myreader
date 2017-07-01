@@ -1,8 +1,8 @@
 describe('src/app/js/entry/entry-actions/entry-actions.component.spec.js', function () {
 
     var item;
-
-    beforeEach(require('angular').mock.module('myreader'));
+    var angular = require('angular');
+    beforeEach(angular.mock.module('myreader'));
 
     beforeEach(function () {
         item = {
@@ -40,7 +40,31 @@ describe('src/app/js/entry/entry-actions/entry-actions.component.spec.js', funct
 
     describe('with html', function () {
 
-        var scope, element;
+        var scope, page;
+
+        var Button = function (el) {
+            return {
+                iconType: function () {
+                    return el.find('my-icon').attr('my-type');
+                },
+                click: function () {
+                    el.triggerHandler('click');
+                }
+            }
+        };
+
+        var PageObject = function (el) {
+            return {
+                expandIcon: function () {
+                    var buttons = el.find('button');
+                    return new Button(angular.element(buttons[0]));
+                },
+                checkButton: function () {
+                    var buttons = el.find('button');
+                    return new Button(angular.element(buttons[1]));
+                }
+            }
+        };
 
         beforeEach(inject(function ($rootScope, $compile) {
             var myOnMore = jasmine.createSpy('myOnMore');
@@ -53,42 +77,44 @@ describe('src/app/js/entry/entry-actions/entry-actions.component.spec.js', funct
                 seen: true
             };
 
-            element = $compile('<my-entry-actions my-item="item" my-on-more="myOnMore(showMore)" my-on-check="myOnCheck(item)"></my-entry-actions>')(scope);
+            var element = $compile('<my-entry-actions my-item="item" my-on-more="myOnMore(showMore)" my-on-check="myOnCheck(item)"></my-entry-actions>')(scope);
             scope.$digest();
+
+            page = new PageObject(element);
         }));
 
         it('should show "expand more" and "unseen item" actions', function () {
             scope.item.seen = false;
+            scope.$digest();
 
-            var buttons = element.find('button');
-            expect(buttons[0].innerText).toContain('expand_more');
-            expect(buttons[1].innerText).toContain('check');
+            expect(page.expandIcon().iconType()).toEqual('expand-more');
+            expect(page.checkButton().iconType()).toEqual('check');
         });
 
         it('should toggle "expand more" action', function () {
-            element.find('button')[0].click();
-            expect(element.find('button')[0].innerText).toContain('expand_less');
+            page.expandIcon().click();
+            expect(page.expandIcon().iconType()).toEqual('expand-less');
 
-            element.find('button')[0].click();
-            expect(element.find('button')[0].innerText).toContain('expand_more');
+            page.expandIcon().click();
+            expect(page.expandIcon().iconType()).toEqual('expand-more');
         });
 
         it('should show "seen item" action when seen flag is set to true', function () {
-            expect(element.find('button')[1].innerText).toContain('check_circle');
+            expect(page.checkButton().iconType()).toEqual('check-circle');
         });
 
         it('should propagate "onMore" event when "expand more" action triggered', function () {
-            element.find('button')[0].click();
+            page.expandIcon().click();
             scope.$digest();
             expect(scope.myOnMore).toHaveBeenCalledWith(true);
 
-            element.find('button')[0].click();
+            page.expandIcon().click();
             scope.$digest();
             expect(scope.myOnMore).toHaveBeenCalledWith(false);
         });
 
         it('should propagate "onCheck" event with seen flag set to false when "check" action triggered', function () {
-            element.find('button')[1].click();
+            page.checkButton().click();
             scope.$digest();
             expect(scope.myOnCheck).toHaveBeenCalledWith({ seen: false });
         });
@@ -96,7 +122,7 @@ describe('src/app/js/entry/entry-actions/entry-actions.component.spec.js', funct
         it('should propagate "onCheck" event with seen flag set to true when "check" action triggered', function () {
             scope.item.seen = false;
             scope.$digest();
-            element.find('button')[1].click();
+            page.checkButton().click();
             scope.$digest();
             expect(scope.myOnCheck).toHaveBeenCalledWith({ seen: true });
         });

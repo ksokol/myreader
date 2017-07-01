@@ -78,7 +78,7 @@ module.exports = function makeWebpackConfig() {
             // Reference: https://github.com/webpack/file-loader
             // Rename the file using the asset hash
             // Pass along the updated reference to your code
-            test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
+            test: /\.(png|jpg|jpeg|gif|woff|woff2|ttf|eot)$/,
             query: {
                 publicPath: '../',
                 outputPath: 'app/',
@@ -90,6 +90,9 @@ module.exports = function makeWebpackConfig() {
             test: /\.html$/,
             exclude: /node_modules/,
             use: 'raw-loader'
+        }, {
+            test: /\.svg$/,
+            loader: 'svg-url-loader',
         }]
     };
 

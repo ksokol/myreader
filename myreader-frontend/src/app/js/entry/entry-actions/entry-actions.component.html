@@ -1,27 +1,27 @@
 <md-button class="md-icon-button"
            aria-label="Show more"
            ng-click="$ctrl.toggleMore()"
-           ng-if="! $ctrl.showMore">
-    <md-icon md-font-library="material-icons">expand_more</md-icon>
+           ng-if="!$ctrl.showMore">
+    <my-icon my-type="expand-more"></my-icon>
 </md-button>
 
 <md-button class="md-icon-button"
            aria-label="Show less"
            ng-click="$ctrl.toggleMore()"
            ng-if="$ctrl.showMore">
-    <md-icon md-font-library="material-icons">expand_less</md-icon>
+    <my-icon my-type="expand-less"></my-icon>
 </md-button>
 
 <md-button class="md-icon-button"
            aria-label="Mark as unseen"
            ng-if="$ctrl.item.seen"
            ng-click="$ctrl.onCheckClick(false)">
-    <md-icon md-font-library="material-icons">check_circle</md-icon>
+    <my-icon my-type="check-circle"></my-icon>
 </md-button>
 
 <md-button class="md-icon-button"
            aria-label="Mark as seen"
            ng-if="!$ctrl.item.seen"
            ng-click="$ctrl.onCheckClick(true)">
-    <md-icon md-font-library="material-icons">check</md-icon>
+    <my-icon my-type="check"></my-icon>
 </md-button>

@@ -6,4 +6,3 @@ require('angular-messages');
 require('angular-hotkeys');
 
 require('angular-material/angular-material.css');
-require('../css/MaterialIcons-Regular.woff2');

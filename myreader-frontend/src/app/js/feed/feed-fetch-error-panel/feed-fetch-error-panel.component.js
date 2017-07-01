@@ -2,6 +2,7 @@
     'use strict';
 
     require('./feed-fetch-error/feed-fetch-error.component');
+    require('../../shared/component/icon/icon.component');
 
     function FeedFetchErrorPanelComponent () {
         var ctrl = this;

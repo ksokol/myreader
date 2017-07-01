@@ -6,12 +6,14 @@
     require('angular').module('myreader').directive('mySafeOpener', ['safeOpenerService', function (safeOpenerService) {
         return {
             restrict: 'A',
-            scope: {
+            controllerAs: 'ctrl',
+            bindToController: {
                 url: '@'
             },
-            link: function(scope, element) {
+            controller: function () {},
+            link: function(scope, element, attrs) {
                 element.on('click', function () {
-                    safeOpenerService.openSafely(scope.url);
+                    safeOpenerService.openSafely(attrs.url);
                 });
             }
         }

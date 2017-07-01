@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    require('../icon/icon.component');
+
     function NotificationPanelComponent($timeout) {
         var ctrl = this;
         var promise;
