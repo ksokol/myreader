@@ -1,11 +1,8 @@
-(function () {
-    'use strict';
+'use strict';
 
-    require('./about/about.component');
-    require('./maintenance-actions/maintenance-actions.component');
+require('./about/about.component');
+require('./maintenance-actions/maintenance-actions.component');
 
-    require('angular').module('myreader').component('myMaintenance', {
-        template: require('./maintenance.component.html')
-    });
-
-})();
+require('angular').module('myreader').component('myMaintenance', {
+    template: require('./maintenance.component.html')
+});

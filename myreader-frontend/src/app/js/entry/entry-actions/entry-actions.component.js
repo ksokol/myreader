@@ -1,37 +1,34 @@
-(function () {
-    'use strict';
+'use strict';
 
-    require('../../shared/component/icon/icon.component');
+require('../../shared/component/icon/icon.component');
 
-    function EntryActionsComponent() {
-        var ctrl = this;
+function EntryActionsComponent() {
+    var ctrl = this;
 
-        ctrl.$onInit = function () {
-            ctrl.item = ctrl.myItem;
-        };
+    ctrl.$onInit = function () {
+        ctrl.item = ctrl.myItem;
+    };
 
-        ctrl.$onChanges = function (obj) {
-            ctrl.item = obj.myItem.currentValue;
-        };
+    ctrl.$onChanges = function (obj) {
+        ctrl.item = obj.myItem.currentValue;
+    };
 
-        ctrl.toggleMore = function () {
-            ctrl.showMore = !ctrl.showMore;
-            ctrl.myOnMore({showMore: ctrl.showMore});
-        };
+    ctrl.toggleMore = function () {
+        ctrl.showMore = !ctrl.showMore;
+        ctrl.myOnMore({showMore: ctrl.showMore});
+    };
 
-        ctrl.onCheckClick = function (value) {
-            ctrl.myOnCheck({item: { seen: value}});
-        };
+    ctrl.onCheckClick = function (value) {
+        ctrl.myOnCheck({item: { seen: value}});
+    };
+}
+
+require('angular').module('myreader').component('myEntryActions', {
+    template: require('./entry-actions.component.html'),
+    controller: EntryActionsComponent,
+    bindings: {
+        myItem: '<',
+        myOnMore: '&',
+        myOnCheck: '&'
     }
-
-    require('angular').module('myreader').component('myEntryActions', {
-        template: require('./entry-actions.component.html'),
-        controller: EntryActionsComponent,
-        bindings: {
-            myItem: '<',
-            myOnMore: '&',
-            myOnCheck: '&'
-        }
-    });
-
-})();
+});

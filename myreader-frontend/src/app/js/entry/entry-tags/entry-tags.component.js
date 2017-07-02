@@ -1,26 +1,23 @@
-(function () {
-    'use strict';
+'use strict';
 
-    function EntryTagsComponent () {
-        var ctrl = this;
+function EntryTagsComponent () {
+    var ctrl = this;
 
-        ctrl.$onInit = function () {
-          ctrl.tags = ctrl.myItem.tag ? ctrl.myItem.tag.split(/[ ,]+/) : [];
-        };
+    ctrl.$onInit = function () {
+      ctrl.tags = ctrl.myItem.tag ? ctrl.myItem.tag.split(/[ ,]+/) : [];
+    };
 
-        ctrl.onTagChange = function () {
-            ctrl.myOnChange({tag: ctrl.tags.join(", ")});
-        }
+    ctrl.onTagChange = function () {
+        ctrl.myOnChange({tag: ctrl.tags.join(", ")});
     }
+}
 
-    require('angular').module('myreader').component('myEntryTags', {
-        template: require('./entry.tags.component.html'),
-        controller: EntryTagsComponent,
-        bindings: {
-            myItem: '<',
-            myShow: '<',
-            myOnChange: '&'
-        }
-    });
-
-})();
+require('angular').module('myreader').component('myEntryTags', {
+    template: require('./entry.tags.component.html'),
+    controller: EntryTagsComponent,
+    bindings: {
+        myItem: '<',
+        myShow: '<',
+        myOnChange: '&'
+    }
+});

@@ -1,23 +1,20 @@
-(function () {
-    'use strict';
+'use strict';
 
-    require('../../../shared/safe-opener/safe-opener.service');
+require('../../../shared/safe-opener/safe-opener.service');
 
-    require('angular')
-        .module('myreader')
-        .directive('myEntryContentSanitizer', ['$timeout', 'safeOpenerService', function ($timeout, safeOpenerService) {
+require('angular')
+    .module('myreader')
+    .directive('myEntryContentSanitizer', ['$timeout', 'safeOpenerService', function ($timeout, safeOpenerService) {
 
-            return {
-                restrict: 'A',
-                link: function(scope, element) {
-                    $timeout(function () {
-                        element.find('a').on('click', function ($event) {
-                            $event.preventDefault();
-                            safeOpenerService.openSafely(this.href);
-                        })
-                    }, 0);
-                }
+        return {
+            restrict: 'A',
+            link: function(scope, element) {
+                $timeout(function () {
+                    element.find('a').on('click', function ($event) {
+                        $event.preventDefault();
+                        safeOpenerService.openSafely(this.href);
+                    })
+                }, 0);
             }
-        }]);
-
-})();
+        }
+    }]);
