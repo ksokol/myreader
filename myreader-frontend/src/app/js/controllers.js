@@ -18,6 +18,7 @@ require('./feed/feed-fetch-error-panel/feed-fetch-error-panel.component');
 require('./shared/component/load-more/load-more.component');
 require('./maintenance/maintenance.component');
 require('./shared/component/icon/icon.component');
+require('./feed/feed.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -402,47 +403,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 
     $scope.onSearchClear = function () {
         $scope.searchKey = '';
-    };
-
-    $scope.refresh();
-}])
-
-.controller('FeedDetailCtrl', ['$scope', '$stateParams', '$state', 'feedService',
-    function($scope, $stateParams, $state, feedService) {
-
-    $scope.feed = {};
-
-    $scope.refresh = function() {
-        feedService.findOne($stateParams.uuid)
-            .then(function(data) {
-                $scope.feed = data;
-            });
-    };
-
-    $scope.onDelete = function() {
-        return feedService.remove($scope.feed);
-    };
-
-    $scope.onSuccessDelete = function() {
-        $state.go('admin.feed');
-    };
-
-    $scope.onSave = function() {
-        return feedService.save($scope.feed);
-    };
-
-    $scope.onSuccessSave = function() {
-        $scope.message = { type: 'success', message: 'saved' };
-    };
-
-    $scope.onError = function(error) {
-        if(error.status === 409) {
-            $scope.message = { type: 'error', message: 'abort. Feed has subscriptions' };
-        } else if (error.status === 400) {
-            $scope.validations = error.data.fieldErrors;
-        } else {
-            $scope.message = { type: 'error', message: error.data };
-        }
     };
 
     $scope.refresh();
