@@ -19,6 +19,7 @@ require('./shared/component/load-more/load-more.component');
 require('./maintenance/maintenance.component');
 require('./shared/component/icon/icon.component');
 require('./feed/feed.component');
+require('./feed/feed.service');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -380,13 +381,13 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 
 .controller('FeedsCtrl', ['$scope', '$state', 'feedService', function($scope, $state, feedService) {
 
-    $scope.data = [];
+    $scope.feeds = [];
 
     $scope.refresh = function() {
         feedService.findAll()
         .then(function(data) {
             $scope.searchKey = null;
-            $scope.data = data;
+            $scope.feeds = data;
         })
         .catch (function(error) {
             $scope.message = { type: 'error', message: error };

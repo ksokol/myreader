@@ -6,7 +6,8 @@ require('../shared/component/icon/icon.component');
 require('../shared/component/button-group/button-group.component');
 require('../shared/component/button/button.component');
 require('../shared/component/notification-panel/notification-panel.component');
-require('../feed/feed-fetch-error-panel/feed-fetch-error-panel.component');
+require('./feed-fetch-error-panel/feed-fetch-error-panel.component');
+require('./feed.service');
 
 function FeedComponent($state, $stateParams, feedService) {
     var ctrl = this;

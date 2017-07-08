@@ -101,34 +101,6 @@ angular.module('common.services', [])
     }
 }])
 
-.service('feedService', ['$http', function($http) {
-    var feedUrl = '/myreader/api/2/feeds';
-
-    return {
-        findAll: function() {
-            return $http.get(feedUrl)
-                .then(function (response) {
-                    return new Feeds(response.data.content, response.data.links);
-                });
-        },
-        findOne: function(uuid) {
-            return $http.get(feedUrl + '/' + uuid)
-                .then(function (response) {
-                    return response.data;
-                });
-        },
-        remove: function(feed) {
-            return $http.delete(feedUrl + '/' + feed.uuid);
-        },
-        save: function(feed) {
-            return $http.patch(feedUrl + '/' + feed.uuid, { 'title': feed.title, 'url': feed.url })
-                .then(function (response) {
-                    return response.data;
-                });
-        }
-    }
-}])
-
 .service('bookmarkService', ['$http', function($http) {
     var url = '/myreader/api/2/subscriptionEntries/availableTags';
 
