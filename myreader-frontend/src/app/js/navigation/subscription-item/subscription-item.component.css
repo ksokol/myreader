@@ -2,9 +2,32 @@
     background-color: #e5e5e5;
 }
 
-.my-navigation-dynamic__sub-menu span {
-    display: block;
-    font-weight: 400;
-    padding: 0 16px 0 32px;
+.my-navigation-dynamic__item-title-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.my-navigation-dynamic__item-subscription {
+    flex-grow: 1;
+    padding: 0 16px 0 16px;
     text-transform: none;
+}
+
+.my-navigation-dynamic__item-tag {
+    flex-grow: 1;
+}
+
+.my-navigation-dynamic__item-badge {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    background-color: #777;
+    border-radius: 10px;
 }

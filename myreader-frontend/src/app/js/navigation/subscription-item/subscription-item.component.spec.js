@@ -115,20 +115,20 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
 
     describe('with html', function () {
 
-        var testUtils = require('../../shared/test-utils');
-
         var scope, element, myOnSelect;
 
         var item = {
+            title: 'item title',
+            unseen: 2,
             tag: 'tag',
             uuid: 'uuid',
             subscriptions: [
-                { tag: 'tag', uuid: 'uuid1' },
-                { tag: 'tag', uuid: 'uuid2' }
+                { title: 'subscription 1', tag: 'tag', uuid: 'uuid1', unseen: 1 },
+                { title: 'subscription 2', tag: 'tag', uuid: 'uuid2', unseen: 0 }
             ]
         };
 
-        beforeEach(require('angular').mock.module('myreader', testUtils.filterMock('myNavigationItemTitle')));
+        beforeEach(require('angular').mock.module('myreader'));
 
         beforeEach(inject(function ($rootScope, $compile) {
             myOnSelect = jasmine.createSpy('myOnSelect');
@@ -180,9 +180,20 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
                 expect(myOnSelect).toHaveBeenCalledWith({ tag: 'tag', uuid: 'uuid' });
             });
 
-            it('should render title with pipe', function () {
-                expect(element.find('span')[0].innerText)
-                    .toEqual('myNavigationItemTitle({"tag":"tag","uuid":"uuid","subscriptions":[{"tag":"tag","uuid":"uuid1"},{"tag":"tag","uuid":"uuid2"}]})');
+            it('should render title and unseen count', function () {
+                var div = angular.element(element.find('li')[0]).find('div');
+
+                expect(div.find('div')[0].innerText).toEqual('item title');
+                expect(angular.element(div.find('div')[1]).find('span').text()).toEqual('2');
+            });
+
+            it('should render title and no unseen count', function () {
+                delete scope.item.unseen;
+                scope.$digest();
+
+                var div = angular.element(element.find('li')[0]).find('div');
+                expect(div.find('div')[0].innerText).toEqual('item title');
+                expect(div.find('div')[1]).toBeUndefined();
             });
         });
 
@@ -203,17 +214,6 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
             it('should render every item', function () {
                 expect(element.find('ul').find('li').length).toEqual(2);
             });
-
-            it('should hide items when unseen count is zero', inject(function ($rootScope, $compile) {
-                scope.item.subscriptions[0].unseen = 0;
-                element = $compile('<my-navigation-subscription-item my-item="item" my-selected="selected"></my-navigation-subscription-item>')(scope);
-                scope.$digest();
-
-                var items = element.find('ul').find('li');
-
-                expect(items[0].classList).toContain('ng-hide');
-                expect(items[1].classList).not.toContain('ng-hide');
-            }));
 
             it('should not mark as selected', function () {
                 var items = element.find('ul').find('li');
@@ -242,11 +242,18 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
                 expect(myOnSelect).toHaveBeenCalledWith({ tag: 'tag', uuid: 'uuid2' });
             });
 
-            it('should render title with pipe', function () {
-                expect(element.find('ul').find('li').find('button')[0].innerText)
-                    .toEqual('myNavigationItemTitle({"tag":"tag","uuid":"uuid1","unseen":0})');
-                expect(element.find('ul').find('li').find('button')[1].innerText)
-                    .toEqual('myNavigationItemTitle({"tag":"tag","uuid":"uuid2"})');
+            it('should render item title with unseen count', function () {
+                var div1 = angular.element(angular.element(element.find('ul').find('button')[0]).find('div')).find('div');
+
+                 expect(div1[0].innerText).toEqual('subscription 1');
+                 expect(angular.element(div1[1]).find('span').text()).toEqual('1');
+            });
+
+            it('should render item title without unseen count', function () {
+                var div2 = angular.element(angular.element(element.find('ul').find('button')[1]).find('div')).find('div');
+
+                expect(div2[0].innerText).toEqual('subscription 2');
+                expect(div2[1]).toBeUndefined();
             });
         });
     });
