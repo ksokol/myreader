@@ -1,4 +1,4 @@
-fdescribe('src/app/js/shared/component/notification-panel/notification-panel.component.spec.js', function () {
+describe('src/app/js/shared/component/notification-panel/notification-panel.component.spec.js', function () {
 
     beforeEach(require('angular').mock.module('myreader'));
 
