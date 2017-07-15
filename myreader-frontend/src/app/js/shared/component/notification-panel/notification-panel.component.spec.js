@@ -1,4 +1,4 @@
-describe('src/app/js/shared/component/notification-panel/notification-panel.component.spec.js', function () {
+fdescribe('src/app/js/shared/component/notification-panel/notification-panel.component.spec.js', function () {
 
     beforeEach(require('angular').mock.module('myreader'));
 
@@ -101,7 +101,7 @@ describe('src/app/js/shared/component/notification-panel/notification-panel.comp
                     return new Icon(angular.element(icons[0]));
                 },
                 notificationArea: function () {
-                    return el.find('div').children();
+                    return el.children();
                 },
                 notificationMessage: function () {
                     return el.find('span')[0];
