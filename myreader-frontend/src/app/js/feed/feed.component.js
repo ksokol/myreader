@@ -45,6 +45,8 @@ function FeedComponent($state, $stateParams, feedService) {
             ctrl.message = { type: 'error', message: error.data };
         }
     };
+
+    ctrl.css = require('./feed.component.css');
 }
 
 require('angular').module('myreader').component('myFeed', {
