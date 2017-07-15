@@ -116,8 +116,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                 url: "/feed",
                 views: {
                     content: {
-                        template: require('../../templates/feeds.html'),
-                        controller: 'FeedsCtrl'
+                        template: '<div><my-feed-list></my-feed-list></div>',
                     }
                 }
             })

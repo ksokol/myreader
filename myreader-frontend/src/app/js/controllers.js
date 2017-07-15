@@ -14,12 +14,11 @@ require('./subscription/subscription.component');
 require('./login/login.component');
 require('./settings/settings.component');
 require('./shared/service/settings.service');
-require('./feed/feed-fetch-error-panel/feed-fetch-error-panel.component');
 require('./shared/component/load-more/load-more.component');
 require('./maintenance/maintenance.component');
 require('./shared/component/icon/icon.component');
 require('./feed/feed.component');
-require('./feed/feed.service');
+require('./feed/feed-list.component');
 
 require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
 
@@ -366,36 +365,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
 
     $scope.open = function(subscription) {
         $state.go('app.subscription', {uuid: subscription.uuid});
-    };
-
-    $scope.onSearchChange = function (value) {
-        $scope.searchKey = value;
-    };
-
-    $scope.onSearchClear = function () {
-        $scope.searchKey = '';
-    };
-
-    $scope.refresh();
-}])
-
-.controller('FeedsCtrl', ['$scope', '$state', 'feedService', function($scope, $state, feedService) {
-
-    $scope.feeds = [];
-
-    $scope.refresh = function() {
-        feedService.findAll()
-        .then(function(data) {
-            $scope.searchKey = null;
-            $scope.feeds = data;
-        })
-        .catch (function(error) {
-            $scope.message = { type: 'error', message: error };
-        });
-    };
-
-    $scope.open = function(feed) {
-        $state.go('admin.feed-detail', {uuid: feed.uuid});
     };
 
     $scope.onSearchChange = function (value) {

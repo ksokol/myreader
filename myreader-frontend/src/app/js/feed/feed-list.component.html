@@ -1,0 +1,21 @@
+<div class="my-feed-list__search-panel">
+    <my-search-input
+            class="my-feed-list__search-input"
+            my-on-change="$ctrl.onSearchChange(value)"
+            my-on-clear="$ctrl.onSearchClear()">
+    </my-search-input>
+</div>
+
+<my-notification-panel layout="row" layout-align="center center" my-message="$ctrl.message"></my-notification-panel>
+
+<md-list>
+    <md-list-item ng-click="$ctrl.open(feed)" class="md-2-line" ng-repeat="feed in $ctrl.feeds | filter: $ctrl.searchKey">
+        <div class="md-list-item-text">
+            <h3 ng-bind-html="feed.title"></h3>
+            <p>
+                <my-icon my-type="error" ng-if="feed.hasErrors"></my-icon>
+                {{::feed.createdAt | timeago}}
+            </p>
+        </div>
+    </md-list-item>
+</md-list>
