@@ -154,11 +154,6 @@ my-divider {
     margin: 0;
 }
 
-md-input-container.md-default-theme > .my-input {
-    border-color: rgba(255, 255, 255, 255);
-    color: rgba(255, 255, 255, 255);
-}
-
 my-list-item[ng-class="my-focused"] {
     background-color: rgba(158, 158, 158, 0.2);
 }
