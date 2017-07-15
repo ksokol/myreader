@@ -1,15 +1,13 @@
-<md-subheader class="md-primary my-subheader">
-    <div layout="row" layout-align="center end" layout-wrap>
-        <div flex>
-            <my-search-input
-                    my-value="search"
-                    my-on-change="onSearchChange(value)"
-                    my-on-clear="onSearchClear()">
-            </my-search-input>
-        </div>
-    </div>
-    <my-notification-panel layout="row" layout-align="center center" my-message="message"></my-notification-panel>
-</md-subheader>
+<div class="search-panel">
+    <my-search-input
+            class="search-input"
+            my-value="search"
+            my-on-change="onSearchChange(value)"
+            my-on-clear="onSearchClear()">
+    </my-search-input>
+</div>
+
+<my-notification-panel layout="row" layout-align="center center" my-message="message"></my-notification-panel>
 
 <my-list class="md-default-theme">
     <my-list-item class="my-2-line" ng-repeat="entry in data.entries">

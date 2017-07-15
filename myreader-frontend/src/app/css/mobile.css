@@ -177,17 +177,18 @@ my-list-item[ng-class="my-focused"] {
     padding: 0;
 }
 
-.my-subheader {
-    padding: 2px;
-}
-.my-subheader div:first-child {
-    padding: 0;
-}
-
 .my-feed-detail-url-icon {
     margin: 0;
     right: 2px;
     left: auto;
     position: absolute;
     top: 8px;
+}
+
+.search-panel {
+    display: flex;
+}
+
+.search-input {
+    flex-grow: 1;
 }

@@ -1,41 +1,36 @@
-<md-subheader class="md-primary my-subheader">
-    <div layout="row" layout-align="end">
-        <div flex="85" flex-md="95" flex-sm="95" flex-xs="92">
-            <my-search-input
-                    my-value="search"
-                    my-on-change="onSearchChange(value)"
-                    my-on-clear="onSearchClear()">
-            </my-search-input>
-        </div>
-        <div flex="15" flex-md="5" flex-sm="5" flex-xs="8">
-            <div layout="row" layout-align="end">
-                <md-button
-                        aria-label="Previous entry"
-                        hide
-                        show-gt-md
-                        class="md-icon-button"
-                        ng-click="up()">
-                    <my-icon my-type="navigate-before"></my-icon>
-                </md-button>
-                <md-button
-                        aria-label="Next entry"
-                        hide
-                        show-gt-md
-                        class="md-icon-button"
-                        ng-click="down()">
-                    <my-icon my-type="navigate-next"></my-icon>
-                </md-button>
-                <md-button
-                        aria-label="Refresh"
-                        class="md-icon-button"
-                        ng-click="forceRefresh()">
-                    <my-icon my-type="refresh"></my-icon>
-                </md-button>
-            </div>
-        </div>
-    </div>
-    <my-notification-panel layout="row" layout-align="center center" my-message="message"></my-notification-panel>
-</md-subheader>
+<div class="search-panel">
+    <my-search-input
+            class="search-input"
+            my-value="search"
+            my-on-change="onSearchChange(value)"
+            my-on-clear="onSearchClear()">
+    </my-search-input>
+
+    <md-button
+            aria-label="Previous entry"
+            hide
+            show-gt-md
+            class="md-icon-button"
+            ng-click="up()">
+        <my-icon my-type="navigate-before"></my-icon>
+    </md-button>
+    <md-button
+            aria-label="Next entry"
+            hide
+            show-gt-md
+            class="md-icon-button"
+            ng-click="down()">
+        <my-icon my-type="navigate-next"></my-icon>
+    </md-button>
+    <md-button
+            aria-label="Refresh"
+            class="md-icon-button"
+            ng-click="forceRefresh()">
+        <my-icon my-type="refresh"></my-icon>
+    </md-button>
+</div>
+
+<my-notification-panel layout="row" layout-align="center center" my-message="message"></my-notification-panel>
 
 <my-list class="md-default-theme">
     <my-list-item ng-class="{{isFocused(entry)}}" class="my-2-line" ng-repeat="entry in data.entries | filter: visible">
