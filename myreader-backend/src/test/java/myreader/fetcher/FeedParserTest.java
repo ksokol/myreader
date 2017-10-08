@@ -35,6 +35,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.MediaType.TEXT_HTML;
+import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.http.MediaType.TEXT_XML;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -70,38 +72,38 @@ public class FeedParserTest {
     }
 
     @Test
-	public void testFeed1() throws Exception {
+    public void testFeed1() throws Exception {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed1.xml"), TEXT_XML));
 
-		FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
-		assertThat(result.getEntries(), hasSize(2));
-		assertThat(result.getResultSizePerFetch(), is(2));
-	}
+        FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
+        assertThat(result.getEntries(), hasSize(2));
+        assertThat(result.getResultSizePerFetch(), is(2));
+    }
 
-	@Test
-	public void testFeed2() throws Exception {
+    @Test
+    public void testFeed2() throws Exception {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
 
-		FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
-		assertThat(result.getEntries(), hasItems(
+        FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
+        assertThat(result.getEntries(), hasItems(
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217.html")),
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217b.html"))
         ));
-	}
+    }
 
-	@Test
-	public void testFeed3() throws Exception {
+    @Test
+    public void testFeed3() throws Exception {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed3.xml"), TEXT_XML));
 
-		FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
-		assertThat(result.getEntries(), hasItems(
-				hasProperty("url", is(HTTP_EXAMPLE_COM + "/12539.htm")),
-				hasProperty("url", is(HTTP_EXAMPLE_COM + "/12673.htm"))
-		));
-	}
+        FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
+        assertThat(result.getEntries(), hasItems(
+                hasProperty("url", is(HTTP_EXAMPLE_COM + "/12539.htm")),
+                hasProperty("url", is(HTTP_EXAMPLE_COM + "/12673.htm"))
+        ));
+    }
 
     @Test
     public void testFeed4() throws Exception {
@@ -166,14 +168,35 @@ public class FeedParserTest {
     }
 
     @Test
-    public void testAdjustedResponseContentType() {
-        String url = "https://feeds.feedwrench.com/AdventuresInAngular.rss";
+    public void shouldExtractFromResponseWithTextPlainContentType() {
+        String url = "https://example.com/path-with-extension.rss";
 
         mockServer.expect(requestTo(url)).andExpect(method(GET))
-                .andRespond(
-                        withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_XML)
-                        .contentType(MediaType.TEXT_PLAIN)
-                );
+                .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_PLAIN));
+
+        FetchResult result = parser.parse(url);
+
+        assertThat(result.getEntries(), hasSize(greaterThan(0)));
+    }
+
+    @Test
+    public void shouldExtractFromResponseWithTextXmlContentType() {
+        String url = "https://example.com/path-with-extension.rss";
+
+        mockServer.expect(requestTo(url)).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_XML));
+
+        FetchResult result = parser.parse(url);
+
+        assertThat(result.getEntries(), hasSize(greaterThan(0)));
+    }
+
+    @Test
+    public void shouldExtractFromResponseWithTextHtmlContentType() throws Exception {
+        String url = "https://example.com/path-without-extension";
+
+        mockServer.expect(requestTo(url)).andExpect(method(GET))
+                .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_HTML));
 
         FetchResult result = parser.parse(url);
 

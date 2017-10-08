@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.springframework.http.MediaType.APPLICATION_ATOM_XML;
 import static org.springframework.http.MediaType.APPLICATION_XML;
+import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.http.MediaType.TEXT_XML;
 
 /**
@@ -35,6 +36,7 @@ public class SyndicationRestTemplateConfiguration {
 
     private static final List<MediaType> SUPPORTED_TYPES = Arrays.asList(
             TEXT_XML,
+            TEXT_HTML,
             APPLICATION_ATOM_XML,
             APPLICATION_XML,
             new MediaType("application", "rss+xml"),
