@@ -71,7 +71,7 @@ module.exports = function makeWebpackConfig() {
             test: /\.css$/,
             use: isTest ? 'null-loader' : ExtractTextPlugin.extract({
                 fallback: 'style-loader',
-                loader: 'css-loader'
+                use: 'css-loader'
             })
         }, {
             // ASSET LOADER
