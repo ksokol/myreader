@@ -1,15 +1,16 @@
 'use strict';
 
-var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 var ENV = process.env.npm_lifecycle_event;
 var isTest = ENV === 'test' || ENV === 'test-watch';
-var isProd = ENV === 'build';
+var isReport = ENV === 'report';
+var isProd = ENV === 'build' || isReport;
 
 module.exports = function makeWebpackConfig() {
     /**
@@ -117,7 +118,7 @@ module.exports = function makeWebpackConfig() {
      * Reference: http://webpack.github.io/docs/configuration.html#plugins
      * List: http://webpack.github.io/docs/list-of-plugins.html
      */
-    config.plugins = [];
+    config.plugins = [new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'})];
 
     // Skip rendering index.html in test mode
     if (!isTest) {
