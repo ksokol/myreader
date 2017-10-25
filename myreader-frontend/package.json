@@ -2,7 +2,7 @@
   "name": "myreader-frontend",
   "description": "Myreader frontend package",
   "scripts": {
-    "build": "export NODE_ENV=production && rimraf dist && webpack --bail --progress --profile",
+    "build": "export NODE_ENV=production && rimraf dist && webpack --bail --progress --profile --display-optimization-bailout",
     "server": "export NODE_ENV=development && webpack-dev-server --history-api-fallback --inline --progress",
     "test": "export NODE_ENV=development && karma start",
     "test-watch": "export NODE_ENV=development && npm test -- --single-run=false --reporters=progress,coverage-istanbul",

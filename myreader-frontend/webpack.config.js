@@ -18,6 +18,8 @@ module.exports = function makeWebpackConfig() {
      */
     var config = {};
 
+    config.stats = 'verbose';
+
     /**
      * Reference: http://webpack.github.io/docs/configuration.html#entry
      * Should be an empty object if it's generating a test build
