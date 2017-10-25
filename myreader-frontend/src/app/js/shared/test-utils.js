@@ -63,9 +63,20 @@ function mock(name) {
     return _mock;
 }
 
+function spy(name) {
+    function _spy($provide) {
+        $provide.decorator(name, ['$delegate', function ($delegate) {
+                return jasmine.createSpy($delegate);
+            }
+        ]);
+    }
+    return _spy;
+}
+
 module.exports = {
     'componentMock': componentMock,
     'directiveMock': directiveMock,
     'filterMock': filterMock,
-    'mock': mock
+    'mock': mock,
+    'spy': spy
 };

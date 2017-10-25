@@ -112,14 +112,16 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', funct
 
     describe('with html', function () {
 
+        var testUtils = require('../../shared/test-utils');
+
         var settingsService, $mdMedia, compile, scope, element;
 
-        beforeEach(require('angular').mock.module('myreader'));
+        beforeEach(require('angular').mock.module('myreader', testUtils.spy('$mdMedia')));
 
-        beforeEach(inject(function ($rootScope, $compile) {
+        beforeEach(inject(function ($rootScope, $compile, _$mdMedia_) {
             compile = $compile;
             settingsService = jasmine.createSpyObj('settingsService', ['isShowEntryDetails']);
-            $mdMedia = jasmine.createSpy('$mdMedia');
+            $mdMedia = _$mdMedia_;
 
             scope = $rootScope.$new();
             scope.item = {
@@ -144,6 +146,8 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', funct
         });
 
         it('should not render entry content when myShow is set to false', function () {
+            $mdMedia.and.returnValue(false);
+
             scope.show = false;
             element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope);
             scope.$digest();

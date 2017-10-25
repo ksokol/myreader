@@ -16,7 +16,7 @@ module.exports = function karmaConfig (config) {
             'src/tests.webpack.js': ['webpack', 'sourcemap']
         },
         browsers: [
-            'PhantomJS'
+            'ChromeHeadless'
         ],
         singleRun: true,
         coverageReporter: {
