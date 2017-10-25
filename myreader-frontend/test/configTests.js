@@ -2,11 +2,11 @@ describe('test/configTests.js', function() {
 
     var provider = undefined;
 
-    beforeEach(module("myreader"));
+    beforeEach(angular.mock.module("myreader"));
 
     var withProvider = function(providerName) {
         beforeEach(function() {
-            module([providerName, function ($provider) {
+            angular.mock.module([providerName, function ($provider) {
                 provider = $provider;
             }]);
         });

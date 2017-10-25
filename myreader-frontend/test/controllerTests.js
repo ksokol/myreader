@@ -1,10 +1,12 @@
+import {myMock} from './testUtil';
+
 describe("test/controllerTests.js", function() {
     var scope,
         subscriptionEntryServiceMock,
         subscriptionsTagServiceMock,
         settingsServiceMock;
 
-    beforeEach(module('common.controllers', function($provide) {
+    beforeEach(angular.mock.module('common.controllers', function($provide) {
         $provide.provider(myMock.provider(['$stateParams', '$state']));
 
         $provide.provider(myMock.providerWithObj('hotkeys', {

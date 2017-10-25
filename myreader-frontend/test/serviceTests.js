@@ -1,9 +1,9 @@
 describe('test/serviceTests.js', function() {
     var api, service;
 
-    beforeEach(module('common.services'));
+    beforeEach(angular.mock.module('common.services'));
 
-    beforeEach(module(function($provide) {
+    beforeEach(angular.mock.module(function($provide) {
         api = {
             get: jasmine.createSpy(),
             post: jasmine.createSpy(),

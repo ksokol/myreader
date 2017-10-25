@@ -8,6 +8,8 @@ describe('src/app/js/shared/service/settings.service.spec.js', function() {
 
     describe('settings service', function () {
 
+        let service;
+
         beforeEach(inject(function (settingsService) {
             service = settingsService;
             localStorage.clear();

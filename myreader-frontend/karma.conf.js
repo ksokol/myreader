@@ -9,8 +9,7 @@ module.exports = function karmaConfig (config) {
             'coverage-istanbul'
         ],
         files: [
-            'src/tests.webpack.js',
-            'test/*.js'
+            'src/tests.webpack.js'
         ],
         preprocessors: {
             'src/tests.webpack.js': ['webpack', 'sourcemap']

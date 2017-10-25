@@ -1,6 +1,6 @@
 describe('src/app/js/subscription/subscription-tag-panel/subscription-tag.service.spec.js', function () {
 
-    var httpBackend;
+    var httpBackend, service;
 
     beforeEach(require('angular').mock.module('myreader'));
 

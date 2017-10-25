@@ -1,5 +1,5 @@
-var angular = require('angular');
-var models = require('./models');
+import angular from 'angular';
+import {Bookmarks, SubscriptionEntries, SubscriptionTags} from './models';
 
 angular.module('common.services', [])
 

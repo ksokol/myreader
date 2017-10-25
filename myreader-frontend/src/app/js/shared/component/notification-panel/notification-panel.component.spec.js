@@ -83,7 +83,7 @@ describe('src/app/js/shared/component/notification-panel/notification-panel.comp
 
     describe('with html', function () {
 
-        var scope, message, myOnDismiss;
+        var scope, myOnDismiss, page;
         var aMessage = { type: 'success', message: 'expected message' };
 
         var Icon = function (el) {

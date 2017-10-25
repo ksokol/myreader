@@ -94,6 +94,14 @@ module.exports = function makeWebpackConfig() {
         }, {
             test: /\.svg$/,
             loader: 'svg-url-loader',
+        },
+        {
+            test: /\.js$/,
+            loader: 'babel-loader',
+            exclude: /node_modules/,
+            query: {
+                presets: ['env']
+            }
         }]
     };
 
@@ -101,7 +109,7 @@ module.exports = function makeWebpackConfig() {
     // https://github.com/deepsweet/istanbul-instrumenter-loader
     if (isTest) {
         config.module.rules.push({
-            enforce: 'pre',
+            enforce: 'post',
             test: /\.js$/,
             exclude: [
                 /node_modules/,
