@@ -129,7 +129,10 @@ module.exports = function makeWebpackConfig() {
      * Reference: http://webpack.github.io/docs/configuration.html#plugins
      * List: http://webpack.github.io/docs/list-of-plugins.html
      */
-    config.plugins = [new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'})];
+    config.plugins = [
+        new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'}),
+        new webpack.optimize.ModuleConcatenationPlugin()
+    ];
 
     // Skip rendering index.html in test mode
     if (!isTest) {
