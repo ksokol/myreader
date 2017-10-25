@@ -105,7 +105,8 @@ module.exports = function makeWebpackConfig() {
             test: /\.js$/,
             exclude: [
                 /node_modules/,
-                /\.spec\.js$/
+                /\.spec\.js$/,
+                /test-utils.js$/
             ],
             loader: 'istanbul-instrumenter-loader',
             query: {

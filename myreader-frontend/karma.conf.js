@@ -4,9 +4,9 @@ module.exports = function karmaConfig (config) {
             'jasmine'
         ],
         reporters: [
-            'coverage',
             'progress',
-            'sonarqubeUnit'
+            'sonarqubeUnit',
+            'coverage-istanbul'
         ],
         files: [
             'src/tests.webpack.js',
@@ -19,7 +19,7 @@ module.exports = function karmaConfig (config) {
             'ChromeHeadless'
         ],
         singleRun: true,
-        coverageReporter: {
+        coverageIstanbulReporter: {
             type: 'lcov',
             dir : 'build/reports/istanbul/'
         },
