@@ -19,7 +19,7 @@ def vJavaLang = '1.8'
 def javaProjects = [ project('myreader-backend') ]
 def gradleDir = "${rootProject.rootDir}/gradle"
 
-wrapper.gradleVersion = '2.6'
+wrapper.gradleVersion = '4.2.1'
 
 configure(allprojects) {
     apply plugin: 'eclipse'
