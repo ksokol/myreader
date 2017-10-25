@@ -1,9 +1,10 @@
-// This file is an entry point for angular tests
-// Avoids some weird issues when using webpack + angular.
+import 'angular';
+import 'angular-mocks';
+import 'angular-material/angular-material-mocks';
 
-var angular = require('angular');
-var context = require.context('./app/js', true, /\.js$/);
-require('angular-mocks');
-require('../node_modules/angular-material/angular-material-mocks');
-
+const context = require.context('./app/js', true, /\.js$/);
 context.keys().forEach(context);
+
+// TODO deprecated
+const testContext = require.context('../test', true, /\.js$/);
+testContext.keys().forEach(testContext);

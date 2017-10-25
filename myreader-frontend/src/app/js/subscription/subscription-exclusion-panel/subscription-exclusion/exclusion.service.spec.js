@@ -1,6 +1,6 @@
 describe('src/app/js/subscription/subscription-exclusion-panel/subscription-exclusion/exclusion.service.spec.js', function () {
 
-    var httpBackend;
+    var httpBackend, service;
 
     beforeEach(require('angular').mock.module('myreader'));
 

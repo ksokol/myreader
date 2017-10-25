@@ -2,7 +2,7 @@ describe('src/app/js/maintenance/maintenance-actions/processing.service.spec.js'
 
     beforeEach(require('angular').mock.module('myreader'));
 
-    var httpBackend;
+    var httpBackend, service;
 
     beforeEach(inject(function (processingService, $httpBackend) {
         service = processingService;

@@ -1,6 +1,6 @@
 describe('src/app/js/feed/feed-fetch-error-panel/feed-fetch-error/feed-fetch-error.service.spec.js', function () {
 
-    var httpBackend;
+    var httpBackend, service;
 
     var page0 = {
         "links": [{

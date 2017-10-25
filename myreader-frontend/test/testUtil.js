@@ -1,4 +1,4 @@
-var myMock = {
+export const myMock = {
     providerWithObj: function (providerName, getFnObj) {
         var obj = {};
 

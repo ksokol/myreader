@@ -18,6 +18,8 @@ module.exports = function makeWebpackConfig() {
      */
     var config = {};
 
+    config.stats = 'verbose';
+
     /**
      * Reference: http://webpack.github.io/docs/configuration.html#entry
      * Should be an empty object if it's generating a test build
@@ -94,6 +96,14 @@ module.exports = function makeWebpackConfig() {
         }, {
             test: /\.svg$/,
             loader: 'svg-url-loader',
+        },
+        {
+            test: /\.js$/,
+            loader: 'babel-loader',
+            exclude: /node_modules/,
+            query: {
+                presets: ['env']
+            }
         }]
     };
 
@@ -101,7 +111,7 @@ module.exports = function makeWebpackConfig() {
     // https://github.com/deepsweet/istanbul-instrumenter-loader
     if (isTest) {
         config.module.rules.push({
-            enforce: 'pre',
+            enforce: 'post',
             test: /\.js$/,
             exclude: [
                 /node_modules/,
@@ -119,7 +129,10 @@ module.exports = function makeWebpackConfig() {
      * Reference: http://webpack.github.io/docs/configuration.html#plugins
      * List: http://webpack.github.io/docs/list-of-plugins.html
      */
-    config.plugins = [new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'})];
+    config.plugins = [
+        new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'}),
+        new webpack.optimize.ModuleConcatenationPlugin()
+    ];
 
     // Skip rendering index.html in test mode
     if (!isTest) {

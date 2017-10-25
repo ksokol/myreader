@@ -1,3 +1,5 @@
+import {SubscriptionEntries} from './models';
+
 require('./shared/component/button-group/button-group.component');
 require('./shared/component/button/button.component');
 require('./shared/component/notification-panel/notification-panel.component');

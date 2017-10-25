@@ -1,3 +1,5 @@
+import {SubscriptionEntries, SubscriptionTags} from '../src/app/js/models';
+
 describe('test/modelTests.js', function() {
 
     describe("SubscriptionTags", function() {
