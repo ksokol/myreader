@@ -61,7 +61,6 @@ configure(javaProjects) {
 
 configure(javaProjects) {
     apply plugin: 'spring-boot'
-    apply from: "$gradleDir/integTest.gradle"
 
     springBoot.backupSource = false
 }
