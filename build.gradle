@@ -79,7 +79,7 @@ task devRun() {
 
 task copyFrontend(type: Sync, dependsOn: ':myreader-frontend:build') {
     from project(':myreader-frontend').file('dist')
-    into project(':myreader-backend').buildDir.absolutePath + '/classes/main/static'
+    into project(':myreader-backend').buildDir.absolutePath + '/classes/java/main/static'
 }
 
 project(':myreader-backend').tasks.jar.dependsOn copyFrontend
