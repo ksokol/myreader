@@ -5,12 +5,10 @@ jdk:
 sudo: false
 
 addons:
-  sonarqube:
+  sonarcloud:
     organization: "ksokol-github"
     token:
       secure: "GRaTBAwL9tHxCULbGDDZeHaSSvfUTTtEKCywZYCokO0XO5s5G4FN1koKM16ip9uH7pKeGfd6hi5MjiEqHvXphXGgu9qXDYpSFtnGB1I+Ixn2s/mEu6MXa+yURsxEH3UMGrhQoIn6SSFrNwtNa1B6Z4SIvFRvfjyI/f++Owp9jC8="
-    github_token:
-      secure: "FGx+8MjV6GUjM/HM4D4MnwnJFRwPIi7WeJ8dsc1xQY08S0aCtQHGXSze01xbhrVNb3jeztzwWHLMuFzWpJy75L6v74XflsOroE0RE/AKEK8IcqMk5QuwRC/jpJNur2lPGFVV7i9KAbxcAOc/TX/6WfwDWI7LyHyjRnY+GWzXlDo="
   chrome: stable
 
 before_cache:
