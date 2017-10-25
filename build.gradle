@@ -12,14 +12,14 @@ buildscript {
 }
 
 plugins {
-    id "org.sonarqube" version "2.3"
+    id "org.sonarqube" version "2.5"
 }
 
 def vJavaLang = '1.8'
 def javaProjects = [ project('myreader-backend') ]
 def gradleDir = "${rootProject.rootDir}/gradle"
 
-wrapper.gradleVersion = '2.6'
+wrapper.gradleVersion = '4.2.1'
 
 configure(allprojects) {
     apply plugin: 'eclipse'
@@ -61,7 +61,6 @@ configure(javaProjects) {
 
 configure(javaProjects) {
     apply plugin: 'spring-boot'
-    apply from: "$gradleDir/integTest.gradle"
 
     springBoot.backupSource = false
 }
@@ -79,7 +78,7 @@ task devRun() {
 
 task copyFrontend(type: Sync, dependsOn: ':myreader-frontend:build') {
     from project(':myreader-frontend').file('dist')
-    into project(':myreader-backend').buildDir.absolutePath + '/classes/main/static'
+    into project(':myreader-backend').buildDir.absolutePath + '/classes/java/main/static'
 }
 
 project(':myreader-backend').tasks.jar.dependsOn copyFrontend
