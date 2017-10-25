@@ -2,10 +2,10 @@
   "name": "myreader-frontend",
   "description": "Myreader frontend package",
   "scripts": {
-    "build": "rimraf dist && webpack --bail --progress --profile",
-    "server": "webpack-dev-server --history-api-fallback --inline --progress",
-    "test": "karma start",
-    "test-watch": "npm test -- --single-run=false --reporters=progress,coverage",
+    "build": "export NODE_ENV=production && rimraf dist && webpack --bail --progress --profile",
+    "server": "export NODE_ENV=development && webpack-dev-server --history-api-fallback --inline --progress",
+    "test": "export NODE_ENV=development && karma start",
+    "test-watch": "export NODE_ENV=development && npm test -- --single-run=false --reporters=progress,coverage",
     "start": "npm run server",
     "report": "export NODE_ENV=production && rimraf dist && webpack --bail --progress --profile && webpack-bundle-analyzer dist/stats.json"
   },
