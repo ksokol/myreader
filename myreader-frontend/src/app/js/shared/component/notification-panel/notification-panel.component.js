@@ -12,7 +12,7 @@ class controller {
         this.type = null;
         this.message = null;
         this.myOnDismiss();
-    };
+    }
 
     $onChanges(obj) {
         if (this.promise) {
@@ -25,12 +25,12 @@ class controller {
         }
 
         this.promise = this.$timeout(() => this.reset(), 5000);
-    };
+    }
 
     onClose() {
         this.$timeout.cancel(this.promise);
         this.reset();
-    };
+    }
 }
 
 export const NotificationPanelComponent = {

@@ -18,7 +18,7 @@ class controller {
 
     onError(error) {
         this.message = { type: 'error', message: error };
-    };
+    }
 
     onErrorSave(error) {
         if(error.data.status === 400) {
