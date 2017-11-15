@@ -1,3 +1,5 @@
+import {CONTEXT, FEEDS} from "../../../constants";
+
 export class FetchErrors {
 
     constructor(errors) {
@@ -18,8 +20,6 @@ export class FetchErrors {
     };
 }
 
-const feedUrl = '/myreader/api/2/feeds';
-
 export class FeedFetchErrorService {
 
     constructor($http) {
@@ -28,13 +28,13 @@ export class FeedFetchErrorService {
     }
 
     findByFeedId(feedUuid) {
-        return this.$http.get(feedUrl + '/' + feedUuid + '/fetchError').then(function (response) {
+        return this.$http.get(`${FEEDS}/${feedUuid}/fetchError`).then(function (response) {
             return new FetchErrors(response.data);
         });
     }
 
     findByLink(url) {
-        return this.$http.get('/myreader' + url).then(function (response) {
+        return this.$http.get(CONTEXT + url).then(function (response) {
             return new FetchErrors(response.data);
         });
     }

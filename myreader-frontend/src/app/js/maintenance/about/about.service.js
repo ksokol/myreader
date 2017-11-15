@@ -1,4 +1,4 @@
-const url = '/myreader/info';
+import {INFO} from "../../constants";
 
 export class About {
 
@@ -18,6 +18,6 @@ export class AboutService {
     }
 
     getProperties() {
-        return this.$http.get(url).then(response => new About(response.data));
+        return this.$http.get(INFO).then(response => new About(response.data));
     }
 }

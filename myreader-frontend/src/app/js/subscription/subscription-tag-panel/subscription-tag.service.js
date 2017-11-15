@@ -1,4 +1,4 @@
-const url = '/myreader/api/2/subscriptions/availableTags';
+import {AVAILABLE_TAGS} from "../../constants";
 
 export class SubscriptionTagService {
 
@@ -8,6 +8,6 @@ export class SubscriptionTagService {
     }
 
     findAll() {
-        return this.$http.get(url).then(response => response.data);
+        return this.$http.get(AVAILABLE_TAGS).then(response => response.data);
     }
 }

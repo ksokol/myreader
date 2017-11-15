@@ -1,4 +1,4 @@
-const url = '/myreader/api/2/processing';
+import {PROCESSING} from "../../constants";
 
 export class ProcessingService {
 
@@ -8,6 +8,6 @@ export class ProcessingService {
     }
 
     rebuildSearchIndex() {
-        return this.$http.put(url, {process: 'indexSyncJob'});
+        return this.$http.put(PROCESSING, {process: 'indexSyncJob'});
     }
 }
