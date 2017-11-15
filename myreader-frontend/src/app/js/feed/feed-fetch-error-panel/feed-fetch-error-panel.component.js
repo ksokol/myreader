@@ -1,28 +1,22 @@
-'use strict';
+import template from './feed-fetch-error-panel.component.html';
+import css from './feed-fetch-error-panel.component.css';
 
-require('./feed-fetch-error/feed-fetch-error.component');
-require('../../shared/component/icon/icon.component');
+class controller {
 
-function FeedFetchErrorPanelComponent () {
-    var ctrl = this;
+    open() {
+        this.firstOpen = true;
+        this.showErrors = true;
+    }
 
-    ctrl.open = function () {
-        ctrl.firstOpen = true;
-        ctrl.showErrors = true;
-    };
-
-    ctrl.close = function () {
-        ctrl.showErrors = false;
-    };
-
-    ctrl.css = require('./feed-fetch-error-panel.component.css');
+    close() {
+        this.showErrors = false;
+    }
 }
 
-require('angular').module('myreader').component('myFeedFetchErrorPanel', {
-    template: require('./feed-fetch-error-panel.component.html'),
-    controller: FeedFetchErrorPanelComponent,
+export const FeedFetchErrorPanelComponent = {
+    template, css, controller,
     bindings: {
         myId: '<',
         myOnError: '&'
     }
-});
+};

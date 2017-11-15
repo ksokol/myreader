@@ -1,28 +1,28 @@
-'use strict';
+class controller {
 
-function ButtonGroupComponent() {
-    var ctrl = this;
-    ctrl.buttons = [];
+    constructor() {
+        this.buttons = [];
+    }
 
-    ctrl.disableButtons = function () {
-        for (var i = 0; i < ctrl.buttons.length; i++) {
-            ctrl.buttons[i].disable();
+    disableButtons() {
+        for (let i = 0; i < this.buttons.length; i++) {
+            this.buttons[i].disable();
         }
-    };
+    }
 
-    ctrl.enableButtons = function () {
-        for (var i = 0; i < ctrl.buttons.length; i++) {
-            ctrl.buttons[i].enable();
+    enableButtons() {
+        for (let i = 0; i < this.buttons.length; i++) {
+            this.buttons[i].enable();
         }
-    };
+    }
 
-    ctrl.addButton = function (button) {
-        ctrl.buttons.push(button);
-    };
+    addButton(button) {
+        this.buttons.push(button);
+    }
 }
 
-require('angular').module('myreader').component('myButtonGroup', {
+export const ButtonGroupComponent = {
     template: '<div ng-transclude></div>',
     transclude: true,
-    controller: ButtonGroupComponent
-});
+    controller
+};

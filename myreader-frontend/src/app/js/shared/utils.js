@@ -1,5 +1,3 @@
-'use strict';
-
 function isDefined(value) {
     return typeof value !== 'undefined';
 }
@@ -12,7 +10,7 @@ function isFunction(value) {
     return typeof value === 'function';
 }
 
-var isPromise = function (value) {
+export function isPromise(value) {
     if (!isDefined(value)) {
         return false;
     }
@@ -21,13 +19,9 @@ var isPromise = function (value) {
     && isFunction(value.then)
     && isFunction(value.catch)
     && isFunction(value.finally));
-};
+}
 
-function isBoolean(value) {
+export function isBoolean(value) {
     return typeof value === 'boolean';
 }
 
-module.exports = {
-    isPromise: isPromise,
-    isBoolean: isBoolean
-};

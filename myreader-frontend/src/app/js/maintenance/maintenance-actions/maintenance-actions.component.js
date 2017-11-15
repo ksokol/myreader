@@ -1,27 +1,25 @@
-'use strict';
+import template from './maintenance-actions.component.html';
 
-require('./processing.service');
-require('../../shared/component/button-group/button-group.component');
-require('../../shared/component/button/button.component');
-require('../../shared/component/notification-panel/notification-panel.component');
+class controller {
 
-function MaintenanceAtionsComponent(processingService) {
-    var ctrl = this;
+    constructor(processingService) {
+        'ngInject';
+        this.processingService = processingService;
+    }
 
-    ctrl.onRefreshIndex = function() {
-        return processingService.rebuildSearchIndex();
-    };
+    onRefreshIndex() {
+        return this.processingService.rebuildSearchIndex();
+    }
 
-    ctrl.onSuccessRefreshIndex = function() {
-        ctrl.message = { type: 'success', message: 'started' };
-    };
+    onSuccessRefreshIndex() {
+        this.message = {type: 'success', message: 'started'};
+    }
 
-    ctrl.onErrorRefreshIndex = function(data) {
-        ctrl.message = { type: 'error', message: data };
-    };
+    onErrorRefreshIndex(error) {
+        this.message = {type: 'error', message: error};
+    }
 }
 
-require('angular').module('myreader').component('myMaintenanceActions', {
-    template: require('./maintenance-actions.component.html'),
-    controller: ['processingService', MaintenanceAtionsComponent]
-});
+export const MaintenanceActionsComponent = {
+    template, controller
+};

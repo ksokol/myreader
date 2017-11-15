@@ -1,10 +1,7 @@
-'use strict';
+import timeago from 'timeago.js';
 
-var timeago = require('timeago.js');
-
-require('angular').module('myreader').filter('timeago', function() {
-
-    return function(date) {
+export const TimeagoFilter = () => {
+    return (date) => {
         if(date) {
             try {
                 return timeago().format(date);
@@ -12,4 +9,4 @@ require('angular').module('myreader').filter('timeago', function() {
         }
         return "sometime";
     }
-});
+};

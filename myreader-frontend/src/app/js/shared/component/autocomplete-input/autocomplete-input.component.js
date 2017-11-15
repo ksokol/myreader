@@ -1,69 +1,70 @@
-'use strict';
+import template from './autocomplete-input.component.html';
+import {isPromise} from '../../../shared/utils';
 
-var utils = require('../../../shared/utils');
+class controller {
 
-function AutoCompleteInputComponent($q) {
-    var ctrl = this;
+    constructor($q) {
+        'ngInject';
+        this.$q = $q;
+        this.valuesLoaded = false;
+        this.values = [];
+    }
 
-    ctrl.valuesLoaded = false;
-    ctrl.values = [];
-
-    var cachedValues = function () {
-        var deferred = $q.defer();
-        deferred.resolve(ctrl.values);
+    cachedValues() {
+        const deferred = this.$q.defer();
+        deferred.resolve(this.values);
         return deferred.promise;
-    };
+    }
 
-    var fetchValues = function () {
-        if(ctrl.valuesLoaded) {
-            return cachedValues();
+    fetchValues() {
+        if(this.valuesLoaded) {
+            return this.cachedValues();
         }
 
-        var result = ctrl.myAsyncValues();
+        const result = this.myAsyncValues();
 
-        if(!utils.isPromise(result)) {
-            return cachedValues();
+        if(!isPromise(result)) {
+            return this.cachedValues();
         }
 
-        return result.then(function (data) {
-            ctrl.valuesLoaded = true;
-            ctrl.values = ctrl.values.concat(data);
-            return ctrl.values;
+        return result.then(data => {
+            this.valuesLoaded = true;
+            this.values = this.values.concat(data);
+            return this.values;
         });
-    };
+    }
 
-    ctrl.$onInit = function () {
-        if(!ctrl.myLabel) {
+    $onInit() {
+        if(!this.myLabel) {
             throw new Error('myLabel is undefined');
         }
-    };
+    }
 
-    ctrl.$onChanges = function (obj) {
+    $onChanges(obj) {
         if(obj.myValues) {
-            ctrl.valuesLoaded = false;
-            ctrl.values = obj.myValues.currentValue || [];
+            this.valuesLoaded = false;
+            this.values = obj.myValues.currentValue || [];
         }
         if(obj.mySelectedItem && obj.mySelectedItem.isFirstChange()) {
-            ctrl.selectedItem = obj.mySelectedItem.currentValue;
+            this.selectedItem = obj.mySelectedItem.currentValue;
         }
-    };
+    }
 
-    ctrl.filterValues = function(term) {
-        return fetchValues().then(function (values) {
-            var lowerCaseTerm = term.toLowerCase();
-            var filteredValues = values.filter(function (value) { return value.indexOf(lowerCaseTerm) === 0; });
+    filterValues(term) {
+        return this.fetchValues().then(values => {
+            const lowerCaseTerm = term.toLowerCase();
+            const filteredValues = values.filter(value => value.indexOf(lowerCaseTerm) === 0);
             return filteredValues.length === 0 ? [term] : filteredValues;
         });
-    };
+    }
 
-    ctrl.onSelect = function (selectedValue) {
-        selectedValue.length !== 0 ? ctrl.myOnSelect({value: selectedValue}) : ctrl.myOnClear();
-    };
+    onSelect(selectedValue) {
+        selectedValue.length !== 0 ? this.myOnSelect({value: selectedValue}) : this.myOnClear();
+    }
 }
 
-require('angular').module('myreader').component('myAutocompleteInput', {
-    template: require('./autocomplete-input.component.html'),
-    controller: ['$q', AutoCompleteInputComponent],
+export const AutoCompleteInputComponent = {
+    template, controller,
     bindings: {
         myLabel: '@',
         myDisabled: '<',
@@ -73,4 +74,4 @@ require('angular').module('myreader').component('myAutocompleteInput', {
         myOnSelect: '&',
         myOnClear: '&'
     }
-});
+};

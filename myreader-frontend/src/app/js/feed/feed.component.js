@@ -1,55 +1,48 @@
-'use strict';
+import template from './feed.component.html';
+import css from './feed.component.css';
 
-require('../shared/directive/backend-validation/backend-validation.directive');
-require('../shared/component/validation-message/validation-message.component');
-require('../shared/component/icon/icon.component');
-require('../shared/component/button-group/button-group.component');
-require('../shared/component/button/button.component');
-require('../shared/component/notification-panel/notification-panel.component');
-require('./feed-fetch-error-panel/feed-fetch-error-panel.component');
-require('./feed.service');
+class controller {
 
-function FeedComponent($state, $stateParams, feedService) {
-    var ctrl = this;
+    constructor($state, $stateParams, feedService) {
+        'ngInject';
+        this.$state = $state;
+        this.$stateParams = $stateParams;
+        this.feedService = feedService;
+    }
 
-    ctrl.$onInit = function () {
-        feedService.findOne($stateParams.uuid).then(function(data) {
-            ctrl.feed = data;
-        }).catch(function (error) {
-            ctrl.message = { type: 'error', message: error };
-        })
-    };
+    $onInit() {
+        this.feedService.findOne(this.$stateParams.uuid)
+            .then(data => this.feed = data)
+            .catch(error => this.message = {type: 'error', message: error});
+    }
 
-    ctrl.onDelete = function() {
-        return feedService.remove(ctrl.feed);
-    };
+    onDelete() {
+        return this.feedService.remove(this.feed);
+    }
 
-    ctrl.onSuccessDelete = function() {
-        $state.go('admin.feed');
-    };
+    onSuccessDelete() {
+        this.$state.go('admin.feed');
+    }
 
-    ctrl.onSave = function() {
-        return feedService.save(ctrl.feed);
-    };
+    onSave() {
+        return this.feedService.save(this.feed);
+    }
 
-    ctrl.onSuccessSave = function() {
-        ctrl.message = { type: 'success', message: 'saved' };
-    };
+    onSuccessSave() {
+        this.message = {type: 'success', message: 'saved'};
+    }
 
-    ctrl.onError = function(error) {
+    onError(error) {
         if(error.status === 409) {
-            ctrl.message = { type: 'error', message: 'abort. Feed has subscriptions' };
+            this.message = {type: 'error', message: 'abort. Feed has subscriptions'};
         } else if (error.status === 400) {
-            ctrl.validations = error.data.fieldErrors;
+            this.validations = error.data.fieldErrors;
         } else {
-            ctrl.message = { type: 'error', message: error.data };
+            this.message = {type: 'error', message: error.data};
         }
-    };
-
-    ctrl.css = require('./feed.component.css');
+    }
 }
 
-require('angular').module('myreader').component('myFeed', {
-    template: require('./feed.component.html'),
-    controller: ['$state', '$stateParams', 'feedService', FeedComponent]
-});
+export const FeedComponent = {
+    template, css, controller
+};

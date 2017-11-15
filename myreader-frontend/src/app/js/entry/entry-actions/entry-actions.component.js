@@ -1,34 +1,30 @@
-'use strict';
+import template from './entry-actions.component.html';
 
-require('../../shared/component/icon/icon.component');
+class controller {
 
-function EntryActionsComponent() {
-    var ctrl = this;
+    $onInit() {
+        this.item = this.myItem;
+    }
 
-    ctrl.$onInit = function () {
-        ctrl.item = ctrl.myItem;
-    };
+    $onChanges(obj) {
+        this.item = obj.myItem.currentValue;
+    }
 
-    ctrl.$onChanges = function (obj) {
-        ctrl.item = obj.myItem.currentValue;
-    };
+    toggleMore() {
+        this.showMore = !this.showMore;
+        this.myOnMore({showMore: this.showMore});
+    }
 
-    ctrl.toggleMore = function () {
-        ctrl.showMore = !ctrl.showMore;
-        ctrl.myOnMore({showMore: ctrl.showMore});
-    };
-
-    ctrl.onCheckClick = function (value) {
-        ctrl.myOnCheck({item: { seen: value}});
-    };
+    onCheckClick(value) {
+        this.myOnCheck({item: {seen: value}});
+    }
 }
 
-require('angular').module('myreader').component('myEntryActions', {
-    template: require('./entry-actions.component.html'),
-    controller: EntryActionsComponent,
+export const EntryActionsComponent = {
+    template, controller,
     bindings: {
         myItem: '<',
         myOnMore: '&',
         myOnCheck: '&'
     }
-});
+}

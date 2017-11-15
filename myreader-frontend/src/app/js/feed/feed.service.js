@@ -1,32 +1,25 @@
-'use strict';
+const feedUrl = '/myreader/api/2/feeds';
 
-function FeedService($http) {
+export class FeedService {
 
-    var feedUrl = '/myreader/api/2/feeds';
+    constructor($http) {
+        'ngInject';
+        this.$http = $http;
+    }
 
-    return {
-        findAll: function() {
-            return $http.get(feedUrl)
-                .then(function (response) {
-                    return response.data.content;
-                });
-        },
-        findOne: function(uuid) {
-            return $http.get(feedUrl + '/' + uuid)
-                .then(function (response) {
-                    return response.data;
-                });
-        },
-        remove: function(feed) {
-            return $http.delete(feedUrl + '/' + feed.uuid);
-        },
-        save: function(feed) {
-            return $http.patch(feedUrl + '/' + feed.uuid, { 'title': feed.title, 'url': feed.url })
-                .then(function (response) {
-                    return response.data;
-                });
-        }
+    findAll() {
+        return this.$http.get(feedUrl).then(response => response.data.content);
+    }
+
+    findOne(uuid) {
+        return this.$http.get(`${feedUrl}/${uuid}`).then(response => response.data);
+    }
+
+    remove(feed) {
+        return this.$http.delete(`${feedUrl}/${feed.uuid}`);
+    }
+
+    save(feed) {
+        return this.$http.patch(`${feedUrl}/${feed.uuid}`, {title: feed.title, url: feed.url }).then(response => response.data);
     }
 }
-
-require('angular').module('myreader').service('feedService', ['$http', FeedService]);

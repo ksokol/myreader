@@ -1,28 +1,7 @@
+import angular from 'angular';
 import {SubscriptionEntries} from './models';
 
-require('./shared/component/button-group/button-group.component');
-require('./shared/component/button/button.component');
-require('./shared/component/notification-panel/notification-panel.component');
-require('./shared/component/search-input/search-input.component');
-require('./shared/safe-opener/safe-opener.directive');
-require('./navigation/subscription-item/subscription-item.component');
-require('./entry/entry.component');
-require('./shared/timeago/timeago.filter');
-require('./subscription/subscription.service');
-require('./shared/component/validation-message/validation-message.component');
-require('./shared/directive/backend-validation/backend-validation.directive');
-require('./subscription/subscribe/subscribe.component');
-require('./subscription/subscription.component');
-require('./login/login.component');
-require('./settings/settings.component');
-require('./shared/service/settings.service');
-require('./shared/component/load-more/load-more.component');
-require('./maintenance/maintenance.component');
-require('./shared/component/icon/icon.component');
-require('./feed/feed.component');
-require('./feed/feed-list.component');
-
-require('angular').module('common.controllers', ['common.services', 'ngMaterial'])
+angular.module('common.controllers', [])
 
 .controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav',
 function($rootScope, $scope, $state, $http, $mdSidenav) {

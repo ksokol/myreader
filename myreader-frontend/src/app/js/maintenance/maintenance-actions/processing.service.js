@@ -1,11 +1,13 @@
-'use strict';
+const url = '/myreader/api/2/processing';
 
-require('angular').module('myreader').service('processingService', ['$http', function($http) {
-    var url = '/myreader/api/2/processing';
+export class ProcessingService {
 
-    return {
-        rebuildSearchIndex: function() {
-            return $http.put(url, { process: 'indexSyncJob' });
-        }
+    constructor($http) {
+        'ngInject';
+        this.$http = $http;
     }
-}]);
+
+    rebuildSearchIndex() {
+        return this.$http.put(url, {process: 'indexSyncJob'});
+    }
+}

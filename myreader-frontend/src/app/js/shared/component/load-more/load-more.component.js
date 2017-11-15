@@ -1,24 +1,22 @@
-'use strict';
+import template from './load-more.component.html';
 
-function LoadMoreComponent() {
-    var ctrl = this;
+class controller {
 
-    ctrl.$onChanges = function (obj) {
-        ctrl.disabled = false;
-        ctrl.next = obj.myNext.currentValue;
-    };
+    $onChanges(obj) {
+        this.disabled = false;
+        this.next = obj.myNext.currentValue;
+    }
 
-    ctrl.onClick = function () {
-        ctrl.disabled = true;
-        ctrl.myOnMore({more: ctrl.next});
-    };
+    onClick() {
+        this.disabled = true;
+        this.myOnMore({more: this.next});
+    }
 }
 
-require('angular').module('myreader').component('myLoadMore', {
-    template: require('./load-more.component.html'),
-    controller: LoadMoreComponent,
+export const LoadMoreComponent = {
+    template, controller,
     bindings: {
         myNext: '<',
         myOnMore: '&'
     }
-});
+};

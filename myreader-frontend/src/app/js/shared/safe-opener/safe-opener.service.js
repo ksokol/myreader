@@ -1,11 +1,13 @@
-'use strict';
+export default class SafeOpenerService {
 
-require('angular').module('myreader').service('safeOpenerService', ['$window', function ($window) {
-    return {
-        openSafely: function(url) {
-            var otherWindow = $window.open();
-            otherWindow.opener = null;
-            otherWindow.location = url;
-        }
+    constructor($window) {
+        'ngInject';
+        this.$window = $window;
     }
-}]);
+
+    openSafely(url) {
+        const otherWindow = this.$window.open();
+        otherWindow.opener = null;
+        otherWindow.location = url;
+    }
+}

@@ -1,44 +1,39 @@
-'use strict';
+import template from './search-input.component.html';
+import css from './search-input.component.css';
 
-require('../icon/icon.component');
+class controller {
 
-function SearchInputComponent() {
-    var ctrl = this;
+    $onInit() {
+        this.value = this.myValue || '';
+    }
 
-    ctrl.$onInit = function () {
-        ctrl.value = ctrl.myValue || '';
-    };
+    $onChanges(obj) {
+        this.value = obj.myValue.currentValue || '';
+    }
 
-    ctrl.$onChanges = function (obj) {
-        ctrl.value = obj.myValue.currentValue || '';
-    };
+    isEmpty() {
+        return this.value.length === 0;
+    }
 
-    ctrl.isEmpty = function () {
-        return ctrl.value.length === 0;
-    };
-
-    ctrl.onChange = function () {
-        if (ctrl.isEmpty()) {
-            ctrl.myOnClear();
+    onChange() {
+        if (this.isEmpty()) {
+            this.myOnClear();
         } else {
-            ctrl.myOnChange({ value: ctrl.value });
+            this.myOnChange({value: this.value});
         }
-    };
+    }
 
-    ctrl.onClear = function () {
-        ctrl.value = '';
-        ctrl.myOnClear();
-    };
-
-    ctrl.css = require('./search-input.component.css');
+    onClear() {
+        this.value = '';
+        this.myOnClear();
+    }
 }
 
-require('angular').module('myreader').component('mySearchInput', {
-    template: require('./search-input.component.html'),
-    controller: SearchInputComponent,
+export const SearchInputComponent = {
+    template, css, controller,
     bindings: {
         myValue: '<',
         myOnChange: '&',
         myOnClear: '&'
     }
-});
+};

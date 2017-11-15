@@ -1,84 +1,80 @@
-'use strict';
+import template from './button.component.html';
+import css from './button.component.css';
+import {isPromise} from '../../utils';
 
-var utils = require('../../utils');
+class controller {
 
-function ButtonComponent($timeout, $q) {
-    var ctrl = this;
-    var disableConfirmButtons = false;
-    var isPending = false;
+    constructor($timeout, $q) {
+        'ngInject';
+        this.$timeout = $timeout;
+        this.$q = $q;
+        this.disableConfirmButtons = false;
+        this.isPending = false;
+    }
 
-    var shouldPresentConfirmButton = function () {
-        return ctrl.myConfirm === 'true';
-    };
+    shouldPresentConfirmButton() {
+        return this.myConfirm === 'true';
+    }
 
-    var presentConfirmButton = function () {
-        disableConfirmButtons = true;
-        ctrl.showConfirmButton = true;
+    presentConfirmButton() {
+        this.disableConfirmButtons = true;
+        this.showConfirmButton = true;
 
-        $timeout(function () {
-            disableConfirmButtons = false;
-        }, 250);
-    };
+        this.$timeout(() => this.disableConfirmButtons = false, 250);
+    }
 
-    var processMyOnClick = function () {
-        var result = ctrl.myOnClick();
-        var promise = result;
+    processMyOnClick() {
+        let result = this.myOnClick();
+        let promise = result;
 
-        if (!utils.isPromise(result)) {
-            var deferred = $q.defer();
+        if (!isPromise(result)) {
+            let deferred = this.$q.defer();
             deferred.resolve();
             promise = deferred.promise;
         }
 
         return promise;
-    };
+    }
 
-    ctrl.$onInit = function () {
-        ctrl.buttonGroupCtrl.addButton(this);
-        ctrl.myButtonType = ctrl.myButtonType || 'button';
-    };
+    $onInit() {
+        this.buttonGroupCtrl.addButton(this);
+        this.myButtonType = this.myButtonType || 'button';
+    }
 
-    ctrl.reset = function () {
-        isPending = false;
-        ctrl.showConfirmButton = false;
-        ctrl.buttonGroupCtrl.enableButtons();
-    };
+    reset() {
+        this.isPending = false;
+        this.showConfirmButton = false;
+        this.buttonGroupCtrl.enableButtons();
+    }
 
-    ctrl.onClick = function () {
-        ctrl.buttonGroupCtrl.disableButtons();
-        shouldPresentConfirmButton() ? presentConfirmButton() : ctrl.processOnClick();
-    };
+    onClick() {
+        this.buttonGroupCtrl.disableButtons();
+        this.shouldPresentConfirmButton() ? this.presentConfirmButton() : this.processOnClick();
+    }
 
-    ctrl.processOnClick = function () {
-        isPending = true;
+    processOnClick() {
+        this.isPending = true;
 
-        processMyOnClick().then(function (data) {
-            ctrl.myOnSuccess({data: data});
-        }).catch(function (data) {
-            ctrl.myOnError({error: data});
-        }).finally(function () {
-            ctrl.reset();
-        });
-    };
+        this.processMyOnClick().then(data => this.myOnSuccess({data}))
+            .catch(data => this.myOnError({error: data}))
+            .finally(() => this.reset());
+    }
 
-    ctrl.isDisabled = function () {
-        return isPending || disableConfirmButtons || ctrl.myDisabled;
-    };
+    isDisabled() {
+        return this.isPending || this.disableConfirmButtons || this.myDisabled;
+    }
 
-    ctrl.disable = function () {
-        disableConfirmButtons = shouldPresentConfirmButton() || !ctrl.showConfirmButton;
-    };
+    disable() {
+        this.disableConfirmButtons = this.shouldPresentConfirmButton() || !this.showConfirmButton;
+    }
 
-    ctrl.enable = function () {
-        disableConfirmButtons = false;
-    };
-
-    ctrl.css = require('./button.component.css');
+    enable() {
+        this.disableConfirmButtons = false;
+    }
 }
 
-require('angular').module('myreader').component('myButton', {
-    template: require('./button.component.html'),
-    controller: ['$timeout', '$q', ButtonComponent],
+export const ButtonComponent = {
+    template, css, controller,
     require: {
         buttonGroupCtrl: '^myButtonGroup'
     },
@@ -92,4 +88,4 @@ require('angular').module('myreader').component('myButton', {
         myOnSuccess: '&',
         myOnError: '&'
     }
-});
+};

@@ -1,33 +1,34 @@
-'use strict';
+import template from './entry-content.component.html';
+import css from './entry-content.component.css';
 
-require('./entry-content-sanitizer/entry-content-sanitizer.directive');
+class controller {
 
-function EntryContentComponent($mdMedia, settingsService) {
-    var ctrl = this;
+    constructor($mdMedia, settingsService) {
+        'ngInject';
+        this.$mdMedia = $mdMedia;
+        this.settingsService = settingsService;
+    }
 
-    ctrl.$onInit = function () {
-        ctrl.item = ctrl.myItem || {};
-        ctrl.show = ctrl.myShow || false;
-    };
+    $onInit() {
+        this.item = this.myItem || {};
+        this.show = this.myShow || false;
+    }
 
-    ctrl.$onChanges = function (obj) {
+    $onChanges(obj) {
         if (obj.myShow) {
-            ctrl.show = obj.myShow.currentValue;
+            this.show = obj.myShow.currentValue;
         }
-    };
+    }
 
-    ctrl.showEntryContent = function () {
-        return $mdMedia('gt-md') ? settingsService.isShowEntryDetails() || ctrl.show : ctrl.show;
-    };
-
-    ctrl.css = require('./entry-content.component.css');
+    showEntryContent () {
+        return this.$mdMedia('gt-md') ? this.settingsService.isShowEntryDetails() || this.show : this.show;
+    }
 }
 
-require('angular').module('myreader').component('myEntryContent', {
-    template: require('./entry-content.component.html'),
-    controller: [ '$mdMedia', 'settingsService', EntryContentComponent ],
+export const EntryContentComponent = {
+    template, css, controller,
     bindings: {
         myItem: '<',
         myShow: '<'
     }
-});
+}

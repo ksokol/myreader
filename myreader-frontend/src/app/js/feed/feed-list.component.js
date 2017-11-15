@@ -1,36 +1,34 @@
-'use strict';
+import template from './feed-list.component.html';
+import css from './feed-list.component.css';
 
-require('../shared/component/search-input/search-input.component');
-require('../shared/component/icon/icon.component');
-require('./feed.service');
+class controller {
 
-function FeedListComponent($state, feedService) {
-    var ctrl = this;
+    constructor($state, feedService) {
+        'ngInject';
+        this.$state = $state;
+        this.feedService = feedService;
+    }
 
-    ctrl.$onInit = function() {
-        feedService.findAll().then(function(data) {
-            ctrl.feeds = data;
-        }).catch (function(error) {
-            ctrl.message = { type: 'error', message: error };
-        });
-    };
+    $onInit() {
+        this.feedService.findAll()
+            .then(data => this.feeds = data)
+            .catch (error => this.message = {type: 'error', message: error});
+    }
 
-    ctrl.open = function(feed) {
-        $state.go('admin.feed-detail', { uuid: feed.uuid });
-    };
+    open(feed) {
+        this.$state.go('admin.feed-detail', {uuid: feed.uuid});
+    }
 
-    ctrl.onSearchChange = function (value) {
-        ctrl.searchKey = value;
-    };
+    onSearchChange(value) {
+        this.searchKey = value;
+    }
 
-    ctrl.onSearchClear = function () {
-        ctrl.searchKey = '';
-    };
-
-    ctrl.css = require('./feed-list.component.css');
+    onSearchClear() {
+        this.searchKey = '';
+    }
 }
 
-require('angular').module('myreader').component('myFeedList', {
-    template: require('./feed-list.component.html'),
-    controller: ['$state', 'feedService', FeedListComponent]
-});
+export const FeedListComponent = {
+    template, css,
+    controller: ['$state', 'feedService', controller]
+};

@@ -1,19 +1,19 @@
-describe('src/app/js/subscription/subscription.service.spec.js', function () {
+describe('src/app/js/subscription/subscription.service.spec.js', () => {
 
-    var httpBackend, service;
+    let httpBackend, service;
 
-    beforeEach(require('angular').mock.module('myreader'));
+    beforeEach(angular.mock.module('myreader'));
 
-    beforeEach(inject(function ($httpBackend, subscriptionService) {
+    beforeEach(inject(($httpBackend, subscriptionService) => {
         httpBackend = $httpBackend;
         service = subscriptionService;
     }));
 
-    it('should return expected body', function(done) {
-        httpBackend.expectGET('/myreader/api/2/subscriptions').respond({ content: 'expected' });
+    it('should return expected body', done => {
+        httpBackend.expectGET('/myreader/api/2/subscriptions').respond({content: 'expected'});
 
         service.findAll()
-            .then(function (data) {
+            .then(data => {
                 expect(data).toEqual('expected');
                 done();
             });
@@ -21,11 +21,11 @@ describe('src/app/js/subscription/subscription.service.spec.js', function () {
         httpBackend.flush();
     });
 
-    it('should return expected body', function(done) {
+    it('should return expected body', done => {
         httpBackend.expectGET('/myreader/api/2/subscriptions/subscriptionUuid').respond('expected');
 
         service.find('subscriptionUuid')
-            .then(function (data) {
+            .then(data => {
                 expect(data).toEqual('expected');
                 done();
             });
@@ -33,13 +33,13 @@ describe('src/app/js/subscription/subscription.service.spec.js', function () {
         httpBackend.flush();
     });
 
-    it('should post subscription when uuid is missing', function(done) {
-        var subscription = { tag: 'tag' };
+    it('should post subscription when uuid is missing', done => {
+        const subscription = {tag: 'tag'};
 
         httpBackend.expectPOST('/myreader/api/2/subscriptions', subscription).respond('expected');
 
         service.save(subscription)
-            .then(function (data) {
+            .then(data => {
                 expect(data).toEqual('expected');
                 done();
             });
@@ -47,11 +47,11 @@ describe('src/app/js/subscription/subscription.service.spec.js', function () {
         httpBackend.flush();
     });
 
-    it('should convert empty tag to null', function(done) {
-        httpBackend.expectPOST('/myreader/api/2/subscriptions', { tag: null }).respond('expected');
+    it('should convert empty tag to null', done => {
+        httpBackend.expectPOST('/myreader/api/2/subscriptions', {tag: null}).respond('expected');
 
-        service.save({ tag: '' })
-            .then(function (data) {
+        service.save({tag: ''})
+            .then(data => {
                 expect(data).toEqual('expected');
                 done();
             });
@@ -59,13 +59,13 @@ describe('src/app/js/subscription/subscription.service.spec.js', function () {
         httpBackend.flush();
     });
 
-    it('should patch existing subscription when uuid exists', function(done) {
-        var subscription = { uuid: '1' };
+    it('should patch existing subscription when uuid exists', done => {
+        const subscription = {uuid: '1'};
 
         httpBackend.expectPATCH('/myreader/api/2/subscriptions/1', subscription).respond('expected');
 
         service.save(subscription)
-            .then(function (data) {
+            .then(data => {
                 expect(data).toEqual('expected');
                 done();
             });
@@ -73,13 +73,10 @@ describe('src/app/js/subscription/subscription.service.spec.js', function () {
         httpBackend.flush();
     });
 
-    it('should delete subscription', function(done) {
+    it('should delete subscription', done => {
         httpBackend.expectDELETE('/myreader/api/2/subscriptions/1').respond();
 
-        service.remove('1')
-            .then(function () {
-                done()
-            });
+        service.remove('1').then(() => done());
 
         httpBackend.flush();
     });

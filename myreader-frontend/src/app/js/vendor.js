@@ -1,8 +1,9 @@
-require('angular');
-require('angular-sanitize');
-require('angular-ui-router');
-require('angular-material');
-require('angular-messages');
-require('angular-hotkeys');
+import 'angular';
+import 'angular-sanitize';
+import 'angular-ui-router';
+import 'angular-material';
+import 'angular-messages';
+import 'angular-hotkeys';
 
-require('angular-material/angular-material.css');
+import 'angular-material/angular-material.css';
+

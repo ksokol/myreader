@@ -1,8 +1,11 @@
-window.write = function() {};
+import angular from 'angular';
+import subscriptionTagsTemplate from '../../templates/subscription-tags.html';
+import navigationAdminTemplate from '../../templates/navigation-admin.html';
+import subscriptionEntriesTemplate from '../../templates/subscription-entries.html';
+import bookmarkEntriesTemplate from '../../templates/bookmark-entries.html';
+import subscriptionsTemplate from '../../templates/subscriptions.html';
 
-var angular = require('angular');
-
-angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
+angular.module('common.config', ['ui.router', 'cfp.hotkeys'])
 
 .config(['$httpProvider', function($httpProvider) {
 
@@ -46,7 +49,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                 url: "/app",
                 views: {
                     body: {
-                        template: require('../../templates/subscription-tags.html'),
+                        template: subscriptionTagsTemplate,
                         controller: 'SubscriptionNavigationCtrl'
                     }
                 }
@@ -56,7 +59,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                 url: "/admin",
                 views: {
                     body: {
-                        template: require('../../templates/navigation-admin.html'),
+                        template: navigationAdminTemplate,
                         controller: 'SubscriptionNavigationCtrl'
                     }
                 }
@@ -65,7 +68,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                 url: "/entries/:tag/:uuid",
                 views: {
                     content: {
-                        template: require('../../templates/subscription-entries.html'),
+                        template: subscriptionEntriesTemplate,
                         controller: 'SubscriptionEntryListCtrl'
                     }
                 }
@@ -74,7 +77,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                 url: "/bookmark/:tag",
                 views: {
                     content: {
-                        template: require('../../templates/bookmark-entries.html'),
+                        template: bookmarkEntriesTemplate,
                         controller: 'BookmarkEntryListCtrl'
                     }
                 }
@@ -83,7 +86,7 @@ angular.module('myreader', ['ngSanitize', 'common.services', 'common.controllers
                 url: "/subscriptions",
                 views: {
                     content: {
-                        template: require('../../templates/subscriptions.html'),
+                        template: subscriptionsTemplate,
                         controller: 'SubscriptionsCtrl'
                     }
                 }

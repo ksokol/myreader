@@ -1,23 +1,21 @@
-'use strict';
+import template from './entry.tags.component.html';
 
-function EntryTagsComponent () {
-    var ctrl = this;
+class controller {
 
-    ctrl.$onInit = function () {
-      ctrl.tags = ctrl.myItem.tag ? ctrl.myItem.tag.split(/[ ,]+/) : [];
-    };
+    $onInit() {
+      this.tags = this.myItem.tag ? this.myItem.tag.split(/[ ,]+/) : [];
+    }
 
-    ctrl.onTagChange = function () {
-        ctrl.myOnChange({tag: ctrl.tags.join(", ")});
+    onTagChange() {
+        this.myOnChange({tag: this.tags.join(", ")});
     }
 }
 
-require('angular').module('myreader').component('myEntryTags', {
-    template: require('./entry.tags.component.html'),
-    controller: EntryTagsComponent,
+export const EntryTagsComponent = {
+    template, controller,
     bindings: {
         myItem: '<',
         myShow: '<',
         myOnChange: '&'
     }
-});
+}

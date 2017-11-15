@@ -1,52 +1,45 @@
-'use strict';
+import template from './feed-fetch-error.component.html';
+import css from './feed-fetch-error.component.css';
 
-require('./feed-fetch-error.service');
-require('./feed-fetch-error-list-item.component');
-require('../../../shared/component/load-more/load-more.component');
+class controller {
 
-function FeedFetchErrorComponent(feedFetchErrorService) {
-    var ctrl = this;
-    ctrl.errors = [];
+    constructor(feedFetchErrorService) {
+        'ngInject';
+        this.feedFetchErrorService = feedFetchErrorService;
+        this.errors = [];
+    }
 
-    ctrl.$onChanges = function (obj) {
-        if (obj.myId.currentValue !== ctrl.id) {
-            ctrl.id = obj.myId.currentValue;
-            ctrl.loading = true;
+    $onChanges(obj) {
+        if (obj.myId.currentValue !== this.id) {
+            this.id = obj.myId.currentValue;
+            this.loading = true;
 
-            feedFetchErrorService.findByFeedId(ctrl.id).then(function (errors) {
-                ctrl.next = errors.next();
-                ctrl.totalElements = errors.totalElements;
-                ctrl.retainDays = errors.retainDays;
-                ctrl.errors = errors.fetchError;
-            }).catch(function (error) {
-                ctrl.myOnError({error: error});
-            }).finally(function () {
-                ctrl.loading = false;
-            });
+            this.feedFetchErrorService.findByFeedId(this.id).then(errors => {
+                this.next = errors.next();
+                this.totalElements = errors.totalElements;
+                this.retainDays = errors.retainDays;
+                this.errors = errors.fetchError;
+            }).catch(error => this.myOnError({error}))
+              .finally(() => this.loading = false);
         }
-    };
+    }
 
-    ctrl.onMore = function (load) {
-        feedFetchErrorService.findByLink(load).then(function (errors) {
-            ctrl.next = errors.next();
-            ctrl.errors = ctrl.errors.concat(errors.fetchError);
-        }).catch(function (error) {
-            ctrl.myOnError({error: error});
-        });
-    };
+    onMore(load) {
+        this.feedFetchErrorService.findByLink(load).then(errors => {
+            this.next = errors.next();
+            this.errors = this.errors.concat(errors.fetchError);
+        }).catch(error => this.myOnError({error}));
+    }
 
-    ctrl.hasErrors = function () {
-        return ctrl.errors.length > 0;
-    };
-
-    ctrl.css = require('./feed-fetch-error.component.css');
+    hasErrors() {
+        return this.errors.length > 0;
+    }
 }
 
-require('angular').module('myreader').component('myFeedFetchError', {
-    template: require('./feed-fetch-error.component.html'),
-    controller: ['feedFetchErrorService', FeedFetchErrorComponent],
+export const FeedFetchErrorComponent = {
+    template, css, controller,
     bindings: {
         myId: '<',
         myOnError: '&'
     }
-});
+};

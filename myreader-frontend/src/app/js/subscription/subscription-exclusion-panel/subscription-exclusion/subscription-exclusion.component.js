@@ -1,16 +1,18 @@
-'use strict';
+import template from './subscription-exclusion.component.html';
 
-require('./exclusion.service');
+class controller {
 
-function SubscriptionExclusionComponent (exclusionService) {
-    var ctrl = this;
+    constructor(exclusionService) {
+        'ngInject';
+        this.exclusionService = exclusionService;
+    }
 
-    var handleError = function (error) {
-        ctrl.myOnError({error: error});
-    };
+    handleError(error) {
+        this.myOnError({error: error});
+    }
 
-    var sortExclusions = function () {
-        ctrl.exclusions.sort(function (left, right) {
+    sortExclusions() {
+        this.exclusions.sort((left, right) => {
             if (left.pattern < right.pattern) {
                 return -1;
             }
@@ -19,81 +21,80 @@ function SubscriptionExclusionComponent (exclusionService) {
             }
             return 0;
         })
-    };
+    }
 
-    var startLoading = function () {
-        ctrl.loading = true;
-    };
+    startLoading() {
+        this.loading = true;
+    }
 
-    var endLoading = function () {
-        ctrl.loading = false;
-    };
+    endLoading() {
+        this.loading = false;
+    }
 
-    var startProcessing = function () {
-        ctrl.processing = true;
-    };
+    startProcessing() {
+        this.processing = true;
+    }
 
-    var endProcessing = function () {
-        ctrl.processing = false;
-    };
+    endProcessing() {
+        this.processing = false;
+    }
 
-    var initExclusions = function (exclusions) {
-        ctrl.exclusions = exclusions;
-        sortExclusions();
-    };
+    initExclusions(exclusions) {
+        this.exclusions = exclusions;
+        this.sortExclusions();
+    }
 
-    var addExclusion = function (exclusion) {
-        ctrl.exclusions.push(exclusion);
-        sortExclusions();
-    };
+    addExclusion(exclusion) {
+        this.exclusions.push(exclusion);
+        this.sortExclusions();
+    }
 
-    ctrl.$onChanges = function (obj) {
-        if(obj.myId.currentValue && obj.myId.currentValue !== ctrl.id) {
-            ctrl.id = obj.myId.currentValue;
-            startLoading();
+    $onChanges(obj) {
+        if(obj.myId.currentValue && obj.myId.currentValue !== this.id) {
+            this.id = obj.myId.currentValue;
+            this.startLoading();
 
-            exclusionService.find(ctrl.id)
-                .then(initExclusions)
-                .catch(handleError)
-                .finally(endLoading);
+            this.exclusionService.find(this.id)
+                .then((exclusions) => this.initExclusions(exclusions))
+                .catch((error) => this.handleError(error))
+                .finally(() => this.endLoading());
         }
-    };
+    }
 
-    ctrl.onRemove = function (exclusion) {
-        startProcessing();
-        exclusionService.delete(ctrl.id, exclusion.uuid)
-            .catch(function (error) {
-                addExclusion(exclusion);
-                handleError(error);
+    onRemove(exclusion) {
+        this.startProcessing();
+        this.exclusionService.delete(this.id, exclusion.uuid)
+            .catch(error => {
+                this.addExclusion(exclusion);
+                this.handleError(error);
             })
-            .finally(endProcessing);
-    };
+            .finally(() => this.endProcessing());
+    }
 
-    ctrl.onTransform = function ($chip) {
-        startProcessing();
-        exclusionService.save(ctrl.id, $chip)
-            .then(addExclusion)
-            .catch(handleError)
-            .finally(endProcessing);
+    onTransform($chip) {
+        this.startProcessing();
+        this.exclusionService.save(this.id, $chip)
+            .then((exclusion) => this.addExclusion(exclusion))
+            .catch((error) => this.handleError(error))
+            .finally(() => this.endProcessing());
 
         return null; // don't render the new chip
-    };
+    }
 
-    ctrl.placeholder = function () {
-        return ctrl.processing ? 'processing...' : 'Enter an exclusion pattern';
-    };
+    placeholder() {
+        return this.processing ? 'processing...' : 'Enter an exclusion pattern';
+    }
 
-    ctrl.isDisabled = function () {
-        return ctrl.id === undefined || ctrl.myDisabled === true;
+    isDisabled() {
+        return this.id === undefined || this.myDisabled === true;
     }
 }
 
-require('angular').module('myreader').component('mySubscriptionExclusion', {
-    template: require('./subscription-exclusion.component.html'),
-    controller: ['exclusionService', SubscriptionExclusionComponent],
+export const SubscriptionExclusionComponent = {
+    template, controller,
     bindings: {
         myId: '<',
         myDisabled: '<',
         myOnError: '&'
     }
-});
+};

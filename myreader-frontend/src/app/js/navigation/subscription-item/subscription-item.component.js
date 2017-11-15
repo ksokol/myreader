@@ -1,42 +1,39 @@
-'use strict';
+import template from './subscription-item.component.html';
+import css from './subscription-item.component.css';
 
-function NavigationSubscriptionItemComponent() {
-    var ctrl = this;
+class controller {
 
-    ctrl.$onInit = function () {
-        ctrl.item = ctrl.myItem || {};
-        ctrl.selected = ctrl.mySelected || {};
-    };
+    $onInit() {
+        this.item = this.myItem || {};
+        this.selected = this.mySelected || {};
+    }
 
-    ctrl.$onChanges = function (obj) {
-        ctrl.selected = obj.mySelected.currentValue;
-    };
+    $onChanges(obj) {
+        this.selected = obj.mySelected.currentValue;
+    }
 
-    ctrl.isSelected = function (item) {
-        return ctrl.selected.uuid === item.uuid && ctrl.selected.tag === item.tag;
-    };
+    isSelected(item) {
+        return this.selected.uuid === item.uuid && this.selected.tag === item.tag;
+    }
 
-    ctrl.isOpen = function () {
-        return ctrl.selected.tag === ctrl.item.tag;
-    };
+    isOpen() {
+        return this.selected.tag === this.item.tag;
+    }
 
-    ctrl.onSelect = function (tag, uuid) {
-        ctrl.myOnSelect({selected: {tag: tag, uuid: uuid}});
-    };
+    onSelect(tag, uuid) {
+        this.myOnSelect({selected: {tag, uuid}});
+    }
 
-    ctrl.isInvisible = function (item) {
+    isInvisible(item) {
         return item.hasOwnProperty('unseen') && item.unseen <= 0;
-    };
-
-    ctrl.css = require('./subscription-item.component.css');
+    }
 }
 
-require('angular').module('myreader').component('myNavigationSubscriptionItem', {
-    template: require('./subscription-item.component.html'),
-    controller: NavigationSubscriptionItemComponent,
+export const NavigationSubscriptionItemComponent = {
+    template, css, controller,
     bindings: {
         myItem: '<',
         mySelected: '<',
         myOnSelect: '&'
     }
-});
+};

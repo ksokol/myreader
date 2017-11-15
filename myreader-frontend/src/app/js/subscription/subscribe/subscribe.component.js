@@ -1,30 +1,34 @@
-'use strict';
+import template from './subscribe.component.html';
 
-function SubscribeComponent($state, subscriptionService) {
-    var ctrl = this;
+class controller {
 
-    ctrl.onSave = function() {
-        return subscriptionService.save({origin: ctrl.origin});
+    constructor($state, subscriptionService) {
+        'ngInject';
+        this.$state = $state;
+        this.subscriptionService = subscriptionService;
+    }
+
+    onSave() {
+        return this.subscriptionService.save({origin: this.origin});
+    }
+
+    onSuccessSave(data) {
+        this.$state.go('app.subscription', {uuid: data.uuid});
+    }
+
+    onError(error) {
+        this.message = { type: 'error', message: error };
     };
 
-    ctrl.onSuccessSave = function(data) {
-        $state.go('app.subscription', {uuid: data.uuid});
-    };
-
-    ctrl.onError = function(error) {
-        ctrl.message = { type: 'error', message: error };
-    };
-
-    ctrl.onErrorSave = function(error) {
+    onErrorSave(error) {
         if(error.data.status === 400) {
-            ctrl.validations = error.data.fieldErrors
+            this.validations = error.data.fieldErrors
         } else {
-            ctrl.onError(error);
+            this.onError(error);
         }
-    };
+    }
 }
 
-require('angular').module('myreader').component('mySubscribe', {
-    template: require('./subscribe.component.html'),
-    controller: [ '$state', 'subscriptionService', SubscribeComponent ]
-});
+export const SubscribeComponent = {
+    template, controller
+};

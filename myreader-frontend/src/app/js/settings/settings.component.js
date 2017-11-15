@@ -1,26 +1,26 @@
-'use strict';
+import template from './settings.component.html';
+import css from './settings.component.css';
 
-require('../shared/service/settings.service');
+class controller {
 
-function SettingsComponent (settingsService) {
-    var ctrl = this;
+    constructor(settingsService) {
+        'ngInject';
+        this.settingsService = settingsService;
+    }
 
-    ctrl.$onInit = function () {
-        ctrl.currentSize = settingsService.getPageSize();
-        ctrl.showUnseenEntries = settingsService.isShowUnseenEntries();
-        ctrl.showEntryDetails = settingsService.isShowEntryDetails();
-    };
+    $onInit() {
+        this.currentSize = this.settingsService.getPageSize();
+        this.showUnseenEntries = this.settingsService.isShowUnseenEntries();
+        this.showEntryDetails = this.settingsService.isShowEntryDetails();
+    }
 
-    ctrl.save = function() {
-        settingsService.setPageSize(ctrl.currentSize);
-        settingsService.setShowUnseenEntries(ctrl.showUnseenEntries);
-        settingsService.setShowEntryDetails(ctrl.showEntryDetails);
-    };
-
-    ctrl.css = require('./settings.component.css');
+    save() {
+        this.settingsService.setPageSize(this.currentSize);
+        this.settingsService.setShowUnseenEntries(this.showUnseenEntries);
+        this.settingsService.setShowEntryDetails(this.showEntryDetails);
+    }
 }
 
-require('angular').module('myreader').component('mySettings', {
-    template: require('./settings.component.html'),
-    controller: ['settingsService', SettingsComponent]
-});
+export const SettingsComponent = {
+    template, css, controller
+};

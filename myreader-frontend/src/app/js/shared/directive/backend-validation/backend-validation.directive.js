@@ -1,12 +1,9 @@
-'use strict';
-
-require('angular').module('myreader').directive('myBackendValidation', function () {
-
+export const BackendValidationDirective = () => {
     return {
         restrict: 'A',
         require: 'ngModel',
         scope: {
-          myValidations: '<'
+            myValidations: '<'
         },
         link: function($scope, element, attr, modelCtrl) {
             $scope.$watch('myValidations', function (validations) {
@@ -29,4 +26,4 @@ require('angular').module('myreader').directive('myBackendValidation', function 
             });
         }
     }
-});
+};

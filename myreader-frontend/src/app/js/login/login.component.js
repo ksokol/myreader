@@ -1,40 +1,43 @@
-'use strict';
+import template from './login.component.html';
+import css from './login.component.css';
 
-function LoginComponent($http, $state) {
-    var ctrl = this;
+class controller {
 
-    ctrl.onClick = function () {
-        ctrl.actionPending = true;
-        var encodedBody = 'username=' + encodeURIComponent(ctrl.username) +
-                          '&password=' + encodeURIComponent(ctrl.password) +
-                          '&remember-me=' + ctrl.rememberMe;
+    constructor($http, $state) {
+        'ngInject';
+        this.$http = $http;
+        this.$state = $state;
+    }
 
-        return $http({
+    onClick() {
+        this.actionPending = true;
+        const encodedBody = 'username=' + encodeURIComponent(this.username) +
+                          '&password=' + encodeURIComponent(this.password) +
+                          '&remember-me=' + this.rememberMe;
+
+        return this.$http({
             method: 'POST',
             url: 'check',
             data: encodedBody,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         });
-    };
+    }
 
-    ctrl.onSuccess = function (response) {
-        var authorities = response.headers('X-MY-AUTHORITIES');
+    onSuccess(response) {
+        const authorities = response.headers('X-MY-AUTHORITIES');
         if(authorities !== null && authorities.indexOf('ROLE_ADMIN') !== -1) {
-            $state.go('admin.overview');
+            this.$state.go('admin.overview');
         } else {
-            $state.go('app.entries');
+            this.$state.go('app.entries');
         }
-    };
+    }
 
-    ctrl.onError = function (error) {
-        ctrl.actionPending = false;
-        ctrl.message = { type: 'error', message: 'Username or password wrong' };
-    };
-
-    ctrl.css = require('./login.component.css');
+    onError(error) {
+        this.actionPending = false;
+        this.message = {type: 'error', message: 'Username or password wrong'};
+    }
 }
 
-require('angular').module('myreader').component('myLogin', {
-    template: require('./login.component.html'),
-    controller: ['$http', '$state', LoginComponent]
-});
+export const LoginComponent = {
+    template, css, controller
+};
