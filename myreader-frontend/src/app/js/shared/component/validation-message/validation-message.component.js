@@ -1,15 +1,9 @@
-'use strict';
+import template from './validation-message.component.html';
+import css from './validation-message.component.css';
 
-function ValidationMessage() {
-    var ctrl = this;
-
-    ctrl.css = require('./validation-message.component.css');
-}
-
-require('angular').module('myreader').component('myValidationMessage', {
-    template: require('./validation-message.component.html'),
-    controller: ValidationMessage,
+export const ValidationMessageComponent = {
+    template, css,
     bindings: {
         myFormControl: '<'
     }
-});
+};

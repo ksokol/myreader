@@ -1,8 +1,5 @@
-'use strict';
-
-require('./safe-opener.service');
-
-require('angular').module('myreader').directive('mySafeOpener', ['safeOpenerService', function (safeOpenerService) {
+export const SafeOpenerDirective = (safeOpenerService) => {
+    'ngInject';
     return {
         restrict: 'A',
         controllerAs: 'ctrl',
@@ -16,4 +13,4 @@ require('angular').module('myreader').directive('mySafeOpener', ['safeOpenerServ
             });
         }
     }
-}]);
+};

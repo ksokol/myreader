@@ -1,14 +1,13 @@
-'use strict';
+import {AVAILABLE_TAGS} from "../../constants";
 
-require('angular').module('myreader').service('subscriptionTagService', ['$http', function($http) {
-    var url = '/myreader/api/2/subscriptions/availableTags';
+export class SubscriptionTagService {
 
-    return {
-        findAll: function() {
-            return $http.get(url)
-                .then(function (response) {
-                    return response.data;
-                });
-        }
+    constructor($http) {
+        'ngInject';
+        this.$http = $http;
     }
-}]);
+
+    findAll() {
+        return this.$http.get(AVAILABLE_TAGS).then(response => response.data);
+    }
+}

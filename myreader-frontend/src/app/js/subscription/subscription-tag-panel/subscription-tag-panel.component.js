@@ -1,23 +1,23 @@
-'use strict';
+import template from './subscription-tag-panel.component.html';
 
-require('../../shared/component/autocomplete-input/autocomplete-input.component');
-require('./subscription-tag.service');
+class controller {
 
-function SubscriptionTagPanelComponent (subscriptionTagService) {
-    var ctrl = this;
+    constructor(subscriptionTagService) {
+        'ngInject';
+        this.subscriptionTagService = subscriptionTagService;
+    }
 
-    ctrl.loadTags = function () {
-        return subscriptionTagService.findAll();
-    };
+    loadTags() {
+        return this.subscriptionTagService.findAll();
+    }
 }
 
-require('angular').module('myreader').component('mySubscriptionTagPanel', {
-    template: require('./subscription-tag-panel.component.html'),
-    controller: ['subscriptionTagService', SubscriptionTagPanelComponent],
+export const SubscriptionTagPanelComponent = {
+    template, controller,
     bindings: {
         mySelectedItem: '<',
         myDisabled: '<',
         myOnSelect: '&',
         myOnClear: '&'
     }
-});
+};

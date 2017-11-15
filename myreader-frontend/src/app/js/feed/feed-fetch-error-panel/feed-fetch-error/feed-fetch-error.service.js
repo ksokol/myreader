@@ -1,37 +1,41 @@
-'use strict';
+import {CONTEXT, FEEDS} from "../../../constants";
 
-var FetchErrors = function(errors) {
-    var self = this;
-    self.fetchError = errors.content;
-    self.totalElements = errors.page.totalElements;
-    self.retainDays = self.fetchError.length > 0 ? self.fetchError[0].retainDays : 0;
+export class FetchErrors {
 
-    var getLink = function(rel) {
-        return errors.links.filter(function (link) {
-            return link.rel === rel;
-        }).map(function (link) {
-            return link.href;
-        })[0];
-    };
-
-    self.next = function() {
-        return getLink('next');
-    };
-};
-
-require('angular').module('myreader').service('feedFetchErrorService', ['$http', function($http) {
-    var feedUrl = '/myreader/api/2/feeds';
-
-    return {
-        findByFeedId: function(feedUuid) {
-            return $http.get(feedUrl + '/' + feedUuid + '/fetchError').then(function (response) {
-                return new FetchErrors(response.data);
-            });
-        },
-        findByLink: function(url) {
-            return $http.get('/myreader' + url).then(function (response) {
-                return new FetchErrors(response.data);
-            });
-        }
+    constructor(errors) {
+        this.errors = errors;
+        this.fetchError = errors.content;
+        this.totalElements = errors.page.totalElements;
+        this.retainDays = this.fetchError.length > 0 ? this.fetchError[0].retainDays : 0;
     }
-}]);
+
+    getLink(rel) {
+        return this.errors.links
+            .filter(link => link.rel === rel)
+            .map(link => link.href)[0];
+    };
+
+    next() {
+        return this.getLink('next');
+    };
+}
+
+export class FeedFetchErrorService {
+
+    constructor($http) {
+        'ngInject';
+        this.$http = $http;
+    }
+
+    findByFeedId(feedUuid) {
+        return this.$http.get(`${FEEDS}/${feedUuid}/fetchError`).then(function (response) {
+            return new FetchErrors(response.data);
+        });
+    }
+
+    findByLink(url) {
+        return this.$http.get(CONTEXT + url).then(function (response) {
+            return new FetchErrors(response.data);
+        });
+    }
+}

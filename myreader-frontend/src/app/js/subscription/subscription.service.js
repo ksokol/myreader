@@ -1,38 +1,29 @@
-'use strict';
+import {SUBSCRIPTIONS} from "../constants";
 
-require('angular').module('myreader').service('subscriptionService', ['$http', function($http) {
-    var url = '/myreader/api/2/subscriptions';
+export class SubscriptionService {
 
-    return {
-        findAll: function() {
-            return $http.get(url)
-                .then(function (response) {
-                    return response.data.content;
-                });
-        },
-        find: function(uuid) {
-            return $http.get(url + '/' + uuid)
-                .then(function (response) {
-                    return response.data;
-                });
-        },
-        save: function(subscription) {
-            subscription.tag = subscription.tag === "" ? null : subscription.tag;
-
-            if(subscription.uuid) {
-                return $http.patch(url + '/' + subscription.uuid, subscription)
-                    .then(function (response) {
-                        return response.data;
-                    });
-            }
-
-            return $http.post(url, subscription)
-                .then(function (response) {
-                    return response.data;
-                });
-        },
-        remove: function(uuid) {
-            return $http.delete(url + '/' + uuid);
-        }
+    constructor($http) {
+        'ngInject';
+        this.$http = $http;
     }
-}]);
+
+    findAll() {
+        return this.$http.get(SUBSCRIPTIONS).then(response => response.data.content);
+    }
+
+    find(uuid) {
+        return this.$http.get(`${SUBSCRIPTIONS}/${uuid}`).then(response => response.data);
+    }
+
+    save(subscription) {
+        subscription.tag = subscription.tag === "" ? null : subscription.tag;
+
+        return subscription.uuid ?
+            this.$http.patch(`${SUBSCRIPTIONS}/${subscription.uuid}`, subscription).then(response => response.data) :
+            this.$http.post(SUBSCRIPTIONS, subscription).then(response => response.data);
+    }
+
+    remove(uuid) {
+        return this.$http.delete(`${SUBSCRIPTIONS}/${uuid}`);
+    }
+}

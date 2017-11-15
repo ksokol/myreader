@@ -1,26 +1,24 @@
-'use strict';
+import css from './icon.component.css';
 
-function IconComponent() {
-    var ctrl = this;
+class controller {
 
-    ctrl.iconColor = 'my-icon__icon--grey';
+    constructor() {
+        this.iconColor = 'my-icon__icon--grey';
+    }
+    $onInit() {
+        this.iconClass = 'my-icon__icon--' + this.myType;
 
-    ctrl.$onInit = function () {
-        ctrl.iconClass = 'my-icon__icon--' + ctrl.myType;
-
-        if (ctrl.myColor) {
-            ctrl.iconColor = 'my-icon__icon--' + ctrl.myColor;
+        if (this.myColor) {
+            this.iconColor = 'my-icon__icon--' + this.myColor;
         }
-    };
-
-    ctrl.css = require('./icon.component.css');
+    }
 }
 
-require('angular').module('myreader').component('myIcon', {
+export const IconComponent = {
     template: '<md-icon class="my-icon" ng-class="[$ctrl.iconClass, $ctrl.iconColor]"></md-icon>',
-    controller: IconComponent,
+    controller, css,
     bindings: {
         myType: '@',
         myColor: '@'
     }
-});
+};

@@ -1,5 +1,6 @@
-require('./config');
-require('./services');
-require('./controllers');
+import './app.module';
 
-require('../css/mobile.css');
+import '../css/mobile.css';
+
+// TODO replace with CSP
+window.write = () => {};

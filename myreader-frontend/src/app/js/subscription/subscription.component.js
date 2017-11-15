@@ -1,68 +1,64 @@
-'use strict';
+import template from './subscription.component.html';
+import css from './subscription.component.css';
 
-require('./subscription-exclusion-panel/subscription-exclusion-panel.component');
-require('./subscription-tag-panel/subscription-tag-panel.component');
-require('./subscription.service');
-require('../shared/component/icon/icon.component');
+class controller {
 
-function SubscriptionComponent($state, $stateParams, subscriptionService) {
-    var ctrl = this;
+    constructor($state, $stateParams, subscriptionService) {
+        'ngInject';
+        this.$state = $state;
+        this.$stateParams = $stateParams;
+        this.subscriptionService = subscriptionService;
+    }
 
-    ctrl.$onInit = function () {
-        if($stateParams.uuid) {
-            subscriptionService.find($stateParams.uuid)
-                .then(function(data) {
-                    ctrl.subscription = data;
-                });
+    $onInit() {
+        if(this.$stateParams.uuid) {
+            this.subscriptionService.find(this.$stateParams.uuid).then(data => this.subscription = data);
         }
-    };
+    }
 
-    ctrl.onError = function(error) {
-        ctrl.message = { type: 'error', message: error };
-        ctrl.pendingAction = false;
-    };
+    onError(error) {
+        this.message = {type: 'error', message: error};
+        this.pendingAction = false;
+    }
 
-    ctrl.onSelectTag = function (value) {
-        ctrl.subscription.tag = value;
-    };
+    onSelectTag(value) {
+        this.subscription.tag = value;
+    }
 
-    ctrl.onClearTag = function () {
-        ctrl.subscription.tag = null;
-    };
+    onClearTag() {
+        this.subscription.tag = null;
+    }
 
-    ctrl.onSave = function() {
-        ctrl.pendingAction = true;
-        return subscriptionService.save(ctrl.subscription);
-    };
+    onSave() {
+        this.pendingAction = true;
+        return this.subscriptionService.save(this.subscription);
+    }
 
-    ctrl.onSuccessSave = function(data) {
-        ctrl.message = { type: 'success', message: 'saved' };
-        ctrl.subscription = data;
-        ctrl.pendingAction = false;
-    };
+    onSuccessSave(data) {
+        this.message = {type: 'success', message: 'saved'};
+        this.subscription = data;
+        this.pendingAction = false;
+    }
 
-    ctrl.onErrorSave = function(error) {
+    onErrorSave(error) {
         if(error.data.status === 400) {
-            ctrl.validations = error.data.fieldErrors
+            this.validations = error.data.fieldErrors
         } else {
-            ctrl.onError(error);
+            this.onError(error);
         }
-        ctrl.pendingAction = false;
-    };
+        this.pendingAction = false;
+    }
 
-    ctrl.onDelete = function() {
-        ctrl.pendingAction = true;
-        return subscriptionService.remove(ctrl.subscription.uuid);
-    };
+    onDelete() {
+        this.pendingAction = true;
+        return this.subscriptionService.remove(this.subscription.uuid);
+    }
 
-    ctrl.onSuccessDelete = function() {
-        $state.go('app.subscriptions');
-    };
-
-    ctrl.css = require('./subscription.component.css');
+    onSuccessDelete() {
+        this.$state.go('app.subscriptions');
+    }
 }
 
-require('angular').module('myreader').component('mySubscription', {
-    template: require('./subscription.component.html'),
-    controller: ['$state', '$stateParams', 'subscriptionService', SubscriptionComponent]
-});
+export const SubscriptionComponent = {
+    template, css, controller
+};

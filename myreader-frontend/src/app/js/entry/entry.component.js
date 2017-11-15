@@ -1,58 +1,51 @@
-'use strict';
+import template from './entry.component.html';
+import css from './entry.component.css';
 
-require('./entry-title/entry-title.component');
-require('./entry-actions/entry-actions.component');
-require('./entry-content/entry-content.component');
-require('./entry-tags/entry-tags.component');
+class controller {
 
-function EntryComponent(subscriptionEntryService) {
-    var ctrl = this;
+    constructor(subscriptionEntryService) {
+        'ngInject';
+        this.subscriptionEntryService = subscriptionEntryService;
+    }
 
-    var updateItem = function (item) {
-        subscriptionEntryService.save(item)
-        .then(function (updatedEntry) {
-            ctrl.item = updatedEntry;
-        })
-        .catch(function (error) {
-            ctrl.message = { type: 'error', message: error};
-        });
-    };
+    updateItem(item) {
+        this.subscriptionEntryService.save(item)
+        .then(updatedEntry => this.item = updatedEntry)
+        .catch(error => this.message = {type: 'error', message: error});
+    }
 
-    ctrl.$onInit = function () {
-        ctrl.item = ctrl.myItem;
-    };
+    $onInit() {
+        this.item = this.myItem;
+    }
 
-    ctrl.onDismissMessage = function () {
-        ctrl.message = null;
-    };
+    onDismissMessage() {
+        this.message = null;
+    }
 
-    ctrl.toggleMore = function (showMore) {
-        ctrl.showMore = showMore;
-    };
+    toggleMore(showMore) {
+        this.showMore = showMore;
+    }
 
-    ctrl.onCheck = function (item) {
-        updateItem({
-            uuid: ctrl.item.uuid,
+    onCheck(item) {
+        this.updateItem({
+            uuid: this.item.uuid,
             seen: item.seen,
-            tag: ctrl.item.tag
+            tag: this.item.tag
         });
-    };
+    }
 
-    ctrl.onTagUpdate = function (tag) {
-        updateItem({
-            uuid: ctrl.item.uuid,
-            seen: ctrl.item.seen,
+    onTagUpdate(tag) {
+        this.updateItem({
+            uuid: this.item.uuid,
+            seen: this.item.seen,
             tag: tag
         });
-    };
-
-    ctrl.css = require('./entry.component.css');
+    }
 }
 
-require('angular').module('myreader').component('myEntry', {
-    template: require('./entry.component.html'),
-    controller: [ 'subscriptionEntryService', EntryComponent ],
+export const EntryComponent = {
+    template, css, controller,
     bindings: {
         myItem: '<'
     }
-});
+};

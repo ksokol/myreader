@@ -1,43 +1,42 @@
-'use strict';
+import template from './notification-panel.component.html';
+import css from './notification-panel.component.css';
 
-require('../icon/icon.component');
+class controller {
 
-function NotificationPanelComponent($timeout) {
-    var ctrl = this;
-    var promise;
+    constructor($timeout) {
+        'ngInject';
+        this.$timeout = $timeout;
+    }
 
-    var reset = function () {
-        ctrl.type = null;
-        ctrl.message = null;
-        ctrl.myOnDismiss();
-    };
+    reset() {
+        this.type = null;
+        this.message = null;
+        this.myOnDismiss();
+    }
 
-    ctrl.$onChanges = function (obj) {
-        if (promise) {
-            $timeout.cancel(promise);
+    $onChanges(obj) {
+        if (this.promise) {
+            this.$timeout.cancel(this.promise);
         }
 
         if (obj.myMessage.currentValue) {
-            ctrl.type = obj.myMessage.currentValue.type;
-            ctrl.message = obj.myMessage.currentValue.message;
+            this.type = obj.myMessage.currentValue.type;
+            this.message = obj.myMessage.currentValue.message;
         }
 
-        promise = $timeout(reset, 5000);
-    };
+        this.promise = this.$timeout(() => this.reset(), 5000);
+    }
 
-    ctrl.onClose = function () {
-        $timeout.cancel(promise);
-        reset();
-    };
-
-    ctrl.css = require('./notification-panel.component.css');
+    onClose() {
+        this.$timeout.cancel(this.promise);
+        this.reset();
+    }
 }
 
-require('angular').module('myreader').component('myNotificationPanel', {
-    template: require('./notification-panel.component.html'),
-    controller: ['$timeout', NotificationPanelComponent],
+export const NotificationPanelComponent = {
+    template, css, controller,
     bindings: {
         myMessage: '<',
         myOnDismiss: '&'
     }
-});
+};

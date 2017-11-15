@@ -1,70 +1,83 @@
-'use strict';
+import {isBoolean} from '../../shared/utils';
 
-var utils = require('../../shared/utils');
+class Settings {
 
-var Settings = function (json) {
-
-    var source;
-
-    try {
-        source = JSON.parse(json) || {};
-    } catch (e) {
-        source = {};
-    }
-
-    return {
-        getPageSize: function () {
-            if (source.pageSize > 0 && source.pageSize <= 30) {
-                return source.pageSize;
-            }
-            return 10;
-        },
-        setPageSize: function (pageSize) {
-            source.pageSize = (pageSize > 0 && pageSize <= 30) ? pageSize : 10;
-        },
-        isShowEntryDetails: function () {
-            return utils.isBoolean(source.showEntryDetails) ? source.showEntryDetails : true;
-        },
-        setShowEntryDetails: function (showEntryDetails) {
-            source.showEntryDetails = utils.isBoolean(showEntryDetails) ? showEntryDetails : true;
-        },
-        isShowUnseenEntries: function () {
-            return utils.isBoolean(source.showUnseenEntries) ? source.showUnseenEntries : true;
-        },
-        setShowUnseenEntries: function (showUnseenEntries) {
-            source.showUnseenEntries = utils.isBoolean(showUnseenEntries) ? showUnseenEntries : true;
-        },
-        toJson: function () {
-            return JSON.stringify(source);
+    constructor(json) {
+        try {
+            this.source = JSON.parse(json) || {};
+        } catch (e) {
+            this.source = {};
         }
     }
-};
 
-require('angular').module('myreader').service('settingsService', function() {
+    getPageSize() {
+        if (this.source.pageSize > 0 && this.source.pageSize <= 30) {
+            return this.source.pageSize;
+        }
+        return 10;
+    }
 
-    var storageKey = 'myreader-settings';
-    var settings = new Settings(localStorage.getItem(storageKey));
+    setPageSize(pageSize) {
+        this.source.pageSize = (pageSize > 0 && pageSize <= 30) ? pageSize : 10;
+    }
 
-    var persistSettings = function () {
-        localStorage.setItem(storageKey, settings.toJson());
+    isShowEntryDetails() {
+        return isBoolean(this.source.showEntryDetails) ? this.source.showEntryDetails : true;
+    }
+
+    setShowEntryDetails(showEntryDetails) {
+        this.source.showEntryDetails = isBoolean(showEntryDetails) ? showEntryDetails : true;
+    }
+
+    isShowUnseenEntries() {
+        return isBoolean(this.source.showUnseenEntries) ? this.source.showUnseenEntries : true;
+    }
+
+    setShowUnseenEntries(showUnseenEntries) {
+        this.source.showUnseenEntries = isBoolean(showUnseenEntries) ? showUnseenEntries : true;
+    }
+
+    toJson() {
+        return JSON.stringify(this.source);
+    }
+}
+
+const storageKey = 'myreader-settings';
+
+export class SettingsService {
+
+    constructor() {
+        this.settings = new Settings(localStorage.getItem(storageKey));
+    }
+
+    persistSettings() {
+        localStorage.setItem(storageKey, this.settings.toJson());
     };
 
-    return {
-        getPageSize: settings.getPageSize,
-        isShowUnseenEntries: settings.isShowUnseenEntries,
-        isShowEntryDetails: settings.isShowEntryDetails,
-
-        setPageSize: function(pageSize) {
-            settings.setPageSize(pageSize);
-            persistSettings();
-        },
-        setShowEntryDetails: function(showEntryDetails) {
-            settings.setShowEntryDetails(showEntryDetails);
-            persistSettings();
-        },
-        setShowUnseenEntries: function(showUnseenEntries) {
-            settings.setShowUnseenEntries(showUnseenEntries);
-            persistSettings();
-        }
+    getPageSize() {
+        return this.settings.getPageSize();
     }
-});
+
+    isShowUnseenEntries() {
+        return this.settings.isShowUnseenEntries();
+    }
+
+    isShowEntryDetails() {
+        return this.settings.isShowEntryDetails();
+    }
+
+    setPageSize(pageSize) {
+        this.settings.setPageSize(pageSize);
+        this.persistSettings();
+    }
+
+    setShowEntryDetails(showEntryDetails) {
+        this.settings.setShowEntryDetails(showEntryDetails);
+        this.persistSettings();
+    }
+
+    setShowUnseenEntries(showUnseenEntries) {
+        this.settings.setShowUnseenEntries(showUnseenEntries);
+        this.persistSettings();
+    }
+}

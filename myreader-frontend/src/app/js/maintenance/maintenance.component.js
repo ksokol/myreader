@@ -1,8 +1,5 @@
-'use strict';
+import template from './maintenance.component.html';
 
-require('./about/about.component');
-require('./maintenance-actions/maintenance-actions.component');
-
-require('angular').module('myreader').component('myMaintenance', {
-    template: require('./maintenance.component.html')
-});
+export const MaintenanceComponent = {
+    template
+};

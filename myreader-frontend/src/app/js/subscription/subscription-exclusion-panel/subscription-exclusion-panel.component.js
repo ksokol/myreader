@@ -1,29 +1,23 @@
-'use strict';
+import template from './subscription-exclusion-panel.component.html';
+import css from './subscription-exclusion-panel.component.css';
 
-require('./subscription-exclusion/subscription-exclusion.component');
-require('../../shared/component/icon/icon.component');
+class controller {
 
-function SubscriptionExclusionPanelComponent () {
-    var ctrl = this;
+    open() {
+        this.firstOpen = true;
+        this.showExclusions = true;
+    }
 
-    ctrl.open = function () {
-        ctrl.firstOpen = true;
-        ctrl.showExclusions = true;
-    };
-
-    ctrl.close = function () {
-        ctrl.showExclusions = false;
-    };
-
-    ctrl.css = require('./subscription-exclusion-panel.component.css');
+    close() {
+        this.showExclusions = false;
+    }
 }
 
-require('angular').module('myreader').component('mySubscriptionExclusionPanel', {
-    template: require('./subscription-exclusion-panel.component.html'),
-    controller: SubscriptionExclusionPanelComponent,
+export const SubscriptionExclusionPanelComponent = {
+    template, css, controller,
     bindings: {
         myId: '<',
         myDisabled: '<',
         myOnError: '&'
     }
-});
+};

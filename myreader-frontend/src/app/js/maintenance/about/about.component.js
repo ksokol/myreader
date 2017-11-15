@@ -1,24 +1,21 @@
-'use strict';
+import template from './about.component.html';
 
-require('./about.service');
-require('../../shared/timeago/timeago.filter');
+class controller {
 
-function AboutComponent(aboutService) {
-    var ctrl = this;
-    ctrl.loading = true;
+    constructor(aboutService) {
+        'ngInject';
+        this.aboutService = aboutService;
+        this.loading = true;
+    }
 
-    ctrl.$onInit = function () {
-        aboutService.getProperties().then(function(properties) {
-            ctrl.properties = properties;
-        }).catch(function () {
-            ctrl.propertiesMissing = true;
-        }).finally(function () {
-            ctrl.loading = false;
-        });
-    };
+    $onInit() {
+        this.aboutService.getProperties()
+            .then(properties => this.properties = properties)
+            .catch(() => this.propertiesMissing = true)
+            .finally(() => this.loading = false);
+    }
 }
 
-require('angular').module('myreader').component('myAbout', {
-    template: require('./about.component.html'),
-    controller: ['aboutService', AboutComponent]
-});
+export const AboutComponent = {
+    template, controller
+};

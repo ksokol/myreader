@@ -3,9 +3,10 @@
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+var FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+require('babel-plugin-angularjs-annotate');
 
 var ENV = process.env.npm_lifecycle_event;
 var isTest = ENV === 'test' || ENV === 'test-watch';
@@ -102,7 +103,8 @@ module.exports = function makeWebpackConfig() {
             loader: 'babel-loader',
             exclude: /node_modules/,
             query: {
-                presets: ['env']
+                presets: ['env'],
+                plugins: [['angularjs-annotate', { 'explicitOnly' : true}]]
             }
         }]
     };

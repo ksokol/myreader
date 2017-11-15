@@ -1,44 +1,41 @@
-'use strict';
+const url = '/myreader/api/2/exclusions';
 
-require('angular').module('myreader').service('exclusionService', ['$http', function($http) {
-    var url = '/myreader/api/2/exclusions';
+function extractNextHref(links) {
+    return links.filter(link => link.rel === 'next')[0];
+}
 
-    var extractNextHref = function (links) {
-        return links.filter(function (link) { return link.rel === 'next'; })[0];
-    };
+export class ExclusionService {
 
-    var findBy = function (next) {
-        return $http.get('/myreader' + next.href)
-            .then(function (response) {
-                return response;
-            });
-    };
-
-    return {
-        find: function(uuid) {
-            return findBy({ href: '/api/2/exclusions/' + uuid + '/pattern'})
-                .then(function collect(response) {
-                    var next = extractNextHref(response.data.links);
-
-                    if(!next) {
-                        return response.data.content;
-                    }
-
-                    return findBy(next)
-                        .then(collect)
-                        .then(function (inner) {
-                            return response.data.content.concat(inner);
-                        });
-                });
-        },
-        save: function(uuid, exclusion) {
-            return $http.post(url + '/' + uuid + '/pattern', { pattern: exclusion })
-                .then(function (response) {
-                    return response.data;
-                });
-        },
-        delete: function(subscriptionUuid, uuid) {
-            return $http.delete(url + '/' + subscriptionUuid + '/pattern/' + uuid);
-        }
+    constructor($http) {
+        'ngInject';
+        this.$http = $http;
     }
-}]);
+
+    findBy(next) {
+        return this.$http.get('/myreader' + next.href);
+    }
+
+    collect(response) {
+        const next = extractNextHref(response.data.links);
+
+        if(!next) {
+            return response.data.content;
+        }
+
+        return this.findBy(next)
+            .then(response => this.collect(response))
+            .then(inner => response.data.content.concat(inner));
+    }
+
+    find(uuid) {
+        return this.findBy({href: `/api/2/exclusions/${uuid}/pattern`}).then(response => this.collect(response));
+    }
+
+    save(uuid, exclusion) {
+        return this.$http.post(`${url}/${uuid}/pattern`, {pattern: exclusion}).then(response => response.data);
+    }
+
+    delete(subscriptionUuid, uuid) {
+        return this.$http.delete(`${url}/${subscriptionUuid}/pattern/${uuid}`);
+    }
+}

@@ -1,21 +1,16 @@
-'use strict';
+import template from './entry-title.component.html';
+import css from './entry-title.component.css';
 
-require('../../shared/timeago/timeago.filter');
+class controller {
 
-function EntryTitleComponent() {
-    var ctrl = this;
-
-    ctrl.$onInit = function () {
-        ctrl.item = ctrl.myItem;
-    };
-
-    ctrl.css = require('./entry-title.component.css');
+    $onInit() {
+        this.item = this.myItem;
+    }
 }
 
-require('angular').module('myreader').component('myEntryTitle', {
-    template: require('./entry-title.component.html'),
-    controller: EntryTitleComponent,
+export const EntryTitleComponent = {
+    template, css, controller,
     bindings: {
         myItem: '<'
     }
-});
+};

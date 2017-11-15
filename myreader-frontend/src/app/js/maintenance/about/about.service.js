@@ -1,22 +1,23 @@
-'use strict';
+import {INFO} from "../../constants";
 
-var About = function (about) {
-    var self = this;
+export class About {
 
-    self.branch = about.git.branch;
-    self.commitId = about.git.commit.id;
-    self.version = about.build.version;
-    self.buildTime = about.build.time;
-};
-
-require('angular').module('myreader').service('aboutService', ['$http', function($http) {
-    var url = '/myreader/info';
-
-    return {
-        getProperties: function() {
-            return $http.get(url).then(function (response) {
-                return new About(response.data);
-            });
-        }
+    constructor(raw) {
+        this.branch = raw.git.branch;
+        this.commitId = raw.git.commit.id;
+        this.version = raw.build.version;
+        this.buildTime = raw.build.time;
     }
-}]);
+}
+
+export class AboutService {
+
+    constructor($http) {
+        'ngInject';
+        this.$http = $http;
+    }
+
+    getProperties() {
+        return this.$http.get(INFO).then(response => new About(response.data));
+    }
+}
