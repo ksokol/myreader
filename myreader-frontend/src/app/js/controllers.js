@@ -60,8 +60,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
     };
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'settingsService', 'hotkeys',
-    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, subscriptionsTagService, settingsService, hotkeys) {
+.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'hotkeys',
+    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, subscriptionsTagService, hotkeys) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
@@ -96,21 +96,12 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         }
     };
 
-    $scope.addSeenParam = function(param) {
-        if(settingsService.isShowUnseenEntries()) {
-            param['seenEqual'] = false;
-        }
-    };
-
     $scope.params = function() {
         var param = {};
 
         $scope.addUuidParam($stateParams, param);
         $scope.addTagParam($stateParams, param);
         $scope.addSearchParam(param);
-        $scope.addSeenParam(param);
-
-        param['size'] = settingsService.getPageSize();
 
         return param;
     };
@@ -255,8 +246,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         });
 }])
 
-.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService', 'settingsService',
-    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, bookmarkService, settingsService) {
+.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService',
+    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, bookmarkService) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
@@ -293,7 +284,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         $scope.addTagParam($stateParams, param);
         $scope.addSearchParam(param);
 
-        param['size'] = settingsService.getPageSize();
+        param['seenEqual'] = '*';
 
         return param;
     };

@@ -1,21 +1,7 @@
 describe('test/serviceTests.js', function() {
-    var api, service;
+    var service;
 
     beforeEach(angular.mock.module('common.services'));
-
-    beforeEach(angular.mock.module(function($provide) {
-        api = {
-            get: jasmine.createSpy(),
-            post: jasmine.createSpy(),
-            delete: jasmine.createSpy(),
-            patch: jasmine.createSpy(),
-            put: jasmine.createSpy()
-        };
-
-        $provide.service('api', function() {
-            return api;
-        });
-    }));
 
     describe('subscriptionsTagService', function() {
 
@@ -45,15 +31,25 @@ describe('test/serviceTests.js', function() {
     });
 
     describe('subscriptionEntryService', function() {
-        var httpBackend;
+        var httpBackend, settingsService;
 
-        beforeEach(inject(function ($httpBackend, subscriptionEntryService) {
+        beforeEach(angular.mock.module(function($provide) {
+            $provide.service('settingsService', function() {
+                return jasmine.createSpyObj('settingsService', ['getPageSize', 'isShowUnseenEntries']);
+            });
+        }));
+
+        beforeEach(inject(function ($httpBackend, subscriptionEntryService, _settingsService_) {
             httpBackend = $httpBackend;
             service = subscriptionEntryService;
+            settingsService = _settingsService_;
+
+            settingsService.getPageSize.and.returnValue(10);
+            settingsService.isShowUnseenEntries.and.returnValue(false);
         }));
 
         it('should process own properties in params object', function(done) {
-            httpBackend.expectGET('/myreader/api/2/subscriptionEntries?&param1=1&param2=2').respond({ content: 'expected' });
+            httpBackend.expectGET('/myreader/api/2/subscriptionEntries?&param1=1&param2=2&size=10').respond({ content: 'expected' });
 
             var Params = function() {
                 this.param1 = 1;

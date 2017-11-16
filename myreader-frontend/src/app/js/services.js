@@ -37,7 +37,7 @@ angular.module('common.services', [])
     }
 }])
 
-.service('subscriptionEntryService', ['$rootScope', '$http', '$q', function($rootScope, $http, $q) {
+.service('subscriptionEntryService', ['$rootScope', '$http', '$q', 'settingsService', function($rootScope, $http, $q, settingsService) {
     var url = '/myreader/api/2/subscriptionEntries?';
 
     return {
@@ -47,6 +47,16 @@ angular.module('common.services', [])
             if(angular.isString(params)) {
                 tmp = params;
             } else {
+                if (!params['size']) {
+                    params['size'] = settingsService.getPageSize();
+                }
+
+                if (!params['seenEqual']) {
+                    if(settingsService.isShowUnseenEntries()) {
+                        params['seenEqual'] = false;
+                    }
+                }
+
                 for(var key in params) {
                     if (params.hasOwnProperty(key)) {
                         tmp += "&" + key + "=" + params[key];
