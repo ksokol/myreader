@@ -4,9 +4,7 @@ import {EntryContentComponent} from './entry/entry-content/entry-content.compone
 import {EntryTagsComponent} from './entry/entry-tags/entry-tags.component';
 import {EntryTitleComponent} from './entry/entry-title/entry-title.component';
 import {EntryComponent} from './entry/entry.component';
-import SafeOpenerService from "./shared/safe-opener/safe-opener.service";
 import {EntryContentSanitizerDirective} from "./entry/entry-content/entry-content-sanitizer/entry-content-sanitizer.directive";
-import {SafeOpenerDirective} from "./shared/safe-opener/safe-opener.directive";
 import {TimeagoFilter} from "./shared/timeago/timeago.filter";
 import {FeedFetchErrorComponent} from "./feed/feed-fetch-error-panel/feed-fetch-error/feed-fetch-error.component";
 import {FeedFetchErrorService} from "./feed/feed-fetch-error-panel/feed-fetch-error/feed-fetch-error.service";
@@ -78,7 +76,6 @@ angular.module('myreader', ['common.config', 'common.services', 'common.controll
     .component('myNotificationPanel', NotificationPanelComponent)
     .component('mySearchInput', SearchInputComponent)
 
-    .service('safeOpenerService', SafeOpenerService)
     .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)
     .service('aboutService', AboutService)
@@ -88,7 +85,6 @@ angular.module('myreader', ['common.config', 'common.services', 'common.controll
     .service('exclusionService', ExclusionService)
     .service('subscriptionTagService', SubscriptionTagService)
 
-    .directive('mySafeOpener', SafeOpenerDirective)
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)
 

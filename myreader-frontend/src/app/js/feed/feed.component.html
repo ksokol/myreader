@@ -16,10 +16,11 @@
                ng-model="$ctrl.feed.url"
                my-backend-validation my-validations="$ctrl.validations">
 
-        <my-icon class="my-feed__url-icon"
-                 my-type="open-in-new"
-                 my-safe-opener url="{{$ctrl.feed.url}}">
-        </my-icon>
+        <a ng-href="{{$ctrl.feed.url}}" target="_blank" rel="noopener noreferrer">
+            <my-icon class="my-feed__url-icon"
+                     my-type="open-in-new">
+            </my-icon>
+        </a>
 
         <my-validation-message my-form-control="feedForm.url"></my-validation-message>
     </md-input-container>

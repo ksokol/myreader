@@ -13,10 +13,11 @@
         <input disabled
                ng-model="$ctrl.subscription.origin">
 
-        <my-icon class="my-subscription__origin-link"
-                 my-type="open-in-new"
-                 my-safe-opener url="{{$ctrl.subscription.origin}}">
-        </my-icon>
+        <a ng-href="{{$ctrl.subscription.origin}}" target="_blank" rel="noopener noreferrer">
+            <my-icon class="my-subscription__origin-link"
+                     my-type="open-in-new">
+            </my-icon>
+        </a>
     </md-input-container>
 
     <my-subscription-tag-panel my-disabled="$ctrl.pendingAction"

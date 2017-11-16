@@ -1,26 +1,32 @@
-describe('src/app/js/entry/entry-content/entry-content-sanitizer/entry-content-sanitizer.directive.spec.js', function() {
+describe('src/app/js/entry/entry-content/entry-content-sanitizer/entry-content-sanitizer.directive.spec.js', () => {
 
-    var testUtils = require('../../../shared/test-utils');
+    let element;
 
-    var safeOpenerService, element;
+    beforeEach(angular.mock.module('myreader'));
 
-    beforeEach(require('angular').mock.module('myreader', testUtils.mock('safeOpenerService')));
-
-    beforeEach(inject(function ($compile, $rootScope, $timeout, _safeOpenerService_) {
-        safeOpenerService = _safeOpenerService_;
-        safeOpenerService['openSafely']  = jasmine.createSpy('safeOpenerService.openSafely');
-
-        element = $compile("<div my-entry-content-sanitizer><p><a href='http://url1/'></a></p><span><a href='http://url2/'></a></span></div>")($rootScope.$new());
+    beforeEach(inject(($compile, $rootScope, $timeout) => {
+        element = $compile(`<div my-entry-content-sanitizer>
+                                <p><a href='http://url1/'></a></p>
+                                <span><a href='http://url2/'></a></span>
+                            </div>`)($rootScope.$new());
         $timeout.flush(0);
     }));
 
-    it('should delegate url1 to safeOpenerService', function () {
-        element.find('a')[0].click();
-        expect(safeOpenerService.openSafely).toHaveBeenCalledWith('http://url1/');
+    it('should open url1 safely', () => {
+        const a = element.find('a')[0];
+        a.click();
+
+        expect(a.attributes['href'].value).toEqual('http://url1/');
+        expect(a.attributes['target'].value).toEqual('_blank');
+        expect(a.attributes['rel'].value).toEqual('noopener noreferrer');
     });
 
-    it('should delegate url2 to safeOpenerService', function () {
-        element.find('a')[1].click();
-        expect(safeOpenerService.openSafely).toHaveBeenCalledWith('http://url2/');
+    it('should open url2 safely', () => {
+        const a = element.find('a')[1];
+        a.click();
+
+        expect(a.attributes['href'].value).toEqual('http://url2/');
+        expect(a.attributes['target'].value).toEqual('_blank');
+        expect(a.attributes['rel'].value).toEqual('noopener noreferrer');
     });
 });

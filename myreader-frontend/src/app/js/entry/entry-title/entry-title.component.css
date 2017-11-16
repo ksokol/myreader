@@ -1,5 +1,6 @@
 .my-entry-title__title {
-    cursor: pointer;
+    color: rgba(0,0,0,0.87);
+    text-decoration: none;
 }
 
 .my-entry-title__subtitle {

@@ -1,12 +1,12 @@
-describe('src/app/js/entry/entry-title/entry-title.component.spec.js', function () {
+import {filterMock} from '../../shared/test-utils';
 
-    var testUtils = require('../../shared/test-utils');
+describe('src/app/js/entry/entry-title/entry-title.component.spec.js', () => {
 
-    var item;
+    let scope, element, item;
 
-    beforeEach(require('angular').mock.module('myreader', testUtils.mock('$window'), testUtils.filterMock('timeago')));
+    beforeEach(angular.mock.module('myreader', filterMock('timeago')));
 
-    beforeEach(function () {
+    beforeEach(() => {
         item = {
             title: 'entry title',
             origin: 'entry url',
@@ -15,64 +15,39 @@ describe('src/app/js/entry/entry-title/entry-title.component.spec.js', function 
         };
     });
 
-    describe('with html', function () {
+    beforeEach(inject(($rootScope, $compile) => {
+        scope = $rootScope.$new();
+        scope.item = item;
 
-        var scope, element;
+        element = $compile('<my-entry-title my-item="item"></my-entry-title>')(scope);
+        scope.$digest();
+    }));
 
-        beforeEach(inject(function ($rootScope, $compile) {
-            scope = $rootScope.$new();
-            scope.item = item;
+    it('should render entry title', () => {
+        expect(element.find('h3')[0].innerText.trim()).toEqual(item.title);
+    });
 
-            element = $compile('<my-entry-title my-item="item"></my-entry-title>')(scope);
-            scope.$digest();
-        }));
+    it('should render feed title', () => {
+        expect(element.find('h4').find('span')[0].innerText).toEqual(item.feedTitle);
+    });
 
-        it('should render entry title', function () {
-            expect(element.find('h3')[0].innerText).toEqual(item.title);
-        });
+    it('should render html encoded feed title', inject($compile => {
+        item.feedTitle = '&quot;feed title&quot;';
+        element = $compile('<my-entry-title my-item="item"></my-entry-title>')(scope);
+        scope.$digest();
 
-        it('should render html encoded entry title', inject(function ($compile) {
-            item.title = '&quot;entry title&quot;';
-            element = $compile('<my-entry-title my-item="item"></my-entry-title>')(scope);
-            scope.$digest();
+        expect(element.find('h4').find('span')[0].innerText).toEqual('"feed title"');
+    }));
 
-            expect(element.find('h3')[0].innerText).toEqual('"entry title"');
-        }));
+    it('should open entry url safely', () => {
+        const title = element.find('a')[0];
 
-        it('should render feed title', function () {
-            expect(element.find('h4').find('span')[0].innerText).toEqual(item.feedTitle);
-        });
+        expect(title.attributes['ng-href'].value).toEqual('entry url');
+        expect(title.attributes['target'].value).toEqual('_blank');
+        expect(title.attributes['rel'].value).toEqual('noopener noreferrer');
+    });
 
-        it('should render html encoded feed title', inject(function ($compile) {
-            item.feedTitle = '&quot;feed title&quot;';
-            element = $compile('<my-entry-title my-item="item"></my-entry-title>')(scope);
-            scope.$digest();
-
-            expect(element.find('h4').find('span')[0].innerText).toEqual('"feed title"');
-        }));
-
-        it('should open entry url when clicked on entry title', inject(function ($window) {
-            var windowAttributes = {};
-            $window.open = jasmine.createSpy('open');
-            $window.open.and.returnValue(windowAttributes);
-
-            element.find('h3')[0].click();
-
-            expect(windowAttributes.location).toBe('entry url');
-        }));
-
-        it('should open entry url safely', inject(function ($window) {
-            var windowAttributes = {};
-            $window.open = jasmine.createSpy('open');
-            $window.open.and.returnValue(windowAttributes);
-
-            element.find('h3')[0].click();
-
-            expect(windowAttributes.opener).toBeNull();
-        }));
-
-        it('should render creation date with timeago filter before feed title', function () {
-            expect(element.find('h4')[0].innerText).toEqual('timeago("creation date") on feed title');
-        });
+    it('should render creation date with timeago filter before feed title', () => {
+        expect(element.find('h4')[0].innerText).toEqual('timeago("creation date") on feed title');
     });
 });

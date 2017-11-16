@@ -1,14 +1,11 @@
-export const EntryContentSanitizerDirective = ($timeout, safeOpenerService) => {
+export const EntryContentSanitizerDirective = $timeout => {
     'ngInject';
     return {
         restrict: 'A',
-        link: function(scope, element) {
-            $timeout(function () {
-                element.find('a').on('click', function ($event) {
-                    $event.preventDefault();
-                    safeOpenerService.openSafely(this.href);
-                })
-            }, 0);
-        }
+        link: (scope, element) =>
+            $timeout(() => element.find('a').on('click', function () {
+                this.rel = 'noopener noreferrer';
+                this.target = '_blank'
+            }), 0)
     }
 };
