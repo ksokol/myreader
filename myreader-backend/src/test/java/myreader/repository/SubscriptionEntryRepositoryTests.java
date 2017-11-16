@@ -116,6 +116,13 @@ public class SubscriptionEntryRepositoryTests {
 
     @Test
     @WithMockUser4
+    public void seenEqualWildcard() throws Exception {
+        givenQuery(null, null, null, null, "*", null, 10);
+        assertThat(slice.getContent(), hasSize(5));
+    }
+
+    @Test
+    @WithMockUser4
     public void feedUuidEqual14() throws Exception {
         givenQuery(null, "14", null, null, null, null, 10);
         assertThat(slice.getContent(), hasSize(5));

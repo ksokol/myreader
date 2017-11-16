@@ -66,9 +66,9 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
         addFilter(USER_ID, userRepository.findByCurrentUser().getId(), termFilters);
         addFilter(SUBSCRIPTION_ID, feedId, termFilters);
-        addFilter(SEEN, seen, termFilters);
         addFilter(SUBSCRIPTION_TAG, feedTagEqual, termFilters);
         addFilter(TAG, entryTagEqual, termFilters);
+        addSeenFilter(seen, termFilters);
         addPagination(nextId, termFilters);
 
         fullTextQuery.setFilter(new ChainedFilter(termFilters.toArray(new Filter[termFilters.size()]), ChainedFilter.AND));
@@ -108,6 +108,12 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
             query = queryBuilder.bool().must(queryBuilder.all().createQuery()).createQuery();
         }
         return query;
+    }
+
+    private void addSeenFilter(final String seenValue, final List<Filter> filters) {
+        if(!"*".equals(seenValue)) {
+            addFilter(SEEN, seenValue, filters);
+        }
     }
 
     private void addFilter(final String fieldName, final Object fieldValue, final List<Filter> filters) {
