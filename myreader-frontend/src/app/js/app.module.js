@@ -39,6 +39,7 @@ import {SubscriptionTagService} from "./subscription/subscription-tag-panel/subs
 import {AutoCompleteInputComponent} from "./shared/component/autocomplete-input/autocomplete-input.component";
 import {SubscriptionTagPanelComponent} from "./subscription/subscription-tag-panel/subscription-tag-panel.component";
 import {SubscriptionComponent} from "./subscription/subscription.component";
+import {ScrollIntoViewDirective} from "./shared/directive/scroll-into-view/scroll-into-view.directive";
 
 import './config';
 import './services';
@@ -87,5 +88,6 @@ angular.module('myreader', ['common.config', 'common.services', 'common.controll
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)
+    .directive('myScrollIntoView', ScrollIntoViewDirective)
 
     .filter('timeago', TimeagoFilter);

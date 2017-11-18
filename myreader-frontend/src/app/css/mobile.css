@@ -56,7 +56,6 @@ md-toolbar ~ md-content > my-list {
 
 my-list {
     display: block;
-    padding: 8px 0;
 }
 
 my-select, my-card, my-list, my-toolbar, ul, ol, p, h1, h2, h3, h4, h5, h6 {
@@ -170,12 +169,36 @@ my-list-item[ng-class="my-focused"] {
 
 .my-content {
     padding: 0;
+    overflow: auto;
 }
 
 .search-panel {
     display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 1280px) {
+    .search-panel {
+        background: white;
+        position: fixed;
+        width: calc(100% - 330px);
+        z-index: 1030;
+    }
 }
 
 .search-input {
     flex-grow: 1;
+}
+
+.my-list-wrapper {
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+    padding: 0;
+    width: 100%;
+}
+.my-list {
+    overflow: auto;
+    margin-top: 50px;
+    width: 100%
 }

@@ -1,22 +1,27 @@
 <div class="search-panel">
-    <my-search-input
-            class="search-input"
-            my-value="search"
-            my-on-change="onSearchChange(value)"
-            my-on-clear="onSearchClear()">
-    </my-search-input>
+    <div layout="row">
+        <my-search-input
+                class="search-input"
+                my-value="search"
+                my-on-change="onSearchChange(value)"
+                my-on-clear="onSearchClear()">
+        </my-search-input>
+    </div>
+    <my-notification-panel layout="row" layout-align="center center" my-message="message"></my-notification-panel>
 </div>
 
-<my-notification-panel layout="row" layout-align="center center" my-message="message"></my-notification-panel>
-
-<my-list class="md-default-theme">
-    <my-list-item class="my-2-line" ng-repeat="entry in data.entries">
-        <div class="my-no-style my-list-item-inner">
-            <my-entry my-item="entry"></my-entry>
-            <my-divider class="my-default-theme"></my-divider>
-        </div>
-    </my-list-item>
-    <my-list-item>
-        <my-load-more my-next="data.next()" my-on-more="loadMore(more)"></my-load-more>
-    </my-list-item>
-</my-list>
+<div class="my-list-wrapper">
+    <div class="my-list">
+        <my-list class="md-default-theme">
+            <my-list-item class="my-2-line" ng-repeat="entry in data.entries">
+                <div class="my-no-style my-list-item-inner">
+                    <my-entry my-item="entry"></my-entry>
+                    <my-divider class="my-default-theme"></my-divider>
+                </div>
+            </my-list-item>
+            <my-list-item>
+                <my-load-more my-next="data.next()" my-on-more="loadMore(more)"></my-load-more>
+            </my-list-item>
+        </my-list>
+    </div>
+</div>
