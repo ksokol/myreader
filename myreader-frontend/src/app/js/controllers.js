@@ -112,7 +112,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
             var entry = $scope.data.entries[i];
             if(entry.focused) {
                 entry.focused = false;
-                entry.visible = false;
                 var j = i + 1;
                 if(j < $scope.data.entries.length) {
                     focused = $scope.data.entries[j];
@@ -147,11 +146,9 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
             var entry = $scope.data.entries[i];
             if(entry.focused) {
                 entry.focused = false;
-                entry.visible = true;
                 var j = i - 1;
                 if(j > -1) {
                     $scope.data.entries[j].focused = true;
-                    $scope.data.entries[j].visible = true;
                 }
                 return;
             }
@@ -167,10 +164,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
             .catch(function (error) {
                 $scope.message = { type: 'error', message: error };
             });
-    };
-
-    $scope.visible = function(item) {
-        return item.visible !== undefined ? item.visible : true;
     };
 
     $scope.toggleReadFromEnter = function() {
@@ -216,8 +209,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
             combo: 'enter',
             callback: $scope.toggleReadFromEnter
         });
-
-
 
     $scope.onSearchChange = function (value) {
         onSearch(value);
