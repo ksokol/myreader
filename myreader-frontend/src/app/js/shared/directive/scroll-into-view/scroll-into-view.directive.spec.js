@@ -1,6 +1,6 @@
 import {ScrollIntoViewDirective} from "./scroll-into-view.directive";
 
-describe('src/app/js/shared/directive/scroll-into-view/scroll-into-view.directive-spec.js', () => {
+describe('src/app/js/shared/directive/scroll-into-view/scroll-into-view.directive.spec.js', () => {
 
     let scope, element, attrs, watcherExp, watcher;
 
