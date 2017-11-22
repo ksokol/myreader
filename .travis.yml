@@ -29,4 +29,5 @@ cache:
 install: true
 
 script:
+  - git fetch --unshallow # necessary for SonarQube blame information
   - ./gradlew check sonarqube
