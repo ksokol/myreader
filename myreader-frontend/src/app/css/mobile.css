@@ -199,6 +199,6 @@ my-list-item[ng-class="my-focused"] {
 }
 .my-list {
     overflow: auto;
-    margin-top: 50px;
+    margin-top: 56px;
     width: 100%
 }
