@@ -166,6 +166,14 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
             });
     };
 
+    $scope.toggleRead = function(entry) {
+        entry.seen = !entry.seen;
+        subscriptionEntryService.save(entry)
+        .catch(function (error) {
+            $scope.message = { type: 'error', message: error};
+        });
+    };
+
     $scope.toggleReadFromEnter = function() {
         for(var i=0;i<$scope.data.entries.length;i++) {
             var entry = $scope.data.entries[i];
