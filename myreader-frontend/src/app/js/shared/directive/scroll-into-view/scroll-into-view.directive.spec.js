@@ -11,7 +11,7 @@ describe('src/app/js/shared/directive/scroll-into-view/scroll-into-view.directiv
                 watcher = listener;
             }
         };
-        element = [jasmine.createSpyObj('$element', ['scrollIntoView'])];
+        element = [jasmine.createSpyObj('$element', ['scrollIntoView', 'focus'])];
         attrs = {myScrollIntoView: 'expected watcher expression'};
 
         ScrollIntoViewDirective().link(scope, element, attrs);
@@ -19,6 +19,11 @@ describe('src/app/js/shared/directive/scroll-into-view/scroll-into-view.directiv
 
     it('should register watch expression', () => {
         expect(watcherExp).toEqual('expected watcher expression');
+    });
+
+    it('should focus element when watcher expression becomes true', () => {
+        watcher(true);
+        expect(element[0].focus).toHaveBeenCalledWith();
     });
 
     it('should scroll element into view when watcher expression becomes true', () => {
