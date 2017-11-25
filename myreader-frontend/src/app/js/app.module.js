@@ -40,6 +40,7 @@ import {AutoCompleteInputComponent} from "./shared/component/autocomplete-input/
 import {SubscriptionTagPanelComponent} from "./subscription/subscription-tag-panel/subscription-tag-panel.component";
 import {SubscriptionComponent} from "./subscription/subscription.component";
 import {ScrollIntoViewDirective} from "./shared/directive/scroll-into-view/scroll-into-view.directive";
+import {ClickIfInViewDirective} from "./shared/component/load-more/click-if-in-view.directive";
 
 import './config';
 import './services';
@@ -89,5 +90,6 @@ angular.module('myreader', ['common.config', 'common.services', 'common.controll
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)
     .directive('myScrollIntoView', ScrollIntoViewDirective)
+    .directive('myClickIfInView', ClickIfInViewDirective)
 
     .filter('timeago', TimeagoFilter);
