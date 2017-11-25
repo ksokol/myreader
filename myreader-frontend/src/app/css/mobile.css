@@ -177,6 +177,10 @@ my-list-item[ng-class="my-focused"] {
     flex-direction: column;
 }
 
+.search-input {
+    flex-grow: 1;
+}
+
 @media (min-width: 1280px) {
     .search-panel {
         background: white;
@@ -184,21 +188,18 @@ my-list-item[ng-class="my-focused"] {
         width: calc(100% - 330px);
         z-index: 1030;
     }
-}
 
-.search-input {
-    flex-grow: 1;
-}
+    .my-list-wrapper {
+        height: 100%;
+        display: flex;
+        overflow: hidden;
+        padding: 0;
+        width: 100%;
+    }
 
-.my-list-wrapper {
-    height: 100%;
-    display: flex;
-    overflow: hidden;
-    padding: 0;
-    width: 100%;
-}
-.my-list {
-    overflow: auto;
-    margin-top: 56px;
-    width: 100%
+    .my-list {
+        overflow: auto;
+        margin-top: 56px;
+        width: 100%
+    }
 }
