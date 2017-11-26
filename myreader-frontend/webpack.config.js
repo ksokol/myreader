@@ -104,7 +104,7 @@ module.exports = function makeWebpackConfig() {
             exclude: /node_modules/,
             query: {
                 presets: ['env'],
-                plugins: [['angularjs-annotate', { 'explicitOnly' : true}]]
+                plugins: ['transform-object-rest-spread', ['angularjs-annotate', { 'explicitOnly' : true}]]
             }
         }]
     };
