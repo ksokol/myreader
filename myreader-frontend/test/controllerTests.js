@@ -3,8 +3,7 @@ import {myMock} from './testUtil';
 describe("test/controllerTests.js", function() {
     var scope,
         subscriptionEntryServiceMock,
-        subscriptionsTagServiceMock,
-        settingsServiceMock;
+        subscriptionsTagServiceMock;
 
     beforeEach(angular.mock.module('common.controllers', function($provide) {
         $provide.provider(myMock.provider(['$stateParams', '$state']));
@@ -27,17 +26,11 @@ describe("test/controllerTests.js", function() {
             findAllByUnseen: jasmine.createSpy().and.returnValue($q.defer().promise)
         };
 
-        settingsServiceMock = {
-            getPageSize: function () { return 10; },
-            isShowUnseenEntries: function () { return true; }
-        };
-
         scope = $rootScope.$new();
         $controller('SubscriptionEntryListCtrl', {
             $scope: scope,
             subscriptionEntryService: subscriptionEntryServiceMock,
-            subscriptionsTagService: subscriptionsTagServiceMock,
-            settingsService: settingsServiceMock
+            subscriptionsTagService: subscriptionsTagServiceMock
         });
     }));
 
