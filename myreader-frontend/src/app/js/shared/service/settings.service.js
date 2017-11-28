@@ -1,7 +1,7 @@
 import {
     getPageSize, isShowEntryDetails, isShowUnseenEntries, setPageSize,
     setShowEntryDetails, setShowUnseenEntries
-} from "../../store/common/settings";
+} from "../../store/settings/settings";
 
 /*
  * @deprecated

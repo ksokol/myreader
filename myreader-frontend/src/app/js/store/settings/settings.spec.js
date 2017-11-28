@@ -3,7 +3,7 @@ import {
     setShowUnseenEntries
 } from "./settings";
 
-describe('src/app/js/store/common/settings.spec.js', () => {
+describe('src/app/js/store/settings/settings.spec.js', () => {
 
     beforeEach(() => localStorage.clear());
     afterEach(() => localStorage.clear());
