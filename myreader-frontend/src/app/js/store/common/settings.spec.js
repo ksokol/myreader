@@ -27,9 +27,9 @@ describe('src/app/js/store/common/settings.spec.js', () => {
         expect(getPageSize()).toBe(10);
     });
 
-    it('should return true for showEntryDetails setting', () => {
-        setShowEntryDetails(true);
-        expect(isShowEntryDetails()).toBe(true);
+    it('should return false for showEntryDetails setting', () => {
+        setShowEntryDetails(false);
+        expect(isShowEntryDetails()).toBe(false);
     });
 
     it('should return default value true for showEntryDetails setting', () => {
@@ -40,9 +40,9 @@ describe('src/app/js/store/common/settings.spec.js', () => {
         expect(isShowUnseenEntries()).toBe(true);
     });
 
-    it('should return true for showUnseenEntries setting', () => {
-        setShowUnseenEntries(true);
-        expect(isShowUnseenEntries()).toBe(true);
+    it('should return false for showUnseenEntries setting', () => {
+        setShowUnseenEntries(false);
+        expect(isShowUnseenEntries()).toBe(false);
     });
 
     it('should return default value true for showUnseenEntries setting when given value is undefined', () => {
