@@ -1,4 +1,7 @@
 import angular from 'angular';
+import ngRedux from 'ng-redux';
+import thunk from 'redux-thunk';
+
 import {EntryActionsComponent} from './entry/entry-actions/entry-actions.component';
 import {EntryContentComponent} from './entry/entry-content/entry-content.component';
 import {EntryTagsComponent} from './entry/entry-tags/entry-tags.component';
@@ -42,11 +45,21 @@ import {SubscriptionComponent} from "./subscription/subscription.component";
 import {ScrollIntoViewDirective} from "./shared/directive/scroll-into-view/scroll-into-view.directive";
 import {ClickIfInViewDirective} from "./shared/component/load-more/click-if-in-view.directive";
 
+import {reducers} from './store/index';
+import {loadSettings} from "./store/settings/settings.actions";
+
 import './config';
 import './services';
 import './controllers';
 
-angular.module('myreader', ['common.config', 'common.services', 'common.controllers', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
+const reduxDevTools = () => {
+    const devTools = window.__REDUX_DEVTOOLS_EXTENSION__;
+    return devTools ? [devTools()] : null;
+};
+
+angular.module('myreader', [ngRedux, 'common.config', 'common.services', 'common.controllers', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
+    .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(reducers, [thunk], reduxDevTools())])
+
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)
     .component('myEntryTags', EntryTagsComponent)
@@ -92,4 +105,6 @@ angular.module('myreader', ['common.config', 'common.services', 'common.controll
     .directive('myScrollIntoView', ScrollIntoViewDirective)
     .directive('myClickIfInView', ClickIfInViewDirective)
 
-    .filter('timeago', TimeagoFilter);
+    .filter('timeago', TimeagoFilter)
+
+    .run(['$ngRedux', $ngRedux => $ngRedux.dispatch(loadSettings())]);
