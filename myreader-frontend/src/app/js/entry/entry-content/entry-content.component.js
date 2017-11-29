@@ -1,17 +1,22 @@
 import template from './entry-content.component.html';
 import css from './entry-content.component.css';
+import {getSettings} from '../../store/settings/index';
 
 class controller {
 
-    constructor($mdMedia, settingsService) {
+    constructor($mdMedia, $ngRedux) {
         'ngInject';
         this.$mdMedia = $mdMedia;
-        this.settingsService = settingsService;
+        this.unsubscribe = $ngRedux.connect(getSettings)(this);
     }
 
     $onInit() {
         this.item = this.myItem || {};
         this.show = this.myShow || false;
+    }
+
+    $onDestroy() {
+        this.unsubscribe();
     }
 
     $onChanges(obj) {
@@ -21,7 +26,7 @@ class controller {
     }
 
     showEntryContent () {
-        return this.$mdMedia('gt-md') ? this.settingsService.isShowEntryDetails() || this.show : this.show;
+        return this.$mdMedia('gt-md') ? this.showEntryDetails || this.show : this.show;
     }
 }
 

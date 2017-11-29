@@ -1,20 +1,24 @@
-describe('src/app/js/entry/entry-content/entry-content.component.spec.js', function () {
+import {mockNgRedux, ngReduxMock, spy} from '../../shared/test-utils';
 
-    describe('controller', function () {
+describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () => {
 
-        var component, settingsService, $mdMedia;
+    describe('controller', () => {
 
-        beforeEach(require('angular').mock.module('myreader'));
+        let component, $mdMedia, $ngRedux;
 
-        beforeEach(inject(function (_$componentController_) {
-            settingsService = jasmine.createSpyObj('settingsService', ['isShowEntryDetails']);
+        beforeEach(angular.mock.module('myreader'));
+
+        beforeEach(inject(_$componentController_ => {
+            $ngRedux = ngReduxMock();
+            $ngRedux.onConnect = {showEntryDetails: false};
+
             $mdMedia = jasmine.createSpy('$mdMedia');
 
-            component = _$componentController_('myEntryContent', { $mdMedia: $mdMedia, settingsService: settingsService }, {});
+            component = _$componentController_('myEntryContent', {$mdMedia: $mdMedia, $ngRedux: $ngRedux}, {});
             component.$onInit();
         }));
 
-        it('should set default values on init', inject(function (_$componentController_) {
+        it('should set default values on init', inject(_$componentController_ => {
             component = _$componentController_('myEntryContent');
             component.$onInit();
 
@@ -22,7 +26,7 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', funct
             expect(component.show).toEqual(false);
         }));
 
-        it('should set provided values on init', inject(function (_$componentController_) {
+        it('should set provided values on init', inject(_$componentController_ => {
             component = _$componentController_('myEntryContent', null, {myItem: 'expected', myShow: true});
             component.$onInit();
 
@@ -30,79 +34,82 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', funct
             expect(component.show).toEqual(true);
         }));
 
-        it('should not update show flag when myShow is undefined on $onChanges', function () {
+        it('should not update show flag when myShow is undefined on $onChanges', () => {
             component.$onChanges({});
 
             expect(component.show).toEqual(false);
         });
 
-        it('should update show flag when myShow is defined on $onChanges', function () {
-            component.$onChanges({ myShow: { currentValue: true }});
+        it('should update show flag when myShow is defined on $onChanges', () => {
+            component.$onChanges({myShow: {currentValue: true}});
 
             expect(component.show).toEqual(true);
         });
 
-        describe('showEntryContent()', function () {
+        describe('showEntryContent()', () => {
 
-            it('should query $mdMedia with "gt-md"', function () {
+            it('should query $mdMedia with "gt-md"', () => {
                 component.showEntryContent();
                 expect($mdMedia).toHaveBeenCalledWith('gt-md');
             });
 
             describe('with myShow set to false', function () {
 
-                it('should return false when settingsService and $mdMedia return false', function () {
-                    settingsService.isShowEntryDetails.and.returnValue(false);
+                it('should return false when settingsService and $mdMedia return false', () => {
+                    $ngRedux.stateChange({showEntryDetails: false});
                     $mdMedia.and.returnValue(false);
                     expect(component.showEntryContent()).toEqual(false);
                 });
 
-                it('should return false when settingsService return true and $mdMedia return false', function () {
-                    settingsService.isShowEntryDetails.and.returnValue(true);
+                it('should return false when settingsService return true and $mdMedia return false', () => {
+                    $ngRedux.stateChange({showEntryDetails: true});
                     $mdMedia.and.returnValue(false);
                     expect(component.showEntryContent()).toEqual(false);
                 });
 
-                it('should return false when settingsService return false and $mdMedia return true', function () {
-                    settingsService.isShowEntryDetails.and.returnValue(false);
+                it('should return false when settingsService return false and $mdMedia return true', () => {
+                    $ngRedux.stateChange({showEntryDetails: false});
                     $mdMedia.and.returnValue(true);
                     expect(component.showEntryContent()).toEqual(false);
                 });
 
-                it('should return true when settingsService return true and $mdMedia return true', function () {
-                    settingsService.isShowEntryDetails.and.returnValue(true);
+                it('should return true when settingsService return true and $mdMedia return true', () => {
+                    $ngRedux.stateChange({showEntryDetails: true});
                     $mdMedia.and.returnValue(true);
                     expect(component.showEntryContent()).toEqual(true);
                 });
             });
 
-            describe('with myShow set to true', function () {
+            describe('with myShow set to true', () => {
 
-                beforeEach(inject(function (_$componentController_) {
-                    component = _$componentController_('myEntryContent', { $mdMedia: $mdMedia, settingsService: settingsService }, { myShow: true });
+                beforeEach(inject(_$componentController_ => {
+                    $ngRedux = ngReduxMock();
+                    $ngRedux.onConnect = {showEntryDetails: true};
+
+                    component = _$componentController_('myEntryContent', {$mdMedia: $mdMedia, $ngRedux: $ngRedux}, {myShow: true});
                     component.$onInit();
                 }));
 
-                it('should return true when settingsService and $mdMedia return false', function () {
-                    settingsService.isShowEntryDetails.and.returnValue(false);
+                it('should return true when settingsService and $mdMedia return false', () => {
+                    $ngRedux.stateChange({showEntryDetails: false});
                     $mdMedia.and.returnValue(false);
                     expect(component.showEntryContent()).toEqual(true);
                 });
 
-                it('should return true when settingsService return true and $mdMedia return false', function () {
-                    settingsService.isShowEntryDetails.and.returnValue(true);
+                it('should return true when settingsService return true and $mdMedia return false', () => {
+                    $ngRedux.stateChange({showEntryDetails: true});
                     $mdMedia.and.returnValue(false);
                     expect(component.showEntryContent()).toEqual(true);
                 });
 
-                it('should return true when settingsService return false and $mdMedia return true', function () {
-                    settingsService.isShowEntryDetails.and.returnValue(false);
+                it('should return true when settingsService return false and $mdMedia return true', () => {
+                    $ngRedux.stateChange({showEntryDetails: false});
                     $mdMedia.and.returnValue(true);
                     expect(component.showEntryContent()).toEqual(true);
                 });
 
-                it('should return true when settingsService return true and $mdMedia return true', function () {
-                    settingsService.isShowEntryDetails.and.returnValue(true);
+                it('should return true when settingsService return true and $mdMedia return true', () => {
+                    $ngRedux.stateChange({showEntryDetails: true});
                     $mdMedia.and.returnValue(true);
                     expect(component.showEntryContent()).toEqual(true);
                 });
@@ -110,18 +117,18 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', funct
         });
     });
 
-    describe('with html', function () {
+    describe('with html', () => {
 
-        var testUtils = require('../../shared/test-utils');
+        let $mdMedia, $ngRedux, compile, scope, element;
 
-        var settingsService, $mdMedia, compile, scope, element;
+        beforeEach(angular.mock.module('myreader', spy('$mdMedia'), mockNgRedux()));
 
-        beforeEach(require('angular').mock.module('myreader', testUtils.spy('$mdMedia')));
-
-        beforeEach(inject(function ($rootScope, $compile, _$mdMedia_) {
+        beforeEach(inject(($rootScope, $compile, _$mdMedia_, _$ngRedux_) => {
             compile = $compile;
-            settingsService = jasmine.createSpyObj('settingsService', ['isShowEntryDetails']);
             $mdMedia = _$mdMedia_;
+            $ngRedux = _$ngRedux_;
+
+            $ngRedux.onConnect = {showEntryDetails: true};
 
             scope = $rootScope.$new();
             scope.item = {
@@ -130,14 +137,14 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', funct
             scope.show = true;
         }));
 
-        it('should render entry content', function () {
+        it('should render entry content', () => {
             element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope);
             scope.$digest();
 
             expect(element.find('div')[0].innerText).toEqual('entry content');
         });
 
-        it('should render html encoded entry content', function () {
+        it('should render html encoded entry content', () => {
             scope.item.content = '&quot;entry content&quot;';
             element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope);
             scope.$digest();
@@ -145,7 +152,7 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', funct
             expect(element.find('div')[0].innerText).toEqual('"entry content"');
         });
 
-        it('should not render entry content when myShow is set to false', function () {
+        it('should not render entry content when myShow is set to false', () => {
             $mdMedia.and.returnValue(false);
 
             scope.show = false;
@@ -155,7 +162,7 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', funct
             expect(element.find('div')[0]).toBeUndefined();
         });
 
-        it('should contain myEntryContentSanitizer directive', function () {
+        it('should contain myEntryContentSanitizer directive', () => {
             element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope);
             scope.$digest();
 

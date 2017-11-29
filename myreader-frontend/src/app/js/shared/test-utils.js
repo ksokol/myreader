@@ -62,15 +62,22 @@ function mock(name) {
     return _mock;
 }
 
+function ngReduxMock() {
+    let _store = {};
+    const mock = jasmine.createSpyObj('$ngRedux', ['dispatch', 'connect']);
+    mock.onConnect = {};
+    mock.stateChange = values => Object.assign(_store, values);
+    mock.connect.and.returnValue(store => {
+        _store = store;
+        Object.assign(_store, mock.onConnect);
+        return () => {return {unsubscribe: () => {}}}
+    });
+    return mock;
+}
+
 function mockNgRedux() {
     function _mock($provide) {
-        const mock = jasmine.createSpyObj('$ngRedux', ['dispatch', 'connect']);
-        mock.onConnect = {};
-        mock.connect.and.returnValue(store => {
-            Object.assign(store, mock.onConnect);
-            return () => {return {unsubscribe: () => {}}}
-        });
-        $provide.value('$ngRedux', mock);
+        $provide.value('$ngRedux', ngReduxMock());
     }
     return _mock;
 }
@@ -91,5 +98,6 @@ module.exports = {
     'filterMock': filterMock,
     'mock': mock,
     'spy': spy,
-    'mockNgRedux': mockNgRedux
+    'mockNgRedux': mockNgRedux,
+    'ngReduxMock': ngReduxMock
 };
