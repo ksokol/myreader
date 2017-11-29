@@ -62,6 +62,19 @@ function mock(name) {
     return _mock;
 }
 
+function mockNgRedux() {
+    function _mock($provide) {
+        const mock = jasmine.createSpyObj('$ngRedux', ['dispatch', 'connect']);
+        mock.onConnect = {};
+        mock.connect.and.returnValue(store => {
+            Object.assign(store, mock.onConnect);
+            return () => {return {unsubscribe: () => {}}}
+        });
+        $provide.value('$ngRedux', mock);
+    }
+    return _mock;
+}
+
 function spy(name) {
     function _spy($provide) {
         $provide.decorator(name, ['$delegate', function ($delegate) {
@@ -77,5 +90,6 @@ module.exports = {
     'directiveMock': directiveMock,
     'filterMock': filterMock,
     'mock': mock,
-    'spy': spy
+    'spy': spy,
+    'mockNgRedux': mockNgRedux
 };

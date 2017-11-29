@@ -12,6 +12,9 @@ var ENV = process.env.npm_lifecycle_event;
 var isTest = ENV === 'test' || ENV === 'test-watch';
 var isReport = ENV === 'report';
 var isProd = ENV === 'build' || isReport;
+var isServed = ENV === 'server';
+
+var environment = isTest ? 'test' : isServed ? 'development' : 'production';
 
 module.exports = function makeWebpackConfig() {
     /**
@@ -133,7 +136,10 @@ module.exports = function makeWebpackConfig() {
      */
     config.plugins = [
         new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'}),
-        new webpack.optimize.ModuleConcatenationPlugin()
+        new webpack.optimize.ModuleConcatenationPlugin(),
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(environment)
+        })
     ];
 
     // Skip rendering index.html in test mode

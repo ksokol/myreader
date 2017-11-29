@@ -2,6 +2,7 @@ import angular from 'angular';
 import ngRedux from 'ng-redux';
 import thunk from 'redux-thunk';
 
+import {isDevMode, isProdMode} from './environment';
 import {EntryActionsComponent} from './entry/entry-actions/entry-actions.component';
 import {EntryContentComponent} from './entry/entry-content/entry-content.component';
 import {EntryTagsComponent} from './entry/entry-tags/entry-tags.component';
@@ -54,10 +55,11 @@ import './controllers';
 
 const reduxDevTools = () => {
     const devTools = window.__REDUX_DEVTOOLS_EXTENSION__;
-    return devTools ? [devTools()] : null;
+    return devTools && isDevMode() ? [devTools()] : null;
 };
 
-angular.module('myreader', [ngRedux, 'common.config', 'common.services', 'common.controllers', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
+const app =
+    angular.module('myreader', [ngRedux, 'common.config', 'common.services', 'common.controllers', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
     .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(reducers, [thunk], reduxDevTools())])
 
     .component('myEntryActions', EntryActionsComponent)
@@ -105,6 +107,9 @@ angular.module('myreader', [ngRedux, 'common.config', 'common.services', 'common
     .directive('myScrollIntoView', ScrollIntoViewDirective)
     .directive('myClickIfInView', ClickIfInViewDirective)
 
-    .filter('timeago', TimeagoFilter)
+    .filter('timeago', TimeagoFilter);
 
-    .run(['$ngRedux', $ngRedux => $ngRedux.dispatch(loadSettings())]);
+if (isProdMode() || isDevMode()) {
+    app.run(['$ngRedux', $ngRedux => $ngRedux.dispatch(loadSettings())]);
+}
+

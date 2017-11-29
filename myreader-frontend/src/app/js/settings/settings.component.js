@@ -1,23 +1,26 @@
 import template from './settings.component.html';
 import css from './settings.component.css';
+import {getSettings} from '../store/settings/index';
+import {updateSettings} from '../store/settings/settings.actions';
 
 class controller {
 
-    constructor(settingsService) {
+    constructor($ngRedux) {
         'ngInject';
-        this.settingsService = settingsService;
+        this.$ngRedux = $ngRedux;
+        this.unsubscribe = $ngRedux.connect(getSettings)(this);
     }
 
-    $onInit() {
-        this.currentSize = this.settingsService.getPageSize();
-        this.showUnseenEntries = this.settingsService.isShowUnseenEntries();
-        this.showEntryDetails = this.settingsService.isShowEntryDetails();
+    $onDestroy() {
+        this.unsubscribe();
     }
 
     save() {
-        this.settingsService.setPageSize(this.currentSize);
-        this.settingsService.setShowUnseenEntries(this.showUnseenEntries);
-        this.settingsService.setShowEntryDetails(this.showEntryDetails);
+        this.$ngRedux.dispatch(updateSettings({
+            pageSize: this.pageSize,
+            showUnseenEntries: this.showUnseenEntries,
+            showEntryDetails: this.showEntryDetails
+        }));
     }
 }
 

@@ -1,60 +1,63 @@
-describe('src/app/js/settings/settings.component.spec.js', function () {
+import {mockNgRedux} from '../shared/test-utils';
 
-    describe('with html', function () {
+describe('src/app/js/settings/settings.component.spec.js', () => {
 
-        var testUtils = require('../shared/test-utils');
+    let scope, element, $ngRedux;
 
-        var scope, element, settingsService;
+    beforeEach(angular.mock.module('myreader', mockNgRedux()));
 
-        beforeEach(require('angular').mock.module('myreader', testUtils.mock('settingsService')));
+    beforeEach(inject(($rootScope, $compile, _$ngRedux_) => {
+        scope = $rootScope.$new();
+        $ngRedux = _$ngRedux_;
 
-        beforeEach(inject(function ($rootScope, $compile, _settingsService_) {
-            scope = $rootScope.$new();
-            settingsService = _settingsService_;
+        $ngRedux.onConnect = {
+            pageSize: 20,
+            showUnseenEntries: false,
+            showEntryDetails: true
+        };
 
-            settingsService.getPageSize = function () { return 20; };
-            settingsService.isShowUnseenEntries = function () { return false; };
-            settingsService.isShowEntryDetails = function () { return true; };
+        element = $compile('<my-settings></my-settings>')(scope);
+        scope.$digest();
+    }));
 
-            settingsService.setPageSize = jasmine.createSpy('settingsService.setPageSize()');
-            settingsService.setShowUnseenEntries = jasmine.createSpy('settingsService.setShowUnseenEntries()');
-            settingsService.setShowEntryDetails = jasmine.createSpy('settingsService.setShowEntryDetails()');
+    it('should render setting values', () => {
+        expect(element.find('md-option')[1].selected).toBe(true);
+        expect(element.find('md-option')[1].innerText).toBe('20');
 
-            element = $compile('<my-settings></my-settings>')(scope);
-            scope.$digest();
-        }));
+        expect(element.find('md-checkbox')[0].classList).not.toContain('md-checked');
+        expect(element.find('md-checkbox')[1].classList).toContain('md-checked');
+    });
 
-        it('should render setting values', function () {
-            expect(element.find('md-option')[1].selected).toBe(true);
-            expect(element.find('md-option')[1].innerText).toBe('20');
+    it('should dispatch action with proper type', () => {
+        element.find('md-checkbox')[1].click();
 
-            expect(element.find('md-checkbox')[0].classList).not.toContain('md-checked');
-            expect(element.find('md-checkbox')[1].classList).toContain('md-checked');
-        });
+        expect($ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'SETTINGS_UPDATE'}));
+    });
 
-        it('should update pageSize setting', function () {
-            element.find('md-select').triggerHandler('click');
-            scope.$digest();
+    it('should update pageSize setting', ()=>  {
+        element.find('md-select').triggerHandler('click');
+        scope.$digest();
 
-            var select = angular.element(angular.element(document).find('md-select-menu'));
-            select.find('md-option')[2].click();
-            scope.$digest();
+        const select = angular.element(angular.element(document).find('md-select-menu'));
+        select.find('md-option')[2].click();
+        scope.$digest();
 
-            expect(select.find('md-option')[2].selected).toBe(true);
-            expect(select.find('md-option')[2].innerText).toContain('30');
-            expect(settingsService.setPageSize).toHaveBeenCalledWith(30);
-        });
+        expect(select.find('md-option')[2].selected).toBe(true);
+        expect(select.find('md-option')[2].innerText).toContain('30');
+        expect($ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({settings: jasmine.objectContaining({pageSize: 30})}));
+    });
 
-        it('should update showUnseenEntries setting', function () {
-            element.find('md-checkbox')[0].click();
-            expect(element.find('md-checkbox')[0].classList).toContain('md-checked');
-            expect(settingsService.setShowUnseenEntries).toHaveBeenCalledWith(true);
-        });
+    it('should update showUnseenEntries setting', () => {
+        element.find('md-checkbox')[0].click();
 
-        it('should update showEntryDetails setting', function () {
-            element.find('md-checkbox')[1].click();
-            expect(element.find('md-checkbox')[1].classList).not.toContain('md-checked');
-            expect(settingsService.setShowEntryDetails).toHaveBeenCalledWith(false);
-        });
+        expect(element.find('md-checkbox')[0].classList).toContain('md-checked');
+        expect($ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({settings: jasmine.objectContaining({showUnseenEntries: true})}));
+    });
+
+    it('should update showEntryDetails setting', () => {
+        element.find('md-checkbox')[1].click();
+
+        expect(element.find('md-checkbox')[1].classList).not.toContain('md-checked');
+        expect($ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({settings: jasmine.objectContaining({showEntryDetails: false})}));
     });
 });
