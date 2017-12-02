@@ -1,9 +1,11 @@
 import template from './maintenance-actions.component.html';
+import {showErrorNotification, showSuccessNotification} from "../../store/common/common.actions";
 
 class controller {
 
-    constructor(processingService) {
+    constructor($ngRedux, processingService) {
         'ngInject';
+        this.$ngRedux = $ngRedux;
         this.processingService = processingService;
     }
 
@@ -11,12 +13,12 @@ class controller {
         return this.processingService.rebuildSearchIndex();
     }
 
-    onSuccessRefreshIndex() {
-        this.message = {type: 'success', message: 'started'};
+    onSuccessRefreshIndex(text) {
+        this.$ngRedux.dispatch(showSuccessNotification(text));
     }
 
     onErrorRefreshIndex(error) {
-        this.message = {type: 'error', message: error};
+        this.$ngRedux.dispatch(showErrorNotification(error));
     }
 }
 

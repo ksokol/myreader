@@ -1,44 +1,56 @@
-describe('src/app/js/maintenance/maintenance-actions/maintenance-actions.component.spec.js', function () {
+import {mock, mockNgRedux} from '../../shared/test-utils';
 
-    describe('with html', function () {
+describe('src/app/js/maintenance/maintenance-actions/maintenance-actions.component.spec.js', () => {
 
-        var testUtils = require('../../shared/test-utils');
+    const currentState = {
+        common: {
+            notification: {
+                nextId: 1
+            }
+        }
+    };
 
-        var myNotificationPanel = testUtils.componentMock('myNotificationPanel');
+    let scope, element, ngRedux, processingService, deferred;
 
-        var scope, element, processingService, deferred;
+    beforeEach(angular.mock.module('myreader', mock('processingService'), mockNgRedux()));
 
-        beforeEach(require('angular').mock.module('myreader', testUtils.mock('processingService')));
+    beforeEach(inject(($rootScope, $compile, $q, $ngRedux, _processingService_) => {
+        scope = $rootScope.$new();
+        ngRedux = $ngRedux;
 
-        beforeEach(inject(function ($rootScope, $compile, $q, _processingService_) {
-            scope = $rootScope.$new();
+        deferred = $q.defer();
 
-            deferred = $q.defer();
+        processingService = _processingService_;
+        processingService.rebuildSearchIndex = jasmine.createSpy('processingService.rebuildSearchIndex()');
+        processingService.rebuildSearchIndex.and.returnValue(deferred.promise);
 
-            processingService = _processingService_;
-            processingService.rebuildSearchIndex = jasmine.createSpy('processingService.rebuildSearchIndex()');
-            processingService.rebuildSearchIndex.and.returnValue(deferred.promise);
+        element = $compile('<my-maintenance-actions></my-maintenance-actions>')(scope);
+        scope.$digest();
+    }));
 
-            element = $compile('<my-maintenance-actions></my-maintenance-actions>')(scope);
-            scope.$digest();
-        }));
+    it('should start indexing job when button clicked', () => {
+        deferred.resolve();
+        element.find('button')[0].click();
+        scope.$digest();
 
-        it('should start indexing job when button clicked', function () {
-            deferred.resolve();
-            element.find('button')[0].click();
-            scope.$digest();
+        expect(processingService.rebuildSearchIndex).toHaveBeenCalledWith();
+    });
 
-            expect(processingService.rebuildSearchIndex).toHaveBeenCalledWith();
-            expect(element.find('my-notification-panel').find('span')[0].innerText).toEqual('started');
-        });
+    it('should show success message when indexing job started', () => {
+        deferred.resolve();
+        element.find('button')[0].click();
+        scope.$digest();
 
-        it('should show error message when indexing job failed', function () {
-            deferred.reject('expected error');
-            element.find('button')[0].click();
-            scope.$digest();
+        ngRedux.thunk(currentState);
+        expect(ngRedux.dispatch).toHaveBeenCalledWith({type: 'SHOW_NOTIFICATION', notification: {id: 1, text: 'Refreshing index', type: 'success'}});
+    });
 
-            expect(element.find('my-notification-panel').find('span')[0].innerText).toEqual('expected error');
-        });
+    it('should show error message when indexing job failed', () => {
+        deferred.reject('expected error');
+        element.find('button')[0].click();
+        scope.$digest();
 
+        ngRedux.thunk(currentState);
+        expect(ngRedux.dispatch).toHaveBeenCalledWith({type: 'SHOW_NOTIFICATION', notification: {id: 1, text: 'expected error', type: 'error'}});
     });
 });

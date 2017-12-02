@@ -5,9 +5,7 @@
             my-type="primary"
             my-text="Refresh index"
             my-on-click="$ctrl.onRefreshIndex()"
-            my-on-success="$ctrl.onSuccessRefreshIndex()"
+            my-on-success="$ctrl.onSuccessRefreshIndex('Refreshing index')"
             my-on-error="$ctrl.onErrorRefreshIndex(error)">
     </my-button>
 </my-button-group>
-
-<my-notification-panel layout="row" my-message="$ctrl.message"></my-notification-panel>
