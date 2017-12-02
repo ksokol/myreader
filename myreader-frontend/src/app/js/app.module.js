@@ -45,6 +45,7 @@ import {SubscriptionTagPanelComponent} from "./subscription/subscription-tag-pan
 import {SubscriptionComponent} from "./subscription/subscription.component";
 import {ScrollIntoViewDirective} from "./shared/directive/scroll-into-view/scroll-into-view.directive";
 import {ClickIfInViewDirective} from "./shared/component/load-more/click-if-in-view.directive";
+import {ToastComponent} from './shared/component/toast/toast.component';
 
 import {reducers} from './store/index';
 import {loadSettings} from "./store/settings/settings.actions";
@@ -92,6 +93,7 @@ const app =
     .component('myIcon', IconComponent)
     .component('myNotificationPanel', NotificationPanelComponent)
     .component('mySearchInput', SearchInputComponent)
+    .component('myToast', ToastComponent)
 
     .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)

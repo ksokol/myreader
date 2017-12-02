@@ -33,6 +33,9 @@ class controller {
     }
 }
 
+/*
+ * @deprecated
+ */
 export const NotificationPanelComponent = {
     template, controller,
     bindings: {

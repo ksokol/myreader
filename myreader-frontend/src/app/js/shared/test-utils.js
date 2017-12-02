@@ -63,14 +63,20 @@ function mock(name) {
 }
 
 function ngReduxMock() {
-    let _store = {};
+    let _component = null;
     const mock = jasmine.createSpyObj('$ngRedux', ['dispatch', 'connect']);
     mock.onConnect = {};
-    mock.stateChange = values => Object.assign(_store, values);
-    mock.connect.and.returnValue(store => {
-        _store = store;
-        Object.assign(_store, mock.onConnect);
-        return () => {return {unsubscribe: () => {}}}
+    mock.stateChange = values => Object.assign(_component, values);
+    mock.connect.and.callFake((mapStateToTarget, mapDispatchToTarget) => {
+        return component => {
+            _component = component;
+            Object.assign(component, mock.onConnect);
+            Object.assign(component, mapStateToTarget);
+            if (mapDispatchToTarget) {
+                Object.assign(component, mapDispatchToTarget(mock.dispatch));
+            }
+            return () => {};
+        }
     });
     return mock;
 }
