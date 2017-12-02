@@ -1,5 +1,5 @@
 import template from './search-input.component.html';
-import css from './search-input.component.css';
+import './search-input.component.css';
 
 class controller {
 
@@ -30,7 +30,7 @@ class controller {
 }
 
 export const SearchInputComponent = {
-    template, css, controller,
+    template, controller,
     bindings: {
         myValue: '<',
         myOnChange: '&',

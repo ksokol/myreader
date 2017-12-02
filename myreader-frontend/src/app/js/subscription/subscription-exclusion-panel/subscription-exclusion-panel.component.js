@@ -1,5 +1,5 @@
 import template from './subscription-exclusion-panel.component.html';
-import css from './subscription-exclusion-panel.component.css';
+import './subscription-exclusion-panel.component.css';
 
 class controller {
 
@@ -14,7 +14,7 @@ class controller {
 }
 
 export const SubscriptionExclusionPanelComponent = {
-    template, css, controller,
+    template, controller,
     bindings: {
         myId: '<',
         myDisabled: '<',

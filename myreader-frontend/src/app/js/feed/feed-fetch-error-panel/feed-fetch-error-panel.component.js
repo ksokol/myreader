@@ -1,5 +1,5 @@
 import template from './feed-fetch-error-panel.component.html';
-import css from './feed-fetch-error-panel.component.css';
+import './feed-fetch-error-panel.component.css';
 
 class controller {
 
@@ -14,7 +14,7 @@ class controller {
 }
 
 export const FeedFetchErrorPanelComponent = {
-    template, css, controller,
+    template, controller,
     bindings: {
         myId: '<',
         myOnError: '&'

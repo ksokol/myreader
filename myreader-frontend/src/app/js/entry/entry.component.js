@@ -1,5 +1,5 @@
 import template from './entry.component.html';
-import css from './entry.component.css';
+import './entry.component.css';
 
 class controller {
 
@@ -44,7 +44,7 @@ class controller {
 }
 
 export const EntryComponent = {
-    template, css, controller,
+    template, controller,
     bindings: {
         myItem: '<'
     }

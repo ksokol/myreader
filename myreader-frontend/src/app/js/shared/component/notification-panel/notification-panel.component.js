@@ -1,5 +1,5 @@
 import template from './notification-panel.component.html';
-import css from './notification-panel.component.css';
+import './notification-panel.component.css';
 
 class controller {
 
@@ -34,7 +34,7 @@ class controller {
 }
 
 export const NotificationPanelComponent = {
-    template, css, controller,
+    template, controller,
     bindings: {
         myMessage: '<',
         myOnDismiss: '&'

@@ -1,5 +1,5 @@
 import template from './settings.component.html';
-import css from './settings.component.css';
+import './settings.component.css';
 import {getSettings} from '../store/settings/index';
 import {updateSettings} from '../store/settings/settings.actions';
 
@@ -25,5 +25,5 @@ class controller {
 }
 
 export const SettingsComponent = {
-    template, css, controller
+    template, controller
 };

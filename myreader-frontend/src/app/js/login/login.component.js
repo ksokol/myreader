@@ -1,5 +1,5 @@
 import template from './login.component.html';
-import css from './login.component.css';
+import './login.component.css';
 
 class controller {
 
@@ -39,5 +39,5 @@ class controller {
 }
 
 export const LoginComponent = {
-    template, css, controller
+    template, controller
 };

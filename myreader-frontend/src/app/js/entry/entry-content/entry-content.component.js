@@ -1,5 +1,5 @@
 import template from './entry-content.component.html';
-import css from './entry-content.component.css';
+import './entry-content.component.css';
 import {getSettings} from '../../store/settings/index';
 
 class controller {
@@ -31,9 +31,9 @@ class controller {
 }
 
 export const EntryContentComponent = {
-    template, css, controller,
+    template, controller,
     bindings: {
         myItem: '<',
         myShow: '<'
     }
-}
+};

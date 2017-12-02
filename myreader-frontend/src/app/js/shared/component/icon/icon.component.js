@@ -1,4 +1,4 @@
-import css from './icon.component.css';
+import './icon.component.css';
 
 class controller {
 
@@ -16,7 +16,7 @@ class controller {
 
 export const IconComponent = {
     template: '<md-icon class="my-icon" ng-class="[$ctrl.iconClass, $ctrl.iconColor]"></md-icon>',
-    controller, css,
+    controller,
     bindings: {
         myType: '@',
         myColor: '@'

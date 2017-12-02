@@ -1,5 +1,5 @@
 import template from './subscription-item.component.html';
-import css from './subscription-item.component.css';
+import './subscription-item.component.css';
 
 class controller {
 
@@ -30,7 +30,7 @@ class controller {
 }
 
 export const NavigationSubscriptionItemComponent = {
-    template, css, controller,
+    template, controller,
     bindings: {
         myItem: '<',
         mySelected: '<',

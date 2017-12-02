@@ -1,5 +1,5 @@
 import template from './entry-title.component.html';
-import css from './entry-title.component.css';
+import './entry-title.component.css';
 
 class controller {
 
@@ -9,7 +9,7 @@ class controller {
 }
 
 export const EntryTitleComponent = {
-    template, css, controller,
+    template, controller,
     bindings: {
         myItem: '<'
     }

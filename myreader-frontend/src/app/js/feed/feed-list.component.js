@@ -1,5 +1,5 @@
 import template from './feed-list.component.html';
-import css from './feed-list.component.css';
+import './feed-list.component.css';
 
 class controller {
 
@@ -29,6 +29,5 @@ class controller {
 }
 
 export const FeedListComponent = {
-    template, css,
-    controller: ['$state', 'feedService', controller]
+    template, controller
 };

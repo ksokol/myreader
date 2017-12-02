@@ -1,5 +1,5 @@
 import template from './subscription.component.html';
-import css from './subscription.component.css';
+import './subscription.component.css';
 
 class controller {
 
@@ -60,5 +60,5 @@ class controller {
 }
 
 export const SubscriptionComponent = {
-    template, css, controller
+    template, controller
 };

@@ -1,5 +1,5 @@
 import template from './feed-fetch-error.component.html';
-import css from './feed-fetch-error.component.css';
+import './feed-fetch-error.component.css';
 
 class controller {
 
@@ -37,7 +37,7 @@ class controller {
 }
 
 export const FeedFetchErrorComponent = {
-    template, css, controller,
+    template, controller,
     bindings: {
         myId: '<',
         myOnError: '&'

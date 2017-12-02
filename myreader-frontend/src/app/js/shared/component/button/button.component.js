@@ -1,5 +1,5 @@
 import template from './button.component.html';
-import css from './button.component.css';
+import './button.component.css';
 import {isPromise} from '../../utils';
 
 class controller {
@@ -74,7 +74,7 @@ class controller {
 }
 
 export const ButtonComponent = {
-    template, css, controller,
+    template, controller,
     require: {
         buttonGroupCtrl: '^myButtonGroup'
     },

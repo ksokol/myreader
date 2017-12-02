@@ -1,5 +1,5 @@
 import template from './feed.component.html';
-import css from './feed.component.css';
+import './feed.component.css';
 
 class controller {
 
@@ -44,5 +44,5 @@ class controller {
 }
 
 export const FeedComponent = {
-    template, css, controller
+    template, controller
 };
