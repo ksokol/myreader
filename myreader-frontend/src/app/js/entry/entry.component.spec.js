@@ -1,112 +1,99 @@
-describe('src/app/js/entry/entry.component.spec.js', function () {
+import {componentMock, mock, mockNgRedux} from '../shared/test-utils';
 
-    describe('with html', function () {
+describe('src/app/js/entry/entry.component.spec.js', () => {
 
-        var testUtils = require('../shared/test-utils');
+    const currentState = {
+        common: {
+            notification: {
+                nextId: 1
+            }
+        }
+    };
 
-        var entryTitle = testUtils.componentMock('myEntryTitle');
-        var entryActions = testUtils.componentMock('myEntryActions');
-        var entryTags = testUtils.componentMock('myEntryTags');
-        var entryContent = testUtils.componentMock('myEntryContent');
-        var notificationPanel = testUtils.componentMock('myNotificationPanel');
+    const entryTitle = componentMock('myEntryTitle');
+    const entryActions = componentMock('myEntryActions');
+    const entryTags = componentMock('myEntryTags');
+    const entryContent = componentMock('myEntryContent');
 
-        var rootScope, scope, element, subscriptionEntryService, deferred, item;
+    let rootScope, scope, element, ngRedux, subscriptionEntryService, deferred, item;
 
-        beforeEach(
-            require('angular').mock.module(
-                'myreader',
-                entryTitle,
-                entryActions,
-                entryTags,
-                entryContent,
-                notificationPanel,
-                testUtils.mock('subscriptionEntryService')
-            )
-        );
+    beforeEach(angular.mock.module('myreader', entryTitle, entryActions, entryTags, entryContent, mock('subscriptionEntryService'), mockNgRedux()));
 
-        beforeEach(inject(function ($rootScope, $compile, $q, _subscriptionEntryService_) {
-            rootScope = $rootScope;
-            scope = $rootScope.$new();
-            deferred = $q.defer();
+    beforeEach(inject(($rootScope, $compile, $q, $ngRedux, _subscriptionEntryService_) => {
+        rootScope = $rootScope;
+        scope = $rootScope.$new();
+        ngRedux = $ngRedux;
+        deferred = $q.defer();
 
-            subscriptionEntryService = _subscriptionEntryService_;
-            subscriptionEntryService.save = jasmine.createSpy('save');
-            subscriptionEntryService.save.and.returnValue(deferred.promise);
+        subscriptionEntryService = _subscriptionEntryService_;
+        subscriptionEntryService.save = jasmine.createSpy('save');
+        subscriptionEntryService.save.and.returnValue(deferred.promise);
 
-            scope.item = item = {
-                uuid: 'uuid',
-                seen: false,
-                tag: 'tag'
-            };
+        scope.item = item = {
+            uuid: 'uuid',
+            seen: false,
+            tag: 'tag'
+        };
 
-            element = $compile('<my-entry my-item="item"></my-entry>')(scope);
-            scope.$digest();
+        element = $compile('<my-entry my-item="item"></my-entry>')(scope);
+        scope.$digest();
+    }));
+
+    it('should propagate item to child components', () => {
+        expect(entryTitle.bindings.myItem).toEqual(item);
+        expect(entryActions.bindings.myItem).toEqual(item);
+        expect(entryTags.bindings.myItem).toEqual(item);
+        expect(entryContent.bindings.myItem).toEqual(item);
+    });
+
+    it('should show or hide entryTags and entryContent components based on showMore flag', () => {
+        entryActions.bindings.myOnMore({showMore: true});
+        rootScope.$digest();
+
+        expect(entryTags.bindings.myShow).toEqual(true);
+        expect(entryContent.bindings.myShow).toEqual(true);
+
+        entryActions.bindings.myOnMore({showMore: false});
+        rootScope.$digest();
+
+        expect(entryTags.bindings.myShow).toEqual(false);
+        expect(entryContent.bindings.myShow).toEqual(false);
+    });
+
+    it('should update seen flag when entryActions component fired myOnCheck event', () => {
+        entryActions.bindings.myOnCheck({item: {seen: true}});
+
+        expect(subscriptionEntryService.save).toHaveBeenCalledWith({uuid: 'uuid', seen: true, tag: 'tag'});
+    });
+
+    it('should propagate error message to notificationPanel when update fails', () => {
+        deferred.reject('expected error');
+        entryActions.bindings.myOnCheck({item: {}});
+        rootScope.$digest();
+
+        ngRedux.thunk(currentState);
+        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({
+            type: 'SHOW_NOTIFICATION',
+            notification: jasmine.objectContaining({text: 'expected error', type: 'error'})
         }));
+    });
 
-        it('should propagate item to child components', function () {
-            expect(entryTitle.bindings.myItem).toEqual(item);
-            expect(entryActions.bindings.myItem).toEqual(item);
-            expect(entryTags.bindings.myItem).toEqual(item);
-            expect(entryContent.bindings.myItem).toEqual(item);
-            expect(notificationPanel.bindings.myMessage).toBeUndefined();
-        });
+    it('should update tag when entryTags component fired onSelect event', () => {
+        entryTags.bindings.myOnChange({ tag: 'tag1' });
 
-        it('should show or hide entryTags and entryContent components based on showMore flag', function () {
-            entryActions.bindings.myOnMore({showMore: true});
-            rootScope.$digest();
+        expect(subscriptionEntryService.save).toHaveBeenCalledWith({uuid: 'uuid', seen: false, tag: 'tag1'});
+    });
 
-            expect(entryTags.bindings.myShow).toEqual(true);
-            expect(entryContent.bindings.myShow).toEqual(true);
+    it('should propagate updated tem to child components', () => {
+        const updatedItem = {uuid: 'uuid', seen: false, tag: 'tag1'};
+        deferred.resolve(updatedItem);
 
-            entryActions.bindings.myOnMore({showMore: false});
-            rootScope.$digest();
+        entryTags.bindings.myOnChange({ tag: 'tag1' });
+        rootScope.$digest();
 
-            expect(entryTags.bindings.myShow).toEqual(false);
-            expect(entryContent.bindings.myShow).toEqual(false);
-        });
-
-        it('should update seen flag when entryActions component fired myOnCheck event', function () {
-            entryActions.bindings.myOnCheck({ item: {seen: true }});
-
-            expect(subscriptionEntryService.save).toHaveBeenCalledWith({ uuid: 'uuid', seen: true, tag: 'tag' });
-        });
-
-        it('should propagate error message to notificationPanel when update fails', function () {
-            expect(notificationPanel.bindings.myMessage).toBeUndefined();
-            deferred.reject('expected error');
-            entryActions.bindings.myOnCheck({ item: {}});
-            rootScope.$digest();
-
-            expect(notificationPanel.bindings.myMessage).toEqual({ type: 'error', message: 'expected error' });
-        });
-
-        it('should clear message property when notificationPanel fired myOnDismiss event', function () {
-            deferred.reject();
-            entryActions.bindings.myOnCheck({ item: {}});
-            rootScope.$digest();
-
-            notificationPanel.bindings.myOnDismiss();
-
-            expect(element.controller('myEntry').message).toBeNull();
-        });
-
-        it('should update tag when entryTags component fired onSelect event', function () {
-            entryTags.bindings.myOnChange({ tag: 'tag1' });
-
-            expect(subscriptionEntryService.save).toHaveBeenCalledWith({ uuid: 'uuid', seen: false, tag: 'tag1' });
-        });
-
-        it('should propagate updated tem to child components', function () {
-            var updatedItem = { uuid: 'uuid', seen: false, tag: 'tag1' };
-            deferred.resolve(updatedItem);
-
-            entryTags.bindings.myOnChange({ tag: 'tag1' });
-            rootScope.$digest();
-
-            expect(entryTitle.bindings.myItem).toEqual(updatedItem);
-            expect(entryActions.bindings.myItem).toEqual(updatedItem);
-            expect(entryTags.bindings.myItem).toEqual(updatedItem);
-            expect(entryContent.bindings.myItem).toEqual(updatedItem);
-        })
+        expect(entryTitle.bindings.myItem).toEqual(updatedItem);
+        expect(entryActions.bindings.myItem).toEqual(updatedItem);
+        expect(entryTags.bindings.myItem).toEqual(updatedItem);
+        expect(entryContent.bindings.myItem).toEqual(updatedItem);
     });
 });

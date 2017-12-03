@@ -6,8 +6,6 @@
     </my-search-input>
 </div>
 
-<my-notification-panel layout="row" layout-align="center center" my-message="$ctrl.message"></my-notification-panel>
-
 <md-list>
     <md-list-item ng-click="$ctrl.open(feed)" class="md-2-line" ng-repeat="feed in $ctrl.feeds | filter: $ctrl.searchKey">
         <div class="md-list-item-text">

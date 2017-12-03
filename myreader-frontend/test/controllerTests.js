@@ -1,11 +1,12 @@
 import {myMock} from './testUtil';
+import {mockNgRedux} from '../src/app/js/shared/test-utils';
 
 describe("test/controllerTests.js", function() {
     var scope,
         subscriptionEntryServiceMock,
         subscriptionsTagServiceMock;
 
-    beforeEach(angular.mock.module('common.controllers', function($provide) {
+    beforeEach(angular.mock.module('common.controllers', mockNgRedux(), function($provide) {
         $provide.provider(myMock.provider(['$stateParams', '$state']));
 
         $provide.provider(myMock.providerWithObj('hotkeys', {

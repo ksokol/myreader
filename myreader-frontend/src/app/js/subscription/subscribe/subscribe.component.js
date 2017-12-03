@@ -1,10 +1,12 @@
 import template from './subscribe.component.html';
+import {showErrorNotification} from "../../store/common/common.actions";
 
 class controller {
 
-    constructor($state, subscriptionService) {
+    constructor($state, $ngRedux, subscriptionService) {
         'ngInject';
         this.$state = $state;
+        this.$ngRedux = $ngRedux;
         this.subscriptionService = subscriptionService;
     }
 
@@ -17,7 +19,7 @@ class controller {
     }
 
     onError(error) {
-        this.message = { type: 'error', message: error };
+        this.$ngRedux.dispatch(showErrorNotification(error));
     }
 
     onErrorSave(error) {

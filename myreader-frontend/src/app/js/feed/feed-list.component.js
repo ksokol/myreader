@@ -1,18 +1,20 @@
 import template from './feed-list.component.html';
 import './feed-list.component.css';
+import {showErrorNotification} from "../store/common/common.actions";
 
 class controller {
 
-    constructor($state, feedService) {
+    constructor($state, $ngRedux, feedService) {
         'ngInject';
         this.$state = $state;
+        this.$ngRedux = $ngRedux;
         this.feedService = feedService;
     }
 
     $onInit() {
         this.feedService.findAll()
             .then(data => this.feeds = data)
-            .catch (error => this.message = {type: 'error', message: error});
+            .catch(error => this.$ngRedux.dispatch(showErrorNotification(error)));
     }
 
     open(feed) {

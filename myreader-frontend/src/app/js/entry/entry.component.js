@@ -1,25 +1,23 @@
 import template from './entry.component.html';
 import './entry.component.css';
+import {showErrorNotification} from "../store/common/common.actions";
 
 class controller {
 
-    constructor(subscriptionEntryService) {
+    constructor($ngRedux, subscriptionEntryService) {
         'ngInject';
         this.subscriptionEntryService = subscriptionEntryService;
+        this.$ngRedux = $ngRedux;
     }
 
     updateItem(item) {
         this.subscriptionEntryService.save(item)
         .then(updatedEntry => this.item = updatedEntry)
-        .catch(error => this.message = {type: 'error', message: error});
+        .catch(error => this.$ngRedux.dispatch(showErrorNotification(error)));
     }
 
     $onInit() {
         this.item = this.myItem;
-    }
-
-    onDismissMessage() {
-        this.message = null;
     }
 
     toggleMore(showMore) {

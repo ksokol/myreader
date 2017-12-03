@@ -1,17 +1,22 @@
-import {componentMock, mock} from '../shared/test-utils';
+import {componentMock, mock, mockNgRedux} from '../shared/test-utils';
 
 describe('src/app/js/feed/feed.component.spec.js', () => {
 
+    const currentState = {
+        common: {
+            notification: {
+                nextId: 1
+            }
+        }
+    };
+
     const myFeedFetchErrorPanel = componentMock('myFeedFetchErrorPanel');
 
-    let scope, element, page, $state, $stateParams, feedService, feed, findOneDeferred, saveDeferred, removeDeferred;
+    let scope, element, page, $state, $stateParams, ngRedux, feedService, feed, findOneDeferred, saveDeferred, removeDeferred;
 
     const PageObject = el => {
-
         const _title = () => angular.element(el.find('input')[0]);
-
         const _url = () => angular.element(el.find('input')[1]);
-
         const _validationErrorText = validationEl => {
             const firstDiv = angular.element(angular.element(validationEl).find('div'));
             return firstDiv.find('div')[0].innerText;
@@ -19,33 +24,23 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
 
         return {
             title: () =>_title(),
-
             url: () => _url(),
-
             feedUrlLink: () => el.find('a')[0],
-
             enterTitle: value => _title().val(value).triggerHandler('input'),
-
             enterUrl: value => _url().val(value).triggerHandler('input'),
-
             titleValidationErrorText: () => _validationErrorText(element.find('my-validation-message')[0]),
-
             urlValidationErrorText: () => _validationErrorText(element.find('my-validation-message')[1]),
-
             clickSaveButton: () => angular.element(element.find('button')[0]).triggerHandler('click'),
-
             clickDeleteButton: () => angular.element(element.find('button')[1]).triggerHandler('click'),
-
             clickYesButton: () => angular.element(element.find('button')[1]).triggerHandler('click'),
-
-            notificationText: () => element.find('my-notification-panel').find('span')[0].innerText
         }
     };
 
-    beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams'), mock('feedService'), myFeedFetchErrorPanel));
+    beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams'), mock('feedService'), myFeedFetchErrorPanel, mockNgRedux()));
 
-    beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, _feedService_) => {
+    beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, $ngRedux, _feedService_) => {
         scope = $rootScope.$new();
+        ngRedux = $ngRedux;
 
         feed = {
             uuid: 'expected uuid',
@@ -92,7 +87,14 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         findOneDeferred.reject('expected error');
         scope.$digest();
 
-        expect(page.notificationText()).toEqual('expected error');
+        ngRedux.thunk(currentState);
+        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({
+            type: 'SHOW_NOTIFICATION',
+            notification: jasmine.objectContaining({
+                text: 'expected error',
+                type: 'error'
+            })
+        }));
     });
 
     it('should render title and url', () => {
@@ -124,7 +126,14 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         saveDeferred.resolve();
         scope.$digest();
 
-        expect(page.notificationText()).toEqual('saved');
+        ngRedux.thunk(currentState);
+        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({
+            type: 'SHOW_NOTIFICATION',
+            notification: jasmine.objectContaining({
+                text: 'Feed saved',
+                type: 'success'
+            })
+        }));
     });
 
     it('should render error notification when feed persist failed', () => {
@@ -132,7 +141,14 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         saveDeferred.reject({data: 'expected error'});
         scope.$digest();
 
-        expect(page.notificationText()).toEqual('expected error');
+        ngRedux.thunk(currentState);
+        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({
+            type: 'SHOW_NOTIFICATION',
+            notification: jasmine.objectContaining({
+                text: {data: 'expected error'},
+                type: 'error'
+            })
+        }));
     });
 
     it('should render error notification when feed could not be deleted', () => {
@@ -140,7 +156,14 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         saveDeferred.reject({status: 409});
         scope.$digest();
 
-        expect(page.notificationText()).toEqual('abort. Feed has subscriptions');
+        ngRedux.thunk(currentState);
+        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({
+            type: 'SHOW_NOTIFICATION',
+            notification: jasmine.objectContaining({
+                text: 'Can not delete. Feed has subscriptions',
+                type: 'error'
+            })
+        }));
     });
 
     it('should render validation messages', () => {
@@ -183,7 +206,14 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         removeDeferred.reject({data: 'expected error'});
         scope.$digest();
 
-        expect(page.notificationText()).toEqual('expected error');
+        ngRedux.thunk(currentState);
+        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({
+            type: 'SHOW_NOTIFICATION',
+            notification: jasmine.objectContaining({
+                text: {data: 'expected error'},
+                type: 'error'
+            })
+        }));
     });
 
     it('should open url safely', () => {

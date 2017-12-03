@@ -1,10 +1,11 @@
 import angular from 'angular';
 import {SubscriptionEntries} from './models';
+import {showErrorNotification} from "./store/common/common.actions";
 
 angular.module('common.controllers', [])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav',
-function($rootScope, $scope, $state, $http, $mdSidenav) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$ngRedux',
+function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.data = {
         tags: [],
         items: []
@@ -55,13 +56,13 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
             $state.go('login');
         })
         .error(function() {
-            $scope.message = { type: 'error', message: 'Could not log out'};
+            $ngRedux.dispatch(showErrorNotification('Could not log out'));
         });
     };
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'hotkeys',
-    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, subscriptionsTagService, hotkeys) {
+.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'hotkeys', '$ngRedux',
+    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, subscriptionsTagService, hotkeys, $ngRedux) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
@@ -134,7 +135,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
                     $scope.data.entries[idx].focused = true;
                 })
                 .catch(function (error) {
-                    $scope.message = { type: 'error', message: error};
+                    $ngRedux.dispatch(showErrorNotification(error));
                 });
         } else {
             focused.focused = true;
@@ -162,7 +163,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
                 $scope.data = new SubscriptionEntries(entries, data.links)
             })
             .catch(function (error) {
-                $scope.message = { type: 'error', message: error };
+                $ngRedux.dispatch(showErrorNotification(error));
             });
     };
 
@@ -170,7 +171,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         entry.seen = !entry.seen;
         subscriptionEntryService.save(entry)
         .catch(function (error) {
-            $scope.message = { type: 'error', message: error};
+            $ngRedux.dispatch(showErrorNotification(error));
         });
     };
 
@@ -230,23 +231,17 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         subscriptionsTagService.findAllByUnseen(true)
             .then(function (data) {
                 $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data, state: 'app.entries'});
-            })
-            .catch(function (error) {
-                $scope.message = { type: 'error', message: error};
             });
     });
 
     subscriptionsTagService.findAllByUnseen(true)
         .then(function (data) {
             $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data, state: 'app.entries'});
-        })
-        .catch(function (error) {
-            $scope.message = { type: 'error', message: error};
         });
 }])
 
-.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService',
-    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, bookmarkService) {
+.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService', '$ngRedux',
+    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, bookmarkService, $ngRedux) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
@@ -295,7 +290,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
                 $scope.data = new SubscriptionEntries(entries, data.links)
             })
             .catch(function (error) {
-                $scope.message = { type: 'error', message: error };
+                $ngRedux.dispatch(showErrorNotification(error));
             });
     };
 
@@ -317,7 +312,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav) {
         .then(function (data) {
             $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data, state: 'app.bookmarks'});
         }).catch(function (error) {
-            $scope.message = { type: 'error', message: error};
+            $ngRedux.dispatch(showErrorNotification(error));
         });
 }])
 
