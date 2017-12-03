@@ -4,14 +4,6 @@ import {
     setShowUnseenEntries
 } from './settings';
 
-export const updateSettings = ({pageSize, showEntryDetails, showUnseenEntries}) => {
-    setPageSize(pageSize);
-    setShowEntryDetails(showEntryDetails);
-    setShowUnseenEntries(showUnseenEntries);
-
-    return loadSettings();
-};
-
 export const loadSettings = () => {
     const settings = {
         pageSize: getPageSize(),
@@ -19,4 +11,12 @@ export const loadSettings = () => {
         showEntryDetails: isShowEntryDetails()
     };
     return {type: settingsTypes.UPDATE_SETTINGS, settings};
+};
+
+export const updateSettings = ({pageSize, showEntryDetails, showUnseenEntries}) => {
+    setPageSize(pageSize);
+    setShowEntryDetails(showEntryDetails);
+    setShowUnseenEntries(showUnseenEntries);
+
+    return loadSettings();
 };
