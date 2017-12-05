@@ -32,7 +32,6 @@ import {ProcessingService} from "./maintenance/maintenance-actions/processing.se
 import {MaintenanceActionsComponent} from "./maintenance/maintenance-actions/maintenance-actions.component";
 import {MaintenanceComponent} from "./maintenance/maintenance.component";
 import {NavigationSubscriptionItemComponent} from "./navigation/subscription-item/subscription-item.component";
-import {SettingsService} from "./shared/service/settings.service";
 import {SettingsComponent} from "./settings/settings.component";
 import {SubscriptionService} from "./subscription/subscription.service";
 import {SubscribeComponent} from "./subscription/subscribe/subscribe.component";
@@ -99,7 +98,6 @@ const app =
     .service('feedService', FeedService)
     .service('aboutService', AboutService)
     .service('processingService', ProcessingService)
-    .service('settingsService', SettingsService)
     .service('subscriptionService', SubscriptionService)
     .service('exclusionService', ExclusionService)
     .service('subscriptionTagService', SubscriptionTagService)
