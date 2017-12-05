@@ -1,5 +1,6 @@
 import angular from 'angular';
 import {Bookmarks, SubscriptionEntries, SubscriptionTags} from './models';
+import {getPageSize, isShowUnseenEntries} from "./store/settings/settings";
 
 angular.module('common.services', [])
 
@@ -37,7 +38,7 @@ angular.module('common.services', [])
     }
 }])
 
-.service('subscriptionEntryService', ['$rootScope', '$http', '$q', 'settingsService', function($rootScope, $http, $q, settingsService) {
+.service('subscriptionEntryService', ['$rootScope', '$http', '$q', function($rootScope, $http, $q) {
     var url = '/myreader/api/2/subscriptionEntries?';
 
     return {
@@ -48,11 +49,11 @@ angular.module('common.services', [])
                 tmp = params;
             } else {
                 if (!params['size']) {
-                    params['size'] = settingsService.getPageSize();
+                    params['size'] = getPageSize();
                 }
 
                 if (!params['seenEqual']) {
-                    if(settingsService.isShowUnseenEntries()) {
+                    if(isShowUnseenEntries()) {
                         params['seenEqual'] = false;
                     }
                 }

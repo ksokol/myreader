@@ -31,25 +31,15 @@ describe('test/serviceTests.js', function() {
     });
 
     describe('subscriptionEntryService', function() {
-        var httpBackend, settingsService;
+        var httpBackend;
 
-        beforeEach(angular.mock.module(function($provide) {
-            $provide.service('settingsService', function() {
-                return jasmine.createSpyObj('settingsService', ['getPageSize', 'isShowUnseenEntries']);
-            });
-        }));
-
-        beforeEach(inject(function ($httpBackend, subscriptionEntryService, _settingsService_) {
+        beforeEach(inject(function ($httpBackend, subscriptionEntryService) {
             httpBackend = $httpBackend;
             service = subscriptionEntryService;
-            settingsService = _settingsService_;
-
-            settingsService.getPageSize.and.returnValue(10);
-            settingsService.isShowUnseenEntries.and.returnValue(false);
         }));
 
         it('should process own properties in params object', function(done) {
-            httpBackend.expectGET('/myreader/api/2/subscriptionEntries?&param1=1&param2=2&size=10').respond({ content: 'expected' });
+            httpBackend.expectGET('/myreader/api/2/subscriptionEntries?&param1=1&param2=2&size=10&seenEqual=false').respond({ content: 'expected' });
 
             var Params = function() {
                 this.param1 = 1;
