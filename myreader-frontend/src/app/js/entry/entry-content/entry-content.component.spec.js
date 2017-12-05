@@ -55,25 +55,25 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
 
             describe('with myShow set to false', function () {
 
-                it('should return false when settingsService and $mdMedia return false', () => {
+                it('should return false when showEntryDetails and $mdMedia are false', () => {
                     $ngRedux.stateChange({showEntryDetails: false});
                     $mdMedia.and.returnValue(false);
                     expect(component.showEntryContent()).toEqual(false);
                 });
 
-                it('should return false when settingsService return true and $mdMedia return false', () => {
+                it('should return false when showEntryDetails is true and $mdMedia is false', () => {
                     $ngRedux.stateChange({showEntryDetails: true});
                     $mdMedia.and.returnValue(false);
                     expect(component.showEntryContent()).toEqual(false);
                 });
 
-                it('should return false when settingsService return false and $mdMedia return true', () => {
+                it('should return false when showEntryDetails is false and $mdMedia is true', () => {
                     $ngRedux.stateChange({showEntryDetails: false});
                     $mdMedia.and.returnValue(true);
                     expect(component.showEntryContent()).toEqual(false);
                 });
 
-                it('should return true when settingsService return true and $mdMedia return true', () => {
+                it('should return true when showEntryDetails is true and $mdMedia is true', () => {
                     $ngRedux.stateChange({showEntryDetails: true});
                     $mdMedia.and.returnValue(true);
                     expect(component.showEntryContent()).toEqual(true);
@@ -90,25 +90,25 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
                     component.$onInit();
                 }));
 
-                it('should return true when settingsService and $mdMedia return false', () => {
+                it('should return true when showEntryDetails and $mdMedia are false', () => {
                     $ngRedux.stateChange({showEntryDetails: false});
                     $mdMedia.and.returnValue(false);
                     expect(component.showEntryContent()).toEqual(true);
                 });
 
-                it('should return true when settingsService return true and $mdMedia return false', () => {
+                it('should return true when showEntryDetails is true and $mdMedia is false', () => {
                     $ngRedux.stateChange({showEntryDetails: true});
                     $mdMedia.and.returnValue(false);
                     expect(component.showEntryContent()).toEqual(true);
                 });
 
-                it('should return true when settingsService return false and $mdMedia return true', () => {
+                it('should return true when showEntryDetails is false and $mdMedia is true', () => {
                     $ngRedux.stateChange({showEntryDetails: false});
                     $mdMedia.and.returnValue(true);
                     expect(component.showEntryContent()).toEqual(true);
                 });
 
-                it('should return true when settingsService return true and $mdMedia return true', () => {
+                it('should return true when showEntryDetails is true and $mdMedia is true', () => {
                     $ngRedux.stateChange({showEntryDetails: true});
                     $mdMedia.and.returnValue(true);
                     expect(component.showEntryContent()).toEqual(true);
