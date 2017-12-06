@@ -1,7 +1,7 @@
 import {setPageSize, setShowEntryDetails, setShowUnseenEntries} from './settings';
-import {loadSettings, updateSettings} from './settings.actions';
+import {loadSettings, updateSettings} from './actions';
 
-describe('src/app/js/store/settings/settings.actions.spec.js', () => {
+describe('src/app/js/store/settings/actions.spec.js', () => {
 
     beforeEach(() => localStorage.clear());
     afterEach(() => localStorage.clear());

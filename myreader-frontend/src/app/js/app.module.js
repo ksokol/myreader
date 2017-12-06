@@ -47,7 +47,7 @@ import {ClickIfInViewDirective} from "./shared/component/load-more/click-if-in-v
 import {ToastComponent} from './shared/component/toast/toast.component';
 
 import {reducers} from './store/index';
-import {loadSettings} from "./store/settings/settings.actions";
+import {loadSettings} from './store/settings/index';
 import {getSecurity, updateSecurity} from './store/security/index';
 
 import './config';

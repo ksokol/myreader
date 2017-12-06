@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import {settingsReducers} from './settings/settings.reducers';
+import {settingsReducers} from './settings/index';
 import {commonReducers} from './common/common.reducers';
 import {securityReducers} from "./security/index";
 

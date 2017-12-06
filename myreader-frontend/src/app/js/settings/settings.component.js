@@ -1,7 +1,6 @@
 import template from './settings.component.html';
 import './settings.component.css';
-import {getSettings} from '../store/settings/index';
-import {updateSettings} from '../store/settings/settings.actions';
+import {getSettings, updateSettings} from '../store/settings/index';
 
 class controller {
 

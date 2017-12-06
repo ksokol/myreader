@@ -1,4 +1,4 @@
-import * as settingsTypes from './settings.action-types';
+import * as settingsTypes from './action-types';
 
 const initialState = {
     pageSize: 10,

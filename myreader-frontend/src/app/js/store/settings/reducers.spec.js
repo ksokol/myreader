@@ -1,6 +1,6 @@
-import {settingsReducers} from './settings.reducers';
+import {settingsReducers} from './reducers';
 
-describe('src/app/js/store/settings/settings.reducers.spec.js', () => {
+describe('src/app/js/store/settings/reducers.spec.js', () => {
 
     const state = {
         '__previous': 'state'
