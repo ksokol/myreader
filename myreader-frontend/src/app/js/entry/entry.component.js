@@ -1,6 +1,6 @@
 import template from './entry.component.html';
 import './entry.component.css';
-import {showErrorNotification} from "../store/common/common.actions";
+import {showErrorNotification} from '../store/common/index';
 
 class controller {
 

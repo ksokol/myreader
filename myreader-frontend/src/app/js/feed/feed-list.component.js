@@ -1,6 +1,6 @@
 import template from './feed-list.component.html';
 import './feed-list.component.css';
-import {showErrorNotification} from "../store/common/common.actions";
+import {showErrorNotification} from '../store/common/index';
 
 class controller {
 

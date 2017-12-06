@@ -1,5 +1,5 @@
 import template from './subscribe.component.html';
-import {showErrorNotification} from "../../store/common/common.actions";
+import {showErrorNotification} from '../../store/common/index';
 
 class controller {
 

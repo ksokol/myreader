@@ -1,5 +1,5 @@
-import * as types from './common.action-types';
-import {getNextNotificationId} from './index';
+import * as types from './action-types';
+import {getNextNotificationId} from './selectors';
 
 const showNotification = (text, type) => {
     return (dispatch, getState) => {

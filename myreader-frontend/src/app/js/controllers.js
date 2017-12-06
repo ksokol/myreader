@@ -1,6 +1,6 @@
 import angular from 'angular';
 import {SubscriptionEntries} from './models';
-import {showErrorNotification} from "./store/common/common.actions";
+import {showErrorNotification} from './store/common/index';
 import {unauthorized} from './store/security/index';
 
 angular.module('common.controllers', [])

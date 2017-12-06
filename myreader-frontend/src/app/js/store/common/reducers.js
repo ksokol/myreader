@@ -1,4 +1,4 @@
-import * as types from './common.action-types';
+import * as types from './action-types';
 
 const initialState = {
     notification: {

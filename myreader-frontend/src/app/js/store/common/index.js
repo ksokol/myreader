@@ -1,11 +1,3 @@
-export {removeNotification, showSuccessNotification, showErrorNotification} from './common.actions';
-
-export const getNotifications = state => {
-    return {
-        notifications: state.common.notification.notifications.map(it => {return {...it}})
-    }
-};
-
-export const getNextNotificationId = getState => {
-    return getState().common.notification.nextId;
-};
+export {removeNotification, showSuccessNotification, showErrorNotification} from './actions';
+export {getNotifications} from './selectors';
+export {commonReducers} from './reducers';

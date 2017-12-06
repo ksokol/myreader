@@ -1,6 +1,6 @@
-import {commonReducers} from './common.reducers';
+import {commonReducers} from './reducers';
 
-describe('src/app/js/store/common/common.reducers.spec.js', () => {
+describe('src/app/js/store/common/reducers.spec.js', () => {
 
     const state = {
         notification: {

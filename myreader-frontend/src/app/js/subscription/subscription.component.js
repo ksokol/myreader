@@ -1,6 +1,6 @@
 import template from './subscription.component.html';
 import './subscription.component.css';
-import {showErrorNotification, showSuccessNotification} from "../store/common/common.actions";
+import {showErrorNotification, showSuccessNotification} from '../store/common/index';
 
 class controller {
 

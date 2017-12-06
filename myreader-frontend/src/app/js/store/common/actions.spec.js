@@ -1,6 +1,6 @@
-import {removeNotification, showErrorNotification, showSuccessNotification} from './common.actions';
+import {removeNotification, showErrorNotification, showSuccessNotification} from './actions';
 
-describe('src/app/js/store/common/common.actions.spec.js', () => {
+describe('src/app/js/store/common/actions.spec.js', () => {
 
     const currentState = {
         common: {

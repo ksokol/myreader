@@ -1,5 +1,5 @@
 import template from './maintenance-actions.component.html';
-import {showErrorNotification, showSuccessNotification} from "../../store/common/common.actions";
+import {showErrorNotification, showSuccessNotification} from '../../store/common/index';
 
 class controller {
 

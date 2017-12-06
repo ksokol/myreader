@@ -1,6 +1,6 @@
-import {getNextNotificationId, getNotifications} from './index';
+import {getNextNotificationId, getNotifications} from './selectors';
 
-describe('src/app/js/store/common/index.spec.js', () => {
+describe('src/app/js/store/common/selectors.spec.js', () => {
 
     it('should select notifications', () => {
         const state = {
