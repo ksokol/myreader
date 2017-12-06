@@ -48,6 +48,7 @@ import {ToastComponent} from './shared/component/toast/toast.component';
 
 import {reducers} from './store/index';
 import {loadSettings} from "./store/settings/settings.actions";
+import {getSecurity, updateSecurity} from './store/security/index';
 
 import './config';
 import './services';
@@ -109,7 +110,16 @@ const app =
 
     .filter('timeago', TimeagoFilter);
 
+app.run(['$ngRedux', $ngRedux => {
+    $ngRedux.subscribe(() => {
+        if (!getSecurity($ngRedux.getState).authorized) {
+            window.location.hash = '#/login';
+        }
+    });
+}]);
+
 if (isProdMode() || isDevMode()) {
     app.run(['$ngRedux', $ngRedux => $ngRedux.dispatch(loadSettings())]);
+    app.run(['$ngRedux', $ngRedux => $ngRedux.dispatch(updateSecurity())]);
 }
 

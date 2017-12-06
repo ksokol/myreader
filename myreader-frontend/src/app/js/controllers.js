@@ -1,6 +1,7 @@
 import angular from 'angular';
 import {SubscriptionEntries} from './models';
 import {showErrorNotification} from "./store/common/common.actions";
+import {unauthorized} from './store/security/index';
 
 angular.module('common.controllers', [])
 
@@ -47,13 +48,11 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
         })
         .success(function() {
             $rootScope.$emit('refresh');
-
+            $ngRedux.dispatch(unauthorized());
             $scope.data = {
                 tags: [],
                 items: []
             };
-
-            $state.go('login');
         })
         .error(function() {
             $ngRedux.dispatch(showErrorNotification('Could not log out'));

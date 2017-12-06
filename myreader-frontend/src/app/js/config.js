@@ -4,18 +4,18 @@ import navigationAdminTemplate from '../../templates/navigation-admin.html';
 import subscriptionEntriesTemplate from '../../templates/subscription-entries.html';
 import bookmarkEntriesTemplate from '../../templates/bookmark-entries.html';
 import subscriptionsTemplate from '../../templates/subscriptions.html';
+import {unauthorized} from './store/security/index';
 
 angular.module('common.config', ['ui.router', 'cfp.hotkeys'])
 
 .config(['$httpProvider', function($httpProvider) {
 
-    $httpProvider.interceptors.push(['$q', '$rootScope', '$injector', function($q, $rootScope, $injector) {
+    $httpProvider.interceptors.push(['$q', '$rootScope', '$ngRedux', function($q, $rootScope, $ngRedux) {
         return {
             'responseError': function(rejection) {
                 if(rejection.status === 401) {
-                    var $state = $injector.get('$state');
                     $rootScope.$emit('refresh');
-                    $state.go('login');
+                    $ngRedux.dispatch(unauthorized());
                 }
 
                 return $q.reject(rejection);

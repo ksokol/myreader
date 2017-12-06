@@ -11,3 +11,4 @@ export const AVAILABLE_TAGS = CONTEXT + API_2 + '/subscriptions/availableTags';
 export const SUBSCRIPTIONS = CONTEXT + API_2 + '/subscriptions';
 
 export const STORAGE_SETTINGS_KEY = 'myreader-settings';
+export const STORAGE_SECURITY_KEY = 'myreader-security';
