@@ -57,7 +57,7 @@ import './services'
 import './controllers'
 
 const reduxDevTools = () => {
-    const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
+    const devTools = window.devToolsExtension
     return devTools && isDevMode() ? [devTools()] : null
 }
 
