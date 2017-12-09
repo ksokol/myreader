@@ -5,9 +5,6 @@ import {
 
 describe('src/app/js/store/settings/settings.spec.js', () => {
 
-    beforeEach(() => localStorage.clear());
-    afterEach(() => localStorage.clear());
-
     it('should return default pageSize equal to 10', () => {
         expect(getPageSize()).toBe(10);
     });

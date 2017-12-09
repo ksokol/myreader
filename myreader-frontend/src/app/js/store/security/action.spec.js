@@ -2,9 +2,6 @@ import {authorized, unauthorized, updateSecurity} from './actions';
 
 describe('src/app/js/store/security/action.spec.js', () => {
 
-    beforeEach(() => localStorage.clear());
-    afterEach(() => localStorage.clear());
-
     it('should return SECURITY_UPDATE action with last security state from local storage', () => {
         localStorage.setItem('myreader-security', '{"authorized": true, "role": "expected role"}');
 

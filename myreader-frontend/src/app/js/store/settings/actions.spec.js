@@ -3,9 +3,6 @@ import {loadSettings, updateSettings} from './actions';
 
 describe('src/app/js/store/settings/actions.spec.js', () => {
 
-    beforeEach(() => localStorage.clear());
-    afterEach(() => localStorage.clear());
-
     it('should return SETTINGS_UPDATE action with settings from local storage', () => {
         setPageSize(5);
         setShowEntryDetails(false);
