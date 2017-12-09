@@ -46,6 +46,7 @@
     "karma-sonarqube-unit-reporter": "0.0.13",
     "karma-sourcemap-loader": "0.3.7",
     "karma-webpack": "2.0.5",
+    "lodash.ismatch": "4.4.0",
     "node-libs-browser": "2.0.0",
     "null-loader": "0.1.1",
     "optimize-css-assets-webpack-plugin": "3.2.0",
