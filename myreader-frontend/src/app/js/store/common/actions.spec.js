@@ -1,73 +1,72 @@
-import {removeNotification, showErrorNotification, showSuccessNotification} from './actions';
+import configureMockStore from 'redux-mock-store'
+import thunk from 'redux-thunk'
+import {
+    fetchEnd,
+    fetchStart,
+    initialState,
+    removeNotification,
+    showErrorNotification,
+    showSuccessNotification
+} from './index'
 
 describe('src/app/js/store/common/actions.spec.js', () => {
 
-    const currentState = {
-        common: {
-            notification: {
-                nextId: 1
-            }
-        }
-    };
-
-    let dispatch;
+    let store
 
     beforeEach(() => {
-        dispatch = jasmine.createSpy('dispatch');
-        jasmine.clock().install();
-    });
+        const mockStore = configureMockStore([thunk])
+        store = mockStore({common: initialState()})
+    })
 
-    afterEach(() => jasmine.clock().uninstall());
+    it('action creator removeNotification', () => {
+        store.dispatch(removeNotification({id: 1}))
+        expect(store.getActions()[0]).toContainObject({type: 'REMOVE_NOTIFICATION', id: 1})
+    })
 
-    it('action removeNotification', () => {
-        expect(removeNotification({id: 1})).toEqual({type: 'REMOVE_NOTIFICATION', id: 1});
-    });
+    it('action creator showSuccessNotification', () => {
+        store.dispatch(showSuccessNotification('expected text'))
+        expect(store.getActions()[0])
+            .toContainObject({type: 'SHOW_NOTIFICATION', notification: {id: 0, text: 'expected text', type: 'success'}})
+    })
 
-    it('action showSuccessNotification', () => {
-        const expectedAction = {
-            type: 'SHOW_NOTIFICATION',
-            notification: {
-                id: 1, text: 'expected text', type: 'success'
-            }
-        };
+    it('action creator showSuccessNotification should trigger action creator removeNotification action after 3 seconds', () => {
+        store.dispatch(showSuccessNotification('expected text'))
+        jasmine.clock().tick(3000)
 
-        showSuccessNotification('expected text')(dispatch, () => currentState);
-        expect(dispatch).toHaveBeenCalledWith(expectedAction);
-    });
+        expect(store.getActions()[1]).toContainObject({type: 'REMOVE_NOTIFICATION', id: 0})
+    })
 
-    it('action showSuccessNotification should dispatch removeNotification action after 3 seconds', () => {
-        const expectedAction = {
-            type: 'REMOVE_NOTIFICATION',
-            id: 1
-        };
+    it('action creator showErrorNotification', () => {
+        store.dispatch(showErrorNotification('expected text'))
 
-        showSuccessNotification('expected text')(dispatch, () => currentState);
-        jasmine.clock().tick(3000);
+        expect(store.getActions()[0])
+            .toContainObject({type: 'SHOW_NOTIFICATION', notification: {id: 0, text: 'expected text', type: 'error'}})
+    })
 
-        expect(dispatch).toHaveBeenCalledWith(expectedAction);
-    });
+    it('action creator showErrorNotification should trigger action creator removeNotification action after 3 seconds', () => {
+        store.dispatch(showErrorNotification('expected text'))
+        jasmine.clock().tick(3000)
 
-    it('action showErrorNotification', () => {
-        const expectedAction = {
-            type: 'SHOW_NOTIFICATION',
-            notification: {
-                id: 1, text: 'expected text', type: 'error'
-            }
-        };
+        expect(store.getActions()[1]).toContainObject({type: 'REMOVE_NOTIFICATION', id: 0})
+    })
 
-        showErrorNotification('expected text')(dispatch, () => currentState);
-        expect(dispatch).toHaveBeenCalledWith(expectedAction);
-    });
+    it('action creator fetchStart', () => {
+        store.dispatch(fetchStart())
 
-    it('action showErrorNotification should dispatch removeNotification action after 3 seconds', () => {
-        const expectedAction = {
-            type: 'REMOVE_NOTIFICATION',
-            id: 1
-        };
+        expect(store.getActions()[0]).toContainObject({type: 'FETCH_START'})
+    })
 
-        showErrorNotification('expected text')(dispatch, () => currentState);
-        jasmine.clock().tick(3000);
+    it('action creator fetchEnd', () => {
+        store.dispatch(fetchEnd())
 
-        expect(dispatch).toHaveBeenCalledWith(expectedAction);
-    });
-});
+        expect(store.getActions()[0]).toContainObject({type: 'FETCH_END'})
+    })
+
+    it('action creator fetchEnd with error message', () => {
+        store.dispatch(fetchEnd('expected error message'))
+
+        expect(store.getActions()[0])
+            .toContainObject({type: 'SHOW_NOTIFICATION', notification: {text: 'expected error message', type: 'error'}})
+        expect(store.getActions()[1]).toContainObject({type: 'FETCH_END'})
+    })
+})

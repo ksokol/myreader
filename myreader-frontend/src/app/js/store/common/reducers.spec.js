@@ -1,29 +1,22 @@
-import {commonReducers} from './reducers';
+import {initialState, commonReducers} from './index'
 
 describe('src/app/js/store/common/reducers.spec.js', () => {
 
-    const state = {
-        notification: {
-            nextId: 0,
-            notifications: []
-        }
-    };
+    let state
+
+    beforeEach(() => state = initialState())
 
     it('initial state', () => {
-        const action = {
-            type: 'UNKNOWN_ACTION'
-        };
+        const action = {type: 'UNKNOWN_ACTION'}
 
-        const expectedState = {...state};
-
-        expect(commonReducers(state, action)).toEqual(expectedState);
-    });
+        expect(commonReducers(state, action)).toEqual(state)
+    })
 
     it('action SHOW_NOTIFICATION', () => {
         const action = {
             type: 'SHOW_NOTIFICATION',
             notification: {id: 0, text: 'notification0'}
-        };
+        }
 
         const expectedState = {
             notification: {
@@ -32,16 +25,16 @@ describe('src/app/js/store/common/reducers.spec.js', () => {
                     {id: 0, text: 'notification0'}
                 ]
             }
-        };
+        }
 
-        expect(commonReducers(state, action)).toEqual(jasmine.objectContaining(expectedState));
-    });
+        expect(commonReducers(state, action)).toContainObject(expectedState)
+    })
 
     it('action REMOVE_NOTIFICATION', () => {
         const action = {
             type: 'REMOVE_NOTIFICATION',
             id: 1
-        };
+        }
 
         const currentState = {
             notification: {
@@ -51,7 +44,7 @@ describe('src/app/js/store/common/reducers.spec.js', () => {
                     {id: 2, text: 'notification2'}
                 ]
             }
-        };
+        }
 
         const expectedState = {
             notification: {
@@ -60,8 +53,18 @@ describe('src/app/js/store/common/reducers.spec.js', () => {
                     {id: 2, text: 'notification2'}
                 ]
             }
-        };
+        }
 
-        expect(commonReducers(currentState, action)).toEqual(jasmine.objectContaining(expectedState));
-    });
-});
+        expect(commonReducers(currentState, action)).toContainObject(expectedState)
+    })
+
+    it('action FETCH_START', () => {
+        expect(commonReducers(state, {type: 'FETCH_START'})).toContainObject({pendingRequests: 1})
+        expect(commonReducers(state, {type: 'FETCH_START'})).toContainObject({pendingRequests: 2})
+    })
+
+    it('action FETCH_END', () => {
+        commonReducers(state, {type: 'FETCH_START'})
+        expect(commonReducers(state, {type: 'FETCH_END'})).toContainObject({pendingRequests: 0})
+    })
+})
