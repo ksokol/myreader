@@ -1,75 +1,82 @@
-import template from './button.component.html';
-import './button.component.css';
-import {isPromise} from '../../utils';
+import template from './button.component.html'
+import './button.component.css'
+import {isPromise} from '../../utils'
+import {getPendingRequests} from '../../../store/common/index'
 
 class controller {
 
-    constructor($timeout, $q) {
-        'ngInject';
-        this.$timeout = $timeout;
-        this.$q = $q;
-        this.disableConfirmButtons = false;
-        this.isPending = false;
+    constructor($timeout, $q, $ngRedux) {
+        'ngInject'
+        this.$timeout = $timeout
+        this.$q = $q
+        this.disableConfirmButtons = false
+        this.isPending = false
+
+        this.unsubscribe = $ngRedux.connect(getPendingRequests)(this)
+    }
+
+    $onDestroy() {
+        this.unsubscribe()
     }
 
     shouldPresentConfirmButton() {
-        return this.myConfirm === 'true';
+        return this.myConfirm === 'true'
     }
 
     presentConfirmButton() {
-        this.disableConfirmButtons = true;
-        this.showConfirmButton = true;
+        this.disableConfirmButtons = true
+        this.showConfirmButton = true
 
-        this.$timeout(() => this.disableConfirmButtons = false, 250);
+        this.$timeout(() => this.disableConfirmButtons = false, 250)
     }
 
     processMyOnClick() {
-        let result = this.myOnClick();
-        let promise = result;
+        let result = this.myOnClick()
+        let promise = result
 
         if (!isPromise(result)) {
-            let deferred = this.$q.defer();
-            deferred.resolve();
-            promise = deferred.promise;
+            let deferred = this.$q.defer()
+            deferred.resolve()
+            promise = deferred.promise
         }
 
-        return promise;
+        return promise
     }
 
     $onInit() {
-        this.buttonGroupCtrl.addButton(this);
-        this.myButtonType = this.myButtonType || 'button';
+        this.buttonGroupCtrl.addButton(this)
+        this.myButtonType = this.myButtonType || 'button'
     }
 
     reset() {
-        this.isPending = false;
-        this.showConfirmButton = false;
-        this.buttonGroupCtrl.enableButtons();
+        this.isPending = false
+        this.showConfirmButton = false
+        this.buttonGroupCtrl.enableButtons()
     }
 
     onClick() {
-        this.buttonGroupCtrl.disableButtons();
-        this.shouldPresentConfirmButton() ? this.presentConfirmButton() : this.processOnClick();
+        this.buttonGroupCtrl.disableButtons()
+        this.shouldPresentConfirmButton() ? this.presentConfirmButton() : this.processOnClick()
     }
 
     processOnClick() {
-        this.isPending = true;
+        this.isPending = true
 
         this.processMyOnClick().then(data => this.myOnSuccess({data}))
             .catch(data => this.myOnError({error: data}))
-            .finally(() => this.reset());
+            .finally(() => this.reset())
     }
 
     isDisabled() {
-        return this.isPending || this.disableConfirmButtons || this.myDisabled;
+        return this.isPending || this.disableConfirmButtons || this.myDisabled || this.pendingRequests > 0
     }
 
     disable() {
-        this.disableConfirmButtons = this.shouldPresentConfirmButton() || !this.showConfirmButton;
+        this.disableConfirmButtons = this.shouldPresentConfirmButton() || !this.showConfirmButton
     }
 
     enable() {
-        this.disableConfirmButtons = false;
+        this.disableConfirmButtons = false
     }
 }
 
@@ -88,4 +95,4 @@ export const ButtonComponent = {
         myOnSuccess: '&',
         myOnError: '&'
     }
-};
+}

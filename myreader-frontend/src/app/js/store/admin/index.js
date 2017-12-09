@@ -1,0 +1,1 @@
+export {rebuildSearchIndex} from './actions'

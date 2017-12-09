@@ -28,7 +28,6 @@ import {FeedListComponent} from "./feed/feed-list.component"
 import {LoginComponent} from "./login/login.component"
 import {AboutService} from "./maintenance/about/about.service"
 import {AboutComponent} from "./maintenance/about/about.component"
-import {ProcessingService} from "./maintenance/maintenance-actions/processing.service"
 import {MaintenanceActionsComponent} from "./maintenance/maintenance-actions/maintenance-actions.component"
 import {MaintenanceComponent} from "./maintenance/maintenance.component"
 import {NavigationSubscriptionItemComponent} from "./navigation/subscription-item/subscription-item.component"
@@ -102,7 +101,6 @@ const app =
     .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)
     .service('aboutService', AboutService)
-    .service('processingService', ProcessingService)
     .service('subscriptionService', SubscriptionService)
     .service('exclusionService', ExclusionService)
     .service('subscriptionTagService', SubscriptionTagService)
