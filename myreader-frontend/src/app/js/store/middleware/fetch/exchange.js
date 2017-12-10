@@ -31,7 +31,8 @@ function constructHeaders(headers) {
 }
 
 function isJSON(headers) {
-    return headers.get(CONTENT_TYPE) === MIME_APPLICATION_JSON
+    const contentType = headers.get(CONTENT_TYPE)
+    return contentType ? contentType.indexOf(MIME_APPLICATION_JSON) === 0 : false
 }
 
 function transformBody(headers, body = '') {
