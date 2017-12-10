@@ -15,7 +15,7 @@ function isFunction(value) {
 
 function handleResponse(cb, dispatch, response) {
     if (isFunction(cb)) {
-        dispatch(cb(response));
+        dispatch(cb(response))
     }
 }
 
