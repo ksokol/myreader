@@ -1,3 +1,4 @@
 export const ENTRY_PAGE_RECEIVED = 'ENTRY_PAGE_RECEIVED'
 export const ENTRY_UPDATED = 'ENTRY_UPDATED'
+export const ENTRY_CLEAR = 'ENTRY_CLEAR'
 

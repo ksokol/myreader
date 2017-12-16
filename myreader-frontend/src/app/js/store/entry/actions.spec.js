@@ -1,4 +1,4 @@
-import {entryPageReceived, entryUpdated} from './actions'
+import {entryClear, entryPageReceived, entryUpdated} from './actions'
 
 describe('src/app/js/store/entry/actions.spec.js', () => {
 
@@ -34,5 +34,11 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
         it('should return expected action data', () =>
             expect(entryUpdated({uuid: 1, key: 'value'})).toContainActionData({entry: {uuid: 1, key: 'value'}}))
+    })
+
+    describe('ENTRY_CLEAR', () => {
+
+        it('should contain expected action type', () =>
+            expect(entryClear()).toEqualActionType('ENTRY_CLEAR'))
     })
 })

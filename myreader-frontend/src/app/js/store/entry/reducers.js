@@ -16,6 +16,9 @@ export function entryReducers(state = initialState(), action) {
             const entries = state.entries.map(it => it.uuid === action.entry.uuid ? action.entry : it)
             return {...state, entries}
         }
+        case types.ENTRY_CLEAR: {
+            return {...state, entries: [], links: {}}
+        }
         case securityTypes.SECURITY_UPDATE: {
             let links = action.authorized ? state.links : {}
             let entries = action.authorized ? state.entries : []

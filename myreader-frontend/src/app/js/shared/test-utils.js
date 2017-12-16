@@ -66,6 +66,7 @@ function ngReduxMock() {
     let _component = null;
     const mock = jasmine.createSpyObj('$ngRedux', ['dispatch', 'connect', 'subscribe']);
     mock.onConnect = {};
+    mock.subscribe.and.returnValue(() => {})
     mock.stateChange = values => Object.assign(_component, values);
     mock.thunk = state => {
         mock.dispatch.calls.mostRecent().args[0](mock.dispatch, () => state);

@@ -1,5 +1,6 @@
-export {entryPageReceived, entryUpdated} from './actions'
+export {entryPageReceived, entryUpdated, entryClear} from './actions'
 export {entryReducers} from './reducers'
+export {getEntries} from './selectors'
 
 export const initialState = () => {
     return {

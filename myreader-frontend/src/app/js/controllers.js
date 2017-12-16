@@ -1,7 +1,7 @@
 import angular from 'angular';
-import {SubscriptionEntries} from './models';
 import {showErrorNotification} from './store/common/index';
 import {unauthorized} from './store/security/index';
+import {getEntries, entryClear} from './store/entry/index';
 
 angular.module('common.controllers', [])
 
@@ -67,6 +67,14 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.param = $stateParams;
     $scope.search = "";
     $scope.isOpen = true;
+
+    const unsubscribe = $ngRedux.subscribe(function() {
+        $scope.data.links = getEntries($ngRedux.getState).links
+    });
+
+    $scope.$on('$destroy', function() {
+        unsubscribe();
+    });
 
     var onSearch = function (value) {
         $scope.search = value;
@@ -158,8 +166,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.refresh = function(param) {
         subscriptionEntryService.findBy(param || $scope.params())
             .then(function(data) {
-                var entries = $scope.data.entries.concat(data.entries);
-                $scope.data = new SubscriptionEntries(entries, data.links)
+                $scope.data.entries = $scope.data.entries.concat(data.entries);
             })
             .catch(function (error) {
                 $ngRedux.dispatch(showErrorNotification(error));
@@ -186,8 +193,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
 
     $scope.refresh();
 
-    $scope.loadMore = function() {
-        $scope.refresh($scope.data.next())
+    $scope.loadMore = function(more) {
+        $scope.refresh(more.query);
     };
 
     $scope.isFocused = function(item) {
@@ -195,6 +202,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     };
 
     $scope.forceRefresh = function() {
+        $ngRedux.dispatch(entryClear());
         $scope.data = {entries: []};
         $rootScope.$broadcast('refresh');
         $scope.refresh($scope.params());
@@ -247,6 +255,14 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.search = "";
     $scope.isOpen = true;
 
+    const unsubscribe = $ngRedux.subscribe(function() {
+        $scope.data.links = getEntries($ngRedux.getState).links
+    });
+
+    $scope.$on('$destroy', function() {
+        unsubscribe();
+    });
+
     var onSearch = function (value) {
         $scope.search = value;
         $scope.data = {entries: []};
@@ -285,16 +301,15 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.refresh = function(param) {
         subscriptionEntryService.findBy(param || $scope.params())
             .then(function(data) {
-                var entries = $scope.data.entries.concat(data.entries);
-                $scope.data = new SubscriptionEntries(entries, data.links)
+                $scope.data.entries = $scope.data.entries.concat(data.entries);
             })
             .catch(function (error) {
                 $ngRedux.dispatch(showErrorNotification(error));
             });
     };
 
-    $scope.loadMore = function() {
-        $scope.refresh($scope.data.next())
+    $scope.loadMore = function(more) {
+        $scope.refresh(more.query)
     };
 
     $scope.onSearchChange = function (value) {

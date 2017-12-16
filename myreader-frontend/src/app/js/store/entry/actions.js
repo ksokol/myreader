@@ -8,3 +8,7 @@ export const entryPageReceived = raw => {
 export const entryUpdated = raw => {
     return {type: entryTypes.ENTRY_UPDATED, entry: toEntry(raw)}
 }
+
+export const entryClear = () => {
+    return {type: entryTypes.ENTRY_CLEAR}
+}

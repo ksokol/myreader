@@ -150,4 +150,25 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
             expect(entryReducers(currentState, action)).toContainObject(expectedState)
         })
     })
+
+    describe('action ENTRY_CLEAR', () => {
+
+        it('should clear entries and links', () => {
+            const action = {
+                type: 'ENTRY_CLEAR'
+            }
+
+            const currentState = {
+                links: {path: 'expected path'},
+                entries: [1]
+            }
+
+            const expectedState = {
+                links: {},
+                entries: []
+            }
+
+            expect(entryReducers(currentState, action)).toContainObject(expectedState)
+        })
+    })
 })
