@@ -17,12 +17,35 @@ export function entryReducers(state = initialState(), action) {
             return {...state, entries}
         }
         case types.ENTRY_CLEAR: {
-            return {...state, entries: [], links: {}}
+            return {...state, entries: [], links: {}, entryInFocus: null}
+        }
+        case types.ENTRY_FOCUS_NEXT: {
+            if (!action.currentInFocus) {
+                return {...state, entryInFocus: state.entries[0].uuid}
+            } else {
+                const index = state.entries.findIndex(it => it.uuid === action.currentInFocus)
+                const next = state.entries[index + 1]
+
+                if (next) {
+                    return {...state, entryInFocus: next.uuid}
+                }
+            }
+            return state
+        }
+        case types.ENTRY_FOCUS_PREVIOUS: {
+            if (!action.currentInFocus) {
+                return {...state, entryInFocus: null}
+            } else {
+                const index = state.entries.findIndex(it => it.uuid === action.currentInFocus)
+                const previous = state.entries[index - 1]
+                return {...state, entryInFocus: previous ? previous.uuid: null}
+            }
         }
         case securityTypes.SECURITY_UPDATE: {
             let links = action.authorized ? state.links : {}
             let entries = action.authorized ? state.entries : []
-            return {...state, entries, links}
+            let entryInFocus = action.authorized ? state.entryInFocus : null
+            return {...state, entries, links, entryInFocus}
         }
         default: {
             return state

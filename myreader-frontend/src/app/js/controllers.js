@@ -1,7 +1,7 @@
 import angular from 'angular';
 import {showErrorNotification} from './store/common/index';
 import {unauthorized} from './store/security/index';
-import {getEntries, entryClear} from './store/entry/index';
+import {getEntries, entryClear, entryFocusNext, entryFocusPrevious} from './store/entry/index';
 
 angular.module('common.controllers', [])
 
@@ -68,13 +68,14 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.search = "";
     $scope.isOpen = true;
 
-    const unsubscribe = $ngRedux.subscribe(function() {
-        $scope.data.links = getEntries($ngRedux.getState).links
+    const unsubscribe = $ngRedux.subscribe(() => {
+        const state = getEntries($ngRedux.getState);
+        $scope.data.links = state.links;
+        $scope.entryInFocus = state.entryInFocus;
+        $scope.nextFocusableEntry = state.nextFocusableEntry;
     });
 
-    $scope.$on('$destroy', function() {
-        unsubscribe();
-    });
+    $scope.$on('$destroy', () => unsubscribe());
 
     var onSearch = function (value) {
         $scope.search = value;
@@ -115,49 +116,19 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     };
 
     $scope.down = function() {
-        var focused, idx;
-        for(var i=0;i<$scope.data.entries.length;i++) {
-            var entry = $scope.data.entries[i];
-            if(entry.focused) {
-                entry.focused = false;
-                var j = i + 1;
-                if(j < $scope.data.entries.length) {
-                    focused = $scope.data.entries[j];
-                    idx = j;
-                }
-                break;
-            }
-        }
-
-        if(!focused) {
-            focused = $scope.data.entries[0];
-            idx = 0;
-        }
-
-        if(focused.seen === false) {
-            focused.seen = true;
-            subscriptionEntryService.save(focused)
+        const entry = $scope.data.entries.find(it => it.uuid === $scope.nextFocusableEntry);
+        if (entry && !entry.seen) {
+            entry['seen'] = true
+            subscriptionEntryService.save(entry)
                 .then(function(updatedEntry) {
-                    $scope.data.entries[idx] = updatedEntry;
-                    $scope.data.entries[idx].focused = true;
+                    Object.assign(entry, updatedEntry);
                 });
-        } else {
-            focused.focused = true;
         }
+        $ngRedux.dispatch(entryFocusNext());
     };
 
     $scope.up = function() {
-        for(var i=0;i<$scope.data.entries.length;i++) {
-            var entry = $scope.data.entries[i];
-            if(entry.focused) {
-                entry.focused = false;
-                var j = i - 1;
-                if(j > -1) {
-                    $scope.data.entries[j].focused = true;
-                }
-                return;
-            }
-        }
+        $ngRedux.dispatch(entryFocusPrevious());
     };
 
     $scope.refresh = function(param) {
@@ -173,12 +144,9 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     };
 
     $scope.toggleReadFromEnter = function() {
-        for(var i=0;i<$scope.data.entries.length;i++) {
-            var entry = $scope.data.entries[i];
-            if(entry.focused) {
-                $scope.toggleRead(entry);
-                return;
-            }
+        const entry = $scope.data.entries.find(it => it.uuid === $scope.entryInFocus);
+        if (entry) {
+            $scope.toggleRead(entry);
         }
     };
 
@@ -189,7 +157,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     };
 
     $scope.isFocused = function(item) {
-        return item.focused ? 'my-focused' : '';
+        return item.uuid === $scope.entryInFocus ? 'my-focused' : '';
     };
 
     $scope.forceRefresh = function() {
@@ -202,19 +170,28 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     hotkeys.bindTo($scope)
         .add({
             combo: 'down',
-            callback: $scope.down
+            callback: event => {
+                event.preventDefault();
+                $scope.down();
+            }
         });
 
     hotkeys.bindTo($scope)
         .add({
             combo: 'up',
-            callback: $scope.up
+            callback: event => {
+                event.preventDefault();
+                $scope.up();
+            }
         });
 
     hotkeys.bindTo($scope)
         .add({
             combo: 'enter',
-            callback: $scope.toggleReadFromEnter
+            callback: event => {
+                event.preventDefault();
+                $scope.toggleReadFromEnter();
+            }
         });
 
     $scope.onSearchChange = function (value) {

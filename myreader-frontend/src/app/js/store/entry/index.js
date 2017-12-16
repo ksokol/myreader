@@ -1,10 +1,11 @@
-export {entryPageReceived, entryUpdated, entryClear} from './actions'
+export {entryPageReceived, entryUpdated, entryClear, entryFocusNext, entryFocusPrevious} from './actions'
 export {entryReducers} from './reducers'
-export {getEntries} from './selectors'
+export {getEntries, getEntryInFocus, getNextFocusableEntry} from './selectors'
 
 export const initialState = () => {
     return {
         links: {},
-        entries: []
+        entries: [],
+        entryInFocus: null
     }
 }
