@@ -60,26 +60,17 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
             }
         })
 
-        it('should reset entries and links when not authorized', () => {
-            const currentState = {
-                type: 'ENTRY_PAGE_RECEIVED',
-                links: {path: 'expected path'},
-                entries: [1]
-            }
+        it('should reset state when not authorized', () => {
+            const currentState = {other: 'expected'}
 
-            const expectedState = {
-                links: {},
-                entries: []
-            }
-
-            expect(entryReducers(currentState, action)).toContainObject(expectedState)
+            expect(entryReducers(currentState, action)).toContainObject(initialState())
         })
 
         it('should do nothing when authorized', () => {
             action.authorized = true
 
-            const currentState = {links: {path: 'expected path'}, entries: [1]}
-            const expectedState = {links: {path: 'expected path'}, entries: [1]}
+            const currentState = {other: 'expected'}
+            const expectedState = {other: 'expected'}
 
             expect(entryReducers(currentState, action)).toContainObject(expectedState)
         })

@@ -42,10 +42,7 @@ export function entryReducers(state = initialState(), action) {
             }
         }
         case securityTypes.SECURITY_UPDATE: {
-            let links = action.authorized ? state.links : {}
-            let entries = action.authorized ? state.entries : []
-            let entryInFocus = action.authorized ? state.entryInFocus : null
-            return {...state, entries, links, entryInFocus}
+            return action.authorized ? state : initialState()
         }
         default: {
             return state
