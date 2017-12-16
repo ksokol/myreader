@@ -54,7 +54,7 @@ describe('test/serviceTests.js', function() {
 
             service.findBy(new Params)
                 .then(function (data) {
-                    expect(data.entries).toEqual(['expected']);
+                    expect(data).toEqual(['expected']);
                     done();
                 });
 

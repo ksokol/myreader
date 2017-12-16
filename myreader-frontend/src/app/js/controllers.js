@@ -166,7 +166,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.refresh = function(param) {
         subscriptionEntryService.findBy(param || $scope.params())
             .then(function(data) {
-                $scope.data.entries = $scope.data.entries.concat(data.entries);
+                $scope.data.entries = $scope.data.entries.concat(data);
             })
             .catch(function (error) {
                 $ngRedux.dispatch(showErrorNotification(error));
@@ -301,7 +301,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.refresh = function(param) {
         subscriptionEntryService.findBy(param || $scope.params())
             .then(function(data) {
-                $scope.data.entries = $scope.data.entries.concat(data.entries);
+                $scope.data.entries = $scope.data.entries.concat(data);
             })
             .catch(function (error) {
                 $ngRedux.dispatch(showErrorNotification(error));

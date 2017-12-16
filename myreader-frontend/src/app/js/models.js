@@ -1,21 +1,3 @@
-export function SubscriptionEntries(entries, links) {
-    var self = this;
-    self.entries = angular.isArray(entries) ? entries : [];
-    self.links = angular.isArray(links) ? links : [];
-
-    var getLink = function (rel) {
-        for (var i = 0; i < self.links.length; i++) {
-            if (self.links[i].rel === rel) {
-                return self.links[i].href;
-            }
-        }
-    };
-
-    self.next = function () {
-        return getLink('next');
-    };
-}
-
 export function Bookmarks(data) {
     var self = this;
     self.tags = [];

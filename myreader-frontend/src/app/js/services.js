@@ -1,5 +1,5 @@
 import angular from 'angular';
-import {Bookmarks, SubscriptionEntries, SubscriptionTags} from './models';
+import {Bookmarks, SubscriptionTags} from './models';
 import {getPageSize, isShowUnseenEntries} from "./store/settings/settings";
 import {entryPageReceived, entryUpdated} from './store/entry/index';
 
@@ -69,7 +69,7 @@ angular.module('common.services', [])
             return $http.get(tmp)
                 .then(function (response) {
                     $ngRedux.dispatch(entryPageReceived(response.data));
-                    return new SubscriptionEntries(response.data.content, response.data.links);
+                    return response.data.content;
                 });
         },
         updateEntries: function(entries) {
@@ -94,9 +94,8 @@ angular.module('common.services', [])
             return $http.patch(url, {content: converted})
                 .then(function (response) {
                     $ngRedux.dispatch(entryUpdated(response.data.content[0]));
-                    var subscriptionEntries = new SubscriptionEntries(response.data.content, response.data.links);
-                    $rootScope.$broadcast('subscriptionEntry:updateEntries', subscriptionEntries.entries);
-                    return subscriptionEntries;
+                    $rootScope.$broadcast('subscriptionEntry:updateEntries', response.data.content);
+                    return response.data.content;
                 });
         },
         save: function(entry) {
@@ -104,7 +103,7 @@ angular.module('common.services', [])
 
             this.updateEntries([entry])
             .then(function (data) {
-                deferred.resolve(data.entries[0]);
+                deferred.resolve(data[0]);
             })
             .catch(function (error) {
                 deferred.reject(error);

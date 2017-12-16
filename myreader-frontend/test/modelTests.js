@@ -1,4 +1,4 @@
-import {SubscriptionEntries, SubscriptionTags} from '../src/app/js/models';
+import {SubscriptionTags} from '../src/app/js/models';
 
 describe('test/modelTests.js', function() {
 
@@ -247,53 +247,6 @@ describe('test/modelTests.js', function() {
             var subscriptionTags = new SubscriptionTags(raw.content);
 
             expect(subscriptionTags.containsTags("misc")).toBe(true);
-        });
-    });
-
-    describe('SubscriptionEntries', function () {
-        var link = {
-                rel: 'next',
-                href: 'nextHref'
-            };
-
-        it('should return empty object', function () {
-            var subscriptionEntries = new SubscriptionEntries([], []);
-
-            expect(subscriptionEntries.entries).toEqual([]);
-            expect(subscriptionEntries.links).toEqual([]);
-        });
-
-        it('should return empty object', function () {
-            var subscriptionEntries = new SubscriptionEntries(undefined, undefined);
-
-            expect(subscriptionEntries.entries).toEqual([]);
-            expect(subscriptionEntries.links).toEqual([]);
-        });
-
-        it('should return links', function () {
-            var subscriptionEntries = new SubscriptionEntries(undefined, [link]);
-
-            expect(subscriptionEntries.links).toEqual([link]);
-            expect(subscriptionEntries.entries).toEqual([]);
-        });
-
-        it('should return entries', function () {
-            var subscriptionEntries = new SubscriptionEntries([1], undefined);
-
-            expect(subscriptionEntries.links).toEqual([]);
-            expect(subscriptionEntries.entries).toEqual([1]);
-        });
-
-        it('should return undefined for rel "next"', function () {
-            var subscriptionEntries = new SubscriptionEntries(undefined, [{ rel: "unknown" }]);
-
-            expect(subscriptionEntries.next()).toEqual(undefined);
-        });
-
-        it('should return link for rel "next"', function () {
-            var subscriptionEntries = new SubscriptionEntries(undefined, [link]);
-
-            expect(subscriptionEntries.next()).toEqual('nextHref');
         });
     });
 });

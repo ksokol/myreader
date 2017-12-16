@@ -41,9 +41,7 @@ describe("test/controllerTests.js", function() {
         expect(scope.data.entries).toEqual([]);
 
         var firstCall = $q.defer();
-        firstCall.resolve({
-            entries: [1]
-        });
+        firstCall.resolve([1]);
 
         subscriptionEntryServiceMock.findBy.and.returnValue(firstCall.promise);
 
@@ -53,9 +51,7 @@ describe("test/controllerTests.js", function() {
         expect(scope.data.entries).toEqual([1]);
 
         var secondCall = $q.defer();
-        secondCall.resolve({
-            entries: [2]
-        });
+        secondCall.resolve([2]);
 
         subscriptionEntryServiceMock.findBy.and.returnValue(secondCall.promise);
 
