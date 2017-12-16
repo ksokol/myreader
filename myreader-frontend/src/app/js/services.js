@@ -1,6 +1,7 @@
 import angular from 'angular';
 import {Bookmarks, SubscriptionEntries, SubscriptionTags} from './models';
 import {getPageSize, isShowUnseenEntries} from "./store/settings/settings";
+import {entryPageReceived} from './store/entry/index';
 
 angular.module('common.services', [])
 
@@ -38,7 +39,7 @@ angular.module('common.services', [])
     }
 }])
 
-.service('subscriptionEntryService', ['$rootScope', '$http', '$q', function($rootScope, $http, $q) {
+.service('subscriptionEntryService', ['$ngRedux', '$rootScope', '$http', '$q', function($ngRedux, $rootScope, $http, $q) {
     var url = '/myreader/api/2/subscriptionEntries?';
 
     return {
@@ -67,6 +68,7 @@ angular.module('common.services', [])
 
             return $http.get(tmp)
                 .then(function (response) {
+                    $ngRedux.dispatch(entryPageReceived(response.data));
                     return new SubscriptionEntries(response.data.content, response.data.links);
                 });
         },

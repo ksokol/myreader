@@ -1,3 +1,5 @@
+import {mockNgRedux} from '../src/app/js/shared/test-utils';
+
 describe('test/serviceTests.js', function() {
     var service;
 
@@ -32,6 +34,8 @@ describe('test/serviceTests.js', function() {
 
     describe('subscriptionEntryService', function() {
         var httpBackend;
+
+        beforeEach(angular.mock.module('myreader', mockNgRedux()));
 
         beforeEach(inject(function ($httpBackend, subscriptionEntryService) {
             httpBackend = $httpBackend;
