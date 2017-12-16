@@ -14,16 +14,16 @@ export const fetchEnd = (errorMessage = null) => {
     }
 }
 
+export const removeNotification = ({id}) => {
+    return {type: types.REMOVE_NOTIFICATION, id}
+}
+
 const showNotification = (text, type) => {
     return (dispatch, getState) => {
         const id = getNextNotificationId(getState)
         dispatch({type: types.SHOW_NOTIFICATION, notification: {id, text, type}})
         setTimeout(() => dispatch(removeNotification({id})), 3000)
     }
-}
-
-export const removeNotification = ({id}) => {
-    return {type: types.REMOVE_NOTIFICATION, id}
 }
 
 export const showSuccessNotification = text => showNotification(text, 'success')
