@@ -5,15 +5,6 @@ export const fetchStart = () => {
     return {type: types.FETCH_START}
 }
 
-export const fetchEnd = (errorMessage = null) => {
-    return dispatch => {
-        if (errorMessage) {
-            dispatch(showErrorNotification(errorMessage))
-        }
-        dispatch({type: types.FETCH_END})
-    }
-}
-
 export const removeNotification = ({id}) => {
     return {type: types.REMOVE_NOTIFICATION, id}
 }
@@ -29,3 +20,12 @@ const showNotification = (text, type) => {
 export const showSuccessNotification = text => showNotification(text, 'success')
 
 export const showErrorNotification = text => showNotification(text, 'error')
+
+export const fetchEnd = (errorMessage = null) => {
+    return dispatch => {
+        if (errorMessage) {
+            dispatch(showErrorNotification(errorMessage))
+        }
+        dispatch({type: types.FETCH_END})
+    }
+}
