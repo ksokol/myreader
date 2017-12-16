@@ -1,4 +1,4 @@
-export {entryPageReceived} from './actions'
+export {entryPageReceived, entryUpdated} from './actions'
 export {entryReducers} from './reducers'
 
 export const initialState = () => {

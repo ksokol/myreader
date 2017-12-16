@@ -43,7 +43,7 @@ describe('test/serviceTests.js', function() {
         }));
 
         it('should process own properties in params object', function(done) {
-            httpBackend.expectGET('/myreader/api/2/subscriptionEntries?&param1=1&param2=2&size=10&seenEqual=false').respond({ content: 'expected' });
+            httpBackend.expectGET('/myreader/api/2/subscriptionEntries?&param1=1&param2=2&size=10&seenEqual=false').respond({content: ['expected']});
 
             var Params = function() {
                 this.param1 = 1;
@@ -54,7 +54,7 @@ describe('test/serviceTests.js', function() {
 
             service.findBy(new Params)
                 .then(function (data) {
-                    expect(data.entries).toEqual([]);
+                    expect(data.entries).toEqual(['expected']);
                     done();
                 });
 

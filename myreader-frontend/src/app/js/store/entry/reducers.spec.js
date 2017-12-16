@@ -28,18 +28,15 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
         })
 
         it('should update entries and links', () => {
-            let action = {
-                type: 'ENTRY_PAGE_RECEIVED',
-                links: {self: {path: 'expected path', query: {next: 2}}},
-                entries: [1]
-            }
-
-            const currentState = entryReducers(state, action)
-
-            action = {
+            const action = {
                 type: 'ENTRY_PAGE_RECEIVED',
                 links: {self: {path: 'expected path', query: {next: 3}}},
                 entries: [2]
+            }
+
+            const currentState = {
+                links: {self: {path: 'expected path', query: {next: 2}}},
+                entries: [1]
             }
 
             const expectedState = {
@@ -51,18 +48,15 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
         })
 
         it('should set entries and links when links differ', () => {
-            let action = {
-                type: 'ENTRY_PAGE_RECEIVED',
-                links: {self: {path: 'expected path', query: {next: 2}}},
-                entries: [1]
-            }
-
-            const currentState = entryReducers(state, action)
-
-            action = {
+            const action = {
                 type: 'ENTRY_PAGE_RECEIVED',
                 links: {self: {path: 'expected path', query: {next: 2, a: 'b'}}},
                 entries: [3]
+            }
+
+            const currentState = {
+                links: {self: {path: 'expected path', query: {next: 2}}},
+                entries: [1]
             }
 
             const expectedState = {
@@ -77,17 +71,15 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
     describe('action SECURITY_UPDATE', () => {
 
         it('should reset entries and links when not authorized', () => {
-            let action = {
+            const action = {
+                type: 'SECURITY_UPDATE',
+                authorized: false
+            }
+
+            const currentState = {
                 type: 'ENTRY_PAGE_RECEIVED',
                 links: {path: 'expected path'},
                 entries: [1]
-            }
-
-            const currentState = entryReducers(state, action)
-
-            action = {
-                type: 'SECURITY_UPDATE',
-                authorized: false
             }
 
             const expectedState = {
@@ -99,22 +91,60 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
         })
 
         it('should do nothing when authorized', () => {
-            let action = {
-                type: 'ENTRY_PAGE_RECEIVED',
-                links: {path: 'expected path'},
-                entries: [1]
-            }
-
-            const currentState = entryReducers(state, action)
-
-            action = {
+            const action = {
                 type: 'SECURITY_UPDATE',
                 authorized: true
+            }
+
+            const currentState = {
+                links: {path: 'expected path'},
+                entries: [1]
             }
 
             const expectedState = {
                 links: {path: 'expected path'},
                 entries: [1]
+            }
+
+            expect(entryReducers(currentState, action)).toContainObject(expectedState)
+        })
+    })
+
+    describe('action ENTRY_UPDATED', () => {
+
+        it('', () => {
+            const action = {
+                type: 'ENTRY_UPDATED',
+                entry: {uuid: 2, seen: true}
+            }
+
+            const currentState = {
+                entries: [
+                    {uuid: 1, seen: false}
+                ]
+            }
+
+            expect(entryReducers(currentState, action)).toContainObject(currentState)
+        })
+
+        it('', () => {
+            const action = {
+                type: 'ENTRY_UPDATED',
+                entry: {uuid: 2, seen: true}
+            }
+
+            const currentState = {
+                entries: [
+                    {uuid: 1, seen: false},
+                    {uuid: 2, seen: false}
+                ]
+            }
+
+            const expectedState = {
+                entries: [
+                    {uuid: 1, seen: false},
+                    {uuid: 2, seen: true}
+                ]
             }
 
             expect(entryReducers(currentState, action)).toContainObject(expectedState)

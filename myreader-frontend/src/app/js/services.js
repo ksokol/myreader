@@ -1,7 +1,7 @@
 import angular from 'angular';
 import {Bookmarks, SubscriptionEntries, SubscriptionTags} from './models';
 import {getPageSize, isShowUnseenEntries} from "./store/settings/settings";
-import {entryPageReceived} from './store/entry/index';
+import {entryPageReceived, entryUpdated} from './store/entry/index';
 
 angular.module('common.services', [])
 
@@ -93,6 +93,7 @@ angular.module('common.services', [])
 
             return $http.patch(url, {content: converted})
                 .then(function (response) {
+                    $ngRedux.dispatch(entryUpdated(response.data.content[0]));
                     var subscriptionEntries = new SubscriptionEntries(response.data.content, response.data.links);
                     $rootScope.$broadcast('subscriptionEntry:updateEntries', subscriptionEntries.entries);
                     return subscriptionEntries;
