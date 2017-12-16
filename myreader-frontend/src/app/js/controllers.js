@@ -140,9 +140,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
                 .then(function(updatedEntry) {
                     $scope.data.entries[idx] = updatedEntry;
                     $scope.data.entries[idx].focused = true;
-                })
-                .catch(function (error) {
-                    $ngRedux.dispatch(showErrorNotification(error));
                 });
         } else {
             focused.focused = true;
@@ -166,19 +163,13 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.refresh = function(param) {
         subscriptionEntryService.findBy(param || $scope.params())
             .then(function(data) {
-                $scope.data.entries = $scope.data.entries.concat(data);
-            })
-            .catch(function (error) {
-                $ngRedux.dispatch(showErrorNotification(error));
+                $scope.data.entries = $scope.data.entries.concat(data || []);
             });
     };
 
     $scope.toggleRead = function(entry) {
         entry.seen = !entry.seen;
-        subscriptionEntryService.save(entry)
-        .catch(function (error) {
-            $ngRedux.dispatch(showErrorNotification(error));
-        });
+        subscriptionEntryService.save(entry);
     };
 
     $scope.toggleReadFromEnter = function() {
@@ -301,10 +292,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.refresh = function(param) {
         subscriptionEntryService.findBy(param || $scope.params())
             .then(function(data) {
-                $scope.data.entries = $scope.data.entries.concat(data);
-            })
-            .catch(function (error) {
-                $ngRedux.dispatch(showErrorNotification(error));
+                $scope.data.entries = $scope.data.entries.concat(data || []);
             });
     };
 
