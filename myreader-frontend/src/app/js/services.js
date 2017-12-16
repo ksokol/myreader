@@ -47,23 +47,19 @@ angular.module('common.services', [])
         findBy: function(params) {
             var tmp = url;
 
-            if(angular.isString(params)) {
-                tmp = params;
-            } else {
-                if (!params['size']) {
-                    params['size'] = getPageSize();
-                }
+            if (!params['size']) {
+                params['size'] = getPageSize();
+            }
 
-                if (!params['seenEqual']) {
-                    if(isShowUnseenEntries()) {
-                        params['seenEqual'] = false;
-                    }
+            if (!params['seenEqual']) {
+                if(isShowUnseenEntries()) {
+                    params['seenEqual'] = false;
                 }
+            }
 
-                for(var key in params) {
-                    if (params.hasOwnProperty(key)) {
-                        tmp += "&" + key + "=" + params[key];
-                    }
+            for(var key in params) {
+                if (params.hasOwnProperty(key)) {
+                    tmp += "&" + key + "=" + params[key];
                 }
             }
 
