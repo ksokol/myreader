@@ -3,10 +3,11 @@ import {Bookmarks, SubscriptionTags} from './models';
 import {getPageSize, isShowUnseenEntries} from './store/settings/index';
 import {entryPageReceived, entryUpdated} from './store/entry/index';
 import {showErrorNotification} from './store/common/index';
+import {subscriptionsReceived} from "./store/subscription/index";
 
 angular.module('common.services', [])
 
-.service('subscriptionsTagService', ['$rootScope', '$http', function($rootScope, $http) {
+.service('subscriptionsTagService', ['$rootScope', '$http', '$ngRedux', function($rootScope, $http, $ngRedux) {
 
     var cache = {
         decrementSubscriptionUnseen: function () {},
@@ -33,6 +34,7 @@ angular.module('common.services', [])
 
             return $http.get('/myreader/api/2/subscriptions' + withUnseen)
                 .then(function(response) {
+                    $ngRedux.dispatch(subscriptionsReceived(response.data))
                     cache = new SubscriptionTags(response.data.content);
                     return cache;
                 });

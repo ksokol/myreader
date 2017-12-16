@@ -3,7 +3,7 @@ import {mockNgRedux} from '../src/app/js/shared/test-utils';
 describe('test/serviceTests.js', function() {
     var service;
 
-    beforeEach(angular.mock.module('common.services'));
+    beforeEach(angular.mock.module('common.services', mockNgRedux()));
 
     describe('subscriptionsTagService', function() {
 
