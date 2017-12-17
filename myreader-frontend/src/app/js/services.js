@@ -1,5 +1,5 @@
 import angular from 'angular';
-import {Bookmarks, SubscriptionTags} from './models';
+import {Bookmarks} from './models';
 import {getPageSize, isShowUnseenEntries} from './store/settings/index';
 import {entryPageReceived, entryChanged} from './store/entry/index';
 import {showErrorNotification} from './store/common/index';
@@ -7,26 +7,7 @@ import {subscriptionsReceived} from "./store/subscription/index";
 
 angular.module('common.services', [])
 
-.service('subscriptionsTagService', ['$rootScope', '$http', '$ngRedux', function($rootScope, $http, $ngRedux) {
-
-    var cache = {
-        decrementSubscriptionUnseen: function () {},
-        incrementSubscriptionUnseen: function () {}
-    };
-
-    $rootScope.$on('subscriptionEntry:updateEntries', function(event, subscriptionEntries) {
-        if(subscriptionEntries === undefined || subscriptionEntries.length === 0) {
-            return;
-        }
-
-        for(var i=0;i<subscriptionEntries.length;i++) {
-            if(subscriptionEntries[i].seen) {
-                cache.decrementSubscriptionUnseen(subscriptionEntries[i].feedUuid);
-            } else {
-                cache.incrementSubscriptionUnseen(subscriptionEntries[i].feedUuid)
-            }
-        }
-    });
+.service('subscriptionsTagService', ['$http', '$ngRedux', function($http, $ngRedux) {
 
     return {
         findAllByUnseen: function(unseen) {
@@ -35,14 +16,12 @@ angular.module('common.services', [])
             return $http.get('/myreader/api/2/subscriptions' + withUnseen)
                 .then(function(response) {
                     $ngRedux.dispatch(subscriptionsReceived(response.data))
-                    cache = new SubscriptionTags(response.data.content);
-                    return cache;
                 });
         }
     }
 }])
 
-.service('subscriptionEntryService', ['$ngRedux', '$rootScope', '$http', function($ngRedux, $rootScope, $http) {
+.service('subscriptionEntryService', ['$ngRedux', '$http', function($ngRedux, $http) {
     var url = '/myreader/api/2/subscriptionEntries';
 
     return {
@@ -87,7 +66,6 @@ angular.module('common.services', [])
             return $http.patch(url + '/' + entry.uuid, obj)
                 .then(function (response) {
                     $ngRedux.dispatch(entryChanged(response.data));
-                    $rootScope.$broadcast('subscriptionEntry:updateEntries', [response.data]);
                     return response.data;
                 }).catch(function (error) {
                     $ngRedux.dispatch(showErrorNotification(error));

@@ -2,11 +2,13 @@ import angular from 'angular';
 import {showErrorNotification} from './store/common/index';
 import {unauthorized} from './store/security/index';
 import {getEntries, entryClear, entryFocusNext, entryFocusPrevious} from './store/entry/index';
+import {getSubscriptions} from "./store/subscription/selectors";
+import {SubscriptionTags} from "./models";
 
 angular.module('common.controllers', [])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$ngRedux',
-function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$timeout', '$ngRedux',
+function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
     $scope.data = {
         tags: [],
         items: []
@@ -15,9 +17,17 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     var currentState;
     $scope.currentSelected = $state.params;
 
+    const unsubscribe = $ngRedux.subscribe(() => {
+        if ($state.current.name === 'app.entries') {
+            $scope.data = new SubscriptionTags(getSubscriptions($ngRedux.getState))
+        }
+    });
+
+    $scope.$on('$destroy', () => unsubscribe());
+
     $scope.$on('navigation-change', function(ev, param) {
         currentState = param.state;
-        if(param.data) {
+        if($state.current.name === 'app.bookmarks' && param.data) {
             $scope.data = param.data;
         }
     });
@@ -204,14 +214,14 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
 
     $scope.$on('refresh', function() {
         subscriptionsTagService.findAllByUnseen(true)
-            .then(function (data) {
-                $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data, state: 'app.entries'});
+            .then(function () {
+                $rootScope.$broadcast('navigation-change', {selected: $stateParams, state: 'app.entries'});
             });
     });
 
     subscriptionsTagService.findAllByUnseen(true)
-        .then(function (data) {
-            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data, state: 'app.entries'});
+        .then(function () {
+            $rootScope.$broadcast('navigation-change', {selected: $stateParams, state: 'app.entries'});
         });
 }])
 

@@ -7,28 +7,22 @@ describe('test/serviceTests.js', function() {
 
     describe('subscriptionsTagService', function() {
 
-        describe('with real cache', function() {
+        var httpBackend;
 
-            var httpBackend;
+        beforeEach(inject(function ($httpBackend, subscriptionsTagService) {
+            httpBackend = $httpBackend;
+            service = subscriptionsTagService;
+        }));
 
-            beforeEach(inject(function ($httpBackend, subscriptionsTagService) {
-                httpBackend = $httpBackend;
-                service = subscriptionsTagService;
-            }));
+        it('should return entries when called with unseen set to false', function(done) {
+            httpBackend.expectGET('/myreader/api/2/subscriptions?unseenGreaterThan=0').respond({content: []});
 
-            it('should return entries when called with unseen set to false', function(done) {
-                httpBackend.expectGET('/myreader/api/2/subscriptions').respond({ content: [] });
+            service.findAllByUnseen(true)
+                .then(function () {
+                    done();
+                });
 
-                service.findAllByUnseen(false)
-                    .then(function (data) {
-                        expect(data.unseen).toEqual(0);
-                        expect(data.tags.length).toEqual(1);
-                        expect(data.subscriptions.length).toEqual(0);
-                        done();
-                    });
-
-                httpBackend.flush();
-            });
+            httpBackend.flush();
         });
     });
 

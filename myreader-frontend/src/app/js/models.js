@@ -27,24 +27,6 @@ export function SubscriptionTags(data) {
     self.tags = [];
     self.subscriptions = [];
 
-    self.updateSubscriptionUnseen = function (uuid, value) {
-        var subscription = self.getSubscriptionByUuid(uuid);
-
-        if (subscription) {
-            subscription.unseen += value;
-            self.unseen += value;
-
-            var all = self.getTag('all');
-            all.unseen += value;
-
-            var subscriptionTag = self.getTag(subscription.tag);
-
-            if (subscriptionTag) {
-                subscriptionTag.unseen += value;
-            }
-        }
-    };
-
     self.getTag = function (tag) {
         for (var i = 0; i < self.tags.length; i++) {
             var t = self.tags[i];
@@ -52,10 +34,6 @@ export function SubscriptionTags(data) {
                 return t;
             }
         }
-    };
-
-    self.containsTags = function (tag) {
-        return self.getTag(tag) !== undefined;
     };
 
     self.addSubscription = function (subscription) {
@@ -82,32 +60,6 @@ export function SubscriptionTags(data) {
             tag.subscriptions.push(subscriptionTag);
             self.tags.push(tag);
         }
-    };
-
-    self.getSubscriptionByUuid = function (uuid) {
-        for (var i = 0; i < self.subscriptions.length; i++) {
-            if (self.subscriptions[i].uuid === uuid) {
-                return self.subscriptions[i];
-            }
-        }
-
-        for (var j = 0; j < self.tags.length; j++) {
-            var tag = self.tags[j];
-
-            for (var k = 0; k < tag.subscriptions.length; k++) {
-                if (tag.subscriptions[k].uuid === uuid) {
-                    return tag.subscriptions[k];
-                }
-            }
-        }
-    };
-
-    self.incrementSubscriptionUnseen = function (uuid) {
-        self.updateSubscriptionUnseen(uuid, 1);
-    };
-
-    self.decrementSubscriptionUnseen = function (uuid) {
-        self.updateSubscriptionUnseen(uuid, -1);
     };
 
     var all = new SubscriptionTag;
