@@ -41,9 +41,9 @@ import {SubscriptionTagService} from "./subscription/subscription-tag-panel/subs
 import {AutoCompleteInputComponent} from "./shared/component/autocomplete-input/autocomplete-input.component"
 import {SubscriptionTagPanelComponent} from "./subscription/subscription-tag-panel/subscription-tag-panel.component"
 import {SubscriptionComponent} from "./subscription/subscription.component"
-import {ScrollIntoViewDirective} from "./shared/directive/scroll-into-view/scroll-into-view.directive"
 import {ClickIfInViewDirective} from "./shared/component/load-more/click-if-in-view.directive"
 import {ToastComponent} from './shared/component/toast/toast.component'
+import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
 
 import {createFetchMiddleware} from './store/middleware/fetch/fetch-middleware'
 import {exchange} from './store/middleware/fetch/exchange'
@@ -97,6 +97,7 @@ const app =
     .component('myNotificationPanel', NotificationPanelComponent)
     .component('mySearchInput', SearchInputComponent)
     .component('myToast', ToastComponent)
+    .component('myAutoScroll', AutoScrollComponent)
 
     .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)
@@ -107,7 +108,6 @@ const app =
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)
-    .directive('myScrollIntoView', ScrollIntoViewDirective)
     .directive('myClickIfInView', ClickIfInViewDirective)
 
     .filter('timeago', TimeagoFilter)

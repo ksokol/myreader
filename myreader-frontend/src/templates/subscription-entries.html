@@ -35,16 +35,17 @@
 <div class="my-list-wrapper">
     <div class="my-list">
         <my-list class="md-default-theme">
-            <my-list-item ng-class="{{isFocused(entry)}}"
-                          class="my-2-line"
-                          tabindex="-1"
-                          my-scroll-into-view="isFocused(entry)"
-                          ng-repeat="entry in data.entries">
-                <div class="my-no-style my-list-item-inner">
-                    <my-entry my-item="entry"></my-entry>
-                    <my-divider class="my-default-theme"></my-divider>
-                </div>
-            </my-list-item>
+            <my-auto-scroll my-scroll-on="{'data-uuid': entryInFocus}">
+                <my-list-item ng-class="{{isFocused(entry)}}"
+                              class="my-2-line"
+                              data-uuid="{{entry.uuid}}"
+                              ng-repeat="entry in data.entries">
+                    <div class="my-no-style my-list-item-inner">
+                        <my-entry my-item="entry"></my-entry>
+                        <my-divider class="my-default-theme"></my-divider>
+                    </div>
+                </my-list-item>
+            </my-auto-scroll>
             <my-list-item>
                 <my-load-more my-next="data.links.next" my-on-more="loadMore(more)"></my-load-more>
             </my-list-item>
