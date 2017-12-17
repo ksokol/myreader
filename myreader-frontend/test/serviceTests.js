@@ -61,7 +61,7 @@ describe('test/serviceTests.js', function() {
             httpBackend.flush();
         });
 
-        it('should save entries', function(done) {
+        it('should save entry', function(done) {
             var entry = {
                uuid: '1',
                seen: true,
@@ -69,8 +69,8 @@ describe('test/serviceTests.js', function() {
             };
 
             httpBackend
-                .expectPATCH('/myreader/api/2/subscriptionEntries?', { content: [ entry ]})
-                .respond({ content: [ entry ] });
+                .expectPATCH('/myreader/api/2/subscriptionEntries/1', {seen: true, tag: 'tag'})
+                .respond(entry);
 
             service.save(entry)
                 .then(function (data) {
@@ -78,27 +78,6 @@ describe('test/serviceTests.js', function() {
                     done();
                 });
 
-            httpBackend.flush();
-        });
-
-        it('should return empty array', function () {
-            httpBackend
-                .expectPATCH('/myreader/api/2/subscriptionEntries?', { content: [] })
-                .respond({ content: [] });
-
-            service.updateEntries([]);
-            httpBackend.flush();
-        });
-
-        it('should return empty array', function () {
-            var entries = [{uuid: "1", seen: true, ignore: "me"}, {uuid: "2", tag: "tag", ignoreMeTwo: true}, {uuid: "3", seen: "true", tag : ""}, {seen: true}];
-            var expected = { content : [ { uuid : "1", seen : true }, { uuid : "2", tag : 'tag' }, { uuid : '3', tag : '' } ] };
-
-            httpBackend
-                .expectPATCH('/myreader/api/2/subscriptionEntries?', expected)
-                .respond({ content: [] });
-
-            service.updateEntries(entries);
             httpBackend.flush();
         });
     });

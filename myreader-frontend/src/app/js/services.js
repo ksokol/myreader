@@ -42,12 +42,12 @@ angular.module('common.services', [])
     }
 }])
 
-.service('subscriptionEntryService', ['$ngRedux', '$rootScope', '$http', '$q', function($ngRedux, $rootScope, $http, $q) {
-    var url = '/myreader/api/2/subscriptionEntries?';
+.service('subscriptionEntryService', ['$ngRedux', '$rootScope', '$http', function($ngRedux, $rootScope, $http) {
+    var url = '/myreader/api/2/subscriptionEntries';
 
     return {
         findBy: function(params) {
-            var tmp = url;
+            var tmp = url + '?';
 
             if (!params['size']) {
                 params['size'] = getPageSize();
@@ -73,43 +73,25 @@ angular.module('common.services', [])
                     $ngRedux.dispatch(showErrorNotification(error));
                 });
         },
-        updateEntries: function(entries) {
-            var converted = [];
-            angular.forEach(entries, function(val) {
-                if(angular.isString(val.uuid) && val.uuid.length > 0) {
-                    var obj = {};
-                    obj["uuid"] = val.uuid;
+        save: function(entry) {
+            var obj = {};
 
-                    if(val.seen === true || val.seen === false) {
-                        obj["seen"] = val.seen;
-                    }
+            if(entry.seen === true || entry.seen === false) {
+                obj["seen"] = entry.seen;
+            }
 
-                    if(angular.isDefined(val.tag)) {
-                        obj["tag"] = val.tag;
-                    }
+            if(angular.isDefined(entry.tag)) {
+                obj["tag"] = entry.tag;
+            }
 
-                    converted.push(obj);
-                }
-            });
-
-            return $http.patch(url, {content: converted})
+            return $http.patch(url + '/' + entry.uuid, obj)
                 .then(function (response) {
-                    $ngRedux.dispatch(entryUpdated(response.data.content[0]));
-                    $rootScope.$broadcast('subscriptionEntry:updateEntries', response.data.content);
-                    return response.data.content;
+                    $ngRedux.dispatch(entryUpdated(response.data));
+                    $rootScope.$broadcast('subscriptionEntry:updateEntries', [response.data]);
+                    return response.data;
                 }).catch(function (error) {
                     $ngRedux.dispatch(showErrorNotification(error));
                 });
-        },
-        save: function(entry) {
-            var deferred = $q.defer();
-
-            this.updateEntries([entry])
-            .then(function (data) {
-                deferred.resolve(data[0]);
-            });
-
-            return deferred.promise;
         }
     }
 }])
