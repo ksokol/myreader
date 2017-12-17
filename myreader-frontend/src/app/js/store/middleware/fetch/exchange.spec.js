@@ -116,6 +116,15 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         })
     })
 
+    it('should add x-requested-with header', done => {
+        fetchMock.respond({status: 200})
+
+        execute('POST', {body: {id: 1}}).then(() => {
+            expect(fetchMock.header('x-requested-with')).toEqual('XMLHttpRequest')
+            done()
+        })
+    })
+
     it('should use given content-type', done => {
         fetchMock.respond({status: 200})
 

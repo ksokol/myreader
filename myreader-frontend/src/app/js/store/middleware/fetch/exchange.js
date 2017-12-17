@@ -5,6 +5,7 @@ const READ_METHODS = ['GET', 'HEAD']
 const METHODS = ['POST', 'PUT', 'DELETE', 'PATCH', ...READ_METHODS]
 
 const MIME_APPLICATION_JSON = 'application/json'
+const XML_HTTP_REQUEST = 'XMLHttpRequest'
 const CONTENT_TYPE = 'content-Type'
 
 const credentials = {
@@ -27,7 +28,11 @@ function sanitizeHeaders(headers = {}) {
 }
 
 function constructHeaders(headers) {
-    return new Headers({'content-type': MIME_APPLICATION_JSON, ...sanitizeHeaders(headers)})
+    return new Headers({
+        'content-type': MIME_APPLICATION_JSON,
+        'x-requested-with': XML_HTTP_REQUEST,
+        ...sanitizeHeaders(headers)
+    })
 }
 
 function isJSON(headers) {
