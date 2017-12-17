@@ -25,7 +25,7 @@ export function extractLinks(links = []) {
     }, {})
 }
 
-function toFilteredKeys(query = {}, ignore) {
+function toFilteredKeys(ignore, query = {}) {
     return Object.keys(query).filter(it => !ignore.includes(it))
 }
 
@@ -34,8 +34,8 @@ export function equalLinks(left = {}, right = {}, ignore = []) {
         return false;
     }
 
-    const leftQueryKeys = toFilteredKeys(left.query, ignore)
-    const rightQueryKeys = toFilteredKeys(right.query, ignore)
+    const leftQueryKeys = toFilteredKeys(ignore, left.query)
+    const rightQueryKeys = toFilteredKeys(ignore, right.query)
 
     if (leftQueryKeys.length !== rightQueryKeys.length) {
         return false;
