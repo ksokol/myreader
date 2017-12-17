@@ -1,7 +1,7 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import {initialState} from './index'
-import {subscriptionsReceived} from './actions'
+import {fetchSubscriptions, subscriptionsReceived} from './actions'
 
 describe('src/app/js/store/subscription/actions.spec.js', () => {
 
@@ -27,6 +27,38 @@ describe('src/app/js/store/subscription/actions.spec.js', () => {
         it('should return expected action data', () => {
             store.dispatch(subscriptionsReceived({content: [{key: 'value1'}, {key: 'value2'}]}))
             expect(store.getActions()[0]).toContainActionData({subscriptions: [{key: 'value1'}, {key: 'value2'}]})
+        })
+    })
+
+    describe('action creator fetchSubscriptions()', () => {
+
+        it('should use HTTP verb GET as type', () => {
+            store.dispatch(fetchSubscriptions())
+            expect(store.getActions()[0]).toEqualActionType('GET')
+        })
+
+        it('should fetch all subscriptions with at least one new entry', () => {
+            store.dispatch(fetchSubscriptions())
+            expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions?unseenGreaterThan=0'})
+        })
+
+        it('should fetch all subscriptions', () => {
+            store.dispatch(fetchSubscriptions(false))
+            expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions'})
+        })
+
+        it('should dispatch SUBSCRIPTIONS_RECEIVED action on success', () => {
+            store.dispatch(fetchSubscriptions())
+            store.dispatch(store.getActions()[0].success({}))
+
+            expect(store.getActions()[1]).toEqualActionType('SUBSCRIPTIONS_RECEIVED')
+        })
+
+        it('should convert response data on success', () => {
+            store.dispatch(fetchSubscriptions())
+            store.dispatch(store.getActions()[0].success({content: [{uuid: 1}]}))
+
+            expect(store.getActions()[1]).toContainObject({subscriptions: [{uuid: 1}]})
         })
     })
 })

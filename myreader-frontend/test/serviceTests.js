@@ -5,27 +5,6 @@ describe('test/serviceTests.js', function() {
 
     beforeEach(angular.mock.module('common.services', mockNgRedux()));
 
-    describe('subscriptionsTagService', function() {
-
-        var httpBackend;
-
-        beforeEach(inject(function ($httpBackend, subscriptionsTagService) {
-            httpBackend = $httpBackend;
-            service = subscriptionsTagService;
-        }));
-
-        it('should return entries when called with unseen set to false', function(done) {
-            httpBackend.expectGET('/myreader/api/2/subscriptions?unseenGreaterThan=0').respond({content: []});
-
-            service.findAllByUnseen(true)
-                .then(function () {
-                    done();
-                });
-
-            httpBackend.flush();
-        });
-    });
-
     describe('subscriptionEntryService', function() {
         var httpBackend;
 

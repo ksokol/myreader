@@ -4,6 +4,7 @@ import {unauthorized} from './store/security/index';
 import {getEntries, entryClear, entryFocusNext, entryFocusPrevious} from './store/entry/index';
 import {getSubscriptions} from "./store/subscription/selectors";
 import {SubscriptionTags} from "./models";
+import {fetchSubscriptions} from "./store/subscription/index";
 
 angular.module('common.controllers', [])
 
@@ -70,8 +71,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
     };
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'subscriptionsTagService', 'hotkeys', '$ngRedux',
-    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, subscriptionsTagService, hotkeys, $ngRedux) {
+.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'hotkeys', '$ngRedux',
+    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, hotkeys, $ngRedux) {
 
     $scope.data = {entries: []};
     $scope.param = $stateParams;
@@ -212,17 +213,13 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
         onSearch('');
     };
 
-    $scope.$on('refresh', function() {
-        subscriptionsTagService.findAllByUnseen(true)
-            .then(function () {
-                $rootScope.$broadcast('navigation-change', {selected: $stateParams, state: 'app.entries'});
-            });
-    });
+    const fetchSubscriptionTags = () =>
+        $ngRedux.dispatch(fetchSubscriptions()).then(() =>
+            $rootScope.$broadcast('navigation-change', {selected: $stateParams, state: 'app.entries'}));
 
-    subscriptionsTagService.findAllByUnseen(true)
-        .then(function () {
-            $rootScope.$broadcast('navigation-change', {selected: $stateParams, state: 'app.entries'});
-        });
+    $scope.$on('refresh', fetchSubscriptionTags);
+
+    fetchSubscriptionTags();
 }])
 
 .controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService', '$ngRedux',

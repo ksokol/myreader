@@ -3,23 +3,8 @@ import {Bookmarks} from './models';
 import {getPageSize, isShowUnseenEntries} from './store/settings/index';
 import {entryPageReceived, entryChanged} from './store/entry/index';
 import {showErrorNotification} from './store/common/index';
-import {subscriptionsReceived} from "./store/subscription/index";
 
 angular.module('common.services', [])
-
-.service('subscriptionsTagService', ['$http', '$ngRedux', function($http, $ngRedux) {
-
-    return {
-        findAllByUnseen: function(unseen) {
-            var withUnseen = unseen ? '?unseenGreaterThan=0' : '';
-
-            return $http.get('/myreader/api/2/subscriptions' + withUnseen)
-                .then(function(response) {
-                    $ngRedux.dispatch(subscriptionsReceived(response.data))
-                });
-        }
-    }
-}])
 
 .service('subscriptionEntryService', ['$ngRedux', '$http', function($ngRedux, $http) {
     var url = '/myreader/api/2/subscriptionEntries';

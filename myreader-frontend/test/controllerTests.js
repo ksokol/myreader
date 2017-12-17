@@ -2,9 +2,7 @@ import {myMock} from './testUtil';
 import {mockNgRedux} from '../src/app/js/shared/test-utils';
 
 describe("test/controllerTests.js", function() {
-    var scope,
-        subscriptionEntryServiceMock,
-        subscriptionsTagServiceMock;
+    var scope, subscriptionEntryServiceMock;
 
     beforeEach(angular.mock.module('common.controllers', mockNgRedux(), function($provide) {
         $provide.provider(myMock.provider(['$stateParams', '$state']));
@@ -23,15 +21,10 @@ describe("test/controllerTests.js", function() {
             findBy: jasmine.createSpy().and.returnValue($q.defer().promise)
         };
 
-        subscriptionsTagServiceMock = {
-            findAllByUnseen: jasmine.createSpy().and.returnValue($q.defer().promise)
-        };
-
         scope = $rootScope.$new();
         $controller('SubscriptionEntryListCtrl', {
             $scope: scope,
-            subscriptionEntryService: subscriptionEntryServiceMock,
-            subscriptionsTagService: subscriptionsTagServiceMock
+            subscriptionEntryService: subscriptionEntryServiceMock
         });
     }));
 
