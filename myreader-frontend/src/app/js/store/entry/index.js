@@ -1,4 +1,4 @@
-export {entryPageReceived, entryUpdated, entryClear, entryFocusNext, entryFocusPrevious} from './actions'
+export {entryPageReceived, entryChanged, entryClear, entryFocusNext, entryFocusPrevious} from './actions'
 export {entryReducers} from './reducers'
 export {getEntries, getEntryInFocus, getNextFocusableEntry} from './selectors'
 

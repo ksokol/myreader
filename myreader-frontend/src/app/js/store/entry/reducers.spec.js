@@ -76,14 +76,14 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
         })
     })
 
-    describe('action ENTRY_UPDATED', () => {
+    describe('action ENTRY_CHANGED', () => {
 
         let action
 
         beforeEach(() => {
             action = {
-                type: 'ENTRY_UPDATED',
-                entry: {uuid: 2, seen: true}
+                type: 'ENTRY_CHANGED',
+                newValue: {uuid: 2, seen: true}
             }
         })
 
@@ -94,7 +94,7 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
         })
 
         it('should set seen flag to false for given entry', () => {
-            action.entry = {uuid: 2, seen: true}
+            action.newValue = {uuid: 2, seen: true}
 
             const currentState = {entries: [{uuid: 1, seen: false}, {uuid: 2, seen: false}]}
             const expectedState = {entries: [{uuid: 1, seen: false}, {uuid: 2, seen: true}]}

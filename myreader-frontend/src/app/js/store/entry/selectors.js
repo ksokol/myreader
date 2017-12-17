@@ -26,3 +26,7 @@ export const getEntries = getState => {
         nextFocusableEntry: getNextFocusableEntry(getState)
     }
 }
+
+export const getEntry = (uuid, getState) => {
+    return cloneObject(getState().entry.entries.find(it => it.uuid === uuid))
+}

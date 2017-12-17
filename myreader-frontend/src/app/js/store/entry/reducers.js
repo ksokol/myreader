@@ -11,8 +11,8 @@ function entryPageReceived({state, action}) {
     return {...state, entries, links}
 }
 
-function entryUpdated({state, action}) {
-    const entries = state.entries.map(it => it.uuid === action.entry.uuid ? action.entry : it)
+function entryChanged({state, action}) {
+    const entries = state.entries.map(it => it.uuid === action.newValue.uuid ? action.newValue : it)
     return {...state, entries}
 }
 
@@ -52,8 +52,8 @@ export function entryReducers(state = initialState(), action) {
         case types.ENTRY_PAGE_RECEIVED: {
             return entryPageReceived({state, action})
         }
-        case types.ENTRY_UPDATED: {
-            return entryUpdated({state, action})
+        case types.ENTRY_CHANGED: {
+            return entryChanged({state, action})
         }
         case types.ENTRY_CLEAR: {
             return entryClear({state})

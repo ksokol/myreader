@@ -1,13 +1,17 @@
 import * as entryTypes from './action-types'
 import {toEntries, toEntry} from './entry'
-import {getEntryInFocus} from './selectors'
+import {getEntry, getEntryInFocus} from './selectors'
 
 export const entryPageReceived = raw => {
     return {type: entryTypes.ENTRY_PAGE_RECEIVED, ...toEntries(raw)}
 }
 
-export const entryUpdated = raw => {
-    return {type: entryTypes.ENTRY_UPDATED, entry: toEntry(raw)}
+export const entryChanged = entry => {
+    return (dispatch, getState) => {
+        if (entry && entry.uuid) {
+            dispatch({type: entryTypes.ENTRY_CHANGED, newValue: toEntry(entry), oldValue: getEntry(entry.uuid, getState)})
+        }
+    }
 }
 
 export const entryClear = () => {

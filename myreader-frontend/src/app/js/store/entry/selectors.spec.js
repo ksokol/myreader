@@ -1,4 +1,4 @@
-import {getEntries} from './selectors'
+import {getEntries, getEntry} from './selectors'
 
 describe('src/app/js/store/entry/selectors.spec.js', () => {
 
@@ -7,12 +7,12 @@ describe('src/app/js/store/entry/selectors.spec.js', () => {
     beforeEach(() => {
         state = {
             entry: {
-                entries: [{uuid: 1}, {uuid: 2}],
+                entries: [{uuid: '1'}, {uuid: '2'}],
                 links: {
                     self: {path: 'path1', query: {a: 'b'}},
                     next: {path: 'path2'}
                 },
-                entryInFocus: 1
+                entryInFocus: '1'
             }
         }
     })
@@ -20,7 +20,7 @@ describe('src/app/js/store/entry/selectors.spec.js', () => {
     it('should return entries and links', () =>
         expect(getEntries(() => state))
             .toContainObject({
-                entries: [{uuid: 1}, {uuid: 2}],
+                entries: [{uuid: '1'}, {uuid: '2'}],
                 links: {
                     self: {path: 'path1', query: {a: 'b'}},
                     next: {path: 'path2'}
@@ -32,7 +32,7 @@ describe('src/app/js/store/entry/selectors.spec.js', () => {
         const select = getEntries(() => state)
         select.entries[0].key = 'value'
 
-        expect(getEntries(() => state).entries[0]).toEqual({uuid: 1})
+        expect(getEntries(() => state).entries[0]).toEqual({uuid: '1'})
     })
 
     it('should return copy of links', () => {
@@ -44,24 +44,38 @@ describe('src/app/js/store/entry/selectors.spec.js', () => {
     })
 
     it('should return entry in focus', () =>
-        expect(getEntries(() => state).entryInFocus).toEqual(1))
+        expect(getEntries(() => state).entryInFocus).toEqual('1'))
 
     it('should return next focusable entry', () =>
-        expect(getEntries(() => state).nextFocusableEntry).toEqual(2))
+        expect(getEntries(() => state).nextFocusableEntry).toEqual('2'))
 
     it('should return null when next focusable entry is not available', () => {
-        state.entry.entryInFocus = 2
+        state.entry.entryInFocus = '2'
         expect(getEntries(() => state).nextFocusableEntry).toEqual(null)
     })
 
     it('should return first entry as next focusable entry when currently no entry is in focus', () => {
         state.entry.entryInFocus = null
-        expect(getEntries(() => state).nextFocusableEntry).toEqual(1)
+        expect(getEntries(() => state).nextFocusableEntry).toEqual('1')
     })
 
     it('should return null a next focusable entry when entries not available', () => {
         state.entry.entryInFocus = null
         state.entry.entries = []
         expect(getEntries(() => state).nextFocusableEntry).toEqual(null)
+    })
+
+    it('should return entry for uuid 1', () => {
+        expect(getEntry('1', () => state)).toEqual({uuid: '1'})
+    })
+
+    it('should return undefined when entry for uuid 3 is not available', () => {
+        expect(getEntry('3', () => state)).toEqual(undefined)
+    })
+
+    it('should return copy of entry', () => {
+        const actual = getEntry('1', () => state)
+        actual.key = 'value'
+        expect(state.entry.entries[0]).toEqual({uuid: '1'})
     })
 })
