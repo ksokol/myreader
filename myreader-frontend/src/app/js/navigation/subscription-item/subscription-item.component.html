@@ -12,7 +12,7 @@
 </li>
 
 <ul class="my-navigation-dynamic__sub-menu" ng-show="$ctrl.isOpen()">
-    <li ng-repeat="subscription in $ctrl.item.subscriptions"
+    <li ng-repeat="subscription in $ctrl.item.subscriptions track by $ctrl.trackBy(subscription)"
         ng-hide="$ctrl.isInvisible(subscription)"
         ng-class="{'my-navigation-dynamic__item': $ctrl.isSelected(subscription)}">
 

@@ -69,6 +69,10 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
             $ngRedux.dispatch(showErrorNotification('Could not log out'));
         });
     };
+
+    $scope.trackBy = function(item) {
+        return JSON.stringify({uuid: item.item || item.title, unseen: item.unseen});
+    }
 }])
 
 .controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'hotkeys', '$ngRedux',
