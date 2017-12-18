@@ -4,3 +4,9 @@ tmp
 node**
 .idea
 myreader.iml
+
+.gradle
+data
+myreader-backend/data
+myreader-backend/out
+myreader-frontend/.gradle
