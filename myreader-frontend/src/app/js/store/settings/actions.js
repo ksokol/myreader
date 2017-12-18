@@ -1,22 +1,26 @@
-import * as settingsTypes from './action-types';
+import * as settingsTypes from 'store/action-types'
 import {
-    getPageSize, isShowEntryDetails, isShowUnseenEntries, setPageSize, setShowEntryDetails,
+    getPageSize,
+    isShowEntryDetails,
+    isShowUnseenEntries,
+    setPageSize,
+    setShowEntryDetails,
     setShowUnseenEntries
-} from './settings';
+} from 'store'
 
 export const loadSettings = () => {
     const settings = {
         pageSize: getPageSize(),
         showUnseenEntries: isShowUnseenEntries(),
         showEntryDetails: isShowEntryDetails()
-    };
-    return {type: settingsTypes.UPDATE_SETTINGS, settings};
-};
+    }
+    return {type: settingsTypes.UPDATE_SETTINGS, settings}
+}
 
 export const updateSettings = ({pageSize, showEntryDetails, showUnseenEntries}) => {
-    setPageSize(pageSize);
-    setShowEntryDetails(showEntryDetails);
-    setShowUnseenEntries(showUnseenEntries);
+    setPageSize(pageSize)
+    setShowEntryDetails(showEntryDetails)
+    setShowUnseenEntries(showUnseenEntries)
 
-    return loadSettings();
-};
+    return loadSettings()
+}

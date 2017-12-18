@@ -1,5 +1,5 @@
-import * as types from './action-types'
-import {initialState} from './index'
+import * as types from 'store/action-types'
+import initialState from '.'
 
 export function commonReducers(state = initialState(), action) {
     switch (action.type) {

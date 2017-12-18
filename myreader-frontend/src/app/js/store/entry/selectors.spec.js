@@ -1,4 +1,4 @@
-import {getEntries, getEntry} from './selectors'
+import {getEntries, getEntry} from 'store'
 
 describe('src/app/js/store/entry/selectors.spec.js', () => {
 

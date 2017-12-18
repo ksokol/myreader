@@ -1,5 +1,5 @@
 import {PROCESSING} from '../../constants'
-import {showSuccessNotification} from '../common/index'
+import {showSuccessNotification} from 'store'
 
 export const rebuildSearchIndex = () => {
     return {

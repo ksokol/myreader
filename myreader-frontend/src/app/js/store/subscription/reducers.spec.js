@@ -1,4 +1,4 @@
-import {initialState} from './index'
+import initialState from '.'
 import {subscriptionReducers} from './reducers'
 
 describe('src/app/js/store/subscription/reducers.spec.js', () => {

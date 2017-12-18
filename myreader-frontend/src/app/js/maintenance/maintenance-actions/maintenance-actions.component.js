@@ -1,5 +1,5 @@
 import template from './maintenance-actions.component.html'
-import {rebuildSearchIndex} from '../../store/admin/index'
+import {rebuildSearchIndex} from 'store'
 
 class controller {
 

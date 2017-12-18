@@ -1,9 +1,8 @@
-export {entryPageReceived, entryChanged, entryClear, entryFocusNext, entryFocusPrevious} from './actions'
+export * from './actions'
+export * from './selectors'
 export {entryReducers} from './reducers'
-export {getEntries, getEntryInFocus, getNextFocusableEntry} from './selectors'
-export {ENTRY_CHANGED} from './action-types'
 
-export const initialState = () => {
+export default function initialState() {
     return {
         links: {},
         entries: [],

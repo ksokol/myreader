@@ -1,7 +1,7 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import {exchange, supportedMethods} from './exchange'
-import {initialState} from '../../common/index'
+import initialState from '../../common'
 
 const createFetchMock = () => {
     const fetchSpy = spyOn(window, 'fetch')

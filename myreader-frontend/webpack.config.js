@@ -1,5 +1,6 @@
 'use strict';
 
+var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -62,6 +63,12 @@ module.exports = function makeWebpackConfig() {
      */
     if (isTest) {
         config.devtool = 'inline-source-map';
+    }
+
+    config.resolve = {
+        alias: {
+            store: path.resolve(__dirname, 'src/app/js/store')
+        }
     }
 
     /**

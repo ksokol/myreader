@@ -1,21 +1,21 @@
-import template from './toast.component.html';
-import './toast.component.css';
-import {getNotifications, removeNotification} from '../../../store/common/index';
+import template from './toast.component.html'
+import './toast.component.css'
+import {getNotifications, removeNotification} from 'store'
 
 class controller {
 
     constructor($ngRedux) {
-        'ngInject';
-        this.$ngRedux = $ngRedux;
-        this.unsubscribe = $ngRedux.connect(getNotifications, this.mapDispatchToThis)(this);
+        'ngInject'
+        this.$ngRedux = $ngRedux
+        this.unsubscribe = $ngRedux.connect(getNotifications, this.mapDispatchToThis)(this)
     }
 
     $onDestroy() {
-        this.unsubscribe();
+        this.unsubscribe()
     }
 
     set notifications(value) {
-        this._notifications = value.reverse().splice(0, 3);
+        this._notifications = value.reverse().splice(0, 3)
     }
 
     mapDispatchToThis(dispatch) {
@@ -27,4 +27,4 @@ class controller {
 
 export const ToastComponent = {
     template, controller
-};
+}

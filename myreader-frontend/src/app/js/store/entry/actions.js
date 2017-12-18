@@ -1,6 +1,6 @@
-import * as entryTypes from './action-types'
+import * as entryTypes from 'store/action-types'
 import {toEntries, toEntry} from './entry'
-import {getEntry, getEntryInFocus} from './selectors'
+import {getEntry, getEntryInFocus} from 'store'
 
 export const entryPageReceived = raw => {
     return {type: entryTypes.ENTRY_PAGE_RECEIVED, ...toEntries(raw)}

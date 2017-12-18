@@ -1,1 +1,1 @@
-export {rebuildSearchIndex} from './actions'
+export * from './actions'

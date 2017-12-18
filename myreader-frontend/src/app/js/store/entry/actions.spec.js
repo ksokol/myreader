@@ -1,7 +1,7 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import {entryClear, entryFocusNext, entryFocusPrevious, entryPageReceived, entryChanged} from './actions'
-import {initialState} from './index'
+import {entryChanged, entryClear, entryFocusNext, entryFocusPrevious, entryPageReceived} from 'store'
+import initialState from '.'
 
 describe('src/app/js/store/entry/actions.spec.js', () => {
 

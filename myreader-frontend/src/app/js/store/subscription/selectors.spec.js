@@ -1,4 +1,4 @@
-import {getSubscriptions} from './selectors'
+import {getSubscriptions} from 'store'
 
 describe('src/app/js/store/subscription/selectors.spec.js', () => {
 

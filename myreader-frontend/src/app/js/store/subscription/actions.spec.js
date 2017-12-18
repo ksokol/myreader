@@ -1,7 +1,7 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import {initialState} from './index'
-import {fetchSubscriptions, subscriptionsReceived} from './actions'
+import initialState from '.'
+import {fetchSubscriptions, subscriptionsReceived} from 'store'
 
 describe('src/app/js/store/subscription/actions.spec.js', () => {
 

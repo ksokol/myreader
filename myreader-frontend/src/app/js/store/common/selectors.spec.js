@@ -1,4 +1,4 @@
-import {getNextNotificationId, getNotifications, getPendingRequests} from './selectors'
+import {getNextNotificationId, getNotifications, getPendingRequests} from 'store'
 
 describe('src/app/js/store/common/selectors.spec.js', () => {
 

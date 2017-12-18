@@ -1,17 +1,17 @@
-import template from './settings.component.html';
-import './settings.component.css';
-import {getSettings, updateSettings} from '../store/settings/index';
+import template from './settings.component.html'
+import './settings.component.css'
+import {getSettings, updateSettings} from 'store'
 
 class controller {
 
     constructor($ngRedux) {
-        'ngInject';
-        this.$ngRedux = $ngRedux;
-        this.unsubscribe = $ngRedux.connect(getSettings)(this);
+        'ngInject'
+        this.$ngRedux = $ngRedux
+        this.unsubscribe = $ngRedux.connect(getSettings)(this)
     }
 
     $onDestroy() {
-        this.unsubscribe();
+        this.unsubscribe()
     }
 
     save() {
@@ -19,10 +19,10 @@ class controller {
             pageSize: this.pageSize,
             showUnseenEntries: this.showUnseenEntries,
             showEntryDetails: this.showEntryDetails
-        }));
+        }))
     }
 }
 
 export const SettingsComponent = {
     template, controller
-};
+}

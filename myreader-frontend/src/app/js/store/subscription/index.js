@@ -1,8 +1,8 @@
-export * from './actions'
 export {subscriptionReducers} from './reducers'
-export {getSubscriptions} from './selectors'
+export * from './actions'
+export * from './selectors'
 
-export const initialState = () => {
+export default function initialState() {
     return {
         subscriptions: []
     }

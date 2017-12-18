@@ -3,11 +3,11 @@ import thunk from 'redux-thunk'
 import {
     fetchEnd,
     fetchStart,
-    initialState,
     removeNotification,
     showErrorNotification,
     showSuccessNotification
-} from './index'
+} from 'store'
+import initialState from '.'
 
 describe('src/app/js/store/common/actions.spec.js', () => {
 

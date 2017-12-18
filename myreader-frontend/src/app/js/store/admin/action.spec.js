@@ -1,7 +1,7 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import {rebuildSearchIndex} from './actions'
-import {initialState} from '../common/index'
+import {rebuildSearchIndex} from 'store'
+import initialState from '../common'
 import {PROCESSING} from '../../constants'
 
 describe('src/app/js/store/admin/action.spec.js', () => {

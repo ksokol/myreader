@@ -4,7 +4,7 @@ import navigationAdminTemplate from '../../templates/navigation-admin.html';
 import subscriptionEntriesTemplate from '../../templates/subscription-entries.html';
 import bookmarkEntriesTemplate from '../../templates/bookmark-entries.html';
 import subscriptionsTemplate from '../../templates/subscriptions.html';
-import {unauthorized} from './store/security/index';
+import {unauthorized} from 'store';
 
 angular.module('common.config', ['ui.router', 'cfp.hotkeys'])
 

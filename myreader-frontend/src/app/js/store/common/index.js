@@ -1,8 +1,8 @@
-export {fetchStart, fetchEnd, removeNotification, showSuccessNotification, showErrorNotification} from './actions'
-export {getNotifications, getPendingRequests} from './selectors'
+export * from './actions'
+export * from './selectors'
 export {commonReducers} from './reducers'
 
-export const initialState = () => {
+export default function initialState() {
     return {
         pendingRequests: 0,
         notification: {

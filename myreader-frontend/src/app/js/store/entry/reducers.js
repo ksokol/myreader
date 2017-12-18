@@ -1,6 +1,5 @@
-import {initialState} from './index'
-import * as types from './action-types'
-import * as securityTypes from '../index'
+import initialState from '.'
+import * as types from 'store/action-types'
 import {equalLinks} from '../shared/links'
 
 function entryPageReceived({state, action}) {
@@ -64,7 +63,7 @@ export function entryReducers(state = initialState(), action) {
         case types.ENTRY_FOCUS_PREVIOUS: {
             return entryFocusPrevious({state, action})
         }
-        case securityTypes.SECURITY_UPDATE: {
+        case types.SECURITY_UPDATE: {
             return securityUpdate({state, action})
         }
         default: {

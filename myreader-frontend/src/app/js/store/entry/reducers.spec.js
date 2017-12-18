@@ -1,5 +1,5 @@
-import {initialState} from './index'
-import {entryReducers} from './reducers'
+import initialState from '.'
+import {entryReducers} from 'store'
 
 describe('src/app/js/store/entry/reducers.spec.js', () => {
 
