@@ -17,7 +17,6 @@ plugins {
 
 def vJavaLang = '1.8'
 def javaProjects = [ project('myreader-backend') ]
-def gradleDir = "${rootProject.rootDir}/gradle"
 
 wrapper.gradleVersion = '4.2.1'
 

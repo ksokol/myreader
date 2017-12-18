@@ -3,11 +3,18 @@ plugins {
 }
 
 apply plugin: 'com.moowork.node'
+apply plugin: 'idea'
 
 node {
     version = '8.9.1'
     npmVersion = '5.5.1'
     download = true
+}
+
+idea {
+    module {
+        sourceDirs += file('src/app/js')
+    }
 }
 
 task test(overwrite: true,dependsOn: [npm_install, npm_test]) {
