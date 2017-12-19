@@ -11,7 +11,7 @@ export const removeNotification = ({id}) => {
 
 const showNotification = (text, type) => {
     return (dispatch, getState) => {
-        const id = getNextNotificationId(getState)
+        const id = getNextNotificationId(getState())
         dispatch({type: types.SHOW_NOTIFICATION, notification: {id, text, type}})
         setTimeout(() => dispatch(removeNotification({id})), 3000)
     }

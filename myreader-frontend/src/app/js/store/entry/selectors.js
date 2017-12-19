@@ -1,12 +1,12 @@
 import {cloneObject} from '../shared/objects'
 
-export const getEntryInFocus = getState => {
-    return getState().entry.entryInFocus
+export const getEntryInFocus = state => {
+    return state.entry.entryInFocus
 }
 
-export const getNextFocusableEntry = getState => {
-    const currentInFocus = getEntryInFocus(getState)
-    const entries = getState().entry.entries
+export const getNextFocusableEntry = state => {
+    const currentInFocus = getEntryInFocus(state)
+    const entries = state.entry.entries
 
     if (!currentInFocus) {
         return entries[0] ? entries[0].uuid : null
@@ -17,16 +17,16 @@ export const getNextFocusableEntry = getState => {
     }
 }
 
-export const getEntries = getState => {
-    const {entries, links} = getState().entry
+export const getEntries = state => {
+    const {entries, links} = state.entry
     return {
         entries: entries.map(it => cloneObject(it)),
         links: cloneObject(links),
-        entryInFocus: getEntryInFocus(getState),
-        nextFocusableEntry: getNextFocusableEntry(getState)
+        entryInFocus: getEntryInFocus(state),
+        nextFocusableEntry: getNextFocusableEntry(state)
     }
 }
 
-export const getEntry = (uuid, getState) => {
-    return cloneObject(getState().entry.entries.find(it => it.uuid === uuid))
+export const getEntry = (uuid, state) => {
+    return cloneObject(state.entry.entries.find(it => it.uuid === uuid))
 }

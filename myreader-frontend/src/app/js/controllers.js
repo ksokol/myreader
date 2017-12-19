@@ -20,7 +20,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
 
     const unsubscribe = $ngRedux.subscribe(() => {
         if ($state.current.name === 'app.entries') {
-            $scope.data = new SubscriptionTags(getSubscriptions($ngRedux.getState))
+            $scope.data = new SubscriptionTags(getSubscriptions($ngRedux.getState()))
         }
     });
 
@@ -84,7 +84,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
     $scope.isOpen = true;
 
     const unsubscribe = $ngRedux.subscribe(() => {
-        const state = getEntries($ngRedux.getState);
+        const state = getEntries($ngRedux.getState());
         $scope.data.links = state.links;
         $scope.entryInFocus = state.entryInFocus;
         $scope.nextFocusableEntry = state.nextFocusableEntry;
@@ -235,7 +235,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
     $scope.isOpen = true;
 
     const unsubscribe = $ngRedux.subscribe(function() {
-        $scope.data.links = getEntries($ngRedux.getState).links
+        $scope.data.links = getEntries($ngRedux.getState()).links
     });
 
     $scope.$on('$destroy', function() {

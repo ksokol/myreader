@@ -4,8 +4,8 @@ export const getNotifications = state => {
     }
 }
 
-export const getNextNotificationId = getState => {
-    return getState().common.notification.nextId
+export const getNextNotificationId = state => {
+    return state.common.notification.nextId
 }
 
 export const getPendingRequests = state => {

@@ -32,7 +32,7 @@ describe('src/app/js/store/common/selectors.spec.js', () => {
             }
         }
 
-        expect(getNextNotificationId(() => state)).toEqual(3)
+        expect(getNextNotificationId(state)).toEqual(3)
     })
 
     it('should select pendingRequests', () => {

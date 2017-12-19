@@ -9,7 +9,7 @@ export const entryPageReceived = raw => {
 export const entryChanged = entry => {
     return (dispatch, getState) => {
         if (entry && entry.uuid) {
-            dispatch({type: entryTypes.ENTRY_CHANGED, newValue: toEntry(entry), oldValue: getEntry(entry.uuid, getState)})
+            dispatch({type: entryTypes.ENTRY_CHANGED, newValue: toEntry(entry), oldValue: getEntry(entry.uuid, getState())})
         }
     }
 }
@@ -20,13 +20,13 @@ export const entryClear = () => {
 
 export const entryFocusNext = () => {
     return (dispatch, getState) => {
-        dispatch({type: entryTypes.ENTRY_FOCUS_NEXT, currentInFocus: getEntryInFocus(getState)})
+        dispatch({type: entryTypes.ENTRY_FOCUS_NEXT, currentInFocus: getEntryInFocus(getState())})
     }
 }
 
 export const entryFocusPrevious = () => {
     return (dispatch, getState) => {
-        const currentInFocus = getEntryInFocus(getState)
+        const currentInFocus = getEntryInFocus(getState())
         if (currentInFocus) {
             dispatch({type: entryTypes.ENTRY_FOCUS_PREVIOUS, currentInFocus})
         }
