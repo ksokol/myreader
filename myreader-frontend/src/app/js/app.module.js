@@ -1,8 +1,7 @@
 import angular from 'angular'
 import ngRedux from 'ng-redux'
-import thunk from 'redux-thunk'
 
-import {isDevMode, isProdMode} from './environment'
+import {ENVIRONMENT} from './constants'
 import {EntryActionsComponent} from './entry/entry-actions/entry-actions.component'
 import {EntryContentComponent} from './entry/entry-content/entry-content.component'
 import {EntryTagsComponent} from './entry/entry-tags/entry-tags.component'
@@ -44,27 +43,17 @@ import {SubscriptionComponent} from "./subscription/subscription.component"
 import {ClickIfInViewDirective} from "./shared/component/load-more/click-if-in-view.directive"
 import {ToastComponent} from './shared/component/toast/toast.component'
 import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
-
-import {createFetchMiddleware} from './store/middleware/fetch/fetch-middleware'
-import {exchange} from './store/middleware/fetch/exchange'
-import {reducers} from './store/index'
-import {loadSettings} from './store/settings/index'
-import {getSecurity, updateSecurity} from './store/security/index'
+import createApplicationStore from 'store/bootstrap'
 
 import './config'
 import './services'
 import './controllers'
 
-const reduxDevTools = () => {
-    const devTools = window.devToolsExtension
-    return devTools && isDevMode() ? [devTools()] : null
-}
+const storeProviderEnhancer = () => () => createApplicationStore(ENVIRONMENT)
 
-const fetchMiddleware = createFetchMiddleware(exchangeFn => exchange(exchangeFn))
-
-const app =
-    angular.module('myreader', [ngRedux, 'common.config', 'common.services', 'common.controllers', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
-    .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(reducers, [thunk, fetchMiddleware], reduxDevTools())])
+angular
+    .module('myreader', [ngRedux, 'common.config', 'common.services', 'common.controllers', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
+    .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], [storeProviderEnhancer])])
 
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)
@@ -111,17 +100,3 @@ const app =
     .directive('myClickIfInView', ClickIfInViewDirective)
 
     .filter('timeago', TimeagoFilter)
-
-app.run(['$ngRedux', $ngRedux => {
-    $ngRedux.subscribe(() => {
-        if (!getSecurity($ngRedux.getState).authorized) {
-            window.location.hash = '#/login'
-        }
-    })
-}])
-
-if (isProdMode() || isDevMode()) {
-    app.run(['$ngRedux', $ngRedux => $ngRedux.dispatch(loadSettings())])
-    app.run(['$ngRedux', $ngRedux => $ngRedux.dispatch(updateSecurity())])
-}
-

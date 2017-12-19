@@ -30,3 +30,11 @@ export function setShowEntryDetails(value) {
 export function setShowUnseenEntries(value) {
     writeToStorage(key, {...readFromStorage(key), showUnseenEntries: isBoolean(value) ? value : true});
 }
+
+export function settings() {
+    return {
+        pageSize: getPageSize(),
+        showUnseenEntries: isShowUnseenEntries(),
+        showEntryDetails: isShowEntryDetails()
+    }
+}
