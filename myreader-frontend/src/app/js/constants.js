@@ -11,6 +11,7 @@ export const INFO = CONTEXT + '/info'
 export const PROCESSING = CONTEXT + API_2 + '/processing'
 export const AVAILABLE_TAGS = CONTEXT + API_2 + '/subscriptions/availableTags'
 export const SUBSCRIPTIONS = CONTEXT + API_2 + '/subscriptions'
+export const SUBSCRIPTION_ENTRIES = CONTEXT + API_2 + '/subscriptionEntries'
 
 export const STORAGE_SETTINGS_KEY = 'myreader-settings'
 export const STORAGE_SECURITY_KEY = 'myreader-security'
