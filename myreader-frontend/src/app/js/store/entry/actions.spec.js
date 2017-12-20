@@ -1,16 +1,33 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import {entryChanged, entryClear, entryFocusNext, entryFocusPrevious, entryPageReceived} from 'store'
+import {
+    changeEntry,
+    entryChanged,
+    entryClear,
+    entryFocusNext,
+    entryFocusPrevious,
+    entryPageReceived,
+    fetchEntries
+} from 'store'
 import initialState from '.'
 
 describe('src/app/js/store/entry/actions.spec.js', () => {
 
     let store, mockStore
 
-    beforeEach(() => {
+    const initMockStore = (state = {}) => {
+        const s = Object.assign({
+            entry: initialState(),
+            settings: {
+                pageSize: 5
+            }
+        }, state)
+
         mockStore = configureMockStore([thunk])
-        store = mockStore({entry: initialState()})
-    })
+        store = mockStore(s)
+    }
+
+    beforeEach(() => initMockStore())
 
     describe('ENTRY_PAGE_RECEIVED', () => {
 
@@ -110,6 +127,126 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
             store.dispatch(entryFocusPrevious())
             expect(store.getActions()[0]).toContainActionData({currentInFocus: 1})
+        })
+    })
+
+    describe('action creator fetchEntries', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(fetchEntries({path: '', query: {}}))
+
+            expect(store.getActions()[0]).toEqualActionType('GET')
+        })
+
+        it('should dispatch with expected path and size query parameter url as action data', () => {
+            store.dispatch(fetchEntries({path: '/path1', query: {}}))
+
+            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5'})
+        })
+
+        it('should dispatch with expected path and given size query parameter url as action data', () => {
+            store.dispatch(fetchEntries({path: '/path1', query: {size: 15}}))
+
+            expect(store.getActions()[0]).toContainObject({url: '/path1?size=15'})
+        })
+
+        it('should dispatch with expected path and given query parameters url as action data', () => {
+            store.dispatch(fetchEntries({path: '/path1', query: {a: 'b', c: 'd'}}))
+
+            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&c=d&a=b'})
+        })
+
+        it('should dispatch with seenEqual set to true as query parameter in url', () => {
+            store.dispatch(fetchEntries({path: '/path1', query: {seenEqual: true}}))
+
+            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&seenEqual=true'})
+        })
+
+        it('should dispatch with seenEqual set to true as query parameter in url ignoring showUnseenEntries value in settings', () => {
+            initMockStore({
+                settings: {
+                    pageSize: 5,
+                    showUnseenEntries: true
+                }
+            })
+
+            store.dispatch(fetchEntries({path: '/path1', query: {seenEqual: true}}))
+
+            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&seenEqual=true'})
+        })
+
+        it('should dispatch with seenEqual set from showUnseenEntries setting as query parameter in url', () => {
+            initMockStore({
+                settings: {
+                    pageSize: 5,
+                    showUnseenEntries: true
+                }
+            })
+
+            store.dispatch(fetchEntries({path: '/path1', query: {}}))
+
+            expect(store.getActions()[0]).toContainObject({url: '/path1?seenEqual=false&size=5'})
+        })
+
+        it('should dispatch with seenEqual set to false as query parameter in url ignoring showUnseenEntries value from settings', () => {
+            initMockStore({
+                settings: {
+                    pageSize: 5,
+                    showUnseenEntries: false
+                }
+            })
+
+            store.dispatch(fetchEntries({path: '/path1', query: {seenEqual: false}}))
+
+            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&seenEqual=false'})
+        })
+
+        it('should dispatch action defined in success property', () => {
+            store.dispatch(fetchEntries({path: '/path1', query: {}}))
+            store.dispatch(store.getActions()[0].success({links: [{rel: 'self', href: 'expected href'}], content: [{uuid: 'expected uuid'}]}))
+
+            expect(store.getActions()[1]).toEqualActionType('ENTRY_PAGE_RECEIVED')
+            expect(store.getActions()[1]).toContainActionData({
+                entries: [{
+                    uuid: 'expected uuid'
+                }],
+                links: {
+                    self: {
+                        path: 'expected href',
+                        query: {}
+                    }
+                }
+            })
+        })
+    })
+
+    describe('action creator changeEntry', () => {
+
+        it('should not dispatch action when given entry has no uuid property', () => {
+            store.dispatch(changeEntry({}))
+
+            expect(store.getActions()).toEqual([])
+        })
+
+        it('should dispatch expected action when given entry has uuid property', () => {
+            store.dispatch(changeEntry({uuid: '1'}))
+
+            expect(store.getActions()[0]).toEqualActionType('PATCH')
+        })
+
+        it('should dispatch action with expected action data', () => {
+            store.dispatch(changeEntry({uuid: '1', tag: 'expected tag', seen: true}))
+
+            expect(store.getActions()[0])
+                .toContainActionData({url: '/myreader/api/2/subscriptionEntries/1', body: {seen: true, tag: 'expected tag'}})
+        })
+
+        it('should dispatch action defined in success property', () => {
+            store.dispatch(changeEntry({uuid: '1'}))
+            store.dispatch(store.getActions()[0].success({uuid: 'expected uuid'}))
+
+            expect(store.getActions()[1]).toEqualActionType('ENTRY_CHANGED')
+            expect(store.getActions()[1]).toContainActionData({newValue:{uuid: 'expected uuid'}})
         })
     })
 })
