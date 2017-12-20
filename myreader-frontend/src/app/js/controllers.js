@@ -1,15 +1,23 @@
 import angular from 'angular';
-import {showErrorNotification} from './store/common/index';
-import {unauthorized} from './store/security/index';
-import {getEntries, entryClear, entryFocusNext, entryFocusPrevious} from './store/entry/index';
-import {getSubscriptions} from "./store/subscription/selectors";
 import {SubscriptionTags} from "./models";
-import {fetchSubscriptions} from "./store/subscription/index";
+import {
+    changeEntry,
+    entryClear,
+    entryFocusNext,
+    entryFocusPrevious,
+    fetchEntries,
+    fetchSubscriptions,
+    getEntries,
+    getSubscriptions,
+    showErrorNotification,
+    unauthorized
+} from "store";
+import {SUBSCRIPTION_ENTRIES} from "./constants";
 
 angular.module('common.controllers', [])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$timeout', '$ngRedux',
-function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
+.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$ngRedux',
+function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.data = {
         tags: [],
         items: []
@@ -75,27 +83,18 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
     }
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'hotkeys', '$ngRedux',
-    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, hotkeys, $ngRedux) {
+.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'hotkeys', '$ngRedux',
+    function($rootScope, $scope, $stateParams, $state, hotkeys, $ngRedux) {
 
-    $scope.data = {entries: []};
     $scope.param = $stateParams;
     $scope.search = "";
-    $scope.isOpen = true;
 
-    const unsubscribe = $ngRedux.subscribe(() => {
-        const state = getEntries($ngRedux.getState());
-        $scope.data.links = state.links;
-        $scope.entryInFocus = state.entryInFocus;
-        $scope.nextFocusableEntry = state.nextFocusableEntry;
-    });
-
+    const unsubscribe = $ngRedux.connect(getEntries)($scope);
     $scope.$on('$destroy', () => unsubscribe());
 
     var onSearch = function (value) {
         $scope.search = value;
-        $scope.data = {entries: []};
-        $scope.refresh($scope.params());
+        $scope.refresh();
     };
 
     $scope.addUuidParam = function(stateParams, param) {
@@ -131,13 +130,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
     };
 
     $scope.down = function() {
-        const entry = $scope.data.entries.find(it => it.uuid === $scope.nextFocusableEntry);
-        if (entry && !entry.seen) {
-            entry['seen'] = true
-            subscriptionEntryService.save(entry)
-                .then(function(updatedEntry) {
-                    Object.assign(entry, updatedEntry);
-                });
+        if (this.nextFocusableEntry.seen === false) {
+            $ngRedux.dispatch(changeEntry({...this.nextFocusableEntry, seen: true}));
         }
         $ngRedux.dispatch(entryFocusNext());
     };
@@ -146,40 +140,21 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
         $ngRedux.dispatch(entryFocusPrevious());
     };
 
-    $scope.refresh = function(param) {
-        subscriptionEntryService.findBy(param || $scope.params())
-            .then(function(data) {
-                $scope.data.entries = $scope.data.entries.concat(data || []);
-            });
-    };
-
-    $scope.toggleRead = function(entry) {
-        entry.seen = !entry.seen;
-        subscriptionEntryService.save(entry);
+    $scope.refresh = function() {
+        $ngRedux.dispatch(fetchEntries({path: SUBSCRIPTION_ENTRIES, query: $scope.params()}));
     };
 
     $scope.toggleReadFromEnter = function() {
-        const entry = $scope.data.entries.find(it => it.uuid === $scope.entryInFocus);
-        if (entry) {
-            $scope.toggleRead(entry);
-        }
+        $ngRedux.dispatch(changeEntry({...this.entryInFocus, seen: !this.entryInFocus.seen}));
     };
 
     $scope.refresh();
 
-    $scope.loadMore = function(more) {
-        $scope.refresh(more.query);
-    };
-
-    $scope.isFocused = function(item) {
-        return item.uuid === $scope.entryInFocus ? 'my-focused' : '';
-    };
-
     $scope.forceRefresh = function() {
         $ngRedux.dispatch(entryClear());
-        $scope.data = {entries: []};
+        $scope.search = '';
         $rootScope.$broadcast('refresh');
-        $scope.refresh($scope.params());
+        $scope.refresh();
     };
 
     hotkeys.bindTo($scope)
@@ -226,21 +201,11 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
     fetchSubscriptionTags();
 }])
 
-.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'subscriptionEntryService', 'bookmarkService', '$ngRedux',
-    function($rootScope, $scope, $stateParams, $state, subscriptionEntryService, bookmarkService, $ngRedux) {
+.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'bookmarkService', '$ngRedux',
+    function($rootScope, $scope, $stateParams, $state, bookmarkService, $ngRedux) {
 
-    $scope.data = {entries: []};
     $scope.param = $stateParams;
     $scope.search = "";
-    $scope.isOpen = true;
-
-    const unsubscribe = $ngRedux.subscribe(function() {
-        $scope.data.links = getEntries($ngRedux.getState()).links
-    });
-
-    $scope.$on('$destroy', function() {
-        unsubscribe();
-    });
 
     var onSearch = function (value) {
         $scope.search = value;
@@ -277,15 +242,8 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $timeout, $ngRedux) {
         return param;
     };
 
-    $scope.refresh = function(param) {
-        subscriptionEntryService.findBy(param || $scope.params())
-            .then(function(data) {
-                $scope.data.entries = $scope.data.entries.concat(data || []);
-            });
-    };
-
-    $scope.loadMore = function(more) {
-        $scope.refresh(more.query)
+    $scope.refresh = function() {
+        $ngRedux.dispatch(fetchEntries({path: SUBSCRIPTION_ENTRIES, query: $scope.params()}));
     };
 
     $scope.onSearchChange = function (value) {

@@ -1,0 +1,14 @@
+<div>
+    <my-auto-scroll my-scroll-on="{'data-uuid': $ctrl.entryInFocus.uuid}">
+        <div ng-class="{'focus': $ctrl.isFocused(entry)}"
+             class="my-entry-list__item"
+             data-uuid="{{entry.uuid}}"
+             ng-repeat="entry in $ctrl.entries track by entry.uuid">
+            <div class="my-entry-list__item-content">
+                <my-entry my-item="entry"></my-entry>
+                <div class="my-entry-list__item-divider"></div>
+            </div>
+        </div>
+    </my-auto-scroll>
+    <my-load-more my-next="$ctrl.links.next" my-on-more="$ctrl.loadMore(more)"></my-load-more>
+</div>

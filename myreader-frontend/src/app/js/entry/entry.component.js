@@ -1,19 +1,20 @@
 import template from './entry.component.html'
 import './entry.component.css'
+import {changeEntry} from 'store'
 
 class controller {
 
-    constructor(subscriptionEntryService) {
+    constructor($ngRedux) {
         'ngInject'
-        this.subscriptionEntryService = subscriptionEntryService
+        this.$ngRedux = $ngRedux
+    }
+
+    $onChanges(changes) {
+        this.item = changes.myItem.currentValue
     }
 
     updateItem(item) {
-        this.subscriptionEntryService.save(item).then(updatedEntry => this.item = updatedEntry)
-    }
-
-    $onInit() {
-        this.item = this.myItem
+        this.$ngRedux.dispatch(changeEntry(item))
     }
 
     toggleMore(showMore) {
@@ -32,7 +33,7 @@ class controller {
         this.updateItem({
             uuid: this.item.uuid,
             seen: this.item.seen,
-            tag: tag
+            tag
         })
     }
 }

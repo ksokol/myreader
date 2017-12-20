@@ -1,4 +1,4 @@
-import {componentMock, mock} from '../shared/test-utils'
+import {componentMock, mockNgRedux} from '../shared/test-utils'
 
 describe('src/app/js/entry/entry.component.spec.js', () => {
 
@@ -7,18 +7,14 @@ describe('src/app/js/entry/entry.component.spec.js', () => {
     const entryTags = componentMock('myEntryTags')
     const entryContent = componentMock('myEntryContent')
 
-    let rootScope, scope, element, subscriptionEntryService, deferred, item
+    let rootScope, scope, element, item, $ngRedux
 
-    beforeEach(angular.mock.module('myreader', entryTitle, entryActions, entryTags, entryContent, mock('subscriptionEntryService')))
+    beforeEach(angular.mock.module('myreader', entryTitle, entryActions, entryTags, entryContent, mockNgRedux()))
 
-    beforeEach(inject(($rootScope, $compile, $q, _subscriptionEntryService_) => {
+    beforeEach(inject(($rootScope, $compile, _$ngRedux_) => {
         rootScope = $rootScope
+        $ngRedux = _$ngRedux_
         scope = $rootScope.$new()
-        deferred = $q.defer()
-
-        subscriptionEntryService = _subscriptionEntryService_
-        subscriptionEntryService.save = jasmine.createSpy('save')
-        subscriptionEntryService.save.and.returnValue(deferred.promise)
 
         scope.item = item = {
             uuid: 'uuid',
@@ -54,25 +50,22 @@ describe('src/app/js/entry/entry.component.spec.js', () => {
     it('should update seen flag when entryActions component fired myOnCheck event', () => {
         entryActions.bindings.myOnCheck({item: {seen: true}})
 
-        expect(subscriptionEntryService.save).toHaveBeenCalledWith({uuid: 'uuid', seen: true, tag: 'tag'})
+        $ngRedux.thunk()
+        expect($ngRedux.lastAction()).toContainActionData({
+                type: 'PATCH',
+                url: '/myreader/api/2/subscriptionEntries/uuid',
+                body: {seen: true, tag: 'tag'}
+        })
     })
 
     it('should update tag when entryTags component fired onSelect event', () => {
-        entryTags.bindings.myOnChange({ tag: 'tag1' })
+        entryTags.bindings.myOnChange({tag: 'tag1'})
 
-        expect(subscriptionEntryService.save).toHaveBeenCalledWith({uuid: 'uuid', seen: false, tag: 'tag1'})
-    })
-
-    it('should propagate updated tem to child components', () => {
-        const updatedItem = {uuid: 'uuid', seen: false, tag: 'tag1'}
-        deferred.resolve(updatedItem)
-
-        entryTags.bindings.myOnChange({ tag: 'tag1' })
-        rootScope.$digest()
-
-        expect(entryTitle.bindings.myItem).toEqual(updatedItem)
-        expect(entryActions.bindings.myItem).toEqual(updatedItem)
-        expect(entryTags.bindings.myItem).toEqual(updatedItem)
-        expect(entryContent.bindings.myItem).toEqual(updatedItem)
+        $ngRedux.thunk()
+        expect($ngRedux.lastAction()).toContainActionData({
+                    type: 'PATCH',
+                    url: '/myreader/api/2/subscriptionEntries/uuid',
+                    body: {seen: false, tag: 'tag1'}
+        })
     })
 })

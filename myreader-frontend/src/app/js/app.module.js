@@ -43,6 +43,7 @@ import {SubscriptionComponent} from "./subscription/subscription.component"
 import {ClickIfInViewDirective} from "./shared/component/load-more/click-if-in-view.directive"
 import {ToastComponent} from './shared/component/toast/toast.component'
 import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
+import {EntryListComponent} from './entry/entry-list.component'
 import createApplicationStore from 'store/bootstrap'
 
 import './config'
@@ -78,6 +79,7 @@ angular
     .component('myAutocompleteInput', AutoCompleteInputComponent)
     .component('mySubscriptionTagPanel', SubscriptionTagPanelComponent)
     .component('mySubscription', SubscriptionComponent)
+    .component('myEntryList', EntryListComponent)
 
     .component('myButtonGroup', ButtonGroupComponent)
     .component('myButton', ButtonComponent)

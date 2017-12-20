@@ -96,11 +96,12 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
         it('should return expected action data', () => {
             const state = initialState()
-            state.entryInFocus = 1
+            state.entries = [{uuid: '1'}]
+            state.entryInFocus = '1'
             store = mockStore({entry: state})
 
             store.dispatch(entryFocusNext())
-            expect(store.getActions()[0]).toContainActionData({currentInFocus: 1})
+            expect(store.getActions()[0]).toContainActionData({currentInFocus: '1'})
         })
     })
 
@@ -113,7 +114,8 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
         it('should contain expected action type', () => {
             const state = initialState()
-            state.entryInFocus = 1
+            state.entries = [{uuid: '1'}]
+            state.entryInFocus = '1'
             store = mockStore({entry: state})
 
             store.dispatch(entryFocusPrevious())
@@ -122,11 +124,12 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
         it('should return expected action data', () => {
             const state = initialState()
-            state.entryInFocus = 1
+            state.entries = [{uuid: '1'}]
+            state.entryInFocus = '1'
             store = mockStore({entry: state})
 
             store.dispatch(entryFocusPrevious())
-            expect(store.getActions()[0]).toContainActionData({currentInFocus: 1})
+            expect(store.getActions()[0]).toContainActionData({currentInFocus: '1'})
         })
     })
 

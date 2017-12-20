@@ -1,8 +1,7 @@
 import * as entryTypes from 'store/action-types'
 import {toEntries, toEntry} from './entry'
-import {getEntry, getEntryInFocus} from 'store'
+import {getEntry, getEntryInFocus, getSettings} from 'store'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
-import {getSettings} from '../settings/selectors'
 import {toUrlString} from '../shared/links'
 
 export const entryPageReceived = raw => {
@@ -23,13 +22,13 @@ export const entryClear = () => {
 
 export const entryFocusNext = () => {
     return (dispatch, getState) => {
-        dispatch({type: entryTypes.ENTRY_FOCUS_NEXT, currentInFocus: getEntryInFocus(getState())})
+        dispatch({type: entryTypes.ENTRY_FOCUS_NEXT, currentInFocus: getEntryInFocus(getState()).uuid})
     }
 }
 
 export const entryFocusPrevious = () => {
     return (dispatch, getState) => {
-        const currentInFocus = getEntryInFocus(getState())
+        const currentInFocus = getEntryInFocus(getState()).uuid
         if (currentInFocus) {
             dispatch({type: entryTypes.ENTRY_FOCUS_PREVIOUS, currentInFocus})
         }

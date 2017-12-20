@@ -21,6 +21,26 @@ function componentMock(name) {
     return _componentMock
 }
 
+function multipleComponentMock(name) {
+    multipleComponentMock.bindings = []
+
+    function _componentMock($provide) {
+        _componentMock.bindings = multipleComponentMock.bindings
+
+        $provide.decorator(name + 'Directive', function($delegate) {
+            var component = $delegate[0]
+            component.template = ''
+            component.controller = function () {
+                multipleComponentMock.bindings.push(this)
+            }
+
+            return $delegate
+        })
+    }
+
+    return _componentMock
+}
+
 function directiveMock(name) {
     function _directiveMock($provide) {
         _directiveMock.scope = {}
@@ -106,6 +126,7 @@ function spy(name) {
 
 module.exports = {
     'componentMock': componentMock,
+    'multipleComponentMock': multipleComponentMock,
     'directiveMock': directiveMock,
     'filterMock': filterMock,
     'mock': mock,

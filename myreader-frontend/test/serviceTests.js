@@ -1,59 +1,7 @@
-import {mockNgRedux} from '../src/app/js/shared/test-utils';
-
 describe('test/serviceTests.js', function() {
     var service;
 
-    beforeEach(angular.mock.module('common.services', mockNgRedux()));
-
-    describe('subscriptionEntryService', function() {
-        var httpBackend;
-
-        beforeEach(angular.mock.module('myreader', mockNgRedux()));
-
-        beforeEach(inject(function ($httpBackend, subscriptionEntryService) {
-            httpBackend = $httpBackend;
-            service = subscriptionEntryService;
-        }));
-
-        it('should process own properties in params object', function(done) {
-            httpBackend.expectGET('/myreader/api/2/subscriptionEntries?&param1=1&param2=2&size=10&seenEqual=false').respond({content: ['expected']});
-
-            var Params = function() {
-                this.param1 = 1;
-                this.param2 = 2;
-            };
-
-            Params.prototype.param3 = 3;
-
-            service.findBy(new Params)
-                .then(function (data) {
-                    expect(data).toEqual(['expected']);
-                    done();
-                });
-
-            httpBackend.flush();
-        });
-
-        it('should save entry', function(done) {
-            var entry = {
-               uuid: '1',
-               seen: true,
-               tag: 'tag'
-            };
-
-            httpBackend
-                .expectPATCH('/myreader/api/2/subscriptionEntries/1', {seen: true, tag: 'tag'})
-                .respond(entry);
-
-            service.save(entry)
-                .then(function (data) {
-                    expect(data).toEqualData(entry);
-                    done();
-                });
-
-            httpBackend.flush();
-        });
-    });
+    beforeEach(angular.mock.module('common.services'));
 
     describe('bookmarkService', function() {
 

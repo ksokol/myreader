@@ -1,5 +1,11 @@
-my-entry {
+/* host */  my-entry {
     width: 100%;
+}
+
+.my-entry {
+    flex: 1 1 0;
+    padding: 16px 0;
+    text-overflow: ellipsis;
 }
 
 .my-entry__entry-tags {

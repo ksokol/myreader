@@ -1,8 +1,20 @@
 .my-entry-title__title {
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: .01em;
+    margin: 0 0 6px;
+}
+
+.my-entry-title__title > a {
     color: rgba(0,0,0,0.87);
     text-decoration: none;
 }
 
 .my-entry-title__subtitle {
     padding-top: 0.3rem;
+    font-weight: 400;
+    line-height: 1rem;
+    margin: 10px 0 5px;
+    font-size: 14px;
+    letter-spacing: .01em;
 }
