@@ -7,7 +7,7 @@ class controller {
     }
 
     onTagChange() {
-        this.myOnChange({tag: this.tags.join(", ")});
+        this.myOnChange({tag: this.tags.length > 0 ? this.tags.join(", ") : null});
     }
 }
 
