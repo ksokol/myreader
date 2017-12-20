@@ -1,4 +1,4 @@
-import {equalLinks, extractLinks} from './links'
+import {equalLinks, extractLinks, toUrlString} from './links'
 
 describe('src/app/js/store/shared/links.spec.js', () => {
 
@@ -95,5 +95,29 @@ describe('src/app/js/store/shared/links.spec.js', () => {
 
         it('should return true when unordered multiple query parameters equal', () =>
             expect(equalLinks({query: {c: 'd', a: 'b'}}, {query: {a: 'b', c: 'd'}})).toEqual(true))
+    })
+
+    describe('toUrlString', () => {
+
+        it('should return path as url when query is undefined', () =>
+            expect(toUrlString({path: '/path'})).toEqual('/path'))
+
+        it('should return path as url when query is empty', () =>
+            expect(toUrlString({path: '/path', query: {}})).toEqual('/path'))
+
+        it('should return path with query params as url when query has one parameters', () =>
+            expect(toUrlString({path: '/path', query: {a: 'b'}})).toEqual('/path?a=b'))
+
+        it('should return path with query params as url when query has multiple parameters', () =>
+            expect(toUrlString({path: '/path', query: {a: 'b', c: 'd'}})).toEqual('/path?c=d&a=b'))
+
+        it('should return query params as url when path is empty', () =>
+            expect(toUrlString({path: '', query: {a: 'b', c: 'd'}})).toEqual('?c=d&a=b'))
+
+        it('should return query params as url when path is undefined', () =>
+            expect(toUrlString({query: {a: 'b'}})).toEqual('?a=b'))
+
+        it('should return empty string as url when path and query params are undefined', () =>
+            expect(toUrlString({})).toEqual(''))
     })
 })

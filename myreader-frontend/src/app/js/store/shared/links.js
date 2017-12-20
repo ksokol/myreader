@@ -47,3 +47,16 @@ export function equalLinks(left = {}, right = {}, ignore = []) {
 
     return !leftQueryKeys.some(key => left.query[key] !== right.query[key])
 }
+
+function toQueryParams(query = {}) {
+    const queryParams = Object
+        .entries(query)
+        .reduce((acc, [key, value]) => `${key}=${value}&${acc}`, '')
+    return queryParams ? queryParams.slice(0, -1) : queryParams
+}
+
+export function toUrlString(link) {
+    const url = link.path || ''
+    const queryParams = toQueryParams(link.query)
+    return queryParams ? `${url}?${queryParams}` : url
+}
