@@ -4,9 +4,19 @@ import {equalLinks} from '../shared/links'
 
 function entryPageReceived({state, action}) {
     const links = action.links
-    const entries = equalLinks(state.links.self, links.self, ['next']) ?
-        [...state.entries].concat(action.entries) :
-        action.entries;
+    let actionEntries = [...action.entries]
+    let entries = actionEntries
+
+    if (equalLinks(state.links.self, links.self, ['next'])) {
+        entries = []
+        state.entries.forEach(stateEntry => {
+            let index = actionEntries.findIndex(actionEntry => stateEntry.uuid === actionEntry.uuid)
+            entries.push(index === -1 ? stateEntry : actionEntries.splice(index, 1)[0])
+        })
+
+        entries = entries.concat(actionEntries)
+    }
+
     return {...state, entries, links}
 }
 

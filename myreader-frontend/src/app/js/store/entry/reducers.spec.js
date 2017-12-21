@@ -18,34 +18,83 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
             action = {
                 type: 'ENTRY_PAGE_RECEIVED',
                 links: {self: {path: 'expected path'}},
-                entries: [1]
+                entries: [{uuid: '1'}]
             }
         })
 
         it('should set entries and links', () => {
-            const expectedState = {links: {self: {path: 'expected path'}}, entries: [1]}
+            const expectedState = {links: {self: {path: 'expected path'}}, entries: [{uuid: '1'}]}
 
             expect(entryReducers(state, action)).toContainObject(expectedState)
         })
 
         it('should update entries and links', () => {
-            action.links = {self: {path: 'expected path', query: {next: 3}}}
-            action.entries = [2]
+            action.links = {self: {path: 'expected path', query: {next: 3, a: 'b'}}}
+            action.entries = [{uuid: '2'}]
 
-            const currentState = {links: {self: {path: 'expected path', query: {next: 2}}}, entries: [1]}
-            const expectedState = {links: {self: {path: 'expected path', query: {next: 3}}}, entries: [1, 2]}
+            const currentState = {links: {self: {path: 'expected path', query: {next: 2, a: 'b'}}}, entries: [{uuid: '1'}]}
+            const expectedState = {links: {self: {path: 'expected path', query: {next: 3, a: 'b'}}}, entries: [{uuid: '1'}, {uuid: '2'}]}
 
             expect(entryReducers(currentState, action)).toContainObject(expectedState)
         })
 
         it('should set entries and links when links differ', () => {
             action.links = {self: {path: 'expected path', query: {next: 2, a: 'b'}}}
-            action.entries = [3]
+            action.entries = [{uuid: '3'}]
 
-            const currentState = {links: {self: {path: 'expected path', query: {next: 2}}}, entries: [1]}
-            const expectedState = {links: {self: {path: 'expected path', query: {next: 2, a: 'b'}}}, entries: [3]}
+            const currentState = {links: {self: {path: 'expected path', query: {next: 2}}}, entries: [{uuid: '1'}]}
+            const expectedState = {links: {self: {path: 'expected path', query: {next: 2, a: 'b'}}}, entries: [{uuid: '3'}]}
 
             expect(entryReducers(currentState, action)).toContainObject(expectedState)
+        })
+
+        it('should not add entries to store when entries already available in store', () => {
+            action.links = {self: {query: {next: '3'}}}
+            action.entries = [{uuid: '1'}, {uuid: '2'}]
+
+            const currentState = {links: {self: {query: {next: '3'}}}, entries: [{uuid: '1'}, {uuid: '2'}]}
+            const nextState = entryReducers(currentState, action)
+
+            expect(entryReducers(nextState, action).entries).toEqual([{uuid: '1'}, {uuid: '2'}])
+        })
+
+        it('should not add entry to store when entry already available in store', () => {
+            action.links = {self: {query: {next: '3'}}}
+            action.entries = [{uuid: '1'}, {uuid: '2'}]
+
+            const currentState = {links: {self: {query: {next: '3'}}}, entries: [{uuid: '1'}, {uuid: '2'}]}
+            const nextState = entryReducers(currentState, action)
+
+            action.links = {self: {query: {next: '3'}}}
+            action.entries = [{uuid: '2'}]
+
+            expect(entryReducers(nextState, action).entries).toEqual([{uuid: '1'}, {uuid: '2'}])
+        })
+
+        it('should add entry to store when entry is not in store', () => {
+            action.links = {self: {query: {next: '3'}}}
+            action.entries = [{uuid: '1'}]
+
+            const currentState = {links: {self: {query: {next: '3'}}}, entries: [{uuid: '1'}]}
+            const nextState = entryReducers(currentState, action)
+
+            action.links = {self: {query: {next: '3'}}}
+            action.entries = [{uuid: '2'}]
+
+            expect(entryReducers(nextState, action).entries).toEqual([{uuid: '1'}, {uuid: '2'}])
+        })
+
+        it('should update entry in store', () => {
+            action.links = {self: {query: {next: '3'}}}
+            action.entries = [{uuid: '1', seen: false}]
+
+            const currentState = {links: {self: {query: {next: '3'}}}, entries: [{uuid: '1', seen: false}]}
+            const nextState = entryReducers(currentState, action)
+
+            action.links = {self: {query: {next: '3'}}}
+            action.entries = [{uuid: '1', seen: true}, {uuid: '2', seen: false}]
+
+            expect(entryReducers(nextState, action).entries).toEqual([{uuid: '1', seen: true}, {uuid: '2', seen: false}])
         })
     })
 
