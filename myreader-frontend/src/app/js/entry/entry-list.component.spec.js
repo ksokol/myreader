@@ -44,9 +44,9 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
 
     it('should dispatch action for next page', () => {
         loadMore.bindings.myOnMore({more: loadMore.bindings.myNext})
-        $ngRedux.thunk({settings: {pageSize: 5}})
+        $ngRedux.thunk({settings: {pageSize: 5, showUnseenEntries: true}})
 
         expect($ngRedux.lastAction()).toEqualActionType('GET')
-        expect($ngRedux.lastAction()).toContainActionData({url: 'expected-path?size=5'})
+        expect($ngRedux.lastAction()).toContainActionData({url: 'expected-path?seenEqual=false&size=5'})
     })
 })

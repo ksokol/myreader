@@ -142,21 +142,21 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
         })
 
         it('should dispatch with expected path and size query parameter url as action data', () => {
-            store.dispatch(fetchEntries({path: '/path1', query: {}}))
+            store.dispatch(fetchEntries({path: '/path1', query: {seenEqual: '*'}}))
 
-            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5'})
+            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&seenEqual=*'})
         })
 
         it('should dispatch with expected path and given size query parameter url as action data', () => {
-            store.dispatch(fetchEntries({path: '/path1', query: {size: 15}}))
+            store.dispatch(fetchEntries({path: '/path1', query: {size: 15, seenEqual: '*'}}))
 
-            expect(store.getActions()[0]).toContainObject({url: '/path1?size=15'})
+            expect(store.getActions()[0]).toContainObject({url: '/path1?seenEqual=*&size=15'})
         })
 
         it('should dispatch with expected path and given query parameters url as action data', () => {
-            store.dispatch(fetchEntries({path: '/path1', query: {a: 'b', c: 'd'}}))
+            store.dispatch(fetchEntries({path: '/path1', query: {a: 'b', seenEqual: '*'}}))
 
-            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&c=d&a=b'})
+            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&seenEqual=*&a=b'})
         })
 
         it('should dispatch with seenEqual set to true as query parameter in url', () => {
@@ -165,20 +165,13 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
             expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&seenEqual=true'})
         })
 
-        it('should dispatch with seenEqual set to true as query parameter in url ignoring showUnseenEntries value in settings', () => {
-            initMockStore({
-                settings: {
-                    pageSize: 5,
-                    showUnseenEntries: true
-                }
-            })
+        it('should dispatch with seenEqual set to false as query parameter in url', () => {
+            store.dispatch(fetchEntries({path: '/path1', query: {seenEqual: false}}))
 
-            store.dispatch(fetchEntries({path: '/path1', query: {seenEqual: true}}))
-
-            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&seenEqual=true'})
+            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&seenEqual=false'})
         })
 
-        it('should dispatch with seenEqual set from showUnseenEntries setting as query parameter in url', () => {
+        it('should dispatch with settings value false for seenEqual when seenEqual is undefined in query parameters', () => {
             initMockStore({
                 settings: {
                     pageSize: 5,
@@ -191,7 +184,7 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
             expect(store.getActions()[0]).toContainObject({url: '/path1?seenEqual=false&size=5'})
         })
 
-        it('should dispatch with seenEqual set to false as query parameter in url ignoring showUnseenEntries value from settings', () => {
+        it('should dispatch with settings value * for seenEqual when seenEqual is undefined in query parameters', () => {
             initMockStore({
                 settings: {
                     pageSize: 5,
@@ -199,9 +192,9 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
                 }
             })
 
-            store.dispatch(fetchEntries({path: '/path1', query: {seenEqual: false}}))
+            store.dispatch(fetchEntries({path: '/path1', query: {}}))
 
-            expect(store.getActions()[0]).toContainObject({url: '/path1?size=5&seenEqual=false'})
+            expect(store.getActions()[0]).toContainObject({url: '/path1?seenEqual=*&size=5'})
         })
 
         it('should dispatch action defined in success property', () => {

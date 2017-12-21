@@ -40,10 +40,7 @@ export const fetchEntries = link => {
         const settings = getSettings(getState())
 
         link.query['size'] = link.query['size'] || settings.pageSize
-
-        if (!link.query['seenEqual'] && settings.showUnseenEntries) {
-            link.query['seenEqual'] = false
-        }
+        link.query['seenEqual'] = link.query['seenEqual'] === undefined ? settings.showUnseenEntries === true ? false : '*' : link.query['seenEqual']
 
         dispatch({
             type: 'GET',
