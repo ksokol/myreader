@@ -199,6 +199,16 @@ public class SubscriptionEntryRepositoryTests {
         assertThat(slice.getContent().get(0).getTag(), is("tag8Tag9"));
     }
 
+    @Test
+    @WithMockUser4
+    public void shouldAppendAsteriskToSearchParameterWhenSearchParameterDoesNotEndWithAsterisk() throws Exception {
+        givenQuery("con", null, null, null, "*", null, 10);
+        assertThat(slice.getContent(), hasSize(5));
+
+        givenQuery("con*", null, null, null, "*", null, 10);
+        assertThat(slice.getContent(), hasSize(5));
+    }
+
     private void givenQuery(String q, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, int pageSize) {
         slice = subscriptionEntryRepository.findByForCurrentUser(q, feedId, feedTagEqual, entryTagEqual, seen, nextId, pageSize);
     }

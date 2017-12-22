@@ -99,10 +99,11 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         Query query;
 
         if(isNotEmpty(q)) {
+            String searchToken = q.endsWith("*") ? q : q + "*";
             query =  queryBuilder.bool()
-                    .should(queryBuilder.keyword().wildcard().onField(CONTENT).matching(q).createQuery())
-                    .should(queryBuilder.keyword().wildcard().onField(TITLE).matching(q).createQuery())
-                    .should(queryBuilder.keyword().wildcard().onField(TAG).matching(q).createQuery())
+                    .should(queryBuilder.keyword().wildcard().onField(CONTENT).matching(searchToken).createQuery())
+                    .should(queryBuilder.keyword().wildcard().onField(TITLE).matching(searchToken).createQuery())
+                    .should(queryBuilder.keyword().wildcard().onField(TAG).matching(searchToken).createQuery())
                     .createQuery();
         } else {
             query = queryBuilder.bool().must(queryBuilder.all().createQuery()).createQuery();
