@@ -45,15 +45,15 @@ import {ToastComponent} from './shared/component/toast/toast.component'
 import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
 import {EntryListComponent} from './entry/entry-list.component'
 import createApplicationStore from 'store/bootstrap'
+import {ListPageComponent} from './shared/component/list-page/list-page.component'
 
 import './config'
-import './services'
 import './controllers'
 
 const storeProviderEnhancer = () => () => createApplicationStore(ENVIRONMENT)
 
 angular
-    .module('myreader', [ngRedux, 'common.config', 'common.services', 'common.controllers', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
+    .module('myreader', [ngRedux, 'common.config', 'common.controllers', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages', 'cfp.hotkeys'])
     .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], [storeProviderEnhancer])])
 
     .component('myEntryActions', EntryActionsComponent)
@@ -89,6 +89,7 @@ angular
     .component('mySearchInput', SearchInputComponent)
     .component('myToast', ToastComponent)
     .component('myAutoScroll', AutoScrollComponent)
+    .component('myListPage', ListPageComponent)
 
     .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)

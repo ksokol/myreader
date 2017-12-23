@@ -1,0 +1,15 @@
+<div class="my-list-page__action-panel">
+    <my-search-input class="my-list-page__search-action"
+                     my-value="$ctrl.$stateParams['q']"
+                     my-on-change="$ctrl.onSearchChange(value)"
+                     my-on-clear="$ctrl.onSearchClear()">
+    </my-search-input>
+    <md-button class="md-icon-button"
+               ng-click="$ctrl.onRefresh()">
+        <my-icon my-type="refresh"></my-icon>
+    </md-button>
+</div>
+
+<div class="my-list-page__list-panel">
+    <div class="my-list-page__list-content" ng-transclude="list-panel"></div>
+</div>
