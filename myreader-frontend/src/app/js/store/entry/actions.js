@@ -1,28 +1,28 @@
-import * as entryTypes from 'store/action-types'
+import * as types from 'store/action-types'
 import {toEntries, toEntry} from './entry'
 import {getEntry, getEntryInFocus, getSettings} from 'store'
-import {SUBSCRIPTION_ENTRIES} from '../../constants'
+import {ENTRY_AVAILABLE_TAGS, SUBSCRIPTION_ENTRIES} from '../../constants'
 import {toUrlString} from '../shared/links'
 
 export const entryPageReceived = raw => {
-    return {type: entryTypes.ENTRY_PAGE_RECEIVED, ...toEntries(raw)}
+    return {type: types.ENTRY_PAGE_RECEIVED, ...toEntries(raw)}
 }
 
 export const entryChanged = entry => {
     return (dispatch, getState) => {
         if (entry && entry.uuid) {
-            dispatch({type: entryTypes.ENTRY_CHANGED, newValue: toEntry(entry), oldValue: getEntry(entry.uuid, getState())})
+            dispatch({type: types.ENTRY_CHANGED, newValue: toEntry(entry), oldValue: getEntry(entry.uuid, getState())})
         }
     }
 }
 
 export const entryClear = () => {
-    return {type: entryTypes.ENTRY_CLEAR}
+    return {type: types.ENTRY_CLEAR}
 }
 
 export const entryFocusNext = () => {
     return (dispatch, getState) => {
-        dispatch({type: entryTypes.ENTRY_FOCUS_NEXT, currentInFocus: getEntryInFocus(getState()).uuid})
+        dispatch({type: types.ENTRY_FOCUS_NEXT, currentInFocus: getEntryInFocus(getState()).uuid})
     }
 }
 
@@ -30,7 +30,7 @@ export const entryFocusPrevious = () => {
     return (dispatch, getState) => {
         const currentInFocus = getEntryInFocus(getState()).uuid
         if (currentInFocus) {
-            dispatch({type: entryTypes.ENTRY_FOCUS_PREVIOUS, currentInFocus})
+            dispatch({type: types.ENTRY_FOCUS_PREVIOUS, currentInFocus})
         }
     }
 }
@@ -62,5 +62,17 @@ export const changeEntry = ({uuid, seen, tag}) => {
             body: {seen, tag},
             success: response => entryChanged(response)
         })
+    }
+}
+
+export const entryTagsReceived = raw => {
+    return {type: types.ENTRY_TAGS_RECEIVED, tags: [...raw]}
+}
+
+export const fetchEntryTags = () => {
+    return {
+        type: 'GET',
+        url: ENTRY_AVAILABLE_TAGS,
+        success: response => entryTagsReceived(response)
     }
 }

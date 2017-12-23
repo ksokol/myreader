@@ -132,21 +132,39 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
         beforeEach(() => {
             action = {
                 type: 'ENTRY_CHANGED',
-                newValue: {uuid: 2, seen: true}
+                newValue: {uuid: '2', seen: true}
             }
         })
 
-        it('should set seen flag to false', () => {
-            const currentState = {entries: [{uuid: 1, seen: false}]}
+        it('should do nothing when changed entry is not in store', () => {
+            const currentState = {entries: [{uuid: '1', seen: false}], tags: []}
 
             expect(entryReducers(currentState, action)).toContainObject(currentState)
         })
 
         it('should set seen flag to false for given entry', () => {
-            action.newValue = {uuid: 2, seen: true}
+            action.newValue = {uuid: '2', seen: true}
 
-            const currentState = {entries: [{uuid: 1, seen: false}, {uuid: 2, seen: false}]}
-            const expectedState = {entries: [{uuid: 1, seen: false}, {uuid: 2, seen: true}]}
+            const currentState = {entries: [{uuid: '1', seen: false}, {uuid: '2', seen: false}], tags: []}
+            const expectedState = {entries: [{uuid: '1', seen: false}, {uuid: '2', seen: true}], tags: []}
+
+            expect(entryReducers(currentState, action)).toContainObject(expectedState)
+        })
+
+        it('should extract and store tags from entry', () => {
+            action.newValue = {uuid: '2', tag: 'tag1, tag2'}
+
+            const currentState = {entries: [], tags: []}
+            const expectedState = {tags: ['tag1', 'tag2']}
+
+            expect(entryReducers(currentState, action)).toContainObject(expectedState)
+        })
+
+        it('should update existing tags', () => {
+            action.newValue = {uuid: '2', tag: 'tag1, tag2'}
+
+            const currentState = {entries: [], tags: ['tag2']}
+            const expectedState = {tags: ['tag1', 'tag2']}
 
             expect(entryReducers(currentState, action)).toContainObject(expectedState)
         })
@@ -233,6 +251,21 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
 
             const currentState = {entries: [{uuid: 1}], entryInFocus: 1}
             const expectedState = {entryInFocus: null}
+
+            expect(entryReducers(currentState, action)).toContainObject(expectedState)
+        })
+    })
+
+    describe('action ENTRY_TAGS_RECEIVED', () => {
+
+        it('should set tags', () => {
+            const action = {
+                type: 'ENTRY_TAGS_RECEIVED',
+                tags: ['tag1', 'tag2']
+            }
+
+            const currentState = {tags: []}
+            const expectedState = {tags: ['tag1', 'tag2']}
 
             expect(entryReducers(currentState, action)).toContainObject(expectedState)
         })

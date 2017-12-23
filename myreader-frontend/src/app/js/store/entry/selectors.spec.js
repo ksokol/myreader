@@ -1,4 +1,4 @@
-import {getEntries, getEntry} from 'store'
+import {getEntries, getEntry, getEntryTags} from 'store'
 
 describe('src/app/js/store/entry/selectors.spec.js', () => {
 
@@ -12,7 +12,8 @@ describe('src/app/js/store/entry/selectors.spec.js', () => {
                     self: {path: 'path1', query: {a: 'b'}},
                     next: {path: 'path2'}
                 },
-                entryInFocus: '1'
+                entryInFocus: '1',
+                tags: ['tag1', 'tag2']
             }
         }
     })
@@ -77,5 +78,15 @@ describe('src/app/js/store/entry/selectors.spec.js', () => {
         const actual = getEntry('1', state)
         actual.key = 'value'
         expect(state.entry.entries[0]).toEqual({uuid: '1'})
+    })
+
+    it('should return entry tags', () => {
+        expect(getEntryTags(state)).toEqual({entryTags: ['tag1', 'tag2']})
+    })
+
+    it('should return copy of entry tags', () => {
+        const actual = getEntryTags(state).entryTags
+        actual.push('tag3')
+        expect(getEntryTags(state)).toEqual({entryTags: ['tag1', 'tag2']})
     })
 })

@@ -31,3 +31,9 @@ export const getEntries = state => {
 export const getEntry = (uuid, state) => {
     return cloneObject(state.entry.entries.find(it => it.uuid === uuid))
 }
+
+export const getEntryTags = state => {
+    return {
+        entryTags: [...state.entry.tags]
+    }
+}
