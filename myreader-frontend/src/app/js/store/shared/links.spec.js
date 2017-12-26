@@ -119,5 +119,8 @@ describe('src/app/js/store/shared/links.spec.js', () => {
 
         it('should return empty string as url when path and query params are undefined', () =>
             expect(toUrlString({})).toEqual(''))
+
+        it('should skip query params with undefined value', () =>
+            expect(toUrlString({path: '', query: {a: 'b', c: undefined, d: undefined}})).toEqual('?a=b'))
     })
 })
