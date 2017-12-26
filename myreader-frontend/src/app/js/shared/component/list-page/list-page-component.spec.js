@@ -42,9 +42,9 @@ describe('src/app/js/shared/component/list-page/list-page-component.spec.js', ()
         scope.$digest()
     })
 
-    it('should set q value to empty string when myOnClear event received', done => {
+    it('should set q value to undefined when myOnClear event received', done => {
         scope.onSearch = params => {
-            expect(params).toEqual({q: '', other: 'expected other value'})
+            expect(params).toEqual({q: undefined, other: 'expected other value'})
             done()
         }
 

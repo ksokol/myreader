@@ -14,7 +14,7 @@ class controller {
     }
 
     onSearchClear() {
-        const params = {...this.$stateParams, q: ''}
+        const params = {...this.$stateParams, q: undefined}
         this.myOnSearch({params})
     }
 
