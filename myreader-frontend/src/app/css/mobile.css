@@ -62,7 +62,6 @@ ul li {
 
 .my-content {
     padding: 0;
-    overflow: auto;
 }
 
 .search-panel {
@@ -76,7 +75,6 @@ ul li {
 
 @media (min-width: 1280px) {
     .search-panel {
-        background: white;
         position: fixed;
         width: calc(100% - 330px);
         z-index: 1030;
@@ -93,6 +91,17 @@ ul li {
     .my-list {
         overflow: auto;
         margin-top: 56px;
-        width: 100%
+        width: 100%;
+        height: calc(100vh - 64px);
+    }
+
+    .my-content {
+        overflow: hidden;
+    }
+}
+
+@media (max-width: 1179px) {
+    md-content {
+        overflow-y: auto;
     }
 }

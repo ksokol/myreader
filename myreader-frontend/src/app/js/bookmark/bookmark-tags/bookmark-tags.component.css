@@ -1,0 +1,21 @@
+.bookmark-tags__tags .md-chips .md-chip-input-container {
+    display: none;
+}
+
+.bookmark-tags__tags .md-chips md-chip {
+    cursor: pointer;
+}
+
+.bookmark-tags__tags > md-chips-wrap .md-focused {
+    background: rgb(224,224,224);
+    color: rgb(63, 81, 181);
+}
+
+.bookmark-tags__tag--selected {
+    color: rgb(63, 81, 181);
+    font-weight: bold;
+}
+
+md-chips-wrap {
+    box-shadow: none !important;
+}

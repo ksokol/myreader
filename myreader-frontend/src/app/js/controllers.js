@@ -23,23 +23,11 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
         items: []
     };
 
-    var currentState;
     $scope.currentSelected = $state.params;
 
-    const unsubscribe = $ngRedux.subscribe(() => {
-        if ($state.current.name === 'app.entries') {
-            $scope.data = new SubscriptionTags(getSubscriptions($ngRedux.getState()))
-        }
-    });
+    const unsubscribe = $ngRedux.subscribe(() => $scope.data = new SubscriptionTags(getSubscriptions($ngRedux.getState())));
 
     $scope.$on('$destroy', () => unsubscribe());
-
-    $scope.$on('navigation-change', function(ev, param) {
-        currentState = param.state;
-        if($state.current.name === 'app.bookmarks' && param.data) {
-            $scope.data = param.data;
-        }
-    });
 
     $scope.navigateTo = function (state) {
         $scope.closeSidenav();
@@ -49,7 +37,7 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.onSelect = function (selected) {
         $scope.currentSelected = selected;
         $scope.closeSidenav();
-        $state.go(currentState, {tag: selected.tag, uuid: selected.uuid});
+        $state.go('app.entries', {tag: selected.tag, uuid: selected.uuid});
     };
 
     $scope.openMenu = function() {
@@ -81,6 +69,12 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.trackBy = function(item) {
         return JSON.stringify({uuid: item.item || item.title, unseen: item.unseen});
     }
+
+    const fetchSubscriptionTags = () => $ngRedux.dispatch(fetchSubscriptions())
+
+    $scope.$on('refresh', fetchSubscriptionTags);
+
+    fetchSubscriptionTags();
 }])
 
 .controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'hotkeys', '$ngRedux',
@@ -191,89 +185,17 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
     $scope.onSearchClear = function () {
         onSearch('');
     };
-
-    const fetchSubscriptionTags = () =>
-        $ngRedux.dispatch(fetchSubscriptions()).then(() =>
-            $rootScope.$broadcast('navigation-change', {selected: $stateParams, state: 'app.entries'}));
-
-    $scope.$on('refresh', fetchSubscriptionTags);
-
-    fetchSubscriptionTags();
-}])
-
-.controller('BookmarkEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'bookmarkService', '$ngRedux',
-    function($rootScope, $scope, $stateParams, $state, bookmarkService, $ngRedux) {
-
-    $scope.param = $stateParams;
-    $scope.search = "";
-
-    var onSearch = function (value) {
-        $scope.search = value;
-        $scope.data = {entries: []};
-        $scope.refresh($scope.params());
-    };
-
-    $scope.addSearchParam = function(param) {
-        if($scope.search !== "") {
-            if($scope.search.indexOf('*') === -1) {
-                param['q'] = $scope.search + '*';
-            } else {
-                param['q'] = $scope.search;
-            }
-        }
-    };
-
-    $scope.addTagParam = function(stateParams, param) {
-        if(stateParams.tag) {
-            param['entryTagEqual'] = stateParams.tag === "all" ? "*" : stateParams.tag;
-        } else {
-            param['entryTagEqual'] = '*';
-        }
-    };
-
-    $scope.params = function() {
-        var param = {};
-
-        $scope.addTagParam($stateParams, param);
-        $scope.addSearchParam(param);
-
-        param['seenEqual'] = '*';
-
-        return param;
-    };
-
-    $scope.refresh = function() {
-        $ngRedux.dispatch(fetchEntries({path: SUBSCRIPTION_ENTRIES, query: $scope.params()}));
-    };
-
-    $scope.onSearchChange = function (value) {
-        onSearch(value);
-    };
-
-    $scope.onSearchClear = function () {
-        onSearch('');
-    };
-
-    $scope.refresh();
-
-    bookmarkService.findAll()
-        .then(function (data) {
-            $rootScope.$broadcast('navigation-change', {selected: $stateParams, data: data, state: 'app.bookmarks'});
-        }).catch(function (error) {
-            $ngRedux.dispatch(showErrorNotification(error));
-        });
 }])
 
 .controller('SubscriptionsCtrl', ['$scope', '$state', 'subscriptionService', function($scope, $state, subscriptionService) {
 
-    $scope.data.subscriptions = [];
+    $scope.subscriptions = [];
 
     $scope.refresh = function() {
         subscriptionService.findAll()
         .then(function(data) {
-            $scope.searchKey = null;
-            $scope.data = {}; // overlaps with data from SubscriptionEntryCtrl and BookmarkEntryListCtrl
-            $scope.data.subscriptions = data;
+            $scope.searchKey = '';
+            $scope.subscriptions = data;
         });
     };
 

@@ -46,6 +46,8 @@ import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.co
 import {EntryListComponent} from './entry/entry-list.component'
 import createApplicationStore from 'store/bootstrap'
 import {ListPageComponent} from './shared/component/list-page/list-page.component'
+import {BookmarkTagsComponent} from './bookmark/bookmark-tags/bookmark-tags.component'
+import {BookmarkComponent} from './bookmark/bookmark.component'
 
 import './config'
 import './controllers'
@@ -80,6 +82,8 @@ angular
     .component('mySubscriptionTagPanel', SubscriptionTagPanelComponent)
     .component('mySubscription', SubscriptionComponent)
     .component('myEntryList', EntryListComponent)
+    .component('myBookmarkTags', BookmarkTagsComponent)
+    .component('myBookmark', BookmarkComponent)
 
     .component('myButtonGroup', ButtonGroupComponent)
     .component('myButton', ButtonComponent)

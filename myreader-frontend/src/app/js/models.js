@@ -1,20 +1,3 @@
-export function Bookmarks(data) {
-    var self = this;
-    self.tags = [];
-
-    self.addTag = function (bookmarkTag) {
-        var tag = {};
-        tag.tag = bookmarkTag;
-        tag.title = bookmarkTag;
-        tag.type = 'tag';
-        self.tags.push(tag);
-    };
-
-    for (var i = 0; i < data.length; i++) {
-        self.addTag(data[i]);
-    }
-};
-
 export function SubscriptionTag () {
     var self = this;
     self.subscriptions = [];

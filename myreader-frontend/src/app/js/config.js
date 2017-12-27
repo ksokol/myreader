@@ -2,7 +2,6 @@ import angular from 'angular';
 import subscriptionTagsTemplate from '../../templates/subscription-tags.html';
 import navigationAdminTemplate from '../../templates/navigation-admin.html';
 import subscriptionEntriesTemplate from '../../templates/subscription-entries.html';
-import bookmarkEntriesTemplate from '../../templates/bookmark-entries.html';
 import subscriptionsTemplate from '../../templates/subscriptions.html';
 import {unauthorized} from 'store';
 
@@ -74,11 +73,10 @@ angular.module('common.config', ['ui.router', 'cfp.hotkeys'])
                 }
             })
             .state('app.bookmarks', {
-                url: "/bookmark/:tag",
+                url: '/bookmark/:entryTagEqual?q',
                 views: {
                     content: {
-                        template: bookmarkEntriesTemplate,
-                        controller: 'BookmarkEntryListCtrl'
+                        template: '<div><my-bookmark></my-bookmark></div>'
                     }
                 }
             })

@@ -1,0 +1,9 @@
+<md-chips
+        class="bookmark-tags__tags"
+        md-removable="false"
+        md-on-select="$ctrl.myOnSelect({tag: $chip})"
+        ng-model="$ctrl.myTags">
+    <md-chip-template>
+        <span ng-class="{'bookmark-tags__tag--selected': $ctrl.mySelected === $chip}">{{$chip}}</span>
+    </md-chip-template>
+</md-chips>
