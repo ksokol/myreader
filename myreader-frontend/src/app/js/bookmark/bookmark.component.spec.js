@@ -31,8 +31,7 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
 
         it('should dispatch expected action on component initialization', () => {
             expect(ngRedux.dispatch.calls.first().args[0]).toEqualActionType('ENTRY_CLEAR')
-            expect(ngRedux.dispatch.calls.mostRecent().args[0]).toEqualActionType('GET')
-            expect(ngRedux.dispatch.calls.mostRecent().args[0]).toContainActionData({url: '/myreader/api/2/subscriptionEntries/availableTags'})
+            expect(ngRedux.dispatch.calls.mostRecent().args[0]).toEqualActionType('GET_ENTRY_TAGS')
             expect(state.go).toHaveBeenCalledWith('app.bookmarks', {entryTagEqual: 'tag2', other: 'expected other', seenEqual: '*'}, {notify: false})
         })
 
@@ -56,10 +55,8 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
                         cb()
 
                         ngRedux.thunk({settings: {pageSize: 10}})
-                        expect(ngRedux.dispatch.calls.mostRecent().args[0]).toEqualActionType('GET')
-                        expect(ngRedux.dispatch.calls.mostRecent().args[0]).toContainActionData({
-                            url: '/myreader/api/2/subscriptionEntries?size=10&seenEqual=*&other=expected other&entryTagEqual=tag2'
-                        })
+                        expect(ngRedux.dispatch.calls.mostRecent().args[0]).toEqualActionType('GET_ENTRIES')
+                        expect(ngRedux.dispatch.calls.mostRecent().args[0].url).toContain('other=expected other&entryTagEqual=tag2')
                         done()
                     }
                 }
@@ -116,8 +113,7 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
             scope.$digest()
 
             expect(ngRedux.dispatch.calls.first().args[0]).toEqualActionType('ENTRY_CLEAR')
-            expect(ngRedux.dispatch.calls.mostRecent().args[0]).toEqualActionType('GET')
-            expect(ngRedux.dispatch.calls.mostRecent().args[0]).toContainActionData({url: '/myreader/api/2/subscriptionEntries/availableTags'})
+            expect(ngRedux.dispatch.calls.mostRecent().args[0]).toEqualActionType('GET_ENTRY_TAGS')
             expect(state.go).toHaveBeenCalledWith('app.bookmarks', {seenEqual: '*'}, {notify: false})
         })
     })

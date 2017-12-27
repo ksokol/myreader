@@ -1,8 +1,6 @@
 import {fetchEnd, fetchStart, unauthorized} from 'store'
 
 const READ_METHODS = ['GET', 'HEAD']
-const METHODS = ['POST', 'PUT', 'DELETE', 'PATCH', ...READ_METHODS]
-
 const MIME_APPLICATION_JSON = 'application/json'
 const XML_HTTP_REQUEST = 'XMLHttpRequest'
 const CONTENT_TYPE = 'content-Type'
@@ -76,10 +74,6 @@ function handleResponse(response, dispatch, resolve, reject) {
 function handleError (error, dispatch, reject) {
     dispatch(fetchEnd(error.toString()))
     reject(error)
-}
-
-export function supportedMethods() {
-    return [...METHODS]
 }
 
 export function exchange(params) {

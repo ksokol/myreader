@@ -17,6 +17,6 @@ describe('src/app/js/navigation/logout-item/logout-item.component.spec.js', () =
         element.find('button')[0].click()
         scope.$digest()
 
-        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'POST', url: 'logout'}))
+        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'POST_LOGOUT'}))
     })
 })

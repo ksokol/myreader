@@ -42,7 +42,7 @@ describe('src/app/js/store/security/action.spec.js', () => {
     describe('action creator logout', () => {
 
         it('should create expected action', () => {
-            expect(logout()).toEqualActionType('POST')
+            expect(logout()).toEqualActionType('POST_LOGOUT')
             expect(logout()).toContainActionData({url: 'logout'})
         })
 

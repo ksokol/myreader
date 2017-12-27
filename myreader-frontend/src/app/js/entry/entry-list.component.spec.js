@@ -48,7 +48,6 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
         loadMore.bindings.myOnMore({more: loadMore.bindings.myNext})
         $ngRedux.thunk({settings: {pageSize: 5, showUnseenEntries: true}})
 
-        expect($ngRedux.lastAction()).toEqualActionType('GET')
-        expect($ngRedux.lastAction()).toContainActionData({url: 'expected-path?seenEqual=false&size=5'})
+        expect($ngRedux.lastAction()).toContainActionData({type: 'GET_ENTRIES', url: 'expected-path?seenEqual=false&size=5'})
     })
 })

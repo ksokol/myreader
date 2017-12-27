@@ -17,5 +17,5 @@ export const authorized = ({role}) => {
 }
 
 export const logout = () => {
-    return {type: 'POST', url: 'logout', success: unauthorized}
+    return {type: 'POST_LOGOUT', url: 'logout', success: unauthorized}
 }

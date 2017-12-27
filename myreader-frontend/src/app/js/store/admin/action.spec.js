@@ -15,7 +15,7 @@ describe('src/app/js/store/admin/action.spec.js', () => {
 
     it('action creator rebuildSearchIndex', () => {
         store.dispatch(rebuildSearchIndex())
-        expect(store.getActions()[0]).toContainObject({type: 'PUT', url: PROCESSING, body: {process: 'indexSyncJob'}})
+        expect(store.getActions()[0]).toContainObject({type: 'PUT_INDEX_SYNC_JOB', url: PROCESSING, body: {process: 'indexSyncJob'}})
     })
 
     it('action creator rebuildSearchIndex should contain notification action creator in success property', () => {

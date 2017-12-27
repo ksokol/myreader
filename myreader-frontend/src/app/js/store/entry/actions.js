@@ -43,7 +43,7 @@ export const fetchEntries = link => {
         link.query['seenEqual'] = link.query['seenEqual'] === undefined ? settings.showUnseenEntries === true ? false : '*' : link.query['seenEqual']
 
         dispatch({
-            type: 'GET',
+            type: 'GET_ENTRIES',
             url: toUrlString(link),
             success: response => entryPageReceived(response)
         })
@@ -57,7 +57,7 @@ export const changeEntry = ({uuid, seen, tag}) => {
         }
 
         dispatch({
-            type: 'PATCH',
+            type: 'PATCH_ENTRY',
             url: `${SUBSCRIPTION_ENTRIES}/${uuid}`,
             body: {seen, tag},
             success: response => entryChanged(response)
@@ -71,7 +71,7 @@ export const entryTagsReceived = raw => {
 
 export const fetchEntryTags = () => {
     return {
-        type: 'GET',
+        type: 'GET_ENTRY_TAGS',
         url: ENTRY_AVAILABLE_TAGS,
         success: response => entryTagsReceived(response)
     }

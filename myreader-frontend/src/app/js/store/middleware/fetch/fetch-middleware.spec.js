@@ -16,7 +16,7 @@ describe('src/app/js/store/middleware/fetch/fetch-middleware.spec.js', () => {
 
     const anAction = () => {
         return {
-            type: 'POST',
+            type: 'POST_SOMETHING',
             url: 'test',
             body: {id: 1},
             headers: {
@@ -27,9 +27,8 @@ describe('src/app/js/store/middleware/fetch/fetch-middleware.spec.js', () => {
         }
     }
 
-    it('should ', () => {
+    it('should call exchange with action data and extracted method', () => {
         resolve()
-
         execute(anAction())
 
         expect(exchange).toHaveBeenCalledWith({
@@ -40,20 +39,18 @@ describe('src/app/js/store/middleware/fetch/fetch-middleware.spec.js', () => {
         })
     })
 
-    it('', () => {
+    it('should call exchange with empty headers when not set', () => {
         const action = anAction()
         delete action.headers
 
         resolve()
-
         execute(action)
 
         expect(exchange).toHaveBeenCalledWith({url: 'test', method: 'POST', headers: {}, body: {id: 1}})
     })
 
-    it('1', () => {
+    it('should dispatch action when action type is not eligible for exchange', () => {
         resolve()
-
         execute({type: 'OTHER_ACTION'})
 
         expect(next).toHaveBeenCalledWith({type: 'OTHER_ACTION'})
@@ -61,7 +58,7 @@ describe('src/app/js/store/middleware/fetch/fetch-middleware.spec.js', () => {
         expect(dispatch).not.toHaveBeenCalled()
     })
 
-    it('2', done => {
+    it('should call success callback when exchange succeeded', done => {
         resolve('expected success')
 
         execute(anAction()).then(() => {
@@ -71,7 +68,7 @@ describe('src/app/js/store/middleware/fetch/fetch-middleware.spec.js', () => {
         })
     })
 
-    it('3', done => {
+    it('should call error callback when exchange failed', done => {
         reject('expected error')
 
         execute(anAction()).then(() => {
@@ -81,10 +78,9 @@ describe('src/app/js/store/middleware/fetch/fetch-middleware.spec.js', () => {
         })
     })
 
-    it('3', done => {
+    it('should not call success callback when success is not a function', done => {
         const action = anAction()
         action.success = 'not a function'
-
         resolve()
 
         execute(action).then(() => {
@@ -94,10 +90,9 @@ describe('src/app/js/store/middleware/fetch/fetch-middleware.spec.js', () => {
         })
     })
 
-    it('3', done => {
+    it('should not call error callback when success is not a function', done => {
         const action = anAction()
         action.error = 'not a function'
-
         reject()
 
         execute(action).then(() => {
@@ -105,5 +100,20 @@ describe('src/app/js/store/middleware/fetch/fetch-middleware.spec.js', () => {
             expect(dispatch).not.toHaveBeenCalled()
             done()
         })
+    })
+
+    it('should only forward action types starting with an HTTP verb to exchange', () => {
+        const exchangeWithActionType = type => {
+            resolve()
+            execute({type: type, success: () => {}})
+            return expect(exchange)
+        }
+
+        exchangeWithActionType('POST_SOMETHING').toHaveBeenCalledWith(jasmine.objectContaining({method: 'POST'}))
+        exchangeWithActionType('PUT_SOMETHING').toHaveBeenCalledWith(jasmine.objectContaining({method: 'PUT'}))
+        exchangeWithActionType('DELETE_SOMETHING').toHaveBeenCalledWith(jasmine.objectContaining({method: 'DELETE'}))
+        exchangeWithActionType('PATCH_SOMETHING').toHaveBeenCalledWith(jasmine.objectContaining({method: 'PATCH'}))
+        exchangeWithActionType('GET_SOMETHING').toHaveBeenCalledWith(jasmine.objectContaining({method: 'GET'}))
+        exchangeWithActionType('HEAD_SOMETHING').toHaveBeenCalledWith(jasmine.objectContaining({method: 'HEAD'}))
     })
 })

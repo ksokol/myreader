@@ -23,6 +23,6 @@ describe('src/app/js/maintenance/maintenance-actions/maintenance-actions.compone
         element.find('button')[0].click()
         scope.$digest()
 
-        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'PUT'}))
+        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'PUT_INDEX_SYNC_JOB'}))
     })
 })

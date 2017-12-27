@@ -1,9 +1,13 @@
-import {supportedMethods} from './exchange'
+const METHODS = ['POST', 'PUT', 'DELETE', 'PATCH', 'GET', 'HEAD']
+
+function supportsType(method) {
+    return METHODS.findIndex(it => method.startsWith(it + '_')) !== -1
+}
 
 function toArguments(action) {
     return {
         url: action.url,
-        method: action.type,
+        method: action.type.split('_')[0],
         headers: action.headers ? action.headers : {},
         body: action.body
     }
@@ -20,10 +24,8 @@ function handleResponse(cb, dispatch, response) {
 }
 
 export function createFetchMiddleware(exchange) {
-    const methods = supportedMethods()
-
     return ({dispatch}) => next => action => {
-        if (!methods.includes(action.type)) {
+        if (!supportsType(action.type)) {
             return next(action)
         }
 

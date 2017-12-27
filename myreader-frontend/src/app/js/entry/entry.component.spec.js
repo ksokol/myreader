@@ -51,21 +51,13 @@ describe('src/app/js/entry/entry.component.spec.js', () => {
         entryActions.bindings.myOnCheck({item: {seen: true}})
 
         $ngRedux.thunk()
-        expect($ngRedux.lastAction()).toContainActionData({
-                type: 'PATCH',
-                url: '/myreader/api/2/subscriptionEntries/uuid',
-                body: {seen: true, tag: 'tag'}
-        })
+        expect($ngRedux.lastAction()).toContainObject({type: 'PATCH_ENTRY', body: {seen: true, tag: 'tag'}})
     })
 
     it('should update tag when entryTags component fired onSelect event', () => {
         entryTags.bindings.myOnChange({tag: 'tag1'})
 
         $ngRedux.thunk()
-        expect($ngRedux.lastAction()).toContainActionData({
-                    type: 'PATCH',
-                    url: '/myreader/api/2/subscriptionEntries/uuid',
-                    body: {seen: false, tag: 'tag1'}
-        })
+        expect($ngRedux.lastAction()).toContainObject({type: 'PATCH_ENTRY', body: {seen: false, tag: 'tag1'}})
     })
 })

@@ -1,6 +1,6 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import {exchange, supportedMethods} from './exchange'
+import {exchange} from './exchange'
 import initialState from '../../common'
 
 const createFetchMock = () => {
@@ -208,7 +208,4 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
 
         execute('HEAD').then(done)
     })
-
-    it('should return supported http methods', () =>
-        expect(supportedMethods()).toEqual(['POST', 'PUT', 'DELETE', 'PATCH', 'GET', 'HEAD']))
 })

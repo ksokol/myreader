@@ -34,7 +34,7 @@ describe('src/app/js/store/subscription/actions.spec.js', () => {
 
         it('should use HTTP verb GET as type', () => {
             store.dispatch(fetchSubscriptions())
-            expect(store.getActions()[0]).toEqualActionType('GET')
+            expect(store.getActions()[0]).toEqualActionType('GET_SUBSCRIPTIONS')
         })
 
         it('should fetch all subscriptions with at least one new entry', () => {

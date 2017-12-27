@@ -91,7 +91,7 @@ describe('src/app/js/store/bootstrap.spec.js', () => {
             const store = createApplicationStore(OTHER)
 
             store.dispatch({
-                type: 'GET',
+                type: 'GET_SOMETHING',
                 url: '/',
                 success: done
             })

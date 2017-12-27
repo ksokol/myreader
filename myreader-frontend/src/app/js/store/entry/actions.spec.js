@@ -140,7 +140,7 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
         it('should contain expected action type', () => {
             store.dispatch(fetchEntries({path: '', query: {}}))
 
-            expect(store.getActions()[0]).toEqualActionType('GET')
+            expect(store.getActions()[0]).toEqualActionType('GET_ENTRIES')
         })
 
         it('should dispatch with expected path and size query parameter url as action data', () => {
@@ -229,7 +229,7 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
         it('should dispatch expected action when given entry has uuid property', () => {
             store.dispatch(changeEntry({uuid: '1'}))
 
-            expect(store.getActions()[0]).toEqualActionType('PATCH')
+            expect(store.getActions()[0]).toEqualActionType('PATCH_ENTRY')
         })
 
         it('should dispatch action with expected action data', () => {
@@ -262,7 +262,7 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
     describe('action creator fetchEntryTags', () => {
 
         it('should contain expected action type', () => {
-            expect(fetchEntryTags()).toEqualActionType('GET')
+            expect(fetchEntryTags()).toEqualActionType('GET_ENTRY_TAGS')
         })
 
         it('should return expected action data', () => {

@@ -10,7 +10,7 @@ export const fetchSubscriptions = (unseen = true) => {
     const url =  unseen ? `${SUBSCRIPTIONS}?unseenGreaterThan=0` : SUBSCRIPTIONS;
 
     return {
-        type: 'GET', url,
+        type: 'GET_SUBSCRIPTIONS', url,
         success: response => subscriptionsReceived(response)
     }
 }
