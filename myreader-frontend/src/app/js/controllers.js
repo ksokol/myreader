@@ -8,16 +8,13 @@ import {
     fetchEntries,
     fetchSubscriptions,
     getEntries,
-    getSubscriptions,
-    showErrorNotification,
-    unauthorized
+    getSubscriptions
 } from "store";
 import {SUBSCRIPTION_ENTRIES} from "./constants";
 
 angular.module('common.controllers', [])
 
-.controller('SubscriptionNavigationCtrl', ['$rootScope', '$scope', '$state', '$http', '$mdSidenav', '$ngRedux',
-function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
+.controller('SubscriptionNavigationCtrl', ['$scope', '$state', '$mdSidenav', '$ngRedux', function($scope, $state, $mdSidenav, $ngRedux) {
     $scope.data = {
         tags: [],
         items: []
@@ -46,24 +43,6 @@ function($rootScope, $scope, $state, $http, $mdSidenav, $ngRedux) {
 
     $scope.closeSidenav = function () {
         $mdSidenav('left').close();
-    };
-
-    $scope.logout = function() {
-        $http({
-            method: 'POST',
-            url: 'logout'
-        })
-        .success(function() {
-            $rootScope.$emit('refresh');
-            $ngRedux.dispatch(unauthorized());
-            $scope.data = {
-                tags: [],
-                items: []
-            };
-        })
-        .error(function() {
-            $ngRedux.dispatch(showErrorNotification('Could not log out'));
-        });
     };
 
     $scope.trackBy = function(item) {

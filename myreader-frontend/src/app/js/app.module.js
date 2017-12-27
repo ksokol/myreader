@@ -48,6 +48,7 @@ import createApplicationStore from 'store/bootstrap'
 import {ListPageComponent} from './shared/component/list-page/list-page.component'
 import {BookmarkTagsComponent} from './bookmark/bookmark-tags/bookmark-tags.component'
 import {BookmarkComponent} from './bookmark/bookmark.component'
+import {LogoutComponent} from './navigation/logout-item/logout-item.component'
 
 import './config'
 import './controllers'
@@ -94,6 +95,7 @@ angular
     .component('myToast', ToastComponent)
     .component('myAutoScroll', AutoScrollComponent)
     .component('myListPage', ListPageComponent)
+    .component('myLogout', LogoutComponent)
 
     .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)

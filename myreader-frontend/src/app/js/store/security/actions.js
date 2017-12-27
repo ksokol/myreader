@@ -15,3 +15,7 @@ export const authorized = ({role}) => {
     setLastSecurityState({authorized: true, role})
     return updateSecurity()
 }
+
+export const logout = () => {
+    return {type: 'POST', url: 'logout', success: unauthorized}
+}
