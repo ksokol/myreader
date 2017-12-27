@@ -76,7 +76,7 @@ angular.module('common.config', ['ui.router', 'cfp.hotkeys'])
                 url: '/bookmark/:entryTagEqual?q',
                 views: {
                     content: {
-                        template: '<div><my-bookmark></my-bookmark></div>'
+                        template: '<div class="zero-padding-right"><my-bookmark></my-bookmark></div>'
                     }
                 }
             })

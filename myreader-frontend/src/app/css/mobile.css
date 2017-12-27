@@ -105,3 +105,8 @@ ul li {
         overflow-y: auto;
     }
 }
+
+/* TODO temporary */
+.zero-padding-right {
+    padding-right: 0;
+}
