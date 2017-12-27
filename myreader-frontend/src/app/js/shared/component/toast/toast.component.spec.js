@@ -1,8 +1,9 @@
-import {mockNgRedux} from '../../test-utils';
+import {mockNgRedux} from '../../test-utils'
+import initialState from '../../../store/common'
 
 describe('src/app/js/shared/component/toast/toast.component.spec.js', () => {
 
-    let scope, element, compile, ngRedux;
+    let scope, element, compile, ngRedux
 
     const prepareState = () => {
         const notifications = [
@@ -10,63 +11,71 @@ describe('src/app/js/shared/component/toast/toast.component.spec.js', () => {
             {id: 2, text: 'text2', type: 'success'},
             {id: 3, text: 'text3', type: 'error'},
             {id: 4, text: 'text4', type: 'success'}
-        ];
-        ngRedux.onConnect = {notifications: [...notifications]};
-    };
+        ]
+        ngRedux.state = {
+            common: {
+                pendingRequests: 0,
+                notification: {
+                    nextId: 5,
+                    notifications: [...notifications]
+                }
+            }
+        }
+    }
 
     function notification(index) {
-        return notifications()[index];
+        return notifications()[index]
     }
 
     function notifications() {
-        return element.find('div').children();
+        return element.find('div').children()
     }
 
-    beforeEach(angular.mock.module('myreader', mockNgRedux()));
+    beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
-        scope = $rootScope.$new();
-        compile = $compile;
-        ngRedux = $ngRedux;
-    }));
+        scope = $rootScope.$new()
+        compile = $compile
+        ngRedux = $ngRedux
+    }))
 
     it('should not show any notifications', () => {
-        ngRedux.onConnect = {notifications: []};
-        element = compile('<my-toast></my-toast>')(scope);
-        scope.$digest();
+        ngRedux.state = {common: initialState()}
+        element = compile('<my-toast></my-toast>')(scope)
+        scope.$digest()
 
-        expect(notifications().length).toEqual(0);
-    });
+        expect(notifications().length).toEqual(0)
+    })
 
     it('should show three notifications at most in reversed order', () => {
-        prepareState();
-        element = compile('<my-toast></my-toast>')(scope);
-        scope.$digest();
+        prepareState()
+        element = compile('<my-toast></my-toast>')(scope)
+        scope.$digest()
 
-        expect(notifications().length).toEqual(3);
-        expect(notification(0).innerText.trim()).toEqual('text4');
-        expect(notification(1).innerText.trim()).toEqual('text3');
-        expect(notification(2).innerText.trim()).toEqual('text2');
-    });
+        expect(notifications().length).toEqual(3)
+        expect(notification(0).innerText.trim()).toEqual('text4')
+        expect(notification(1).innerText.trim()).toEqual('text3')
+        expect(notification(2).innerText.trim()).toEqual('text2')
+    })
 
     it('should show success and error notifications', () => {
-        prepareState();
-        element = compile('<my-toast></my-toast>')(scope);
-        scope.$digest();
+        prepareState()
+        element = compile('<my-toast></my-toast>')(scope)
+        scope.$digest()
 
-        expect(notification(0).classList).not.toContain('my-my-notification__item--error');
-        expect(notification(1).classList).toContain('my-notification__item--error');
-        expect(notification(2).classList).not.toContain('my-my-notification__item--error');
-    });
+        expect(notification(0).classList).not.toContain('my-my-notification__item--error')
+        expect(notification(1).classList).toContain('my-notification__item--error')
+        expect(notification(2).classList).not.toContain('my-my-notification__item--error')
+    })
 
     it('should dispatch action REMOVE_NOTIFICATION when notification item clicked', () => {
-        prepareState();
-        element = compile('<my-toast></my-toast>')(scope);
-        scope.$digest();
+        prepareState()
+        element = compile('<my-toast></my-toast>')(scope)
+        scope.$digest()
 
-        notification(1).click();
-        scope.$digest();
+        notification(1).click()
+        scope.$digest()
 
-        expect(ngRedux.dispatch).toHaveBeenCalledWith({type: 'REMOVE_NOTIFICATION', id: 3});
-    });
-});
+        expect(ngRedux.dispatch).toHaveBeenCalledWith({type: 'REMOVE_NOTIFICATION', id: 3})
+    })
+})

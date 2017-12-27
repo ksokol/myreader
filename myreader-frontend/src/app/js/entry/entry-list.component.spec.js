@@ -15,15 +15,17 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
         $ngRedux = _$ngRedux_
         scope = $rootScope.$new()
 
-        $ngRedux.onConnect = {
-            entries: [{uuid: '1'}, {uuid: '2'}, {uuid: '3'}],
-            links: {
-                next: {
-                    path: 'expected-path',
-                    query: {}
-                }
-            },
-            entryInFocus: {uuid: '2'}
+        $ngRedux.state = {
+            entry: {
+                entries: [{uuid: '1'}, {uuid: '2'}, {uuid: '3'}],
+                links: {
+                    next: {
+                        path: 'expected-path',
+                        query: {}
+                    }
+                },
+                entryInFocus: '2'
+            }
         }
 
         element = $compile('<my-entry-list></my-entry-list>')(scope)

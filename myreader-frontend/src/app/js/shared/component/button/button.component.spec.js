@@ -1,4 +1,5 @@
 import {mockNgRedux} from '../../test-utils'
+import initialState from '../../../store/common'
 
 describe('src/app/js/shared/component/button/button.component.spec.js', () => {
 
@@ -19,6 +20,11 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
             myOnError: jasmine.createSpy('myOnError')
         }
     })
+
+    beforeEach(inject(_$ngRedux_ => {
+        $ngRedux = _$ngRedux_
+        $ngRedux.state = {common: initialState()}
+    }))
 
     describe('without confirmation', () => {
 
@@ -113,9 +119,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
             }
         }
 
-        beforeEach(inject(($rootScope, $compile, $q, $timeout, _$ngRedux_) => {
-            $ngRedux = _$ngRedux_
-
+        beforeEach(inject(($rootScope, $compile, $q, $timeout) => {
             Page = myConfirm => {
 
                 const expected = {

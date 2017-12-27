@@ -1,4 +1,5 @@
 import {mock, mockNgRedux} from '../../shared/test-utils'
+import initialState from '../../store/common'
 
 describe('src/app/js/maintenance/maintenance-actions/maintenance-actions.component.spec.js', () => {
 
@@ -9,6 +10,10 @@ describe('src/app/js/maintenance/maintenance-actions/maintenance-actions.compone
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
         scope = $rootScope.$new()
         ngRedux = $ngRedux
+
+        ngRedux.state = {
+            common: initialState()
+        }
 
         element = $compile('<my-maintenance-actions></my-maintenance-actions>')(scope)
         scope.$digest()
