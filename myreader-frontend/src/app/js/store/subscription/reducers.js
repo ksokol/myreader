@@ -1,6 +1,6 @@
 import * as types from 'store/action-types'
-import initialState from '.'
 import {cloneObject} from '../shared/objects'
+import {initialApplicationState} from 'store'
 
 function subscriptionsReceived({state, action}) {
     return {...state, subscriptions: action.subscriptions}
@@ -19,10 +19,10 @@ function entryChanged({state, action}) {
 }
 
 function securityUpdate({state, action}) {
-    return action.authorized ? state : initialState()
+    return action.authorized ? state : initialApplicationState().subscription
 }
 
-export function subscriptionReducers(state = initialState(), action) {
+export function subscriptionReducers(state = initialApplicationState().subscription, action) {
     switch (action.type) {
         case types.SUBSCRIPTIONS_RECEIVED: {
             return subscriptionsReceived({state, action})

@@ -1,11 +1,7 @@
 import * as types from 'store/action-types'
+import {initialApplicationState} from 'store'
 
-const initialState = {
-    authorized: true,
-    role: ''
-}
-
-export function securityReducers(state = initialState, action) {
+export function securityReducers(state = initialApplicationState().security, action) {
     switch (action.type) {
         case types.SECURITY_UPDATE: {
             const {authorized, role} = action

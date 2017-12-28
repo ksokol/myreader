@@ -1,7 +1,7 @@
 import * as types from 'store/action-types'
-import initialState from '.'
+import {initialApplicationState} from 'store'
 
-export function settingsReducers(state = initialState(), action) {
+export function settingsReducers(state = initialApplicationState().settings, action) {
     switch (action.type) {
         case types.UPDATE_SETTINGS: {
             return {...state, ...action.settings}

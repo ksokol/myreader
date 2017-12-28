@@ -1,7 +1,7 @@
 import * as types from 'store/action-types'
-import initialState from '.'
+import {initialApplicationState} from 'store'
 
-export function commonReducers(state = initialState(), action) {
+export function commonReducers(state = initialApplicationState().common, action) {
     switch (action.type) {
         case types.FETCH_START: {
             return {...state, pendingRequests: state.pendingRequests + 1}

@@ -1,6 +1,6 @@
-import initialState from '.'
 import * as types from 'store/action-types'
 import {equalLinks} from '../shared/links'
+import {initialApplicationState} from 'store'
 
 function entryPageReceived({state, action}) {
     const links = action.links
@@ -65,10 +65,10 @@ function entryTagsReceived({state, action}) {
 }
 
 function securityUpdate({state, action}) {
-    return action.authorized ? state : initialState()
+    return action.authorized ? state : initialApplicationState().entry
 }
 
-export function entryReducers(state = initialState(), action) {
+export function entryReducers(state = initialApplicationState().entry, action) {
     switch (action.type) {
         case types.ENTRY_PAGE_RECEIVED: {
             return entryPageReceived({state, action})
