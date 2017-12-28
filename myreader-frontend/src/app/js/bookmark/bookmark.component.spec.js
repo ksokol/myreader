@@ -4,7 +4,7 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
 
     const bookmarkTags = componentMock('myBookmarkTags')
     const entryList = componentMock('myEntryList')
-    let rootScope, scope, compile, state, stateParams, ngRedux, element
+    let rootScope, scope, compile, state, stateParams, ngReduxMock, element
 
     describe('', () => {
 
@@ -15,7 +15,7 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
             state = $state
             compile = $compile
             stateParams = $stateParams
-            ngRedux = $ngRedux
+            ngReduxMock = $ngRedux
             scope = $rootScope.$new()
 
             state.go = jasmine.createSpy('$state.go')
@@ -23,15 +23,14 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
             stateParams.entryTagEqual = 'tag2'
             stateParams.other = 'expected other'
 
-            ngRedux.state = {entry: {tags: ['tag1', 'tag2']}}
+            ngReduxMock.setState({entry: {tags: ['tag1', 'tag2']}})
 
             element = $compile('<my-bookmark></my-bookmark>')(scope)
             scope.$digest()
         }))
 
         it('should dispatch expected action on component initialization', () => {
-            expect(ngRedux.dispatch.calls.first().args[0]).toEqualActionType('ENTRY_CLEAR')
-            expect(ngRedux.dispatch.calls.mostRecent().args[0]).toEqualActionType('GET_ENTRY_TAGS')
+            expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_CLEAR', 'GET_ENTRY_TAGS'])
             expect(state.go).toHaveBeenCalledWith('app.bookmarks', {entryTagEqual: 'tag2', other: 'expected other', seenEqual: '*'}, {notify: false})
         })
 
@@ -51,12 +50,11 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
             state.go.and.callFake(() => {
                 return {
                     then: cb => {
-                        ngRedux.dispatch.calls.reset()
+                        ngReduxMock.clearActions()
                         cb()
 
-                        ngRedux.thunk({settings: {pageSize: 10}})
-                        expect(ngRedux.dispatch.calls.mostRecent().args[0]).toEqualActionType('GET_ENTRIES')
-                        expect(ngRedux.dispatch.calls.mostRecent().args[0].url).toContain('other=expected other&entryTagEqual=tag2')
+                        expect(ngReduxMock.getActionTypes()).toEqual(['GET_ENTRIES'])
+                        expect(ngReduxMock.getActions()[0].url).toContain('other=expected other&entryTagEqual=tag2')
                         done()
                     }
                 }
@@ -67,10 +65,10 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
         })
 
         it('should clear entries in store on component destroy', () => {
-            ngRedux.dispatch.calls.reset()
+            ngReduxMock.clearActions()
             scope.$destroy()
 
-            expect(ngRedux.dispatch).toHaveBeenCalledWith({type: 'ENTRY_CLEAR'})
+            expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_CLEAR'])
         })
 
         it('should contain EntryListComponent', () => {
@@ -88,13 +86,13 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
             rootScope = $rootScope
             state = $state
             compile = $compile
-            ngRedux = $ngRedux
+            ngReduxMock = $ngRedux
             scope = $rootScope.$new()
 
             state.go = jasmine.createSpy('$state.go')
             state.go.and.returnValue({then: () => {}})
 
-            ngRedux.state = {entry: {tags: []}}
+            ngReduxMock.setState({entry: {tags: []}})
 
             element = $compile('<my-bookmark></my-bookmark>')(scope)
             scope.$digest()
@@ -108,12 +106,12 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
         })
 
         it('should refresh state', () => {
-            ngRedux.dispatch.calls.reset()
+            ngReduxMock.clearActions()
+
             listPage.bindings.myOnRefresh()
             scope.$digest()
 
-            expect(ngRedux.dispatch.calls.first().args[0]).toEqualActionType('ENTRY_CLEAR')
-            expect(ngRedux.dispatch.calls.mostRecent().args[0]).toEqualActionType('GET_ENTRY_TAGS')
+            expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_CLEAR', 'GET_ENTRY_TAGS'])
             expect(state.go).toHaveBeenCalledWith('app.bookmarks', {seenEqual: '*'}, {notify: false})
         })
     })

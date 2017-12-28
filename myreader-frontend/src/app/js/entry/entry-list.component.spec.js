@@ -6,16 +6,16 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
     const entry = multipleComponentMock('myEntry')
     const loadMore = componentMock('myLoadMore')
 
-    let rootScope, scope, element, $ngRedux
+    let rootScope, scope, element, ngReduxMock
 
     beforeEach(angular.mock.module('myreader', autoScroll, entry, loadMore, mockNgRedux()))
 
-    beforeEach(inject(($rootScope, $compile, _$ngRedux_) => {
+    beforeEach(inject(($rootScope, $compile, $ngRedux) => {
         rootScope = $rootScope
-        $ngRedux = _$ngRedux_
+        ngReduxMock = $ngRedux
         scope = $rootScope.$new()
 
-        $ngRedux.state = {
+        ngReduxMock.setState({
             entry: {
                 entries: [{uuid: '1'}, {uuid: '2'}, {uuid: '3'}],
                 links: {
@@ -26,7 +26,7 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
                 },
                 entryInFocus: '2'
             }
-        }
+        })
 
         element = $compile('<my-entry-list></my-entry-list>')(scope)
         scope.$digest()
@@ -46,8 +46,8 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
 
     it('should dispatch action for next page', () => {
         loadMore.bindings.myOnMore({more: loadMore.bindings.myNext})
-        $ngRedux.thunk({settings: {pageSize: 5, showUnseenEntries: true}})
 
-        expect($ngRedux.lastAction()).toContainActionData({type: 'GET_ENTRIES', url: 'expected-path?seenEqual=false&size=5'})
+        expect(ngReduxMock.getActionTypes()).toEqual(['GET_ENTRIES'])
+        expect(ngReduxMock.getActions()[0].url).toContain('expected-path')
     })
 })

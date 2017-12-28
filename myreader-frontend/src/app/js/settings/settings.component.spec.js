@@ -2,21 +2,21 @@ import {mockNgRedux} from '../shared/test-utils'
 
 describe('src/app/js/settings/settings.component.spec.js', () => {
 
-    let scope, element, $ngRedux
+    let scope, element, ngReduxMock
 
     beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
-    beforeEach(inject(($rootScope, $compile, _$ngRedux_) => {
+    beforeEach(inject(($rootScope, $compile, $ngRedux) => {
         scope = $rootScope.$new()
-        $ngRedux = _$ngRedux_
+        ngReduxMock = $ngRedux
 
-        $ngRedux.state = {
+        ngReduxMock.setState({
             settings: {
                 pageSize: 20,
                 showUnseenEntries: false,
                 showEntryDetails: true
             }
-        }
+        })
 
         element = $compile('<my-settings></my-settings>')(scope)
         scope.$digest()
@@ -33,7 +33,7 @@ describe('src/app/js/settings/settings.component.spec.js', () => {
     it('should dispatch action with proper type', () => {
         element.find('md-checkbox')[1].click()
 
-        expect($ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'SETTINGS_UPDATE'}))
+        expect(ngReduxMock.getActionTypes()).toEqual(['SETTINGS_UPDATE'])
     })
 
     it('should update pageSize setting', ()=>  {
@@ -46,20 +46,20 @@ describe('src/app/js/settings/settings.component.spec.js', () => {
 
         expect(select.find('md-option')[2].selected).toBe(true)
         expect(select.find('md-option')[2].innerText).toContain('30')
-        expect($ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({settings: jasmine.objectContaining({pageSize: 30})}))
+        expect(ngReduxMock.getActions()[0]).toContainActionData({settings: {pageSize: 30}})
     })
 
     it('should update showUnseenEntries setting', () => {
         element.find('md-checkbox')[0].click()
 
         expect(element.find('md-checkbox')[0].classList).toContain('md-checked')
-        expect($ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({settings: jasmine.objectContaining({showUnseenEntries: true})}))
+        expect(ngReduxMock.getActions()[0]).toContainActionData({settings: {showUnseenEntries: true}})
     })
 
     it('should update showEntryDetails setting', () => {
         element.find('md-checkbox')[1].click()
 
         expect(element.find('md-checkbox')[1].classList).not.toContain('md-checked')
-        expect($ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({settings: jasmine.objectContaining({showEntryDetails: false})}))
+        expect(ngReduxMock.getActions()[0]).toContainActionData({settings: {showEntryDetails: false}})
     })
 })

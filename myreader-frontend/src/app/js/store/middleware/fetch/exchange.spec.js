@@ -1,7 +1,5 @@
-import configureMockStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
 import {exchange} from './exchange'
-import initialState from '../../common'
+import {createMockStore} from '../../../shared/test-utils'
 
 const createFetchMock = () => {
     const fetchSpy = spyOn(window, 'fetch')
@@ -30,26 +28,16 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
 
     beforeEach(() => {
         fetchMock = createFetchMock()
-        const mockStore = configureMockStore([thunk])
-        store = mockStore({common: initialState()})
+        store = createMockStore()
     })
 
     const execute = (method, params) => exchange({...params, method}).call(this, store.dispatch)
 
-    it('should dispatch FETCH_START action when http request is about to start', done => {
+    it('should dispatch FETCH_START/FETCH_END actions when http request starts/ends', done => {
         fetchMock.respond({status: 200})
 
         execute('GET').then(() => {
-            expect(store.getActions()[0]).toEqualActionType('FETCH_START')
-            done()
-        })
-    })
-
-    it('should dispatch FETCH_END action when http request finished', done => {
-        fetchMock.respond({status: 200})
-
-        execute('GET').then(() => {
-            expect(store.getActions()[1]).toEqualActionType('FETCH_END')
+            expect(store.getActionTypes()).toEqual(['FETCH_START', 'FETCH_END'])
             done()
         })
     })
@@ -58,9 +46,8 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.respond({status: 500, statusText: 'expected statusText'})
 
         execute('GET').catch(() => {
-            expect(store.getActions()[0]).toEqualActionType('FETCH_START')
+            expect(store.getActionTypes()).toEqual(['FETCH_START', 'SHOW_NOTIFICATION', 'FETCH_END'])
             expect(store.getActions()[1]).toContainActionData({notification: {text: 'expected statusText'}})
-            expect(store.getActions()[2]).toEqualActionType('FETCH_END')
             done()
         })
     })
@@ -69,9 +56,8 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.reject('expected error')
 
         execute('GET').catch(() => {
-            expect(store.getActions()[0]).toEqualActionType('FETCH_START')
+            expect(store.getActionTypes()).toEqual(['FETCH_START', 'SHOW_NOTIFICATION', 'FETCH_END'])
             expect(store.getActions()[1]).toContainActionData({notification: {text: 'expected error'}})
-            expect(store.getActions()[2]).toEqualActionType('FETCH_END')
             done()
         })
     })
@@ -80,9 +66,7 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.respond({status: 401})
 
         execute('GET').catch(() => {
-            expect(store.getActions()[0]).toEqualActionType('FETCH_START')
-            expect(store.getActions()[1]).toEqualActionType('FETCH_END')
-            expect(store.getActions()[2]).toEqualActionType('SECURITY_UPDATE')
+            expect(store.getActionTypes()).toEqual(['FETCH_START', 'FETCH_END', 'SECURITY_UPDATE'])
             done()
         })
     })

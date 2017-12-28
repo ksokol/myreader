@@ -7,13 +7,13 @@ describe('src/app/js/entry/entry.component.spec.js', () => {
     const entryTags = componentMock('myEntryTags')
     const entryContent = componentMock('myEntryContent')
 
-    let rootScope, scope, element, item, $ngRedux
+    let rootScope, scope, element, item, ngReduxMock
 
     beforeEach(angular.mock.module('myreader', entryTitle, entryActions, entryTags, entryContent, mockNgRedux()))
 
-    beforeEach(inject(($rootScope, $compile, _$ngRedux_) => {
+    beforeEach(inject(($rootScope, $compile, $ngRedux) => {
         rootScope = $rootScope
-        $ngRedux = _$ngRedux_
+        ngReduxMock = $ngRedux
         scope = $rootScope.$new()
 
         scope.item = item = {
@@ -50,14 +50,12 @@ describe('src/app/js/entry/entry.component.spec.js', () => {
     it('should update seen flag when entryActions component fired myOnCheck event', () => {
         entryActions.bindings.myOnCheck({item: {seen: true}})
 
-        $ngRedux.thunk()
-        expect($ngRedux.lastAction()).toContainObject({type: 'PATCH_ENTRY', body: {seen: true, tag: 'tag'}})
+        expect(ngReduxMock.getActions()[0]).toContainObject({type: 'PATCH_ENTRY', body: {seen: true, tag: 'tag'}})
     })
 
     it('should update tag when entryTags component fired onSelect event', () => {
         entryTags.bindings.myOnChange({tag: 'tag1'})
 
-        $ngRedux.thunk()
-        expect($ngRedux.lastAction()).toContainObject({type: 'PATCH_ENTRY', body: {seen: false, tag: 'tag1'}})
+        expect(ngReduxMock.getActions()[0]).toContainObject({type: 'PATCH_ENTRY', body: {seen: false, tag: 'tag1'}})
     })
 })

@@ -1,9 +1,8 @@
 import {mockNgRedux} from '../../test-utils'
-import initialState from '../../../store/common'
 
 describe('src/app/js/shared/component/button/button.component.spec.js', () => {
 
-    let scope, component, bindings, buttonGroupCtrl, myOnClick, $ngRedux
+    let scope, component, bindings, buttonGroupCtrl, myOnClick, ngReduxMock
 
     beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
@@ -21,10 +20,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
         }
     })
 
-    beforeEach(inject(_$ngRedux_ => {
-        $ngRedux = _$ngRedux_
-        $ngRedux.state = {common: initialState()}
-    }))
+    beforeEach(inject($ngRedux => ngReduxMock = $ngRedux))
 
     describe('without confirmation', () => {
 
@@ -215,7 +211,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
             const page = Page(withoutConfirmation)
 
             expect(page.button().disabled()).toEqual(false)
-            $ngRedux.stateChange({pendingRequests: 1})
+            ngReduxMock.setState({common: {pendingRequests: 1}})
             scope.$digest()
             expect(page.button().disabled()).toEqual(true)
         })

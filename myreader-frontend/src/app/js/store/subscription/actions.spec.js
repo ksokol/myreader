@@ -1,22 +1,17 @@
-import configureMockStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
-import initialState from '.'
 import {fetchSubscriptions, subscriptionsReceived} from 'store'
+import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/subscription/actions.spec.js', () => {
 
-    let store, mockStore
+    let store
 
-    beforeEach(() => {
-        mockStore = configureMockStore([thunk])
-        store = mockStore({subscription: initialState()})
-    })
+    beforeEach(() => store = createMockStore())
 
     describe('SUBSCRIPTIONS_RECEIVED', () => {
 
         it('should contain expected action type', () => {
             store.dispatch(subscriptionsReceived())
-            expect(store.getActions()[0]).toEqualActionType('SUBSCRIPTIONS_RECEIVED')
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTIONS_RECEIVED'])
         })
 
         it('should return valid object when input is undefined', () => {
@@ -34,7 +29,7 @@ describe('src/app/js/store/subscription/actions.spec.js', () => {
 
         it('should use HTTP verb GET as type', () => {
             store.dispatch(fetchSubscriptions())
-            expect(store.getActions()[0]).toEqualActionType('GET_SUBSCRIPTIONS')
+            expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTIONS'])
         })
 
         it('should fetch all subscriptions with at least one new entry', () => {

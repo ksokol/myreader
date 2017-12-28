@@ -2,23 +2,13 @@ import {mock, mockNgRedux} from '../../shared/test-utils'
 
 describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => {
 
-    const currentState = {
-        common: {
-            notification: {
-                nextId: 1
-            }
-        }
-    }
-
-    let scope, element, $state, ngRedux, subscriptionService, deferred
+    let scope, element, $state, ngReduxMock, subscriptionService, deferred
 
     beforeEach(angular.mock.module('myreader', mock('$state'), mock('subscriptionService'), mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, $q, _$state_, $ngRedux, _subscriptionService_) => {
         scope = $rootScope.$new()
-        ngRedux = $ngRedux
-
-        ngRedux.state = currentState
+        ngReduxMock = $ngRedux
 
         deferred = $q.defer()
         const promise = deferred.promise
@@ -69,14 +59,8 @@ describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => 
         element.find('input').val('expected url').triggerHandler('input')
         element.find('button')[0].click()
 
-        ngRedux.thunk(currentState)
-        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({
-            type: 'SHOW_NOTIFICATION',
-            notification: jasmine.objectContaining({
-                text: {data: {status: 500, message: 'expected error'}},
-                type: 'error'
-            })
-        }))
+        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
+        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: {data: {status: 500, message: 'expected error'}}, type: 'error'}})
     })
 
     it('should show backend validation message', function () {

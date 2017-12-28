@@ -2,19 +2,10 @@ import {componentMock, mock, mockNgRedux} from '../shared/test-utils'
 
 describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
-    const currentState = {
-        common: {
-            pendingRequests: 0,
-            notification: {
-                nextId: 1
-            }
-        }
-    }
-
     const mySubscriptionTagPanel = componentMock('mySubscriptionTagPanel')
     const mySubscriptionExclusionPanel = componentMock('mySubscriptionExclusionPanel')
 
-    let scope, element, $state, $stateParams, ngRedux, subscriptionService, subscription, saveDeferred, removeDeferred
+    let scope, element, $state, $stateParams, ngReduxMock, subscriptionService, subscription, saveDeferred, removeDeferred
 
     beforeEach(angular.mock.module('myreader',
         mock('$state'),
@@ -27,9 +18,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
     beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, $ngRedux, _subscriptionService_) => {
         scope = $rootScope.$new()
-        ngRedux = $ngRedux
-
-        ngRedux.state = currentState
+        ngReduxMock = $ngRedux
 
         subscription = {
             uuid: 'expected uuid',
@@ -94,14 +83,8 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
         expect(element.find('input')[0].value).toEqual('expected new title')
 
-        ngRedux.thunk(currentState)
-        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({
-            type: 'SHOW_NOTIFICATION',
-            notification: jasmine.objectContaining({
-                text: 'Subscription saved',
-                type: 'success'
-            })
-        }))
+        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
+        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'Subscription saved', type: 'success'}})
     })
 
     it('should show notification message when save failed', () => {
@@ -109,14 +92,8 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         angular.element(element.find('input')[0]).val('new title').triggerHandler('input')
         element.find('button')[0].click()
 
-        ngRedux.thunk(currentState)
-        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({
-            type: 'SHOW_NOTIFICATION',
-            notification: jasmine.objectContaining({
-                text: {data: {status:500, message: 'expected error'}},
-                type: 'error'
-            })
-        }))
+        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
+        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: {data: {status:500, message: 'expected error'}}, type: 'error'}})
     })
 
     it('should show validation message when validation failed', () => {
@@ -146,14 +123,8 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         mySubscriptionExclusionPanel.bindings.myOnError({error: 'expected error'})
         scope.$digest()
 
-        ngRedux.thunk(currentState)
-        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({
-            type: 'SHOW_NOTIFICATION',
-            notification: jasmine.objectContaining({
-                text: 'expected error',
-                type: 'error'
-            })
-        }))
+        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
+        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'expected error', type: 'error'}})
     })
 
     it('should navigate to subscription overview page when remove succeeded', inject($timeout => {

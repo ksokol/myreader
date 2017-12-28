@@ -2,13 +2,13 @@ import {mockNgRedux} from '../../shared/test-utils'
 
 describe('src/app/js/navigation/logout-item/logout-item.component.spec.js', () => {
 
-    let scope, element, ngRedux
+    let scope, element, ngReduxMock
 
     beforeEach(() => angular.mock.module('myreader', mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
         scope = $rootScope.$new()
-        ngRedux = $ngRedux
+        ngReduxMock = $ngRedux
 
         element = $compile('<my-logout></my-logout>')(scope)
     }))
@@ -17,6 +17,6 @@ describe('src/app/js/navigation/logout-item/logout-item.component.spec.js', () =
         element.find('button')[0].click()
         scope.$digest()
 
-        expect(ngRedux.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'POST_LOGOUT'}))
+        expect(ngReduxMock.getActionTypes()).toEqual(['POST_LOGOUT'])
     })
 })

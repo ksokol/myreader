@@ -1,9 +1,8 @@
 import {mockNgRedux} from '../../test-utils'
-import initialState from '../../../store/common'
 
 describe('src/app/js/shared/component/toast/toast.component.spec.js', () => {
 
-    let scope, element, compile, ngRedux
+    let scope, element, compile, ngReduxMock
 
     const prepareState = () => {
         const notifications = [
@@ -12,7 +11,7 @@ describe('src/app/js/shared/component/toast/toast.component.spec.js', () => {
             {id: 3, text: 'text3', type: 'error'},
             {id: 4, text: 'text4', type: 'success'}
         ]
-        ngRedux.state = {
+        ngReduxMock.setState({
             common: {
                 pendingRequests: 0,
                 notification: {
@@ -20,7 +19,7 @@ describe('src/app/js/shared/component/toast/toast.component.spec.js', () => {
                     notifications: [...notifications]
                 }
             }
-        }
+        })
     }
 
     function notification(index) {
@@ -36,11 +35,10 @@ describe('src/app/js/shared/component/toast/toast.component.spec.js', () => {
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
         scope = $rootScope.$new()
         compile = $compile
-        ngRedux = $ngRedux
+        ngReduxMock = $ngRedux
     }))
 
     it('should not show any notifications', () => {
-        ngRedux.state = {common: initialState()}
         element = compile('<my-toast></my-toast>')(scope)
         scope.$digest()
 
@@ -76,6 +74,6 @@ describe('src/app/js/shared/component/toast/toast.component.spec.js', () => {
         notification(1).click()
         scope.$digest()
 
-        expect(ngRedux.dispatch).toHaveBeenCalledWith({type: 'REMOVE_NOTIFICATION', id: 3})
+        expect(ngReduxMock.getActions()[0]).toContainObject({type: 'REMOVE_NOTIFICATION', id: 3})
     })
 })

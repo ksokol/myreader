@@ -1,17 +1,12 @@
-import configureMockStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
 import {rebuildSearchIndex} from 'store'
-import initialState from '../common'
 import {PROCESSING} from '../../constants'
+import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/admin/action.spec.js', () => {
 
     let store
 
-    beforeEach(() => {
-        const mockStore = configureMockStore([thunk])
-        store = mockStore({common: initialState()})
-    })
+    beforeEach(() => store = createMockStore())
 
     it('action creator rebuildSearchIndex', () => {
         store.dispatch(rebuildSearchIndex())

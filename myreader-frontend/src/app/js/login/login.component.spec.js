@@ -1,18 +1,14 @@
 import {mock, mockNgRedux} from '../shared/test-utils'
-import initialState from '../store/common'
 
 describe('src/app/js/login/login.component.spec.js', () => {
 
-    let scope, element, httpBackend, $state, ngRedux
+    let scope, element, httpBackend, $state, ngReduxMock
 
     beforeEach(angular.mock.module('myreader', mock('$state'), mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, _$httpBackend_, _$state_, $ngRedux) => {
         scope = $rootScope.$new()
-        ngRedux = $ngRedux
-
-        ngRedux.state = {common: initialState()}
-
+        ngReduxMock = $ngRedux
         httpBackend = _$httpBackend_
         $state = _$state_
         $state.go = jasmine.createSpy('$state.go()')
@@ -54,7 +50,7 @@ describe('src/app/js/login/login.component.spec.js', () => {
         httpBackend.flush()
 
         expect($state.go).toHaveBeenCalledWith('admin.overview')
-        expect(ngRedux.dispatch).toHaveBeenCalledWith({type: 'SECURITY_UPDATE', authorized: true, role: 'admin'})
+        expect(ngReduxMock.getActions()[0]).toEqual({type: 'SECURITY_UPDATE', authorized: true, role: 'admin'})
     })
 
     it('should navigate to stream page when X-MY-AUTHORITIES header contains user role', () => {
@@ -63,7 +59,7 @@ describe('src/app/js/login/login.component.spec.js', () => {
         httpBackend.flush()
 
         expect($state.go).toHaveBeenCalledWith('app.entries')
-        expect(ngRedux.dispatch).toHaveBeenCalledWith({type: 'SECURITY_UPDATE', authorized: true, role: 'user'})
+        expect(ngReduxMock.getActions()[0]).toEqual({type: 'SECURITY_UPDATE', authorized: true, role: 'user'})
     })
 
     it('should navigate to stream page when X-MY-AUTHORITIES is not present', () => {
@@ -72,7 +68,7 @@ describe('src/app/js/login/login.component.spec.js', () => {
         httpBackend.flush()
 
         expect($state.go).toHaveBeenCalledWith('app.entries')
-        expect(ngRedux.dispatch).toHaveBeenCalledWith({type: 'SECURITY_UPDATE', authorized: true, role: 'user'})
+        expect(ngReduxMock.getActions()[0]).toEqual({type: 'SECURITY_UPDATE', authorized: true, role: 'user'})
     })
 
     it('should indicate wrong credentials on page', () => {

@@ -1,5 +1,3 @@
-import configureMockStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
 import {
     changeEntry,
     entryChanged,
@@ -11,31 +9,19 @@ import {
     fetchEntries,
     fetchEntryTags
 } from 'store'
-import initialState from '.'
+import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/entry/actions.spec.js', () => {
 
-    let store, mockStore
+    let store
 
-    const initMockStore = (state = {}) => {
-        const s = Object.assign({
-            entry: initialState(),
-            settings: {
-                pageSize: 5
-            }
-        }, state)
-
-        mockStore = configureMockStore([thunk])
-        store = mockStore(s)
-    }
-
-    beforeEach(() => initMockStore())
+    beforeEach(() => store = createMockStore())
 
     describe('ENTRY_PAGE_RECEIVED', () => {
 
         it('should contain expected action type', () => {
             store.dispatch(entryPageReceived())
-            expect(store.getActions()[0]).toEqualActionType('ENTRY_PAGE_RECEIVED')
+            expect(store.getActionTypes()).toEqual(['ENTRY_PAGE_RECEIVED'])
         })
 
         it('should return valid object when input is undefined', () => {
@@ -62,18 +48,16 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
         it('should contain expected action type', () => {
             store.dispatch(entryChanged({uuid: '1'}))
-            expect(store.getActions()[0]).toEqualActionType('ENTRY_CHANGED')
+            expect(store.getActionTypes()).toEqual(['ENTRY_CHANGED'])
         })
 
         it('should not dispatch action when input is undefined', () => {
             store.dispatch(entryChanged())
-            expect(store.getActions()[0]).toEqual(undefined)
+            expect(store.getActionTypes()).toEqual([])
         })
 
         it('should return expected action data', () => {
-            const state = initialState()
-            state.entries = [{uuid: '1', key: 'old value'}]
-            store = mockStore({entry: state})
+            store.setState({entry: {entries: [{uuid: '1', key: 'old value'}]}})
 
             store.dispatch(entryChanged({uuid: '1', key: 'new value'}))
             expect(store.getActions()[0])
@@ -85,7 +69,7 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
         it('should contain expected action type', () => {
             store.dispatch(entryClear())
-            expect(store.getActions()[0]).toEqualActionType('ENTRY_CLEAR')
+            expect(store.getActionTypes()).toEqual(['ENTRY_CLEAR'])
         })
     })
 
@@ -93,14 +77,11 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
         it('should contain expected action type', () => {
             store.dispatch(entryFocusNext())
-            expect(store.getActions()[0]).toEqualActionType('ENTRY_FOCUS_NEXT')
+            expect(store.getActionTypes()).toEqual(['ENTRY_FOCUS_NEXT'])
         })
 
         it('should return expected action data', () => {
-            const state = initialState()
-            state.entries = [{uuid: '1'}]
-            state.entryInFocus = '1'
-            store = mockStore({entry: state})
+            store.setState({entry: {entries: [{uuid: '1'}], entryInFocus: '1'}})
 
             store.dispatch(entryFocusNext())
             expect(store.getActions()[0]).toContainActionData({currentInFocus: '1'})
@@ -111,24 +92,18 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
         it('should not dispatch action when no entry focused', () => {
             store.dispatch(entryFocusPrevious())
-            expect(store.getActions()[0]).toEqual(undefined)
+            expect(store.getActionTypes()).toEqual([])
         })
 
         it('should contain expected action type', () => {
-            const state = initialState()
-            state.entries = [{uuid: '1'}]
-            state.entryInFocus = '1'
-            store = mockStore({entry: state})
+            store.setState({entry: {entries: [{uuid: '1'}], entryInFocus: '1'}})
 
             store.dispatch(entryFocusPrevious())
-            expect(store.getActions()[0]).toEqualActionType('ENTRY_FOCUS_PREVIOUS')
+            expect(store.getActionTypes()).toEqual(['ENTRY_FOCUS_PREVIOUS'])
         })
 
         it('should return expected action data', () => {
-            const state = initialState()
-            state.entries = [{uuid: '1'}]
-            state.entryInFocus = '1'
-            store = mockStore({entry: state})
+            store.setState({entry: {entries: [{uuid: '1'}], entryInFocus: '1'}})
 
             store.dispatch(entryFocusPrevious())
             expect(store.getActions()[0]).toContainActionData({currentInFocus: '1'})
@@ -137,10 +112,12 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
     describe('action creator fetchEntries', () => {
 
+        beforeEach(() => store.setState({settings: {pageSize: 5}}))
+
         it('should contain expected action type', () => {
             store.dispatch(fetchEntries({path: '', query: {}}))
 
-            expect(store.getActions()[0]).toEqualActionType('GET_ENTRIES')
+            expect(store.getActionTypes()).toEqual(['GET_ENTRIES'])
         })
 
         it('should dispatch with expected path and size query parameter url as action data', () => {
@@ -174,12 +151,7 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
         })
 
         it('should dispatch with settings value false for seenEqual when seenEqual is undefined in query parameters', () => {
-            initMockStore({
-                settings: {
-                    pageSize: 5,
-                    showUnseenEntries: true
-                }
-            })
+            store.setState({settings: {pageSize: 5, showUnseenEntries: true}})
 
             store.dispatch(fetchEntries({path: '/path1', query: {}}))
 
@@ -187,12 +159,7 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
         })
 
         it('should dispatch with settings value * for seenEqual when seenEqual is undefined in query parameters', () => {
-            initMockStore({
-                settings: {
-                    pageSize: 5,
-                    showUnseenEntries: false
-                }
-            })
+            store.setState({settings: {pageSize: 5, showUnseenEntries: false}})
 
             store.dispatch(fetchEntries({path: '/path1', query: {}}))
 
@@ -229,7 +196,7 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
         it('should dispatch expected action when given entry has uuid property', () => {
             store.dispatch(changeEntry({uuid: '1'}))
 
-            expect(store.getActions()[0]).toEqualActionType('PATCH_ENTRY')
+            expect(store.getActionTypes()).toEqual(['PATCH_ENTRY'])
         })
 
         it('should dispatch action with expected action data', () => {
@@ -251,22 +218,26 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
     describe('ENTRY_TAGS_RECEIVED', () => {
 
         it('should contain expected action type', () => {
-            expect(entryTagsReceived(['tag1', 'tag2'])).toEqualActionType('ENTRY_TAGS_RECEIVED')
+            store.dispatch(entryTagsReceived(['tag1', 'tag2']))
+            expect(store.getActionTypes()).toEqual(['ENTRY_TAGS_RECEIVED'])
         })
 
         it('should return expected action data', () => {
-            expect(entryTagsReceived(['tag1', 'tag2'])).toContainActionData({tags: ['tag1', 'tag2']})
+            store.dispatch(entryTagsReceived(['tag1', 'tag2']))
+            expect(store.getActions()[0]).toContainActionData({tags: ['tag1', 'tag2']})
         })
     })
 
     describe('action creator fetchEntryTags', () => {
 
         it('should contain expected action type', () => {
-            expect(fetchEntryTags()).toEqualActionType('GET_ENTRY_TAGS')
+            store.dispatch(fetchEntryTags())
+            expect(store.getActionTypes()).toEqual(['GET_ENTRY_TAGS'])
         })
 
         it('should return expected action data', () => {
-            expect(fetchEntryTags()).toContainActionData({url: '/myreader/api/2/subscriptionEntries/availableTags'})
+            store.dispatch(fetchEntryTags())
+            expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptionEntries/availableTags'})
         })
 
         it('should dispatch action defined in success property', () => {

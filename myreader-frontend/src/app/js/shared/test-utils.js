@@ -1,3 +1,8 @@
+import configureMockStore from 'redux-mock-store'
+import thunk from 'redux-thunk'
+import merge from 'lodash.merge'
+import {initialApplicationState} from 'store'
+
 /*
  * https://velesin.io/2016/08/23/unit-testing-angular-1-5-components/
  */
@@ -63,30 +68,48 @@ export function mock(name) {
     return _mock
 }
 
+export function createMockStore() {
+    const store = configureMockStore([thunk])(initialApplicationState())
+
+    store.getActionTypes = () => store.getActions().map(it => it.type)
+    store.setState = stateSlice => merge(store.getState(), stateSlice)
+
+    return store
+}
+
 export function ngReduxMock() {
-    let _component = null
-    const mock = jasmine.createSpyObj('$ngRedux', ['dispatch', 'connect', 'subscribe'])
-    mock.state = {}
-    mock.subscribe.and.returnValue(() => {})
-    mock.dispatch.and.returnValue({then: () => {}})
-    mock.stateChange = values => Object.assign(_component, values)
-    mock.thunk = (state = {}) => {
-        mock.dispatch.calls.mostRecent().args[0](mock.dispatch, () => state)
+    const store = createMockStore()
+    const storeSetState = store.setState
+    let mapToTarget
+
+    const createMapToTarget = (component, mapStateToTarget) => state => {
+        if (typeof mapStateToTarget === 'function') {
+            Object.assign(component, mapStateToTarget(state))
+        }
     }
-    mock.connect.and.callFake((mapStateToTarget, mapDispatchToTarget) => {
+
+    store.connect = jasmine.createSpy('$ngRedux.connect')
+    store.connect.and.callFake((mapStateToTarget, mapDispatchToTarget) => {
         return component => {
-            _component = component
-            if (typeof mapStateToTarget === 'function') {
-                Object.assign(component, mapStateToTarget(mock.state))
-            }
+            mapToTarget = createMapToTarget(component, mapStateToTarget)
+            mapToTarget(store.getState())
+
             if (typeof mapDispatchToTarget === 'function') {
-                Object.assign(component, mapDispatchToTarget(mock.dispatch))
+                Object.assign(component, mapDispatchToTarget(store.dispatch))
             }
             return () => {}
         }
     })
-    mock.lastAction = () => mock.dispatch.calls.mostRecent().args[0]
-    return mock
+
+    store.setState = stateSlice => {
+        storeSetState(stateSlice)
+
+        if(mapToTarget) {
+            mapToTarget(store.getState())
+        }
+    }
+
+    return store
 }
 
 export function mockNgRedux() {
