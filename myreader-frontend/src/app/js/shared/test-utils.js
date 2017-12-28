@@ -1,14 +1,12 @@
-'use strict'
-
 /*
  * https://velesin.io/2016/08/23/unit-testing-angular-1-5-components/
  */
-function componentMock(name) {
+export function componentMock(name) {
     function _componentMock($provide) {
         _componentMock.bindings = {}
 
         $provide.decorator(name + 'Directive', function($delegate) {
-            var component = $delegate[0]
+            const component = $delegate[0]
             component.template = ''
             component.controller = function () {
                 _componentMock.bindings = this
@@ -21,14 +19,14 @@ function componentMock(name) {
     return _componentMock
 }
 
-function multipleComponentMock(name) {
+export function multipleComponentMock(name) {
     multipleComponentMock.bindings = []
 
     function _componentMock($provide) {
         _componentMock.bindings = multipleComponentMock.bindings
 
         $provide.decorator(name + 'Directive', function($delegate) {
-            var component = $delegate[0]
+            const component = $delegate[0]
             component.template = ''
             component.controller = function () {
                 multipleComponentMock.bindings.push(this)
@@ -41,26 +39,9 @@ function multipleComponentMock(name) {
     return _componentMock
 }
 
-function directiveMock(name) {
-    function _directiveMock($provide) {
-        _directiveMock.scope = {}
-
-        $provide.decorator(name + 'Directive', function($delegate) {
-            var directive = $delegate[0]
-            directive.template = ''
-            directive.controller = function ($scope) {
-                _directiveMock.scope = $scope
-            }
-            return $delegate
-        })
-    }
-
-    return _directiveMock
-}
-
-function filterMock(name) {
+export function filterMock(name) {
     function _filterMock($provide) {
-        var filter = jasmine.createSpy(name + 'Filter')
+        const filter = jasmine.createSpy(name + 'Filter')
         filter.and.callFake(function (value) {
             if (typeof value === 'object') {
                 // remove Angular specific attributes
@@ -75,14 +56,14 @@ function filterMock(name) {
     return _filterMock
 }
 
-function mock(name) {
+export function mock(name) {
     function _mock($provide) {
         $provide.value(name, {})
     }
     return _mock
 }
 
-function ngReduxMock() {
+export function ngReduxMock() {
     let _component = null
     const mock = jasmine.createSpyObj('$ngRedux', ['dispatch', 'connect', 'subscribe'])
     mock.state = {}
@@ -108,14 +89,14 @@ function ngReduxMock() {
     return mock
 }
 
-function mockNgRedux() {
+export function mockNgRedux() {
     function _mock($provide) {
         $provide.value('$ngRedux', ngReduxMock())
     }
     return _mock
 }
 
-function spy(name) {
+export function spy(name) {
     function _spy($provide) {
         $provide.decorator(name, ['$delegate', function ($delegate) {
                 return jasmine.createSpy($delegate)
@@ -123,15 +104,4 @@ function spy(name) {
         ])
     }
     return _spy
-}
-
-module.exports = {
-    'componentMock': componentMock,
-    'multipleComponentMock': multipleComponentMock,
-    'directiveMock': directiveMock,
-    'filterMock': filterMock,
-    'mock': mock,
-    'spy': spy,
-    'mockNgRedux': mockNgRedux,
-    'ngReduxMock': ngReduxMock
 }
