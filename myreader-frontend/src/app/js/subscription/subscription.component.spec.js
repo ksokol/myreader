@@ -5,7 +5,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     const mySubscriptionTagPanel = componentMock('mySubscriptionTagPanel')
     const mySubscriptionExclusionPanel = componentMock('mySubscriptionExclusionPanel')
 
-    let scope, element, $state, $stateParams, ngReduxMock, subscriptionService, subscription, saveDeferred, removeDeferred
+    let scope, element, $state, $stateParams, ngReduxMock, subscriptionService, subscription, saveDeferred
 
     beforeEach(angular.mock.module('myreader',
         mock('$state'),
@@ -28,7 +28,6 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         }
 
         saveDeferred = $q.defer()
-        removeDeferred = $q.defer()
         const deferred = $q.defer()
         deferred.resolve(subscription)
         subscriptionService = _subscriptionService_
@@ -37,7 +36,6 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         subscriptionService.remove = jasmine.createSpy('subscriptionService.remove()')
         subscriptionService.find.and.returnValue(deferred.promise)
         subscriptionService.save.and.returnValue(saveDeferred.promise)
-        subscriptionService.remove.and.returnValue(removeDeferred.promise)
 
         $state = _$state_
         $state.go = jasmine.createSpy('$state.go()')
@@ -128,12 +126,12 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     })
 
     it('should navigate to subscription overview page when remove succeeded', inject($timeout => {
-        removeDeferred.resolve()
         element.find('button')[1].click() //click delete
         $timeout.flush(1000)
         element.find('button')[1].click() //confirm
 
-        expect(subscriptionService.remove).toHaveBeenCalledWith('expected uuid')
+        expect(ngReduxMock.getActionTypes()).toEqual(['DELETE_SUBSCRIPTION'])
+        expect(ngReduxMock.getActions()[0].url).toContain('expected uuid')
         expect($state.go).toHaveBeenCalledWith('app.subscriptions')
     }))
 

@@ -18,6 +18,11 @@ function entryChanged({state, action}) {
     return {...state, subscriptions}
 }
 
+function subscriptionDeleted({state, action}) {
+    const subscriptions = state.subscriptions.filter(it => it !== action.uuid)
+    return {...state, subscriptions}
+}
+
 function securityUpdate({state, action}) {
     return action.authorized ? state : initialApplicationState().subscription
 }
@@ -29,6 +34,9 @@ export function subscriptionReducers(state = initialApplicationState().subscript
         }
         case types.ENTRY_CHANGED: {
             return entryChanged({state, action})
+        }
+        case types.SUBSCRIPTION_DELETED: {
+            return subscriptionDeleted({state, action})
         }
         case types.SECURITY_UPDATE: {
             return securityUpdate({state, action})

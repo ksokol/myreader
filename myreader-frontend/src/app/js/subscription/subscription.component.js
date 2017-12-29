@@ -1,6 +1,7 @@
 import template from './subscription.component.html'
 import './subscription.component.css'
 import {showErrorNotification, showSuccessNotification} from 'store'
+import {deleteSubscription} from 'store'
 
 class controller {
 
@@ -53,7 +54,7 @@ class controller {
 
     onDelete() {
         this.pendingAction = true
-        return this.subscriptionService.remove(this.subscription.uuid)
+        return this.$ngRedux.dispatch(deleteSubscription(this.subscription.uuid))
     }
 
     onSuccessDelete() {

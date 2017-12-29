@@ -102,4 +102,14 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
                 .toContainObject({subscriptions: [{uuid: '1', unseen: 2}, {uuid: '2', unseen: 3}]})
         })
     })
+
+    describe('action SUBSCRIPTION_DELETED', () => {
+
+        it('should remove subscription for given uuid', () => {
+            const state = {subscriptions: [{uuid: '1'}, {uuid: '2'}, {uuid: '3'}]}
+            const action = {type: 'SUBSCRIPTION_DELETED', uuid: '2'}
+
+            expect(subscriptionReducers(state, action)).toContainObject({subscriptions: [{uuid: '1'}, {uuid: '3'}]})
+        })
+    })
 })

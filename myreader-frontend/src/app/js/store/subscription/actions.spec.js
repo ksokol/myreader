@@ -1,4 +1,4 @@
-import {fetchSubscriptions, subscriptionsReceived} from 'store'
+import {fetchSubscriptions, subscriptionsReceived, subscriptionDeleted, deleteSubscription} from 'store'
 import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/subscription/actions.spec.js', () => {
@@ -49,6 +49,38 @@ describe('src/app/js/store/subscription/actions.spec.js', () => {
             store.dispatch(store.getActions()[0].success({content: [{uuid: 1}]}))
 
             expect(store.getActions()[1]).toContainObject({subscriptions: [{uuid: 1}]})
+        })
+    })
+
+    describe('SUBSCRIPTION_DELETED', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(subscriptionDeleted('1'))
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_DELETED'])
+        })
+
+        it('should return expected action data', () => {
+            store.dispatch(subscriptionDeleted('1'))
+            expect(store.getActions()[0]).toContainActionData({uuid: '1'})
+        })
+    })
+
+    describe('action creator deleteSubscription()', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(deleteSubscription('1'))
+            expect(store.getActionTypes()).toEqual(['DELETE_SUBSCRIPTION'])
+        })
+
+        it('should return expected action data', () => {
+            store.dispatch(deleteSubscription('uuid1'))
+            expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions/uuid1'})
+        })
+
+        it('should dispatch SUBSCRIPTION_DELETED action on success', () => {
+            store.dispatch(deleteSubscription('uuid1'))
+            store.dispatch(store.getActions()[0].success())
+            expect(store.getActions()[1]).toContainObject({type: 'SUBSCRIPTION_DELETED', uuid: 'uuid1'})
         })
     })
 })
