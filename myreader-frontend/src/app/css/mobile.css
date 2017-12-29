@@ -59,37 +59,7 @@ ul li {
     padding: 0;
 }
 
-.search-panel {
-    display: flex;
-    flex-direction: column;
-}
-
-.search-input {
-    flex-grow: 1;
-}
-
 @media (min-width: 1280px) {
-    .search-panel {
-        position: fixed;
-        width: calc(100% - 330px);
-        z-index: 1030;
-    }
-
-    .my-list-wrapper {
-        height: 100%;
-        display: flex;
-        overflow: hidden;
-        padding: 0;
-        width: 100%;
-    }
-
-    .my-list {
-        overflow: auto;
-        margin-top: 56px;
-        width: 100%;
-        height: calc(100vh - 64px);
-    }
-
     .my-content {
         overflow: hidden;
     }

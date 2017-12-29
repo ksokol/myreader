@@ -1,39 +1,26 @@
-<div class="search-panel">
-    <div layout="row">
-        <my-search-input
-                class="search-input"
-                my-value="search"
-                my-on-change="onSearchChange(value)"
-                my-on-clear="onSearchClear()">
-        </my-search-input>
-
-        <md-button
-                aria-label="Previous entry"
-                hide
-                show-gt-md
-                class="md-icon-button"
-                ng-click="up()">
-            <my-icon my-type="navigate-before"></my-icon>
-        </md-button>
-        <md-button
-                aria-label="Next entry"
-                hide
-                show-gt-md
-                class="md-icon-button"
-                ng-click="down()">
-            <my-icon my-type="navigate-next"></my-icon>
-        </md-button>
-        <md-button
-                aria-label="Refresh"
-                class="md-icon-button"
-                ng-click="forceRefresh()">
-            <my-icon my-type="refresh"></my-icon>
-        </md-button>
-    </div>
-</div>
-
-<div class="my-list-wrapper">
-    <div class="my-list">
-        <my-entry-list></my-entry-list>
-    </div>
+<div class="zero-padding-right">
+    <my-list-page my-on-search="refresh(params)"
+                  my-on-refresh="forceRefresh()">
+        <my-action-panel>
+            <md-button
+                    aria-label="Previous entry"
+                    hide
+                    show-gt-md
+                    class="md-icon-button"
+                    ng-click="up()">
+                <my-icon my-type="navigate-before"></my-icon>
+            </md-button>
+            <md-button
+                    aria-label="Next entry"
+                    hide
+                    show-gt-md
+                    class="md-icon-button"
+                    ng-click="down()">
+                <my-icon my-type="navigate-next"></my-icon>
+            </md-button>
+        </my-action-panel>
+        <my-list-panel>
+            <my-entry-list></my-entry-list>
+        </my-list-panel>
+    </my-list-page>
 </div>

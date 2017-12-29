@@ -34,7 +34,17 @@ angular.module('common.controllers', [])
     $scope.onSelect = function (selected) {
         $scope.currentSelected = selected;
         $scope.closeSidenav();
-        $state.go('app.entries', {tag: selected.tag, uuid: selected.uuid});
+
+        const params = {feedTagEqual: null, feedUuidEqual: null};
+
+        if(selected.tag && selected.tag !== 'all') {
+            params['feedTagEqual'] = selected.tag
+        }
+        if (selected.uuid) {
+            params['feedUuidEqual'] = selected.uuid
+        }
+
+        $state.go('app.entries', params, {inherit: false});
     };
 
     $scope.openMenu = function() {
@@ -59,48 +69,8 @@ angular.module('common.controllers', [])
 .controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'hotkeys', '$ngRedux',
     function($rootScope, $scope, $stateParams, $state, hotkeys, $ngRedux) {
 
-    $scope.param = $stateParams;
-    $scope.search = "";
-
     const unsubscribe = $ngRedux.connect(getEntries)($scope);
     $scope.$on('$destroy', () => unsubscribe());
-
-    var onSearch = function (value) {
-        $scope.search = value;
-        $scope.refresh();
-    };
-
-    $scope.addUuidParam = function(stateParams, param) {
-        if(stateParams.uuid) {
-            param['feedUuidEqual'] = stateParams.uuid;
-        }
-    };
-
-    $scope.addTagParam = function(stateParams, param) {
-        if(stateParams.tag && $stateParams.tag !== "all") {
-            param['feedTagEqual'] = stateParams.tag;
-        }
-    };
-
-    $scope.addSearchParam = function(param) {
-        if($scope.search !== "") {
-            if($scope.search.indexOf('*') === -1) {
-                param['q'] = $scope.search + '*';
-            } else {
-                param['q'] = $scope.search;
-            }
-        }
-    };
-
-    $scope.params = function() {
-        var param = {};
-
-        $scope.addUuidParam($stateParams, param);
-        $scope.addTagParam($stateParams, param);
-        $scope.addSearchParam(param);
-
-        return param;
-    };
 
     $scope.down = function() {
         if (this.nextFocusableEntry.seen === false) {
@@ -113,21 +83,21 @@ angular.module('common.controllers', [])
         $ngRedux.dispatch(entryFocusPrevious());
     };
 
-    $scope.refresh = function() {
-        $ngRedux.dispatch(fetchEntries({path: SUBSCRIPTION_ENTRIES, query: $scope.params()}));
+    $scope.refresh = function(params) {
+        $state.go('app.entries', params, {notify: false})
+            .then(() => $ngRedux.dispatch(fetchEntries({path: SUBSCRIPTION_ENTRIES, query: params})));
     };
 
     $scope.toggleReadFromEnter = function() {
         $ngRedux.dispatch(changeEntry({...this.entryInFocus, seen: !this.entryInFocus.seen}));
     };
 
-    $scope.refresh();
+    $scope.refresh($stateParams);
 
     $scope.forceRefresh = function() {
         $ngRedux.dispatch(entryClear());
-        $scope.search = '';
         $rootScope.$broadcast('refresh');
-        $scope.refresh();
+        $scope.refresh($stateParams);
     };
 
     hotkeys.bindTo($scope)
@@ -156,12 +126,4 @@ angular.module('common.controllers', [])
                 $scope.toggleReadFromEnter();
             }
         });
-
-    $scope.onSearchChange = function (value) {
-        onSearch(value);
-    };
-
-    $scope.onSearchClear = function () {
-        onSearch('');
-    };
 }]);

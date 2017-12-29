@@ -26,6 +26,7 @@ class controller {
 export const ListPageComponent = {
     template, css, controller,
     transclude: {
+        'action-panel': '?myActionPanel',
         'list-panel': 'myListPanel'
     },
     bindings: {

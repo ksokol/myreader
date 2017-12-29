@@ -4,6 +4,9 @@
                      my-on-change="$ctrl.onSearchChange(value)"
                      my-on-clear="$ctrl.onSearchClear()">
     </my-search-input>
+
+    <ng-transclude ng-transclude-slot="action-panel"></ng-transclude>
+
     <md-button class="md-icon-button"
                ng-click="$ctrl.onRefresh()">
         <my-icon my-type="refresh"></my-icon>

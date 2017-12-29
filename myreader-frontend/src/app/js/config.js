@@ -63,7 +63,11 @@ angular.module('common.config', ['ui.router', 'cfp.hotkeys'])
                 }
             })
             .state('app.entries', {
-                url: "/entries/:tag/:uuid",
+                url: "/entries/:feedTagEqual/:feedUuidEqual?q",
+                params: {
+                    feedTagEqual: null,
+                    feedUuidEqual: null
+                },
                 views: {
                     content: {
                         template: subscriptionEntriesTemplate,

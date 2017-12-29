@@ -51,7 +51,7 @@ export function equalLinks(left = {}, right = {}, ignore = []) {
 function toQueryParams(query = {}) {
     const queryParams = Object
         .entries(query)
-        .filter(([key, value]) => value !== undefined)
+        .filter(([key, value]) => value !== undefined && value !== null)
         .reduce((acc, [key, value]) => `${key}=${value}&${acc}`, '')
     return queryParams ? queryParams.slice(0, -1) : queryParams
 }
