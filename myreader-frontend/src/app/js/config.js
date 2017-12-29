@@ -2,7 +2,6 @@ import angular from 'angular';
 import subscriptionTagsTemplate from '../../templates/subscription-tags.html';
 import navigationAdminTemplate from '../../templates/navigation-admin.html';
 import subscriptionEntriesTemplate from '../../templates/subscription-entries.html';
-import subscriptionsTemplate from '../../templates/subscriptions.html';
 import {unauthorized} from 'store';
 
 angular.module('common.config', ['ui.router', 'cfp.hotkeys'])
@@ -81,11 +80,10 @@ angular.module('common.config', ['ui.router', 'cfp.hotkeys'])
                 }
             })
             .state('app.subscriptions', {
-                url: "/subscriptions",
+                url: "/subscriptions?q",
                 views: {
                     content: {
-                        template: subscriptionsTemplate,
-                        controller: 'SubscriptionsCtrl'
+                        template: '<div class="zero-padding-right"><my-subscription-list></my-subscription-list></div>'
                     }
                 }
             })

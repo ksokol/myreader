@@ -164,31 +164,4 @@ angular.module('common.controllers', [])
     $scope.onSearchClear = function () {
         onSearch('');
     };
-}])
-
-.controller('SubscriptionsCtrl', ['$scope', '$state', 'subscriptionService', function($scope, $state, subscriptionService) {
-
-    $scope.subscriptions = [];
-
-    $scope.refresh = function() {
-        subscriptionService.findAll()
-        .then(function(data) {
-            $scope.searchKey = '';
-            $scope.subscriptions = data;
-        });
-    };
-
-    $scope.open = function(subscription) {
-        $state.go('app.subscription', {uuid: subscription.uuid});
-    };
-
-    $scope.onSearchChange = function (value) {
-        $scope.searchKey = value;
-    };
-
-    $scope.onSearchClear = function () {
-        $scope.searchKey = '';
-    };
-
-    $scope.refresh();
 }]);

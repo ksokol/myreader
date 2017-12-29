@@ -49,6 +49,7 @@ import {ListPageComponent} from './shared/component/list-page/list-page.componen
 import {BookmarkTagsComponent} from './bookmark/bookmark-tags/bookmark-tags.component'
 import {BookmarkComponent} from './bookmark/bookmark.component'
 import {LogoutComponent} from './navigation/logout-item/logout-item.component'
+import {SubscriptionListComponent} from './subscription/subscription-list.component'
 
 import './config'
 import './controllers'
@@ -85,6 +86,7 @@ angular
     .component('myEntryList', EntryListComponent)
     .component('myBookmarkTags', BookmarkTagsComponent)
     .component('myBookmark', BookmarkComponent)
+    .component('mySubscriptionList', SubscriptionListComponent)
 
     .component('myButtonGroup', ButtonGroupComponent)
     .component('myButton', ButtonComponent)

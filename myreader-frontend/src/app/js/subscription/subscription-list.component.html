@@ -1,0 +1,20 @@
+<my-list-page my-on-search="$ctrl.onSearch(params)"
+              my-on-refresh="$ctrl.refresh()">
+    <my-list-panel>
+        <md-list>
+            <md-list-item class="md-2-line"
+                          ng-click="$ctrl.navigateTo(subscription)"
+                          ng-repeat="subscription in $ctrl.subscriptions | filter: $ctrl.$stateParams.q">
+                <div layout="row">
+                    <div class="md-list-item-text">
+                        <div>
+                            <h3 ng-bind-html="subscription.title"></h3>
+                            <h4>{{::subscription.createdAt | timeago}}</h4>
+                        </div>
+                    </div>
+                </div>
+                <md-divider></md-divider>
+            </md-list-item>
+        </md-list>
+    </my-list-panel>
+</my-list-page>
