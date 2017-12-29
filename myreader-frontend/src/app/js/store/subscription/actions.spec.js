@@ -32,13 +32,8 @@ describe('src/app/js/store/subscription/actions.spec.js', () => {
             expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTIONS'])
         })
 
-        it('should fetch all subscriptions with at least one new entry', () => {
-            store.dispatch(fetchSubscriptions())
-            expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions?unseenGreaterThan=0'})
-        })
-
         it('should fetch all subscriptions', () => {
-            store.dispatch(fetchSubscriptions(false))
+            store.dispatch(fetchSubscriptions())
             expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions'})
         })
 

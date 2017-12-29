@@ -22,7 +22,7 @@ angular.module('common.controllers', [])
 
     $scope.currentSelected = $state.params;
 
-    const unsubscribe = $ngRedux.subscribe(() => $scope.data = new SubscriptionTags(getSubscriptions($ngRedux.getState())));
+    const unsubscribe = $ngRedux.subscribe(() => $scope.data = new SubscriptionTags(getSubscriptions($ngRedux.getState()).subscriptions));
 
     $scope.$on('$destroy', () => unsubscribe());
 

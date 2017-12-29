@@ -6,11 +6,10 @@ export const subscriptionsReceived = raw => {
     return {type: types.SUBSCRIPTIONS_RECEIVED, ...toSubscriptions(raw)}
 }
 
-export const fetchSubscriptions = (unseen = true) => {
-    const url =  unseen ? `${SUBSCRIPTIONS}?unseenGreaterThan=0` : SUBSCRIPTIONS;
-
+export const fetchSubscriptions = () => {
     return {
-        type: 'GET_SUBSCRIPTIONS', url,
+        type: 'GET_SUBSCRIPTIONS',
+        url: SUBSCRIPTIONS,
         success: response => subscriptionsReceived(response)
     }
 }
