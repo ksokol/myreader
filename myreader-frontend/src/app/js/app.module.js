@@ -110,11 +110,19 @@ angular
 
     .filter('timeago', TimeagoFilter)
 
-    .run($q => {
+    // TODO part of AngularJS exit strategy https://github.com/angular/angular.js/issues/16199#issuecomment-324911598
+    .run(($rootScope, $q) => {
         'ngInject'
 
-        // TODO part of AngularJS exit strategy https://github.com/angular/angular.js/issues/16199#issuecomment-324911598
         if (ENVIRONMENT === 'production' || ENVIRONMENT === 'development') {
             window['Promise'] = $q
+        }
+
+        const setTimeoutFn = window.setTimeout
+        window.setTimeout = (fn, delay) => {
+            setTimeoutFn(() => {
+                fn()
+                $rootScope.$digest()
+            }, delay)
         }
     })
