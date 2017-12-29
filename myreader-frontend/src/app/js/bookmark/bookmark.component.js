@@ -1,5 +1,5 @@
 import template from './bookmark.component.html'
-import css from './bookmark.component.css'
+import './bookmark.component.css'
 import {fetchEntries, fetchEntryTags, getEntryTags, entryClear} from 'store'
 import {SUBSCRIPTION_ENTRIES} from '../constants'
 
@@ -40,5 +40,5 @@ class controller {
 }
 
 export const BookmarkComponent = {
-    template, css, controller
+    template, controller
 }

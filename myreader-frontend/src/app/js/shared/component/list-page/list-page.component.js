@@ -1,5 +1,5 @@
 import template from './list-page.component.html'
-import css from './list-page.component.css'
+import './list-page.component.css'
 
 class controller {
 
@@ -24,7 +24,7 @@ class controller {
 }
 
 export const ListPageComponent = {
-    template, css, controller,
+    template, controller,
     transclude: {
         'action-panel': '?myActionPanel',
         'list-panel': 'myListPanel'

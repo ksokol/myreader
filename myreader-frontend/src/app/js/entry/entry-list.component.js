@@ -1,5 +1,5 @@
 import template from './entry-list.component.html'
-import css from './entry-list.component.css'
+import './entry-list.component.css'
 import {fetchEntries, getEntries} from 'store'
 
 class controller {
@@ -24,5 +24,5 @@ class controller {
 }
 
 export const EntryListComponent = {
-    template, css, controller
+    template, controller
 }

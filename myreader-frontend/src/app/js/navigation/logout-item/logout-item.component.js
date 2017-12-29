@@ -1,5 +1,5 @@
 import template from './logout-item.component.html'
-import css from './logout-item.component.css'
+import './logout-item.component.css'
 import {logout} from 'store'
 
 class controller {
@@ -15,5 +15,5 @@ class controller {
 }
 
 export const LogoutComponent = {
-    template, css, controller
+    template, controller
 }
