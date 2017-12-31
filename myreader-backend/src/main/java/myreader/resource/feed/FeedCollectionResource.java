@@ -4,6 +4,7 @@ import myreader.entity.Feed;
 import myreader.repository.FeedRepository;
 import myreader.resource.feed.beans.FeedGetResponse;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceAssembler;
@@ -35,6 +36,9 @@ public class FeedCollectionResource {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public PagedResources<FeedGetResponse> get() {
         List<Feed> feeds = feedRepository.findAll();
-        return pagedResourcesAssembler.toResource(new PageImpl<>(feeds), assembler);
+
+        // TODO Add proper pagination
+        PageRequest pageRequest = new PageRequest(0, feeds.size());
+        return pagedResourcesAssembler.toResource(new PageImpl<>(feeds, pageRequest, feeds.size()), assembler);
     }
 }

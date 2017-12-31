@@ -2,7 +2,7 @@
   "links": [
     {
       "rel": "self",
-      "href": "http://localhost/api/2/feeds"
+      "href": "http://localhost/api/2/feeds?page=0&size=20"
     }
   ],
   "content": [
@@ -208,7 +208,7 @@
     }
   ],
   "page": {
-    "size": 0,
+    "size": 20,
     "totalElements": 20,
     "totalPages": 1,
     "number": 0
