@@ -2,7 +2,8 @@
   "name": "myreader-frontend",
   "description": "Myreader frontend package",
   "scripts": {
-    "build": "export NODE_ENV=production && rimraf dist && webpack --bail --progress --profile --display-optimization-bailout",
+    "nsp": "nsp check --thershold 7",
+    "build": "npm run nsp && export NODE_ENV=production && rimraf dist && webpack --bail --progress --profile --display-optimization-bailout",
     "server": "export NODE_ENV=development && webpack-dev-server --history-api-fallback --inline --progress",
     "test": "export NODE_ENV=development && karma start",
     "test-watch": "export NODE_ENV=development && npm test -- --single-run=false --reporters=progress,coverage-istanbul",
@@ -58,7 +59,8 @@
     "svg-url-loader": "2.2.1",
     "webpack": "3.8.1",
     "webpack-bundle-analyzer": "2.9.0",
-    "webpack-dev-server": "2.9.3"
+    "webpack-dev-server": "2.9.3",
+    "nsp": "3.1.0"
   },
   "directories": {
     "test": "test"
