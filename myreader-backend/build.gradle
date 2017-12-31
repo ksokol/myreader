@@ -1,3 +1,15 @@
+buildscript {
+    ext.dependencyCheckVersion = '3.0.2'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.owasp:dependency-check-gradle:${dependencyCheckVersion}"
+    }
+}
+
 plugins {
     id "jacoco"
     id "com.gorylenko.gradle-git-properties" version "1.4.6"
@@ -9,6 +21,7 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'pmd'
 apply plugin: 'findbugs'
+apply plugin: 'org.owasp.dependencycheck'
 
 group = 'myreader'
 
@@ -70,6 +83,11 @@ springBoot {
     backupSource = false
 }
 
+dependencyCheck {
+    failBuildOnCVSS = 7
+    suppressionFile = "${projectDir}/owasp/cve_suppress.xml"
+}
+
 task startServer(type: SpawnProcessTask) {
     def withAppTasks = project.hasProperty('withAppTasks') as String
 
@@ -92,3 +110,5 @@ test {
         exceptionFormat = 'full'
     }
 }
+
+check.dependsOn dependencyCheckAnalyze
