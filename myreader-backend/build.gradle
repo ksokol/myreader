@@ -101,6 +101,12 @@ task stopServer(type: KillProcessTask) {
     pidLockFileName 'build/.pid.lock'
 }
 
+task resolve() {
+    doLast {
+        resolveDependencies(project)
+    }
+}
+
 tasks.matching {it instanceof Test}.all {
     testLogging.events = ["failed", "passed", "skipped"]
 }
@@ -110,5 +116,3 @@ test {
         exceptionFormat = 'full'
     }
 }
-
-check.dependsOn dependencyCheckAnalyze

@@ -17,7 +17,17 @@ idea {
     }
 }
 
-task test(overwrite: true,dependsOn: [npm_install, npm_test]) {
+task resolve(dependsOn: npm_install) {
+    doLast {
+        resolveDependencies(project)
+    }
+}
+
+task dependencyCheckAnalyze(type: NpmTask, dependsOn: npm_install) {
+    args = ['run', 'nsp']
+}
+
+task test(overwrite: true, dependsOn: [npm_install, npm_test]) {
     inputs.files files('src', 'test', 'webpack.config.js', 'src/tests.webpack.js', 'package.json', 'karma.conf.js')
 }
 
