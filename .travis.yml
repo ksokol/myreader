@@ -30,4 +30,4 @@ install: true
 
 script:
   - git fetch --unshallow # necessary for SonarQube blame information
-  - ./gradlew check sonarqube
+  - travis_wait 20 ./gradlew check sonarqube
