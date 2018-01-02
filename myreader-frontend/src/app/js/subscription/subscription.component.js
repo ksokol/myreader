@@ -1,21 +1,23 @@
 import template from './subscription.component.html'
 import './subscription.component.css'
-import {deleteSubscription, saveSubscription, showErrorNotification} from 'store'
+import {deleteSubscription, saveSubscription, showErrorNotification, getSubscriptions} from 'store'
 
 class controller {
 
-    constructor($state, $stateParams, $ngRedux, subscriptionService) {
+    constructor($state, $stateParams, $ngRedux) {
         'ngInject'
         this.$state = $state
         this.$stateParams = $stateParams
         this.$ngRedux = $ngRedux
-        this.subscriptionService = subscriptionService
+        this.unsubscribe = this.$ngRedux.connect(getSubscriptions)(this)
     }
 
-    $onInit() {
-        if(this.$stateParams.uuid) {
-            this.subscriptionService.find(this.$stateParams.uuid).then(data => this.subscription = data)
-        }
+    set subscriptions(subscriptions) {
+        this.subscription = subscriptions.find(it => it.uuid === this.$stateParams.uuid)
+    }
+
+    $onDestroy() {
+        this.unsubscribe()
     }
 
     onError(error) {

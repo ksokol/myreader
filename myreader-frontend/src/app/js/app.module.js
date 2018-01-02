@@ -31,7 +31,6 @@ import {MaintenanceActionsComponent} from "./maintenance/maintenance-actions/mai
 import {MaintenanceComponent} from "./maintenance/maintenance.component"
 import {NavigationSubscriptionItemComponent} from "./navigation/subscription-item/subscription-item.component"
 import {SettingsComponent} from "./settings/settings.component"
-import {SubscriptionService} from "./subscription/subscription.service"
 import {SubscribeComponent} from "./subscription/subscribe/subscribe.component"
 import {ExclusionService} from "./subscription/subscription-exclusion-panel/subscription-exclusion/exclusion.service"
 import {SubscriptionExclusionComponent} from "./subscription/subscription-exclusion-panel/subscription-exclusion/subscription-exclusion.component"
@@ -102,7 +101,6 @@ angular
     .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)
     .service('aboutService', AboutService)
-    .service('subscriptionService', SubscriptionService)
     .service('exclusionService', ExclusionService)
     .service('subscriptionTagService', SubscriptionTagService)
 

@@ -5,18 +5,17 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     const mySubscriptionTagPanel = componentMock('mySubscriptionTagPanel')
     const mySubscriptionExclusionPanel = componentMock('mySubscriptionExclusionPanel')
 
-    let rootScope, scope, element, $state, $stateParams, ngReduxMock, subscriptionService, subscription, timeout
+    let rootScope, scope, element, state, stateParams, ngReduxMock, subscription, timeout
 
     beforeEach(angular.mock.module('myreader',
         mock('$state'),
         mock('$stateParams'),
-        mock('subscriptionService'),
         mySubscriptionTagPanel,
         mySubscriptionExclusionPanel,
         mockNgRedux()
     ))
 
-    beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, $ngRedux, $timeout, _subscriptionService_) => {
+    beforeEach(inject(($rootScope, $compile, $state, $stateParams, $ngRedux, $timeout) => {
         jasmine.clock().uninstall()
 
         rootScope = $rootScope
@@ -31,30 +30,24 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
             tag: 'expected tag'
         }
 
-        const deferred = $q.defer()
-        deferred.resolve(subscription)
-        subscriptionService = _subscriptionService_
-        subscriptionService.find = jasmine.createSpy('subscriptionService.find()')
-        subscriptionService.remove = jasmine.createSpy('subscriptionService.remove()')
-        subscriptionService.find.and.returnValue(deferred.promise)
+        ngReduxMock.setState({subscription: {subscriptions: [subscription]}})
 
-        $state = _$state_
-        $state.go = jasmine.createSpy('$state.go()')
+        state = $state
+        state.go = jasmine.createSpy('$state.go()')
 
-        $stateParams = _$stateParams_
-        $stateParams.uuid = subscription.uuid
+        stateParams = $stateParams
+        stateParams.uuid = subscription.uuid
 
         element = $compile('<my-subscription></my-subscription>')(scope)
         scope.$digest()
     }))
 
-    it('should not render page when subscription has not yet been loaded', inject($compile => {
-        delete $stateParams.uuid
+    it('should not render page when subscription with given uuid is not available in store', inject($compile => {
+        stateParams.uuid = 'other uuid'
         element = $compile('<my-subscription></my-subscription>')(scope)
         scope.$digest()
 
         expect(element.children().length).toEqual(0)
-        expect(subscriptionService.find).toHaveBeenCalledWith('expected uuid')
     }))
 
     it('should render page when subscription has been loaded', () => {
@@ -140,7 +133,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
         expect(ngReduxMock.getActionTypes()).toEqual(['DELETE_SUBSCRIPTION'])
         expect(ngReduxMock.getActions()[0].url).toContain('expected uuid')
-        expect($state.go).toHaveBeenCalledWith('app.subscriptions')
+        expect(state.go).toHaveBeenCalledWith('app.subscriptions')
     })
 
     it('should disable page elements while ajax call is pending', () => {
