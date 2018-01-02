@@ -45,9 +45,9 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         findOneDeferred = $q.defer()
 
         feedService = _feedService_
-        feedService.findOne = jasmine.createSpy('subscriptionService.findOne()')
-        feedService.save = jasmine.createSpy('subscriptionService.save()')
-        feedService.remove = jasmine.createSpy('subscriptionService.remove()')
+        feedService.findOne = jasmine.createSpy('feedService.findOne()')
+        feedService.save = jasmine.createSpy('feedService.save()')
+        feedService.remove = jasmine.createSpy('feedService.remove()')
         feedService.findOne.and.returnValue(findOneDeferred.promise)
         feedService.save.and.returnValue(saveDeferred.promise)
         feedService.remove.and.returnValue(removeDeferred.promise)

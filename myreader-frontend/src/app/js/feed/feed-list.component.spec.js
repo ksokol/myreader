@@ -60,7 +60,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         findAllDeferred = $q.defer()
 
         feedService = _feedService_
-        feedService.findAll = jasmine.createSpy('subscriptionService.findAll()')
+        feedService.findAll = jasmine.createSpy('feedService.findAll()')
         feedService.findAll.and.returnValue(findAllDeferred.promise)
 
         $state = _$state_
