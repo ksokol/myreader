@@ -1,5 +1,4 @@
 import {exchange} from './exchange'
-import {createMockStore} from '../../../shared/test-utils'
 
 const createFetchMock = () => {
     const fetchSpy = spyOn(window, 'fetch')
@@ -18,58 +17,18 @@ const createFetchMock = () => {
             )
             fetchSpy.and.returnValue(Promise.resolve(response))
         },
-        reject: error => fetchSpy.and.returnValue(Promise.reject(error))
+        reject: error => fetchSpy.and.returnValue(Promise.reject(error)),
+        error: error => fetchSpy.and.returnValue(new Promise(() => {throw error}))
     }
 }
 
 describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
 
-    let store, fetchMock
+    let fetchMock
 
-    beforeEach(() => {
-        fetchMock = createFetchMock()
-        store = createMockStore()
-    })
+    beforeEach(() => fetchMock = createFetchMock())
 
-    const execute = (method, params) => exchange({...params, method}).call(this, store.dispatch)
-
-    it('should dispatch FETCH_START/FETCH_END actions when http request starts/ends', done => {
-        fetchMock.respond({status: 200})
-
-        execute('GET').then(() => {
-            expect(store.getActionTypes()).toEqual(['FETCH_START', 'FETCH_END'])
-            done()
-        })
-    })
-
-    it('should dispatch notification action with error text when http request rejected', done => {
-        fetchMock.respond({status: 500, statusText: 'expected statusText'})
-
-        execute('GET').catch(() => {
-            expect(store.getActionTypes()).toEqual(['FETCH_START', 'SHOW_NOTIFICATION', 'FETCH_END'])
-            expect(store.getActions()[1]).toContainActionData({notification: {text: 'expected statusText'}})
-            done()
-        })
-    })
-
-    it('should dispatch notification action with error text when http request failed', done => {
-        fetchMock.reject('expected error')
-
-        execute('GET').catch(() => {
-            expect(store.getActionTypes()).toEqual(['FETCH_START', 'SHOW_NOTIFICATION', 'FETCH_END'])
-            expect(store.getActions()[1]).toContainActionData({notification: {text: 'expected error'}})
-            done()
-        })
-    })
-
-    it('should dispatch SECURITY_UPDATE action when http request is unauthorized', done => {
-        fetchMock.respond({status: 401})
-
-        execute('GET').catch(() => {
-            expect(store.getActionTypes()).toEqual(['FETCH_START', 'FETCH_END', 'SECURITY_UPDATE'])
-            done()
-        })
-    })
+    const execute = (method, params) => exchange({...params, method})
 
     it('should GET resource', done => {
         fetchMock.respond({status: 200})
@@ -131,7 +90,7 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.respond({status: 200, headers: {'content-type': 'application/json'}, body: '{"id": 1}'})
 
         execute('GET').then(response => {
-            expect(response).toEqual({id: 1})
+            expect(response).toEqual({ok: true, status: 200, data: {id: 1}})
             done()
         })
     })
@@ -140,43 +99,52 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.respond({status: 200, headers: {'content-type': 'text/plain'}, body: 'expected body'})
 
         execute('POST').then(response => {
-            expect(response).toEqual('expected body')
+            expect(response).toEqual({ok: true, status: 200, data: 'expected body'})
             done()
         })
     })
 
     it('should return json body when http request is unauthorized', done => {
-        fetchMock.respond({status: 400, headers: {'content-type': 'application/json'}, body: '{"id": 1}'})
+        fetchMock.respond({status: 401, headers: {'content-type': 'application/json'}, body: '{"id": 1}'})
 
-        execute('POST').catch(response => {
-            expect(response).toEqual({id: 1})
+        execute('POST').then(response => {
+            expect(response).toEqual({ok: false, status: 401, data: {id: 1}})
             done()
         })
     })
 
     it('should return text body when http request is unauthorized', done => {
-        fetchMock.respond({status: 400, headers: {'content-type': 'text/plain'}, body: 'expected body'})
-
-        execute('POST').catch(response => {
-            expect(response).toEqual('expected body')
-            done()
-        })
-    })
-
-    it('should return json body when http request is rejected', done => {
-        fetchMock.respond({status: 401, headers: {'content-type': 'application/json'}, body: '{"id": 1}'})
-
-        execute('POST').catch(response => {
-            expect(response).toEqual({id: 1})
-            done()
-        })
-    })
-
-    it('should return text body when http request is rejected', done => {
         fetchMock.respond({status: 401, headers: {'content-type': 'text/plain'}, body: 'expected body'})
 
-        execute('POST').catch(response => {
-            expect(response).toEqual('expected body')
+        execute('POST').then(response => {
+            expect(response).toEqual({ok: false, status: 401, data: 'expected body'})
+            done()
+        })
+    })
+
+    it('should return json body when http request failed', done => {
+        fetchMock.respond({status: 400, headers: {'content-type': 'application/json'}, body: '{"id": 1}'})
+
+        execute('POST').then(response => {
+            expect(response).toEqual({ok: false, status: 400, data: {id: 1}})
+            done()
+        })
+    })
+
+    it('should return text body when http request failed', done => {
+        fetchMock.respond({status: 400, headers: {'content-type': 'text/plain'}, body: 'expected body'})
+
+        execute('POST').then(response => {
+            expect(response).toEqual({ok: false, status: 400, data: 'expected body'})
+            done()
+        })
+    })
+
+    it('should return text error message when http request failed for unknown reasons', done => {
+        fetchMock.error('expected error')
+
+        execute('POST').then(response => {
+            expect(response).toEqual({ok: false, status: -1, data: 'expected error'})
             done()
         })
     })

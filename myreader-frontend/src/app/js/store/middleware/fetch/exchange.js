@@ -1,21 +1,8 @@
-import {fetchEnd, fetchStart, unauthorized} from 'store'
-
 const READ_METHODS = ['GET', 'HEAD']
 const MIME_APPLICATION_JSON = 'application/json'
 const XML_HTTP_REQUEST = 'XMLHttpRequest'
-const CONTENT_TYPE = 'content-Type'
-
-const credentials = {
-    credentials: 'same-origin'
-}
-
-function isUnauthorized(response) {
-    return response.status === 401
-}
-
-function isError(response) {
-    return !response.ok && !isUnauthorized(response)
-}
+const CONTENT_TYPE = 'content-type'
+const credentials = {credentials: 'same-origin'}
 
 function sanitizeHeaders(headers = {}) {
     return Object.entries(headers).reduce((acc, [key, value]) => {
@@ -45,45 +32,24 @@ function constructBody(method, headers, body) {
     return READ_METHODS.includes(method) ? null : transformBody(headers, body)
 }
 
-function toArguments({url, method, headers, body}) {
+function toRequest({url, method, headers, body}) {
     const _headers = constructHeaders(headers)
     const _body = constructBody(method, _headers, body)
     return new Request(url, {method, headers: _headers, body: _body, ...credentials})
 }
 
-function handleResponseBody(response, cb) {
+function handleResponse(response) {
     return isJSON(response.headers) ?
-        response.json().then(json => cb(json)) :
-        response.text().then(text => cb(text))
+        response.json().then(json => {return {ok: response.ok, status: response.status, data: json}}) :
+        response.text().then(text => {return {ok: response.ok, status: response.status, data: text}})
 }
 
-function handleResponse(response, dispatch, resolve, reject) {
-    if (isUnauthorized(response)) {
-        dispatch(fetchEnd())
-        dispatch(unauthorized())
-        handleResponseBody(response, reject)
-    } else if(isError(response)) {
-        dispatch(fetchEnd(response.statusText))
-        handleResponseBody(response, reject)
-    } else {
-        dispatch(fetchEnd())
-        handleResponseBody(response, resolve)
-    }
-}
-
-function handleError (error, dispatch, reject) {
-    dispatch(fetchEnd(error.toString()))
-    reject(error)
+function handleError(error) {
+    return {ok: false, status: -1, data: error.toString()}
 }
 
 export function exchange(params) {
-    return dispatch => {
-        dispatch(fetchStart())
-
-        return new Promise((resolve, reject) =>
-            fetch(toArguments(params))
-                .then(response => handleResponse(response, dispatch, resolve, reject))
-                .catch(error => handleError(error, dispatch, reject))
-        )
-    }
+    return fetch(toRequest(params))
+        .then(response => handleResponse(response))
+        .catch(error => handleError(error))
 }
