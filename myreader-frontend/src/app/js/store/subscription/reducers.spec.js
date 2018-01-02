@@ -112,4 +112,30 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
             expect(subscriptionReducers(state, action)).toContainObject({subscriptions: [{uuid: '1'}, {uuid: '3'}]})
         })
     })
+
+    describe('SUBSCRIPTION_SAVED', () => {
+
+        const action = uuid => {
+            return {
+                type: 'SUBSCRIPTION_SAVED',
+                subscription: {uuid, title: 'new title'}
+            }
+        }
+
+        beforeEach(() => {
+            state = {
+                subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}]
+            }
+        })
+
+        it('should not update subscription when not in store', () => {
+            expect(subscriptionReducers(state, action('3')))
+                .toContainObject({subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}]})
+        })
+
+        it('should update subscription when in store', () => {
+            expect(subscriptionReducers(state, action('2')))
+                .toContainObject({subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'new title'}]})
+        })
+    })
 })

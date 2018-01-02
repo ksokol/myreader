@@ -5,7 +5,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     const mySubscriptionTagPanel = componentMock('mySubscriptionTagPanel')
     const mySubscriptionExclusionPanel = componentMock('mySubscriptionExclusionPanel')
 
-    let scope, element, $state, $stateParams, ngReduxMock, subscriptionService, subscription, saveDeferred
+    let rootScope, scope, element, $state, $stateParams, ngReduxMock, subscriptionService, subscription, timeout
 
     beforeEach(angular.mock.module('myreader',
         mock('$state'),
@@ -16,9 +16,13 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         mockNgRedux()
     ))
 
-    beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, $ngRedux, _subscriptionService_) => {
+    beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, $ngRedux, $timeout, _subscriptionService_) => {
+        jasmine.clock().uninstall()
+
+        rootScope = $rootScope
         scope = $rootScope.$new()
         ngReduxMock = $ngRedux
+        timeout = $timeout
 
         subscription = {
             uuid: 'expected uuid',
@@ -27,15 +31,12 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
             tag: 'expected tag'
         }
 
-        saveDeferred = $q.defer()
         const deferred = $q.defer()
         deferred.resolve(subscription)
         subscriptionService = _subscriptionService_
         subscriptionService.find = jasmine.createSpy('subscriptionService.find()')
-        subscriptionService.save = jasmine.createSpy('subscriptionService.save()')
         subscriptionService.remove = jasmine.createSpy('subscriptionService.remove()')
         subscriptionService.find.and.returnValue(deferred.promise)
-        subscriptionService.save.and.returnValue(saveDeferred.promise)
 
         $state = _$state_
         $state.go = jasmine.createSpy('$state.go()')
@@ -70,37 +71,44 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         angular.element(element.find('input')[0]).val('new title').triggerHandler('input')
         element.find('button')[0].click()
 
-        expect(subscriptionService.save)
-            .toHaveBeenCalledWith({ uuid: 'expected uuid', title: 'new title', origin: 'expected origin', tag: 'expected tag' })
+        expect(ngReduxMock.getActionTypes()).toEqual(['PATCH_SUBSCRIPTION'])
+        expect(ngReduxMock.getActions()[0])
+            .toContainActionData({body: {uuid: 'expected uuid', title: 'new title', origin: 'expected origin', tag: 'expected tag'}})
     })
 
     it('should update page when save completed', () => {
-        saveDeferred.resolve({title: 'expected new title'})
-        angular.element(element.find('input')[0]).val('new title').triggerHandler('input')
+        angular.element(element.find('input')[0]).val('expected new title').triggerHandler('input')
         element.find('button')[0].click()
 
         expect(element.find('input')[0].value).toEqual('expected new title')
-
-        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'Subscription saved', type: 'success'}})
     })
 
-    it('should show notification message when save failed', () => {
-        saveDeferred.reject({data: {status: 500, message: 'expected error'}})
+    it('should show validation message when validation failed', done => {
+        ngReduxMock.dispatch.and.returnValue(Promise.reject({status: 400, data: {fieldErrors: [{field: 'title', message: 'expected validation message'}]}}))
+
         angular.element(element.find('input')[0]).val('new title').triggerHandler('input')
         element.find('button')[0].click()
 
-        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: {data: {status:500, message: 'expected error'}}, type: 'error'}})
+        setTimeout(() => {
+            scope.$digest()
+            expect(element.find('button')[0].disabled).toEqual(true)
+            expect(element.find('my-validation-message').children().find('div')[0].innerText).toEqual('expected validation message')
+            done()
+        }, 0)
     })
 
-    it('should show validation message when validation failed', () => {
-        saveDeferred.reject({data: {status: 400, fieldErrors: [{field: 'title', message: 'expected validation message'}]}})
+    it('should not show validation message when request failed', done => {
+        ngReduxMock.dispatch.and.returnValue(Promise.reject({status: 500}))
+
         angular.element(element.find('input')[0]).val('new title').triggerHandler('input')
         element.find('button')[0].click()
 
-        expect(element.find('button')[0].disabled).toEqual(true)
-        expect(element.find('my-validation-message').children().find('div')[0].innerText).toEqual('expected validation message')
+        setTimeout(() => {
+            scope.$digest()
+            expect(element.find('button')[0].disabled).toEqual(false)
+            expect(element.find('my-validation-message').children().find('div')[0]).toBeUndefined()
+            done()
+        }, 0)
     })
 
     it('should propagate updated subscription tag', () => {
@@ -125,17 +133,19 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'expected error', type: 'error'}})
     })
 
-    it('should navigate to subscription overview page when remove succeeded', inject($timeout => {
+    it('should navigate to subscription overview page when remove succeeded', () => {
         element.find('button')[1].click() //click delete
-        $timeout.flush(1000)
+        timeout.flush(1000)
         element.find('button')[1].click() //confirm
 
         expect(ngReduxMock.getActionTypes()).toEqual(['DELETE_SUBSCRIPTION'])
         expect(ngReduxMock.getActions()[0].url).toContain('expected uuid')
         expect($state.go).toHaveBeenCalledWith('app.subscriptions')
-    }))
+    })
 
     it('should disable page elements while ajax call is pending', () => {
+        ngReduxMock.dispatch.and.returnValue(new Promise(() => {}))
+
         element.find('button')[0].click()
         scope.$digest()
 
@@ -145,18 +155,23 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         expect(mySubscriptionExclusionPanel.bindings.myDisabled).toEqual(true)
     })
 
-    it('should enable page elements as soon as ajax call finished', inject($timeout => {
-        saveDeferred.resolve({uuid:''})
-        element.find('button')[0].click() //click delete
-        $timeout.flush(1000)
-        element.find('button')[0].click() //confirm
-        scope.$digest()
+    it('should enable page elements as soon as ajax call finished', done => {
+        ngReduxMock.dispatch.and.returnValue(Promise.resolve({uuid: ''}))
 
-        expect(element.find('input')[0].disabled).toEqual(false)
-        expect(element.find('input')[1].disabled).toEqual(true)
-        expect(mySubscriptionTagPanel.bindings.myDisabled).toEqual(false)
-        expect(mySubscriptionExclusionPanel.bindings.myDisabled).toEqual(false)
-    }))
+        element.find('button')[0].click() //click delete
+        timeout.flush(1000)
+        element.find('button')[0].click() //confirm
+
+        setTimeout(() => {
+            scope.$digest()
+
+            expect(element.find('input')[0].disabled).toEqual(false)
+            expect(element.find('input')[1].disabled).toEqual(true)
+            expect(mySubscriptionTagPanel.bindings.myDisabled).toEqual(false)
+            expect(mySubscriptionExclusionPanel.bindings.myDisabled).toEqual(false)
+            done()
+        }, 0)
+    })
 
     it('should open url safely', () => {
         const a = element.find('a')[0]

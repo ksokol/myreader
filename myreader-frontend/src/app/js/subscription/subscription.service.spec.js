@@ -20,44 +20,4 @@ describe('src/app/js/subscription/subscription.service.spec.js', () => {
 
         httpBackend.flush()
     })
-
-    it('should post subscription when uuid is missing', done => {
-        var subscription = { tag: 'tag' }
-
-        httpBackend.expectPOST('/myreader/api/2/subscriptions', subscription).respond('expected')
-
-        service.save(subscription)
-            .then(data => {
-                expect(data).toEqual('expected')
-                done()
-            })
-
-        httpBackend.flush()
-    })
-
-    it('should convert empty tag to null', done => {
-        httpBackend.expectPOST('/myreader/api/2/subscriptions', {tag: null}).respond('expected')
-
-        service.save({tag: ''})
-            .then(data => {
-                expect(data).toEqual('expected')
-                done()
-            })
-
-        httpBackend.flush()
-    })
-
-    it('should patch existing subscription when uuid exists', done => {
-        const subscription = {uuid: '1'}
-
-        httpBackend.expectPATCH('/myreader/api/2/subscriptions/1', subscription).respond('expected')
-
-        service.save(subscription)
-            .then(data => {
-                expect(data).toEqual('expected')
-                done()
-            })
-
-        httpBackend.flush()
-    })
 })

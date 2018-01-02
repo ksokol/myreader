@@ -23,6 +23,11 @@ function subscriptionDeleted({state, action}) {
     return {...state, subscriptions}
 }
 
+function subscriptionSaved({state, action}) {
+    const subscriptions = state.subscriptions.map(it => it.uuid === action.subscription.uuid ? action.subscription : it)
+    return {...state, subscriptions}
+}
+
 function securityUpdate({state, action}) {
     return action.authorized ? state : initialApplicationState().subscription
 }
@@ -37,6 +42,9 @@ export function subscriptionReducers(state = initialApplicationState().subscript
         }
         case types.SUBSCRIPTION_DELETED: {
             return subscriptionDeleted({state, action})
+        }
+        case types.SUBSCRIPTION_SAVED: {
+            return subscriptionSaved({state, action})
         }
         case types.SECURITY_UPDATE: {
             return securityUpdate({state, action})

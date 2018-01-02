@@ -79,6 +79,9 @@ export function createMockStore() {
 
 export function ngReduxMock() {
     const store = createMockStore()
+    spyOn(store, 'dispatch')
+    store.dispatch.and.callThrough()
+
     const storeSetState = store.setState
     let mapToTarget
 

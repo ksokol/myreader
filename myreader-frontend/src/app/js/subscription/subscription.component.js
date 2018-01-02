@@ -1,7 +1,6 @@
 import template from './subscription.component.html'
 import './subscription.component.css'
-import {showErrorNotification, showSuccessNotification} from 'store'
-import {deleteSubscription} from 'store'
+import {deleteSubscription, saveSubscription, showErrorNotification} from 'store'
 
 class controller {
 
@@ -34,20 +33,16 @@ class controller {
 
     onSave() {
         this.pendingAction = true
-        return this.subscriptionService.save(this.subscription)
+        return this.$ngRedux.dispatch(saveSubscription(this.subscription))
     }
 
-    onSuccessSave(data) {
-        this.$ngRedux.dispatch(showSuccessNotification('Subscription saved'))
-        this.subscription = data
+    onSuccessSave() {
         this.pendingAction = false
     }
 
     onErrorSave(error) {
-        if(error.data.status === 400) {
+        if(error.status === 400) {
             this.validations = error.data.fieldErrors
-        } else {
-            this.onError(error)
         }
         this.pendingAction = false
     }
