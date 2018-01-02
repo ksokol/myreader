@@ -84,9 +84,14 @@ describe('src/app/js/store/subscription/actions.spec.js', () => {
             expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions/uuid1'})
         })
 
-        it('should dispatch SUBSCRIPTION_DELETED action on success', () => {
+        it('should dispatch actions defined in success property', () => {
             store.dispatch(deleteSubscription('uuid1'))
-            store.dispatch(store.getActions()[0].success())
+            const success = store.getActions()[0].success
+            store.clearActions()
+            success.forEach(action => store.dispatch(action({uuid: '1'})))
+
+            expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION', 'SUBSCRIPTION_DELETED'])
+            expect(store.getActions()[0]).toContainActionData({notification: {text: 'Subscription deleted', type: 'success'}})
             expect(store.getActions()[1]).toContainObject({type: 'SUBSCRIPTION_DELETED', uuid: 'uuid1'})
         })
     })

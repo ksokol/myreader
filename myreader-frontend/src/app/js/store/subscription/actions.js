@@ -23,7 +23,10 @@ export const deleteSubscription = uuid => {
     return {
         type: 'DELETE_SUBSCRIPTION',
         url : `${SUBSCRIPTIONS}/${uuid}`,
-        success: () => subscriptionDeleted(uuid)
+        success: [
+            () => showSuccessNotification('Subscription deleted'),
+            () => subscriptionDeleted(uuid)
+        ]
     }
 }
 
