@@ -25,5 +25,6 @@ Developer notes
 ---------------
 
 - Split CSS into vendor and app files in [webpack](https://github.com/vuejs-templates/webpack/issues/598#issuecomment-286680721)
-- Execute `./gradlew devRun` to start the Spring Boot application and Webpack dev server on port 8080.
+- Execute `./gradlew devRun` to start the Spring Boot application on port 19340 and Webpack dev server on port 8080.
+- Execute `./gradlew stop` or `./gradlew stopServer` to stop the Spring Boot application and Webpack dev server.
 - All scheduled or fixed rate tasks inside the Spring Boot application are disabled by default. You can enable application tasks by using `./gradlew devRun -PwithAppTasks`.

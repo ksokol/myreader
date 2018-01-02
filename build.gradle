@@ -60,11 +60,7 @@ configure(javaProjects) {
 task devRun() {
     doFirst {
         project(':myreader-backend').tasks.startServer.execute()
-        project(':myreader-frontend').tasks['npm_start'].execute()
-    }
-
-    finalizedBy {
-        project(':myreader-backend').tasks.stopServer.execute()
+        project(':myreader-frontend').tasks.startServer.execute()
     }
 }
 

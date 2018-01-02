@@ -92,13 +92,15 @@ task startServer(type: SpawnProcessTask) {
     def withAppTasks = project.hasProperty('withAppTasks') as String
 
     environmentVariables << ['TASK_ENABLED' : withAppTasks]
-    command "$projectDir/../gradlew bootRun"
+    command '../gradlew bootRun'
+    directory = "${projectDir}"
     ready 'Tomcat started on port(s):'
-    pidLockFileName 'build/.pid.lock'
+    pidLockFileName 'build/backend.lock'
 }
 
 task stopServer(type: KillProcessTask) {
-    pidLockFileName 'build/.pid.lock'
+    directory = "${projectDir}"
+    pidLockFileName 'build/backend.lock'
 }
 
 task resolve() {
