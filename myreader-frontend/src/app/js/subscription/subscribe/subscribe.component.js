@@ -1,32 +1,25 @@
 import template from './subscribe.component.html'
-import {showErrorNotification} from 'store'
+import {saveSubscription} from 'store'
 
 class controller {
 
-    constructor($state, $ngRedux, subscriptionService) {
+    constructor($state, $ngRedux) {
         'ngInject'
         this.$state = $state
         this.$ngRedux = $ngRedux
-        this.subscriptionService = subscriptionService
     }
 
     onSave() {
-        return this.subscriptionService.save({origin: this.origin})
+        return this.$ngRedux.dispatch(saveSubscription({origin: this.origin}))
     }
 
     onSuccessSave(data) {
         this.$state.go('app.subscription', {uuid: data.uuid})
     }
 
-    onError(error) {
-        this.$ngRedux.dispatch(showErrorNotification(error))
-    }
-
     onErrorSave(error) {
-        if(error.data.status === 400) {
+        if(error.status === 400) {
             this.validations = error.data.fieldErrors
-        } else {
-            this.onError(error)
         }
     }
 }

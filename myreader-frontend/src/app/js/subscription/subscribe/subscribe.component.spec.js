@@ -2,73 +2,91 @@ import {mock, mockNgRedux} from '../../shared/test-utils'
 
 describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => {
 
-    let scope, element, $state, ngReduxMock, subscriptionService, deferred
+    let scope, element, state, ngReduxMock
 
-    beforeEach(angular.mock.module('myreader', mock('$state'), mock('subscriptionService'), mockNgRedux()))
+    beforeEach(angular.mock.module('myreader', mock('$state'), mockNgRedux()))
 
-    beforeEach(inject(($rootScope, $compile, $q, _$state_, $ngRedux, _subscriptionService_) => {
+    beforeEach(inject(($rootScope, $compile, $state, $ngRedux) => {
+        jasmine.clock().uninstall()
+
         scope = $rootScope.$new()
         ngReduxMock = $ngRedux
-
-        deferred = $q.defer()
-        const promise = deferred.promise
-        subscriptionService = _subscriptionService_
-        subscriptionService.save = jasmine.createSpy('subscriptionService.save()')
-        subscriptionService.save.and.returnValue(promise)
-
-        $state = _$state_
-        $state.go = jasmine.createSpy('$state.go()')
+        state = $state
+        state.go = jasmine.createSpy('$state.go()')
 
         element = $compile('<my-subscribe></my-subscribe>')(scope)
         scope.$digest()
     }))
 
-    it('should disable button when action is pending', function () {
-        element.find('input').val('expected url').triggerHandler('input')
+    it('should disable button when action is pending', done => {
+        ngReduxMock.dispatch.and.returnValue(new Promise(() => {}))
         element.find('button')[0].click()
 
-        expect(element.find('button')[0].disabled).toEqual(true)
+        setTimeout(() => {
+            scope.$digest()
+            expect(element.find('button')[0].disabled).toEqual(true)
+            done()
+        }, 0)
+
     })
 
-    it('should enable button when action finished', function () {
-        deferred.resolve({uuid: 'expected uuid'})
+    it('should enable button when action finished', done => {
+        ngReduxMock.dispatch.and.returnValue(Promise.resolve({uuid: 'expected uuid'}))
         element.find('input').val('expected url').triggerHandler('input')
         element.find('button')[0].click()
 
-        expect(element.find('button')[0].disabled).toEqual(false)
+        setTimeout(() => {
+            scope.$digest()
+            expect(element.find('button')[0].disabled).toEqual(false)
+            done()
+        }, 0)
     })
 
-    it('should delegate to subscriptionService', function () {
-        deferred.resolve({uuid: 'expected uuid'})
+    it('should dispatch save subscription action with given url', done => {
+        ngReduxMock.dispatch.and.callFake(action => {
+            expect(action).toEqualActionType('POST_SUBSCRIPTION')
+            expect(action).toContainActionData({body: {origin: 'expected url'}})
+            done()
+            return new Promise(() => {})
+        })
+
         element.find('input').val('expected url').triggerHandler('input')
         element.find('button')[0].click()
-
-        expect(subscriptionService.save).toHaveBeenCalledWith({origin: 'expected url'})
     })
 
-    it('should navigate user to detail page when action completed successfully', function () {
-        deferred.resolve({uuid: 'expected uuid'})
+    it('should navigate user to detail page when action completed successfully', done => {
+        ngReduxMock.dispatch.and.returnValue(Promise.resolve({uuid: 'expected uuid'}))
         element.find('input').val('expected url').triggerHandler('input')
         element.find('button')[0].click()
 
-        expect($state.go).toHaveBeenCalledWith('app.subscription', {uuid: 'expected uuid'})
+        setTimeout(() => {
+            scope.$digest()
+            expect(state.go).toHaveBeenCalledWith('app.subscription', {uuid: 'expected uuid'})
+            done()
+        }, 0)
     })
 
-    it('should show notification message when action failed with HTTP 500', function () {
-        deferred.reject({data: {status: 500, message: 'expected error'}})
+    it('should show backend validation message', done => {
+        ngReduxMock.dispatch.and.returnValue(Promise.reject({status: 400, data: {fieldErrors: [{field: 'origin', message: 'expected validation message'}]}}))
         element.find('input').val('expected url').triggerHandler('input')
         element.find('button')[0].click()
 
-        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: {data: {status: 500, message: 'expected error'}}, type: 'error'}})
+        setTimeout(() => {
+            scope.$digest()
+            expect(element.find('my-validation-message').children().find('div')[0].innerText).toEqual('expected validation message')
+            done()
+        }, 0)
     })
 
-    it('should show backend validation message', function () {
-        deferred.reject({data: {status: 400, fieldErrors: [{field: 'origin', message: 'expected validation message'}]}})
+    it('should not show validation message when request failed', done => {
+        ngReduxMock.dispatch.and.returnValue(Promise.reject({status: 500}))
         element.find('input').val('expected url').triggerHandler('input')
         element.find('button')[0].click()
 
-        expect(element.find('my-validation-message').children().find('div')[0].innerText)
-            .toEqual('expected validation message')
+        setTimeout(() => {
+            scope.$digest()
+            expect(element.find('my-validation-message').children().find('div')[0]).toBeUndefined()
+            done()
+        }, 0)
     })
 })
