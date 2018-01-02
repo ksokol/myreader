@@ -59,15 +59,11 @@ angular.module('common.controllers', [])
         return JSON.stringify({uuid: item.item || item.title, unseen: item.unseen});
     }
 
-    const fetchSubscriptionTags = () => $ngRedux.dispatch(fetchSubscriptions())
-
-    $scope.$on('refresh', fetchSubscriptionTags);
-
-    fetchSubscriptionTags();
+    $ngRedux.dispatch(fetchSubscriptions())
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'hotkeys', '$ngRedux',
-    function($rootScope, $scope, $stateParams, $state, hotkeys, $ngRedux) {
+.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', '$state', 'hotkeys', '$ngRedux',
+    function($scope, $stateParams, $state, hotkeys, $ngRedux) {
 
     const unsubscribe = $ngRedux.connect(getEntries)($scope);
     $scope.$on('$destroy', () => unsubscribe());
@@ -96,7 +92,7 @@ angular.module('common.controllers', [])
 
     $scope.forceRefresh = function() {
         $ngRedux.dispatch(entryClear());
-        $rootScope.$broadcast('refresh');
+        $ngRedux.dispatch(fetchSubscriptions());
         $scope.refresh($stateParams);
     };
 
