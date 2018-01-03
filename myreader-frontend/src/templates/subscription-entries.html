@@ -20,7 +20,9 @@
             </md-button>
         </my-action-panel>
         <my-list-panel>
-            <my-entry-list></my-entry-list>
+            <my-hotkeys my-bind-to="$ctrl" my-hotkeys="{'down': down, 'up': up, 'enter': toggleReadFromEnter}">
+                <my-entry-list></my-entry-list>
+            </my-hotkeys>
         </my-list-panel>
     </my-list-page>
 </div>

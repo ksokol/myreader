@@ -4,7 +4,7 @@ import navigationAdminTemplate from '../../templates/navigation-admin.html';
 import subscriptionEntriesTemplate from '../../templates/subscription-entries.html';
 import {unauthorized} from 'store';
 
-angular.module('common.config', ['ui.router', 'cfp.hotkeys'])
+angular.module('common.config', ['ui.router'])
 
 .config(['$httpProvider', function($httpProvider) {
 
@@ -141,10 +141,4 @@ angular.module('common.config', ['ui.router', 'cfp.hotkeys'])
                 }
             });
         $urlRouterProvider.otherwise('/app/entries//');
-}])
-
-.config(['hotkeysProvider', function(hotkeysProvider) {
-    hotkeysProvider.includeCheatSheet = false;
-    hotkeysProvider.useNgRoute = false;
 }]);
-

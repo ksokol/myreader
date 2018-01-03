@@ -62,8 +62,9 @@ angular.module('common.controllers', [])
     $ngRedux.dispatch(fetchSubscriptions())
 }])
 
-.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', '$state', 'hotkeys', '$ngRedux',
-    function($scope, $stateParams, $state, hotkeys, $ngRedux) {
+.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', '$state', '$ngRedux', function($scope, $stateParams, $state, $ngRedux) {
+
+    $scope.$ctrl = $scope
 
     const unsubscribe = $ngRedux.connect(getEntries)($scope);
     $scope.$on('$destroy', () => unsubscribe());
@@ -95,31 +96,4 @@ angular.module('common.controllers', [])
         $ngRedux.dispatch(fetchSubscriptions());
         $scope.refresh($stateParams);
     };
-
-    hotkeys.bindTo($scope)
-        .add({
-            combo: 'down',
-            callback: event => {
-                event.preventDefault();
-                $scope.down();
-            }
-        });
-
-    hotkeys.bindTo($scope)
-        .add({
-            combo: 'up',
-            callback: event => {
-                event.preventDefault();
-                $scope.up();
-            }
-        });
-
-    hotkeys.bindTo($scope)
-        .add({
-            combo: 'enter',
-            callback: event => {
-                event.preventDefault();
-                $scope.toggleReadFromEnter();
-            }
-        });
 }]);
