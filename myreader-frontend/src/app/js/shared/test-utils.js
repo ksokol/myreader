@@ -131,3 +131,10 @@ export function spy(name) {
     }
     return _spy
 }
+
+export function onKey(type, which) {
+    const event = document.createEvent('Event')
+    event.which = which
+    event.initEvent(`key${type}`)
+    document.dispatchEvent(event)
+}

@@ -23,8 +23,7 @@ export const getEntries = state => {
     return {
         entries: entries.map(it => cloneObject(it)),
         links: cloneObject(links),
-        entryInFocus: getEntryInFocus(state),
-        nextFocusableEntry: getNextFocusableEntry(state)
+        entryInFocus: getEntryInFocus(state)
     }
 }
 

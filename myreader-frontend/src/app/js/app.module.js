@@ -50,6 +50,7 @@ import {BookmarkComponent} from './bookmark/bookmark.component'
 import {LogoutComponent} from './navigation/logout-item/logout-item.component'
 import {SubscriptionListComponent} from './subscription/subscription-list.component'
 import {HotkeysComponent} from './shared/component/hotkeys/hotkeys.component'
+import {FeedStreamComponent} from './feed-stream/feed-stream.component'
 
 import './config'
 import './controllers'
@@ -96,6 +97,7 @@ angular
     .component('myListPage', ListPageComponent)
     .component('myLogout', LogoutComponent)
     .component('myHotkeys', HotkeysComponent)
+    .component('myFeedStream', FeedStreamComponent)
 
     .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)

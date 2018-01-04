@@ -1,4 +1,4 @@
-import {getEntries, getEntry, getEntryTags} from 'store'
+import {getEntries, getEntry, getEntryTags, getNextFocusableEntry} from 'store'
 
 describe('src/app/js/store/entry/selectors.spec.js', () => {
 
@@ -48,22 +48,22 @@ describe('src/app/js/store/entry/selectors.spec.js', () => {
         expect(getEntries(state).entryInFocus).toEqual({uuid: '1'}))
 
     it('should return next focusable entry', () =>
-        expect(getEntries(state).nextFocusableEntry).toEqual({uuid: '2'}))
+        expect(getNextFocusableEntry(state)).toEqual({uuid: '2'}))
 
     it('should return empty object when next focusable entry is not available', () => {
         state.entry.entryInFocus = '2'
-        expect(getEntries(state).nextFocusableEntry).toEqual({})
+        expect(getNextFocusableEntry(state)).toEqual({})
     })
 
     it('should return first entry as next focusable entry when currently no entry is in focus', () => {
         state.entry.entryInFocus = null
-        expect(getEntries(state).nextFocusableEntry).toEqual({uuid: '1'})
+        expect(getNextFocusableEntry(state)).toEqual({uuid: '1'})
     })
 
     it('should return empty object as next focusable entry when entries not available', () => {
         state.entry.entryInFocus = null
         state.entry.entries = []
-        expect(getEntries(state).nextFocusableEntry).toEqual({})
+        expect(getNextFocusableEntry(state)).toEqual({})
     })
 
     it('should return entry for uuid 1', () => {

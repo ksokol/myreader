@@ -1,16 +1,6 @@
 import angular from 'angular';
 import {SubscriptionTags} from "./models";
-import {
-    changeEntry,
-    entryClear,
-    entryFocusNext,
-    entryFocusPrevious,
-    fetchEntries,
-    fetchSubscriptions,
-    getEntries,
-    getSubscriptions
-} from "store";
-import {SUBSCRIPTION_ENTRIES} from "./constants";
+import {fetchSubscriptions, getSubscriptions} from "store";
 
 angular.module('common.controllers', [])
 
@@ -42,40 +32,4 @@ angular.module('common.controllers', [])
     }
 
     $ngRedux.dispatch(fetchSubscriptions())
-}])
-
-.controller('SubscriptionEntryListCtrl', ['$scope', '$stateParams', '$state', '$ngRedux', function($scope, $stateParams, $state, $ngRedux) {
-
-    $scope.$ctrl = $scope
-
-    const unsubscribe = $ngRedux.connect(getEntries)($scope);
-    $scope.$on('$destroy', () => unsubscribe());
-
-    $scope.down = function() {
-        if (this.nextFocusableEntry.seen === false) {
-            $ngRedux.dispatch(changeEntry({...this.nextFocusableEntry, seen: true}));
-        }
-        $ngRedux.dispatch(entryFocusNext());
-    };
-
-    $scope.up = function() {
-        $ngRedux.dispatch(entryFocusPrevious());
-    };
-
-    $scope.refresh = function(params) {
-        $state.go('app.entries', params, {notify: false})
-            .then(() => $ngRedux.dispatch(fetchEntries({path: SUBSCRIPTION_ENTRIES, query: params})));
-    };
-
-    $scope.toggleReadFromEnter = function() {
-        $ngRedux.dispatch(changeEntry({...this.entryInFocus, seen: !this.entryInFocus.seen}));
-    };
-
-    $scope.refresh($stateParams);
-
-    $scope.forceRefresh = function() {
-        $ngRedux.dispatch(entryClear());
-        $ngRedux.dispatch(fetchSubscriptions());
-        $scope.refresh($stateParams);
-    };
 }]);

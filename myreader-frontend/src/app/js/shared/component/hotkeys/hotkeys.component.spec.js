@@ -1,14 +1,8 @@
 import * as Mousetrap from 'mousetrap'
+import {onKey} from '../../test-utils'
 
 const y = 89
 const z = 90
-
-function keyPress(keyCode) {
-    const event = document.createEvent('Event')
-    event.which = keyCode
-    event.initEvent('keypress')
-    document.dispatchEvent(event)
-}
 
 describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => {
 
@@ -47,20 +41,20 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
     })
 
     it('should call function in myBindTo context', () => {
-        keyPress(z)
+        onKey('press', z)
 
         expect(parentScope.called).toEqual(true)
     })
 
     it('should call function mapped to "z" key', () => {
-        keyPress(z)
+        onKey('press', z)
 
         expect(scope.onKeyPressZ).toHaveBeenCalledWith()
         expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
     })
 
     it('should call function mapped to "y" key', () => {
-        keyPress(y)
+        onKey('press', y)
 
         expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
         expect(scope.onKeyPressY).toHaveBeenCalledWith()
@@ -69,8 +63,8 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
     it('should unbind hotkeys on destroy', () => {
         scope.$emit('$destroy')
 
-        keyPress(z)
-        keyPress(y)
+        onKey('press', z)
+        onKey('press', y)
 
         expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
         expect(scope.onKeyPressY).not.toHaveBeenCalledWith()

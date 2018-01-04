@@ -1,7 +1,6 @@
 import angular from 'angular';
 import subscriptionTagsTemplate from '../../templates/subscription-tags.html';
 import navigationAdminTemplate from '../../templates/navigation-admin.html';
-import subscriptionEntriesTemplate from '../../templates/subscription-entries.html';
 import {unauthorized} from 'store';
 
 angular.module('common.config', ['ui.router'])
@@ -70,8 +69,7 @@ angular.module('common.config', ['ui.router'])
                 },
                 views: {
                     content: {
-                        template: subscriptionEntriesTemplate,
-                        controller: 'SubscriptionEntryListCtrl'
+                        template: '<div class="zero-padding-right"><my-feed-stream></my-feed-stream></div>'
                     }
                 }
             })
