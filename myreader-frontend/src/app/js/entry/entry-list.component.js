@@ -1,6 +1,6 @@
 import template from './entry-list.component.html'
 import './entry-list.component.css'
-import {fetchEntries, getEntries} from 'store'
+import {entryClear, fetchEntries, getEntries} from 'store'
 
 class controller {
 
@@ -12,6 +12,7 @@ class controller {
 
     $onDestroy() {
         this.unsubscribe()
+        this.$ngRedux.dispatch(entryClear())
     }
 
     isFocused(item) {

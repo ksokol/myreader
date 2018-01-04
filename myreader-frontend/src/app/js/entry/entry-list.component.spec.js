@@ -50,4 +50,9 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
         expect(ngReduxMock.getActionTypes()).toEqual(['GET_ENTRIES'])
         expect(ngReduxMock.getActions()[0].url).toContain('expected-path')
     })
+
+    it('should purge entries from store when component is about to be destroyed', () => {
+        scope.$destroy()
+        expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_CLEAR'])
+    })
 })
