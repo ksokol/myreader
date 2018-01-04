@@ -20,8 +20,6 @@ angular.module('common.controllers', [])
         items: []
     };
 
-    $scope.currentSelected = $state.params;
-
     const unsubscribe = $ngRedux.subscribe(() => $scope.data = new SubscriptionTags(getSubscriptions($ngRedux.getState()).subscriptions));
 
     $scope.$on('$destroy', () => unsubscribe());
@@ -29,22 +27,6 @@ angular.module('common.controllers', [])
     $scope.navigateTo = function (state) {
         $scope.closeSidenav();
         $state.go(state);
-    };
-
-    $scope.onSelect = function (selected) {
-        $scope.currentSelected = selected;
-        $scope.closeSidenav();
-
-        const params = {feedTagEqual: null, feedUuidEqual: null};
-
-        if(selected.tag && selected.tag !== 'all') {
-            params['feedTagEqual'] = selected.tag
-        }
-        if (selected.uuid) {
-            params['feedUuidEqual'] = selected.uuid
-        }
-
-        $state.go('app.entries', params, {inherit: false});
     };
 
     $scope.openMenu = function() {

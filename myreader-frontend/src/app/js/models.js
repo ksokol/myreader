@@ -21,7 +21,6 @@ export function SubscriptionTags(data) {
 
     self.addSubscription = function (subscription) {
         subscription['type'] = 'subscription';
-        subscription.tag = subscription.tag === null ? '' : subscription.tag;
         self.subscriptions.push(subscription);
         self.unseen += subscription.unseen;
     };
@@ -35,7 +34,7 @@ export function SubscriptionTags(data) {
             theTag.subscriptions.push(subscriptionTag);
         } else {
             var tag = new SubscriptionTag;
-            tag.uuid = '';
+            tag.uuid = null;
             tag.tag = subscriptionTag.tag;
             tag.title = subscriptionTag.tag;
             tag.type = 'tag';
@@ -47,7 +46,7 @@ export function SubscriptionTags(data) {
 
     var all = new SubscriptionTag;
     all.title = "all";
-    all.uuid = "";
+    all.uuid = null;
     all.tag = "all";
     all.subscriptions = [];
     all.type = 'global';

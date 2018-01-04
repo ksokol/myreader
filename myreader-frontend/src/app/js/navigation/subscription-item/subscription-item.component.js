@@ -3,27 +3,36 @@ import './subscription-item.component.css'
 
 class controller {
 
-    $onInit() {
-        this.item = this.myItem || {}
-        this.selected = this.mySelected || {}
+    constructor($state, $stateParams) {
+        'ngInject'
+        this.$state = $state
+        this.$stateParams = $stateParams
     }
 
-    $onChanges(obj) {
-        if (obj.mySelected) {
-            this.selected = obj.mySelected.currentValue
-        }
+    $onInit() {
+        this.item = this.myItem || {}
     }
 
     isSelected(item) {
-        return this.selected.uuid === item.uuid && this.selected.tag === item.tag
+        return this.$stateParams['feedUuidEqual'] === item.uuid && this.$stateParams['feedTagEqual'] === item.tag
     }
 
     isOpen() {
-        return this.selected.tag === this.item.tag
+        return this.$stateParams['feedTagEqual'] === this.item.tag
     }
 
     onSelect(tag, uuid) {
-        this.myOnSelect({selected: {tag, uuid}})
+        const params = {feedTagEqual: null, feedUuidEqual: null}
+
+        if(tag && tag !== 'all') {
+            params['feedTagEqual'] = tag
+        }
+        if (uuid) {
+            params['feedUuidEqual'] = uuid
+        }
+
+        this.$state.go('app.entries', params, {inherit: false})
+        this.myOnSelect()
     }
 
     isInvisible(item) {
@@ -39,7 +48,9 @@ export const NavigationSubscriptionItemComponent = {
     template, controller,
     bindings: {
         myItem: '<',
-        mySelected: '<',
+        /*
+         * @deprecated
+         */
         myOnSelect: '&'
     }
 }

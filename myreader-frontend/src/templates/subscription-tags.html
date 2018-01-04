@@ -7,15 +7,13 @@
             <my-navigation-subscription-item
                                         ng-repeat="item in data.tags track by trackBy(item)"
                                         my-item="item"
-                                        my-on-select="onSelect(selected)"
-                                        my-selected="currentSelected">
+                                        my-on-select="closeSidenav()">
             </my-navigation-subscription-item>
 
             <my-navigation-subscription-item
                                         ng-repeat="item in data.subscriptions track by trackBy(item)"
                                         my-item="item"
-                                        my-on-select="onSelect(selected)"
-                                        my-selected="currentSelected">
+                                        my-on-select="closeSidenav()">
             </my-navigation-subscription-item>
 
             <li>

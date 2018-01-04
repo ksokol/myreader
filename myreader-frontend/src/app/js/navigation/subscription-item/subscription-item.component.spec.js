@@ -1,6 +1,8 @@
+import {mock} from '../../shared/test-utils'
+
 describe('src/app/js/navigation/subscription-item/subscription-item.component.spec.js', () => {
 
-    beforeEach(angular.mock.module('myreader'))
+    beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams')))
 
     describe('$onInit', () => {
 
@@ -11,7 +13,6 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
             component.$onInit()
 
             expect(component.item).toEqual({})
-            expect(component.selected).toEqual({})
         }))
 
         it('should use bindings', inject(_$componentController_ => {
@@ -20,45 +21,33 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
             component.$onInit()
 
             expect(component.item).toEqual('expected myItem')
-            expect(component.selected).toEqual('expected mySelected')
         }))
     })
 
     describe('controller', () => {
 
-        let component, bindings, myOnSelect
+        let component, bindings, myOnSelect, state, stateParams
 
         beforeEach(inject(_$componentController_ => {
+            state = jasmine.createSpyObj('state', ['go'])
             myOnSelect = jasmine.createSpy('myOnSelect')
 
             bindings = {
-                mySelected: {
-                    tag: 'tag',
-                    uuid: 'uuid'
-                },
                 myOnSelect: myOnSelect
             }
 
-            component = _$componentController_('myNavigationSubscriptionItem', null, bindings)
+            stateParams = {
+                feedTagEqual: 'tag',
+                feedUuidEqual: 'uuid'
+            }
+
+            component = _$componentController_('myNavigationSubscriptionItem', {$state: state, $stateParams: stateParams}, bindings)
             component.$onInit()
         }))
 
-        it('should update selected on $onChanges', () => {
-            const expected = {tag: 'expected tag', uuid: 'expected uuid'}
-            component.$onChanges({mySelected: {currentValue: expected}})
-
-            expect(component.selected).toEqual(expected)
-        })
-
-        it('should not update selected when mySelected is undefined in $onChanges', () => {
-            component.$onChanges({})
-
-            expect(component.selected).toEqual(bindings.mySelected)
-        })
-
         it('should not mark item as selected when uuid does not match', () => {
             const item = {
-                tag: bindings.mySelected.tag,
+                tag: stateParams.feedTagEqual,
                 uuid: 'other uuid'
             }
 
@@ -68,7 +57,7 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
         it('should not mark item as selected when tag does not match', () => {
             const item = {
                 tag: 'other tag',
-                uuid: bindings.mySelected.uuid
+                uuid: stateParams.feedUuidEqual
             }
 
             expect(component.isSelected(item)).toEqual(false)
@@ -76,8 +65,8 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
 
         it('should mark item as selected when tag and uuid match', () => {
             const item = {
-                tag: bindings.mySelected.tag,
-                uuid: bindings.mySelected.uuid
+                tag: stateParams.feedTagEqual,
+                uuid: stateParams.feedUuidEqual
             }
 
             expect(component.isSelected(item)).toEqual(true)
@@ -85,10 +74,10 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
 
         it('should mark submenu as open when tag matches', inject(_$componentController_ => {
             bindings.myItem = {
-                tag: bindings.mySelected.tag
+                tag: stateParams.feedTagEqual
             }
 
-            component = _$componentController_('myNavigationSubscriptionItem', null, bindings)
+            component = _$componentController_('myNavigationSubscriptionItem', {$stateParams: stateParams}, bindings)
             component.$onInit()
 
             expect(component.isOpen()).toEqual(true)
@@ -99,16 +88,40 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
                 tag: 'other tag'
             }
 
-            component = _$componentController_('myNavigationSubscriptionItem', null, bindings)
+            component = _$componentController_('myNavigationSubscriptionItem', {$stateParams: stateParams}, bindings)
             component.$onInit()
 
             expect(component.isOpen()).toEqual(false)
         }))
 
-        it('should propagate selected item', () => {
-            component.onSelect('tag parameter', 'uuid parameter')
+        it('should navigate to route with feedTagEqual and feedUuidEqual set', () => {
+            component.onSelect('selected tag', 'selected uuid')
+            expect(state.go)
+                .toHaveBeenCalledWith('app.entries', {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'}, {inherit: false})
+        })
 
-            expect(myOnSelect).toHaveBeenCalledWith({selected: { tag: 'tag parameter', uuid: 'uuid parameter'}})
+        it('should navigate to route with feedTagEqual to null when value is "all"', () => {
+            component.onSelect('all', 'selected uuid')
+            expect(state.go)
+                .toHaveBeenCalledWith('app.entries', {feedTagEqual: null, feedUuidEqual: 'selected uuid'}, {inherit: false})
+        })
+
+        it('should navigate to route with feedTagEqual to null when value is null', () => {
+            component.onSelect(null, 'selected uuid')
+            expect(state.go)
+                .toHaveBeenCalledWith('app.entries', {feedTagEqual: null, feedUuidEqual: 'selected uuid'}, {inherit: false})
+        })
+
+        it('should navigate to route with feedTagEqual to null when value is "all" and feedUuidEqual set to null when value is null', () => {
+            component.onSelect('all', null)
+            expect(state.go)
+                .toHaveBeenCalledWith('app.entries', {feedTagEqual: null, feedUuidEqual: null}, {inherit: false})
+        })
+
+        it('should navigate to route with feedTagEqual given value and feedUuidEqual set to null when value is null', () => {
+            component.onSelect('selected tag', null)
+            expect(state.go)
+                .toHaveBeenCalledWith('app.entries', {feedTagEqual: 'selected tag', feedUuidEqual: null}, {inherit: false})
         })
 
         it('should calculate proper visibility', () => {
@@ -124,7 +137,7 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
 
     describe('with html', () => {
 
-        let scope, element, myOnSelect
+        let scope, element, myOnSelect, state, stateParams
 
         const item = {
             title: 'item title',
@@ -137,20 +150,21 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
             ]
         }
 
-        beforeEach(inject(($rootScope, $compile) => {
+        beforeEach(inject(($rootScope, $compile, $state, $stateParams) => {
             myOnSelect = jasmine.createSpy('myOnSelect')
+            state = $state
+            stateParams = $stateParams
 
             scope = $rootScope.$new()
             scope.item = item
-            scope.selected = {
-                tag: scope.item.tag,
-                uuid: scope.item.uuid
-            }
             scope.onSelect = myOnSelect
 
+            state.go = jasmine.createSpy('$state.go()')
+            stateParams['feedTagEqual'] = scope.item.tag
+            stateParams['feedUuidEqual'] = scope.item.uuid
+
             element = $compile(`<my-navigation-subscription-item my-item="item"
-                                                                 my-selected="selected"
-                                                                 my-on-select="onSelect(selected)">
+                                                                 my-on-select="onSelect()">
                                 </my-navigation-subscription-item>`)(scope)
             scope.$digest()
         }))
@@ -158,9 +172,11 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
         describe('parent item', () => {
 
             it('should not mark as selected', inject($compile => {
-                scope.selected = {}
+                stateParams['feedTagEqual'] = null
+                stateParams['feedUuidEqual'] = null
+
                 element = $compile(`<my-navigation-subscription-item my-item="item" 
-                                                                     my-selected="selected">
+                                                                     my-on-select="onSelect()">
                                     </my-navigation-subscription-item>`)(scope)
                 scope.$digest()
 
@@ -176,22 +192,22 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
             })
 
             it('should hide when unseen count is zero', inject($compile => {
-                scope.item = { unseen: 0 }
-                scope.selected = {}
+                scope.item = {unseen: 0}
+                stateParams['feedTagEqual'] = null
+                stateParams['feedUuidEqual'] = null
 
-                element = $compile(`<my-navigation-subscription-item my-item="item" 
-                                                                     my-selected="selected">
+                element = $compile(`<my-navigation-subscription-item my-item="item">
                                     </my-navigation-subscription-item>`)(scope)
                 scope.$digest()
 
                 expect(element.find('li')[0].classList).toContain('ng-hide')
             }))
 
-            it('should propagate selection', () => {
+            it('should emit myOnSelect event when a selection occurred', () => {
                 element.find('button')[0].click()
                 scope.$digest()
 
-                expect(myOnSelect).toHaveBeenCalledWith({ tag: 'tag', uuid: 'uuid' })
+                expect(myOnSelect).toHaveBeenCalledWith()
             })
 
             it('should render title and unseen count', () => {
@@ -214,9 +230,10 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
         describe('sub items', () => {
 
             it('should hide items', inject($compile => {
-                scope.selected = {}
-                element = $compile(`<my-navigation-subscription-item my-item="item" 
-                                                                     my-selected="selected">
+                stateParams['feedTagEqual'] = null
+                stateParams['feedUuidEqual'] = null
+
+                element = $compile(`<my-navigation-subscription-item my-item="item">
                                     </my-navigation-subscription-item>`)(scope)
                 scope.$digest()
 
@@ -239,10 +256,8 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
             })
 
             it('should mark as selected', () => {
-                scope.selected = {
-                    tag: scope.item.tag,
-                    uuid: 'uuid1'
-                }
+                stateParams['feedTagEqual'] = scope.item.tag
+                stateParams['feedUuidEqual'] = 'uuid1'
                 scope.$digest()
 
                 const items = element.find('ul').find('li')
@@ -251,11 +266,11 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
                 expect(items[1].classList).not.toContain('my-navigation-dynamic__item')
             })
 
-            it('should propagate selection', () => {
+            it('should emit myOnSelect event when a selection occurred', () => {
                 element.find('ul').find('li').find('button')[1].click()
                 scope.$digest()
 
-                expect(myOnSelect).toHaveBeenCalledWith({ tag: 'tag', uuid: 'uuid2' })
+                expect(myOnSelect).toHaveBeenCalledWith()
             })
 
             it('should render item title with unseen count', () => {

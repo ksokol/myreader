@@ -43,7 +43,7 @@ describe('test/modelTests.js', function() {
             untagged2 = {
                 "uuid": "53",
                 "title": "untagged",
-                "tag": "",
+                "tag": null,
                 "unseen": 0,
                 "links": []
             };
@@ -64,7 +64,7 @@ describe('test/modelTests.js', function() {
                     subscriptions : [],
                     links : { },
                     title : 'all',
-                    uuid : '',
+                    uuid : null,
                     tag : 'all',
                     type : 'global',
                     unseen : 334
@@ -80,7 +80,7 @@ describe('test/modelTests.js', function() {
                         }
                     ],
                     links : { },
-                    uuid : '',
+                    uuid : null,
                     tag : 'news',
                     title : 'news',
                     type : 'tag',
@@ -104,7 +104,7 @@ describe('test/modelTests.js', function() {
                         }
                     ],
                     links : { },
-                    uuid : '',
+                    uuid : null,
                     tag : 'misc',
                     title : 'misc',
                     type : 'tag',
@@ -116,7 +116,7 @@ describe('test/modelTests.js', function() {
                 {
                     uuid : '52',
                     title : 'untagged',
-                    tag : '',
+                    tag : null,
                     unseen : 94,
                     links : [],
                     type : 'subscription'
@@ -124,7 +124,7 @@ describe('test/modelTests.js', function() {
                 {
                     uuid : '53',
                     title : 'untagged',
-                    tag : '',
+                    tag : null,
                     unseen : 0,
                     links : [],
                     type : 'subscription'
