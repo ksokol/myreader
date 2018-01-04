@@ -6,6 +6,7 @@ function entryPageReceived({state, action}) {
     const links = action.links
     let actionEntries = [...action.entries]
     let entries = actionEntries
+    let entryInFocus = null
 
     if (equalLinks(state.links.self, links.self, ['next'])) {
         entries = []
@@ -15,9 +16,10 @@ function entryPageReceived({state, action}) {
         })
 
         entries = entries.concat(actionEntries)
+        entryInFocus = state.entryInFocus
     }
 
-    return {...state, entries, links}
+    return {...state, entries, links, entryInFocus}
 }
 
 function entryChanged({state, action}) {

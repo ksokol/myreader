@@ -58,6 +58,25 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
             expect(entryReducers(nextState, action).entries).toEqual([{uuid: '1'}, {uuid: '2'}])
         })
 
+        it('should reset entryInFocus property when links differ', () => {
+            action.links = {self: {path: 'expected path', query: {next: 2, a: 'b'}}}
+            action.entries = []
+
+            const currentState = {links: {self: {path: 'expected path', query: {next: 2}}}, entries: [], entryInFocus: '1'}
+
+            expect(entryReducers(currentState, action).entryInFocus).toEqual(null)
+        })
+
+        it('should not reset entryInFocus property when links are equal', () => {
+            action.links = {self: {query: {next: '3'}}}
+            action.entries = []
+
+            const currentState = {links: {self: {query: {next: '3'}}}, entries: [], entryInFocus: '1'}
+            const nextState = entryReducers(currentState, action)
+
+            expect(entryReducers(nextState, action).entryInFocus).toEqual('1')
+        })
+
         it('should not add entry to store when entry already available in store', () => {
             action.links = {self: {query: {next: '3'}}}
             action.entries = [{uuid: '1'}, {uuid: '2'}]
