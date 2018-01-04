@@ -54,11 +54,8 @@ import {HotkeysComponent} from './shared/component/hotkeys/hotkeys.component'
 import './config'
 import './controllers'
 
-const storeProviderEnhancer = () => () => createApplicationStore(ENVIRONMENT)
-
 angular
     .module('myreader', [ngRedux, 'common.config', 'common.controllers', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages'])
-    .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], [storeProviderEnhancer])])
 
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)
@@ -112,21 +109,14 @@ angular
 
     .filter('timeago', TimeagoFilter)
 
-    // TODO part of AngularJS exit strategy https://github.com/angular/angular.js/issues/16199#issuecomment-324911598
-    .run(($rootScope, $q) => {
+    .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], ['myStoreEnhancer'])])
+
+    // TODO part of AngularJS exit strategy
+    .factory('myStoreEnhancer', $rootScope => {
         'ngInject'
-
-        if (ENVIRONMENT === 'production' || ENVIRONMENT === 'development') {
-            window['Promise'] = $q
+        return () => () => {
+            const store = createApplicationStore(ENVIRONMENT)
+            store.subscribe(() => $rootScope.$evalAsync())
+            return store
         }
-
-        const setTimeoutFn = window.setTimeout
-        window.setTimeout = (fn, delay) => {
-            setTimeoutFn(() => {
-                fn()
-                $rootScope.$apply()
-            }, delay)
-        }
-
-        window.addEventListener('keyup', () => $rootScope.$apply(), false)
     })
