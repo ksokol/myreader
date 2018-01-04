@@ -1,3 +1,6 @@
+.bookmark-tags__tags > md-chips-wrap {
+    padding-left: 10px;
+}
 .bookmark-tags__tags .md-chips .md-chip-input-container {
     display: none;
 }

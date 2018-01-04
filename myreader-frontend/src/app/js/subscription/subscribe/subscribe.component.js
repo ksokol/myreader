@@ -1,4 +1,5 @@
 import template from './subscribe.component.html'
+import './subscribe.component.css'
 import {saveSubscription} from 'store'
 
 class controller {

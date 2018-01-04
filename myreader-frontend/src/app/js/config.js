@@ -69,7 +69,7 @@ angular.module('common.config', ['ui.router'])
                 },
                 views: {
                     content: {
-                        template: '<div class="zero-padding-right"><my-feed-stream></my-feed-stream></div>'
+                        template: '<my-feed-stream></my-feed-stream>'
                     }
                 }
             })
@@ -77,7 +77,7 @@ angular.module('common.config', ['ui.router'])
                 url: '/bookmark/:entryTagEqual?q',
                 views: {
                     content: {
-                        template: '<div class="zero-padding-right"><my-bookmark></my-bookmark></div>'
+                        template: '<my-bookmark></my-bookmark>'
                     }
                 }
             })
@@ -85,7 +85,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/subscriptions?q",
                 views: {
                     content: {
-                        template: '<div class="zero-padding-right"><my-subscription-list></my-subscription-list></div>'
+                        template: '<my-subscription-list></my-subscription-list>'
                     }
                 }
             })
@@ -93,7 +93,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/subscriptions/add",
                 views: {
                     content: {
-                        template: '<div><my-subscribe></my-subscribe></div>'
+                        template: '<my-subscribe></my-subscribe>'
                     }
                 }
             })
@@ -101,7 +101,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/subscriptions/:uuid",
                 views: {
                     content: {
-                        template: '<div><my-subscription></my-subscription></div>'
+                        template: '<my-subscription></my-subscription>'
                     }
                 }
             })
@@ -109,7 +109,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/overview",
                 views: {
                     content: {
-                        template: '<div><my-maintenance></my-maintenance></div>'
+                        template: '<my-maintenance></my-maintenance>'
                     }
                 }
             })
@@ -117,7 +117,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/feed",
                 views: {
                     content: {
-                        template: '<div><my-feed-list></my-feed-list></div>',
+                        template: '<my-feed-list></my-feed-list>',
                     }
                 }
             })
@@ -125,7 +125,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/feed/:uuid",
                 views: {
                     content: {
-                        template: '<div><my-feed></my-feed></div>'
+                        template: '<my-feed></my-feed>'
                     }
                 }
             })
@@ -134,7 +134,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/settings",
                 views: {
                     content: {
-                        template: '<div><my-settings></my-settings></div>'
+                        template: '<my-settings></my-settings>'
                     }
                 }
             });
