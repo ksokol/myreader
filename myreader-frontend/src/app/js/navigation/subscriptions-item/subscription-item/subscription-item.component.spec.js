@@ -1,6 +1,6 @@
-import {mock} from '../../shared/test-utils'
+import {mock} from '../../../shared/test-utils'
 
-describe('src/app/js/navigation/subscription-item/subscription-item.component.spec.js', () => {
+describe('src/app/js/navigation/subscriptions-item/subscription-item/subscription-item.component.spec.js', () => {
 
     beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams')))
 
