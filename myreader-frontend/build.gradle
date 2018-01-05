@@ -61,8 +61,8 @@ sonarqube {
     properties {
         property "sonar.sources", "${projectDir}/src/app/js"
         property "sonar.exclusions", ["**/*.spec.js", "**/test-utils.js"]
-        property "sonar.tests", ["${projectDir}/test", "${projectDir}/src/app/js"]
-        property "sonar.test.inclusions", ["**/*.spec.js", "**Tests.js"]
+        property "sonar.tests", ["${projectDir}/src/app/js"]
+        property "sonar.test.inclusions", ["**/*.spec.js"]
         property "sonar.javascript.lcov.reportPaths", "${buildDir}/reports/istanbul/lcov.info"
         property "sonar.testExecutionReportPaths", "${buildDir}/TESTS.xml"
     }

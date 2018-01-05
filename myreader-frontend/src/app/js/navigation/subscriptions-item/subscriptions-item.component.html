@@ -1,0 +1,11 @@
+<my-navigation-subscription-item
+        ng-repeat="item in $ctrl.subscriptionsGroupedByTag track by $ctrl.trackBy(item)"
+        my-item="item"
+        my-on-select="$ctrl.myOnSelect()">
+</my-navigation-subscription-item>
+
+<my-navigation-subscription-item
+        ng-repeat="item in $ctrl.subscriptionsWithoutTag track by $ctrl.trackBy(item)"
+        my-item="item"
+        my-on-select="$ctrl.myOnSelect()">
+</my-navigation-subscription-item>

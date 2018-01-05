@@ -3,18 +3,7 @@
 
     <md-content flex role="navigation">
         <ul class="subscription-tag-menu">
-
-            <my-navigation-subscription-item
-                                        ng-repeat="item in data.tags track by trackBy(item)"
-                                        my-item="item"
-                                        my-on-select="closeSidenav()">
-            </my-navigation-subscription-item>
-
-            <my-navigation-subscription-item
-                                        ng-repeat="item in data.subscriptions track by trackBy(item)"
-                                        my-item="item"
-                                        my-on-select="closeSidenav()">
-            </my-navigation-subscription-item>
+            <my-navigation-subscriptions-item my-on-select="closeSidenav()"></my-navigation-subscriptions-item>
 
             <li>
                 <md-button ng-click="navigateTo('app.subscriptions')">subscriptions</md-button>

@@ -69,10 +69,14 @@ export function mock(name) {
 }
 
 export function createMockStore() {
-    const store = configureMockStore([thunk])(initialApplicationState())
+    let state = initialApplicationState()
+    const store = configureMockStore([thunk])(() => state)
 
     store.getActionTypes = () => store.getActions().map(it => it.type)
-    store.setState = stateSlice => merge(store.getState(), stateSlice)
+    store.setState = stateSlice => {
+        merge(state, stateSlice)
+        state = {...state}
+    }
 
     return store
 }

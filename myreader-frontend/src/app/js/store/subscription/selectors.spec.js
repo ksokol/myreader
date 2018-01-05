@@ -1,25 +1,46 @@
-import {getSubscriptions} from 'store'
+import {getSubscriptions, filteredByUnseenSubscriptionsSelector} from 'store'
+import settingsInitialState from '../settings'
 
 describe('src/app/js/store/subscription/selectors.spec.js', () => {
 
     let state
 
+    const subscriptions = () => {
+        return {
+            subscriptions: [{uuid: '1', unseen: 1}, {uuid: '2', unseen: 0}]
+        }
+    }
+
     beforeEach(() => {
         state = {
-            subscription: {
-                subscriptions: [{uuid: '1'}, {uuid: '2'}]
-            }
+            subscription: {...subscriptions()},
+            settings: settingsInitialState()
         }
     })
 
     it('should return subscriptions', () =>
-        expect(getSubscriptions(state)).toEqual({subscriptions: [{uuid: '1'}, {uuid: '2'}]}))
+        expect(getSubscriptions(state)).toEqual(subscriptions()))
 
+    it('selector getSubscriptions should return copy of subscriptions', () => {
+        const actualSubscriptions = getSubscriptions(state).subscriptions
+        actualSubscriptions[0].key = 'value'
 
-    it('should return copy of subscriptions', () => {
-        const subscriptions = getSubscriptions(state).subscriptions
-        subscriptions[0].key = 'value'
+        expect(state.subscription).toEqual(subscriptions())
+    })
 
-        expect(state.subscription).toEqual({subscriptions: [{uuid: '1'}, {uuid: '2'}]})
+    it('should return subscriptions with unseen greater than zero when showUnseenEntries is set to true', () => {
+        expect(filteredByUnseenSubscriptionsSelector(state)).toEqual({subscriptions: [{uuid: '1', unseen: 1}]})
+    })
+
+    it('should return all subscriptions when showUnseenEntries is set to false', () => {
+        state.settings.showUnseenEntries = false
+        expect(filteredByUnseenSubscriptionsSelector(state)).toEqual(subscriptions())
+    })
+
+    it('selector filteredByUnseenSubscriptionsSelector should return copy of subscriptions', () => {
+        const actualSubscriptions = filteredByUnseenSubscriptionsSelector(state).subscriptions
+        actualSubscriptions[0].key = 'value'
+
+        expect(state.subscription).toEqual(subscriptions())
     })
 })

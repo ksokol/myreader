@@ -16,7 +16,7 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
         }))
 
         it('should use bindings', inject(_$componentController_ => {
-            const bindings = { myItem: 'expected myItem', mySelected: 'expected mySelected'}
+            const bindings = {myItem: 'expected myItem'}
             component = _$componentController_('myNavigationSubscriptionItem', null, bindings)
             component.$onInit()
 
@@ -100,35 +100,16 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
                 .toHaveBeenCalledWith('app.entries', {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'}, {inherit: false})
         })
 
-        it('should navigate to route with feedTagEqual to null when value is "all"', () => {
-            component.onSelect('all', 'selected uuid')
-            expect(state.go)
-                .toHaveBeenCalledWith('app.entries', {feedTagEqual: null, feedUuidEqual: 'selected uuid'}, {inherit: false})
-        })
-
         it('should navigate to route with feedTagEqual to null when value is null', () => {
             component.onSelect(null, 'selected uuid')
             expect(state.go)
                 .toHaveBeenCalledWith('app.entries', {feedTagEqual: null, feedUuidEqual: 'selected uuid'}, {inherit: false})
         })
 
-        it('should navigate to route with feedTagEqual to null when value is "all" and feedUuidEqual set to null when value is null', () => {
-            component.onSelect('all', null)
-            expect(state.go)
-                .toHaveBeenCalledWith('app.entries', {feedTagEqual: null, feedUuidEqual: null}, {inherit: false})
-        })
-
         it('should navigate to route with feedTagEqual given value and feedUuidEqual set to null when value is null', () => {
             component.onSelect('selected tag', null)
             expect(state.go)
                 .toHaveBeenCalledWith('app.entries', {feedTagEqual: 'selected tag', feedUuidEqual: null}, {inherit: false})
-        })
-
-        it('should calculate proper visibility', () => {
-            expect(component.isInvisible({})).toEqual(false)
-            expect(component.isInvisible({unseen: 0})).toEqual(true)
-            expect(component.isInvisible({unseen: -1})).toEqual(true)
-            expect(component.isInvisible({unseen: 1})).toEqual(false)
         })
 
         it('should construct comparison value for ng-repeat track by', () =>
@@ -180,28 +161,12 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
                                     </my-navigation-subscription-item>`)(scope)
                 scope.$digest()
 
-                expect(element.find('li')[0].classList).not.toContain('my-navigation-dynamic__item')
+                expect(element.find('li')[0].classList).not.toContain('my-subscription-item--selected')
             }))
 
             it('should mark as selected', () => {
-                expect(element.find('li')[0].classList).toContain('my-navigation-dynamic__item')
+                expect(element.find('li')[0].classList).toContain('my-subscription-item--selected')
             })
-
-            it('should not hide when unseen count is greater than zero', () => {
-                expect(element.find('li')[0].classList).not.toContain('ng-hide')
-            })
-
-            it('should hide when unseen count is zero', inject($compile => {
-                scope.item = {unseen: 0}
-                stateParams['feedTagEqual'] = null
-                stateParams['feedUuidEqual'] = null
-
-                element = $compile(`<my-navigation-subscription-item my-item="item">
-                                    </my-navigation-subscription-item>`)(scope)
-                scope.$digest()
-
-                expect(element.find('li')[0].classList).toContain('ng-hide')
-            }))
 
             it('should emit myOnSelect event when a selection occurred', () => {
                 element.find('button')[0].click()
@@ -216,20 +181,11 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
                 expect(div.find('div')[0].innerText).toEqual('item title')
                 expect(angular.element(div.find('div')[1]).find('span').text()).toEqual('2')
             })
-
-            it('should render title and no unseen count', () => {
-                delete scope.item.unseen
-                scope.$digest()
-
-                const div = angular.element(element.find('li')[0]).find('div')
-                expect(div.find('div')[0].innerText).toEqual('item title')
-                expect(div.find('div')[1]).toBeUndefined()
-            })
         })
 
         describe('sub items', () => {
 
-            it('should hide items', inject($compile => {
+            it('should not render items when not selected', inject($compile => {
                 stateParams['feedTagEqual'] = null
                 stateParams['feedUuidEqual'] = null
 
@@ -237,12 +193,18 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
                                     </my-navigation-subscription-item>`)(scope)
                 scope.$digest()
 
-                expect(element.find('ul')[0].classList).toContain('ng-hide')
+                expect(element.find('ul')[0]).toBeUndefined()
             }))
 
-            it('should not hide items', () => {
-                expect(element.find('ul')[0].classList).not.toContain('ng-hide')
-            })
+            it('should not render items when no subscriptions available', inject($compile => {
+                scope.item = {...scope.item, subscriptions: []}
+
+                element = $compile(`<my-navigation-subscription-item my-item="item">
+                                    </my-navigation-subscription-item>`)(scope)
+                scope.$digest()
+
+                expect(element.find('ul')[0]).toBeUndefined()
+            }))
 
             it('should render every item', () => {
                 expect(element.find('ul').find('li').length).toEqual(2)
@@ -251,9 +213,19 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
             it('should not mark as selected', () => {
                 const items = element.find('ul').find('li')
 
-                expect(items[0].classList).not.toContain('my-navigation-dynamic__item')
-                expect(items[1].classList).not.toContain('my-navigation-dynamic__item')
+                expect(items[0].classList).not.toContain('my-subscription-item--selected')
+                expect(items[1].classList).not.toContain('my-subscription-item--selected')
             })
+
+            it('should not render items when item is selected but subscriptions property is undefined', inject($compile => {
+                scope.item = {...scope.item}
+                delete scope.item.subscriptions
+                element = $compile(`<my-navigation-subscription-item my-item="item">
+                                    </my-navigation-subscription-item>`)(scope)
+                scope.$digest()
+
+                expect(element.find('ul')[0]).toBeUndefined()
+            }))
 
             it('should mark as selected', () => {
                 stateParams['feedTagEqual'] = scope.item.tag
@@ -262,8 +234,8 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
 
                 const items = element.find('ul').find('li')
 
-                expect(items[0].classList).toContain('my-navigation-dynamic__item')
-                expect(items[1].classList).not.toContain('my-navigation-dynamic__item')
+                expect(items[0].classList).toContain('my-subscription-item--selected')
+                expect(items[1].classList).not.toContain('my-subscription-item--selected')
             })
 
             it('should emit myOnSelect event when a selection occurred', () => {
@@ -278,13 +250,6 @@ describe('src/app/js/navigation/subscription-item/subscription-item.component.sp
 
                 expect(div1[0].innerText).toEqual('subscription 1')
                 expect(angular.element(div1[1]).find('span').text()).toEqual('1')
-            })
-
-            it('should render item title without unseen count', () => {
-                const div2 = angular.element(angular.element(element.find('ul').find('button')[1]).find('div')).find('div')
-
-                expect(div2[0].innerText).toEqual('subscription 2')
-                expect(div2[1]).toBeUndefined()
             })
         })
     })

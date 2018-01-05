@@ -51,6 +51,7 @@ import {LogoutComponent} from './navigation/logout-item/logout-item.component'
 import {SubscriptionListComponent} from './subscription/subscription-list.component'
 import {HotkeysComponent} from './shared/component/hotkeys/hotkeys.component'
 import {FeedStreamComponent} from './feed-stream/feed-stream.component'
+import {NavigationSubscriptionsItemComponent} from './navigation/subscriptions-item/subscriptions-item.component'
 
 import './config'
 import './controllers'
@@ -73,7 +74,6 @@ angular
     .component('myAbout', AboutComponent)
     .component('myMaintenanceActions', MaintenanceActionsComponent)
     .component('myMaintenance', MaintenanceComponent)
-    .component('myNavigationSubscriptionItem', NavigationSubscriptionItemComponent)
     .component('mySettings', SettingsComponent)
     .component('mySubscribe', SubscribeComponent)
     .component('mySubscriptionExclusion', SubscriptionExclusionComponent)
@@ -85,6 +85,9 @@ angular
     .component('myBookmarkTags', BookmarkTagsComponent)
     .component('myBookmark', BookmarkComponent)
     .component('mySubscriptionList', SubscriptionListComponent)
+    .component('myFeedStream', FeedStreamComponent)
+    .component('myNavigationSubscriptionItem', NavigationSubscriptionItemComponent)
+    .component('myNavigationSubscriptionsItem', NavigationSubscriptionsItemComponent)
 
     .component('myButtonGroup', ButtonGroupComponent)
     .component('myButton', ButtonComponent)
@@ -97,7 +100,6 @@ angular
     .component('myListPage', ListPageComponent)
     .component('myLogout', LogoutComponent)
     .component('myHotkeys', HotkeysComponent)
-    .component('myFeedStream', FeedStreamComponent)
 
     .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)

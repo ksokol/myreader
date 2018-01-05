@@ -21,26 +21,17 @@ class controller {
         return this.$stateParams['feedTagEqual'] === this.item.tag
     }
 
-    onSelect(tag, uuid) {
-        const params = {feedTagEqual: null, feedUuidEqual: null}
-
-        if(tag && tag !== 'all') {
-            params['feedTagEqual'] = tag
-        }
-        if (uuid) {
-            params['feedUuidEqual'] = uuid
-        }
-
-        this.$state.go('app.entries', params, {inherit: false})
+    onSelect(feedTagEqual, feedUuidEqual) {
+        this.$state.go('app.entries', {feedTagEqual, feedUuidEqual}, {inherit: false})
         this.myOnSelect()
     }
 
-    isInvisible(item) {
-        return item.hasOwnProperty('unseen') && item.unseen <= 0
+    isVisible() {
+        return this.isOpen() && (this.item.subscriptions ? this.item.subscriptions.length > 0 : false)
     }
 
-    trackBy(subscription) {
-        return JSON.stringify({uuid: subscription.uuid, unseen: subscription.unseen})
+    trackBy(item) {
+        return JSON.stringify({uuid: item.uuid, unseen: item.unseen})
     }
 }
 
