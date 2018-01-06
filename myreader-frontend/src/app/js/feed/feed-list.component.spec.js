@@ -14,9 +14,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         createdAt: 'createdAt 2'
     }]
 
-    const mySearchInput = componentMock('mySearchInput')
-
-    let rootScope, scope, element, page, $state, ngReduxMock, feedService, feed, findAllDeferred
+    let rootScope, scope, element, page, state, stateParams, ngReduxMock, feedService, feed, findAllDeferred
 
     const Feed = el => {
         return {
@@ -43,100 +41,151 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         }
     }
 
-    beforeEach(angular.mock.module('myreader', mock('$state'), mock('feedService'), filterMock('timeago'), mySearchInput, mockNgRedux()))
+    describe('', () => {
 
-    beforeEach(inject(($rootScope, $compile, $q, _$state_, $ngRedux, _feedService_) => {
-        rootScope = $rootScope
-        scope = $rootScope.$new()
-        ngReduxMock = $ngRedux
+        beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams'), mock('feedService'), filterMock('timeago'), mockNgRedux()))
 
-        feed = {
-            uuid: 'expected uuid',
-            title: 'expected title',
-            url: 'expected url',
-            other: 'other field'
-        }
+        beforeEach(inject(($rootScope, $compile, $q, $state, $stateParams, $ngRedux, _feedService_) => {
+            rootScope = $rootScope
+            scope = $rootScope.$new()
+            ngReduxMock = $ngRedux
 
-        findAllDeferred = $q.defer()
+            feed = {
+                uuid: 'expected uuid',
+                title: 'expected title',
+                url: 'expected url',
+                other: 'other field'
+            }
 
-        feedService = _feedService_
-        feedService.findAll = jasmine.createSpy('feedService.findAll()')
-        feedService.findAll.and.returnValue(findAllDeferred.promise)
+            findAllDeferred = $q.defer()
 
-        $state = _$state_
-        $state.go = jasmine.createSpy('$state.go()')
+            feedService = _feedService_
+            feedService.findAll = jasmine.createSpy('feedService.findAll()')
+            feedService.findAll.and.returnValue(findAllDeferred.promise)
 
-        element = $compile('<my-feed-list></my-feed-list>')(scope)
-        page = new PageObject(element)
-        scope.$digest()
+            state = $state
+            state.go = jasmine.createSpy('$state.go()')
+            stateParams = $stateParams
 
-        findAllDeferred.resolve(feeds)
-        scope.$digest()
-    }))
+            element = $compile('<my-feed-list></my-feed-list>')(scope)
+            page = new PageObject(element)
+            scope.$digest()
 
-    it('should show error when feed fetch failed', inject(($compile, $q) => {
-        findAllDeferred = $q.defer()
-        feedService.findAll.and.returnValue(findAllDeferred.promise)
-        element = $compile('<my-feed-list></my-feed-list>')(scope)
-        page = new PageObject(element)
-        findAllDeferred.reject('expected error')
-        scope.$digest()
+            findAllDeferred.resolve(feeds)
+            scope.$digest()
+        }))
 
-        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'expected error', type: 'error'}})
-    }))
+        it('should show error when feed fetch failed', inject(($compile, $q) => {
+            findAllDeferred = $q.defer()
+            feedService.findAll.and.returnValue(findAllDeferred.promise)
+            element = $compile('<my-feed-list></my-feed-list>')(scope)
+            page = new PageObject(element)
+            findAllDeferred.reject('expected error')
+            scope.$digest()
 
-    it('should show feed items', () => {
-        expect(page.feedList()[0].title().innerText).toEqual('title 1')
-        expect(page.feedList()[1].title().innerText).toEqual('title 2')
+            expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
+            expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'expected error', type: 'error'}})
+        }))
+
+        it('should show feed items', () => {
+            expect(page.feedList()[0].title().innerText).toEqual('title 1')
+            expect(page.feedList()[1].title().innerText).toEqual('title 2')
+        })
+
+        it('should sanitize feed title', () => {
+            expect(page.feedList()[0].title().classList).toContain('ng-binding')
+        })
+
+        it('should show error icon when feed err', () => {
+            expect(page.feedList()[0].errorIcon()).toBeUndefined()
+            expect(page.feedList()[1].errorIcon()).toBeDefined()
+        })
+
+        it('should render error icon when feed err', () => {
+            expect(page.feedList()[1].errorIcon().attr('my-type')).toEqual('error')
+        })
+
+        it('should pass feed creation date to timeago pipe', () => {
+            expect(page.feedList()[0].createdAt().innerText).toContain('timeago("createdAt 1")')
+        })
+
+        it('should navigate to feed detail page', () => {
+            page.feedList()[1].click()
+
+            expect(state.go).toHaveBeenCalledWith('admin.feed-detail', {uuid: 2})
+        })
+
+        it('should filter feeds', () => {
+            stateParams.q = 'title 1'
+
+            scope.$digest()
+
+            expect(page.feedList().length).toEqual(1)
+            expect(page.feedList()[0].title().innerText).toEqual('title 1')
+
+            stateParams.q = 'title 2'
+            scope.$digest()
+
+            expect(page.feedList().length).toEqual(1)
+            expect(page.feedList()[0].title().innerText).toEqual('title 2')
+        })
+
+        it('should clear filter', () => {
+            stateParams.q = 'title 1'
+            scope.$digest()
+
+            expect(page.feedList().length).toEqual(1)
+
+            stateParams.q = undefined
+            scope.$digest()
+
+            expect(page.feedList().length).toEqual(2)
+        })
     })
 
-    it('should sanitize feed title', () => {
-        expect(page.feedList()[0].title().classList).toContain('ng-binding')
-    })
+    describe('', () => {
 
-    it('should show error icon when feed err', () => {
-        expect(page.feedList()[0].errorIcon()).toBeUndefined()
-        expect(page.feedList()[1].errorIcon()).toBeDefined()
-    })
+        let listPage
 
-    it('should render error icon when feed err', () => {
-        expect(page.feedList()[1].errorIcon().attr('my-type')).toEqual('error')
-    })
+        beforeEach(() => {
+            listPage = componentMock('myListPage')
+            angular.mock.module('myreader', mock('$state'), mock('feedService'), listPage, mockNgRedux())
+        })
 
-    it('should pass feed creation date to timeago pipe', () => {
-        expect(page.feedList()[0].createdAt().innerText).toContain('timeago("createdAt 1")')
-    })
+        beforeEach(inject(($rootScope, $compile, $q, $state, $ngRedux, _feedService_) => {
+            rootScope = $rootScope
+            scope = $rootScope.$new()
+            ngReduxMock = $ngRedux
 
-    it('should navigate to feed detail page', () => {
-        page.feedList()[1].click()
+            findAllDeferred = $q.defer()
 
-        expect($state.go).toHaveBeenCalledWith('admin.feed-detail', {uuid: 2})
-    })
+            feedService = _feedService_
+            feedService.findAll = jasmine.createSpy('feedService.findAll()')
+            feedService.findAll.and.returnValue(findAllDeferred.promise)
 
-    it('should filter feeds', () => {
-        mySearchInput.bindings.myOnChange({ value: 'title 1'})
-        scope.$digest()
+            state = $state
+            state.go = jasmine.createSpy('$state.go()')
 
-        expect(page.feedList().length).toEqual(1)
-        expect(page.feedList()[0].title().innerText).toEqual('title 1')
+            element = $compile('<my-feed-list></my-feed-list>')(scope)
+            page = new PageObject(element)
+            scope.$digest()
 
-        mySearchInput.bindings.myOnChange({ value: 'title 2'})
-        scope.$digest()
+            findAllDeferred.resolve(feeds)
+            scope.$digest()
+        }))
 
-        expect(page.feedList().length).toEqual(1)
-        expect(page.feedList()[0].title().innerText).toEqual('title 2')
-    })
+        it('should update url when search executed', () => {
+            listPage.bindings.myOnSearch({params: {q: 'b'}})
+            scope.$digest()
 
-    it('should clear filter', () => {
-        mySearchInput.bindings.myOnChange({ value: 'title 1'})
-        scope.$digest()
+            expect(state.go).toHaveBeenCalledWith('admin.feed', {q: 'b'}, {notify: false})
+        })
 
-        expect(page.feedList().length).toEqual(1)
+        it('should refresh state', () => {
+            listPage.bindings.myOnRefresh()
+            scope.$digest()
 
-        mySearchInput.bindings.myOnClear()
-        scope.$digest()
-
-        expect(page.feedList().length).toEqual(2)
+            expect(feedService.findAll).toHaveBeenCalledWith()
+        })
     })
 })

@@ -1,32 +1,32 @@
 import template from './feed-list.component.html'
-import './feed-list.component.css'
 import {showErrorNotification} from 'store'
 
 class controller {
 
-    constructor($state, $ngRedux, feedService) {
+    constructor($state, $stateParams, $ngRedux, feedService) {
         'ngInject'
         this.$state = $state
+        this.$stateParams = $stateParams
         this.$ngRedux = $ngRedux
         this.feedService = feedService
     }
 
     $onInit() {
-        this.feedService.findAll()
-            .then(data => this.feeds = data)
-            .catch(error => this.$ngRedux.dispatch(showErrorNotification(error)))
+        this.refresh()
     }
 
     open(feed) {
         this.$state.go('admin.feed-detail', {uuid: feed.uuid})
     }
 
-    onSearchChange(value) {
-        this.searchKey = value
+    onSearch(params) {
+        this.$state.go('admin.feed', params, {notify: false})
     }
 
-    onSearchClear() {
-        this.searchKey = ''
+    refresh() {
+        this.feedService.findAll()
+            .then(data => this.feeds = data)
+            .catch(error => this.$ngRedux.dispatch(showErrorNotification(error)))
     }
 }
 

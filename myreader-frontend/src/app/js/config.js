@@ -114,7 +114,7 @@ angular.module('common.config', ['ui.router'])
                 }
             })
             .state('admin.feed', {
-                url: "/feed",
+                url: "/feed?q",
                 views: {
                     content: {
                         template: '<my-feed-list></my-feed-list>',
