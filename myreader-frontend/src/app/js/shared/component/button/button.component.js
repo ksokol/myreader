@@ -1,6 +1,6 @@
 import template from './button.component.html'
 import './button.component.css'
-import {isPromise} from '../../utils'
+import {isPromiseLike} from '../../utils'
 import {getPendingRequests} from 'store'
 
 class controller {
@@ -34,7 +34,7 @@ class controller {
         let result = this.myOnClick()
         let promise = result
 
-        if (!isPromise(result)) {
+        if (!isPromiseLike(result)) {
             let deferred = this.$q.defer()
             deferred.resolve()
             promise = deferred.promise
@@ -62,9 +62,15 @@ class controller {
     processOnClick() {
         this.isPending = true
 
-        this.processMyOnClick().then(data => this.myOnSuccess({data}))
-            .catch(data => this.myOnError({error: data}))
-            .finally(() => this.reset())
+        this.processMyOnClick()
+            .then(data => {
+                this.myOnSuccess({data})
+                this.reset()
+            })
+            .catch(error => {
+                this.myOnError({error})
+                this.reset()
+            })
     }
 
     isDisabled() {

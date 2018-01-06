@@ -1,69 +1,67 @@
-describe('src/app/js/shared/utils.spec.js', function () {
+import {isPromiseLike, isBoolean} from './utils'
 
-    var utils = require('./utils');
+describe('src/app/js/shared/spec.js', () => {
 
-    describe('isPromise() should return', function () {
+    describe('isPromiseLike() should return', () => {
 
-        describe('false when parameter', function () {
+        describe('false when parameter', () => {
 
-            it('is undefined or null', function () {
-                expect(utils.isPromise()).toEqual(false);
-                expect(utils.isPromise(null)).toEqual(false);
-            });
+            it('is undefined or null', () => {
+                expect(isPromiseLike()).toEqual(false)
+                expect(isPromiseLike(null)).toEqual(false)
+            })
 
-            it('is a primitive type', function () {
-                expect(utils.isPromise(42)).toEqual(false);
-            });
+            it('is null', () =>
+                expect(isPromiseLike(null)).toEqual(false))
 
-            it('is an empty object', function () {
-                expect(utils.isPromise({})).toEqual(false);
-            });
+            it('is undefined', () =>
+                expect(isPromiseLike(undefined)).toEqual(false))
 
-            it('has invalid properties then, catch and finally', function () {
-                var fn = function () {
-                };
-                var obj = {
+            it('is a primitive type', () =>
+                expect(isPromiseLike(42)).toEqual(false))
+
+            it('is an empty object', () =>
+                expect(isPromiseLike({})).toEqual(false))
+
+            it('has invalid properties then, catch and finally', () => {
+                const fn = () => {}
+                const obj = {
                     then: 'then',
-                    catch: 'catch',
-                    finally: 'finally'
-                };
-                expect(utils.isPromise(obj)).toEqual(false);
+                    catch: 'catch'
+                }
 
-                obj.then = fn;
-                expect(utils.isPromise(obj)).toEqual(false);
+                expect(isPromiseLike(obj)).toEqual(false)
 
-                obj.catch = fn;
-                expect(utils.isPromise(obj)).toEqual(false);
-            });
-        });
+                obj.then = fn
+                expect(isPromiseLike(obj)).toEqual(false)
+            })
+        })
 
-        describe('true when parameter', function () {
-            it('has valid properties then, catch and finally', function () {
-                var fn = function () {
-                };
+        describe('true when parameter', () => {
 
-                var obj = {
+            it('has valid properties then, catch and finally', () => {
+                const fn = () => {}
+
+                const obj = {
                     then: fn,
                     catch: fn,
                     finally: fn
-                };
-                expect(utils.isPromise(obj)).toEqual(true);
-            });
-        });
-    });
+                }
 
-    describe('isBoolean() should return', function () {
+                expect(isPromiseLike(obj)).toEqual(true)
+            })
+        })
+    })
 
-        it('false when parameter is of type string', function () {
-           expect(utils.isBoolean('true')).toBe(false);
-        });
+    describe('isBoolean() should return', () => {
 
-        it('true when parameter is of type boolean', function () {
-            expect(utils.isBoolean(true)).toBe(true);
-        });
+        it('false when parameter is of type string', () =>
+           expect(isBoolean('true')).toBe(false))
 
-        it('true when parameter is of type boolean and value is false', function () {
-            expect(utils.isBoolean(false)).toBe(true);
-        });
-    });
-});
+        it('true when parameter is of type boolean', () =>
+            expect(isBoolean(true)).toBe(true))
+
+        it('true when parameter is of type boolean and value is false', () =>
+            expect(isBoolean(false)).toBe(true))
+    })
+})

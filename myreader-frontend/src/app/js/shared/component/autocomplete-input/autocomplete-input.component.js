@@ -1,5 +1,5 @@
 import template from './autocomplete-input.component.html';
-import {isPromise} from '../../../shared/utils';
+import {isPromiseLike} from '../../../shared/utils';
 
 class controller {
 
@@ -23,7 +23,7 @@ class controller {
 
         const result = this.myAsyncValues();
 
-        if(!isPromise(result)) {
+        if(!isPromiseLike(result)) {
             return this.cachedValues();
         }
 
