@@ -24,7 +24,9 @@ function subscriptionDeleted({state, action}) {
 }
 
 function subscriptionSaved({state, action}) {
-    const subscriptions = state.subscriptions.map(it => it.uuid === action.subscription.uuid ? action.subscription : it)
+    let subscriptions = !state.subscriptions.some(it => it.uuid === action.subscription.uuid) ?
+                            [...state.subscriptions, action.subscription] :
+                            state.subscriptions.map(it => it.uuid === action.subscription.uuid ? action.subscription : it)
     return {...state, subscriptions}
 }
 

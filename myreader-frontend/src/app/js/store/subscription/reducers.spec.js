@@ -115,10 +115,10 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
 
     describe('SUBSCRIPTION_SAVED', () => {
 
-        const action = uuid => {
+        const action = subscription => {
             return {
                 type: 'SUBSCRIPTION_SAVED',
-                subscription: {uuid, title: 'new title'}
+                subscription
             }
         }
 
@@ -128,14 +128,14 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
             }
         })
 
-        it('should not update subscription when not in store', () => {
-            expect(subscriptionReducers(state, action('3')))
-                .toContainObject({subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}]})
+        it('should update subscription in store when in store', () => {
+            expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'})))
+                .toContainObject({subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'new title'}]})
         })
 
-        it('should update subscription when in store', () => {
-            expect(subscriptionReducers(state, action('2')))
-                .toContainObject({subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'new title'}]})
+        it('should add subscription to store when not in store', () => {
+            expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'})))
+                .toContainObject({subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}, {uuid: '3', title: 'title3'}]})
         })
     })
 })
