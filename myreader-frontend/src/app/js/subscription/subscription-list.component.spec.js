@@ -127,10 +127,10 @@ describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
         })
 
         it('should refresh state', () => {
-            listPage.bindings.myOnSearch({params: {q: 'b'}})
-            scope.$digest()
+            ngReduxMock.clearActions()
+            listPage.bindings.myOnRefresh()
 
-            expect(state.go).toHaveBeenCalledWith('app.subscriptions', {q: 'b'}, {notify: false})
+            expect(ngReduxMock.getActionTypes()).toEqual(['GET_SUBSCRIPTIONS'])
         })
     })
 })
