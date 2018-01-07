@@ -8,7 +8,7 @@ public enum UrlMappings {
     LOGOUT("logout"),
     LOGIN_PROCESSING("check"),
     LANDING_PAGE(""),
-    API("api");
+    API_2("api/2");
 
     private final String mapping;
 
@@ -18,5 +18,9 @@ public enum UrlMappings {
 
     public String mapping() {
         return mapping;
+    }
+
+    public String path(String path) {
+        return mapping + "/" + path;
     }
 }

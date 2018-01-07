@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
@@ -24,7 +23,7 @@ import spring.security.XAuthoritiesFilterUtils;
 import javax.servlet.http.HttpServletResponse;
 
 import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT;
-import static myreader.config.UrlMappings.API;
+import static myreader.config.UrlMappings.API_2;
 import static myreader.config.UrlMappings.LANDING_PAGE;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static spring.security.SecurityConstants.MY_AUTHORITIES;
@@ -32,7 +31,7 @@ import static spring.security.SecurityConstants.MY_AUTHORITIES;
 /**
  * @author Kamill Sokol
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
+@Order
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -104,8 +103,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http
-                .antMatcher(API.mapping() + "/**")
-                .authorizeRequests().anyRequest().authenticated()
+                .antMatcher(API_2.mapping() + "/**")
+                .authorizeRequests().antMatchers(API_2.path("processing"), API_2.path("feeds") + "/**").hasRole("ADMIN")
+                .and()
+                .authorizeRequests().anyRequest().hasRole("USER")
                 .and()
                 .rememberMe().key(rememberMeKey)
                 .and()

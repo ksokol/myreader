@@ -24,6 +24,7 @@ import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
 import static myreader.test.CustomRequestPostProcessors.sessionUser;
 import static myreader.test.CustomRequestPostProcessors.xmlHttpRequest;
+import static myreader.test.KnownUser.ADMIN;
 import static myreader.test.KnownUser.USER1;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.TEXT_HTML;
@@ -42,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(properties = { "task.enabled = false" })
 public class ApiSecurityTest {
 
-    private static final String API_2 = "/api/2/irrelevant";
+    private static final String API_2 = "/api/2";
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +51,7 @@ public class ApiSecurityTest {
     // used by MyReader Android
     @Test
     public void testApiAccessByBasicAuthentication() throws Exception {
-        mockMvc.perform(get(API_2)
+        mockMvc.perform(get(API_2 + "/sub")
                 .header("Authorization", basic(USER1)))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
@@ -58,14 +59,14 @@ public class ApiSecurityTest {
 
     @Test
     public void testApiUnauthorizedWithRequestWithAjax() throws Exception {
-        mockMvc.perform(get(API_2)
+        mockMvc.perform(get(API_2 + "/sub")
                 .with(xmlHttpRequest()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void testApiUnauthorized() throws Exception {
-        mockMvc.perform(get(API_2))
+        mockMvc.perform(get(API_2 + "/sub"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -96,7 +97,7 @@ public class ApiSecurityTest {
                 .andReturn()
                 .getResponse().getCookie("remember-me");
 
-        mockMvc.perform(get(API_2)
+        mockMvc.perform(get(API_2 + "/sub")
                 .cookie(rememberMeCookie))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
@@ -121,7 +122,7 @@ public class ApiSecurityTest {
 
     @Test
     public void testApiOk() throws Exception {
-        mockMvc.perform(get(API_2)
+        mockMvc.perform(get(API_2 + "/sub")
                 .with(sessionUser(USER1)))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
@@ -164,9 +165,51 @@ public class ApiSecurityTest {
     }
 
     @Test
-    public void shouldRejectAccessToActuatorEndpointsWhenUserIsAuthenticated() throws Exception {
+    public void shouldGrantAccessToActuatorEndpointsWhenUserIsAuthenticated() throws Exception {
         mockMvc.perform(get("/info")
                 .with(sessionUser(USER1)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldRejectAccessToProcessingEndpointsWhenUserHasNoAdminRole() throws Exception {
+        mockMvc.perform(get(API_2 + "/processing")
+                .with(sessionUser(USER1)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void shouldGrantAccessToProcessingEndpointsWhenUserHasAdminRole() throws Exception {
+        mockMvc.perform(get(API_2 + "/processing")
+                .with(sessionUser(ADMIN)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldRejectAccessToFeedsEndpointsWhenUserHasNoAdminRole() throws Exception {
+        mockMvc.perform(get(API_2 + "/feeds")
+                .with(sessionUser(USER1)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void shouldGranAccessToFeedsEndpointsWhenUserHasAdminRole() throws Exception {
+        mockMvc.perform(get(API_2 + "/feeds")
+                .with(sessionUser(ADMIN)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldRejectAccessToFeedsSubEndpointsWhenUserHasNoAdminRole() throws Exception {
+        mockMvc.perform(get(API_2 + "/feeds/sub1/sub2")
+                .with(sessionUser(USER1)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void shouldGrantAccessToFeedsSubEndpointsWhenUserHasAdminRole() throws Exception {
+        mockMvc.perform(get(API_2 + "/feeds/sub1/sub2")
+                .with(sessionUser(ADMIN)))
                 .andExpect(status().isOk());
     }
 
@@ -180,8 +223,23 @@ public class ApiSecurityTest {
 
         @RestController
         static class TestController {
-            @RequestMapping(API_2)
-            public void ok() {
+            @RequestMapping(API_2 + "/sub")
+            public void sub() {
+                //returns 200
+            }
+
+            @RequestMapping(API_2 + "/processing")
+            public void processing() {
+                //returns 200
+            }
+
+            @RequestMapping(API_2 + "/feeds")
+            public void feeds() {
+                //returns 200
+            }
+
+            @RequestMapping(API_2 + "/feeds/sub1/sub2")
+            public void feedsSub1Sub2() {
                 //returns 200
             }
         }
