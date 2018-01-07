@@ -1,6 +1,5 @@
 import angular from 'angular';
 import subscriptionTagsTemplate from '../../templates/subscription-tags.html';
-import navigationAdminTemplate from '../../templates/navigation-admin.html';
 import {unauthorized} from 'store';
 
 angular.module('common.config', ['ui.router'])
@@ -56,7 +55,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/admin",
                 views: {
                     body: {
-                        template: navigationAdminTemplate,
+                        template: subscriptionTagsTemplate,
                         controller: 'SubscriptionNavigationCtrl'
                     }
                 }
