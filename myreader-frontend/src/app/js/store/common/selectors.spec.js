@@ -1,21 +1,23 @@
-import {getNextNotificationId, getNotifications, getPendingRequests} from 'store'
+import {getNextNotificationId, getNotifications, getPendingRequests, mediaBreakpointIsDesktopSelector} from 'store'
 
 describe('src/app/js/store/common/selectors.spec.js', () => {
 
-    it('should select notifications', () => {
-        const state = {
-            common: {
-                notification: {
-                    nextId: 3,
-                    notifications: [
-                        {id: 1, text: 'notification1'},
-                        {id: 2, text: 'notification2'}
-                    ]
-                }
-            }
-        }
+    const state = common => {
+        return {common}
+    }
 
-        expect(getNotifications(state)).toEqual({
+    it('should select notifications', () => {
+        const currentState = state({
+            notification: {
+                nextId: 3,
+                notifications: [
+                    {id: 1, text: 'notification1'},
+                    {id: 2, text: 'notification2'}
+                ]
+            }
+        })
+
+        expect(getNotifications(currentState)).toEqual({
             notifications: [
                 {id: 1, text: 'notification1'},
                 {id: 2, text: 'notification2'}
@@ -24,24 +26,18 @@ describe('src/app/js/store/common/selectors.spec.js', () => {
     })
 
     it('should select nextId', () => {
-        const state = {
-            common: {
-                notification: {
-                    nextId: 3
-                }
-            }
-        }
-
-        expect(getNextNotificationId(state)).toEqual(3)
+        expect(getNextNotificationId(state({notification: {nextId: 3}}))).toEqual(3)
     })
 
     it('should select pendingRequests', () => {
-        const state = {
-            common: {
-                pendingRequests: 1
-            }
-        }
+        expect(getPendingRequests(state({pendingRequests: 1}))).toEqual({pendingRequests: 1})
+    })
 
-        expect(getPendingRequests(state)).toEqual({pendingRequests: 1})
+    it('mediaBreakpointIsDesktopSelector should return true when mediaBreakpoint is set to "desktop"', () => {
+        expect(mediaBreakpointIsDesktopSelector(state({mediaBreakpoint: 'desktop'}))).toEqual(true)
+    })
+
+    it('mediaBreakpointIsDesktopSelector should return false when mediaBreakpoint is set to "other"', () => {
+        expect(mediaBreakpointIsDesktopSelector(state({mediaBreakpoint: 'other'}))).toEqual(false)
     })
 })

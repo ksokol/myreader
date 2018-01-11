@@ -1,6 +1,7 @@
 import {
     fetchEnd,
     fetchStart,
+    mediaBreakpointChanged,
     removeNotification,
     showErrorNotification,
     showSuccessNotification
@@ -63,5 +64,11 @@ describe('src/app/js/store/common/actions.spec.js', () => {
         expect(store.getActions()[0])
             .toContainObject({type: 'SHOW_NOTIFICATION', notification: {text: 'expected error message', type: 'error'}})
         expect(store.getActions()[1]).toEqualActionType('FETCH_END')
+    })
+
+    it('action creator mediaBreakpointChanged', () => {
+        store.dispatch(mediaBreakpointChanged('expected breakpoint name'))
+
+        expect(store.getActions()[0]).toEqual({type: 'MEDIA_BREAKPOINT_CHANGED', mediaBreakpoint: 'expected breakpoint name'})
     })
 })

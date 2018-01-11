@@ -13,3 +13,5 @@ export const getPendingRequests = state => {
         pendingRequests: state.common.pendingRequests
     }
 }
+
+export const mediaBreakpointIsDesktopSelector = state => state.common.mediaBreakpoint === 'desktop'

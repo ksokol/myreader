@@ -19,6 +19,9 @@ export function commonReducers(state = initialApplicationState().common, action)
             const notifications = state.notification.notifications.filter(it => it.id !== action.id)
             return {...state, notification: {nextId, notifications}}
         }
+        case types.MEDIA_BREAKPOINT_CHANGED: {
+            return {...state, mediaBreakpoint: action.mediaBreakpoint}
+        }
         default: {
             return state
         }

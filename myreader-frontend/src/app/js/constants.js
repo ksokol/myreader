@@ -18,3 +18,11 @@ export const STORAGE_SETTINGS_KEY = 'myreader-settings'
 export const STORAGE_SECURITY_KEY = 'myreader-security'
 
 export const redirectToLoginPage = () => window.location.hash = '#/login'
+
+export const supportedBreakpoints = () => {
+    return {
+        phone: '(max-width: 599px)',
+        tablet: '(min-width: 600px) and (max-width: 1279px)',
+        desktop: '(min-width: 1280px)'
+    }
+}

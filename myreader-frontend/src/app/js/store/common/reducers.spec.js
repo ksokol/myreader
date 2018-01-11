@@ -71,4 +71,10 @@ describe('src/app/js/store/common/reducers.spec.js', () => {
         state.pendingRequests = 1
         expect(commonReducers(state, {type: 'FETCH_END'})).toContainObject({pendingRequests: 0})
     })
+
+    it('action MEDIA_BREAKPOINT_CHANGED', () => {
+        state.mediaBreakpoint = null
+        expect(commonReducers(state, {type: 'MEDIA_BREAKPOINT_CHANGED', mediaBreakpoint: 'expected breakpoint name'}))
+            .toContainObject({mediaBreakpoint: 'expected breakpoint name'})
+    })
 })
