@@ -9,6 +9,6 @@ export default function initialState() {
             nextId: 0,
             notifications: []
         },
-        media: ''
+        mediaBreakpoint: ''
     }
 }
