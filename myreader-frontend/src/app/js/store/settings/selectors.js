@@ -5,3 +5,5 @@ export const getSettings = state => {
 }
 
 export const settingsShowUnseenEntriesSelector = state => state.settings.showUnseenEntries
+
+export const settingsShowEntryDetailsSelector = state => state.settings.showEntryDetails

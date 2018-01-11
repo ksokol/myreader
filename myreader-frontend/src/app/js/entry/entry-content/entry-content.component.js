@@ -1,16 +1,16 @@
 import template from './entry-content.component.html'
 import './entry-content.component.css'
-import {getSettings} from 'store'
+import {settingsShowEntryDetailsSelector, mediaBreakpointIsDesktopSelector} from 'store'
 
 class controller {
 
-    constructor($mdMedia, $ngRedux) {
+    constructor($ngRedux) {
         'ngInject'
-        this.$mdMedia = $mdMedia
-        this.unsubscribe = $ngRedux.connect(getSettings)(this)
+        this.$ngRedux = $ngRedux
     }
 
     $onInit() {
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
         this.item = this.myItem || {}
         this.show = this.myShow || false
     }
@@ -25,8 +25,15 @@ class controller {
         }
     }
 
+    mapStateToThis(state) {
+        return {
+            showEntryDetails: settingsShowEntryDetailsSelector(state),
+            isDesktop: mediaBreakpointIsDesktopSelector(state)
+        }
+    }
+
     showEntryContent () {
-        return this.$mdMedia('gt-md') ? this.showEntryDetails || this.show : this.show
+        return this.isDesktop ? this.showEntryDetails || this.show : this.show
     }
 }
 

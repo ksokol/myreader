@@ -1,10 +1,10 @@
-import {mockNgRedux, spy} from '../../shared/test-utils'
+import {mockNgRedux} from '../../shared/test-utils'
 
 describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () => {
 
     describe('controller', () => {
 
-        let component, $mdMedia, ngReduxMock
+        let component, ngReduxMock
 
         beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
@@ -12,9 +12,7 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
             ngReduxMock = $ngRedux
             ngReduxMock.setState({settings: {showEntryDetails: false}})
 
-            $mdMedia = jasmine.createSpy('$mdMedia')
-
-            component = _$componentController_('myEntryContent', {$mdMedia: $mdMedia, $ngRedux: ngReduxMock}, {})
+            component = _$componentController_('myEntryContent', {$ngRedux: ngReduxMock}, {})
             component.$onInit()
         }))
 
@@ -48,34 +46,25 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
 
         describe('showEntryContent()', () => {
 
-            it('should query $mdMedia with "gt-md"', () => {
-                component.showEntryContent()
-                expect($mdMedia).toHaveBeenCalledWith('gt-md')
-            })
-
             describe('with myShow set to false', function () {
 
-                it('should return false when showEntryDetails and $mdMedia are false', () => {
-                    ngReduxMock.setState({settings: {showEntryDetails: false}})
-                    $mdMedia.and.returnValue(false)
+                it('should return false when showEntryDetails is false and media breakpoint is not of type desktop', () => {
+                    ngReduxMock.setState({common: {mediaBreakpoint: 'phone'}, settings: {showEntryDetails: false}})
                     expect(component.showEntryContent()).toEqual(false)
                 })
 
-                it('should return false when showEntryDetails is true and $mdMedia is false', () => {
-                    ngReduxMock.setState({settings: {showEntryDetails: true}})
-                    $mdMedia.and.returnValue(false)
+                it('should return false when showEntryDetails is true and media breakpoint is not of type desktop', () => {
+                    ngReduxMock.setState({common: {mediaBreakpoint: 'phone'}, settings: {showEntryDetails: true}})
                     expect(component.showEntryContent()).toEqual(false)
                 })
 
-                it('should return false when showEntryDetails is false and $mdMedia is true', () => {
-                    ngReduxMock.setState({settings: {showEntryDetails: false}})
-                    $mdMedia.and.returnValue(true)
+                it('should return false when showEntryDetails is false and media breakpoint is of type desktop', () => {
+                    ngReduxMock.setState({common: {mediaBreakpoint: 'desktop'}, settings: {showEntryDetails: false}})
                     expect(component.showEntryContent()).toEqual(false)
                 })
 
-                it('should return true when showEntryDetails is true and $mdMedia is true', () => {
-                    ngReduxMock.setState({settings: {showEntryDetails: true}})
-                    $mdMedia.and.returnValue(true)
+                it('should return true when showEntryDetails is true and media breakpoint is of type desktop', () => {
+                    ngReduxMock.setState({common: {mediaBreakpoint: 'desktop'}, settings: {showEntryDetails: true}})
                     expect(component.showEntryContent()).toEqual(true)
                 })
             })
@@ -85,31 +74,27 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
                 beforeEach(inject(_$componentController_ => {
                     ngReduxMock.setState({settings: {showEntryDetails: true}})
 
-                    component = _$componentController_('myEntryContent', {$mdMedia: $mdMedia, $ngRedux: ngReduxMock}, {myShow: true})
+                    component = _$componentController_('myEntryContent', {$ngRedux: ngReduxMock}, {myShow: true})
                     component.$onInit()
                 }))
 
-                it('should return true when showEntryDetails and $mdMedia are false', () => {
-                    ngReduxMock.setState({settings: {showEntryDetails: false}})
-                    $mdMedia.and.returnValue(false)
+                it('should return true when showEntryDetails and media breakpoint is not of type desktop', () => {
+                    ngReduxMock.setState({common: {mediaBreakpoint: 'phone'}, settings: {showEntryDetails: false}})
                     expect(component.showEntryContent()).toEqual(true)
                 })
 
-                it('should return true when showEntryDetails is true and $mdMedia is false', () => {
-                    ngReduxMock.setState({settings: {showEntryDetails: true}})
-                    $mdMedia.and.returnValue(false)
+                it('should return true when showEntryDetails is true and media breakpoint is not of type desktop', () => {
+                    ngReduxMock.setState({common: {mediaBreakpoint: 'phone'}, settings: {showEntryDetails: true}})
                     expect(component.showEntryContent()).toEqual(true)
                 })
 
-                it('should return true when showEntryDetails is false and $mdMedia is true', () => {
-                    ngReduxMock.setState({settings: {showEntryDetails: false}})
-                    $mdMedia.and.returnValue(true)
+                it('should return true when showEntryDetails is false and media breakpoint is of type desktop', () => {
+                    ngReduxMock.setState({common: {mediaBreakpoint: 'desktop'}, settings: {showEntryDetails: false}})
                     expect(component.showEntryContent()).toEqual(true)
                 })
 
-                it('should return true when showEntryDetails is true and $mdMedia is true', () => {
-                    ngReduxMock.setState({settings: {showEntryDetails: true}})
-                    $mdMedia.and.returnValue(true)
+                it('should return true when showEntryDetails is true and media breakpoint is of type desktop', () => {
+                    ngReduxMock.setState({common: {mediaBreakpoint: 'desktop'}, settings: {showEntryDetails: true}})
                     expect(component.showEntryContent()).toEqual(true)
                 })
             })
@@ -118,13 +103,12 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
 
     describe('with html', () => {
 
-        let $mdMedia, compile, scope, element
+        let compile, scope, element
 
-        beforeEach(angular.mock.module('myreader', spy('$mdMedia'), mockNgRedux()))
+        beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
-        beforeEach(inject(($rootScope, $compile, _$mdMedia_) => {
+        beforeEach(inject(($rootScope, $compile) => {
             compile = $compile
-            $mdMedia = _$mdMedia_
 
             scope = $rootScope.$new()
             scope.item = {
@@ -149,8 +133,6 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
         })
 
         it('should not render entry content when myShow is set to false', () => {
-            $mdMedia.and.returnValue(false)
-
             scope.show = false
             element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)
             scope.$digest()
