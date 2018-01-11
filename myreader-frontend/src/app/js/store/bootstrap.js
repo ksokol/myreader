@@ -6,10 +6,8 @@ import {commonReducers} from './common'
 import {securityReducers} from './security'
 import {entryReducers} from './entry'
 import {subscriptionReducers} from './subscription'
-import {getAuthorized} from 'store'
 import {settings} from './settings/settings'
 import {getLastSecurityState} from './security/security'
-import {redirectToLoginPage} from '../constants'
 
 function isInProdMode(environment) {
     return 'production' === environment
@@ -51,22 +49,14 @@ function initialState(enabled) {
         } : {}
 }
 
-function createSubscriptions(store) {
-    store.subscribe(() => {
-        if (!getAuthorized(store.getState())) {
-            redirectToLoginPage()
-        }
-    })
-}
-
-export default function createApplicationStore(environment) {
+export default function createApplicationStore(environment, actionDispatchers = []) {
     const store = createStore(
         reducers,
         initialState(isInDevMode(environment) || isInProdMode(environment)),
         enhancer(isInDevMode(environment))
     )
 
-    createSubscriptions(store)
+    actionDispatchers.forEach(actionDispatcher => actionDispatcher(store))
 
     return store
 }

@@ -2,6 +2,8 @@ import angular from 'angular'
 import ngRedux from 'ng-redux'
 
 import {ENVIRONMENT} from './constants'
+import {installAuthorizationChangeActionDispatcher} from './store/security/security'
+import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
 import {EntryActionsComponent} from './entry/entry-actions/entry-actions.component'
 import {EntryContentComponent} from './entry/entry-content/entry-content.component'
 import {EntryTagsComponent} from './entry/entry-tags/entry-tags.component'
@@ -119,7 +121,10 @@ angular
     .factory('myStoreEnhancer', $rootScope => {
         'ngInject'
         return () => () => {
-            const store = createApplicationStore(ENVIRONMENT)
+            const store = createApplicationStore(
+                ENVIRONMENT,
+                [installAuthorizationChangeActionDispatcher, installMediaBreakpointActionDispatcher]
+            )
             store.subscribe(() => $rootScope.$evalAsync())
             return store
         }

@@ -70,18 +70,14 @@ describe('src/app/js/store/bootstrap.spec.js', () => {
             expect(store.getState().security).toEqual({authorized: true, role: ''})
         })
 
-        it('should subscribe to state changes and should redirect to login page when session expired', () => {
-            const store = createApplicationStore(OTHER)
-            store.dispatch({type: 'SECURITY_UPDATE', authorized: false})
+        it('should invoke given actionDispatchers', () => {
+            const actionDispatcher1 = jasmine.createSpy('actionDispatcher1')
+            const actionDispatcher2 = jasmine.createSpy('actionDispatcher2')
+            createApplicationStore(OTHER, [actionDispatcher1, actionDispatcher2])
 
-            expect(window.location.hash).toEqual('#/login')
-        })
+            expect(actionDispatcher1).toHaveBeenCalled()
+            expect(actionDispatcher2).toHaveBeenCalled()
 
-        it('should subscribe to state changes and should not redirect to login page when session valid', () => {
-            const store = createApplicationStore(OTHER)
-            store.dispatch({type: 'SECURITY_UPDATE', authorized: true})
-
-            expect(window.location.hash).toEqual('')
         })
     })
 
