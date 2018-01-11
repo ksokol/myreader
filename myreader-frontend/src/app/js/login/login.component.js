@@ -30,7 +30,7 @@ class controller {
 
         if(authorities !== null && authorities.indexOf('ROLE_ADMIN') !== -1) {
             this.$ngRedux.dispatch(authorized({role: 'admin'}))
-            this.$state.go('admin.overview')
+            this.$state.go('app.overview')
         } else {
             this.$ngRedux.dispatch(authorized({role: 'user'}))
             this.$state.go('app.entries')

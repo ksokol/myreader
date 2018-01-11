@@ -158,7 +158,7 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         removeDeferred.resolve()
         scope.$digest()
 
-        expect($state.go).toHaveBeenCalledWith('admin.feed')
+        expect($state.go).toHaveBeenCalledWith('app.feed')
         expect(feedService.remove).toHaveBeenCalledWith({
             uuid: 'expected uuid',
             title: 'expected title',

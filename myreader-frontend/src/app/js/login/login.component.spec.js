@@ -49,7 +49,7 @@ describe('src/app/js/login/login.component.spec.js', () => {
         element.find('button')[0].click()
         httpBackend.flush()
 
-        expect($state.go).toHaveBeenCalledWith('admin.overview')
+        expect($state.go).toHaveBeenCalledWith('app.overview')
         expect(ngReduxMock.getActions()[0]).toEqual({type: 'SECURITY_UPDATE', authorized: true, role: 'admin'})
     })
 

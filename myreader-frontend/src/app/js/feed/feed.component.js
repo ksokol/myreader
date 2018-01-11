@@ -23,7 +23,7 @@ class controller {
     }
 
     onSuccessDelete() {
-        this.$state.go('admin.feed')
+        this.$state.go('app.feed')
     }
 
     onSave() {

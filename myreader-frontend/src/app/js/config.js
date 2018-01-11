@@ -50,16 +50,6 @@ angular.module('common.config', ['ui.router'])
                     }
                 }
             })
-            .state('admin', {
-                abstract: true,
-                url: "/admin",
-                views: {
-                    body: {
-                        template: subscriptionTagsTemplate,
-                        controller: 'SubscriptionNavigationCtrl'
-                    }
-                }
-            })
             .state('app.entries', {
                 url: "/entries/:feedTagEqual/:feedUuidEqual?q",
                 params: {
@@ -104,7 +94,7 @@ angular.module('common.config', ['ui.router'])
                     }
                 }
             })
-            .state('admin.overview', {
+            .state('app.overview', {
                 url: "/overview",
                 views: {
                     content: {
@@ -112,7 +102,7 @@ angular.module('common.config', ['ui.router'])
                     }
                 }
             })
-            .state('admin.feed', {
+            .state('app.feed', {
                 url: "/feed?q",
                 views: {
                     content: {
@@ -120,7 +110,7 @@ angular.module('common.config', ['ui.router'])
                     }
                 }
             })
-            .state('admin.feed-detail', {
+            .state('app.feed-detail', {
                 url: "/feed/:uuid",
                 views: {
                     content: {

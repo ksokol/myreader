@@ -112,7 +112,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         it('should navigate to feed detail page', () => {
             page.feedList()[1].click()
 
-            expect(state.go).toHaveBeenCalledWith('admin.feed-detail', {uuid: 2})
+            expect(state.go).toHaveBeenCalledWith('app.feed-detail', {uuid: 2})
         })
 
         it('should filter feeds', () => {
@@ -178,7 +178,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
             listPage.bindings.myOnSearch({params: {q: 'b'}})
             scope.$digest()
 
-            expect(state.go).toHaveBeenCalledWith('admin.feed', {q: 'b'}, {notify: false})
+            expect(state.go).toHaveBeenCalledWith('app.feed', {q: 'b'}, {notify: false})
         })
 
         it('should refresh state', () => {
