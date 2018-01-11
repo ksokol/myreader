@@ -1,5 +1,5 @@
 import angular from 'angular'
-import {adminPermissionSelector} from 'store'
+import {adminPermissionSelector, mediaBreakpointIsDesktopSelector} from 'store'
 
 angular.module('common.controllers', [])
 
@@ -10,7 +10,8 @@ angular.module('common.controllers', [])
 
     const mapStateToScope = state => {
         return {
-            isAdmin: adminPermissionSelector(state)
+            isAdmin: adminPermissionSelector(state),
+            isDesktop: mediaBreakpointIsDesktopSelector(state)
         }
     }
 
