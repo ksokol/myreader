@@ -1,14 +1,15 @@
-import template from './subscription-tag-panel.component.html';
+import template from './subscription-tag-panel.component.html'
+import {fetchSubscriptionTags} from 'store'
 
 class controller {
 
-    constructor(subscriptionTagService) {
-        'ngInject';
-        this.subscriptionTagService = subscriptionTagService;
+    constructor($ngRedux) {
+        'ngInject'
+        this.$ngRedux = $ngRedux
     }
 
     loadTags() {
-        return this.subscriptionTagService.findAll();
+        return this.$ngRedux.dispatch(fetchSubscriptionTags())
     }
 }
 
@@ -20,4 +21,4 @@ export const SubscriptionTagPanelComponent = {
         myOnSelect: '&',
         myOnClear: '&'
     }
-};
+}

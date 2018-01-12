@@ -1,10 +1,6 @@
 import {
-    deleteSubscription,
-    fetchSubscriptions,
-    saveSubscription,
-    subscriptionDeleted,
-    subscriptionSaved,
-    subscriptionsReceived
+    deleteSubscription, fetchSubscriptions, fetchSubscriptionTags, saveSubscription, subscriptionDeleted,
+    subscriptionSaved, subscriptionsReceived, subscriptionTagsReceived
 } from 'store'
 import {createMockStore} from '../../shared/test-utils'
 
@@ -148,6 +144,41 @@ describe('src/app/js/store/subscription/actions.spec.js', () => {
             expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION', 'SUBSCRIPTION_SAVED'])
             expect(store.getActions()[0]).toContainActionData({notification: {text: 'Subscription saved', type: 'success'}})
             expect(store.getActions()[1]).toContainActionData({subscription: {uuid: '1', title: 'expected updated title'}})
+        })
+    })
+
+    describe('action creator subscriptionTagsReceived', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(subscriptionTagsReceived([]))
+
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_TAGS_RECEIVED'])
+        })
+
+        it('should contain expected patch action type', () => {
+            store.dispatch(subscriptionTagsReceived(['tag1', 'tag2']))
+
+            expect(store.getActions()[0]).toContainActionData({tags: ['tag1', 'tag2']})
+        })
+    })
+
+    describe('action creator fetchSubscriptionTags', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(fetchSubscriptionTags())
+
+            expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTION_TAGS'])
+            expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions/availableTags'})
+        })
+
+        it('should dispatch actions defined in success property', () => {
+            store.dispatch(fetchSubscriptionTags())
+            const success = store.getActions()[0].success
+            store.clearActions()
+            store.dispatch(success(['tag1', 'tag2']))
+
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_TAGS_RECEIVED'])
+            expect(store.getActions()[0]).toContainActionData({tags: ['tag1', 'tag2']})
         })
     })
 })

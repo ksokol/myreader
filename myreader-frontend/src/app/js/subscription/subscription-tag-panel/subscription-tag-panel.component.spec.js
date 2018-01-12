@@ -1,40 +1,39 @@
-describe('src/app/js/subscription/subscription-tag-panel/subscription-tag-panel.component.spec.js', function () {
+import {mockNgRedux, componentMock} from '../../shared/test-utils'
 
-    describe('controller', function () {
+describe('src/app/js/subscription/subscription-tag-panel/subscription-tag-panel.component.spec.js', () => {
 
-        var component, subscriptionTagService;
+    describe('controller', () => {
 
-        beforeEach(require('angular').mock.module('myreader'));
+        let component, ngReduxMock
 
-        beforeEach(inject(function (_$componentController_) {
-            subscriptionTagService = jasmine.createSpyObj('subscriptionTagService', ['findAll']);
-            component = _$componentController_('mySubscriptionTagPanel', { subscriptionTagService: subscriptionTagService });
-        }));
+        beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
-        it('should call subscriptionTagService when loadTags() called on component', function () {
-            component.loadTags();
-            expect(subscriptionTagService.findAll).toHaveBeenCalledWith();
-        });
-    });
+        beforeEach(inject(($componentController, $ngRedux) => {
+            ngReduxMock = $ngRedux
+            component = $componentController('mySubscriptionTagPanel', {$ngRedux})
+        }))
 
-    describe('with html', function () {
+        it('should call subscriptionTagService when loadTags() called on component', () => {
+            component.loadTags()
+            expect(ngReduxMock.getActionTypes()).toEqual(['GET_SUBSCRIPTION_TAGS'])
+        })
+    })
 
-        var testUtils = require('../../shared/test-utils');
+    describe('with html', () => {
 
-        var myAutocompleteInput = testUtils.componentMock('myAutocompleteInput');
+        const myAutocompleteInput = componentMock('myAutocompleteInput')
+        let scope, element
 
-        var scope, element;
+        beforeEach(angular.mock.module('myreader', myAutocompleteInput))
 
-        beforeEach(require('angular').mock.module('myreader', myAutocompleteInput));
+        beforeEach(inject(($rootScope, $compile) => {
+            scope = $rootScope.$new(true)
 
-        beforeEach(inject(function ($rootScope, $compile) {
-            scope = $rootScope.$new();
-
-            scope.myDisabled = true;
-            scope.mySelectedItem = 'selectedItem';
-            scope.myOnSelect = jasmine.createSpy('myOnSelect');
-            scope.myOnClear = jasmine.createSpy('myOnClear');
-            scope.myAsyncValues = jasmine.createSpy('myAsyncValues');
+            scope.myDisabled = true
+            scope.mySelectedItem = 'selectedItem'
+            scope.myOnSelect = jasmine.createSpy('myOnSelect')
+            scope.myOnClear = jasmine.createSpy('myOnClear')
+            scope.myAsyncValues = jasmine.createSpy('myAsyncValues')
 
             element = $compile('<my-autocomplete-input ' +
                 'my-label="label"' +
@@ -43,40 +42,40 @@ describe('src/app/js/subscription/subscription-tag-panel/subscription-tag-panel.
                 'my-on-clear="myOnClear()"' +
                 'my-async-values="myAsyncValues()"' +
                 'my-disabled="myDisabled">' +
-                '</my-autocomplete-input>')(scope);
+                '</my-autocomplete-input>')(scope)
 
-            scope.$digest();
-        }));
+            scope.$digest()
+        }))
 
-        it('should forward binding parameters to child component', function () {
-            expect(myAutocompleteInput.bindings.myLabel).toEqual('label');
-            expect(myAutocompleteInput.bindings.myDisabled).toEqual(scope.myDisabled);
-            expect(myAutocompleteInput.bindings.mySelectedItem).toEqual(scope.mySelectedItem);
-        });
+        it('should forward binding parameters to child component', () => {
+            expect(myAutocompleteInput.bindings.myLabel).toEqual('label')
+            expect(myAutocompleteInput.bindings.myDisabled).toEqual(scope.myDisabled)
+            expect(myAutocompleteInput.bindings.mySelectedItem).toEqual(scope.mySelectedItem)
+        })
 
-        it('should forward binding parameter myOnSelect to child component', function () {
-            myAutocompleteInput.bindings.myOnSelect({ value: 'expected value'});
-            expect(scope.myOnSelect).toHaveBeenCalledWith({ value: 'expected value'});
-        });
+        it('should forward binding parameter myOnSelect to child component', () => {
+            myAutocompleteInput.bindings.myOnSelect({value: 'expected value'})
+            expect(scope.myOnSelect).toHaveBeenCalledWith({ value: 'expected value'})
+        })
 
-        it('should forward binding parameter myOnClear to child component', function () {
-            myAutocompleteInput.bindings.myOnClear();
-            expect(scope.myOnClear).toHaveBeenCalledWith();
-        });
+        it('should forward binding parameter myOnClear to child component', () => {
+            myAutocompleteInput.bindings.myOnClear()
+            expect(scope.myOnClear).toHaveBeenCalledWith()
+        })
 
-        it('should forward binding parameter myAsyncValues to child component', function () {
-            myAutocompleteInput.bindings.myAsyncValues();
-            expect(scope.myAsyncValues).toHaveBeenCalledWith();
-        });
+        it('should forward binding parameter myAsyncValues to child component', () => {
+            myAutocompleteInput.bindings.myAsyncValues()
+            expect(scope.myAsyncValues).toHaveBeenCalledWith()
+        })
 
-        it('should set binding parameters in component template', inject(function ($compile) {
-            element = $compile(require('./subscription-tag-panel.component.html'))(scope);
-            expect(element.attr('my-label')).toEqual('Tag');
-            expect(element.attr('my-disabled')).toEqual('$ctrl.myDisabled');
-            expect(element.attr('my-selected-item')).toEqual('$ctrl.mySelectedItem');
-            expect(element.attr('my-async-values')).toEqual('$ctrl.loadTags()');
-            expect(element.attr('my-on-select')).toEqual('$ctrl.myOnSelect({value: value})');
-            expect(element.attr('my-on-clear')).toEqual('$ctrl.myOnClear()');
-        }));
-    });
-});
+        it('should set binding parameters in component template', inject($compile => {
+            element = $compile(require('./subscription-tag-panel.component.html'))(scope)
+            expect(element.attr('my-label')).toEqual('Tag')
+            expect(element.attr('my-disabled')).toEqual('$ctrl.myDisabled')
+            expect(element.attr('my-selected-item')).toEqual('$ctrl.mySelectedItem')
+            expect(element.attr('my-async-values')).toEqual('$ctrl.loadTags()')
+            expect(element.attr('my-on-select')).toEqual('$ctrl.myOnSelect({value: value})')
+            expect(element.attr('my-on-clear')).toEqual('$ctrl.myOnClear()')
+        }))
+    })
+})

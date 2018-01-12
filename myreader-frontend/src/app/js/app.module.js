@@ -37,7 +37,6 @@ import {SubscribeComponent} from "./subscription/subscribe/subscribe.component"
 import {ExclusionService} from "./subscription/subscription-exclusion-panel/subscription-exclusion/exclusion.service"
 import {SubscriptionExclusionComponent} from "./subscription/subscription-exclusion-panel/subscription-exclusion/subscription-exclusion.component"
 import {SubscriptionExclusionPanelComponent} from "./subscription/subscription-exclusion-panel/subscription-exclusion-panel.component"
-import {SubscriptionTagService} from "./subscription/subscription-tag-panel/subscription-tag.service"
 import {AutoCompleteInputComponent} from "./shared/component/autocomplete-input/autocomplete-input.component"
 import {SubscriptionTagPanelComponent} from "./subscription/subscription-tag-panel/subscription-tag-panel.component"
 import {SubscriptionComponent} from "./subscription/subscription.component"
@@ -107,7 +106,6 @@ angular
     .service('feedService', FeedService)
     .service('aboutService', AboutService)
     .service('exclusionService', ExclusionService)
-    .service('subscriptionTagService', SubscriptionTagService)
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)

@@ -1,5 +1,5 @@
 import initialState from '.'
-import {subscriptionReducers} from './reducers'
+import {subscriptionReducers} from 'store'
 
 describe('src/app/js/store/subscription/reducers.spec.js', () => {
 
@@ -136,6 +136,21 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
         it('should add subscription to store when not in store', () => {
             expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'})))
                 .toContainObject({subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}, {uuid: '3', title: 'title3'}]})
+        })
+    })
+
+    describe('action SUBSCRIPTION_TAGS_RECEIVED', () => {
+
+        it('should set tags', () => {
+            const action = {
+                type: 'SUBSCRIPTION_TAGS_RECEIVED',
+                tags: ['tag1', 'tag2']
+            }
+
+            const currentState = {tags: []}
+            const expectedState = {tags: ['tag1', 'tag2']}
+
+            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
         })
     })
 })

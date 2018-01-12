@@ -30,6 +30,10 @@ function subscriptionSaved({state, action}) {
     return {...state, subscriptions}
 }
 
+function subscriptionTagsReceived({state, action}) {
+    return {...state, tags: action.tags}
+}
+
 function securityUpdate({state, action}) {
     return action.authorized ? state : initialApplicationState().subscription
 }
@@ -47,6 +51,9 @@ export function subscriptionReducers(state = initialApplicationState().subscript
         }
         case types.SUBSCRIPTION_SAVED: {
             return subscriptionSaved({state, action})
+        }
+        case types.SUBSCRIPTION_TAGS_RECEIVED: {
+            return subscriptionTagsReceived({state, action})
         }
         case types.SECURITY_UPDATE: {
             return securityUpdate({state, action})
