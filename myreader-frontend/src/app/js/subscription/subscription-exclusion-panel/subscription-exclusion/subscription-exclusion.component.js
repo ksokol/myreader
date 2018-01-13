@@ -1,92 +1,90 @@
-import template from './subscription-exclusion.component.html';
+import template from './subscription-exclusion.component.html'
 
 class controller {
 
     constructor(exclusionService) {
-        'ngInject';
-        this.exclusionService = exclusionService;
+        'ngInject'
+        this.exclusionService = exclusionService
+    }
+
+    $onInit() {
+        this.id = this.myId
+        this.startLoading()
+
+        this.exclusionService.find(this.id)
+            .then(exclusions => this.initExclusions(exclusions))
+            .catch(error => this.handleError(error))
+            .finally(() => this.endLoading())
     }
 
     handleError(error) {
-        this.myOnError({error: error});
+        this.myOnError({error})
     }
 
     sortExclusions() {
         this.exclusions.sort((left, right) => {
             if (left.pattern < right.pattern) {
-                return -1;
+                return -1
             }
             if (left.pattern > right.pattern) {
-                return 1;
+                return 1
             }
-            return 0;
+            return 0
         })
     }
 
     startLoading() {
-        this.loading = true;
+        this.loading = true
     }
 
     endLoading() {
-        this.loading = false;
+        this.loading = false
     }
 
     startProcessing() {
-        this.processing = true;
+        this.processing = true
     }
 
     endProcessing() {
-        this.processing = false;
+        this.processing = false
     }
 
     initExclusions(exclusions) {
-        this.exclusions = exclusions;
-        this.sortExclusions();
+        this.exclusions = exclusions
+        this.sortExclusions()
     }
 
     addExclusion(exclusion) {
-        this.exclusions.push(exclusion);
-        this.sortExclusions();
-    }
-
-    $onChanges(obj) {
-        if(obj.myId.currentValue && obj.myId.currentValue !== this.id) {
-            this.id = obj.myId.currentValue;
-            this.startLoading();
-
-            this.exclusionService.find(this.id)
-                .then((exclusions) => this.initExclusions(exclusions))
-                .catch((error) => this.handleError(error))
-                .finally(() => this.endLoading());
-        }
+        this.exclusions.push(exclusion)
+        this.sortExclusions()
     }
 
     onRemove(exclusion) {
-        this.startProcessing();
+        this.startProcessing()
         this.exclusionService.delete(this.id, exclusion.uuid)
             .catch(error => {
-                this.addExclusion(exclusion);
-                this.handleError(error);
+                this.addExclusion(exclusion)
+                this.handleError(error)
             })
-            .finally(() => this.endProcessing());
+            .finally(() => this.endProcessing())
     }
 
     onTransform($chip) {
-        this.startProcessing();
+        this.startProcessing()
         this.exclusionService.save(this.id, $chip)
-            .then((exclusion) => this.addExclusion(exclusion))
-            .catch((error) => this.handleError(error))
-            .finally(() => this.endProcessing());
+            .then(exclusion => this.addExclusion(exclusion))
+            .catch(error => this.handleError(error))
+            .finally(() => this.endProcessing())
 
-        return null; // don't render the new chip
+        return null // don't render the new chip
     }
 
     placeholder() {
-        return this.processing ? 'processing...' : 'Enter an exclusion pattern';
+        return this.processing ? 'processing...' : 'Enter an exclusion pattern'
     }
 
     isDisabled() {
-        return this.id === undefined || this.myDisabled === true;
+        return this.id === undefined || this.myDisabled === true
     }
 }
 
@@ -97,4 +95,4 @@ export const SubscriptionExclusionComponent = {
         myDisabled: '<',
         myOnError: '&'
     }
-};
+}
