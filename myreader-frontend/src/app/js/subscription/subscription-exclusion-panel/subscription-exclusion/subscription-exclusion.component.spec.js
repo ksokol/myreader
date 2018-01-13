@@ -10,7 +10,7 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
 
         let compile, scope, q, initDispatchResolve, initDispatchReject, myOnError, exclusionService, ngReduxMock, exclusions
 
-        const ExclusionPageObject = el => {
+        const ExclusionPageObject = (el, parent) => {
 
             const _pendingRemove = () => {
                 angular.element(el).find('button')[0].click()
@@ -20,21 +20,42 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
             return {
                 text: () => angular.element(el).find('strong')[0].innerText,
                 hitCount: () => angular.element(el).find('em')[0].innerText,
-                pendingRemove: () => _pendingRemove(),
+                pendingRemove: function() {
+                    ngReduxMock.dispatch.and.returnValue(new Promise(()  => {}))
+                    scope.$digest()
+                    _pendingRemove()
+                    return {
+                        whenStable: callback =>
+                            setTimeout(() => {
+                                scope.$digest()
+                                callback(parent)
+                            }, 0)
+                    }
+                },
                 successfulRemove: function () {
                     const deferred = q.defer()
                     exclusionService.delete.and.returnValue(deferred.promise)
                     deferred.resolve()
                     _pendingRemove()
-                    return this
+                    return {
+                        whenStable: callback =>
+                            setTimeout(() => {
+                                scope.$digest()
+                                callback(parent)
+                            }, 0)
+                    }
                 },
                 failedRemove: function (value) {
-                    const deferred = q.defer()
-                    exclusionService.delete.and.returnValue(deferred.promise)
-                    deferred.reject(value)
-                    _pendingRemove()
+                    ngReduxMock.dispatch.and.returnValue(Promise.reject(value))
                     scope.$digest()
-                    return this
+                    _pendingRemove()
+                    return {
+                        whenStable: callback =>
+                            setTimeout(() => {
+                                scope.$digest()
+                                callback(parent)
+                            }, 0)
+                    }
                 }
             }
         }
@@ -93,7 +114,7 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
                     const exclusionElements = element.find('md-chip')
                     const exclusions = []
                     for(let i=0; i < exclusionElements.length; i++) {
-                        exclusions.push(new ExclusionPageObject(exclusionElements[i]))
+                        exclusions.push(new ExclusionPageObject(exclusionElements[i], this))
                     }
                     return exclusions
                 },
@@ -143,7 +164,6 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
                 {uuid: '1', pattern: 'c', hitCount: 10}
             ]
 
-            exclusionService.delete.and.returnValue($q.defer().promise)
             exclusionService.save.and.returnValue($q.defer().promise)
 
             scope = $rootScope.$new(true)
@@ -220,6 +240,7 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
                 new PageObject({'my-id': '1'})
 
                 expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'GET_SUBSCRIPTION_EXCLUSION_PATTERNS'}))
+                expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({url: '/myreader/api/2/exclusions/1/pattern'}))
             })
 
             it('should emit onError event when initial loading failed', done => {
@@ -260,32 +281,32 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
 
             it('should indicate pending remove', done => {
                 whenStable(page => {
-                    page.exclusions()[1].pendingRemove()
-
-                    expect(exclusionService.delete).toHaveBeenCalledWith(1, '3')
-                    expect(page.inputPlaceholderText()).toEqual('processing...')
-                    done()
+                    page.exclusions()[1].pendingRemove().whenStable(page => {
+                        expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS'}))
+                        expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({url: '/myreader/api/2/exclusions/1/pattern/3'}))
+                        expect(page.inputPlaceholderText()).toEqual('processing...')
+                        done()
+                    })
                 })
             })
 
             it('should show default placeholder text in input element when remove finished', done => {
                 whenStable(page => {
-                    page.exclusions()[1].successfulRemove()
-
-                    expect(page.inputPlaceholderText()).toEqual('Enter an exclusion pattern')
-                    expect(page.exclusions().length).toEqual(3)
-                    done()
+                    page.exclusions()[1].successfulRemove().whenStable(page => {
+                        expect(page.inputPlaceholderText()).toEqual('Enter an exclusion pattern')
+                        expect(page.exclusions().length).toEqual(3)
+                        done()
+                    })
                 })
             })
 
             it('should indicate failing remove', done => {
                 whenStable(page => {
-                    page.exclusions()[1].failedRemove('expected error')
-
-                    expect(page.exclusions().length).toEqual(4)
-                    expect(page.inputPlaceholderText()).toEqual('Enter an exclusion pattern')
-                    expect(myOnError).toHaveBeenCalledWith('expected error')
-                    done()
+                    page.exclusions()[1].failedRemove('expected error').whenStable(page => {
+                        expect(page.inputPlaceholderText()).toEqual('Enter an exclusion pattern')
+                        expect(myOnError).toHaveBeenCalledWith('expected error')
+                        done()
+                    })
                 })
             })
 

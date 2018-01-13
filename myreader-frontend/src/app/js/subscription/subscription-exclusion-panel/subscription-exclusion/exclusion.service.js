@@ -10,8 +10,4 @@ export class ExclusionService {
     save(uuid, exclusion) {
         return this.$http.post(`${url}/${uuid}/pattern`, {pattern: exclusion}).then(response => response.data);
     }
-
-    delete(subscriptionUuid, uuid) {
-        return this.$http.delete(`${url}/${subscriptionUuid}/pattern/${uuid}`);
-    }
 }

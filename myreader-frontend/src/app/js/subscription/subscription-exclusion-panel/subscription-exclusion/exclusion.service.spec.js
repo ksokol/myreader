@@ -22,15 +22,4 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
 
         httpBackend.flush();
     });
-
-    it('should delete', function (done) {
-        httpBackend
-            .expectDELETE('/myreader/api/2/exclusions/subscriptionUuid/pattern/exclusionUuid')
-            .respond();
-
-        service.delete('subscriptionUuid', 'exclusionUuid')
-            .then(done);
-
-        httpBackend.flush();
-    });
 });

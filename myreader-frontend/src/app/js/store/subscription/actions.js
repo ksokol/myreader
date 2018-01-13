@@ -69,3 +69,15 @@ export const fetchSubscriptionExclusionPatterns = uuid => {
         success: response => subscriptionExclusionPatternsReceived(uuid, response)
     }
 }
+
+export const subscriptionExclusionPatternsRemoved = (subscriptionUuid, uuid) => {
+    return {type: types.SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED, subscriptionUuid, uuid}
+}
+
+export const removeSubscriptionExclusionPattern = (subscriptionUuid, uuid) => {
+    return {
+        type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS',
+        url : `${EXCLUSION_TAGS}/${subscriptionUuid}/pattern/${uuid}`,
+        success: response => subscriptionExclusionPatternsRemoved(subscriptionUuid, uuid, response)
+    }
+}

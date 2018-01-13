@@ -176,4 +176,34 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
             expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
         })
     })
+
+    describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED', () => {
+
+        const action = {
+            type: 'SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED',
+            subscriptionUuid: '1',
+            uuid: 2
+        }
+
+        it('should remove exclusion pattern', () => {
+            const currentState = {exclusions: {'1': [{uuid: '1'}, {uuid: '2'}], '2': [{uuid: '3'}, {uuid: '4'}]}}
+            const expectedState = {exclusions: {'1': [{uuid: '1'}], '2': [{uuid: '3'}, {uuid: '4'}]}}
+
+            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+        })
+
+        it('should not remove exclusion pattern when exclusion pattern is not present in store', () => {
+            const currentState = {exclusions: {'1': [{uuid: '1'}, {uuid: '3'}]}}
+            const expectedState = {exclusions: {'1': [{uuid: '1'}, {uuid: '3'}]}}
+
+            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+        })
+
+        it('should not remove exclusion pattern when exclusion patterns for subscription are not present in store', () => {
+            const currentState = {exclusions: {'2': [{uuid: '1'}, {uuid: '2'}]}}
+            const expectedState = {exclusions: {'2': [{uuid: '1'}, {uuid: '2'}]}}
+
+            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+        })
+    })
 })

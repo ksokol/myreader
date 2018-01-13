@@ -1,5 +1,8 @@
 import template from './subscription-exclusion.component.html'
-import {fetchSubscriptionExclusionPatterns, subscriptionExclusionPatternsSelector} from 'store'
+import {
+    fetchSubscriptionExclusionPatterns, removeSubscriptionExclusionPattern,
+    subscriptionExclusionPatternsSelector
+} from 'store'
 
 class controller {
 
@@ -72,12 +75,12 @@ class controller {
 
     onRemove(exclusion) {
         this.startProcessing()
-        this.exclusionService.delete(this.id, exclusion.uuid)
+        this.$ngRedux.dispatch(removeSubscriptionExclusionPattern(this.id, exclusion.uuid))
+            .then(() => this.endProcessing())
             .catch(error => {
-                this.addExclusion(exclusion)
                 this.handleError(error)
+                this.endProcessing()
             })
-            .finally(() => this.endProcessing())
     }
 
     onTransform($chip) {
