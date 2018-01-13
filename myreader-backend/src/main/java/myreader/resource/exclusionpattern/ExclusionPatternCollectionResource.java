@@ -8,11 +8,6 @@ import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternPostRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -35,17 +34,14 @@ public class ExclusionPatternCollectionResource {
     protected static final String EXCLUSIONS_URL = "/api/2/exclusions/";
     protected static final String EXCLUSIONS_PATTERN_URL = "/pattern";
 
-    private final PagedResourcesAssembler<ExclusionPattern> pagedResourcesAssembler;
     private final ResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler;
     private final ExclusionRepository exclusionRepository;
     private final SubscriptionRepository subscriptionRepository;
 
     @Autowired
-    public ExclusionPatternCollectionResource(final PagedResourcesAssembler<ExclusionPattern> pagedResourcesAssembler,
-                                              ResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler,
-                                              final ExclusionRepository exclusionRepository,
-                                              final SubscriptionRepository subscriptionRepository) {
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
+    public ExclusionPatternCollectionResource(ResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler,
+                                              ExclusionRepository exclusionRepository,
+                                              SubscriptionRepository subscriptionRepository) {
         this.assembler = assembler;
         this.exclusionRepository = exclusionRepository;
         this.subscriptionRepository = subscriptionRepository;
@@ -61,9 +57,13 @@ public class ExclusionPatternCollectionResource {
     }
 
     @RequestMapping(method = GET)
-    public PagedResources<ExclusionPatternGetResponse> get(@ModelAttribute("subscription") Subscription subscription, Pageable pageable) {
-        Page<ExclusionPattern> exclusionPatternPage = exclusionRepository.findBySubscriptionId(subscription.getId(), pageable);
-        return pagedResourcesAssembler.toResource(exclusionPatternPage, assembler, new Link(EXCLUSIONS_URL + subscription.getId() + EXCLUSIONS_PATTERN_URL));
+    public Map<String, List<ExclusionPatternGetResponse>> get(@ModelAttribute("subscription") Subscription subscription) {
+        List<ExclusionPattern> source = exclusionRepository.findBySubscriptionId(subscription.getId());
+        List<ExclusionPatternGetResponse> target = source.stream().map(assembler::toResource).collect(toList());
+
+        Map<String, List<ExclusionPatternGetResponse>> body = new HashMap<>(3);
+        body.put("content", target);
+        return body;
     }
 
     @RequestMapping(method = POST)

@@ -1,6 +1,6 @@
 import * as types from 'store/action-types'
-import {toSubscriptions} from './subscription'
-import {SUBSCRIPTION_AVAILABLE_TAGS, SUBSCRIPTIONS} from '../../constants'
+import {toSubscriptions, toExclusionPatterns} from './subscription'
+import {SUBSCRIPTION_AVAILABLE_TAGS, SUBSCRIPTIONS, EXCLUSION_TAGS} from '../../constants'
 import {showSuccessNotification} from 'store'
 
 export const subscriptionsReceived = raw => {
@@ -55,5 +55,17 @@ export const fetchSubscriptionTags = () => {
         type: 'GET_SUBSCRIPTION_TAGS',
         url : SUBSCRIPTION_AVAILABLE_TAGS,
         success: response => subscriptionTagsReceived(response)
+    }
+}
+
+export const subscriptionExclusionPatternsReceived = (subscriptionUuid, raw) => {
+    return {type: types.SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED, subscriptionUuid, patterns: toExclusionPatterns(raw)}
+}
+
+export const fetchSubscriptionExclusionPatterns = uuid => {
+    return {
+        type: 'GET_SUBSCRIPTION_EXCLUSION_PATTERNS',
+        url : `${EXCLUSION_TAGS}/${uuid}/pattern`,
+        success: response => subscriptionExclusionPatternsReceived(uuid, response)
     }
 }

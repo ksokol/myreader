@@ -1,6 +1,7 @@
 import {
-    deleteSubscription, fetchSubscriptions, fetchSubscriptionTags, saveSubscription, subscriptionDeleted,
-    subscriptionSaved, subscriptionsReceived, subscriptionTagsReceived
+    deleteSubscription, fetchSubscriptionExclusionPatterns, fetchSubscriptions, fetchSubscriptionTags,
+    saveSubscription, subscriptionDeleted, subscriptionExclusionPatternsReceived, subscriptionSaved,
+    subscriptionsReceived, subscriptionTagsReceived
 } from 'store'
 import {createMockStore} from '../../shared/test-utils'
 
@@ -179,6 +180,46 @@ describe('src/app/js/store/subscription/actions.spec.js', () => {
 
             expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_TAGS_RECEIVED'])
             expect(store.getActions()[0]).toContainActionData({tags: ['tag1', 'tag2']})
+        })
+    })
+
+    describe('action creator subscriptionExclusionPatternsReceived', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(subscriptionExclusionPatternsReceived())
+
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED'])
+        })
+
+        it('should contain expected patch action type', () => {
+            store.dispatch(subscriptionExclusionPatternsReceived('expected uuid', {content: [{pattern: 'a'}, {pattern: 'b'}]}))
+
+            expect(store.getActions()[0]).toContainActionData({subscriptionUuid: 'expected uuid', patterns: [{pattern: 'a'}, {pattern: 'b'}]})
+        })
+    })
+
+    describe('action creator fetchSubscriptionExclusionPatterns', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(fetchSubscriptionExclusionPatterns())
+
+            expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTION_EXCLUSION_PATTERNS'])
+        })
+
+        it('should contain expected patch action type', () => {
+            store.dispatch(fetchSubscriptionExclusionPatterns('expected uuid'))
+
+            expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/exclusions/expected uuid/pattern'})
+        })
+
+        it('should dispatch actions defined in success property', () => {
+            store.dispatch(fetchSubscriptionExclusionPatterns('expected uuid'))
+            const success = store.getActions()[0].success
+            store.clearActions()
+            store.dispatch(success({content: [{pattern: 'a'}, {pattern: 'b'}]}))
+
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED'])
+            expect(store.getActions()[0]).toContainActionData({subscriptionUuid: 'expected uuid', patterns: [{pattern: 'a'}, {pattern: 'b'}]})
         })
     })
 })

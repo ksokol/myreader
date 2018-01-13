@@ -5,6 +5,7 @@ export * from './selectors'
 export default function initialState() {
     return {
         subscriptions: [],
-        tags: []
+        tags: [],
+        exclusions: {}
     }
 }

@@ -2,9 +2,9 @@ import {createSelector} from 'reselect'
 import {settingsShowUnseenEntriesSelector} from 'store'
 import {cloneObject} from '../shared/objects'
 
-const subscriptionsSelector = state => {
-    return state.subscription.subscriptions
-}
+const subscriptionsSelector = state => state.subscription.subscriptions
+
+const exclusionsSelector = state => state.subscription.exclusions
 
 export const getSubscriptions = createSelector(
     subscriptionsSelector,
@@ -26,3 +26,10 @@ export const filteredByUnseenSubscriptionsSelector = createSelector(
         }
     }
 )
+
+export const subscriptionExclusionPatternsSelector = uuid => {
+    return createSelector(
+        exclusionsSelector,
+        exclusions => (exclusions[uuid] || []).map(cloneObject)
+    )
+}

@@ -1,9 +1,11 @@
 import template from './subscription-exclusion.component.html'
+import {fetchSubscriptionExclusionPatterns, subscriptionExclusionPatternsSelector} from 'store'
 
 class controller {
 
-    constructor(exclusionService) {
+    constructor($ngRedux, exclusionService) {
         'ngInject'
+        this.$ngRedux = $ngRedux
         this.exclusionService = exclusionService
     }
 
@@ -11,10 +13,24 @@ class controller {
         this.id = this.myId
         this.startLoading()
 
-        this.exclusionService.find(this.id)
-            .then(exclusions => this.initExclusions(exclusions))
-            .catch(error => this.handleError(error))
-            .finally(() => this.endLoading())
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis.bind(this))(this)
+
+        this.$ngRedux.dispatch(fetchSubscriptionExclusionPatterns(this.myId))
+            .then(() => this.endLoading())
+            .catch(error => {
+                this.handleError(error)
+                this.endLoading()
+            })
+    }
+
+    $onDestroy() {
+        this.unsubscribe()
+    }
+
+    mapStateToThis(state) {
+        return {
+            exclusions: subscriptionExclusionPatternsSelector(this.myId)(state)
+        }
     }
 
     handleError(error) {
@@ -47,11 +63,6 @@ class controller {
 
     endProcessing() {
         this.processing = false
-    }
-
-    initExclusions(exclusions) {
-        this.exclusions = exclusions
-        this.sortExclusions()
     }
 
     addExclusion(exclusion) {

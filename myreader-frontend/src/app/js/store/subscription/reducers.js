@@ -34,6 +34,12 @@ function subscriptionTagsReceived({state, action}) {
     return {...state, tags: action.tags}
 }
 
+function subscriptionExclusionPatternsReceived({state, action}) {
+    const exclusions = {...state.exclusions}
+    exclusions[action.subscriptionUuid] = action.patterns
+    return {...state, exclusions}
+}
+
 function securityUpdate({state, action}) {
     return action.authorized ? state : initialApplicationState().subscription
 }
@@ -54,6 +60,9 @@ export function subscriptionReducers(state = initialApplicationState().subscript
         }
         case types.SUBSCRIPTION_TAGS_RECEIVED: {
             return subscriptionTagsReceived({state, action})
+        }
+        case types.SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED: {
+            return subscriptionExclusionPatternsReceived({state, action})
         }
         case types.SECURITY_UPDATE: {
             return securityUpdate({state, action})

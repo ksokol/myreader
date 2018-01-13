@@ -1,10 +1,4 @@
 {
-    "links": [
-        {
-            "rel": "self",
-            "href": "/api/2/exclusions/1103/pattern"
-        }
-    ],
     "content": [
         {
             "uuid": "9",
@@ -12,11 +6,5 @@
             "pattern": "user115_subscription1_pattern1",
             "links": "${json-unit.ignore}"
         }
-    ],
-    "page": {
-        "size": 20,
-        "totalElements": 1,
-        "totalPages": 1,
-        "number": 0
-    }
+    ]
 }

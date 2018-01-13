@@ -1,4 +1,4 @@
-import {getSubscriptions, filteredByUnseenSubscriptionsSelector} from 'store'
+import {filteredByUnseenSubscriptionsSelector, getSubscriptions, subscriptionExclusionPatternsSelector} from 'store'
 import settingsInitialState from '../settings'
 
 describe('src/app/js/store/subscription/selectors.spec.js', () => {
@@ -7,13 +7,13 @@ describe('src/app/js/store/subscription/selectors.spec.js', () => {
 
     const subscriptions = () => {
         return {
-            subscriptions: [{uuid: '1', unseen: 1}, {uuid: '2', unseen: 0}]
+            subscriptions: [{uuid: '1', unseen: 1}, {uuid: '2', unseen: 0}],
         }
     }
 
     beforeEach(() => {
         state = {
-            subscription: {...subscriptions()},
+            subscription: {...subscriptions(), exclusions: {}},
             settings: settingsInitialState()
         }
     })
@@ -25,7 +25,7 @@ describe('src/app/js/store/subscription/selectors.spec.js', () => {
         const actualSubscriptions = getSubscriptions(state).subscriptions
         actualSubscriptions[0].key = 'value'
 
-        expect(state.subscription).toEqual(subscriptions())
+        expect(state.subscription).toContainObject(subscriptions())
     })
 
     it('should return subscriptions with unseen greater than zero when showUnseenEntries is set to true', () => {
@@ -41,6 +41,24 @@ describe('src/app/js/store/subscription/selectors.spec.js', () => {
         const actualSubscriptions = filteredByUnseenSubscriptionsSelector(state).subscriptions
         actualSubscriptions[0].key = 'value'
 
-        expect(state.subscription).toEqual(subscriptions())
+        expect(state.subscription).toContainObject(subscriptions())
+    })
+
+    it('should return empty array when exclusions for uuid not present', () => {
+        expect(subscriptionExclusionPatternsSelector('1')(state)).toEqual([])
+    })
+
+    it('should return exclusions for given uuid', () => {
+        state.subscription.exclusions = {'1': [{a: 'b'}, {c: 'd'}], '2': [{e: 'f', g: 'h'}]}
+
+        expect(subscriptionExclusionPatternsSelector('2')(state)).toEqual([{e: 'f', g: 'h'}])
+    })
+
+    it('should return copy of exclusions', () => {
+        state.subscription.exclusions = {'1': [{a: 'b'}]}
+        const selection = subscriptionExclusionPatternsSelector('1')(state)
+        state.subscription.exclusions['1'][0].a = 'x'
+
+        expect(selection).toEqual([{a: 'b'}])
     })
 })

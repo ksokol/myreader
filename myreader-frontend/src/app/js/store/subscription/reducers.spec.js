@@ -153,4 +153,27 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
             expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
         })
     })
+
+    describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED', () => {
+
+        const action = {
+            type: 'SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED',
+            subscriptionUuid: '1',
+            patterns: [1, 2]
+        }
+
+        it('should set exclusions', () => {
+            const currentState = {exclusions: []}
+            const expectedState = {exclusions: {'1': [1, 2]}}
+
+            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+        })
+
+        it('should append exclusions', () => {
+            const currentState = {exclusions: {'2': [3, 4]}}
+            const expectedState = {exclusions: {'1': [1, 2], '2': [3, 4]}}
+
+            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+        })
+    })
 })
