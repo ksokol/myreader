@@ -27,7 +27,6 @@ import {FeedComponent} from "./feed/feed.component"
 import {SearchInputComponent} from "./shared/component/search-input/search-input.component"
 import {FeedListComponent} from "./feed/feed-list.component"
 import {LoginComponent} from "./login/login.component"
-import {AboutService} from "./maintenance/about/about.service"
 import {AboutComponent} from "./maintenance/about/about.component"
 import {MaintenanceActionsComponent} from "./maintenance/maintenance-actions/maintenance-actions.component"
 import {MaintenanceComponent} from "./maintenance/maintenance.component"
@@ -104,7 +103,6 @@ angular
 
     .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)
-    .service('aboutService', AboutService)
     .service('exclusionService', ExclusionService)
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)

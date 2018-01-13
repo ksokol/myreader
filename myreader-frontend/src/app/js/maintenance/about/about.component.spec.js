@@ -1,65 +1,51 @@
-describe('src/app/js/maintenance/about/about.component.spec.js', function () {
+import {mockNgRedux, filterMock} from '../../shared/test-utils'
 
-    describe('with html', function () {
+describe('src/app/js/maintenance/about/about.component.spec.js', () => {
 
-        var Table = function (table) {
-            return {
-                rowValue: function (index) {
-                    var tr = angular.element(table).find('tr')[index];
-                    return angular.element(tr).find('td')[1].innerText;
+    const Table = table => {
+        return {
+            rowValue: index => {
+                const tr = angular.element(table).find('tr')[index]
+                return angular.element(tr).find('td')[1].innerText
+            }
+        }
+    }
+
+    let scope, element, table, ngReduxMock
+
+    beforeEach(angular.mock.module('myreader', mockNgRedux(), filterMock('timeago')))
+
+    beforeEach(inject(($rootScope, $compile, $ngRedux) => {
+        scope = $rootScope.$new(true)
+        ngReduxMock = $ngRedux
+
+        element = $compile('<my-about></my-about>')(scope)
+        scope.$digest()
+    }))
+
+    it('should hide content when no application info is present', () =>
+        expect(element.children().length).toEqual(0))
+
+    it('should show application build information', () => {
+        ngReduxMock.setState({
+            admin: {
+                applicationInfo: {
+                    branch: 'a',
+                    commitId: 'b',
+                    version: 'c',
+                    buildTime: 'd'
                 }
             }
-        };
+        })
 
-        var testUtils = require('../../shared/test-utils');
+        scope.$digest()
 
-        var scope, element, deferred, aboutService, table;
+        expect(element.find('p').length).toEqual(0)
 
-        beforeEach(require('angular').mock.module('myreader', testUtils.mock('aboutService'), testUtils.filterMock('timeago')));
-
-        beforeEach(inject(function ($rootScope, $compile, $q, _aboutService_) {
-            scope = $rootScope.$new();
-
-            deferred = $q.defer();
-
-            aboutService = _aboutService_;
-            aboutService.getProperties = jasmine.createSpy('aboutService.getProperties()');
-            aboutService.getProperties.and.returnValue(deferred.promise);
-
-            element = $compile('<my-about></my-about>')(scope);
-            scope.$digest();
-        }));
-
-        it('should show loading indicator', function () {
-            expect(element.find('p').text()).toEqual('loading...');
-            expect(element.find('table').length).toEqual(0);
-        });
-
-        it('should show application build information', function () {
-            deferred.resolve({
-                branch: 'a-branch-name',
-                commitId: 'aec45',
-                version: '1.0',
-                buildTime: 'time'
-            });
-            scope.$digest();
-
-            expect(element.find('p').length).toEqual(0);
-
-            table = new Table(element.find('table'));
-            expect(table.rowValue(0)).toEqual('a-branch-name');
-            expect(table.rowValue(1)).toEqual('aec45');
-            expect(table.rowValue(2)).toEqual('1.0');
-            expect(table.rowValue(3)).toEqual('timeago("time")');
-        });
-
-        it('should indicate missing properties', function () {
-            deferred.reject();
-            scope.$digest();
-
-            expect(element.find('table').length).toEqual(0);
-            expect(element.find('p').length).toEqual(1);
-            expect(element.find('p').text()).toEqual('Properties missing');
-        });
-    });
-});
+        table = new Table(element.find('table'))
+        expect(table.rowValue(0)).toEqual('a')
+        expect(table.rowValue(1)).toEqual('b')
+        expect(table.rowValue(2)).toEqual('c')
+        expect(table.rowValue(3)).toEqual('timeago("d")')
+    })
+})

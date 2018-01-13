@@ -1,6 +1,7 @@
 import {applyMiddleware, combineReducers, compose  as reduxCompose, createStore} from 'redux'
 import thunk from 'redux-thunk'
 import fetchMiddleware from './middleware/fetch'
+import {adminReducers} from './admin/reducers'
 import {settingsReducers} from './settings'
 import {commonReducers} from './common'
 import {securityReducers} from './security'
@@ -35,6 +36,7 @@ function enhancer(enabled) {
 }
 
 const reducers = combineReducers({
+    admin: adminReducers,
     security: securityReducers,
     common: commonReducers,
     settings: settingsReducers,

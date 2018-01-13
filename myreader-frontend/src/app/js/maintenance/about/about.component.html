@@ -1,23 +1,20 @@
-<h4>About</h4>
+<h4 ng-if="$ctrl.applicationInfo.branch">Application info</h4>
 
-<p ng-if="$ctrl.loading">loading...</p>
-<p ng-if="$ctrl.propertiesMissing">Properties missing</p>
-
-<table ng-if="!$ctrl.loading && !$ctrl.propertiesMissing">
+<table ng-if="$ctrl.applicationInfo.branch">
     <tr>
         <td>Branch</td>
-        <td>{{$ctrl.properties.branch}}</td>
+        <td>{{$ctrl.applicationInfo.branch}}</td>
     </tr>
     <tr>
         <td>Commit ID</td>
-        <td>{{$ctrl.properties.commitId}}</td>
+        <td>{{$ctrl.applicationInfo.commitId}}</td>
     </tr>
     <tr>
         <td>Version</td>
-        <td>{{$ctrl.properties.version}}</td>
+        <td>{{$ctrl.applicationInfo.version}}</td>
     </tr>
     <tr>
         <td>Build Time</td>
-        <td>{{$ctrl.properties.buildTime | timeago}}</td>
+        <td>{{$ctrl.applicationInfo.buildTime | timeago}}</td>
     </tr>
 </table>

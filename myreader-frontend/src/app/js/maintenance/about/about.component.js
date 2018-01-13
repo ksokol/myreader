@@ -1,21 +1,29 @@
-import template from './about.component.html';
+import template from './about.component.html'
+import {fetchApplicationInfo, applicationInfoSelector} from 'store'
 
 class controller {
 
-    constructor(aboutService) {
-        'ngInject';
-        this.aboutService = aboutService;
-        this.loading = true;
+    constructor($ngRedux) {
+        'ngInject'
+        this.$ngRedux = $ngRedux
     }
 
     $onInit() {
-        this.aboutService.getProperties()
-            .then(properties => this.properties = properties)
-            .catch(() => this.propertiesMissing = true)
-            .finally(() => this.loading = false);
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
+        this.$ngRedux.dispatch(fetchApplicationInfo())
+    }
+
+    $onDestroy() {
+        this.unsubscribe()
+    }
+
+    mapStateToThis(state) {
+        return {
+            applicationInfo: applicationInfoSelector(state)
+        }
     }
 }
 
 export const AboutComponent = {
     template, controller
-};
+}

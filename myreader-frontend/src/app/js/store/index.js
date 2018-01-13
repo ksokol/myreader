@@ -1,3 +1,4 @@
+import adminInitialState from './admin'
 import commonInitialState from './common'
 import securityInitialState from './security'
 import entryInitialState from './entry'
@@ -13,6 +14,7 @@ export * from './subscription'
 
 export function initialApplicationState() {
     return {
+        admin: adminInitialState(),
         settings: settingsInitialState(),
         common: commonInitialState(),
         security: securityInitialState(),
