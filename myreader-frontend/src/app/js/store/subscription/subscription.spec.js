@@ -1,4 +1,4 @@
-import {toExclusionPatterns, toSubscriptions} from './subscription'
+import {toExclusionPattern, toExclusionPatterns, toSubscriptions} from './subscription'
 
 describe('src/app/js/store/subscription/subscription.spec.js', () => {
 
@@ -36,6 +36,23 @@ describe('src/app/js/store/subscription/subscription.spec.js', () => {
 
         it('should return valid object when input is undefined', () =>
             expect(toSubscriptions(undefined)).toEqual({subscriptions: []}))
+    })
+
+    describe('toExclusionPattern', () => {
+
+        it('should return empty object when raw data is undefined', () =>
+            expect(toExclusionPattern()).toEqual({}))
+
+        it('should convert raw data', () =>
+            expect(toExclusionPattern({uuid: '1', hitCount: 2, pattern: 'a'})).toEqual({uuid: '1', hitCount: 2, pattern: 'a'}))
+
+        it('should return copy of pattern', () => {
+            const source = {uuid: '1', hitCount: 2, pattern: 'a'}
+            const converted = toExclusionPattern(source)
+            source.pattern = 'x'
+
+            expect(converted).toEqual({uuid: '1', hitCount: 2, pattern: 'a'})
+        })
     })
 
     describe('toExclusionPatterns', () => {

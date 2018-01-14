@@ -40,6 +40,13 @@ function subscriptionExclusionPatternsReceived({state, action}) {
     return {...state, exclusions}
 }
 
+function subscriptionExclusionPatternsAdded({state, action}) {
+    const exclusions = {...state.exclusions}
+    const exclusion = exclusions[action.subscriptionUuid] || []
+    exclusions[action.subscriptionUuid] = [...exclusion, action.pattern]
+    return {...state, exclusions}
+}
+
 function subscriptionExclusionPatternsRemoved({state, action}) {
     let exclusion = state.exclusions[action.subscriptionUuid]
 
@@ -75,6 +82,9 @@ export function subscriptionReducers(state = initialApplicationState().subscript
         }
         case types.SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED: {
             return subscriptionExclusionPatternsReceived({state, action})
+        }
+        case types.SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED: {
+            return subscriptionExclusionPatternsAdded({state, action})
         }
         case types.SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED: {
             return subscriptionExclusionPatternsRemoved({state, action})

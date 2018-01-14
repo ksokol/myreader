@@ -1,14 +1,14 @@
-import {mock, mockNgRedux} from '../../../shared/test-utils'
+import {mockNgRedux} from '../../../shared/test-utils'
 
 describe('src/app/js/subscription/subscription-exclusion-panel/subscription-exclusion/subscription-exclusion.component.spec.js', () => {
 
-    beforeEach(angular.mock.module('myreader', mock('exclusionService'), mockNgRedux()))
+    beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
     beforeEach(() => jasmine.clock().uninstall())
 
     describe('with html', () => {
 
-        let compile, scope, q, initDispatchResolve, initDispatchReject, myOnError, exclusionService, ngReduxMock, exclusions
+        let compile, scope, initDispatchResolve, initDispatchReject, myOnError, ngReduxMock, exclusions
 
         const ExclusionPageObject = (el, parent) => {
 
@@ -33,9 +33,8 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
                     }
                 },
                 successfulRemove: function () {
-                    const deferred = q.defer()
-                    exclusionService.delete.and.returnValue(deferred.promise)
-                    deferred.resolve()
+                    ngReduxMock.dispatch.and.returnValue(Promise.resolve())
+                    scope.$digest()
                     _pendingRemove()
                     return {
                         whenStable: callback =>
@@ -129,33 +128,47 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
                     return this
                 },
                 pendingInput: function (value) {
+                    ngReduxMock.dispatch.and.returnValue(new Promise(() => {}))
+                    scope.$digest()
                     _input(value)
+                    return {
+                        whenStable: callback =>
+                            setTimeout(() => {
+                                scope.$digest()
+                                callback(this)
+                            }, 0)
+                    }
                 },
                 successfulSave: function (value) {
-                    const deferred = q.defer()
-                    exclusionService.save.and.returnValue(deferred.promise)
-                    deferred.resolve(value)
+                    ngReduxMock.dispatch.and.returnValue(Promise.resolve(value))
                     scope.$digest()
                     _input(value)
+                    return {
+                        whenStable: callback =>
+                            setTimeout(() => {
+                                scope.$digest()
+                                callback(this)
+                            }, 0)
+                    }
                 },
                 failedSave: function (value) {
-                    const deferred = q.defer()
-                    exclusionService.save.and.returnValue(deferred.promise)
-                    deferred.reject(value)
+                    ngReduxMock.dispatch.and.returnValue(Promise.reject(value))
                     scope.$digest()
                     _input(value)
+                    return {
+                        whenStable: callback =>
+                            setTimeout(() => {
+                                scope.$digest()
+                                callback(this)
+                            }, 0)
+                    }
                 }
             }
         }
 
-        beforeEach(inject(($rootScope, $compile, $q, _exclusionService_, $ngRedux) => {
+        beforeEach(inject(($rootScope, $compile, $ngRedux) => {
             compile = $compile
-            q = $q
             ngReduxMock = $ngRedux
-
-            exclusionService = _exclusionService_
-            exclusionService.delete = jasmine.createSpy('exclusionService.delete()')
-            exclusionService.save = jasmine.createSpy('exclusionService.save()')
 
             exclusions = [
                 {uuid: '2', pattern: 'a', hitCount: 11},
@@ -163,8 +176,6 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
                 {uuid: '4', pattern: 'b', hitCount: 13},
                 {uuid: '1', pattern: 'c', hitCount: 10}
             ]
-
-            exclusionService.save.and.returnValue($q.defer().promise)
 
             scope = $rootScope.$new(true)
             scope.myOnError = myOnError = jasmine.createSpy('myOnError')
@@ -312,41 +323,42 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
 
             it('should indicate pending save', done => {
                 whenStable(page => {
-                    page.pendingInput('expected value')
-
-                    expect(exclusionService.save).toHaveBeenCalledWith(1, 'expected value')
-                    expect(page.inputPlaceholderText()).toEqual('processing...')
-                    done()
+                    page.pendingInput('expected value').whenStable(page => {
+                        expect(page.inputPlaceholderText()).toEqual('processing...')
+                        done()
+                    })
                 })
             })
 
             it('should show default placeholder text in input element when save finished', done => {
                 whenStable(page => {
-                    page.successfulSave({uuid: 50, pattern: 'expected-from-service', hitCount: 0})
-
-                    expect(page.inputPlaceholderText()).toEqual('Enter an exclusion pattern')
-                    done()
+                    page.successfulSave('').whenStable(page => {
+                        expect(page.inputPlaceholderText()).toEqual('Enter an exclusion pattern')
+                        done()
+                    })
                 })
             })
 
             it('should add new exclusion when save finished', done => {
                 whenStable(page => {
-                    page.successfulSave({uuid: 50, pattern: 'expected-from-service', hitCount: 0})
+                    ngReduxMock.dispatch.calls.reset()
+                    page.successfulSave('expected pattern')
 
-                    expect(page.exclusions().length).toEqual(5)
-                    expect(page.exclusions()[4].text()).toEqual('expected-from-service')
+                    expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'POST_SUBSCRIPTION_EXCLUSION_PATTERN'}))
+                    expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({url: '/myreader/api/2/exclusions/1/pattern'}))
+                    expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({body: {pattern: 'expected pattern'}}))
                     done()
                 })
             })
 
             it('should indicate failing save', done => {
                 whenStable(page => {
-                    page.failedSave('expected error')
-
-                    expect(page.exclusions().length).toEqual(4)
-                    expect(page.inputPlaceholderText()).toEqual('Enter an exclusion pattern')
-                    expect(myOnError).toHaveBeenCalledWith('expected error')
-                    done()
+                    page.failedSave('expected error').whenStable(page => {
+                        expect(page.exclusions().length).toEqual(4)
+                        expect(page.inputPlaceholderText()).toEqual('Enter an exclusion pattern')
+                        expect(myOnError).toHaveBeenCalledWith('expected error')
+                        done()
+                    })
                 })
             })
         })

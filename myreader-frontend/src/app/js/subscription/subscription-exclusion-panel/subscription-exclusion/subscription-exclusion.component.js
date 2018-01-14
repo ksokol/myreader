@@ -1,15 +1,14 @@
 import template from './subscription-exclusion.component.html'
 import {
-    fetchSubscriptionExclusionPatterns, removeSubscriptionExclusionPattern,
+    addSubscriptionExclusionPattern, fetchSubscriptionExclusionPatterns, removeSubscriptionExclusionPattern,
     subscriptionExclusionPatternsSelector
 } from 'store'
 
 class controller {
 
-    constructor($ngRedux, exclusionService) {
+    constructor($ngRedux) {
         'ngInject'
         this.$ngRedux = $ngRedux
-        this.exclusionService = exclusionService
     }
 
     $onInit() {
@@ -40,18 +39,6 @@ class controller {
         this.myOnError({error})
     }
 
-    sortExclusions() {
-        this.exclusions.sort((left, right) => {
-            if (left.pattern < right.pattern) {
-                return -1
-            }
-            if (left.pattern > right.pattern) {
-                return 1
-            }
-            return 0
-        })
-    }
-
     startLoading() {
         this.loading = true
     }
@@ -68,11 +55,6 @@ class controller {
         this.processing = false
     }
 
-    addExclusion(exclusion) {
-        this.exclusions.push(exclusion)
-        this.sortExclusions()
-    }
-
     onRemove(exclusion) {
         this.startProcessing()
         this.$ngRedux.dispatch(removeSubscriptionExclusionPattern(this.id, exclusion.uuid))
@@ -85,11 +67,12 @@ class controller {
 
     onTransform($chip) {
         this.startProcessing()
-        this.exclusionService.save(this.id, $chip)
-            .then(exclusion => this.addExclusion(exclusion))
-            .catch(error => this.handleError(error))
-            .finally(() => this.endProcessing())
-
+        this.$ngRedux.dispatch(addSubscriptionExclusionPattern(this.id, $chip))
+            .then(() => this.endProcessing())
+            .catch(error => {
+                this.endProcessing()
+                this.handleError(error)
+            })
         return null // don't render the new chip
     }
 

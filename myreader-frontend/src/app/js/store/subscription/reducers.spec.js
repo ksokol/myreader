@@ -177,6 +177,29 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
         })
     })
 
+    describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED', () => {
+
+        const action = {
+            type: 'SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED',
+            subscriptionUuid: '1',
+            pattern: {uuid: '2'}
+        }
+
+        it('should add exclusion pattern', () => {
+            const currentState = {exclusions: {'2': [{uuid: '3'}, {uuid: '4'}]}}
+            const expectedState = {exclusions: {'2': [{uuid: '3'}, {uuid: '4'}], '1': [{uuid: '2'}]}}
+
+            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+        })
+
+        it('should update exclusion pattern', () => {
+            const currentState = {exclusions: {'1': [{uuid: '1'}]}}
+            const expectedState = {exclusions: {'1': [{uuid: '1'}, {uuid: '2'}]}}
+
+            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+        })
+    })
+
     describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED', () => {
 
         const action = {

@@ -1,7 +1,8 @@
 import {
-    deleteSubscription, fetchSubscriptionExclusionPatterns, fetchSubscriptions, fetchSubscriptionTags,
-    removeSubscriptionExclusionPattern, saveSubscription, subscriptionDeleted, subscriptionExclusionPatternsReceived,
-    subscriptionExclusionPatternsRemoved, subscriptionSaved, subscriptionsReceived, subscriptionTagsReceived
+    addSubscriptionExclusionPattern, deleteSubscription, fetchSubscriptionExclusionPatterns, fetchSubscriptions,
+    fetchSubscriptionTags, removeSubscriptionExclusionPattern, saveSubscription, subscriptionDeleted,
+    subscriptionExclusionPatternsAdded, subscriptionExclusionPatternsReceived, subscriptionExclusionPatternsRemoved,
+    subscriptionSaved, subscriptionsReceived, subscriptionTagsReceived
 } from 'store'
 import {createMockStore} from '../../shared/test-utils'
 
@@ -220,6 +221,48 @@ describe('src/app/js/store/subscription/actions.spec.js', () => {
 
             expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED'])
             expect(store.getActions()[0]).toContainActionData({subscriptionUuid: 'expected uuid', patterns: [{pattern: 'a'}, {pattern: 'b'}]})
+        })
+    })
+
+    describe('action creator subscriptionExclusionPatternsAdded', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(subscriptionExclusionPatternsAdded())
+
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED'])
+        })
+
+        it('should contain expected patch action type', () => {
+            store.dispatch(subscriptionExclusionPatternsAdded('expected subscription uuid', {uuid: '1', hitCount: 0, pattern: 'a'}))
+
+            expect(store.getActions()[0])
+                .toContainActionData({subscriptionUuid: 'expected subscription uuid', pattern: {uuid: '1', hitCount: 0, pattern: 'a'}})
+        })
+    })
+
+    describe('action creator addSubscriptionExclusionPattern', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(addSubscriptionExclusionPattern())
+
+            expect(store.getActionTypes()).toEqual(['POST_SUBSCRIPTION_EXCLUSION_PATTERN'])
+        })
+
+        it('should contain expected patch action type', () => {
+            store.dispatch(addSubscriptionExclusionPattern('1', 'expected pattern'))
+
+            expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/exclusions/1/pattern'})
+            expect(store.getActions()[0]).toContainActionData({body: {pattern: 'expected pattern'}})
+        })
+
+        it('should dispatch actions defined in success property', () => {
+            store.dispatch(addSubscriptionExclusionPattern('1'))
+            const success = store.getActions()[0].success
+            store.clearActions()
+            store.dispatch(success({uuid: '2', hitCount: 0, pattern: 'a'}))
+
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED'])
+            expect(store.getActions()[0]).toContainActionData({subscriptionUuid: '1', pattern: {uuid: '2', hitCount: 0, pattern: 'a'}})
         })
     })
 
