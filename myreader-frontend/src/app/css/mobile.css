@@ -1,72 +1,8 @@
-ul {
-    margin: 0;
-    padding: 0;
-}
-
-ul li {
-    margin-left: 16px;
-    padding: 0;
-    margin-top: 3px;
-    list-style-position: inside;
-}
-
-.subscription-tag-menu, .subscription-tag-menu ul {
-    list-style: none;
-    padding: 0;
-}
-
-.subscription-tag-menu li {
-    margin: 0;
-}
-
-.subscription-tag-menu > li {
-    border-top: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.subscription-tag-menu > li:nth-child(-n+2) {
-    border-top: none;
-}
-
-.subscription-tag-menu .md-button {
-    border-radius: 0;
-    color: inherit;
-    cursor: pointer;
-    display: block;
-    line-height: 40px;
-    margin: 0;
-    max-height: 40px;
-    overflow: hidden;
-    text-align: left;
-    text-decoration: none;
-    white-space: normal;
-    width: 100%;
-}
-
 /* remove dotted outline on buttons in firefox */
 :focus {
     outline:none;
 }
+
 ::-moz-focus-inner {
     border:0;
-}
-
-.my-raised {
-    background-color: rgb(63,81,181);
-    color: rgb(255,255,255);
-}
-
-.my-content {
-    padding: 0;
-}
-
-@media (min-width: 1280px) {
-    .my-content {
-        overflow: hidden;
-    }
-}
-
-@media (max-width: 1179px) {
-    md-content {
-        overflow-y: auto;
-    }
 }

@@ -1,4 +1,5 @@
 import template from './app.component.html'
+import './app.component.css'
 import {adminPermissionSelector, mediaBreakpointIsDesktopSelector} from 'store'
 
 class controller {
