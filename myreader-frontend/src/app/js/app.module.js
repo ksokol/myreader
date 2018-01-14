@@ -52,6 +52,7 @@ import {HotkeysComponent} from './shared/component/hotkeys/hotkeys.component'
 import {FeedStreamComponent} from './feed-stream/feed-stream.component'
 import {NavigationSubscriptionsItemComponent} from './navigation/subscriptions-item/subscriptions-item.component'
 import {AppComponent} from './app.component'
+import {NavigationComponent} from './navigation/navigation.component'
 
 import './config'
 
@@ -88,6 +89,7 @@ angular
     .component('myNavigationSubscriptionItem', NavigationSubscriptionItemComponent)
     .component('myNavigationSubscriptionsItem', NavigationSubscriptionsItemComponent)
     .component('myAppComponent', AppComponent)
+    .component('myNavigation', NavigationComponent)
 
     .component('myButtonGroup', ButtonGroupComponent)
     .component('myButton', ButtonComponent)

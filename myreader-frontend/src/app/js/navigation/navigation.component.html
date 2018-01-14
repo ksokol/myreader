@@ -1,0 +1,27 @@
+<ul class="my-navigation" ng-if="!$ctrl.isAdmin">
+    <my-navigation-subscriptions-item></my-navigation-subscriptions-item>
+
+    <li>
+        <md-button md-no-ink ui-sref="app.subscriptions">Subscriptions</md-button>
+    </li>
+    <li>
+        <md-button md-no-ink ui-sref="app.bookmarks">Bookmarks</md-button>
+    </li>
+    <li>
+        <md-button md-no-ink ui-sref="app.settings">Settings</md-button>
+    </li>
+    <li class="my-navigation__item--raised">
+        <md-button md-no-ink ui-sref="app.subscription-add">Add subscription</md-button>
+    </li>
+    <my-logout></my-logout>
+</ul>
+
+<ul class="my-navigation" ng-if="$ctrl.isAdmin">
+    <li>
+        <md-button md-no-ink ui-sref="app.overview">Admin</md-button>
+    </li>
+    <li>
+        <md-button md-no-ink ui-sref="app.feed">Feeds</md-button>
+    </li>
+    <my-logout></my-logout>
+</ul>

@@ -23,7 +23,6 @@ class controller {
 
     onSelect(feedTagEqual, feedUuidEqual) {
         this.$state.go('app.entries', {feedTagEqual, feedUuidEqual}, {inherit: false})
-        this.myOnSelect()
     }
 
     isVisible() {
@@ -38,10 +37,6 @@ class controller {
 export const NavigationSubscriptionItemComponent = {
     template, controller,
     bindings: {
-        myItem: '<',
-        /*
-         * @deprecated
-         */
-        myOnSelect: '&'
+        myItem: '<'
     }
 }

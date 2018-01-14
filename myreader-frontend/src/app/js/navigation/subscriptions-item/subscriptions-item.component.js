@@ -33,11 +33,5 @@ class controller {
 }
 
 export const NavigationSubscriptionsItemComponent = {
-    template, controller,
-    bindings: {
-        /*
-         * @deprecated
-         */
-        myOnSelect: '&'
-    }
+    template, controller
 }

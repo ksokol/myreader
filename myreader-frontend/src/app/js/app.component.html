@@ -2,33 +2,7 @@
     <md-toolbar></md-toolbar>
 
     <md-content flex>
-        <ul class="subscription-tag-menu" ng-if="!$ctrl.isAdmin">
-            <my-navigation-subscriptions-item my-on-select="$ctrl.closeSidenav()"></my-navigation-subscriptions-item>
-
-            <li>
-                <md-button ng-click="$ctrl.navigateTo('app.subscriptions')">subscriptions</md-button>
-            </li>
-            <li>
-                <md-button ng-click="$ctrl.navigateTo('app.bookmarks')">bookmarks</md-button>
-            </li>
-            <li>
-                <md-button ng-click="$ctrl.navigateTo('app.settings')">Settings</md-button>
-            </li>
-            <li class="my-raised">
-                <md-button ng-click="$ctrl.navigateTo('app.subscription-add')">Add subscription</md-button>
-            </li>
-            <my-logout></my-logout>
-        </ul>
-
-        <ul class="subscription-tag-menu" ng-if="$ctrl.isAdmin">
-            <li>
-                <md-button ng-click="$ctrl.navigateTo('app.overview')">Admin</md-button>
-            </li>
-            <li>
-                <md-button ng-click="$ctrl.navigateTo('app.feed')">Feeds</md-button>
-            </li>
-            <my-logout></my-logout>
-        </ul>
+        <my-navigation ng-click="$ctrl.onClickNavigationItem()"></my-navigation>
     </md-content>
 </md-sidenav>
 <div layout="column" flex>

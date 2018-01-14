@@ -1,12 +1,11 @@
 import template from './app.component.html'
 import './app.component.css'
-import {adminPermissionSelector, mediaBreakpointIsDesktopSelector} from 'store'
+import {mediaBreakpointIsDesktopSelector} from 'store'
 
 class controller {
 
-    constructor($state, $mdSidenav, $ngRedux) {
+    constructor($mdSidenav, $ngRedux) {
         'ngInject'
-        this.$state = $state
         this.$mdSidenav = $mdSidenav
         this.$ngRedux = $ngRedux
     }
@@ -21,21 +20,15 @@ class controller {
 
     mapStateToThis(state) {
         return {
-            isAdmin: adminPermissionSelector(state),
             isDesktop: mediaBreakpointIsDesktopSelector(state)
         }
-    }
-
-    navigateTo(state) {
-        this.closeSidenav()
-        this.$state.go(state)
     }
 
     openMenu() {
         this.$mdSidenav('left').toggle()
     }
 
-    closeSidenav() {
+    onClickNavigationItem() {
         this.$mdSidenav('left').close()
     }
 }

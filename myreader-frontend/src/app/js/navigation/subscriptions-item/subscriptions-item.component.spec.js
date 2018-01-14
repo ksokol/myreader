@@ -9,10 +9,6 @@ class NavigationItem {
     title() {
         return angular.element(this.el.find('button').children()).find('div')[0].innerText
     }
-
-    click() {
-        this.el.controller('myNavigationSubscriptionItem').onSelect()
-    }
 }
 
 class Navigation {
@@ -57,7 +53,7 @@ describe('src/app/js/navigation/subscriptions-item/subscriptions-item.component.
 
         ngReduxMock.setState({subscription: {subscriptions}, settings: {showUnseenEntries: false}})
 
-        element = $compile('<my-navigation-subscriptions-item my-on-select="onSelect()"></my-navigation-subscriptions-item>')(scope)
+        element = $compile('<my-navigation-subscriptions-item></my-navigation-subscriptions-item>')(scope)
         scope.$digest()
     }))
 
@@ -84,27 +80,6 @@ describe('src/app/js/navigation/subscriptions-item/subscriptions-item.component.
         expect(navigation.itemAtPosition(0).title()).toEqual('all')
         expect(navigation.itemAtPosition(1).title()).toEqual('group 1')
         expect(navigation.itemAtPosition(2).title()).toEqual('group 2')
-    })
-
-    it('should emit select event when "all" item clicked', done => {
-        scope.onSelect = done
-
-        new Navigation(element).item('all').click()
-        scope.$digest()
-    })
-
-    it('should emit select event when group clicked', done => {
-        scope.onSelect = done
-
-        new Navigation(element).item('group 1').click()
-        scope.$digest()
-    })
-
-    it('should emit select event when single subscription clicked', done => {
-        scope.onSelect = done
-
-        new Navigation(element).item('subscription 3').click()
-        scope.$digest()
     })
 
     it('should construct comparison value for ng-repeat track by', () => {
