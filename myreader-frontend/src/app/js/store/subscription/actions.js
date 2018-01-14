@@ -91,6 +91,6 @@ export const removeSubscriptionExclusionPattern = (subscriptionUuid, uuid) => {
     return {
         type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS',
         url : `${EXCLUSION_TAGS}/${subscriptionUuid}/pattern/${uuid}`,
-        success: response => subscriptionExclusionPatternsRemoved(subscriptionUuid, uuid, response)
+        success: response => subscriptionExclusionPatternsRemoved(subscriptionUuid, uuid)
     }
 }
