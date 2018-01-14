@@ -51,12 +51,12 @@ import {SubscriptionListComponent} from './subscription/subscription-list.compon
 import {HotkeysComponent} from './shared/component/hotkeys/hotkeys.component'
 import {FeedStreamComponent} from './feed-stream/feed-stream.component'
 import {NavigationSubscriptionsItemComponent} from './navigation/subscriptions-item/subscriptions-item.component'
+import {AppComponent} from './app.component'
 
 import './config'
-import './controllers'
 
 angular
-    .module('myreader', [ngRedux, 'common.config', 'common.controllers', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages'])
+    .module('myreader', [ngRedux, 'common.config', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages'])
 
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)
@@ -87,6 +87,7 @@ angular
     .component('myFeedStream', FeedStreamComponent)
     .component('myNavigationSubscriptionItem', NavigationSubscriptionItemComponent)
     .component('myNavigationSubscriptionsItem', NavigationSubscriptionsItemComponent)
+    .component('myAppComponent', AppComponent)
 
     .component('myButtonGroup', ButtonGroupComponent)
     .component('myButton', ButtonComponent)

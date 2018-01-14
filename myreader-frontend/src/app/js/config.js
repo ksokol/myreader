@@ -1,7 +1,9 @@
 import angular from 'angular';
-import subscriptionTagsTemplate from '../../templates/subscription-tags.html';
 import {unauthorized} from 'store';
 
+/**
+ * @deprecated
+ */
 angular.module('common.config', ['ui.router'])
 
 .config(['$httpProvider', function($httpProvider) {
@@ -45,8 +47,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/app",
                 views: {
                     body: {
-                        template: subscriptionTagsTemplate,
-                        controller: 'SubscriptionNavigationCtrl'
+                        template: '<my-app-component layout="row"></my-app-component>',
                     }
                 }
             })
