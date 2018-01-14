@@ -4,7 +4,7 @@ import {SUBSCRIPTION_AVAILABLE_TAGS, SUBSCRIPTIONS, EXCLUSION_TAGS} from '../../
 import {showSuccessNotification} from 'store'
 
 export const subscriptionsReceived = raw => {
-    return {type: types.SUBSCRIPTIONS_RECEIVED, ...toSubscriptions(raw)}
+    return {type: types.SUBSCRIPTIONS_RECEIVED, subscriptions: toSubscriptions(raw)}
 }
 
 export const fetchSubscriptions = () => {
