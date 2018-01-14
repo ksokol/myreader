@@ -76,7 +76,7 @@ describe('src/app/js/store/admin/action.spec.js', () => {
             expect(store.getActions()[0]).toContainActionData({url: '/myreader/info'})
         })
 
-        it('should dispatch actions defined in success property', () => {
+        it('should dispatch action defined in success property', () => {
             store.dispatch(fetchApplicationInfo())
             const success = store.getActions()[0].success
             store.clearActions()
@@ -89,6 +89,21 @@ describe('src/app/js/store/admin/action.spec.js', () => {
                     commitId: 'not available',
                     version: 'not available',
                     buildTime: ''
+                }
+            })
+        })
+
+        it('should dispatch action defined in error property', () => {
+            store.dispatch(fetchApplicationInfo())
+            const error = store.getActions()[0].error
+            store.clearActions()
+            store.dispatch(error())
+
+            expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
+            expect(store.getActions()[0]).toContainActionData({
+                notification: {
+                    text: 'Application info is missing',
+                    type: 'error'
                 }
             })
         })
