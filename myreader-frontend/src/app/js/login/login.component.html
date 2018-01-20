@@ -11,7 +11,7 @@
                     <label for="email">Email</label>
                     <input id="email"
                            name="username"
-                           ng-model="$ctrl.username"
+                           ng-model="$ctrl.loginForm.username"
                            ng-disabled="$ctrl.actionPending">
                 </md-input-container>
             </div>
@@ -22,7 +22,7 @@
                     <input id="password"
                            type="password"
                            name="password"
-                           ng-model="$ctrl.password"
+                           ng-model="$ctrl.loginForm.password"
                            ng-disabled="$ctrl.actionPending">
                 </md-input-container>
             </div>
@@ -30,7 +30,7 @@
             <div layout="row">
                 <md-input-container>
                     <md-checkbox name="rememberMe"
-                                 ng-model="$ctrl.rememberMe"
+                                 ng-model="$ctrl.loginForm.rememberMe"
                                  ng-true-value="'on'"
                                  ng-disabled="$ctrl.actionPending">Remember me
                     </md-checkbox>
@@ -43,8 +43,7 @@
                         <my-button my-text="Login"
                                    my-button-type="submit"
                                    my-on-click="$ctrl.onClick()"
-                                   my-on-success="$ctrl.onSuccess(data)"
-                                   my-on-error="$ctrl.onError(error)">
+                                   my-on-error="$ctrl.onError()">
                         </my-button>
                     </my-button-group>
                 </div>

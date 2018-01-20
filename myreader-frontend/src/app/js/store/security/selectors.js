@@ -1,3 +1,13 @@
-export const authorizedSelector = state => state.security.authorized
+import {createSelector} from 'reselect'
 
-export const adminPermissionSelector = state => state.security.role === 'admin'
+const securitySelector = state => state.security
+
+export const authorizedSelector = createSelector(
+    securitySelector,
+    security => security.authorized
+)
+
+export const adminPermissionSelector = createSelector(
+    securitySelector,
+    security => security.role === 'ROLE_ADMIN'
+)

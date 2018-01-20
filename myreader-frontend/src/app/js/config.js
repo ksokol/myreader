@@ -128,5 +128,5 @@ angular.module('common.config', ['ui.router'])
                     }
                 }
             });
-        $urlRouterProvider.otherwise('/app/entries//');
+        $urlRouterProvider.otherwise('/login');
 }]);

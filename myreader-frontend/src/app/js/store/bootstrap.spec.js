@@ -65,9 +65,10 @@ describe('src/app/js/store/bootstrap.spec.js', () => {
         })
 
         it('should not initialize last security state when environment is other', () => {
+            localStorage.setItem('myreader-security', `{"authorized":false, role: 'unexpected role'}`)
             const store = createApplicationStore(OTHER)
 
-            expect(store.getState().security).toEqual({authorized: true, role: ''})
+            expect(store.getState().security).toEqual({authorized: false, role: ''})
         })
 
         it('should invoke given actionDispatchers', () => {

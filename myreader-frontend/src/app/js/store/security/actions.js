@@ -1,5 +1,6 @@
 import * as types from 'store/action-types'
 import {getLastSecurityState, setLastSecurityState} from './security'
+import {LOGIN, LOGOUT} from '../../constants'
 
 export const updateSecurity = () => {
     const {authorized, role} = getLastSecurityState()
@@ -17,5 +18,22 @@ export const authorized = ({role}) => {
 }
 
 export const logout = () => {
-    return {type: 'POST_LOGOUT', url: 'logout', success: unauthorized}
+    return {type: 'POST_LOGOUT', url: LOGOUT, success: unauthorized}
+}
+
+export const tryLogin = ({username, password, rememberMe}) => {
+    const searchParams = new URLSearchParams()
+    searchParams.set('username', username)
+    searchParams.set('password', password)
+    searchParams.set('remember-me', rememberMe)
+
+    return {
+        type: 'POST_LOGIN',
+        url: LOGIN,
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+        },
+        body: searchParams,
+        success: (response, headers) => authorized({role: headers['x-my-authorities']})
+    }
 }

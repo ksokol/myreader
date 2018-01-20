@@ -1,43 +1,43 @@
 import template from './login.component.html'
 import './login.component.css'
-import {authorized} from 'store'
+import {authorizedSelector, adminPermissionSelector, tryLogin} from 'store'
 
 class controller {
 
-    constructor($http, $state, $ngRedux) {
+    constructor($state, $ngRedux) {
         'ngInject'
-        this.$http = $http
         this.$state = $state
         this.$ngRedux = $ngRedux
     }
 
-    onClick() {
-        this.actionPending = true
-        const encodedBody = 'username=' + encodeURIComponent(this.username) +
-                          '&password=' + encodeURIComponent(this.password) +
-                          '&remember-me=' + this.rememberMe
-
-        return this.$http({
-            method: 'POST',
-            url: 'check',
-            data: encodedBody,
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        })
+    $onInit() {
+        this.unsubscribe = this.$ngRedux.subscribe(() => this.handleStateChange(this.$ngRedux.getState()))
+        this.handleStateChange(this.$ngRedux.getState())
     }
 
-    onSuccess(response) {
-        const authorities = response.headers('X-MY-AUTHORITIES')
+    $onDestroy() {
+        this.unsubscribe()
+    }
 
-        if(authorities !== null && authorities.indexOf('ROLE_ADMIN') !== -1) {
-            this.$ngRedux.dispatch(authorized({role: 'admin'}))
-            this.$state.go('app.overview')
-        } else {
-            this.$ngRedux.dispatch(authorized({role: 'user'}))
-            this.$state.go('app.entries')
+    handleStateChange(state) {
+        const authorized = authorizedSelector(state)
+        const isAdmin = adminPermissionSelector(state)
+
+        if (authorized) {
+            if(isAdmin) {
+                this.$state.go('app.overview')
+            } else {
+                this.$state.go('app.entries')
+            }
         }
     }
 
-    onError(error) {
+    onClick() {
+        this.actionPending = true
+        return this.$ngRedux.dispatch(tryLogin(this.loginForm))
+    }
+
+    onError() {
         this.actionPending = false
         this.message = {type: 'error', message: 'Username or password wrong'}
     }

@@ -1,6 +1,11 @@
-import {authorized, unauthorized, updateSecurity, logout} from 'store'
+import {authorized, unauthorized, updateSecurity, logout, tryLogin} from 'store'
+import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/security/action.spec.js', () => {
+
+    let store
+
+    beforeEach(() => store = createMockStore())
 
     describe('action creator updateSecurity', () => {
 
@@ -51,6 +56,33 @@ describe('src/app/js/store/security/action.spec.js', () => {
 
             expect(success).toEqualActionType('SECURITY_UPDATE')
             expect(success).toContainActionData({authorized: false})
+        })
+    })
+
+    describe('action creator tryLogin', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(tryLogin({}))
+
+            expect(store.getActionTypes()).toEqual(['POST_LOGIN'])
+        })
+
+        it('should contain expected action data', () => {
+            store.dispatch(tryLogin({username: 'a', password: 'b', rememberMe: 'c'}))
+
+            expect(store.getActions()[0])
+                .toContainActionData({url: 'check', headers: {'content-type': 'application/x-www-form-urlencoded'}})
+            expect(store.getActions()[0].body.toString()).toEqual('username=a&password=b&remember-me=c')
+        })
+
+        it('should dispatch action defined in success property', () => {
+            store.dispatch(tryLogin({}))
+            const success = store.getActions()[0].success
+            store.clearActions()
+            store.dispatch(success(null, {'x-my-authorities': 'ROLE_USER'}))
+
+            expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE'])
+            expect(store.getActions()[0]).toContainActionData({authorized: true, role: 'ROLE_USER'})
         })
     })
 })

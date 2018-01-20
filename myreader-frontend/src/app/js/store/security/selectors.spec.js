@@ -9,8 +9,8 @@ describe('src/app/js/store/security/selectors.spec.js', () => {
         expect(authorizedSelector({security: {authorized: true}})).toEqual(true))
 
     it('adminPermissionSelector should return false when role is set to value "user"', () =>
-        expect(adminPermissionSelector({security: {role: 'user'}})).toEqual(false))
+        expect(adminPermissionSelector({security: {role: 'ROLE_USER'}})).toEqual(false))
 
     it('adminPermissionSelector should return true when role is set to value "admin"', () =>
-        expect(adminPermissionSelector({security: {role: 'admin'}})).toEqual(true))
+        expect(adminPermissionSelector({security: {role: 'ROLE_ADMIN'}})).toEqual(true))
 })

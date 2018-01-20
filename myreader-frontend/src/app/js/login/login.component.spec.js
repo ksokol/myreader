@@ -2,102 +2,96 @@ import {mock, mockNgRedux} from '../shared/test-utils'
 
 describe('src/app/js/login/login.component.spec.js', () => {
 
-    let scope, element, httpBackend, $state, ngReduxMock
+    let ngReduxMock, state
 
     beforeEach(angular.mock.module('myreader', mock('$state'), mockNgRedux()))
 
-    beforeEach(inject(($rootScope, $compile, _$httpBackend_, _$state_, $ngRedux) => {
-        scope = $rootScope.$new()
+    beforeEach(inject(($rootScope, $compile, $state, $ngRedux) => {
         ngReduxMock = $ngRedux
-        httpBackend = _$httpBackend_
-        $state = _$state_
-        $state.go = jasmine.createSpy('$state.go()')
-
-        element = $compile('<my-login></my-login>')(scope)
-
-        angular.element(element.find('input')[0]).val('email').triggerHandler('input')
-        angular.element(element.find('input')[1]).val('password').triggerHandler('input')
-        scope.$digest()
+        state = $state
+        state.go = jasmine.createSpy('$state.go()')
     }))
 
-    afterEach(() => {
-        httpBackend.verifyNoOutstandingExpectation()
-        httpBackend.verifyNoOutstandingRequest()
+    describe('', () => {
+
+        let component
+
+        beforeEach(inject($componentController =>
+            component = $componentController('myLogin', {$ngRedux: ngReduxMock, $state: state})))
+
+        it('should stay on login page when user is not authorized', () => {
+            ngReduxMock.setState({security: {authorized: false}})
+            component.$onInit()
+            expect(state.go).not.toHaveBeenCalled()
+        })
+
+        it('should navigate to admin page when user is authorized and has admin role', () => {
+            ngReduxMock.setState({security: {authorized: true, role: 'ROLE_USER'}})
+            component.$onInit()
+            expect(state.go).toHaveBeenCalledWith('app.entries')
+        })
+
+        it('should navigate to user page when user is authorized and has user role', () => {
+            ngReduxMock.setState({security: {authorized: true, role: 'ROLE_ADMIN'}})
+            component.$onInit()
+            expect(state.go).toHaveBeenCalledWith('app.overview')
+        })
     })
 
-    it('should post credentials without remember me flag', () => {
-        httpBackend.expectPOST('check', 'username=email&password=password&remember-me=undefined', headers =>
-            headers['Content-Type'] === 'application/x-www-form-urlencoded'
-        ).respond(200, '')
+    describe('', () => {
 
-        element.find('button')[0].click()
-        httpBackend.flush()
-    })
+        let scope, element
 
-    it('should post credentials with remember me flag', () => {
-        httpBackend.expectPOST('check', 'username=email&password=password&remember-me=on', headers =>
-            headers['Content-Type'] === 'application/x-www-form-urlencoded'
-        ).respond(200, '')
+        beforeEach(inject(($rootScope, $compile) => {
+            jasmine.clock().uninstall()
 
-        element.find('md-checkbox').triggerHandler('click')
-        element.find('button')[0].click()
-        httpBackend.flush()
-    })
+            scope = $rootScope.$new()
 
-    it('should navigate to admin overview page when X-MY-AUTHORITIES header contains admin role', () => {
-        httpBackend.whenPOST('check').respond(() => [200, undefined, {'X-MY-AUTHORITIES': 'ROLE_ADMIN'}])
-        element.find('button')[0].click()
-        httpBackend.flush()
+            element = $compile('<my-login></my-login>')(scope)
 
-        expect($state.go).toHaveBeenCalledWith('app.overview')
-        expect(ngReduxMock.getActions()[0]).toEqual({type: 'SECURITY_UPDATE', authorized: true, role: 'admin'})
-    })
+            angular.element(element.find('input')[0]).val('email').triggerHandler('input')
+            angular.element(element.find('input')[1]).val('password').triggerHandler('input')
+            scope.$digest()
+        }))
 
-    it('should navigate to stream page when X-MY-AUTHORITIES header contains user role', () => {
-        httpBackend.whenPOST('check').respond(200)
-        element.find('button')[0].click()
-        httpBackend.flush()
+        it('should post credentials without remember me flag', () => {
+            element.find('button')[0].click()
 
-        expect($state.go).toHaveBeenCalledWith('app.entries')
-        expect(ngReduxMock.getActions()[0]).toEqual({type: 'SECURITY_UPDATE', authorized: true, role: 'user'})
-    })
+            expect(ngReduxMock.getActionTypes()).toEqual(['POST_LOGIN'])
+            expect(ngReduxMock.getActions()[0].body.toString()).toEqual('username=email&password=password&remember-me=undefined')
+        })
 
-    it('should navigate to stream page when X-MY-AUTHORITIES is not present', () => {
-        httpBackend.whenPOST('check').respond(() => [200, undefined, {'X-MY-AUTHORITIES': 'ROLE_USER'}])
-        element.find('button')[0].click()
-        httpBackend.flush()
+        it('should post credentials with remember me flag', () => {
+            element.find('md-checkbox').triggerHandler('click')
+            element.find('button')[0].click()
 
-        expect($state.go).toHaveBeenCalledWith('app.entries')
-        expect(ngReduxMock.getActions()[0]).toEqual({type: 'SECURITY_UPDATE', authorized: true, role: 'user'})
-    })
+            expect(ngReduxMock.getActionTypes()).toEqual(['POST_LOGIN'])
+            expect(ngReduxMock.getActions()[0].body.toString()).toEqual('username=email&password=password&remember-me=on')
+        })
 
-    it('should indicate wrong credentials on page', () => {
-        httpBackend.whenPOST('check').respond(404)
-        element.find('button')[0].click()
-        httpBackend.flush()
+        it('should indicate wrong credentials on page', done => {
+            ngReduxMock.dispatch.and.returnValue(Promise.reject(null))
+            element.find('button')[0].click()
 
-        expect(element.find('my-notification-panel').find('span')[0].innerText).toEqual('Username or password wrong')
-    })
+            setTimeout(() => {
+                scope.$digest()
+                expect(element.find('my-notification-panel').find('span')[0].innerText).toEqual('Username or password wrong')
+                done()
+            }, 0)
+        })
 
-    it('should disable elements on page while post request is pending', () => {
-        httpBackend.whenPOST('check').respond(404)
-        element.find('button')[0].click()
+        it('should disable elements on page while post request is pending', done => {
+            ngReduxMock.dispatch.and.returnValue(new Promise(() => {}))
+            element.find('button')[0].click()
 
-        expect(element.find('button')[0].disabled).toBe(true)
-        expect(element.find('input')[0].disabled).toBe(true)
-        expect(element.find('input')[1].disabled).toBe(true)
-        expect(element.find('md-checkbox')[0].disabled).toBe(true)
-        httpBackend.flush()
-    })
-
-    it('should enable elements on page when post request finished', () => {
-        httpBackend.whenPOST('check').respond(404)
-        element.find('button')[0].click()
-
-        httpBackend.flush()
-        expect(element.find('button')[0].disabled).toBe(false)
-        expect(element.find('input')[0].disabled).toBe(false)
-        expect(element.find('input')[1].disabled).toBe(false)
-        expect(element.find('md-checkbox')[0].disabled).toBe(false)
+            setTimeout(() => {
+                scope.$digest()
+                expect(element.find('button')[0].disabled).toBe(true)
+                expect(element.find('input')[0].disabled).toBe(true)
+                expect(element.find('input')[1].disabled).toBe(true)
+                expect(element.find('md-checkbox')[0].disabled).toBe(true)
+                done()
+            }, 0)
+        })
     })
 })

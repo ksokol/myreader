@@ -31,7 +31,7 @@ describe('src/app/js/navigation/navigation.compnent.spec.js', () => {
     })
 
     it('should render admin navigation', () => {
-        ngReduxMock.setState({security: {authorized: true, role: 'admin'}})
+        ngReduxMock.setState({security: {authorized: true, role: 'ROLE_ADMIN'}})
         const element = compile('<my-navigation></my-navigation>')(scope)
         scope.$digest()
 
