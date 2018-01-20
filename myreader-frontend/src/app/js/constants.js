@@ -6,6 +6,8 @@ export const ENVIRONMENT = process.env.NODE_ENV
 export const CONTEXT = '/myreader'
 export const API_2 = '/api/2'
 
+export const LOGIN = 'check'
+export const LOGOUT = 'logout'
 export const FEEDS = CONTEXT + API_2 + '/feeds'
 export const INFO = CONTEXT + '/info'
 export const PROCESSING = CONTEXT + API_2 + '/processing'
