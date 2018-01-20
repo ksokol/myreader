@@ -90,4 +90,18 @@ describe('src/app/js/store/middleware/fetch/response-handler.spec.js', () => {
         expect(store.getActions()[1]).toEqual({type: 'SUCCESS_ACTION1', response: 'response'})
         expect(store.getActions()[2]).toEqual({type: 'SUCCESS_ACTION2', response: 'response'})
     })
+
+    it('should pass response headers to success callback', () => {
+        givenHandledResponse({success: (response, headers) => {return {type: 'SUCCESS_ACTION', headers}}}, {ok: true, headers: {a: 'b', c: 'd'}})
+
+        expect(store.getActions().length).toEqual(2)
+        expect(store.getActions()[1]).toEqual({type: 'SUCCESS_ACTION', headers: {a: 'b', c: 'd'}})
+    })
+
+    it('should pass response headers to error callback', () => {
+        givenHandledResponse({error: (response, headers) => {return {type: 'ERROR_ACTION', headers}}}, {ok: false, headers: {a: 'b', c: 'd'}})
+
+        expect(store.getActions().length).toEqual(2)
+        expect(store.getActions()[1]).toEqual({type: 'ERROR_ACTION', headers: {a: 'b', c: 'd'}})
+    })
 })

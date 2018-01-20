@@ -4,12 +4,12 @@ function isFunction(value) {
     return typeof value === 'function'
 }
 
-function appendActions(callbackAction, payload, actions) {
+function appendActions(callbackAction, response, actions) {
     if (isFunction(callbackAction)) {
-        actions.push(callbackAction(payload))
+        actions.push(callbackAction(response.data, response.headers))
     }
     if (Array.isArray(callbackAction)) {
-        callbackAction.forEach(callback => actions.push(callback(payload)))
+        callbackAction.forEach(callback => actions.push(callback(response.data, response.headers)))
     }
 }
 
@@ -26,7 +26,7 @@ export function responseHandler(action, response) {
 
     if (isSuccess(response)) {
         actions.push(fetchEnd())
-        appendActions(action.success, response.data, actions)
+        appendActions(action.success, response, actions)
         return {ok: true, actions}
     }
 
@@ -38,7 +38,7 @@ export function responseHandler(action, response) {
 
     if (action.error && response.status !== 400) {
         actions.push(fetchEnd())
-        appendActions(action.error, response.data, actions)
+        appendActions(action.error, response, actions)
         return {ok: false, actions}
     }
 

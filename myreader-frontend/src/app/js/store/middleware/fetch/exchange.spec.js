@@ -90,7 +90,7 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.respond({status: 200, headers: {'content-type': 'application/json'}, body: '{"id": 1}'})
 
         execute('GET').then(response => {
-            expect(response).toEqual({ok: true, status: 200, data: {id: 1}})
+            expect(response).toContainObject({ok: true, status: 200, data: {id: 1}})
             done()
         })
     })
@@ -99,7 +99,7 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.respond({status: 200, headers: {'content-type': 'text/plain'}, body: 'expected body'})
 
         execute('POST').then(response => {
-            expect(response).toEqual({ok: true, status: 200, data: 'expected body'})
+            expect(response).toContainObject({ok: true, status: 200, data: 'expected body'})
             done()
         })
     })
@@ -108,7 +108,7 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.respond({status: 401, headers: {'content-type': 'application/json'}, body: '{"id": 1}'})
 
         execute('POST').then(response => {
-            expect(response).toEqual({ok: false, status: 401, data: {id: 1}})
+            expect(response).toContainObject({ok: false, status: 401, data: {id: 1}})
             done()
         })
     })
@@ -117,7 +117,7 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.respond({status: 401, headers: {'content-type': 'text/plain'}, body: 'expected body'})
 
         execute('POST').then(response => {
-            expect(response).toEqual({ok: false, status: 401, data: 'expected body'})
+            expect(response).toContainObject({ok: false, status: 401, data: 'expected body'})
             done()
         })
     })
@@ -126,7 +126,7 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.respond({status: 400, headers: {'content-type': 'application/json'}, body: '{"id": 1}'})
 
         execute('POST').then(response => {
-            expect(response).toEqual({ok: false, status: 400, data: {id: 1}})
+            expect(response).toContainObject({ok: false, status: 400, data: {id: 1}})
             done()
         })
     })
@@ -135,16 +135,43 @@ describe('src/app/js/store/middleware/fetch/exchange.spec.js', () => {
         fetchMock.respond({status: 400, headers: {'content-type': 'text/plain'}, body: 'expected body'})
 
         execute('POST').then(response => {
-            expect(response).toEqual({ok: false, status: 400, data: 'expected body'})
+            expect(response).toContainObject({ok: false, status: 400, data: 'expected body'})
             done()
         })
     })
 
-    it('should return text error message when http request failed for unknown reasons', done => {
+    it('should return all headers when response is of type text/plain', done => {
+        fetchMock.respond({status: 401, headers: {'content-type': 'text/plain', a: 'b'}, body: '{"id": 1}'})
+
+        execute('POST').then(response => {
+            expect(response).toContainObject({headers: {'content-type': 'text/plain', a: 'b'}})
+            done()
+        })
+    })
+
+    it('should return all headers when response is of type application/json', done => {
+        fetchMock.respond({status: 401, headers: {'content-type': 'application/json', a: 'b'}, body: '{"id": 1}'})
+
+        execute('POST').then(response => {
+            expect(response).toContainObject({headers: {'content-type': 'application/json', a: 'b'}})
+            done()
+        })
+    })
+
+    it('should return empty headers when http request failed for unknown reason', done => {
         fetchMock.error('expected error')
 
         execute('POST').then(response => {
-            expect(response).toEqual({ok: false, status: -1, data: 'expected error'})
+            expect(response).toContainObject({headers: {}})
+            done()
+        })
+    })
+
+    it('should return text error message when http request failed for unknown reason', done => {
+        fetchMock.error('expected error')
+
+        execute('POST').then(response => {
+            expect(response).toContainObject({ok: false, status: -1, data: 'expected error'})
             done()
         })
     })

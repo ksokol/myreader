@@ -38,14 +38,22 @@ function toRequest({url, method, headers, body}) {
     return new Request(url, {method, headers: _headers, body: _body, ...credentials})
 }
 
+function collectHeaders(response) {
+    const headers = {}
+    for (const [key, value] of response.headers.entries()) {
+        headers[key] = value
+    }
+    return headers
+}
+
 function handleResponse(response) {
     return isJSON(response.headers) ?
-        response.json().then(json => {return {ok: response.ok, status: response.status, data: json}}) :
-        response.text().then(text => {return {ok: response.ok, status: response.status, data: text}})
+        response.json().then(json => {return {ok: response.ok, status: response.status, data: json, headers: collectHeaders(response)}}) :
+        response.text().then(text => {return {ok: response.ok, status: response.status, data: text, headers: collectHeaders(response)}})
 }
 
 function handleError(error) {
-    return {ok: false, status: -1, data: error.toString()}
+    return {ok: false, status: -1, data: error.toString(), headers: {}}
 }
 
 export function exchange(params) {
