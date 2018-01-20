@@ -15,7 +15,7 @@ module.exports = function karmaConfig (config) {
             'src/tests.js': ['webpack', 'sourcemap']
         },
         browsers: [
-            'ChromeHeadless'
+            'FirefoxHeadless'
         ],
         singleRun: true,
         coverageIstanbulReporter: {
