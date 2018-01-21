@@ -1,29 +1,32 @@
-'use strict';
+'use strict'
 
-var path = require('path');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var FaviconsWebpackPlugin = require('favicons-webpack-plugin');
-var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-require('babel-plugin-angularjs-annotate');
+const path = require('path')
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+require('babel-plugin-angularjs-annotate')
 
-var ENV = process.env.npm_lifecycle_event;
-var isTest = ENV === 'test' || ENV === 'test-watch';
-var isReport = ENV === 'report';
-var isProd = ENV === 'build' || isReport;
-var isServed = ENV === 'server';
+const ENV = process.env.npm_lifecycle_event
+const isTest = ENV === 'test' || ENV === 'test-watch'
+const isReport = ENV === 'report'
+const isProd = ENV === 'build' || isReport
+const isServed = ENV === 'server'
 
-var environment = isTest ? 'test' : isServed ? 'development' : 'production';
+const environment = isTest ? 'test' : isServed ? 'development' : 'production'
+
+const BACKEND_PORT = 19340
+const BACKEND_CONTEXT = 'myreader'
 
 module.exports = function makeWebpackConfig() {
     /**
      * Reference: http://webpack.github.io/docs/configuration.html
      */
-    var config = {};
+    const config = {}
 
-    config.stats = 'verbose';
+    config.stats = 'verbose'
 
     /**
      * Reference: http://webpack.github.io/docs/configuration.html#entry
@@ -33,7 +36,7 @@ module.exports = function makeWebpackConfig() {
     config.entry = isTest ? void 0 : {
         vendor: './src/app/js/vendor.js',
         app: './src/app/js/main.js'
-    };
+    }
 
     /**
      * Reference: http://webpack.github.io/docs/configuration.html#output
@@ -55,14 +58,14 @@ module.exports = function makeWebpackConfig() {
         // Filename for non-entry points
         // Only adds hash in build mode
         chunkFilename: isProd ? 'app/[name].[chunkhash].js' : '[name].bundle.js'
-    };
+    }
 
     /**
      * Reference: http://webpack.github.io/docs/configuration.html#devtool
      * Type of sourcemap to use per build type
      */
     if (isTest) {
-        config.devtool = 'inline-source-map';
+        config.devtool = 'inline-source-map'
     }
 
     config.resolve = {
@@ -117,7 +120,7 @@ module.exports = function makeWebpackConfig() {
                 plugins: ['transform-object-rest-spread', ['angularjs-annotate', { 'explicitOnly' : true}]]
             }
         }]
-    };
+    }
 
     // ISTANBUL LOADER
     // https://github.com/deepsweet/istanbul-instrumenter-loader
@@ -147,7 +150,7 @@ module.exports = function makeWebpackConfig() {
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(environment)
         })
-    ];
+    ]
 
     // Skip rendering index.html in test mode
     if (!isTest) {
@@ -232,32 +235,15 @@ module.exports = function makeWebpackConfig() {
         )
     }
 
-    /**
-     * Reference: http://webpack.github.io/docs/configuration.html#devserver
-     * Reference: http://webpack.github.io/docs/webpack-dev-server.html
-     */
     config.devServer = {
         contentBase: './src',
         stats: 'minimal',
-        proxy: {
-            "/myreader/api": {
-                target: "http://localhost:19340",
-                secure: false
-            },
-            "/check": {
-                target: "http://localhost:19340/myreader",
-                secure: false
-            },
-            "/logout": {
-                target: "http://localhost:19340/myreader",
-                secure: false
-            },
-            "/myreader/info": {
-                target: "http://localhost:19340",
-                secure: false
-            }
-        }
-    };
+        proxy: [{
+            context: ['/myreader/api', '/myreader/info', '/api', '/check', '/logout', '/info'], // deprecated: '/myreader/api', '/myreader/info'
+            target: `http://localhost:${BACKEND_PORT}`,
+            pathRewrite: path => path.startsWith(`/${BACKEND_CONTEXT}`) ? path : `/${BACKEND_CONTEXT}/${path}`
+        }]
+    }
 
-    return config;
-}();
+    return config
+}()
