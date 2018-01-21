@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
+import static myreader.resource.ResourceConstants.fetchErrorsLink;
+
 /**
  * @author Kamill Sokol
  */
@@ -40,6 +42,8 @@ public class FeedGetResponseAssemblerSupport extends ResourceAssemblerSupport<Fe
         target.setLastModified(source.getLastModified());
         target.setHasErrors(fetchErrorRepository.countByFeedIdAndCreatedAtGreaterThan(source.getId(), fromNowMinusRetainDays()) > 0);
         target.setCreatedAt(source.getCreatedAt());
+
+        target.add(fetchErrorsLink(source.getId()));
 
         return target;
     }

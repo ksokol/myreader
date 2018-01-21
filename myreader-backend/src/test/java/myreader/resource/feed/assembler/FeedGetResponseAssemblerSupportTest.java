@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
@@ -29,11 +30,9 @@ public class FeedGetResponseAssemblerSupportTest {
     private static final long FEED_ID = 1L;
     private static final Date EPOCH_PLUS_MINUTE = Date.from(Instant.EPOCH.plusSeconds(60));
 
-    private FeedGetResponseAssemblerSupport assembler;
-
     private FetchErrorRepository fetchErrorRepository = mock(FetchErrorRepository.class);
     private Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
-
+    private FeedGetResponseAssemblerSupport assembler;
     private Feed feed;
 
     @Before
@@ -42,7 +41,7 @@ public class FeedGetResponseAssemblerSupportTest {
     }
 
     @Test
-    public void shouldConvertSourceToTarget() throws Exception {
+    public void shouldConvertSourceToTarget() {
         givenFeedWithErrors(0);
 
         assertFeed(allOf(
@@ -55,35 +54,44 @@ public class FeedGetResponseAssemblerSupportTest {
     }
 
     @Test
-    public void shouldSetHasErrorsToFalse() throws Exception {
+    public void shouldSetHasErrorsToFalse() {
         givenFeedWithErrors(0);
 
         assertFeed(hasProperty("hasErrors", is(false)));
     }
 
     @Test
-    public void shouldSetHasErrorsToTrue() throws Exception {
+    public void shouldSetHasErrorsToTrue() {
         givenFeedWithErrors(1);
 
         assertFeed(hasProperty("hasErrors", is(true)));
+    }
+
+    @Test
+    public void shouldContainExpectedLinks() {
+        givenFeedWithErrors(0);
+
+        assertFeed(
+                hasProperty("links",
+                        contains(allOf(
+                                hasProperty("rel", is("fetchErrors")),
+                                hasProperty("href", is("/api/2/feeds/1/fetchError"))
+                        ))
+                )
+        );
     }
 
     private void assertFeed(Matcher<FeedGetResponse> matcher) {
         assertThat(assembler.toResource(feed), matcher);
     }
 
-    private Feed givenFeedWithErrors(int errors) {
-        feed = new Feed();
+    private void givenFeedWithErrors(int errors) {
+        feed = new Feed("url", "title");
         feed.setId(FEED_ID);
-        feed.setTitle("title");
-        feed.setUrl("url");
         feed.setLastModified("lastModified");
         feed.setFetched(2);
         feed.setCreatedAt(EPOCH_PLUS_MINUTE);
 
         given(fetchErrorRepository.countByFeedIdAndCreatedAtGreaterThan(eq(FEED_ID), any())).willReturn(errors);
-
-        return feed;
     }
-
 }

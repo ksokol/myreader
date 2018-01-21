@@ -14,7 +14,7 @@
       "fetched": 282,
       "hasErrors": false,
       "createdAt": "2011-04-15T22:20:46Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "1",
@@ -24,7 +24,7 @@
       "fetched": 30167,
       "hasErrors": false,
       "createdAt": "2011-04-15T22:20:46Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "2",
@@ -34,7 +34,7 @@
       "fetched": 253,
       "hasErrors": false,
       "createdAt": "2011-04-15T22:20:46Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "3",
@@ -44,7 +44,7 @@
       "fetched": 2651,
       "hasErrors": false,
       "createdAt": "2011-06-05T13:47:44Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "4",
@@ -54,7 +54,7 @@
       "fetched": 748,
       "hasErrors": false,
       "createdAt": "2011-06-06T09:47:20Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "5",
@@ -64,7 +64,7 @@
       "fetched": 12,
       "hasErrors": false,
       "createdAt": "2011-06-26T23:44:20Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "6",
@@ -74,7 +74,7 @@
       "fetched": 151,
       "hasErrors": false,
       "createdAt": "2011-07-20T23:06:57Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "7",
@@ -84,7 +84,7 @@
       "fetched": 268,
       "hasErrors": false,
       "createdAt": "2011-08-05T08:56:32Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "8",
@@ -94,7 +94,7 @@
       "fetched": 314,
       "hasErrors": false,
       "createdAt": "2011-08-12T10:05:56Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "9",
@@ -104,7 +104,7 @@
       "fetched": 291,
       "hasErrors": false,
       "createdAt": "2011-11-07T08:56:19Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "10",
@@ -114,7 +114,7 @@
       "fetched": 183,
       "hasErrors": false,
       "createdAt": "2012-01-16T09:58:34Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "11",
@@ -124,7 +124,7 @@
       "fetched": 138,
       "hasErrors": false,
       "createdAt": "2012-01-16T10:02:22Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "12",
@@ -134,7 +134,7 @@
       "fetched": 131,
       "hasErrors": false,
       "createdAt": "2012-01-16T10:03:30Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "13",
@@ -144,7 +144,7 @@
       "fetched": 119,
       "hasErrors": false,
       "createdAt": "2012-05-04T21:44:58Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "14",
@@ -154,7 +154,7 @@
       "fetched": 327,
       "hasErrors": false,
       "createdAt": "2012-08-24T11:31:57Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "15",
@@ -164,7 +164,7 @@
       "fetched": 197,
       "hasErrors": false,
       "createdAt": "2012-09-11T09:43:18Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "16",
@@ -174,7 +174,7 @@
       "fetched": 3337,
       "hasErrors": false,
       "createdAt": "2012-12-13T16:15:20Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "17",
@@ -184,7 +184,7 @@
       "fetched": 186,
       "hasErrors": false,
       "createdAt": "2013-01-19T09:45:43Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "18",
@@ -194,7 +194,7 @@
       "fetched": 142,
       "hasErrors": false,
       "createdAt": "2014-03-07T21:07:33Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     },
     {
       "uuid": "100",
@@ -204,7 +204,7 @@
       "fetched": 0,
       "hasErrors": false,
       "createdAt": "2014-03-07T21:07:33Z",
-      "links": []
+      "links": "${json-unit.ignore}"
     }
   ],
   "page": {

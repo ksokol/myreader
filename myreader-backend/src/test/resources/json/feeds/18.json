@@ -6,5 +6,5 @@
   "fetched": 142,
   "hasErrors": false,
   "createdAt": "2014-03-07T21:07:33Z",
-  "links": []
+  "links": "${json-unit.ignore}"
 }

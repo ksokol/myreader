@@ -12,7 +12,6 @@ import myreader.resource.feed.beans.FetchErrorGetResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
@@ -21,23 +20,22 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import static myreader.resource.ResourceConstants.FEED_FETCH_ERROR_URL;
+import static myreader.resource.ResourceConstants.FEED_URL;
+import static myreader.resource.ResourceConstants.fetchErrorsLink;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
 /**
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping(value = FeedResource.FEEDS_URL + "/{id}")
 public class FeedResource {
-
-    private static final String FETCH_ERROR_URL = "/fetchError";
-    protected static final String FEEDS_URL = "/api/2/feeds/";
 
     private final PagedResourcesAssembler<FetchError> pagedResourcesAssembler;
     private final ResourceAssembler<Feed, FeedGetResponse> assembler;
@@ -60,7 +58,7 @@ public class FeedResource {
         this.subscriptionRepository = subscriptionRepository;
     }
 
-    @RequestMapping(value = "", method = GET)
+    @RequestMapping(value = FEED_URL, method = GET)
     public FeedGetResponse get(@PathVariable("id") Long id) {
         Feed feed = feedRepository.findOne(id);
         if(feed != null) {
@@ -71,7 +69,7 @@ public class FeedResource {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping(value = "", method = DELETE)
+    @RequestMapping(value = FEED_URL, method = DELETE)
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         int count = subscriptionRepository.countByFeedId(id);
 
@@ -89,7 +87,7 @@ public class FeedResource {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping(value = "", method = RequestMethod.PATCH)
+    @RequestMapping(value = FEED_URL, method = PATCH)
     public FeedGetResponse patch(@PathVariable("id") Long id, @Valid @RequestBody FeedPatchRequest request) {
         Feed feed = findOrThrowException(id);
 
@@ -100,10 +98,10 @@ public class FeedResource {
         return get(id);
     }
 
-    @RequestMapping(value = FETCH_ERROR_URL, method = GET)
+    @RequestMapping(value = FEED_FETCH_ERROR_URL, method = GET)
     public PagedResources<FetchErrorGetResponse> getFetchError(@PathVariable("id") Long id, Pageable pageable) {
         Page<FetchError> page = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(id, pageable);
-        return pagedResourcesAssembler.toResource(page, fetchErrorAssembler, new Link(FEEDS_URL + id + FETCH_ERROR_URL));
+        return pagedResourcesAssembler.toResource(page, fetchErrorAssembler, fetchErrorsLink(id));
     }
 
     private Feed findOrThrowException(Long id) {
