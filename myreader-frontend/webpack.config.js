@@ -241,7 +241,13 @@ module.exports = function makeWebpackConfig() {
         proxy: [{
             context: ['/myreader/api', '/myreader/info', '/api', '/check', '/logout', '/info'], // deprecated: '/myreader/api', '/myreader/info'
             target: `http://localhost:${BACKEND_PORT}`,
-            pathRewrite: path => path.startsWith(`/${BACKEND_CONTEXT}`) ? path : `/${BACKEND_CONTEXT}/${path}`
+            pathRewrite: path => path.startsWith(`/${BACKEND_CONTEXT}`) ? path : `/${BACKEND_CONTEXT}/${path}`,
+            onProxyRes: proxyRes => {
+                const setCookies = proxyRes.headers['set-cookie']
+                if (setCookies) {
+                    proxyRes.headers['set-cookie'] = setCookies.map(setCookie => setCookie.replace(/(.* Path=\/)(\w+)(;.*)?/, '$1$3'))
+                }
+            }
         }]
     }
 
