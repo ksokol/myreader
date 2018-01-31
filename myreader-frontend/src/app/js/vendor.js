@@ -1,6 +1,6 @@
 import 'angular'
 import 'angular-sanitize'
-import 'angular-ui-router'
+import '@uirouter/angularjs'
 import 'angular-material'
 import 'angular-messages'
 import 'redux'

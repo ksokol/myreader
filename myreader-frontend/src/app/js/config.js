@@ -65,6 +65,9 @@ angular.module('common.config', ['ui.router'])
             })
             .state('app.bookmarks', {
                 url: '/bookmark/:entryTagEqual?q',
+                params: {
+                    entryTagEqual: null,
+                },
                 views: {
                     content: {
                         template: '<my-bookmark></my-bookmark>'
