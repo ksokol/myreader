@@ -1,5 +1,13 @@
 export const ENVIRONMENT = process.env.NODE_ENV
 
+export function isInProdMode(environment) {
+    return 'production' === environment
+}
+
+export function isInDevMode(environment) {
+    return 'development' === environment
+}
+
 /*
  * @deprecated
  */
