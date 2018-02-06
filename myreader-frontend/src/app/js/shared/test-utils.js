@@ -126,16 +126,6 @@ export function mockNgRedux() {
     return _mock
 }
 
-export function spy(name) {
-    function _spy($provide) {
-        $provide.decorator(name, ['$delegate', function ($delegate) {
-                return jasmine.createSpy($delegate)
-            }
-        ])
-    }
-    return _spy
-}
-
 export function onKey(type, which) {
     const event = document.createEvent('Event')
     event.which = which
