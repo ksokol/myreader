@@ -93,5 +93,19 @@ describe('src/app/js/store/bootstrap.spec.js', () => {
                 success: done
             })
         })
+
+        it('should add given middlewares', done => {
+            const middleware1 = () => next => action => {
+                return next({...action, middleware1: true})
+            }
+
+            const middleware2 = () => next => action => {
+                expect(action).toContainObject({middleware1: true})
+                done()
+                return next(action)
+            }
+
+            createApplicationStore(OTHER, undefined, [middleware1, middleware2]).dispatch({type: 'NOOP'})
+        })
     })
 })

@@ -7,16 +7,10 @@ import {commonReducers} from './common'
 import {securityReducers} from './security'
 import {entryReducers} from './entry'
 import {subscriptionReducers} from './subscription'
+import {routerReducers} from './router'
 import {settings} from './settings/settings'
 import {getLastSecurityState} from './security/security'
-
-function isInProdMode(environment) {
-    return 'production' === environment
-}
-
-function isInDevMode(environment) {
-    return 'development' === environment
-}
+import {isInDevMode, isInProdMode} from 'constants'
 
 function devToolsExtensionCompose() {
     return window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']
@@ -31,11 +25,12 @@ function determineComposeFn(enabled) {
     return devToolsCompose ? devToolsCompose : reduxCompose
 }
 
-function enhancer(enabled) {
-    return determineComposeFn(enabled)(applyMiddleware(thunk, fetchMiddleware))
+function enhancer(enabled, middlewares = []) {
+    return determineComposeFn(enabled)(applyMiddleware(thunk, fetchMiddleware, ...middlewares))
 }
 
 const reducers = combineReducers({
+    router: routerReducers,
     admin: adminReducers,
     security: securityReducers,
     common: commonReducers,
@@ -51,11 +46,11 @@ function initialState(enabled) {
         } : {}
 }
 
-export default function createApplicationStore(environment, actionDispatchers = []) {
+export default function createApplicationStore(environment, actionDispatchers = [], middlewares = []) {
     const store = createStore(
         reducers,
         initialState(isInDevMode(environment) || isInProdMode(environment)),
-        enhancer(isInDevMode(environment))
+        enhancer(isInDevMode(environment), middlewares)
     )
 
     actionDispatchers.forEach(actionDispatcher => actionDispatcher(store))
