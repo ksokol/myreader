@@ -2,7 +2,7 @@
               my-on-refresh="$ctrl.refresh()">
     <my-list-panel>
         <my-bookmark-tags my-tags="$ctrl.entryTags"
-                          my-selected="$ctrl.$stateParams.entryTagEqual"
+                          my-selected="$ctrl.router.query.entryTagEqual"
                           my-on-select="$ctrl.onTagSelect(tag)">
         </my-bookmark-tags>
         <my-entry-list></my-entry-list>

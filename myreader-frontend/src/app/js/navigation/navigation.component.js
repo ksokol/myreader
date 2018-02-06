@@ -1,6 +1,6 @@
 import template from './navigation.component.html'
 import './navigation.component.css'
-import {adminPermissionSelector} from 'store'
+import {adminPermissionSelector, routeChange} from 'store'
 
 class controller {
 
@@ -10,7 +10,7 @@ class controller {
     }
 
     $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatch)(this)
     }
 
     $onDestroy() {
@@ -20,6 +20,12 @@ class controller {
     mapStateToThis(state) {
         return {
             isAdmin: adminPermissionSelector(state)
+        }
+    }
+
+    mapDispatch(dispatch) {
+        return {
+            routeTo: route => dispatch(routeChange(route))
         }
     }
 }
