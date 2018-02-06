@@ -70,6 +70,8 @@ module.exports = function makeWebpackConfig() {
 
     config.resolve = {
         alias: {
+            shared: path.resolve(__dirname, 'src/app/js/shared'),
+            constants: path.resolve(__dirname, 'src/app/js/constants'),
             store: path.resolve(__dirname, 'src/app/js/store')
         }
     }
