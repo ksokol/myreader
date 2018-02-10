@@ -25,7 +25,7 @@ class controller {
 
         if (authorized) {
             if(isAdmin) {
-                this.$state.go('app.overview')
+                this.$state.go('admin.overview')
             } else {
                 this.$state.go('app.entries')
             }

@@ -51,6 +51,15 @@ angular.module('common.config', ['ui.router'])
                     }
                 }
             })
+            .state('admin', {
+                abstract: true,
+                url: "/admin",
+                views: {
+                    body: {
+                        template: '<my-app-component layout="row"></my-app-component>',
+                    }
+                }
+            })
             .state('app.entries', {
                 url: "/entries/:feedTagEqual/:feedUuidEqual?q",
                 params: {
@@ -98,15 +107,15 @@ angular.module('common.config', ['ui.router'])
                     }
                 }
             })
-            .state('app.overview', {
-                url: "/overview",
+            .state('admin.overview', {
+                url: '/overview',
                 views: {
                     content: {
                         template: '<my-maintenance></my-maintenance>'
                     }
                 }
             })
-            .state('app.feed', {
+            .state('admin.feed', {
                 url: "/feed?q",
                 views: {
                     content: {
@@ -114,7 +123,7 @@ angular.module('common.config', ['ui.router'])
                     }
                 }
             })
-            .state('app.feed-detail', {
+            .state('admin.feed-detail', {
                 url: "/feed/:uuid",
                 views: {
                     content: {

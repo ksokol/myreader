@@ -34,7 +34,7 @@ describe('src/app/js/login/login.component.spec.js', () => {
         it('should navigate to user page when user is authorized and has user role', () => {
             ngReduxMock.setState({security: {authorized: true, role: 'ROLE_ADMIN'}})
             component.$onInit()
-            expect(state.go).toHaveBeenCalledWith('app.overview')
+            expect(state.go).toHaveBeenCalledWith('admin.overview')
         })
     })
 

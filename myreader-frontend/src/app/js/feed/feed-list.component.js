@@ -16,11 +16,11 @@ class controller {
     }
 
     open(feed) {
-        this.$state.go('app.feed-detail', {uuid: feed.uuid})
+        this.$state.go('admin.feed-detail', {uuid: feed.uuid})
     }
 
     onSearch(params) {
-        this.$state.go('app.feed', params, {notify: false})
+        this.$state.go('admin.feed', params, {notify: false})
     }
 
     refresh() {

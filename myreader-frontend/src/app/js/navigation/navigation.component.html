@@ -18,10 +18,10 @@
 
 <ul class="my-navigation" ng-if="$ctrl.isAdmin">
     <li>
-        <md-button md-no-ink ng-click="$ctrl.routeTo(['app', 'overview'])">Admin</md-button>
+        <md-button md-no-ink ng-click="$ctrl.routeTo(['admin', 'overview'])">Admin</md-button>
     </li>
     <li>
-        <md-button md-no-ink ng-click="$ctrl.routeTo(['app', 'feed'])">Feeds</md-button>
+        <md-button md-no-ink ng-click="$ctrl.routeTo(['admin', 'feed'])">Feeds</md-button>
     </li>
     <my-logout></my-logout>
 </ul>

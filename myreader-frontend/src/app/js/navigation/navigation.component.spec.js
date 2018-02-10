@@ -68,6 +68,6 @@ describe('src/app/js/navigation/navigation.component.spec.js', () => {
         const element = compile('<my-navigation></my-navigation>')(scope)
         scope.$digest()
 
-        expect(clickOnAllNavigationItems(element)).toEqual([['app', 'overview'], ['app', 'feed']])
+        expect(clickOnAllNavigationItems(element)).toEqual([['admin', 'overview'], ['admin', 'feed']])
     })
 })
