@@ -1,4 +1,4 @@
-import {mockNgRedux} from '../../test-utils'
+import {mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/shared/component/button/button.component.spec.js', () => {
 
@@ -78,12 +78,12 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
 
         it('should enable other buttons in same button group when error occurred', inject(($q, $timeout) => {
             const deferred = $q.defer()
-            deferred.reject('expected error')
             myOnClick.and.returnValue(deferred.promise)
 
             component.onClick()
             $timeout.flush(250)
 
+            deferred.reject('expected error')
             component.reset()
 
             expect(buttonGroupCtrl.enableButtons).toHaveBeenCalled()
@@ -300,10 +300,10 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
 
         it('should show button again when error occurred', () => {
             const page = Page(withConfirmation)
-            page.onClickError()
 
             page.button().click()
             page.wait(250)
+            page.onClickError()
             page.confirm().click()
 
             expect(page.button().title()).toEqual('Test')
@@ -312,10 +312,10 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
 
         it('should call myOnError function when error occurred', () => {
             const page = Page(withConfirmation)
-            page.onClickError()
 
             page.button().click()
             page.wait(250)
+            page.onClickError()
             page.confirm().click()
 
             expect(page.onSuccessFn()).toEqual(false)

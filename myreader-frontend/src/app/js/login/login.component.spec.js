@@ -1,4 +1,4 @@
-import {mock, mockNgRedux} from '../shared/test-utils'
+import {mock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/login/login.component.spec.js', () => {
 
@@ -89,7 +89,7 @@ describe('src/app/js/login/login.component.spec.js', () => {
                 expect(element.find('button')[0].disabled).toBe(true)
                 expect(element.find('input')[0].disabled).toBe(true)
                 expect(element.find('input')[1].disabled).toBe(true)
-                expect(element.find('md-checkbox')[0].disabled).toBe(true)
+                expect(element.find('md-checkbox')[0].attributes['disabled'].value).toEqual('disabled')
                 done()
             }, 0)
         })
