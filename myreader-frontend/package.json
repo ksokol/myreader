@@ -11,7 +11,7 @@
     "report": "export NODE_ENV=production && rimraf dist && webpack --bail --progress --profile && webpack-bundle-analyzer dist/stats.json"
   },
   "dependencies": {
-    "@uirouter/angularjs": "1.0.13",
+    "@uirouter/angularjs": "1.0.14",
     "angular": "1.6.9",
     "angular-animate": "1.6.9",
     "angular-aria": "1.6.9",
