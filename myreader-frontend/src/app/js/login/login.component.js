@@ -1,6 +1,6 @@
 import template from './login.component.html'
 import './login.component.css'
-import {authorizedSelector, adminPermissionSelector, tryLogin} from 'store'
+import {authorizedSelector, adminPermissionSelector, tryLogin, routeChange} from 'store'
 
 class controller {
 
@@ -24,8 +24,9 @@ class controller {
         const isAdmin = adminPermissionSelector(state)
 
         if (authorized) {
+            this.unsubscribe()
             if(isAdmin) {
-                this.$state.go('admin.overview')
+                this.$ngRedux.dispatch(routeChange(['admin', 'overview']))
             } else {
                 this.$state.go('app.entries')
             }
