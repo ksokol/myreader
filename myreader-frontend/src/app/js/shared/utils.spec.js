@@ -1,4 +1,4 @@
-import {arrayEquals, isBoolean, isPromiseLike, toArray} from './utils'
+import {arrayIncludes, isBoolean, isPromiseLike, toArray} from './utils'
 
 describe('src/app/js/shared/spec.js', () => {
 
@@ -74,18 +74,20 @@ describe('src/app/js/shared/spec.js', () => {
         it('should return given array when', () => expect(toArray([1, 2])).toEqual([1, 2]))
     })
 
-    describe('arrayEquals', () => {
+    describe('arrayIncludes', () => {
 
-        it('should return false when both values are undefined', () => expect(arrayEquals()).toEqual(false))
+        it('should return false when both values are undefined', () => expect(arrayIncludes()).toEqual(false))
 
-        it('should return false when right value is undefined', () => expect(arrayEquals([1])).toEqual(false))
+        it('should return false when right value is undefined', () => expect(arrayIncludes([1])).toEqual(false))
 
-        it('should return false when left value is undefined', () => expect(arrayEquals(undefined, [1])).toEqual(false))
+        it('should return false when left value is undefined', () => expect(arrayIncludes(undefined, [1])).toEqual(false))
 
-        it('should return false when arrays have different values', () => expect(arrayEquals([1, 2], [1])).toEqual(false))
+        it('should return false when arrays have different values', () => expect(arrayIncludes([1, 2], [1])).toEqual(false))
 
-        it('should return false when right value is an object', () => expect(arrayEquals([1], [{a: 'b'}])).toEqual(false))
+        it('should return false when right value is an object', () => expect(arrayIncludes([1], [{a: 'b'}])).toEqual(false))
 
-        it('should return true when arrays have the same values', () => expect(arrayEquals([1, 2], [1, 2])).toEqual(true))
+        it('should return true when arrays have the same values', () => expect(arrayIncludes([1, 2], [1, 2])).toEqual(true))
+
+        it('should return true when right array includes all values of left array', () => expect(arrayIncludes([1, 2], [1, 2, 3])).toEqual(true))
     })
 })

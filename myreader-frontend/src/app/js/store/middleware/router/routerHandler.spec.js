@@ -98,4 +98,92 @@ describe('src/app/js/store/middleware/router/routerHandler.spec.js', () => {
         execute(action, {currentRoute: ['r']})
         expect(dispatch).toHaveBeenCalledWith('expected')
     })
+
+    it('should dispatch resolve action of parent route', () => {
+        const action = {
+            route: ['r1', 'r2'],
+            parent: {
+                route: ['r1'],
+                resolve: () => 'expected'
+            }
+        }
+
+        execute(action, {currentRoute: ['r']})
+        expect(dispatch).toHaveBeenCalledWith('expected')
+    })
+
+    it('should dispatch before action of parent route', () => {
+        const action = {
+            route: ['r1', 'r2'],
+            parent: {
+                route: ['r1'],
+                before: () => 'expected'
+            }
+        }
+
+        execute(action, {currentRoute: ['r']})
+        expect(dispatch).toHaveBeenCalledWith('expected')
+    })
+
+    it('should dispatch resolve action of parent route when current route equals new route', () => {
+        const action = {
+            route: ['r1', 'r2'],
+            parent: {
+                route: ['r1'],
+                resolve: () => 'expected'
+            }
+        }
+
+        execute(action, {currentRoute: ['r1', 'r2']})
+        expect(dispatch).toHaveBeenCalledWith('expected')
+    })
+
+    it('should not dispatch before action of parent route when current route equals new route', () => {
+        const action = {
+            route: ['r1', 'r2'],
+            parent: {
+                route: ['r1'],
+                before: () => null
+            }
+        }
+
+        execute(action, {currentRoute: ['r1', 'r2']})
+        expect(dispatch).not.toHaveBeenCalled()
+    })
+
+    it('should dispatch resolve action of all parent routes', () => {
+        const action = {
+            route: ['r1', '2', 'r3'],
+            resolve: () => 'expected3',
+            parent: {
+                route: ['r1', 'r2'],
+                resolve: () => 'expected2',
+                parent: {
+                    route: ['r1'],
+                    resolve: () => 'expected1'
+                }
+            }
+        }
+
+        execute(action, {currentRoute: ['r']})
+        expect(dispatch.calls.allArgs()).toEqual([['expected1'], ['expected2'], ['expected3']])
+    })
+
+    it('should dispatch before action of all parent routes', () => {
+        const action = {
+            route: ['r1', '2', 'r3'],
+            before: () => 'expected3',
+            parent: {
+                route: ['r1', 'r2'],
+                before: () => 'expected2',
+                parent: {
+                    route: ['r1'],
+                    before: () => 'expected1'
+                }
+            }
+        }
+
+        execute(action, {currentRoute: ['r']})
+        expect(dispatch.calls.allArgs()).toEqual([['expected1'], ['expected2'], ['expected3']])
+    })
 })

@@ -18,8 +18,7 @@ export function toArray(value) {
     return value ? Array.isArray(value) ? value : [value] : []
 }
 
-export function arrayEquals(left, right) {
+export function arrayIncludes(left, right) {
     return Array.isArray(left) && Array.isArray(right) &&
-        left.length === right.length &&
         left.every((leftValue, leftIndex) => leftValue === right[leftIndex])
 }
