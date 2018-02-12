@@ -1,50 +1,80 @@
-import {routes, findRouteConfiguration} from './routes'
+import {routeConfiguration, findRouteConfiguration} from './routes'
 import {createMockStore} from 'shared/test-utils'
 import {SUBSCRIPTION_ENTRIES} from 'constants'
 
 describe('src/app/js/store/router/routes.spec.js', () => {
 
-    let store
-
-    beforeEach(() => store = createMockStore())
-
     describe('findRouteConfiguration', () => {
 
+        const exampleConfiguration = {
+            'parent-route': {
+                query: {a: 'b'},
+                before: () => {return {type: 'BEFORE_PARENT'}},
+                resolve: () => {return {type: 'RESOLVE_PARENT'}},
+                children: {
+                    'child-route': {
+                        query: {c: 'd'},
+                        before: () => {return {type: 'BEFORE_CHILD'}},
+                        resolve: () => {return {type: 'RESOLVE_CHILD'}}
+                    }
+                }
+            }
+        }
+
         it('should return empty route when given route is undefined', () =>
-            expect(findRouteConfiguration()).toEqual({route: []}))
+            expect(findRouteConfiguration(), exampleConfiguration).toEqual({route: []}))
 
         it('should return empty route when given route is empty', () =>
-            expect(findRouteConfiguration([])).toEqual({route: []}))
+            expect(findRouteConfiguration([], exampleConfiguration)).toEqual({route: []}))
 
         it('should return given route with one component when route was not found in route configuration', () =>
-            expect(findRouteConfiguration(['r1'])).toEqual({route: ['r1']}))
+            expect(findRouteConfiguration(['some-route'], exampleConfiguration)).toEqual({route: ['some-route']}))
 
         it('should return given route with two components when route was not found in route configuration', () =>
-            expect(findRouteConfiguration(['r1', 'r2'])).toEqual({route: ['r1', 'r2']}))
+            expect(findRouteConfiguration(['some', 'route'], exampleConfiguration)).toEqual({route: ['some', 'route']}))
 
-        it('should return configured route', () =>
-            expect(findRouteConfiguration(['app', 'bookmarks']))
-                .toContainObject({route: ['app', 'bookmarks'], query: {seenEqual: '*', entryTagEqual: ''}}))
+        it('should return configured route', () => {
+            const route = findRouteConfiguration(['parent-route', 'child-route'], exampleConfiguration)
+            expect(route).toContainObject({route: ['parent-route', 'child-route'], query: {c: 'd'}})
+            expect(route.before()).toEqual({type: 'BEFORE_CHILD'})
+            expect(route.resolve()).toEqual({type: 'RESOLVE_CHILD'})
+        })
+
+        it('should return configured route with parent', () => {
+            const route = findRouteConfiguration(['parent-route', 'child-route'], exampleConfiguration)
+            expect(route.parent).toContainObject({route: ['parent-route'], query: {a: 'b'}})
+            expect(route.parent.before()).toEqual({type: 'BEFORE_PARENT'})
+            expect(route.parent.resolve()).toEqual({type: 'RESOLVE_PARENT'})
+        })
     })
 
     describe('route configuration', () => {
 
-        let routeConfig
+        let store, routeConfig
 
-        describe('bookmarks', () => {
+        beforeEach(() => store = createMockStore())
 
-            beforeEach(() => routeConfig = routes['app'].children['bookmarks'])
+        describe('app bookmarks', () => {
+
+            beforeEach(() => routeConfig = routeConfiguration['app'].children['bookmarks'])
 
             it('should return default query values', () => expect(routeConfig.query).toEqual({seenEqual: '*', entryTagEqual: ''}))
 
-            it('should contain expected before actions', () => expect(routeConfig.before()).toEqualActionType('GET_ENTRY_TAGS'))
+            it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('GET_ENTRY_TAGS'))
 
-            it('should contain expected resolve actions', () => {
+            it('should contain expected resolve action(s)', () => {
                 store.dispatch(routeConfig.resolve({a: 'b', c: 'd'}))
                 expect(store.getActionTypes()).toEqual(['GET_ENTRIES'])
                 expect(store.getActions()[0].url).toContain(SUBSCRIPTION_ENTRIES)
                 expect(store.getActions()[0].url).toContain('c=d&a=b')
             })
+        })
+
+        describe('admin', () => {
+
+            beforeEach(() => routeConfig = routeConfiguration['admin'])
+
+            it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('GET_APPLICATION_INFO'))
         })
     })
 })

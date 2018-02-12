@@ -1,7 +1,7 @@
 import {SUBSCRIPTION_ENTRIES} from 'constants'
-import {fetchEntries, fetchEntryTags} from 'store'
+import {fetchEntries, fetchEntryTags, fetchApplicationInfo} from 'store'
 
-export const routes = {
+export const routeConfiguration = {
     app: {
         children: {
             bookmarks: {
@@ -10,10 +10,19 @@ export const routes = {
                 resolve: query => fetchEntries({path: SUBSCRIPTION_ENTRIES, query})
             }
         }
+    },
+    admin: {
+        before: fetchApplicationInfo
     }
 }
 
-export function findRouteConfiguration(route = []) {
-    const routeConfiguration = routes[route[0]]
-    return routeConfiguration ? {route, ...routeConfiguration.children[route[1]]} : {route}
+export function findRouteConfiguration(route = [], routes = routeConfiguration) {
+    const configuration = routes[route[0]]
+
+    if (!configuration) {
+        return {route}
+    }
+
+    const {children = {}, ...rest} = configuration
+    return {route, ...children[route[1]], parent: {route: [route[0]], ...rest}}
 }
