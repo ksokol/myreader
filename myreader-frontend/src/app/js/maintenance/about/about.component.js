@@ -1,5 +1,5 @@
 import template from './about.component.html'
-import {fetchApplicationInfo, applicationInfoSelector} from 'store'
+import {applicationInfoSelector} from 'store'
 
 class controller {
 
@@ -10,7 +10,6 @@ class controller {
 
     $onInit() {
         this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
-        this.$ngRedux.dispatch(fetchApplicationInfo())
     }
 
     $onDestroy() {
