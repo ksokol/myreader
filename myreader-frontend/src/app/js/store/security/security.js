@@ -14,6 +14,9 @@ export function setLastSecurityState({authorized, role}) {
     writeToStorage(key, {...readFromStorage(key), authorized, role})
 }
 
+/**
+ * @deprecated
+ */
 function createSecurityListener(store) {
     store.subscribe(() => {
         if (!authorizedSelector(store.getState())) {
@@ -22,4 +25,7 @@ function createSecurityListener(store) {
     })
 }
 
+/**
+ * @deprecated
+ */
 export const installAuthorizationChangeActionDispatcher = store => createSecurityListener(store)

@@ -1,6 +1,7 @@
 import * as types from 'store/action-types'
 import {getLastSecurityState, setLastSecurityState} from './security'
-import {LOGIN, LOGOUT} from '../../constants'
+import {LOGIN, LOGOUT} from 'constants'
+import {routeChange} from 'store'
 
 export const updateSecurity = () => {
     const {authorized, role} = getLastSecurityState()
@@ -18,7 +19,7 @@ export const authorized = ({role}) => {
 }
 
 export const logout = () => {
-    return {type: 'POST_LOGOUT', url: LOGOUT, success: unauthorized}
+    return {type: 'POST_LOGOUT', url: LOGOUT, success: [unauthorized, () => routeChange(['login'])]}
 }
 
 export const tryLogin = ({username, password, rememberMe}) => {

@@ -8,7 +8,7 @@ export function isInDevMode(environment) {
     return 'development' === environment
 }
 
-/*
+/**
  * @deprecated
  */
 export const CONTEXT = '/myreader'
@@ -28,6 +28,9 @@ export const EXCLUSION_TAGS = CONTEXT + API_2 + '/exclusions'
 export const STORAGE_SETTINGS_KEY = 'myreader-settings'
 export const STORAGE_SECURITY_KEY = 'myreader-security'
 
+/**
+ * @deprecated
+ */
 export const redirectToLoginPage = () => window.location.hash = '#/login'
 
 export const supportedBreakpoints = () => {

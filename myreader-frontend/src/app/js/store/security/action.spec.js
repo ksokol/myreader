@@ -1,5 +1,5 @@
 import {authorized, unauthorized, updateSecurity, logout, tryLogin} from 'store'
-import {createMockStore} from '../../shared/test-utils'
+import {createMockStore} from 'shared/test-utils'
 
 describe('src/app/js/store/security/action.spec.js', () => {
 
@@ -51,11 +51,12 @@ describe('src/app/js/store/security/action.spec.js', () => {
             expect(logout()).toContainActionData({url: 'logout'})
         })
 
-        it('should call unauthorized action creator on success', () => {
-            const success = logout().success()
+        it('should contain expected success actions', () => {
+            logout().success.forEach(success => store.dispatch(success()))
 
-            expect(success).toEqualActionType('SECURITY_UPDATE')
-            expect(success).toContainActionData({authorized: false})
+            expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
+            expect(store.getActions()[0]).toContainActionData({authorized: false})
+            expect(store.getActions()[1]).toContainActionData({route: ['login']})
         })
     })
 
