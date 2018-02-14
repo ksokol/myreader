@@ -1,8 +1,12 @@
 /* remove dotted outline on buttons in firefox */
 :focus {
-    outline:none;
+    outline: none;
 }
 
 ::-moz-focus-inner {
-    border:0;
+    border: 0;
+}
+
+.md-title {
+    user-select: none;
 }
