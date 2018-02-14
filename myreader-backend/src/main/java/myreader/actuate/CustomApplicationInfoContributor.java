@@ -22,6 +22,6 @@ public class CustomApplicationInfoContributor implements InfoContributor {
     @Override
     public void contribute(Info.Builder builder) {
         int retainDays = environment.getProperty("job.fetchError.retainInDays", int.class);
-        builder.withDetail("fetch-error", singletonMap("retain-days", retainDays));
+        builder.withDetail("app", singletonMap("fetchErrorRetainDays", retainDays));
     }
 }

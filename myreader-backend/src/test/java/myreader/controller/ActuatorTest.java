@@ -40,8 +40,8 @@ public class ActuatorTest {
 
     @Test
     @WithMockUserAdmin
-    public void shouldReturnGitCommitDetails2() throws Exception {
+    public void shouldReturnAppDetails() throws Exception {
         mockMvc.perform(get("/info"))
-                .andExpect(jsonPath("fetch-error.retain-days", is(retainInDays)));
+                .andExpect(jsonPath("app.fetchErrorRetainDays", is(retainInDays)));
     }
 }
