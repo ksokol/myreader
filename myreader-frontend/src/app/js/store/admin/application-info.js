@@ -12,11 +12,12 @@ const noApplicationInfo = {
 }
 
 export function toApplicationInfo(raw = {}) {
-    const {git, build} = raw.git ? raw : noApplicationInfo
+    const {git, build, app} = raw.git ? raw : noApplicationInfo
     return {
         branch: git.branch,
         commitId: git.commit.id,
         version: build.version,
-        buildTime: build.time
+        buildTime: build.time,
+        ...app
     }
 }

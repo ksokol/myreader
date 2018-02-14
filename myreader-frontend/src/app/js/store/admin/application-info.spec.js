@@ -22,6 +22,10 @@ describe('src/app/js/store/admin/application-info.spec.js', () => {
             build: {
                 version: '1.0',
                 time: '2017-05-16T12:07:26Z'
+            },
+            app: {
+                a: 'b',
+                c: 'd'
             }
         }
 
@@ -29,7 +33,9 @@ describe('src/app/js/store/admin/application-info.spec.js', () => {
             branch: 'a-branch-name',
             commitId: 'aec45',
             version: '1.0',
-            buildTime: '2017-05-16T12:07:26Z'
+            buildTime: '2017-05-16T12:07:26Z',
+            a: 'b',
+            c: 'd'
         })
     })
 })
