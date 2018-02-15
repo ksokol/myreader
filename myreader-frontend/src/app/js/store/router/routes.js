@@ -1,5 +1,6 @@
 import {SUBSCRIPTION_ENTRIES} from 'constants'
-import {fetchEntries, fetchEntryTags, fetchApplicationInfo} from 'store'
+import {feedFetchFailuresClear, fetchApplicationInfo, fetchEntries, fetchEntryTags, fetchFeedFetchFailures} from 'store'
+import {FEEDS} from 'constants'
 
 export const routeConfiguration = {
     app: {
@@ -12,7 +13,13 @@ export const routeConfiguration = {
         }
     },
     admin: {
-        before: fetchApplicationInfo
+        before: fetchApplicationInfo,
+        children: {
+            'feed-detail': {
+                before: feedFetchFailuresClear,
+                resolve: query => fetchFeedFetchFailures({path: `${FEEDS}/${query.uuid}/fetchError`})
+            }
+        }
     }
 }
 

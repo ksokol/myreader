@@ -1,6 +1,5 @@
-import {routeConfiguration, findRouteConfiguration} from './routes'
+import {findRouteConfiguration, routeConfiguration} from './routes'
 import {createMockStore} from 'shared/test-utils'
-import {SUBSCRIPTION_ENTRIES} from 'constants'
 
 describe('src/app/js/store/router/routes.spec.js', () => {
 
@@ -65,7 +64,7 @@ describe('src/app/js/store/router/routes.spec.js', () => {
             it('should contain expected resolve action(s)', () => {
                 store.dispatch(routeConfig.resolve({a: 'b', c: 'd'}))
                 expect(store.getActionTypes()).toEqual(['GET_ENTRIES'])
-                expect(store.getActions()[0].url).toContain(SUBSCRIPTION_ENTRIES)
+                expect(store.getActions()[0].url).toContain('/subscriptionEntries')
                 expect(store.getActions()[0].url).toContain('c=d&a=b')
             })
         })
@@ -75,6 +74,19 @@ describe('src/app/js/store/router/routes.spec.js', () => {
             beforeEach(() => routeConfig = routeConfiguration['admin'])
 
             it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('GET_APPLICATION_INFO'))
+        })
+
+        describe('admin feed-detail', () => {
+
+            beforeEach(() => routeConfig = routeConfiguration['admin'].children['feed-detail'])
+
+            it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('FEED_FETCH_FAILURES_CLEAR'))
+
+            it('should contain expected resolve action(s)', () => {
+                store.dispatch(routeConfig.resolve({uuid: 'expectedUuid'}))
+                expect(store.getActionTypes()).toEqual(['GET_FEED_FETCH_FAILURES'])
+                expect(store.getActions()[0].url).toContain('/feeds/expectedUuid/fetchError')
+            })
         })
     })
 })
