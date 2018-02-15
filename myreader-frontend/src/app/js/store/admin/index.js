@@ -5,5 +5,6 @@ export {adminReducers} from './reducers'
 export default function initialState() {
     return {
         applicationInfo: {},
+        fetchFailures: {}
     }
 }

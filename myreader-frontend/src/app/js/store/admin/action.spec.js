@@ -1,5 +1,12 @@
-import {rebuildSearchIndex, applicationInfoReceived, fetchApplicationInfo} from 'store'
-import {createMockStore} from '../../shared/test-utils'
+import {
+    applicationInfoReceived,
+    feedFetchFailuresClear,
+    feedFetchFailuresReceived,
+    fetchApplicationInfo,
+    fetchFeedFetchFailures,
+    rebuildSearchIndex
+} from 'store'
+import {createMockStore} from 'shared/test-utils'
 
 describe('src/app/js/store/admin/action.spec.js', () => {
 
@@ -105,6 +112,67 @@ describe('src/app/js/store/admin/action.spec.js', () => {
                     text: 'Application info is missing',
                     type: 'error'
                 }
+            })
+        })
+    })
+
+    describe('action creator feedFetchFailuresClear', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(feedFetchFailuresClear())
+
+            expect(store.getActionTypes()).toEqual(['FEED_FETCH_FAILURES_CLEAR'])
+        })
+    })
+
+    describe('action creator feedFetchFailuresReceived', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(feedFetchFailuresReceived())
+
+            expect(store.getActionTypes()).toEqual(['FEED_FETCH_FAILURES_RECEIVED'])
+        })
+
+        it('should contain expected action data', () => {
+            store.dispatch(feedFetchFailuresReceived({
+                links: [{rel: 'expected rel', href: 'expected href'}],
+                content: [{message: 'message 1'}],
+                page: {totalElements: 1}
+            }))
+
+            expect(store.getActions()[0]).toContainActionData({
+                failures: [{message: 'message 1'}],
+                links: {'expected rel': {path: 'expected href', query: {}}},
+                totalElements: 1
+            })
+        })
+    })
+
+    describe('action creator fetchFeedFetchFailures', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(fetchFeedFetchFailures({}))
+
+            expect(store.getActionTypes()).toEqual(['GET_FEED_FETCH_FAILURES'])
+        })
+
+        it('should contain expected action data', () => {
+            store.dispatch(fetchFeedFetchFailures({path: 'expected-path', query: {a: 'b'}}))
+
+            expect(store.getActions()[0]).toContainActionData({url: 'expected-path?a=b'})
+        })
+
+        it('should dispatch action defined in success property', () => {
+            store.dispatch(fetchFeedFetchFailures({}))
+            const success = store.getActions()[0].success
+            store.clearActions()
+            store.dispatch(success({content: [{message: 'message 1'}], links: [{rel: 'self', href: '/expected'}], page: {totalElements: 1}}))
+
+            expect(store.getActionTypes()).toEqual(['FEED_FETCH_FAILURES_RECEIVED'])
+            expect(store.getActions()[0]).toContainActionData({
+                links: {self: {path: '/expected', query: {}}},
+                failures: [{message: 'message 1'}],
+                totalElements: 1
             })
         })
     })

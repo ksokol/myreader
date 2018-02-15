@@ -3,7 +3,7 @@ import {adminReducers} from 'store'
 
 describe('src/app/js/store/admin/reducers.spec.js', () => {
 
-    let state
+    let state, action
 
     beforeEach(() => state = initialState())
 
@@ -27,8 +27,6 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
 
     describe('action SECURITY_UPDATE', () => {
 
-        let action
-
         beforeEach(() => {
             action = {
                 type: 'SECURITY_UPDATE',
@@ -47,6 +45,94 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
 
             const currentState = {applicationInfo: {a: 'b'}}
             const expectedState = {applicationInfo: {a: 'b'}}
+
+            expect(adminReducers(currentState, action)).toContainObject(expectedState)
+        })
+    })
+
+    describe('action FEED_FETCH_FAILURES_CLEAR', () => {
+
+        it('should clear feed fetch failures', () => {
+            state = {
+                fetchFailures: {
+                    failures: [1, 2],
+                    links: {
+                        self: {
+                            path: 'path1', query: {a: 'b', next: 'c'}
+                        }
+                    },
+                    totalElements: 2
+                }
+            }
+
+            expect(adminReducers(state, {type: 'FEED_FETCH_FAILURES_CLEAR'}).fetchFailures).toEqual({})
+        })
+    })
+
+    describe('action FEED_FETCH_FAILURES_RECEIVED', () => {
+
+        beforeEach(() => {
+            action = {
+                type: 'FEED_FETCH_FAILURES_RECEIVED',
+                links: {self: {path: 'path1', query: {a: 'b', next: 'c'}}},
+                failures: [1, 2],
+                totalElements: 2
+            }
+        })
+
+        it('should add feed fetch failures', () => {
+            const expectedState = {
+                fetchFailures: {
+                    failures: [1, 2],
+                    links: {
+                        self: {
+                            path: 'path1', query: {a: 'b', next: 'c'}
+                        }
+                    },
+                    totalElements: 2
+                }
+            }
+
+            expect(adminReducers(state, action)).toContainObject(expectedState)
+        })
+
+        it('should add next page to existing feed fetch failures when self link is the same', () => {
+            const currentState = adminReducers(state, action)
+
+            action = {
+                ...action,
+                links: {self: {path: 'path1', query: {a: 'b', next: 'd'}}},
+                failures: [3, 4]
+            }
+
+            const expectedState = {
+                fetchFailures: {
+                    links: {self: {path: 'path1', query: {a: 'b', next: 'd'}}},
+                    failures: [1, 2, 3, 4],
+                    totalElements: 2
+                }
+            }
+
+            expect(adminReducers(currentState, action)).toContainObject(expectedState)
+        })
+
+        it('should replace existing feed fetch failures when self link is different', () => {
+            const currentState = adminReducers(state, action)
+
+            action = {
+                ...action,
+                links: {self: {path: 'path2', query: {a: 'b', next: 'd'}}},
+                failures: [3, 4, 5],
+                totalElements: 3
+            }
+
+            const expectedState = {
+                fetchFailures: {
+                    links: {self: {path: 'path2', query: {a: 'b', next: 'd'}}},
+                    failures: [3, 4, 5],
+                    totalElements: 3
+                }
+            }
 
             expect(adminReducers(currentState, action)).toContainObject(expectedState)
         })
