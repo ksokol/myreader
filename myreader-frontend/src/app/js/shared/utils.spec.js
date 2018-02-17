@@ -1,4 +1,4 @@
-import {arrayIncludes, isBoolean, isObject, isPromiseLike, toArray} from './utils'
+import {arrayIncludes, isBoolean, isDate, isObject, isPromiseLike, toArray} from './utils'
 
 describe('src/app/js/shared/spec.js', () => {
 
@@ -17,6 +17,8 @@ describe('src/app/js/shared/spec.js', () => {
         it('true when given parameter is an array', () => expect(isObject([])).toEqual(true))
 
         it('true when given parameter is an object', () => expect(isObject({})).toEqual(true))
+
+        it('true when given parameter is a date', () => expect(isObject(new Date())).toEqual(true))
     })
 
     describe('isPromiseLike() should return', () => {
@@ -72,14 +74,28 @@ describe('src/app/js/shared/spec.js', () => {
 
     describe('isBoolean() should return', () => {
 
-        it('false when parameter is of type string', () =>
-           expect(isBoolean('true')).toBe(false))
+        it('false when parameter is of type string', () => expect(isBoolean('true')).toBe(false))
 
-        it('true when parameter is of type boolean', () =>
-            expect(isBoolean(true)).toBe(true))
+        it('true when parameter is of type boolean', () => expect(isBoolean(true)).toBe(true))
 
-        it('true when parameter is of type boolean and value is false', () =>
-            expect(isBoolean(false)).toBe(true))
+        it('true when parameter is of type boolean and value is false', () => expect(isBoolean(false)).toBe(true))
+    })
+
+    describe('isDate() should return', () => {
+
+        it('false when parameter is undefined', () => expect(isDate()).toBe(false))
+
+        it('false when parameter is null', () => expect(isDate(null)).toBe(false))
+
+        it('false when parameter is of type string', () => expect(isDate('true')).toBe(false))
+
+        it('false when parameter is of type boolean', () => expect(isDate(true)).toBe(false))
+
+        it('false when parameter is of type array', () => expect(isDate([2018, 2, 17, 12, 0, 0, 0])).toBe(false))
+
+        it('false when parameter is of type object', () => expect(isDate({})).toBe(false))
+
+        it('true when parameter is of type Date', () => expect(isDate(new Date())).toBe(true))
     })
 
     describe('toArray', () => {

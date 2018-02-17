@@ -40,6 +40,14 @@ describe('src/app/js/store/shared/objects.spec.js', () => {
         expect(cloneObject({a: 'b', c: undefined})).toEqual({a: 'b', c: undefined})
     })
 
+    it('should clone date', () => {
+        const date = new Date(0)
+        const clone = cloneObject({date}).date
+        date.setSeconds(1)
+
+        expect(clone.getTime()).toEqual(0)
+    })
+
     it('should return undefined when given value is undefined', () => expect(cloneObject()).toEqual(undefined))
 
     it('should return null when given value is null', () => expect(cloneObject(null)).toEqual(null))

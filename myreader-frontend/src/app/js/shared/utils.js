@@ -14,6 +14,10 @@ export function isBoolean(value) {
     return typeof value === 'boolean'
 }
 
+export function isDate(value) {
+    return value instanceof Date
+}
+
 export function toArray(value) {
     return value ? Array.isArray(value) ? value : [value] : []
 }
