@@ -1,6 +1,5 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import merge from 'lodash.merge'
 import {initialApplicationState} from 'store'
 
 /*
@@ -73,10 +72,7 @@ export function createMockStore() {
     const store = configureMockStore([thunk])(() => state)
 
     store.getActionTypes = () => store.getActions().map(it => it.type)
-    store.setState = stateSlice => {
-        merge(state, stateSlice)
-        state = {...state}
-    }
+    store.setState = stateSlice => state = {...state, ...stateSlice}
 
     return store
 }

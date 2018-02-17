@@ -2,7 +2,6 @@ import {componentMock, mock, mockNgRedux} from '../shared/test-utils'
 
 describe('src/app/js/feed/feed.component.spec.js', () => {
 
-    const myFeedFetchErrorPanel = componentMock('myFeedFetchErrorPanel')
     let scope, element, page, $state, $stateParams, ngReduxMock, feedService, feed, findOneDeferred, saveDeferred, removeDeferred
 
     const PageObject = el => {
@@ -27,7 +26,7 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         }
     }
 
-    beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams'), mock('feedService'), myFeedFetchErrorPanel, mockNgRedux()))
+    beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams'), mock('feedService'), componentMock('myFeedFetchError'), mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, $ngRedux, _feedService_) => {
         scope = $rootScope.$new()
@@ -65,13 +64,6 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
 
     it('should fetch feed on init', () => {
         expect(feedService.findOne).toHaveBeenCalledWith('expected uuid')
-    })
-
-    it('should initialize child components', () => {
-        findOneDeferred.resolve(feed)
-        scope.$digest()
-
-        expect(myFeedFetchErrorPanel.bindings.myId).toEqual('expected uuid')
     })
 
     it('should render error message when feed could not be fetched on init', () => {

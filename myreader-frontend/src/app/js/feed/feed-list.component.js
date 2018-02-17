@@ -1,5 +1,5 @@
 import template from './feed-list.component.html'
-import {showErrorNotification} from 'store'
+import {routeChange, showErrorNotification} from 'store'
 
 class controller {
 
@@ -16,7 +16,7 @@ class controller {
     }
 
     open(feed) {
-        this.$state.go('admin.feed-detail', {uuid: feed.uuid})
+        this.$ngRedux.dispatch(routeChange(['admin', 'feed-detail'], {uuid: feed.uuid}))
     }
 
     onSearch(params) {

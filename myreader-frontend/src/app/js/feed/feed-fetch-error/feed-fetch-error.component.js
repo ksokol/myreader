@@ -1,0 +1,39 @@
+import template from './feed-fetch-error.component.html'
+import './feed-fetch-error.component.css'
+import {feedFetchFailuresSelector, fetchFeedFetchFailures} from 'store'
+
+class controller {
+
+    constructor($ngRedux) {
+        'ngInject'
+        this.$ngRedux = $ngRedux
+    }
+
+    $onInit() {
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatch)(this)
+    }
+
+    $onDestroy() {
+        this.unsubscribe()
+    }
+
+    mapStateToThis(state) {
+        return {
+            ...feedFetchFailuresSelector(state)
+        }
+    }
+
+    mapDispatch(dispatch) {
+        return {
+            onMore: link => dispatch(fetchFeedFetchFailures(link))
+        }
+    }
+
+    hasErrors() {
+        return this.totalElements > 0
+    }
+}
+
+export const FeedFetchErrorComponent = {
+    template, controller
+}

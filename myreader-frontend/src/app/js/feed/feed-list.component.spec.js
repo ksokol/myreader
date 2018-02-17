@@ -111,8 +111,9 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
 
         it('should navigate to feed detail page', () => {
             page.feedList()[1].click()
+            scope.$digest()
 
-            expect(state.go).toHaveBeenCalledWith('admin.feed-detail', {uuid: 2})
+            expect(ngReduxMock.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['admin', 'feed-detail'], query: {uuid: 2}})
         })
 
         it('should filter feeds', () => {

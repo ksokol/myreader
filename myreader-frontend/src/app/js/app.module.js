@@ -11,12 +11,10 @@ import {EntryTitleComponent} from './entry/entry-title/entry-title.component'
 import {EntryComponent} from './entry/entry.component'
 import {EntryContentSanitizerDirective} from "./entry/entry-content/entry-content-sanitizer/entry-content-sanitizer.directive"
 import {TimeagoFilter} from "shared/timeago/timeago.filter"
-import {FeedFetchErrorComponent} from "./feed/feed-fetch-error-panel/feed-fetch-error/feed-fetch-error.component"
-import {FeedFetchErrorService} from "./feed/feed-fetch-error-panel/feed-fetch-error/feed-fetch-error.service"
-import {FeedFetchErrorListItemComponent} from "./feed/feed-fetch-error-panel/feed-fetch-error/feed-fetch-error-list-item.component"
+import {FeedFetchErrorComponent} from "./feed/feed-fetch-error/feed-fetch-error.component"
+import {FeedFetchErrorListItemComponent} from "./feed/feed-fetch-error/feed-fetch-error-list-item.component"
 import {LoadMoreComponent} from "shared/component/load-more/load-more.component"
 import {IconComponent} from "shared/component/icon/icon.component"
-import {FeedFetchErrorPanelComponent} from "./feed/feed-fetch-error-panel/feed-fetch-error-panel.component"
 import {BackendValidationDirective} from "shared/directive/backend-validation/backend-validation.directive"
 import {ValidationMessageComponent} from "shared/component/validation-message/validation-message.component"
 import {ButtonGroupComponent} from "shared/component/button-group/button-group.component"
@@ -69,7 +67,6 @@ angular
     .component('myEntry', EntryComponent)
     .component('myFeedFetchError', FeedFetchErrorComponent)
     .component('myFeedFetchErrorListItem', FeedFetchErrorListItemComponent)
-    .component('myFeedFetchErrorPanel', FeedFetchErrorPanelComponent)
     .component('myValidationMessage', ValidationMessageComponent)
     .component('myFeed', FeedComponent)
     .component('myFeedList', FeedListComponent)
@@ -106,7 +103,6 @@ angular
     .component('myLogout', LogoutComponent)
     .component('myHotkeys', HotkeysComponent)
 
-    .service('feedFetchErrorService', FeedFetchErrorService)
     .service('feedService', FeedService)
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)

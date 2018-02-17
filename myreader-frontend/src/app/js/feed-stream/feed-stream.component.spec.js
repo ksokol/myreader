@@ -9,6 +9,9 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
     let scope, compile, element, ngReduxMock, state, stateParams
 
+    const givenState = (entries = [], entryInFocus = '1', nextFocusableEntry = '2') =>
+        ngReduxMock.setState({entry: {entries, entryInFocus, nextFocusableEntry}})
+
     afterEach(() => Mousetrap.reset())
 
     describe('', () => {
@@ -30,7 +33,7 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
             state.go = jasmine.createSpy('$state.go()')
             state.go.and.returnValue(new Promise(() => {}))
 
-            ngReduxMock.setState({entry: {entries: [{uuid: '1'}, {uuid: '2'}], entryInFocus: '1', nextFocusableEntry: '2'}})
+            givenState([{uuid: '1'}, {uuid: '2'}], '1', '2')
 
             element = $compile('<my-feed-stream></my-feed-stream>')(scope)
             scope.$digest()
@@ -72,7 +75,7 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
         })
 
         it('should flag next focusable entry as read before it is focused', () => {
-            ngReduxMock.setState({entry: {entries: [{uuid: '2', seen: false, tag: 'expected tag'}]}})
+            givenState([{uuid: '2', seen: false, tag: 'expected tag'}])
             element.find('button')[1].click()
 
             expect(ngReduxMock.getActionTypes()).toEqual(['PATCH_ENTRY', 'ENTRY_FOCUS_NEXT'])
@@ -81,14 +84,14 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
         })
 
         it('should not flag next focusable entry as read when it is already flagged as read', () => {
-            ngReduxMock.setState({entry: {entries: [{uuid: '2', seen: true}]}})
+            givenState([{uuid: '2', seen: true}])
             element.find('button')[1].click()
 
             expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_NEXT'])
         })
 
         it('should flag new entry as read when enter button pressed', () => {
-            ngReduxMock.setState({entry: {entries: [{uuid: '1', tag: 'expected tag'}]}})
+            givenState([{uuid: '1', tag: 'expected tag'}])
             onKey('down', enter)
 
             expect(ngReduxMock.getActionTypes()).toEqual(['PATCH_ENTRY'])
@@ -97,7 +100,7 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
         })
 
         it('should flag old entry as unread when enter button pressed', () => {
-            ngReduxMock.setState({entry: {entries: [{uuid: '1', seen: true, tag: 'expected tag'}]}})
+            givenState([{uuid: '1', seen: true, tag: 'expected tag'}])
             onKey('down', enter)
 
             expect(ngReduxMock.getActionTypes()).toEqual(['PATCH_ENTRY'])
@@ -127,7 +130,7 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
             state.go = jasmine.createSpy('$state.go()')
             state.go.and.returnValue(new Promise(() => {}))
 
-            ngReduxMock.setState({entry: {entries: [{uuid: '1'}, {uuid: '2'}], entryInFocus: '1', nextFocusableEntry: '2'}})
+            givenState([{uuid: '1'}, {uuid: '2'}])
 
             element = $compile('<my-feed-stream></my-feed-stream>')(scope)
             scope.$digest()
