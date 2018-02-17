@@ -4,7 +4,9 @@ import {
     feedFetchFailuresReceived,
     fetchApplicationInfo,
     fetchFeedFetchFailures,
-    rebuildSearchIndex
+    rebuildSearchIndex,
+    feedReceived,
+    fetchFeed
 } from 'store'
 import {createMockStore} from 'shared/test-utils'
 
@@ -122,6 +124,62 @@ describe('src/app/js/store/admin/action.spec.js', () => {
             store.dispatch(feedFetchFailuresClear())
 
             expect(store.getActionTypes()).toEqual(['FEED_FETCH_FAILURES_CLEAR'])
+        })
+    })
+
+    describe('action creator feedReceived', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(feedReceived())
+
+            expect(store.getActionTypes()).toEqual(['FEED_RECEIVED'])
+        })
+
+        it('should contain expected action data', () => {
+            store.dispatch(feedReceived({
+                links: [{rel: 'self', href: 'expected href'}],
+                uuid: '1',
+                a: 'b'
+            }))
+
+            expect(store.getActions()[0]).toContainActionData({
+                feed: {
+                    links: {self: {path: 'expected href', query: {}}},
+                    uuid: '1',
+                    a: 'b'
+                }
+            })
+        })
+    })
+
+    describe('action creator fetchFeed', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(fetchFeed({}))
+
+            expect(store.getActionTypes()).toEqual(['GET_FEED'])
+        })
+
+        it('should contain expected action data', () => {
+            store.dispatch(fetchFeed('expectedUuid'))
+
+            expect(store.getActions()[0].url).toContain('/feeds/expectedUuid')
+        })
+
+        it('should dispatch action defined in success property', () => {
+            store.dispatch(fetchFeed({}))
+            const success = store.getActions()[0].success
+            store.clearActions()
+            store.dispatch(success({links: [{rel: 'self', href: 'expected href'}], uuid: '1', a: 'b'}))
+
+            expect(store.getActionTypes()).toEqual(['FEED_RECEIVED'])
+            expect(store.getActions()[0]).toContainActionData({
+                feed: {
+                    links: {self: {path: 'expected href', query: {}}},
+                    uuid: '1',
+                    a: 'b'
+                }
+            })
         })
     })
 

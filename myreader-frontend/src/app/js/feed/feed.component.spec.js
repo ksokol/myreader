@@ -1,8 +1,8 @@
-import {componentMock, mock, mockNgRedux} from '../shared/test-utils'
+import {componentMock, mock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/feed/feed.component.spec.js', () => {
 
-    let scope, element, page, $state, $stateParams, ngReduxMock, feedService, feed, findOneDeferred, saveDeferred, removeDeferred
+    let scope, element, page, $state, $stateParams, ngReduxMock, feedService, feed, saveDeferred, removeDeferred
 
     const PageObject = el => {
         const _title = () => angular.element(el.find('input')[0])
@@ -26,10 +26,15 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         }
     }
 
+    const givenState = (selectedFeed = {}) => {
+        ngReduxMock.setState({admin: {selectedFeed}})
+        scope.$digest()
+    }
+
     beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams'), mock('feedService'), componentMock('myFeedFetchError'), mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, $ngRedux, _feedService_) => {
-        scope = $rootScope.$new()
+        scope = $rootScope.$new(true)
         ngReduxMock = $ngRedux
 
         feed = {
@@ -41,13 +46,10 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
 
         saveDeferred = $q.defer()
         removeDeferred = $q.defer()
-        findOneDeferred = $q.defer()
 
         feedService = _feedService_
-        feedService.findOne = jasmine.createSpy('feedService.findOne()')
         feedService.save = jasmine.createSpy('feedService.save()')
         feedService.remove = jasmine.createSpy('feedService.remove()')
-        feedService.findOne.and.returnValue(findOneDeferred.promise)
         feedService.save.and.returnValue(saveDeferred.promise)
         feedService.remove.and.returnValue(removeDeferred.promise)
 
@@ -62,29 +64,15 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         scope.$digest()
     }))
 
-    it('should fetch feed on init', () => {
-        expect(feedService.findOne).toHaveBeenCalledWith('expected uuid')
-    })
-
-    it('should render error message when feed could not be fetched on init', () => {
-        findOneDeferred.reject('expected error')
-        scope.$digest()
-
-        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'expected error', type: 'error'}})
-    })
-
     it('should render title and url', () => {
-        findOneDeferred.resolve(feed)
-        scope.$digest()
+        givenState(feed)
 
         expect(page.title().val()).toEqual(feed.title)
         expect(page.url().val()).toEqual(feed.url)
     })
 
     it('should save feed when save button clicked', () => {
-        findOneDeferred.resolve(feed)
-        scope.$digest()
+        givenState(feed)
 
         page.enterTitle('updated title')
         page.enterUrl('updated url')
@@ -142,8 +130,7 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
     })
 
     it('should delete feed', () => {
-        findOneDeferred.resolve(feed)
-        scope.$digest()
+        givenState(feed)
 
         page.clickDeleteButton()
         page.clickYesButton()
@@ -170,8 +157,7 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
     })
 
     it('should open url safely', () => {
-        findOneDeferred.resolve(feed)
-        scope.$digest()
+        givenState(feed)
         const link = page.feedUrlLink()
 
         expect(link.attributes['ng-href'].value).toEqual('expected url')

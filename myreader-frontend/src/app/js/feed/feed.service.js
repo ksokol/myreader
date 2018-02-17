@@ -11,10 +11,6 @@ export class FeedService {
         return this.$http.get(FEEDS).then(response => response.data.content);
     }
 
-    findOne(uuid) {
-        return this.$http.get(`${FEEDS}/${uuid}`).then(response => response.data);
-    }
-
     remove(feed) {
         return this.$http.delete(`${FEEDS}/${feed.uuid}`);
     }

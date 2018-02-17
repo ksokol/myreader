@@ -50,6 +50,21 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
         })
     })
 
+    describe('action FEED_RECEIVED', () => {
+
+        it('should add selected feed', () => {
+            state = {selectedFeed: {}}
+
+            expect(adminReducers(state, {type: 'FEED_RECEIVED', feed: {a: 'b', c: 'd'}}).selectedFeed).toEqual({a: 'b', c: 'd'})
+        })
+
+        it('should replace existing selected feed', () => {
+            state = {selectedFeed: {a: 'b', c: 'd'}}
+
+            expect(adminReducers(state, {type: 'FEED_RECEIVED', feed: {e: 'f'}}).selectedFeed).toEqual({e: 'f'})
+        })
+    })
+
     describe('action FEED_FETCH_FAILURES_CLEAR', () => {
 
         it('should clear feed fetch failures', () => {

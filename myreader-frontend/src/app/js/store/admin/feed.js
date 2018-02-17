@@ -1,4 +1,9 @@
-import {extractLinks} from '../shared/links'
+import {extractLinks} from 'store/shared/links'
+
+export function toFeed(raw = {}) {
+    const {links, ...rest} = raw
+    return {...rest, links: extractLinks(links)}
+}
 
 export function toFeedFetchFailure(raw = {}) {
     return {uuid: raw.uuid, message: raw.message, createdAt: raw.createdAt}

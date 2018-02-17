@@ -45,18 +45,6 @@ describe('src/app/js/feed/feed.service.spec.js', function() {
         httpBackend.flush();
     });
 
-    it('should find one', function(done) {
-        httpBackend.expectGET('/myreader/api/2/feeds/1').respond('expected');
-
-        service.findOne('1')
-            .then(function (data) {
-                expect(data).toEqual('expected');
-                done();
-            });
-
-        httpBackend.flush();
-    });
-
     it('should patch existing feed', function(done) {
         var feed = {
             uuid: '1',

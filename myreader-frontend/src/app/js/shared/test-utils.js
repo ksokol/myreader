@@ -83,19 +83,17 @@ export function ngReduxMock() {
     store.dispatch.and.callThrough()
 
     const storeSetState = store.setState
-    let mapToTarget
+    let mapDispatchToTargets = []
 
-    const createMapToTarget = (component, mapStateToTarget) => state => {
-        if (typeof mapStateToTarget === 'function') {
-            Object.assign(component, mapStateToTarget(state))
-        }
-    }
+    const createMapToTarget = (component, mapStateToTarget) => state =>
+        typeof mapStateToTarget === 'function' ? Object.assign(component, mapStateToTarget(state)) : () => null
 
     store.connect = jasmine.createSpy('$ngRedux.connect')
     store.connect.and.callFake((mapStateToTarget, mapDispatchToTarget) => {
         return component => {
-            mapToTarget = createMapToTarget(component, mapStateToTarget)
-            mapToTarget(store.getState())
+            const fn = createMapToTarget(component, mapStateToTarget)
+            fn(store.getState())
+            mapDispatchToTargets.push(fn)
 
             if (typeof mapDispatchToTarget === 'function') {
                 Object.assign(component, mapDispatchToTarget(store.dispatch))
@@ -106,10 +104,7 @@ export function ngReduxMock() {
 
     store.setState = stateSlice => {
         storeSetState(stateSlice)
-
-        if(mapToTarget) {
-            mapToTarget(store.getState())
-        }
+        mapDispatchToTargets.forEach(mapDispatchToTarget => mapDispatchToTarget(store.getState()))
     }
 
     return store

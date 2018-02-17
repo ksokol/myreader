@@ -1,9 +1,9 @@
 import * as types from 'store/action-types'
-import {INFO, PROCESSING} from 'constants'
+import {FEEDS, INFO, PROCESSING} from 'constants'
 import {showErrorNotification, showSuccessNotification} from 'store'
 import {toApplicationInfo} from './application-info'
-import {toFeedFetchFailures} from './feed'
-import {toUrlString} from '../shared/links'
+import {toFeed, toFeedFetchFailures} from './feed'
+import {toUrlString} from 'store/shared/links'
 
 export const rebuildSearchIndex = () => {
     return {
@@ -24,6 +24,18 @@ export const fetchApplicationInfo = () => {
         url: INFO,
         success: response => applicationInfoReceived(response),
         error: () => showErrorNotification('Application info is missing')
+    }
+}
+
+export const feedReceived = raw => {
+    return {type: types.FEED_RECEIVED, feed: toFeed(raw)}
+}
+
+export const fetchFeed = uuid => {
+    return {
+        type: 'GET_FEED',
+        url: `${FEEDS}/${uuid}`,
+        success: response => feedReceived(response)
     }
 }
 

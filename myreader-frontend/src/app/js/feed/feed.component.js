@@ -1,6 +1,6 @@
 import template from './feed.component.html'
 import './feed.component.css'
-import {showErrorNotification, showSuccessNotification} from 'store'
+import {feedSelector, showErrorNotification, showSuccessNotification} from 'store'
 
 class controller {
 
@@ -13,9 +13,17 @@ class controller {
     }
 
     $onInit() {
-        this.feedService.findOne(this.$stateParams.uuid)
-            .then(data => this.feed = data)
-            .catch(error => this.$ngRedux.dispatch(showErrorNotification(error)))
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
+    }
+
+    $onDestroy() {
+        this.unsubscribe()
+    }
+
+    mapStateToThis(state) {
+        return {
+            feed: feedSelector(state)
+        }
     }
 
     onDelete() {
