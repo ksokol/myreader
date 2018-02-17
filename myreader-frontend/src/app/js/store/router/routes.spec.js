@@ -83,9 +83,10 @@ describe('src/app/js/store/router/routes.spec.js', () => {
             it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('FEED_FETCH_FAILURES_CLEAR'))
 
             it('should contain expected resolve action(s)', () => {
-                store.dispatch(routeConfig.resolve({uuid: 'expectedUuid'}))
-                expect(store.getActionTypes()).toEqual(['GET_FEED_FETCH_FAILURES'])
-                expect(store.getActions()[0].url).toContain('/feeds/expectedUuid/fetchError')
+                routeConfig.resolve.forEach(action => store.dispatch(action({uuid: 'expectedUuid'})))
+                expect(store.getActionTypes()).toEqual(['GET_FEED', 'GET_FEED_FETCH_FAILURES'])
+                expect(store.getActions()[0].url).toContain('/feeds/expectedUuid')
+                expect(store.getActions()[1].url).toContain('/feeds/expectedUuid/fetchError')
             })
         })
     })
