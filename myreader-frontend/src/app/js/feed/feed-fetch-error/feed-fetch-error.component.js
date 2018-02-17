@@ -10,7 +10,7 @@ class controller {
     }
 
     $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatch)(this)
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
     }
 
     $onDestroy() {
@@ -23,7 +23,7 @@ class controller {
         }
     }
 
-    mapDispatch(dispatch) {
+    mapDispatchToThis(dispatch) {
         return {
             onMore: link => dispatch(fetchFeedFetchFailures(link))
         }
