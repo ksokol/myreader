@@ -1,4 +1,4 @@
-import {componentMock, mock, filterMock, mockNgRedux} from '../shared/test-utils'
+import {componentMock, mock, filterMock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/feed/feed-list.component.spec.js', () => {
 
@@ -14,7 +14,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         createdAt: 'createdAt 2'
     }]
 
-    let rootScope, scope, element, page, state, stateParams, ngReduxMock, feedService, feed, findAllDeferred
+    let rootScope, scope, element, page, ngReduxMock, feedService, feed, findAllDeferred
 
     const Feed = el => {
         return {
@@ -41,13 +41,18 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         }
     }
 
+    const givenState = (router = {}) => {
+        ngReduxMock.setState({router})
+        scope.$digest()
+    }
+
     describe('', () => {
 
-        beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams'), mock('feedService'), filterMock('timeago'), mockNgRedux()))
+        beforeEach(angular.mock.module('myreader', mock('feedService'), filterMock('timeago'), mockNgRedux()))
 
-        beforeEach(inject(($rootScope, $compile, $q, $state, $stateParams, $ngRedux, _feedService_) => {
+        beforeEach(inject(($rootScope, $compile, $q, $ngRedux, _feedService_) => {
             rootScope = $rootScope
-            scope = $rootScope.$new()
+            scope = $rootScope.$new(true)
             ngReduxMock = $ngRedux
 
             feed = {
@@ -62,10 +67,6 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
             feedService = _feedService_
             feedService.findAll = jasmine.createSpy('feedService.findAll()')
             feedService.findAll.and.returnValue(findAllDeferred.promise)
-
-            state = $state
-            state.go = jasmine.createSpy('$state.go()')
-            stateParams = $stateParams
 
             element = $compile('<my-feed-list></my-feed-list>')(scope)
             page = new PageObject(element)
@@ -117,29 +118,20 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         })
 
         it('should filter feeds', () => {
-            stateParams.q = 'title 1'
-
-            scope.$digest()
-
+            givenState({query: {q: 'title 1'}})
             expect(page.feedList().length).toEqual(1)
             expect(page.feedList()[0].title().innerText).toEqual('title 1')
 
-            stateParams.q = 'title 2'
-            scope.$digest()
-
+            givenState({query: {q: 'title 2'}})
             expect(page.feedList().length).toEqual(1)
             expect(page.feedList()[0].title().innerText).toEqual('title 2')
         })
 
         it('should clear filter', () => {
-            stateParams.q = 'title 1'
-            scope.$digest()
-
+            givenState({query: {q: 'title 1'}})
             expect(page.feedList().length).toEqual(1)
 
-            stateParams.q = undefined
-            scope.$digest()
-
+            givenState({query: {}})
             expect(page.feedList().length).toEqual(2)
         })
     })
@@ -153,7 +145,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
             angular.mock.module('myreader', mock('$state'), mock('feedService'), listPage, mockNgRedux())
         })
 
-        beforeEach(inject(($rootScope, $compile, $q, $state, $ngRedux, _feedService_) => {
+        beforeEach(inject(($rootScope, $compile, $q, $ngRedux, _feedService_) => {
             rootScope = $rootScope
             scope = $rootScope.$new()
             ngReduxMock = $ngRedux
@@ -163,9 +155,6 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
             feedService = _feedService_
             feedService.findAll = jasmine.createSpy('feedService.findAll()')
             feedService.findAll.and.returnValue(findAllDeferred.promise)
-
-            state = $state
-            state.go = jasmine.createSpy('$state.go()')
 
             element = $compile('<my-feed-list></my-feed-list>')(scope)
             page = new PageObject(element)
@@ -179,7 +168,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
             listPage.bindings.myOnSearch({params: {q: 'b'}})
             scope.$digest()
 
-            expect(state.go).toHaveBeenCalledWith('admin.feed', {q: 'b'}, {notify: false})
+            expect(ngReduxMock.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['admin', 'feed'], query: {q: 'b'}})
         })
 
         it('should refresh state', () => {

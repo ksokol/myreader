@@ -1,26 +1,34 @@
 import template from './feed-list.component.html'
-import {routeChange, showErrorNotification} from 'store'
+import {routeChange, routeSelector, showErrorNotification} from 'store'
 
 class controller {
 
-    constructor($state, $stateParams, $ngRedux, feedService) {
+    constructor($ngRedux, feedService) {
         'ngInject'
-        this.$state = $state
-        this.$stateParams = $stateParams
         this.$ngRedux = $ngRedux
         this.feedService = feedService
     }
 
     $onInit() {
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
         this.refresh()
     }
 
-    open(feed) {
-        this.$ngRedux.dispatch(routeChange(['admin', 'feed-detail'], {uuid: feed.uuid}))
+    $onDestroy() {
+        this.unsubscribe()
     }
 
-    onSearch(params) {
-        this.$state.go('admin.feed', params, {notify: false})
+    mapStateToThis(state) {
+        return {
+            ...routeSelector(state)
+        }
+    }
+
+    mapDispatchToThis(dispatch) {
+        return {
+            open: feed => dispatch(routeChange(['admin', 'feed-detail'], {uuid: feed.uuid})),
+            onSearch: params => dispatch(routeChange(['admin', 'feed'], params))
+        }
     }
 
     refresh() {

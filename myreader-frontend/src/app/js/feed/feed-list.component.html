@@ -2,7 +2,7 @@
               my-on-refresh="$ctrl.refresh()">
     <my-list-panel>
         <md-list>
-            <md-list-item ng-click="$ctrl.open(feed)" class="md-2-line" ng-repeat="feed in $ctrl.feeds | filter: $ctrl.$stateParams.q">
+            <md-list-item ng-click="$ctrl.open(feed)" class="md-2-line" ng-repeat="feed in $ctrl.feeds | filter: $ctrl.router.query.q">
                 <div class="md-list-item-text">
                     <h3 ng-bind-html="feed.title"></h3>
                     <p>
