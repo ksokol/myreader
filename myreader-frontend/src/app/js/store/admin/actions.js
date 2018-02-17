@@ -27,6 +27,10 @@ export const fetchApplicationInfo = () => {
     }
 }
 
+export const feedClear = () => {
+    return {type: types.FEED_CLEAR}
+}
+
 export const feedReceived = raw => {
     return {type: types.FEED_RECEIVED, feed: toFeed(raw)}
 }

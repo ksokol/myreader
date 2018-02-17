@@ -50,6 +50,15 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
         })
     })
 
+    describe('action FEED_CLEAR', () => {
+
+        it('should clear selected feed', () => {
+            state = {selectedFeed: {a: 'b', c: 'd'}}
+
+            expect(adminReducers(state, {type: 'FEED_CLEAR'}).selectedFeed).toEqual({})
+        })
+    })
+
     describe('action FEED_RECEIVED', () => {
 
         it('should add selected feed', () => {

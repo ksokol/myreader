@@ -14,6 +14,10 @@ function feedFetchFailuresClear({state}) {
     return {...state, fetchFailures: {}}
 }
 
+function feedClear({state}) {
+    return {...state, selectedFeed: {}}
+}
+
 function feedReceived({state, action}) {
     return {...state, selectedFeed: {...action.feed}}
 }
@@ -31,6 +35,9 @@ export function adminReducers(state = initialApplicationState().admin, action) {
     switch (action.type) {
         case types.APPLICATION_INFO_RECEIVED: {
             return applicationInfoReceived({state, action})
+        }
+        case types.FEED_CLEAR: {
+            return feedClear({state, action})
         }
         case types.FEED_RECEIVED: {
             return feedReceived({state, action})

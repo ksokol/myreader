@@ -1,12 +1,13 @@
 import {
     applicationInfoReceived,
+    feedClear,
     feedFetchFailuresClear,
     feedFetchFailuresReceived,
-    fetchApplicationInfo,
-    fetchFeedFetchFailures,
-    rebuildSearchIndex,
     feedReceived,
-    fetchFeed
+    fetchApplicationInfo,
+    fetchFeed,
+    fetchFeedFetchFailures,
+    rebuildSearchIndex
 } from 'store'
 import {createMockStore} from 'shared/test-utils'
 
@@ -124,6 +125,15 @@ describe('src/app/js/store/admin/action.spec.js', () => {
             store.dispatch(feedFetchFailuresClear())
 
             expect(store.getActionTypes()).toEqual(['FEED_FETCH_FAILURES_CLEAR'])
+        })
+    })
+
+    describe('action creator feedClear', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(feedClear())
+
+            expect(store.getActionTypes()).toEqual(['FEED_CLEAR'])
         })
     })
 
