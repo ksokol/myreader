@@ -1,9 +1,9 @@
-function isObject(value) {
-    return value !== null && typeof value === 'object'
-}
-
 function isFunction(value) {
     return typeof value === 'function'
+}
+
+export function isObject(value) {
+    return value !== null && typeof value === 'object'
 }
 
 export function isPromiseLike(value) {
