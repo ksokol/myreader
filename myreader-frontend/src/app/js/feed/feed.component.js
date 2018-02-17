@@ -1,19 +1,17 @@
 import template from './feed.component.html'
 import './feed.component.css'
-import {feedSelector, showErrorNotification, showSuccessNotification} from 'store'
+import {feedSelector, showErrorNotification, showSuccessNotification, routeChange} from 'store'
 
 class controller {
 
-    constructor($state, $stateParams, $ngRedux, feedService) {
+    constructor($ngRedux, feedService) {
         'ngInject'
-        this.$state = $state
-        this.$stateParams = $stateParams
         this.$ngRedux = $ngRedux
         this.feedService = feedService
     }
 
     $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
     }
 
     $onDestroy() {
@@ -26,12 +24,14 @@ class controller {
         }
     }
 
-    onDelete() {
-        return this.feedService.remove(this.feed)
+    mapDispatchToThis(dispatch) {
+        return {
+            onSuccessDelete: () => dispatch(routeChange(['admin', 'feed']))
+        }
     }
 
-    onSuccessDelete() {
-        this.$state.go('admin.feed')
+    onDelete() {
+        return this.feedService.remove(this.feed)
     }
 
     onSave() {

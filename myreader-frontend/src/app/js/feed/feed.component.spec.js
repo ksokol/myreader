@@ -2,7 +2,7 @@ import {componentMock, mock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/feed/feed.component.spec.js', () => {
 
-    let scope, element, page, $state, $stateParams, ngReduxMock, feedService, feed, saveDeferred, removeDeferred
+    let scope, element, page, ngReduxMock, feedService, feed, saveDeferred, removeDeferred
 
     const PageObject = el => {
         const _title = () => angular.element(el.find('input')[0])
@@ -31,7 +31,7 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         scope.$digest()
     }
 
-    beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams'), mock('feedService'), componentMock('myFeedFetchError'), mockNgRedux()))
+    beforeEach(angular.mock.module('myreader', mock('feedService'), componentMock('myFeedFetchError'), mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, $ngRedux, _feedService_) => {
         scope = $rootScope.$new(true)
@@ -52,12 +52,6 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         feedService.remove = jasmine.createSpy('feedService.remove()')
         feedService.save.and.returnValue(saveDeferred.promise)
         feedService.remove.and.returnValue(removeDeferred.promise)
-
-        $state = _$state_
-        $state.go = jasmine.createSpy('$state.go()')
-
-        $stateParams = _$stateParams_
-        $stateParams.uuid = feed.uuid
 
         element = $compile('<my-feed></my-feed>')(scope)
         page = new PageObject(element)
@@ -137,7 +131,7 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         removeDeferred.resolve()
         scope.$digest()
 
-        expect($state.go).toHaveBeenCalledWith('admin.feed')
+        expect(ngReduxMock.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['admin', 'feed']})
         expect(feedService.remove).toHaveBeenCalledWith({
             uuid: 'expected uuid',
             title: 'expected title',
