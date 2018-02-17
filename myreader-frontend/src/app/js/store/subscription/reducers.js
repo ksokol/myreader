@@ -6,7 +6,7 @@ function subscriptionsReceived({state, action}) {
     return {...state, subscriptions: action.subscriptions}
 }
 
-function entryChanged({state, action}) {
+function subscriptionChanged({state, action}) {
     const {newValue, oldValue} = action
     const subscriptions = state.subscriptions.map(it => {
         const clone = cloneObject(it)
@@ -69,7 +69,7 @@ export function subscriptionReducers(state = initialApplicationState().subscript
             return subscriptionsReceived({state, action})
         }
         case types.ENTRY_CHANGED: {
-            return entryChanged({state, action})
+            return subscriptionChanged({state, action})
         }
         case types.SUBSCRIPTION_DELETED: {
             return subscriptionDeleted({state, action})
