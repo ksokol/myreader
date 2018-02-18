@@ -105,6 +105,20 @@ describe('src/app/js/store/middleware/fetch/response-handler.spec.js', () => {
         expect(store.getActions()[1]).toEqual({type: 'ERROR_ACTION', headers: {a: 'b', c: 'd'}})
     })
 
+    it('should pass response status to success callback', () => {
+        givenHandledResponse({success: (response, headers, status) => {return {type: 'SUCCESS_ACTION', status}}}, {ok: true, status: 200})
+
+        expect(store.getActions().length).toEqual(2)
+        expect(store.getActions()[1]).toEqual({type: 'SUCCESS_ACTION', status: 200})
+    })
+
+    it('should pass response status to error callback', () => {
+        givenHandledResponse({error: (response, headers, status) => {return {type: 'ERROR_ACTION', status}}}, {ok: false, status: 404})
+
+        expect(store.getActions().length).toEqual(2)
+        expect(store.getActions()[1]).toEqual({type: 'ERROR_ACTION', status: 404})
+    })
+
     it('should not dispatch action when success callback returns null', () => {
         givenHandledResponse({success: () => null}, {ok: true})
 

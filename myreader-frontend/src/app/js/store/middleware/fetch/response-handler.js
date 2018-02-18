@@ -2,7 +2,7 @@ import {fetchEnd, unauthorized} from 'store'
 import {toArray} from 'shared/utils'
 
 function invokeActionCreator(actionCreator, response) {
-    return actionCreator(response.data, response.headers)
+    return actionCreator(response.data, response.headers, response.status)
 }
 
 function toActions(actionCreator, response) {
