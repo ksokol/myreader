@@ -43,6 +43,15 @@ export const fetchFeed = uuid => {
     }
 }
 
+export const changeFeed = feed => {
+    return {
+        type: 'PATCH_FEED',
+        url: `${FEEDS}/${feed.uuid}`,
+        body: {title: feed.title, url: feed.url},
+        success: response => feedReceived(response)
+    }
+}
+
 export const feedFetchFailuresClear = () => {
     return {type: types.FEED_FETCH_FAILURES_CLEAR}
 }

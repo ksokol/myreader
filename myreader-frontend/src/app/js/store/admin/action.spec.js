@@ -1,5 +1,6 @@
 import {
     applicationInfoReceived,
+    changeFeed,
     feedClear,
     feedFetchFailuresClear,
     feedFetchFailuresReceived,
@@ -191,6 +192,25 @@ describe('src/app/js/store/admin/action.spec.js', () => {
                 }
             })
         })
+    })
+
+    describe('action creator changeFeed', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(changeFeed({}))
+
+            expect(store.getActionTypes()).toEqual(['PATCH_FEED'])
+        })
+
+        it('should contain expected action data', () => {
+            store.dispatch(changeFeed({uuid: 'expectedUuid', title: 'expected title', url: 'expected url'}))
+
+            expect(store.getActions()[0].url).toContain('/feeds/expectedUuid')
+            expect(store.getActions()[0].body).toEqual({title: 'expected title', url: 'expected url'})
+        })
+
+        it('should return action creator feedReceived from success property', () =>
+            expect(changeFeed({}).success()).toEqual({type: 'FEED_RECEIVED', feed: {links: {}}}))
     })
 
     describe('action creator feedFetchFailuresReceived', () => {

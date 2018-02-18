@@ -45,25 +45,6 @@ describe('src/app/js/feed/feed.service.spec.js', function() {
         httpBackend.flush();
     });
 
-    it('should patch existing feed', function(done) {
-        var feed = {
-            uuid: '1',
-            title: 'new title',
-            url: 'new url',
-            prop1: 'prop1'
-        };
-
-        httpBackend.expectPATCH('/myreader/api/2/feeds/1', { title: 'new title', url: 'new url'}).respond('expected');
-
-        service.save(feed)
-            .then(function (data) {
-                expect(data).toEqual('expected');
-                done();
-            });
-
-        httpBackend.flush();
-    });
-
     it('should delete feed', function(done) {
         httpBackend.expectDELETE('/myreader/api/2/feeds/1').respond();
 

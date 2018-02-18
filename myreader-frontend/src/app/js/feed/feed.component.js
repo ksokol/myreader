@@ -1,6 +1,6 @@
 import template from './feed.component.html'
 import './feed.component.css'
-import {feedSelector, showErrorNotification, showSuccessNotification, routeChange} from 'store'
+import {feedSelector, showErrorNotification, showSuccessNotification, routeChange, changeFeed} from 'store'
 
 class controller {
 
@@ -11,7 +11,7 @@ class controller {
     }
 
     $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis.bind(this))(this)
     }
 
     $onDestroy() {
@@ -26,16 +26,13 @@ class controller {
 
     mapDispatchToThis(dispatch) {
         return {
-            onSuccessDelete: () => dispatch(routeChange(['admin', 'feed']))
+            onSuccessDelete: () => dispatch(routeChange(['admin', 'feed'])),
+            onSave: () => dispatch(changeFeed(this.feed))
         }
     }
 
     onDelete() {
         return this.feedService.remove(this.feed)
-    }
-
-    onSave() {
-        return this.feedService.save(this.feed)
     }
 
     onSuccessSave(text) {

@@ -2,7 +2,7 @@ import {componentMock, mock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/feed/feed.component.spec.js', () => {
 
-    let scope, element, page, ngReduxMock, feedService, feed, saveDeferred, removeDeferred
+    let scope, element, page, ngReduxMock, feedService, feed, removeDeferred
 
     const PageObject = el => {
         const _title = () => angular.element(el.find('input')[0])
@@ -34,6 +34,8 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
     beforeEach(angular.mock.module('myreader', mock('feedService'), componentMock('myFeedFetchError'), mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, $ngRedux, _feedService_) => {
+        jasmine.clock().uninstall()
+
         scope = $rootScope.$new(true)
         ngReduxMock = $ngRedux
 
@@ -44,13 +46,10 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
             other: 'other field'
         }
 
-        saveDeferred = $q.defer()
         removeDeferred = $q.defer()
 
         feedService = _feedService_
-        feedService.save = jasmine.createSpy('feedService.save()')
         feedService.remove = jasmine.createSpy('feedService.remove()')
-        feedService.save.and.returnValue(saveDeferred.promise)
         feedService.remove.and.returnValue(removeDeferred.promise)
 
         element = $compile('<my-feed></my-feed>')(scope)
@@ -72,55 +71,55 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         page.enterUrl('updated url')
         page.clickSaveButton()
 
-        expect(feedService.save).toHaveBeenCalledWith({
-            uuid: 'expected uuid',
-            title: 'updated title',
-            url: 'updated url',
-            other: 'other field'
+        expect(ngReduxMock.getActions()[0]).toEqualActionType('PATCH_FEED')
+        expect(ngReduxMock.getActions()[0]).toContainActionData({body: {title: 'updated title', url: 'updated url'}})
+    })
+
+    it('should render success notification when feed persisted', done => {
+        givenState(feed)
+        page.clickSaveButton()
+
+        setTimeout(() => {
+            expect(ngReduxMock.getActionTypes()).toEqual(['PATCH_FEED', 'SHOW_NOTIFICATION'])
+            expect(ngReduxMock.getActions()[0]).toContainActionData({body: {title: 'expected title', url: 'expected url'}})
+            expect(ngReduxMock.getActions()[1]).toContainActionData({notification: {text: 'Feed saved', type: 'success'}})
+            done()
         })
     })
 
-    it('should render success notification when feed persisted', () => {
-        page.clickSaveButton()
-        saveDeferred.resolve()
-        scope.$digest()
+    it('should render error notification when feed could not be deleted', done => {
+        ngReduxMock.dispatch.and.returnValue(Promise.reject({status: 409}))
 
-        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'Feed saved', type: 'success'}})
+        page.clickSaveButton()
+
+        setTimeout(() => {
+            ngReduxMock.dispatch.calls.allArgs()[1][0](ngReduxMock.dispatch, () => {return {common: {notification: {nextId: 0}}}})
+
+            expect(ngReduxMock.dispatch.calls.allArgs()[2][0])
+                .toContainObject({type: 'SHOW_NOTIFICATION', notification: {text: 'Can not delete. Feed has subscriptions', type: 'error'}})
+
+            done()
+        })
     })
 
-    it('should render error notification when feed persist failed', () => {
-        page.clickSaveButton()
-        saveDeferred.reject({data: 'expected error'})
-        scope.$digest()
-
-        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: {data: 'expected error'}, type: 'error'}})
-    })
-
-    it('should render error notification when feed could not be deleted', () => {
-        page.clickSaveButton()
-        saveDeferred.reject({status: 409})
-        scope.$digest()
-
-        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'Can not delete. Feed has subscriptions', type: 'error'}})
-    })
-
-    it('should render validation messages', () => {
-        page.clickSaveButton()
-        saveDeferred.reject({
+    it('should render validation messages', done => {
+        ngReduxMock.dispatch.and.returnValue(Promise.reject({
             status: 400,
             data: {fieldErrors: [
                     {"field":"url","message":"expected url error"},
                     {"field":"title","message": "expected title error"}
                 ]
             }
-        })
-        scope.$digest()
+        }))
 
-        expect(page.titleValidationErrorText()).toEqual('expected title error')
-        expect(page.urlValidationErrorText()).toEqual('expected url error')
+        page.clickSaveButton()
+
+        setTimeout(() => {
+            scope.$digest()
+            expect(page.titleValidationErrorText()).toEqual('expected title error')
+            expect(page.urlValidationErrorText()).toEqual('expected url error')
+            done()
+        })
     })
 
     it('should delete feed', () => {

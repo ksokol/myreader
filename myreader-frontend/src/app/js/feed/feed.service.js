@@ -14,8 +14,4 @@ export class FeedService {
     remove(feed) {
         return this.$http.delete(`${FEEDS}/${feed.uuid}`);
     }
-
-    save(feed) {
-        return this.$http.patch(`${FEEDS}/${feed.uuid}`, {title: feed.title, url: feed.url}).then(response => response.data);
-    }
 }
