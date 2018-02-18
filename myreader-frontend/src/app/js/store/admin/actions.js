@@ -48,7 +48,10 @@ export const changeFeed = feed => {
         type: 'PATCH_FEED',
         url: `${FEEDS}/${feed.uuid}`,
         body: {title: feed.title, url: feed.url},
-        success: response => feedReceived(response)
+        success: [
+            response => feedReceived(response),
+            () => showSuccessNotification('Feed saved')
+        ]
     }
 }
 

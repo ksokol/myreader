@@ -69,18 +69,6 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         expect(ngReduxMock.getActions()[0]).toContainActionData({body: {title: 'updated title', url: 'updated url'}})
     })
 
-    it('should render success notification when feed persisted', done => {
-        givenState(feed)
-        page.clickSaveButton()
-
-        setTimeout(() => {
-            expect(ngReduxMock.getActionTypes()).toEqual(['PATCH_FEED', 'SHOW_NOTIFICATION'])
-            expect(ngReduxMock.getActions()[0]).toContainActionData({body: {title: 'expected title', url: 'expected url'}})
-            expect(ngReduxMock.getActions()[1]).toContainActionData({notification: {text: 'Feed saved', type: 'success'}})
-            done()
-        })
-    })
-
     it('should render error notification when feed could not be deleted', done => {
         ngReduxMock.dispatch.and.returnValue(Promise.reject({status: 409}))
 

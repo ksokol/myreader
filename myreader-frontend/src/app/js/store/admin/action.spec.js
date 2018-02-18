@@ -211,8 +211,13 @@ describe('src/app/js/store/admin/action.spec.js', () => {
             expect(store.getActions()[0].body).toEqual({title: 'expected title', url: 'expected url'})
         })
 
-        it('should return action creator feedReceived from success property', () =>
-            expect(changeFeed({}).success()).toEqual({type: 'FEED_RECEIVED', feed: {links: {}}}))
+        it('should return action creator(s) from success property', () => {
+            changeFeed({}).success.forEach(action => store.dispatch(action({uuid: 'expected uuid', a: 'b'})))
+
+            expect(store.getActionTypes()).toEqual(['FEED_RECEIVED', 'SHOW_NOTIFICATION'])
+            expect(store.getActions()[0]).toContainActionData({feed: {uuid: 'expected uuid', a: 'b', links: {}}})
+            expect(store.getActions()[1]).toContainActionData({notification: {text: 'Feed saved', type: 'success'}})
+        })
     })
 
     describe('action creator feedDeleted', () => {

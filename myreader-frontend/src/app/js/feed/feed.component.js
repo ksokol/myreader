@@ -1,6 +1,6 @@
 import template from './feed.component.html'
 import './feed.component.css'
-import {changeFeed, deleteFeed, feedSelector, routeChange, showErrorNotification, showSuccessNotification} from 'store'
+import {changeFeed, deleteFeed, feedSelector, routeChange, showErrorNotification} from 'store'
 
 class controller {
 
@@ -30,10 +30,6 @@ class controller {
             onSave: () => dispatch(changeFeed(this.feed)),
             onDelete: () => dispatch(deleteFeed(this.feed.uuid))
         }
-    }
-
-    onSuccessSave(text) {
-        this.$ngRedux.dispatch(showSuccessNotification(text))
     }
 
     onError(error) {
