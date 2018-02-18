@@ -7,6 +7,9 @@ export function cloneObject(object) {
     if (isDate(object)) {
         return new Date(object)
     }
+    if (Array.isArray(object)) {
+        return object.map(cloneObject)
+    }
     return object ? Object.entries(object).reduce((acc, [key, value]) => {
         if (Array.isArray(value)) {
             acc[key] = value.map(cloneObject)

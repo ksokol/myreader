@@ -53,4 +53,12 @@ describe('src/app/js/store/shared/objects.spec.js', () => {
     it('should return null when given value is null', () => expect(cloneObject(null)).toEqual(null))
 
     it('should clone array with primitives', () => expect(cloneObject({a: ['a', 'b', 1]})).toEqual({a: ['a', 'b', 1]}))
+
+    it('should clone array object', () => {
+        const array = ['a', 'b']
+        const actual = cloneObject(array)
+        array[0] = 'x'
+
+        expect(actual).toEqual(['a', 'b'])
+    })
 })
