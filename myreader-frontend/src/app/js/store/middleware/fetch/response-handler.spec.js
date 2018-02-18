@@ -104,4 +104,28 @@ describe('src/app/js/store/middleware/fetch/response-handler.spec.js', () => {
         expect(store.getActions().length).toEqual(2)
         expect(store.getActions()[1]).toEqual({type: 'ERROR_ACTION', headers: {a: 'b', c: 'd'}})
     })
+
+    it('should not dispatch action when success callback returns null', () => {
+        givenHandledResponse({success: () => null}, {ok: true})
+
+        expect(store.getActionTypes()).toEqual(['FETCH_END'])
+    })
+
+    it('should not dispatch action when success callback returns array with null', () => {
+        givenHandledResponse({success: [() => null]}, {ok: true})
+
+        expect(store.getActionTypes()).toEqual(['FETCH_END'])
+    })
+
+    it('should not dispatch action when error callback returns null', () => {
+        givenHandledResponse({error: () => null}, {ok: false})
+
+        expect(store.getActionTypes()).toEqual(['FETCH_END'])
+    })
+
+    it('should not dispatch action when error callback returns array with null', () => {
+        givenHandledResponse({error: [() => null]}, {ok: false})
+
+        expect(store.getActionTypes()).toEqual(['FETCH_END'])
+    })
 })

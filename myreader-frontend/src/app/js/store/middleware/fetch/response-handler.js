@@ -1,16 +1,14 @@
 import {fetchEnd, unauthorized} from 'store'
+import {toArray} from 'shared/utils'
 
-function isFunction(value) {
-    return typeof value === 'function'
+function invokeActionCreator(actionCreator, response) {
+    return actionCreator(response.data, response.headers)
 }
 
-function appendActions(callbackAction, response, actions) {
-    if (isFunction(callbackAction)) {
-        actions.push(callbackAction(response.data, response.headers))
-    }
-    if (Array.isArray(callbackAction)) {
-        callbackAction.forEach(callback => actions.push(callback(response.data, response.headers)))
-    }
+function toActions(actionCreator, response) {
+    return toArray(actionCreator)
+        .map(creator => invokeActionCreator(creator, response))
+        .filter(action => action)
 }
 
 function isSuccess(response) {
@@ -26,7 +24,7 @@ export function responseHandler(action, response) {
 
     if (isSuccess(response)) {
         actions.push(fetchEnd())
-        appendActions(action.success, response, actions)
+        actions.push(...toActions(action.success, response))
         return {ok: true, actions}
     }
 
@@ -38,7 +36,7 @@ export function responseHandler(action, response) {
 
     if (action.error && response.status !== 400) {
         actions.push(fetchEnd())
-        appendActions(action.error, response, actions)
+        actions.push(...toActions(action.error, response))
         return {ok: false, actions}
     }
 
