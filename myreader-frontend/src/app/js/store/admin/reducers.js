@@ -42,6 +42,9 @@ export function adminReducers(state = initialApplicationState().admin, action) {
         case types.FEED_RECEIVED: {
             return feedReceived({state, action})
         }
+        case types.FEED_DELETED: {
+            return feedClear({state, action})
+        }
         case types.FEED_FETCH_FAILURES_CLEAR: {
             return feedFetchFailuresClear({state, action})
         }

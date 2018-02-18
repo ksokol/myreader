@@ -1,8 +1,8 @@
-import {componentMock, mock, mockNgRedux} from 'shared/test-utils'
+import {componentMock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/feed/feed.component.spec.js', () => {
 
-    let scope, element, page, ngReduxMock, feedService, feed, removeDeferred
+    let scope, element, page, ngReduxMock, feed
 
     const PageObject = el => {
         const _title = () => angular.element(el.find('input')[0])
@@ -31,9 +31,9 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         scope.$digest()
     }
 
-    beforeEach(angular.mock.module('myreader', mock('feedService'), componentMock('myFeedFetchError'), mockNgRedux()))
+    beforeEach(angular.mock.module('myreader', componentMock('myFeedFetchError'), mockNgRedux()))
 
-    beforeEach(inject(($rootScope, $compile, $q, _$state_, _$stateParams_, $ngRedux, _feedService_) => {
+    beforeEach(inject(($rootScope, $compile, $ngRedux) => {
         jasmine.clock().uninstall()
 
         scope = $rootScope.$new(true)
@@ -45,12 +45,6 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
             url: 'expected url',
             other: 'other field'
         }
-
-        removeDeferred = $q.defer()
-
-        feedService = _feedService_
-        feedService.remove = jasmine.createSpy('feedService.remove()')
-        feedService.remove.and.returnValue(removeDeferred.promise)
 
         element = $compile('<my-feed></my-feed>')(scope)
         page = new PageObject(element)
@@ -127,26 +121,10 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
 
         page.clickDeleteButton()
         page.clickYesButton()
-        removeDeferred.resolve()
-        scope.$digest()
 
-        expect(ngReduxMock.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['admin', 'feed']})
-        expect(feedService.remove).toHaveBeenCalledWith({
-            uuid: 'expected uuid',
-            title: 'expected title',
-            url: 'expected url',
-            other: 'other field'
-        })
-    })
-
-    it('should render error notification when feed delete failed', () => {
-        page.clickDeleteButton()
-        page.clickYesButton()
-        removeDeferred.reject({data: 'expected error'})
-        scope.$digest()
-
-        expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-        expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: {data: 'expected error'}, type: 'error'}})
+        expect(ngReduxMock.getActions()[0]).toEqualActionType('DELETE_FEED')
+        expect(ngReduxMock.getActions()[0].url).toContain('/feeds/expected uuid')
+        expect(ngReduxMock.getActions()[1]).toContainObject({type: 'ROUTE_CHANGED', route: ['admin', 'feed']})
     })
 
     it('should open url safely', () => {

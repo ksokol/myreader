@@ -52,6 +52,18 @@ export const changeFeed = feed => {
     }
 }
 
+export const feedDeleted = uuid => {
+    return {type: 'FEED_DELETED', uuid}
+}
+
+export const deleteFeed = uuid => {
+    return {
+        type: 'DELETE_FEED',
+        url: `${FEEDS}/${uuid}`,
+        success: () => feedDeleted(uuid)
+    }
+}
+
 export const feedFetchFailuresClear = () => {
     return {type: types.FEED_FETCH_FAILURES_CLEAR}
 }

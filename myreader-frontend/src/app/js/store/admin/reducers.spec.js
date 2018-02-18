@@ -74,6 +74,15 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
         })
     })
 
+    describe('action FEED_DELETED', () => {
+
+        it('should clear selected feed', () => {
+            state = {selectedFeed: {a: 'b', c: 'd'}}
+
+            expect(adminReducers(state, {type: 'FEED_DELETED'}).selectedFeed).toEqual({})
+        })
+    })
+
     describe('action FEED_FETCH_FAILURES_CLEAR', () => {
 
         it('should clear feed fetch failures', () => {

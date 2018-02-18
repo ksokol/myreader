@@ -11,7 +11,4 @@ export class FeedService {
         return this.$http.get(FEEDS).then(response => response.data.content);
     }
 
-    remove(feed) {
-        return this.$http.delete(`${FEEDS}/${feed.uuid}`);
-    }
 }

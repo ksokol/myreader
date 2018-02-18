@@ -44,15 +44,4 @@ describe('src/app/js/feed/feed.service.spec.js', function() {
 
         httpBackend.flush();
     });
-
-    it('should delete feed', function(done) {
-        httpBackend.expectDELETE('/myreader/api/2/feeds/1').respond();
-
-        service.remove({ uuid: '1'})
-            .then(function () {
-                done();
-            });
-
-        httpBackend.flush();
-    });
 });

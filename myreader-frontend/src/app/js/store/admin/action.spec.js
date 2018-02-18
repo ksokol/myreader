@@ -1,7 +1,9 @@
 import {
     applicationInfoReceived,
     changeFeed,
+    deleteFeed,
     feedClear,
+    feedDeleted,
     feedFetchFailuresClear,
     feedFetchFailuresReceived,
     feedReceived,
@@ -211,6 +213,39 @@ describe('src/app/js/store/admin/action.spec.js', () => {
 
         it('should return action creator feedReceived from success property', () =>
             expect(changeFeed({}).success()).toEqual({type: 'FEED_RECEIVED', feed: {links: {}}}))
+    })
+
+    describe('action creator feedDeleted', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(feedDeleted())
+
+            expect(store.getActionTypes()).toEqual(['FEED_DELETED'])
+        })
+
+        it('should contain expected action data', () => {
+            store.dispatch(feedDeleted('expectedUuid'))
+
+            expect(store.getActions()[0]).toContainActionData({uuid: 'expectedUuid'})
+        })
+    })
+
+    describe('action creator deleteFeed', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(deleteFeed())
+
+            expect(store.getActionTypes()).toEqual(['DELETE_FEED'])
+        })
+
+        it('should contain expected action data', () => {
+            store.dispatch(deleteFeed('expectedUuid'))
+
+            expect(store.getActions()[0].url).toContain('/feeds/expectedUuid')
+        })
+
+        it('should return action creator feedDeleted from success property', () =>
+            expect(deleteFeed('expectedUuid').success()).toEqual({type: 'FEED_DELETED', uuid: 'expectedUuid'}))
     })
 
     describe('action creator feedFetchFailuresReceived', () => {
