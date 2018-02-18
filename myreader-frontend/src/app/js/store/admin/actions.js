@@ -1,6 +1,6 @@
 import * as types from 'store/action-types'
 import {FEEDS, INFO, PROCESSING} from 'constants'
-import {showErrorNotification, showSuccessNotification} from 'store'
+import {routeChange, showErrorNotification, showSuccessNotification} from 'store'
 import {toApplicationInfo} from './application-info'
 import {toFeed, toFeedFetchFailures} from './feed'
 import {toUrlString} from 'store/shared/links'
@@ -63,7 +63,10 @@ export const deleteFeed = uuid => {
     return {
         type: 'DELETE_FEED',
         url: `${FEEDS}/${uuid}`,
-        success: () => feedDeleted(uuid),
+        success: [
+            () => routeChange(['admin', 'feed']),
+            () => feedDeleted(uuid)
+        ],
         error: (response, headers, status) =>
             (status === 409 && showErrorNotification('Can not delete. Feed has subscriptions')) ||
             (status !== 400 && showErrorNotification(response)) ||

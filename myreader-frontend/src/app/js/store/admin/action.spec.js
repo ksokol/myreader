@@ -249,8 +249,12 @@ describe('src/app/js/store/admin/action.spec.js', () => {
             expect(store.getActions()[0].url).toContain('/feeds/expectedUuid')
         })
 
-        it('should return action creator feedDeleted from success property', () =>
-            expect(deleteFeed('expectedUuid').success()).toEqual({type: 'FEED_DELETED', uuid: 'expectedUuid'}))
+        it('should dispatch action(s) defined in success property', () => {
+            deleteFeed('expectedUuid').success.forEach(action => store.dispatch(action()))
+
+            expect(store.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['admin', 'feed']})
+            expect(store.getActions()[1]).toEqual({type: 'FEED_DELETED', uuid: 'expectedUuid'})
+        })
 
         it('should return error action(s) when status code is 409', () => {
             const error = deleteFeed().error

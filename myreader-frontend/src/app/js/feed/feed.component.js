@@ -1,6 +1,6 @@
 import template from './feed.component.html'
 import './feed.component.css'
-import {changeFeed, deleteFeed, feedSelector, routeChange} from 'store'
+import {changeFeed, deleteFeed, feedSelector} from 'store'
 
 class controller {
 
@@ -25,7 +25,6 @@ class controller {
 
     mapDispatchToThis(dispatch) {
         return {
-            onSuccessDelete: () => dispatch(routeChange(['admin', 'feed'])),
             onSave: () => dispatch(changeFeed(this.feed)),
             onDelete: () => dispatch(deleteFeed(this.feed.uuid))
         }

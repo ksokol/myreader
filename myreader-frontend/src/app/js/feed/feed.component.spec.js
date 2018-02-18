@@ -97,7 +97,6 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
 
         expect(ngReduxMock.getActions()[0]).toEqualActionType('DELETE_FEED')
         expect(ngReduxMock.getActions()[0].url).toContain('/feeds/expected uuid')
-        expect(ngReduxMock.getActions()[1]).toContainObject({type: 'ROUTE_CHANGED', route: ['admin', 'feed']})
     })
 
     it('should open url safely', () => {
