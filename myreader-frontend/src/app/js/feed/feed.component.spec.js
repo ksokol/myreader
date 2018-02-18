@@ -69,21 +69,6 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
         expect(ngReduxMock.getActions()[0]).toContainActionData({body: {title: 'updated title', url: 'updated url'}})
     })
 
-    it('should render error notification when feed could not be deleted', done => {
-        ngReduxMock.dispatch.and.returnValue(Promise.reject({status: 409}))
-
-        page.clickSaveButton()
-
-        setTimeout(() => {
-            ngReduxMock.dispatch.calls.allArgs()[1][0](ngReduxMock.dispatch, () => {return {common: {notification: {nextId: 0}}}})
-
-            expect(ngReduxMock.dispatch.calls.allArgs()[2][0])
-                .toContainObject({type: 'SHOW_NOTIFICATION', notification: {text: 'Can not delete. Feed has subscriptions', type: 'error'}})
-
-            done()
-        })
-    })
-
     it('should render validation messages', done => {
         ngReduxMock.dispatch.and.returnValue(Promise.reject({
             status: 400,

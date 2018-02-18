@@ -63,7 +63,11 @@ export const deleteFeed = uuid => {
     return {
         type: 'DELETE_FEED',
         url: `${FEEDS}/${uuid}`,
-        success: () => feedDeleted(uuid)
+        success: () => feedDeleted(uuid),
+        error: (response, headers, status) =>
+            (status === 409 && showErrorNotification('Can not delete. Feed has subscriptions')) ||
+            (status !== 400 && showErrorNotification(response)) ||
+            undefined
     }
 }
 

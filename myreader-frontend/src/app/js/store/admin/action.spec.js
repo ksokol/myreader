@@ -251,6 +251,38 @@ describe('src/app/js/store/admin/action.spec.js', () => {
 
         it('should return action creator feedDeleted from success property', () =>
             expect(deleteFeed('expectedUuid').success()).toEqual({type: 'FEED_DELETED', uuid: 'expectedUuid'}))
+
+        it('should return error action(s) when status code is 409', () => {
+            const error = deleteFeed().error
+            store.dispatch(error(null, null, 409))
+
+            expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
+            expect(store.getActions()[0]).toContainActionData({
+                notification: {
+                    text: 'Can not delete. Feed has subscriptions',
+                    type: 'error'
+                }
+            })
+        })
+
+        it('should return error action(s) when status code is 500', () => {
+            const error = deleteFeed().error
+            store.dispatch(error('expected error', null, 500))
+
+            expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
+            expect(store.getActions()[0]).toContainActionData({
+                notification: {
+                    text: 'expected error',
+                    type: 'error'
+                }
+            })
+        })
+
+        it('should not return any error action(s) when status code is 400', () => {
+            const error = deleteFeed().error
+
+            expect(error(null, null, 400)).toEqual(undefined)
+        })
     })
 
     describe('action creator feedFetchFailuresReceived', () => {

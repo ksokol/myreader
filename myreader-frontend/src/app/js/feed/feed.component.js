@@ -1,13 +1,12 @@
 import template from './feed.component.html'
 import './feed.component.css'
-import {changeFeed, deleteFeed, feedSelector, routeChange, showErrorNotification} from 'store'
+import {changeFeed, deleteFeed, feedSelector, routeChange} from 'store'
 
 class controller {
 
-    constructor($ngRedux, feedService) {
+    constructor($ngRedux) {
         'ngInject'
         this.$ngRedux = $ngRedux
-        this.feedService = feedService
     }
 
     $onInit() {
@@ -33,9 +32,7 @@ class controller {
     }
 
     onError(error) {
-        if(error.status === 409) {
-            this.$ngRedux.dispatch(showErrorNotification('Can not delete. Feed has subscriptions'))
-        } else if (error.status === 400) {
+        if (error.status === 400) {
             this.validations = error.data.fieldErrors
         }
     }
