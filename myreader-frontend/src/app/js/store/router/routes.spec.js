@@ -76,6 +76,16 @@ describe('src/app/js/store/router/routes.spec.js', () => {
             it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('GET_APPLICATION_INFO'))
         })
 
+        describe('admin feed', () => {
+
+            beforeEach(() => routeConfig = routeConfiguration['admin'].children['feed'])
+
+            it('should contain expected resolve action(s)', () => {
+                store.dispatch(routeConfig.resolve())
+                expect(store.getActionTypes()).toEqual(['GET_FEEDS'])
+            })
+        })
+
         describe('admin feed-detail', () => {
 
             beforeEach(() => routeConfig = routeConfiguration['admin'].children['feed-detail'])

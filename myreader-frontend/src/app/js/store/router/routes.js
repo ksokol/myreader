@@ -6,7 +6,8 @@ import {
     fetchEntries,
     fetchEntryTags,
     fetchFeed,
-    fetchFeedFetchFailures
+    fetchFeedFetchFailures,
+    fetchFeeds
 } from 'store'
 
 export const routeConfiguration = {
@@ -22,6 +23,9 @@ export const routeConfiguration = {
     admin: {
         before: fetchApplicationInfo,
         children: {
+            feed: {
+                resolve: fetchFeeds
+            },
             'feed-detail': {
                 before: [feedClear, feedFetchFailuresClear],
                 resolve: [
