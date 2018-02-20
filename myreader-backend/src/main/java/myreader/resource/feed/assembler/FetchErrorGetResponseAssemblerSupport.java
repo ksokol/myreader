@@ -2,7 +2,6 @@ package myreader.resource.feed.assembler;
 
 import myreader.entity.FetchError;
 import myreader.resource.feed.beans.FetchErrorGetResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class FetchErrorGetResponseAssemblerSupport extends ResourceAssemblerSupport<FetchError, FetchErrorGetResponse> {
 
-    private final int retainDays;
-
-    public FetchErrorGetResponseAssemblerSupport(@Value("${job.fetchError.retainInDays}") int retainDays) {
+    public FetchErrorGetResponseAssemblerSupport() {
         super(FetchError.class, FetchErrorGetResponse.class);
-        this.retainDays = retainDays;
     }
 
     @Override
@@ -25,7 +21,6 @@ public class FetchErrorGetResponseAssemblerSupport extends ResourceAssemblerSupp
 
         target.setUuid(source.getId().toString());
         target.setMessage(source.getMessage());
-        target.setRetainDays(retainDays);
         target.setCreatedAt(source.getCreatedAt());
 
         return target;

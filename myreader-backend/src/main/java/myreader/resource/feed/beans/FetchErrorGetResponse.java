@@ -12,7 +12,6 @@ public class FetchErrorGetResponse extends ResourceSupport {
 
     private String uuid;
     private String message;
-    private int retainDays;
     private Date createdAt;
 
     public String getUuid() {
@@ -29,14 +28,6 @@ public class FetchErrorGetResponse extends ResourceSupport {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public int getRetainDays() {
-        return retainDays;
-    }
-
-    public void setRetainDays(int retainDays) {
-        this.retainDays = retainDays;
     }
 
     public Date getCreatedAt() {
