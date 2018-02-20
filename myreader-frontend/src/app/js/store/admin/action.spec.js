@@ -7,9 +7,11 @@ import {
     feedFetchFailuresClear,
     feedFetchFailuresReceived,
     feedReceived,
+    feedsReceived,
     fetchApplicationInfo,
     fetchFeed,
     fetchFeedFetchFailures,
+    fetchFeeds,
     rebuildSearchIndex
 } from 'store'
 import {createMockStore} from 'shared/test-utils'
@@ -119,6 +121,43 @@ describe('src/app/js/store/admin/action.spec.js', () => {
                     type: 'error'
                 }
             })
+        })
+    })
+
+    describe('action creator feedsReceived', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(feedsReceived({}))
+
+            expect(store.getActionTypes()).toEqual(['FEEDS_RECEIVED'])
+        })
+
+        it('should contain expected action data', () => {
+            store.dispatch(feedsReceived({content: [{a: 'b', links: [{rel: 'self', href: '/path'}]}]}))
+
+            expect(store.getActions()[0]).toContainActionData({feeds: [{a: 'b', links: {self: {path: '/path', query: {}}}}]})
+        })
+    })
+
+    describe('action creator fetchFeeds', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(fetchFeeds())
+
+            expect(store.getActionTypes()).toEqual(['GET_FEEDS'])
+        })
+
+        it('should contain expected action data', () => {
+            store.dispatch(fetchFeeds())
+
+            expect(store.getActions()[0].url).toContain('/feeds')
+        })
+
+        it('should dispatch action defined in success property', () => {
+            store.dispatch(fetchFeeds().success({content: [{a: 'b', links: []}]}))
+
+            expect(store.getActionTypes()).toEqual(['FEEDS_RECEIVED'])
+            expect(store.getActions()[0]).toContainActionData({feeds: [{a: 'b', links: {}}]})
         })
     })
 

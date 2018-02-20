@@ -50,6 +50,16 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
         })
     })
 
+    describe('action FEEDS_RECEIVED', () => {
+
+        it('should add feeds', () => {
+            state = {feeds: []}
+
+            expect(adminReducers(state, {type: 'FEEDS_RECEIVED', feeds: [{uuid: '1', a: 'b'}, {uuid: '2', c: 'd'}]}))
+                .toContainObject({feeds: [{uuid: '1', a: 'b'}, {uuid: '2', c: 'd'}]})
+        })
+    })
+
     describe('action FEED_CLEAR', () => {
 
         it('should clear selected feed', () => {
@@ -62,24 +72,37 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
     describe('action FEED_RECEIVED', () => {
 
         it('should add selected feed', () => {
-            state = {selectedFeed: {}}
+            state = {feeds: [], selectedFeed: {}}
 
             expect(adminReducers(state, {type: 'FEED_RECEIVED', feed: {a: 'b', c: 'd'}}).selectedFeed).toEqual({a: 'b', c: 'd'})
         })
 
         it('should replace existing selected feed', () => {
-            state = {selectedFeed: {a: 'b', c: 'd'}}
+            state = {feeds: [], selectedFeed: {a: 'b', c: 'd'}}
 
             expect(adminReducers(state, {type: 'FEED_RECEIVED', feed: {e: 'f'}}).selectedFeed).toEqual({e: 'f'})
+        })
+
+        it('should not add feed to store when feed is not already in store', () => {
+            state = {feeds: []}
+
+            expect(adminReducers(state, {type: 'FEED_RECEIVED', feeds: [{uuid: '1'}]}.feeds)).toEqual({feeds: []})
+        })
+
+        it('should update existing feed in store', () => {
+            state = {feeds: [{uuid: '1', a: 'b'}, {uuid: '2', c: 'd'}]}
+
+            expect(adminReducers(state, {type: 'FEED_RECEIVED', feed: {uuid: '2', c: 'x', e: 'f'}}))
+                .toContainObject({feeds: [{uuid: '1', a: 'b'}, {uuid: '2', c: 'x', e: 'f'}]})
         })
     })
 
     describe('action FEED_DELETED', () => {
 
-        it('should clear selected feed', () => {
-            state = {selectedFeed: {a: 'b', c: 'd'}}
+        it('should remove feed from store', () => {
+            state = {feeds: [{uuid: '1'}, {uuid: '2'}]}
 
-            expect(adminReducers(state, {type: 'FEED_DELETED'}).selectedFeed).toEqual({})
+            expect(adminReducers(state, {type: 'FEED_DELETED', uuid: '1'}).feeds).toEqual([{uuid: '2'}])
         })
     })
 

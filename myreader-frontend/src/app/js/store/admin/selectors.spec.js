@@ -1,4 +1,4 @@
-import {applicationInfoSelector, feedFetchFailuresSelector, feedSelector} from 'store'
+import {applicationInfoSelector, feedFetchFailuresSelector, feedSelector, feedsSelector} from 'store'
 
 describe('src/app/js/store/admin/selectors.spec.js', () => {
 
@@ -8,6 +8,7 @@ describe('src/app/js/store/admin/selectors.spec.js', () => {
         state = {
             admin: {
                 applicationInfo: {a: 'b', fetchErrorRetainDays: 42},
+                feeds: [{uuid: 'uuid1'}, {uuid: 'uuid2'}],
                 selectedFeed: {uuid: 'expected uuid', a: 'b', c: 'd'},
                 fetchFailures: {failures: [{a: 'b', c: 'd'}], totalElements: 1}
             },
@@ -35,5 +36,12 @@ describe('src/app/js/store/admin/selectors.spec.js', () => {
         state.admin.fetchFailures.failures[0].a = 'x'
 
         expect(actual.failures).toEqual([{a: 'b', c: 'd'}])
+    })
+
+    it('feedsSelector should return deep copy of feeds', () => {
+        const actual = feedsSelector(state)
+        state.admin.feeds[0].uuid = 'x'
+
+        expect(actual).toEqual({feeds: [{uuid: 'uuid1'}, {uuid: 'uuid2'}]})
     })
 })

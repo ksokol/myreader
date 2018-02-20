@@ -20,7 +20,6 @@ import {ValidationMessageComponent} from "shared/component/validation-message/va
 import {ButtonGroupComponent} from "shared/component/button-group/button-group.component"
 import {ButtonComponent} from "shared/component/button/button.component"
 import {NotificationPanelComponent} from "shared/component/notification-panel/notification-panel.component"
-import {FeedService} from "./feed/feed.service"
 import {FeedComponent} from "./feed/feed.component"
 import {SearchInputComponent} from "shared/component/search-input/search-input.component"
 import {FeedListComponent} from "./feed/feed-list.component"
@@ -102,8 +101,6 @@ angular
     .component('myListPage', ListPageComponent)
     .component('myLogout', LogoutComponent)
     .component('myHotkeys', HotkeysComponent)
-
-    .service('feedService', FeedService)
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)

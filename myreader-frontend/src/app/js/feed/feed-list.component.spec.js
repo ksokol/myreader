@@ -1,4 +1,4 @@
-import {componentMock, mock, filterMock, mockNgRedux} from 'shared/test-utils'
+import {componentMock, filterMock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/feed/feed-list.component.spec.js', () => {
 
@@ -14,7 +14,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         createdAt: 'createdAt 2'
     }]
 
-    let rootScope, scope, element, page, ngReduxMock, feedService, feed, findAllDeferred
+    let rootScope, scope, element, page, ngReduxMock
 
     const Feed = el => {
         return {
@@ -48,44 +48,17 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
 
     describe('', () => {
 
-        beforeEach(angular.mock.module('myreader', mock('feedService'), filterMock('timeago'), mockNgRedux()))
+        beforeEach(angular.mock.module('myreader', filterMock('timeago'), mockNgRedux()))
 
-        beforeEach(inject(($rootScope, $compile, $q, $ngRedux, _feedService_) => {
+        beforeEach(inject(($rootScope, $compile, $ngRedux) => {
             rootScope = $rootScope
             scope = $rootScope.$new(true)
             ngReduxMock = $ngRedux
-
-            feed = {
-                uuid: 'expected uuid',
-                title: 'expected title',
-                url: 'expected url',
-                other: 'other field'
-            }
-
-            findAllDeferred = $q.defer()
-
-            feedService = _feedService_
-            feedService.findAll = jasmine.createSpy('feedService.findAll()')
-            feedService.findAll.and.returnValue(findAllDeferred.promise)
+            ngReduxMock.setState({admin: {feeds}})
 
             element = $compile('<my-feed-list></my-feed-list>')(scope)
             page = new PageObject(element)
             scope.$digest()
-
-            findAllDeferred.resolve(feeds)
-            scope.$digest()
-        }))
-
-        it('should show error when feed fetch failed', inject(($compile, $q) => {
-            findAllDeferred = $q.defer()
-            feedService.findAll.and.returnValue(findAllDeferred.promise)
-            element = $compile('<my-feed-list></my-feed-list>')(scope)
-            page = new PageObject(element)
-            findAllDeferred.reject('expected error')
-            scope.$digest()
-
-            expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-            expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'expected error', type: 'error'}})
         }))
 
         it('should show feed items', () => {
@@ -97,7 +70,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
             expect(page.feedList()[0].title().classList).toContain('ng-binding')
         })
 
-        it('should show error icon when feed err', () => {
+        it('should show error icon when feed has fetch errors', () => {
             expect(page.feedList()[0].errorIcon()).toBeUndefined()
             expect(page.feedList()[1].errorIcon()).toBeDefined()
         })
@@ -142,25 +115,18 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
 
         beforeEach(() => {
             listPage = componentMock('myListPage')
-            angular.mock.module('myreader', mock('$state'), mock('feedService'), listPage, mockNgRedux())
+            angular.mock.module('myreader', listPage, mockNgRedux())
         })
 
-        beforeEach(inject(($rootScope, $compile, $q, $ngRedux, _feedService_) => {
+        beforeEach(inject(($rootScope, $compile, $ngRedux) => {
             rootScope = $rootScope
-            scope = $rootScope.$new()
+            scope = $rootScope.$new(true)
             ngReduxMock = $ngRedux
 
-            findAllDeferred = $q.defer()
-
-            feedService = _feedService_
-            feedService.findAll = jasmine.createSpy('feedService.findAll()')
-            feedService.findAll.and.returnValue(findAllDeferred.promise)
+            ngReduxMock.setState({admin: {feeds}})
 
             element = $compile('<my-feed-list></my-feed-list>')(scope)
             page = new PageObject(element)
-            scope.$digest()
-
-            findAllDeferred.resolve(feeds)
             scope.$digest()
         }))
 
@@ -175,7 +141,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
             listPage.bindings.myOnRefresh()
             scope.$digest()
 
-            expect(feedService.findAll).toHaveBeenCalledWith()
+            expect(ngReduxMock.getActionTypes()).toEqual(['GET_FEEDS'])
         })
     })
 })

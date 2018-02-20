@@ -1,6 +1,6 @@
 import * as types from 'store/action-types'
 import {initialApplicationState} from 'store'
-import {equalLinks} from '../shared/links'
+import {equalLinks} from 'store/shared/links'
 
 function applicationInfoReceived({state, action}) {
     return {...state, applicationInfo: action.applicationInfo}
@@ -18,8 +18,18 @@ function feedClear({state}) {
     return {...state, selectedFeed: {}}
 }
 
+function feedDeleted({state, action}) {
+    const feeds = state.feeds.filter(it => it.uuid !== action.uuid)
+    return {...state, feeds}
+}
+
+function feedsReceived({state, action}) {
+    return {...state, feeds: action.feeds}
+}
+
 function feedReceived({state, action}) {
-    return {...state, selectedFeed: {...action.feed}}
+    const feeds = state.feeds.map(it => it.uuid === action.feed.uuid ? action.feed : it)
+    return {...state, feeds, selectedFeed: {...action.feed}}
 }
 
 function feedFetchFailuresReceived({state, action}) {
@@ -36,14 +46,17 @@ export function adminReducers(state = initialApplicationState().admin, action) {
         case types.APPLICATION_INFO_RECEIVED: {
             return applicationInfoReceived({state, action})
         }
-        case types.FEED_CLEAR: {
-            return feedClear({state, action})
+        case types.FEEDS_RECEIVED: {
+            return feedsReceived({state, action})
         }
         case types.FEED_RECEIVED: {
             return feedReceived({state, action})
         }
-        case types.FEED_DELETED: {
+        case types.FEED_CLEAR: {
             return feedClear({state, action})
+        }
+        case types.FEED_DELETED: {
+            return feedDeleted({state, action})
         }
         case types.FEED_FETCH_FAILURES_CLEAR: {
             return feedFetchFailuresClear({state, action})

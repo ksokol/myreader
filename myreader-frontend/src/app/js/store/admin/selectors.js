@@ -5,6 +5,16 @@ const adminSelector = state => state.admin
 
 export const applicationInfoSelector = state => state.admin.applicationInfo
 
+export const feedsSelector =
+    createSelector(
+        adminSelector,
+        admin => {
+            return {
+                feeds: cloneObject(admin.feeds)
+            }
+        }
+    )
+
 export const feedSelector =
     createSelector(
         adminSelector,
