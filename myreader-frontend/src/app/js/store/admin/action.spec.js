@@ -339,14 +339,12 @@ describe('src/app/js/store/admin/action.spec.js', () => {
         it('should contain expected action data', () => {
             store.dispatch(feedFetchFailuresReceived({
                 links: [{rel: 'expected rel', href: 'expected href'}],
-                content: [{message: 'message 1'}],
-                page: {totalElements: 1}
+                content: [{message: 'message 1'}]
             }))
 
             expect(store.getActions()[0]).toContainActionData({
                 failures: [{message: 'message 1'}],
-                links: {'expected rel': {path: 'expected href', query: {}}},
-                totalElements: 1
+                links: {'expected rel': {path: 'expected href', query: {}}}
             })
         })
     })
@@ -369,13 +367,12 @@ describe('src/app/js/store/admin/action.spec.js', () => {
             store.dispatch(fetchFeedFetchFailures({}))
             const success = store.getActions()[0].success
             store.clearActions()
-            store.dispatch(success({content: [{message: 'message 1'}], links: [{rel: 'self', href: '/expected'}], page: {totalElements: 1}}))
+            store.dispatch(success({content: [{message: 'message 1'}], links: [{rel: 'self', href: '/expected'}]}))
 
             expect(store.getActionTypes()).toEqual(['FEED_FETCH_FAILURES_RECEIVED'])
             expect(store.getActions()[0]).toContainActionData({
                 links: {self: {path: '/expected', query: {}}},
-                failures: [{message: 'message 1'}],
-                totalElements: 1
+                failures: [{message: 'message 1'}]
             })
         })
     })

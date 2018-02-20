@@ -77,7 +77,7 @@ describe('src/app/js/store/admin/feed.spec.js', () => {
     describe('toFeedFetchFailures', () => {
 
         it('should return valid object when raw data is undefined', () => {
-            expect(toFeedFetchFailures()).toEqual({failures: [], links: {}, totalElements: 0})
+            expect(toFeedFetchFailures()).toEqual({failures: [], links: {}})
         })
 
         it('should convert raw data', () => {
@@ -87,10 +87,7 @@ describe('src/app/js/store/admin/feed.spec.js', () => {
                     content: [
                         {uuid: '1', message: 'message 1', createdAt: 'createdAt 1'},
                         {uuid: '2', message: 'message 2', createdAt: 'createdAt 2'}
-                    ],
-                    page: {
-                        totalElements: 2
-                    }
+                    ]
                 })
             ).toEqual(
                 {
@@ -98,8 +95,7 @@ describe('src/app/js/store/admin/feed.spec.js', () => {
                     failures: [
                         {uuid: '1', message: 'message 1', createdAt: 'createdAt 1'},
                         {uuid: '2', message: 'message 2', createdAt: 'createdAt 2'}
-                    ],
-                    totalElements: 2
+                    ]
                 })
         })
     })

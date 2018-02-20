@@ -17,6 +17,5 @@ export function toFeedFetchFailure(raw = {}) {
 export function toFeedFetchFailures(raw = {content: [], page: {}}) {
     const links = extractLinks(raw.links)
     const failures = raw.content.map(toFeedFetchFailure)
-    const totalElements = raw.page.totalElements || 0
-    return {failures, links, totalElements}
+    return {failures, links}
 }

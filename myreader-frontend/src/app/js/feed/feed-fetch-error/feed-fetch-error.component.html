@@ -1,9 +1,6 @@
-<p ng-if="!$ctrl.hasErrors()">no errors</p>
-<p class="fetch-errors__information" ng-if="$ctrl.hasErrors()">
-    {{::$ctrl.totalElements}} error(s) in the last {{::$ctrl.fetchErrorRetainDays}} day(s)
-</p>
+<p ng-if="$ctrl.failures.length === 0">no errors</p>
 
-<md-list>
+<md-list ng-if="$ctrl.failures.length > 0">
     <ng-repeat ng-repeat="item in $ctrl.failures track by item.uuid">
         <my-feed-fetch-error-list-item my-item="item"></my-feed-fetch-error-list-item>
         <md-divider></md-divider>

@@ -33,7 +33,7 @@ function feedReceived({state, action}) {
 }
 
 function feedFetchFailuresReceived({state, action}) {
-    const fetchFailures = {failures: action.failures, links: action.links, totalElements: action.totalElements}
+    const fetchFailures = {failures: action.failures, links: action.links}
     const fetchFailureLinks = state.fetchFailures.links || {}
     if (equalLinks(fetchFailureLinks.self, action.links.self, ['next'])) {
         fetchFailures.failures = [...state.fetchFailures.failures, ...action.failures]

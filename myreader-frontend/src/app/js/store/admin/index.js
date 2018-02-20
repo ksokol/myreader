@@ -7,6 +7,6 @@ export default function initialState() {
         applicationInfo: {},
         feeds: [],
         selectedFeed: {},
-        fetchFailures: {}
+        fetchFailures: {failures: []}
     }
 }

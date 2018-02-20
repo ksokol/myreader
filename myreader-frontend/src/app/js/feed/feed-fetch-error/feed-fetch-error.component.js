@@ -1,5 +1,4 @@
 import template from './feed-fetch-error.component.html'
-import './feed-fetch-error.component.css'
 import {feedFetchFailuresSelector, fetchFeedFetchFailures} from 'store'
 
 class controller {
@@ -27,10 +26,6 @@ class controller {
         return {
             onMore: link => dispatch(fetchFeedFetchFailures(link))
         }
-    }
-
-    hasErrors() {
-        return this.totalElements > 0
     }
 }
 

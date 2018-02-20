@@ -131,8 +131,7 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
             action = {
                 type: 'FEED_FETCH_FAILURES_RECEIVED',
                 links: {self: {path: 'path1', query: {a: 'b', next: 'c'}}},
-                failures: [1, 2],
-                totalElements: 2
+                failures: [1, 2]
             }
         })
 
@@ -144,8 +143,7 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
                         self: {
                             path: 'path1', query: {a: 'b', next: 'c'}
                         }
-                    },
-                    totalElements: 2
+                    }
                 }
             }
 
@@ -164,8 +162,7 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
             const expectedState = {
                 fetchFailures: {
                     links: {self: {path: 'path1', query: {a: 'b', next: 'd'}}},
-                    failures: [1, 2, 3, 4],
-                    totalElements: 2
+                    failures: [1, 2, 3, 4]
                 }
             }
 
@@ -178,15 +175,13 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
             action = {
                 ...action,
                 links: {self: {path: 'path2', query: {a: 'b', next: 'd'}}},
-                failures: [3, 4, 5],
-                totalElements: 3
+                failures: [3, 4, 5]
             }
 
             const expectedState = {
                 fetchFailures: {
                     links: {self: {path: 'path2', query: {a: 'b', next: 'd'}}},
-                    failures: [3, 4, 5],
-                    totalElements: 3
+                    failures: [3, 4, 5]
                 }
             }
 

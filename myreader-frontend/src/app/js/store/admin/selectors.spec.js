@@ -7,16 +7,16 @@ describe('src/app/js/store/admin/selectors.spec.js', () => {
     beforeEach(() => {
         state = {
             admin: {
-                applicationInfo: {a: 'b', fetchErrorRetainDays: 42},
+                applicationInfo: {a: 'b'},
                 feeds: [{uuid: 'uuid1'}, {uuid: 'uuid2'}],
                 selectedFeed: {uuid: 'expected uuid', a: 'b', c: 'd'},
-                fetchFailures: {failures: [{a: 'b', c: 'd'}], totalElements: 1}
+                fetchFailures: {failures: [{a: 'b', c: 'd'}]}
             },
         }
     })
 
     it('feedSelector should return application info', () =>
-        expect(applicationInfoSelector(state)).toEqual({a: 'b', fetchErrorRetainDays: 42}))
+        expect(applicationInfoSelector(state)).toEqual({a: 'b'}))
 
     it('feedSelector should return selected feed', () =>
         expect(feedSelector(state)).toEqual({uuid: 'expected uuid', a: 'b', c: 'd'}))
@@ -29,7 +29,7 @@ describe('src/app/js/store/admin/selectors.spec.js', () => {
     })
 
     it('feedFetchFailuresSelector should return feed fetch failures', () =>
-        expect(feedFetchFailuresSelector(state)).toEqual({failures: [{a: 'b', c: 'd'}], totalElements: 1, fetchErrorRetainDays: 42}))
+        expect(feedFetchFailuresSelector(state)).toEqual({failures: [{a: 'b', c: 'd'}]}))
 
     it('feedFetchFailuresSelector should return deep copy of feed fetch failures', () => {
         const actual = feedFetchFailuresSelector(state)

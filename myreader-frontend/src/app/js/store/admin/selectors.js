@@ -24,11 +24,9 @@ export const feedSelector =
 export const feedFetchFailuresSelector =
     createSelector(
         adminSelector,
-        applicationInfoSelector,
-        (admin, applicationInfo) => {
+        admin => {
             return {
-                ...cloneObject(admin.fetchFailures),
-                fetchErrorRetainDays: applicationInfo.fetchErrorRetainDays
+                ...cloneObject(admin.fetchFailures)
             }
         }
     )
