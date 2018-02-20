@@ -7,9 +7,7 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,13 +29,12 @@ public class FeedGetResponseAssemblerSupportTest {
     private static final Date EPOCH_PLUS_MINUTE = Date.from(Instant.EPOCH.plusSeconds(60));
 
     private FetchErrorRepository fetchErrorRepository = mock(FetchErrorRepository.class);
-    private Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
     private FeedGetResponseAssemblerSupport assembler;
     private Feed feed;
 
     @Before
     public void setUp() {
-        assembler = new FeedGetResponseAssemblerSupport(fetchErrorRepository, clock, 1);
+        assembler = new FeedGetResponseAssemblerSupport(fetchErrorRepository);
     }
 
     @Test
@@ -92,6 +89,6 @@ public class FeedGetResponseAssemblerSupportTest {
         feed.setFetched(2);
         feed.setCreatedAt(EPOCH_PLUS_MINUTE);
 
-        given(fetchErrorRepository.countByFeedIdAndCreatedAtGreaterThan(eq(FEED_ID), any())).willReturn(errors);
+        given(fetchErrorRepository.countByFeedId(eq(FEED_ID))).willReturn(errors);
     }
 }

@@ -22,5 +22,5 @@ public interface FetchErrorRepository extends JpaRepository<FetchError, Long> {
 
     Page<FetchError> findByFeedIdOrderByCreatedAtDesc(Long feedId, Pageable pageable);
 
-    int countByFeedIdAndCreatedAtGreaterThan(Long feedId, Date createdAt);
+    int countByFeedId(Long feedId);
 }

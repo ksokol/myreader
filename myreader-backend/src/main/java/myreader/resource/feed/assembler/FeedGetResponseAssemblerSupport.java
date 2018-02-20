@@ -3,15 +3,10 @@ package myreader.resource.feed.assembler;
 import myreader.entity.Feed;
 import myreader.repository.FetchErrorRepository;
 import myreader.resource.feed.beans.FeedGetResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
-
+import static java.util.Objects.requireNonNull;
 import static myreader.resource.ResourceConstants.fetchErrorsLink;
 
 /**
@@ -21,14 +16,10 @@ import static myreader.resource.ResourceConstants.fetchErrorsLink;
 public class FeedGetResponseAssemblerSupport extends ResourceAssemblerSupport<Feed, FeedGetResponse> {
 
     private final FetchErrorRepository fetchErrorRepository;
-    private final Clock clock;
-    private final int retainDays;
 
-    public FeedGetResponseAssemblerSupport(FetchErrorRepository fetchErrorRepository, Clock clock, @Value("${job.fetchError.retainInDays}") int retainDays) {
+    public FeedGetResponseAssemblerSupport(FetchErrorRepository fetchErrorRepository) {
         super(Feed.class, FeedGetResponse.class);
-        this.fetchErrorRepository = fetchErrorRepository;
-        this.clock = clock;
-        this.retainDays = retainDays;
+        this.fetchErrorRepository = requireNonNull(fetchErrorRepository, "fetchErrorRepository is null");
     }
 
     @Override
@@ -40,15 +31,11 @@ public class FeedGetResponseAssemblerSupport extends ResourceAssemblerSupport<Fe
         target.setUrl(source.getUrl());
         target.setFetched(source.getFetched());
         target.setLastModified(source.getLastModified());
-        target.setHasErrors(fetchErrorRepository.countByFeedIdAndCreatedAtGreaterThan(source.getId(), fromNowMinusRetainDays()) > 0);
+        target.setHasErrors(fetchErrorRepository.countByFeedId(source.getId()) > 0);
         target.setCreatedAt(source.getCreatedAt());
 
         target.add(fetchErrorsLink(source.getId()));
 
         return target;
-    }
-
-    private Date fromNowMinusRetainDays() {
-        return Date.from(LocalDateTime.now(clock).minusDays(retainDays).toInstant(ZoneOffset.UTC));
     }
 }

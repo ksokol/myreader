@@ -86,7 +86,6 @@ public class FetchErrorRepositoryTest {
         assertThat(result.getTotalElements(), is(3L));
     }
 
-
     @Test
     public void shouldFindByFeedIdOrderByCreatedAtDesc() {
         Feed feed = createFeed();
@@ -108,14 +107,14 @@ public class FetchErrorRepositoryTest {
     }
 
     @Test
-    public void shouldFindByFeedIdAndCreatedAtGreaterThan() {
+    public void shouldCountByFeedId() {
         Feed feed = createFeed();
         createEntry(now(), feed);
         createEntry(now().minusMinutes(15), feed);
 
-        int expectedCount = fetchErrorRepository.countByFeedIdAndCreatedAtGreaterThan(feed.getId(), toDate(now().minusMinutes(5)));
+        int expectedCount = fetchErrorRepository.countByFeedId(feed.getId());
 
-        assertThat(expectedCount, is(1));
+        assertThat(expectedCount, is(2));
     }
 
     private FetchError createEntry(Feed feed) {

@@ -192,7 +192,7 @@
       "url": "http://feeds.feedburner.com/AllAtlassianBlogs",
       "lastModified": "Thu, 27 Mar 2014 13:53:36 GMT",
       "fetched": 142,
-      "hasErrors": false,
+      "hasErrors": true,
       "createdAt": "2014-03-07T21:07:33Z",
       "links": "${json-unit.ignore}"
     },
