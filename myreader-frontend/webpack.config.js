@@ -7,6 +7,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 require('babel-plugin-angularjs-annotate')
 
 const ENV = process.env.npm_lifecycle_event
@@ -147,6 +148,7 @@ module.exports = function makeWebpackConfig() {
      * List: http://webpack.github.io/docs/list-of-plugins.html
      */
     config.plugins = [
+        new CleanWebpackPlugin(['dist']),
         new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'}),
         new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.DefinePlugin({
