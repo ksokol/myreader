@@ -57,8 +57,32 @@ import uiRouterStartTransitionHandler from 'shared/router/uiRouterStartTransitio
 import './config'
 
 angular
-    .module('myreader', [ngRedux, 'common.config', 'ngSanitize', 'ui.router', 'ngMaterial', 'ngMessages'])
-
+    .module('myreader', [
+        ngRedux,
+        'common.config',
+        'ngSanitize',
+        'ui.router',
+        'ngMessages',
+        'ngAnimate',
+        'ngAria',
+        'material.core',
+        'material.core.animate',
+        'material.components.autocomplete',
+        'material.components.backdrop',
+        'material.components.button',
+        'material.components.checkbox',
+        'material.components.chips',
+        'material.components.content',
+        'material.components.divider',
+        'material.components.icon',
+        'material.components.input',
+        'material.components.list',
+        'material.components.showHide',
+        'material.components.select',
+        'material.components.sidenav',
+        'material.components.toolbar',
+        'material.components.virtualRepeat'
+    ])
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)
     .component('myEntryTags', EntryTagsComponent)
