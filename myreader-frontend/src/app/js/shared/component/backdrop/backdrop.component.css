@@ -1,0 +1,27 @@
+.my-backdrop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #000;
+    opacity: 0;
+}
+
+@keyframes my-backdrop-fade-in {
+    0% {opacity: 0;}
+    100% {opacity: 0.5;}
+}
+
+@keyframes my-backdrop-fade-out {
+    0% {opacity: 0.5;}
+    100% {opacity: 0;}
+}
+
+.my-backdrop--visible {
+    animation: my-backdrop-fade-in 300ms normal forwards;
+}
+
+.my-backdrop--closing {
+    animation: my-backdrop-fade-out 300ms ease-out forwards;
+}
