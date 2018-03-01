@@ -1,21 +1,16 @@
-<md-sidenav layout="column" class="site-sidenav md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$ctrl.isDesktop">
-    <md-toolbar></md-toolbar>
+<div class="app">
+    <header class="app__header">
+        <md-button class="md-icon-button" ng-if="!$ctrl.isDesktop" ng-click="$ctrl.toggleSidenav()">
+            <my-icon my-type="menu" my-color="white"></my-icon>
+        </md-button>
+    </header>
 
-    <md-content flex>
-        <my-navigation ng-click="$ctrl.onClickNavigationItem()"></my-navigation>
-    </md-content>
-</md-sidenav>
-<div layout="column" flex>
-    <md-toolbar hide-gt-md>
-        <div class="md-toolbar-tools">
-            <md-button class="md-icon-button" hide-gt-md ng-click="$ctrl.openMenu()">
-                <my-icon my-type="menu"
-                         my-color="white">
-                </my-icon>
-            </md-button>
-        </div>
-    </md-toolbar>
+    <nav class="app__nav" ng-class="{'app__nav--open': $ctrl.sidenavSlideIn, 'app__nav--animate': !$ctrl.isDesktop}">
+        <my-navigation ng-click="$ctrl.toggleSidenav()"></my-navigation>
+    </nav>
 
-    <my-toast></my-toast>
-    <md-content ui-view="content"></md-content>
+    <main class="app__main" ui-view="content"></main>
 </div>
+
+<my-toast></my-toast>
+<my-backdrop></my-backdrop>

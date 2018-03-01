@@ -53,6 +53,7 @@ import {NavigationComponent} from './navigation/navigation.component'
 import createRouterMiddleware from 'store/middleware/router'
 import uiRouterAdapter from 'shared/router/uiRouterAdapter'
 import uiRouterStartTransitionHandler from 'shared/router/uiRouterStartTransitionHandler'
+import {BackdropComponent} from 'shared/component/backdrop/backdrop.component'
 
 import './config'
 
@@ -72,15 +73,12 @@ angular
         'material.components.button',
         'material.components.checkbox',
         'material.components.chips',
-        'material.components.content',
         'material.components.divider',
         'material.components.icon',
         'material.components.input',
         'material.components.list',
         'material.components.showHide',
         'material.components.select',
-        'material.components.sidenav',
-        'material.components.toolbar',
         'material.components.virtualRepeat'
     ])
     .component('myEntryActions', EntryActionsComponent)
@@ -111,8 +109,9 @@ angular
     .component('myFeedStream', FeedStreamComponent)
     .component('myNavigationSubscriptionItem', NavigationSubscriptionItemComponent)
     .component('myNavigationSubscriptionsItem', NavigationSubscriptionsItemComponent)
-    .component('myAppComponent', AppComponent)
+    .component('myApp', AppComponent)
     .component('myNavigation', NavigationComponent)
+    .component('myBackdrop', BackdropComponent)
 
     .component('myButtonGroup', ButtonGroupComponent)
     .component('myButton', ButtonComponent)
@@ -145,14 +144,23 @@ angular
                 [installAuthorizationChangeActionDispatcher, installMediaBreakpointActionDispatcher],
                 [routerMiddleware]
             )
-            store.subscribe(() => $rootScope.$evalAsync())
+            store.subscribe($rootScope.$evalAsync)
             return store
         }
     })
-    .run(($ngRedux, $transitions) => {
+    // TODO part of AngularJS exit strategy
+    .run(($rootScope, $ngRedux, $transitions) => {
         'ngInject'
 
         if (isInDevMode(ENVIRONMENT) || isInProdMode(ENVIRONMENT)) {
             $transitions.onStart({}, t => uiRouterStartTransitionHandler(t, $ngRedux, ENVIRONMENT))
+        }
+
+        const setTimeoutFn = window.setTimeout
+        window.setTimeout = (fn, delay) => {
+            return setTimeoutFn(() => {
+                fn()
+                $rootScope.$digest()
+            }, delay)
         }
     })

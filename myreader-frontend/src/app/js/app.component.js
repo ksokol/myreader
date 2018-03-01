@@ -1,17 +1,16 @@
 import template from './app.component.html'
 import './app.component.css'
-import {mediaBreakpointIsDesktopSelector} from 'store'
+import {toggleSidenav, sidenavSlideIn, mediaBreakpointIsDesktopSelector} from 'store'
 
 class controller {
 
-    constructor($mdSidenav, $ngRedux) {
+    constructor($ngRedux) {
         'ngInject'
-        this.$mdSidenav = $mdSidenav
         this.$ngRedux = $ngRedux
     }
 
     $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
     }
 
     $onDestroy() {
@@ -20,16 +19,15 @@ class controller {
 
     mapStateToThis(state) {
         return {
-            isDesktop: mediaBreakpointIsDesktopSelector(state)
+            isDesktop: mediaBreakpointIsDesktopSelector(state),
+            sidenavSlideIn: sidenavSlideIn(state)
         }
     }
 
-    openMenu() {
-        this.$mdSidenav('left').toggle()
-    }
-
-    onClickNavigationItem() {
-        this.$mdSidenav('left').close()
+    mapDispatchToThis(dispatch) {
+        return {
+            toggleSidenav: () => dispatch(toggleSidenav())
+        }
     }
 }
 

@@ -21,7 +21,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/app",
                 views: {
                     body: {
-                        template: '<my-app-component layout="row"></my-app-component>',
+                        template: '<my-app></my-app>',
                     }
                 }
             })
@@ -30,7 +30,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/admin",
                 views: {
                     body: {
-                        template: '<my-app-component layout="row"></my-app-component>',
+                        template: '<my-app></my-app>',
                     }
                 }
             })

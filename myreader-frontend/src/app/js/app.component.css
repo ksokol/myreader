@@ -1,3 +1,61 @@
-my-app-component {
+my-app {
+    display: flex;
+    flex-direction: row;
     width: 100%;
+}
+
+.app {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: 64px;
+    grid-template-areas:
+            "header main"
+            "nav    main";
+}
+
+@media (max-width: 1279px) {
+    .app {
+        grid-template-areas:
+                "header header"
+                "nav    main";
+        grid-template-columns: 0 1fr;
+    }
+}
+
+.app__header {
+    grid-area: header;
+    background-color: rgb(63,81,181);
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+}
+
+.app__nav {
+    grid-area: nav;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+    background-color: white;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    width: 100%;
+    min-height: 0;
+}
+
+.app__nav--animate {
+    transition: 0.3s ease-in-out;
+}
+
+.app__nav--open {
+    width: 320px;
+}
+
+.app__main {
+    grid-area: main;
+    min-height: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
