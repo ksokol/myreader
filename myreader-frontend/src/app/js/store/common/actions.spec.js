@@ -4,9 +4,11 @@ import {
     mediaBreakpointChanged,
     removeNotification,
     showErrorNotification,
-    showSuccessNotification
+    showSuccessNotification,
+    hideBackdrop,
+    toggleSidenav
 } from 'store'
-import {createMockStore} from '../../shared/test-utils'
+import {createMockStore} from 'shared/test-utils'
 
 describe('src/app/js/store/common/actions.spec.js', () => {
 
@@ -70,5 +72,17 @@ describe('src/app/js/store/common/actions.spec.js', () => {
         store.dispatch(mediaBreakpointChanged('expected breakpoint name'))
 
         expect(store.getActions()[0]).toEqual({type: 'MEDIA_BREAKPOINT_CHANGED', mediaBreakpoint: 'expected breakpoint name'})
+    })
+
+    it('action creator toggleSidenav', () => {
+        store.dispatch(toggleSidenav())
+
+        expect(store.getActionTypes()).toEqual(['TOGGLE_SIDENAV'])
+    })
+
+    it('action creator hideBackdrop', () => {
+        store.dispatch(hideBackdrop())
+
+        expect(store.getActionTypes()).toEqual(['HIDE_BACKDROP'])
     })
 })

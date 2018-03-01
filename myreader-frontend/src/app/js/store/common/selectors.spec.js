@@ -1,4 +1,11 @@
-import {getNextNotificationId, getNotifications, getPendingRequests, mediaBreakpointIsDesktopSelector} from 'store'
+import {
+    backdropIsVisible,
+    getNextNotificationId,
+    getNotifications,
+    getPendingRequests,
+    mediaBreakpointIsDesktopSelector,
+    sidenavSlideIn
+} from 'store'
 
 describe('src/app/js/store/common/selectors.spec.js', () => {
 
@@ -39,5 +46,13 @@ describe('src/app/js/store/common/selectors.spec.js', () => {
 
     it('mediaBreakpointIsDesktopSelector should return false when mediaBreakpoint is set to "other"', () => {
         expect(mediaBreakpointIsDesktopSelector(state({mediaBreakpoint: 'other'}))).toEqual(false)
+    })
+
+    it('sidenavSlideIn should return true', () => {
+        expect(sidenavSlideIn(state({sidenavSlideIn: true}))).toEqual(true)
+    })
+
+    it('backdropIsVisible should return true', () => {
+        expect(backdropIsVisible(state({backdropVisible: true}))).toEqual(true)
     })
 })

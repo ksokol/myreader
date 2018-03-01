@@ -72,9 +72,66 @@ describe('src/app/js/store/common/reducers.spec.js', () => {
         expect(commonReducers(state, {type: 'FETCH_END'})).toContainObject({pendingRequests: 0})
     })
 
-    it('action MEDIA_BREAKPOINT_CHANGED', () => {
-        state.mediaBreakpoint = null
-        expect(commonReducers(state, {type: 'MEDIA_BREAKPOINT_CHANGED', mediaBreakpoint: 'expected breakpoint name'}))
-            .toContainObject({mediaBreakpoint: 'expected breakpoint name'})
+    describe('action MEDIA_BREAKPOINT_CHANGED', () => {
+
+        let action, currentState
+
+        beforeEach(() => {
+            action = {
+                type: 'MEDIA_BREAKPOINT_CHANGED',
+                mediaBreakpoint: 'phone'
+            }
+            currentState = {...state, backdropVisible: true, sidenavSlideIn: true}
+        })
+
+        it('should set mediaBreakpoint', () =>
+            expect(commonReducers(state, action)).toContainObject({mediaBreakpoint: 'phone'}))
+
+        it('should not change backdropVisible and sidenavSlideIn when media breakpoint is "phone"', () =>
+            expect(commonReducers(currentState, action)).toContainObject({backdropVisible: true, sidenavSlideIn: true}))
+
+        it('should not change backdropVisible and sidenavSlideIn when media breakpoint is "tablet"', () =>
+            expect(commonReducers(currentState, {...action, mediaBreakpoint: 'tablet'}))
+                .toContainObject({backdropVisible: true, sidenavSlideIn: true}))
+
+        it('should set backdropVisible and sidenavSlideIn to false when media breakpoint is "desktop"', () =>
+            expect(commonReducers(currentState, {...action, mediaBreakpoint: 'desktop'}))
+                .toContainObject({backdropVisible: false, sidenavSlideIn: false}))
+    })
+
+    describe('action TOGGLE_SIDENAV', () => {
+
+        let action, currentState
+
+        beforeEach(() => {
+            action = {type: 'TOGGLE_SIDENAV'}
+            currentState = {...state, mediaBreakpoint: 'phone', backdropVisible: true, sidenavSlideIn: true}
+        })
+
+        it('should not change backdropVisible and sidenavSlideIn when media breakpoint is "phone"', () =>
+            expect(commonReducers(currentState, action)).toContainObject({backdropVisible: false, sidenavSlideIn: false}))
+
+        it('should not change backdropVisible and sidenavSlideIn when media breakpoint is "tablet"', () =>
+            expect(commonReducers({...currentState, mediaBreakpoint: 'tablet'}, action))
+                .toContainObject({backdropVisible: false, sidenavSlideIn: false}))
+
+        it('should change backdropVisible and sidenavSlideIn when media breakpoint is "desktop"', () =>
+            expect(commonReducers({...currentState, mediaBreakpoint: 'desktop'}, action))
+                .toContainObject({backdropVisible: true, sidenavSlideIn: true}))
+    })
+
+    describe('action HIDE_BACKDROP', () => {
+
+        let action
+
+        beforeEach(() => action = {type: 'HIDE_BACKDROP'})
+
+        it('should set backdropVisible and sidenavSlideIn to false when backdrop is visible', () =>
+            expect(commonReducers({...state, backdropVisible: true, sidenavSlideIn: true}, action))
+                .toContainObject({backdropVisible: false, sidenavSlideIn: false}))
+
+        it('should set backdropVisible and sidenavSlideIn to true when backdrop is not visible', () =>
+            expect(commonReducers({...state, backdropVisible: false, sidenavSlideIn: false}, action))
+                .toContainObject({backdropVisible: true, sidenavSlideIn: true}))
     })
 })

@@ -15,3 +15,7 @@ export const getPendingRequests = state => {
 }
 
 export const mediaBreakpointIsDesktopSelector = state => state.common.mediaBreakpoint === 'desktop'
+
+export const sidenavSlideIn = state => state.common.sidenavSlideIn
+
+export const backdropIsVisible = state => state.common.backdropVisible

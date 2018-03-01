@@ -9,6 +9,8 @@ export default function initialState() {
             nextId: 0,
             notifications: []
         },
-        mediaBreakpoint: ''
+        mediaBreakpoint: '',
+        backdropVisible: false,
+        sidenavSlideIn: false,
     }
 }
