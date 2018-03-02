@@ -35,12 +35,13 @@ class controller {
 
     onClick() {
         this.actionPending = true
+        this.loginError = false
         return this.$ngRedux.dispatch(tryLogin(this.loginForm))
     }
 
     onError() {
         this.actionPending = false
-        this.message = {type: 'error', message: 'Username or password wrong'}
+        this.loginError = true
     }
 }
 

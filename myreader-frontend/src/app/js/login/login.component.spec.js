@@ -76,7 +76,7 @@ describe('src/app/js/login/login.component.spec.js', () => {
 
             setTimeout(() => {
                 scope.$digest()
-                expect(element.find('my-notification-panel').find('span')[0].innerText).toEqual('Username or password wrong')
+                expect(element.find('span')[0].innerText).toEqual('Username or password wrong')
                 done()
             }, 0)
         })

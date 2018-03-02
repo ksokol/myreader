@@ -1,53 +1,38 @@
-<div class="login">
-    <div>
-        <my-notification-panel layout="row"
-                               layout-align="center center"
-                               my-message="$ctrl.message">
-        </my-notification-panel>
+<form class="login">
+    <md-input-container>
+        <label for="email">Email</label>
+        <input id="email"
+               name="username"
+               ng-model="$ctrl.loginForm.username"
+               ng-disabled="$ctrl.actionPending">
+    </md-input-container>
 
-        <form class="login__form">
-            <div layout="row">
-                <md-input-container flex>
-                    <label for="email">Email</label>
-                    <input id="email"
-                           name="username"
-                           ng-model="$ctrl.loginForm.username"
-                           ng-disabled="$ctrl.actionPending">
-                </md-input-container>
-            </div>
+    <md-input-container>
+        <label for="password">Password</label>
+        <input id="password"
+               type="password"
+               name="password"
+               ng-model="$ctrl.loginForm.password"
+               ng-disabled="$ctrl.actionPending">
+    </md-input-container>
 
-            <div layout="row">
-                <md-input-container flex>
-                    <label for="password">Password</label>
-                    <input id="password"
-                           type="password"
-                           name="password"
-                           ng-model="$ctrl.loginForm.password"
-                           ng-disabled="$ctrl.actionPending">
-                </md-input-container>
-            </div>
+    <md-input-container>
+        <md-checkbox name="rememberMe"
+                     ng-model="$ctrl.loginForm.rememberMe"
+                     ng-true-value="'on'"
+                     ng-disabled="$ctrl.actionPending">Remember me
+        </md-checkbox>
+    </md-input-container>
 
-            <div layout="row">
-                <md-input-container>
-                    <md-checkbox name="rememberMe"
-                                 ng-model="$ctrl.loginForm.rememberMe"
-                                 ng-true-value="'on'"
-                                 ng-disabled="$ctrl.actionPending">Remember me
-                    </md-checkbox>
-                </md-input-container>
-            </div>
-
-            <div layout="row" class="login__button">
-                <div>
-                    <my-button-group>
-                        <my-button my-text="Login"
-                                   my-button-type="submit"
-                                   my-on-click="$ctrl.onClick()"
-                                   my-on-error="$ctrl.onError()">
-                        </my-button>
-                    </my-button-group>
-                </div>
-            </div>
-        </form>
+    <div class="login__message">
+        <span ng-if="$ctrl.loginError">Username or password wrong</span>
     </div>
-</div>
+
+    <my-button-group class="login__button">
+        <my-button my-text="Login"
+                   my-button-type="submit"
+                   my-on-click="$ctrl.onClick()"
+                   my-on-error="$ctrl.onError()">
+        </my-button>
+    </my-button-group>
+</form>

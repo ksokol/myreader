@@ -12,7 +12,7 @@ angular.module('common.config', ['ui.router'])
                 url: "/login",
                 views: {
                     body: {
-                        template: '<my-login flex></my-login>'
+                        template: '<my-login></my-login>'
                     }
                 }
             })
