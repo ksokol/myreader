@@ -4,9 +4,8 @@ import {authorizedSelector, adminPermissionSelector, tryLogin, routeChange} from
 
 class controller {
 
-    constructor($state, $ngRedux) {
+    constructor($ngRedux) {
         'ngInject'
-        this.$state = $state
         this.$ngRedux = $ngRedux
     }
 
@@ -28,7 +27,7 @@ class controller {
             if(isAdmin) {
                 this.$ngRedux.dispatch(routeChange(['admin', 'overview']))
             } else {
-                this.$state.go('app.entries')
+                this.$ngRedux.dispatch(routeChange(['app', 'entries']))
             }
         }
     }

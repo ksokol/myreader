@@ -1,34 +1,30 @@
-import {mock, mockNgRedux} from 'shared/test-utils'
+import {mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/login/login.component.spec.js', () => {
 
-    let ngReduxMock, state
+    let ngReduxMock
 
-    beforeEach(angular.mock.module('myreader', mock('$state'), mockNgRedux()))
+    beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
-    beforeEach(inject(($rootScope, $compile, $state, $ngRedux) => {
-        ngReduxMock = $ngRedux
-        state = $state
-        state.go = jasmine.createSpy('$state.go()')
-    }))
+    beforeEach(inject($ngRedux => ngReduxMock = $ngRedux))
 
     describe('', () => {
 
         let component
 
         beforeEach(inject($componentController =>
-            component = $componentController('myLogin', {$ngRedux: ngReduxMock, $state: state})))
+            component = $componentController('myLogin', {$ngRedux: ngReduxMock})))
 
         it('should stay on login page when user is not authorized', () => {
             ngReduxMock.setState({security: {authorized: false}})
             component.$onInit()
-            expect(state.go).not.toHaveBeenCalled()
+            expect(ngReduxMock.getActionTypes()).toEqual([])
         })
 
         it('should navigate to admin page when user is authorized and has admin role', () => {
             ngReduxMock.setState({security: {authorized: true, role: 'ROLE_USER'}})
             component.$onInit()
-            expect(state.go).toHaveBeenCalledWith('app.entries')
+            expect(ngReduxMock.getActions()).toContainObject([{type: 'ROUTE_CHANGED', route: ['app', 'entries']}])
         })
 
         it('should navigate to user page when user is authorized and has user role', () => {
@@ -46,7 +42,7 @@ describe('src/app/js/login/login.component.spec.js', () => {
         beforeEach(inject(($rootScope, $compile) => {
             jasmine.clock().uninstall()
 
-            scope = $rootScope.$new()
+            scope = $rootScope.$new(true)
 
             element = $compile('<my-login></my-login>')(scope)
 
