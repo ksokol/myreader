@@ -19,7 +19,6 @@ import {BackendValidationDirective} from "shared/directive/backend-validation/ba
 import {ValidationMessageComponent} from "shared/component/validation-message/validation-message.component"
 import {ButtonGroupComponent} from "shared/component/button-group/button-group.component"
 import {ButtonComponent} from "shared/component/button/button.component"
-import {NotificationPanelComponent} from "shared/component/notification-panel/notification-panel.component"
 import {FeedComponent} from "./feed/feed.component"
 import {SearchInputComponent} from "shared/component/search-input/search-input.component"
 import {FeedListComponent} from "./feed/feed-list.component"
@@ -117,7 +116,6 @@ angular
     .component('myButton', ButtonComponent)
     .component('myLoadMore', LoadMoreComponent)
     .component('myIcon', IconComponent)
-    .component('myNotificationPanel', NotificationPanelComponent)
     .component('mySearchInput', SearchInputComponent)
     .component('myToast', ToastComponent)
     .component('myAutoScroll', AutoScrollComponent)
