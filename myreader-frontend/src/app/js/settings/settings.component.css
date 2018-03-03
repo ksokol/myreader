@@ -1,4 +1,5 @@
-.settings {
-    width: 300px;
+my-settings {
+    display: flex;
+    flex-direction: column;
     padding: 10px;
 }

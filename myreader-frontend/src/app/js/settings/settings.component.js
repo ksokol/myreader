@@ -21,6 +21,11 @@ class controller {
             showEntryDetails: this.showEntryDetails
         }))
     }
+
+    onPageSizeChoose(option) {
+        this.pageSize = option
+        this.save()
+    }
 }
 
 export const SettingsComponent = {
