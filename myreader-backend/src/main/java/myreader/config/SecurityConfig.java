@@ -83,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .failureHandler((request, response, exception) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
-                .rememberMe().key(rememberMeKey)
+                .rememberMe().key(rememberMeKey).alwaysRemember(true)
                 .and()
                 .logout().logoutSuccessHandler((request, response, authentication) -> response.setStatus(SC_NO_CONTENT))
                 .permitAll()

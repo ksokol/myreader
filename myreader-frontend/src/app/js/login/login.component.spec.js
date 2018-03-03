@@ -51,19 +51,11 @@ describe('src/app/js/login/login.component.spec.js', () => {
             scope.$digest()
         }))
 
-        it('should post credentials without remember me flag', () => {
+        it('should post credentials', () => {
             element.find('button')[0].click()
 
             expect(ngReduxMock.getActionTypes()).toEqual(['POST_LOGIN'])
-            expect(ngReduxMock.getActions()[0].body.toString()).toEqual('username=email&password=password&remember-me=undefined')
-        })
-
-        it('should post credentials with remember me flag', () => {
-            element.find('md-checkbox').triggerHandler('click')
-            element.find('button')[0].click()
-
-            expect(ngReduxMock.getActionTypes()).toEqual(['POST_LOGIN'])
-            expect(ngReduxMock.getActions()[0].body.toString()).toEqual('username=email&password=password&remember-me=on')
+            expect(ngReduxMock.getActions()[0].body.toString()).toEqual('username=email&password=password')
         })
 
         it('should indicate wrong credentials on page', done => {
@@ -86,7 +78,6 @@ describe('src/app/js/login/login.component.spec.js', () => {
                 expect(element.find('button')[0].disabled).toBe(true)
                 expect(element.find('input')[0].disabled).toBe(true)
                 expect(element.find('input')[1].disabled).toBe(true)
-                expect(element.find('md-checkbox')[0].attributes['disabled'].value).toEqual('disabled')
                 done()
             }, 0)
         })

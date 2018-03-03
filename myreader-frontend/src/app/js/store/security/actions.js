@@ -22,11 +22,10 @@ export const logout = () => {
     return {type: 'POST_LOGOUT', url: LOGOUT, success: [unauthorized, () => routeChange(['login'])]}
 }
 
-export const tryLogin = ({username, password, rememberMe}) => {
+export const tryLogin = ({username, password}) => {
     const searchParams = new URLSearchParams()
     searchParams.set('username', username)
     searchParams.set('password', password)
-    searchParams.set('remember-me', rememberMe)
 
     return {
         type: 'POST_LOGIN',

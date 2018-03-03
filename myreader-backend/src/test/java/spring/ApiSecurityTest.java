@@ -91,8 +91,7 @@ public class ApiSecurityTest {
     public void testRememberMeWithBrowser() throws Exception {
         Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .param("username", USER1.username)
-                .param("password", USER1.password)
-                .param("remember-me", "on"))
+                .param("password", USER1.password))
                 .andExpect(status().isNoContent())
                 .andReturn()
                 .getResponse().getCookie("remember-me");
@@ -108,8 +107,7 @@ public class ApiSecurityTest {
         Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .with(xmlHttpRequest())
                 .param("username", USER1.username)
-                .param("password", USER1.password)
-                .param("remember-me", "on"))
+                .param("password", USER1.password))
                 .andExpect(status().isNoContent())
                 .andReturn()
                 .getResponse().getCookie("remember-me");

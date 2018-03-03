@@ -69,11 +69,11 @@ describe('src/app/js/store/security/action.spec.js', () => {
         })
 
         it('should contain expected action data', () => {
-            store.dispatch(tryLogin({username: 'a', password: 'b', rememberMe: 'c'}))
+            store.dispatch(tryLogin({username: 'a', password: 'b'}))
 
             expect(store.getActions()[0])
                 .toContainActionData({url: 'check', headers: {'content-type': 'application/x-www-form-urlencoded'}})
-            expect(store.getActions()[0].body.toString()).toEqual('username=a&password=b&remember-me=c')
+            expect(store.getActions()[0].body.toString()).toEqual('username=a&password=b')
         })
 
         it('should dispatch action defined in success property', () => {
