@@ -69,7 +69,6 @@ angular
         'material.core',
         'material.core.animate',
         'material.components.autocomplete',
-        'material.components.backdrop',
         'material.components.button',
         'material.components.checkbox',
         'material.components.chips',
@@ -78,7 +77,6 @@ angular
         'material.components.input',
         'material.components.list',
         'material.components.showHide',
-        'material.components.select',
         'material.components.virtualRepeat'
     ])
     .component('myEntryActions', EntryActionsComponent)
