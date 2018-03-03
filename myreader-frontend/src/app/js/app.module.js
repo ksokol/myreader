@@ -70,7 +70,6 @@ angular
         'material.core.animate',
         'material.components.autocomplete',
         'material.components.button',
-        'material.components.checkbox',
         'material.components.chips',
         'material.components.divider',
         'material.components.icon',
