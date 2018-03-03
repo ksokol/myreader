@@ -33,7 +33,7 @@ describe('src/app/js/settings/settings.component.spec.js', () => {
 
     it('should initialize choose components', () => {
         expect(choose.bindings[0]).toContainObject({myValue: 20, myOptions: [10, 20, 30]})
-        expect(choose.bindings[1]).toContainObject({myValue: false, myOptions: [{label: 'show', value: true}, {label: 'hide', value: false}]})
+        expect(choose.bindings[1]).toContainObject({myValue: false, myOptions: [{label: 'show', value: false}, {label: 'hide', value: true}]})
         expect(choose.bindings[2]).toContainObject({myValue: true, myOptions: [{label: 'show', value: true}, {label: 'hide', value: false}]})
     })
 
