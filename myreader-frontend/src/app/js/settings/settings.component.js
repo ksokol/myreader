@@ -26,6 +26,16 @@ class controller {
         this.pageSize = option
         this.save()
     }
+
+    onShowUnseenEntriesChoose(option) {
+        this.showUnseenEntries = option
+        this.save()
+    }
+
+    onShowEntryDetailsChoose(option) {
+        this.showEntryDetails = option
+        this.save()
+    }
 }
 
 export const SettingsComponent = {

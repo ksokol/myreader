@@ -1,12 +1,12 @@
-import {mockNgRedux, componentMock} from 'shared/test-utils'
+import {mockNgRedux, multipleComponentMock} from 'shared/test-utils'
 
 describe('src/app/js/settings/settings.component.spec.js', () => {
 
-    let scope, element, choosePageSize, ngReduxMock
+    let scope, choose, ngReduxMock
 
     beforeEach(() => {
-        choosePageSize = componentMock('myChoose')
-        angular.mock.module('myreader', choosePageSize, mockNgRedux())
+        choose = multipleComponentMock('myChoose')
+        angular.mock.module('myreader', choose, mockNgRedux())
     })
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
@@ -21,33 +21,36 @@ describe('src/app/js/settings/settings.component.spec.js', () => {
             }
         })
 
-        element = $compile('<my-settings></my-settings>')(scope)
+        $compile('<my-settings></my-settings>')(scope)
         scope.$digest()
     }))
 
     it('should dispatch action with proper type', () => {
-        element.find('md-checkbox')[1].click()
+        choose.bindings[0].myOnChoose({option: false})
 
         expect(ngReduxMock.getActionTypes()).toEqual(['SETTINGS_UPDATE'])
     })
 
-    it('should initialize page size choose component', () =>
-        expect(choosePageSize.bindings).toContainObject({myValue: 20, myOptions: [10, 20, 30]}))
+    it('should initialize choose components', () => {
+        expect(choose.bindings[0]).toContainObject({myValue: 20, myOptions: [10, 20, 30]})
+        expect(choose.bindings[1]).toContainObject({myValue: false, myOptions: [{label: 'show', value: true}, {label: 'hide', value: false}]})
+        expect(choose.bindings[2]).toContainObject({myValue: true, myOptions: [{label: 'show', value: true}, {label: 'hide', value: false}]})
+    })
 
     it('should update pageSize setting', () => {
-        choosePageSize.bindings.myOnChoose({option: 30})
+        choose.bindings[0].myOnChoose({option: 30})
 
         expect(ngReduxMock.getActions()[0]).toContainActionData({settings: {pageSize: 30}})
     })
 
     it('should update showUnseenEntries setting', () => {
-        element.find('md-checkbox')[0].click()
+        choose.bindings[1].myOnChoose({option: true})
 
         expect(ngReduxMock.getActions()[0]).toContainActionData({settings: {showUnseenEntries: true}})
     })
 
     it('should update showEntryDetails setting', () => {
-        element.find('md-checkbox')[1].click()
+        choose.bindings[2].myOnChoose({option: false})
 
         expect(ngReduxMock.getActions()[0]).toContainActionData({settings: {showEntryDetails: false}})
     })

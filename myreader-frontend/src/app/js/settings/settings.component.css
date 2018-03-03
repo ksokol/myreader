@@ -3,3 +3,7 @@ my-settings {
     flex-direction: column;
     padding: 10px;
 }
+
+my-settings > my-choose + label {
+    padding-top: 25px;
+}

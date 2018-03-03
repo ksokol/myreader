@@ -5,14 +5,17 @@
             my-on-choose="$ctrl.onPageSizeChoose(option)">
 </my-choose>
 
-<div layout="row">
-    <md-input-container>
-        <md-checkbox ng-model="$ctrl.showUnseenEntries" ng-change="$ctrl.save()">Hide old entries</md-checkbox>
-    </md-input-container>
-</div>
+<label for="unseenEntries">Old entries</label>
+<my-choose id="unseenEntries"
+           my-value="$ctrl.showUnseenEntries"
+           my-options="[{label: 'show', value: true}, {label: 'hide', value: false}]"
+           my-on-choose="$ctrl.onShowUnseenEntriesChoose(option)">
+</my-choose>
 
-<div layout="row">
-    <md-input-container>
-        <md-checkbox ng-model="$ctrl.showEntryDetails" ng-change="$ctrl.save()">Show entry content</md-checkbox>
-    </md-input-container>
-</div>
+<label for="entryDetails">Entry content</label>
+<my-choose id="entryDetails"
+           my-value="$ctrl.showEntryDetails"
+           my-options="[{label: 'show', value: true}, {label: 'hide', value: false}]"
+           my-on-choose="$ctrl.onShowEntryDetailsChoose(option)">
+</my-choose>
+
