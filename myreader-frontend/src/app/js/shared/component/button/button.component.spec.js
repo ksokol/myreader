@@ -170,11 +170,6 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
             }
         }))
 
-        it('should throw error when required buttonGroupCtrl unavailable', inject(($rootScope, $compile) =>
-            expect(() => $compile('<my-button></my-button>')($rootScope.$new()))
-                .toThrowError(/Controller 'myButtonGroup', required by directive 'myButton', can't be found!/)
-        ))
-
         it('should set my-type and my-text', () => {
             const page = Page(withoutConfirmation)
             expect(page.button().classes()).toContain('md-warn')

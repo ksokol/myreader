@@ -44,18 +44,18 @@ class controller {
     }
 
     $onInit() {
-        this.buttonGroupCtrl.addButton(this)
+        this.buttonGroupCtrl && this.buttonGroupCtrl.addButton(this)
         this.myButtonType = this.myButtonType || 'button'
     }
 
     reset() {
         this.isPending = false
         this.showConfirmButton = false
-        this.buttonGroupCtrl.enableButtons()
+        this.buttonGroupCtrl && this.buttonGroupCtrl.enableButtons()
     }
 
     onClick() {
-        this.buttonGroupCtrl.disableButtons()
+        this.buttonGroupCtrl && this.buttonGroupCtrl.disableButtons()
         this.shouldPresentConfirmButton() ? this.presentConfirmButton() : this.processOnClick()
     }
 
@@ -89,7 +89,7 @@ class controller {
 export const ButtonComponent = {
     template, controller,
     require: {
-        buttonGroupCtrl: '^myButtonGroup'
+        buttonGroupCtrl: '?^myButtonGroup'
     },
     bindings: {
         myText: '@',
