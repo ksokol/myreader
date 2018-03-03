@@ -30,7 +30,6 @@ describe('src/app/js/shared/component/choose/choose.component.spec.js', () => {
 
     let scope, choose, myButtons
 
-
     beforeEach(() => {
         myButtons = multipleComponentMock('myButton')
         angular.mock.module('myreader', myButtons)
@@ -39,32 +38,68 @@ describe('src/app/js/shared/component/choose/choose.component.spec.js', () => {
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new(true)
         scope.onChoose = jasmine.createSpy('onChoose()')
+        scope.value = 2
 
-        const element = $compile(`<my-choose my-value="2"
-                                             my-options="[1, 2, 3]"
+        const element = $compile(`<my-choose my-value="value"
+                                             my-options="options"
                                              my-on-choose="onChoose(option)">
                                   </my-choose>`)(scope)
-        scope.$digest()
         choose = new Choose(element)
     }))
 
-    it('should create button component for every value in myOptions', () => {
-        expect(myButtons.bindings[0].myText).toEqual('1')
-        expect(myButtons.bindings[1].myText).toEqual('2')
-        expect(myButtons.bindings[2].myText).toEqual('3')
+    describe('with primitive options', () => {
+
+        beforeEach(() => {
+            scope.options = [1, 2, 3]
+            scope.$digest()
+        })
+
+        it('should create button component for every value in myOptions', () => {
+            expect(myButtons.bindings[0].myText).toEqual('1')
+            expect(myButtons.bindings[1].myText).toEqual('2')
+            expect(myButtons.bindings[2].myText).toEqual('3')
+        })
+
+        it('should highlight selected option', () => {
+            const items = choose.items()
+
+            expect(items[0].selected).toEqual(false)
+            expect(items[1].selected).toEqual(true)
+            expect(items[2].selected).toEqual(false)
+        })
+
+        it('should propagate selected option', () => {
+            myButtons.bindings[2].myOnClick({option: 3})
+
+            expect(scope.onChoose).toHaveBeenCalledWith(3)
+        })
     })
 
-    it('should highlight selected option', () => {
-        const items = choose.items()
+    describe('with object options', () => {
 
-        expect(items[0].selected).toEqual(false)
-        expect(items[1].selected).toEqual(true)
-        expect(items[2].selected).toEqual(false)
-    })
+        beforeEach(() => {
+            scope.options = [{label: 'one', value: 1}, {label: 'two', value: 2}, {label: 'three', value: 3}]
+            scope.$digest()
+        })
 
-    it('should propagate selected option', () => {
-        myButtons.bindings[2].myOnClick({option: 3})
+        it('should create button component for every value in myOptions', () => {
+            expect(myButtons.bindings[0].myText).toEqual('one')
+            expect(myButtons.bindings[1].myText).toEqual('two')
+            expect(myButtons.bindings[2].myText).toEqual('three')
+        })
 
-        expect(scope.onChoose).toHaveBeenCalledWith(3)
+        it('should highlight selected option', () => {
+            const items = choose.items()
+
+            expect(items[0].selected).toEqual(false)
+            expect(items[1].selected).toEqual(true)
+            expect(items[2].selected).toEqual(false)
+        })
+
+        it('should propagate selected option', () => {
+            myButtons.bindings[2].myOnClick({option: {label: 'three', value: 3}})
+
+            expect(scope.onChoose).toHaveBeenCalledWith(3)
+        })
     })
 })
