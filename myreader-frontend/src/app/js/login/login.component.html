@@ -28,11 +28,10 @@
         <span ng-if="$ctrl.loginError">Username or password wrong</span>
     </div>
 
-    <my-button-group class="login__button">
-        <my-button my-text="Login"
-                   my-button-type="submit"
-                   my-on-click="$ctrl.onClick()"
-                   my-on-error="$ctrl.onError()">
-        </my-button>
-    </my-button-group>
+    <my-button class="login__button"
+               my-text="Login"
+               my-button-type="submit"
+               my-on-click="$ctrl.onClick()"
+               my-on-error="$ctrl.onError()">
+    </my-button>
 </form>
