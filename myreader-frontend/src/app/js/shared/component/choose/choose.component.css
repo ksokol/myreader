@@ -1,0 +1,4 @@
+.my-choose__button--selected > button {
+    background-color: rgb(63,81,181) !important;
+    color: white !important;
+}

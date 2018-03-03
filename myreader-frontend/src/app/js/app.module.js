@@ -53,6 +53,7 @@ import createRouterMiddleware from 'store/middleware/router'
 import uiRouterAdapter from 'shared/router/uiRouterAdapter'
 import uiRouterStartTransitionHandler from 'shared/router/uiRouterStartTransitionHandler'
 import {BackdropComponent} from 'shared/component/backdrop/backdrop.component'
+import {ChooseComponent} from 'shared/component/choose/choose.component'
 
 import './config'
 
@@ -122,6 +123,7 @@ angular
     .component('myListPage', ListPageComponent)
     .component('myLogout', LogoutComponent)
     .component('myHotkeys', HotkeysComponent)
+    .component('myChoose', ChooseComponent)
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)
