@@ -22,7 +22,7 @@ class controller {
 }
 
 export const ButtonGroupComponent = {
-    template: '<div ng-transclude></div>',
+    template: '<ng-transclude></ng-transclude>',
     transclude: true,
     controller
 };
