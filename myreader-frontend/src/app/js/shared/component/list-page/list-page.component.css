@@ -29,3 +29,8 @@
         height: calc(100vh - 56px);
     }
 }
+
+my-list-panel {
+    display: flex;
+    flex-direction: column;
+}

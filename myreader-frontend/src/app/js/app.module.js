@@ -40,7 +40,6 @@ import {AutoScrollComponent} from 'shared/component/auto-scroll/auto-scroll.comp
 import {EntryListComponent} from './entry/entry-list.component'
 import createApplicationStore from 'store/bootstrap'
 import {ListPageComponent} from 'shared/component/list-page/list-page.component'
-import {BookmarkTagsComponent} from './bookmark/bookmark-tags/bookmark-tags.component'
 import {BookmarkComponent} from './bookmark/bookmark.component'
 import {LogoutComponent} from './navigation/logout-item/logout-item.component'
 import {SubscriptionListComponent} from './subscription/subscription-list.component'
@@ -54,6 +53,8 @@ import uiRouterAdapter from 'shared/router/uiRouterAdapter'
 import uiRouterStartTransitionHandler from 'shared/router/uiRouterStartTransitionHandler'
 import {BackdropComponent} from 'shared/component/backdrop/backdrop.component'
 import {ChooseComponent} from 'shared/component/choose/choose.component'
+import {ChipsComponent} from 'shared/component/chips/chips.component'
+import {ChipComponent} from 'shared/component/chips/chip.component'
 
 import './config'
 
@@ -100,7 +101,6 @@ angular
     .component('mySubscriptionTagPanel', SubscriptionTagPanelComponent)
     .component('mySubscription', SubscriptionComponent)
     .component('myEntryList', EntryListComponent)
-    .component('myBookmarkTags', BookmarkTagsComponent)
     .component('myBookmark', BookmarkComponent)
     .component('mySubscriptionList', SubscriptionListComponent)
     .component('myFeedStream', FeedStreamComponent)
@@ -121,6 +121,8 @@ angular
     .component('myLogout', LogoutComponent)
     .component('myHotkeys', HotkeysComponent)
     .component('myChoose', ChooseComponent)
+    .component('myChip', ChipComponent)
+    .component('myChips', ChipsComponent)
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)

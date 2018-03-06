@@ -1,10 +1,10 @@
 <my-list-page my-on-search="$ctrl.retrieveEntries(params)"
               my-on-refresh="$ctrl.refresh()">
     <my-list-panel>
-        <my-bookmark-tags my-tags="$ctrl.entryTags"
-                          my-selected="$ctrl.router.query.entryTagEqual"
-                          my-on-select="$ctrl.onTagSelect(tag)">
-        </my-bookmark-tags>
+        <my-chips my-selected="$ctrl.router.query.entryTagEqual"
+                  my-on-select="$ctrl.onTagSelect(key)">
+            <my-chip ng-repeat="tag in $ctrl.entryTags" my-key="tag">{{::tag}}</my-chip>
+        </my-chips>
         <my-entry-list></my-entry-list>
     </my-list-panel>
 </my-list-page>
