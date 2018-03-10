@@ -1,4 +1,4 @@
-import {toExclusionPattern, toExclusionPatterns, toSubscriptions} from './subscription'
+import {byPattern, toExclusionPattern, toExclusionPatterns, toSubscriptions} from './subscription'
 
 describe('src/app/js/store/subscription/subscription.spec.js', () => {
 
@@ -55,12 +55,6 @@ describe('src/app/js/store/subscription/subscription.spec.js', () => {
             expect(toExclusionPatterns(raw)).toEqual([{pattern: 'a'}, {pattern: 'b'}, {pattern: 'c'}])
         })
 
-        it('should sort by pattern value', () => {
-            const raw = {content: [{pattern: 'c'}, {pattern: 'b'}, {pattern: 'aa'}]}
-
-            expect(toExclusionPatterns(raw)).toEqual([{pattern: 'aa'}, {pattern: 'b'}, {pattern: 'c'}])
-        })
-
         it('should return copy of patterns', () => {
             const raw = {content: [{pattern: 'c'}, {pattern: 'b'}, {pattern: 'a'}]}
             const converted = toExclusionPatterns(raw)
@@ -68,5 +62,20 @@ describe('src/app/js/store/subscription/subscription.spec.js', () => {
 
             expect(converted).toEqual([{pattern: 'a'}, {pattern: 'b'}, {pattern: 'c'}])
         })
+    })
+
+    describe('byPattern', () => {
+
+        it('should sort descending', () => {
+            expect(byPattern({pattern: 'a'}, {pattern: 'b'})).toEqual(-1)
+            expect(byPattern({pattern: 'aa'}, {pattern: 'b'})).toEqual(-1)
+        })
+
+        it('should sort ascending', () => {
+            expect(byPattern({pattern: 'b'}, {pattern: 'a'})).toEqual(1)
+            expect(byPattern({pattern: 'bb'}, {pattern: 'a'})).toEqual(1)
+        })
+
+        it('should keep order', () => expect(byPattern({pattern: 'a'}, {pattern: 'a'})).toEqual(0))
     })
 })

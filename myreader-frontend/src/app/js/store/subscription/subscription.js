@@ -4,7 +4,7 @@ export function toSubscriptions(raw = {}) {
     return (raw.content || []).map(it => cloneObject(it))
 }
 
-function byPattern(left, right) {
+export function byPattern(left, right) {
     return left.pattern < right.pattern ? -1 : left.pattern === right.pattern ? 0 : 1
 }
 

@@ -1,6 +1,7 @@
 import * as types from 'store/action-types'
 import {cloneObject} from '../shared/objects'
 import {initialApplicationState} from 'store'
+import {byPattern} from './subscription'
 
 function subscriptionsReceived({state, action}) {
     return {...state, subscriptions: action.subscriptions}
@@ -42,8 +43,14 @@ function subscriptionExclusionPatternsReceived({state, action}) {
 
 function subscriptionExclusionPatternsAdded({state, action}) {
     const exclusions = {...state.exclusions}
-    const exclusion = exclusions[action.subscriptionUuid] || []
-    exclusions[action.subscriptionUuid] = [...exclusion, action.pattern]
+    let exclusion = exclusions[action.subscriptionUuid] || []
+
+    exclusion = exclusion.findIndex(it => it.uuid === action.pattern.uuid) !== -1 ?
+        exclusion.map(it => (it.uuid === action.pattern.uuid ? action.pattern : it)) :
+        [...exclusion, action.pattern]
+
+    exclusions[action.subscriptionUuid] = exclusion.sort(byPattern)
+
     return {...state, exclusions}
 }
 
