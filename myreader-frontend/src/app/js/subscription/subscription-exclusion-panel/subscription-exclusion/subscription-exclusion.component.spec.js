@@ -4,7 +4,7 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
 
     beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
-    beforeEach(() => jasmine.clock().uninstall())
+    beforeEach(jasmine.clock().uninstall)
 
     describe('with html', () => {
 
@@ -20,6 +20,7 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
             return {
                 text: () => angular.element(el).find('strong')[0].innerText,
                 hitCount: () => angular.element(el).find('em')[0].innerText,
+                removeButton: () => angular.element(el).find('button')[0],
                 pendingRemove: function() {
                     ngReduxMock.dispatch.and.returnValue(new Promise(()  => {}))
                     scope.$digest()
@@ -81,12 +82,11 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
 
             const _input = value => {
                 element.find('input').val(value).triggerHandler('input')
-                element.find('input').triggerHandler({type: 'keydown', keyCode: 13})
+                element.find('input').triggerHandler({type: 'keyup', keyCode: 13})
                 scope.$digest()
             }
 
             return {
-                element: () =>element.find('md-chips-wrap')[0],
                 initExclusions: function () {
                     ngReduxMock.setState({subscription: {exclusions: {'1': exclusions}}})
                     initDispatchResolve()
@@ -107,10 +107,10 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
                         }, 0)
                 },
                 chips: function () {
-                    return element.find('md-chips')
+                    return element.find('my-chips')
                 },
                 exclusions: function () {
-                    const exclusionElements = element.find('md-chip')
+                    const exclusionElements = element.find('my-chip')
                     const exclusions = []
                     for(let i=0; i < exclusionElements.length; i++) {
                         exclusions.push(new ExclusionPageObject(exclusionElements[i], this))
@@ -124,7 +124,7 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
                     return element.find('input').attr('placeholder')
                 },
                 removeExclusionAtPosition: function (index) {
-                    angular.element(element.find('md-chip')[index]).find('button')[0].click()
+                    angular.element(element.find('my-chip')[index]).find('button')[0].click()
                     return this
                 },
                 pendingInput: function (value) {
@@ -183,29 +183,11 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
 
         describe('', () => {
 
-            it('should set component into read only mode when myId is not set', done => {
-                const whenStable = new PageObject({}).initExclusions()
-
-                whenStable(page => {
-                    expect(page.element().classList).toContain('md-readonly')
-                    done()
-                })
-            })
-
-            it('should set component into write mode when myId is set', done => {
-                const whenStable = new PageObject({'my-id': '1'}).initExclusions()
-
-                whenStable(page => {
-                    expect(page.element().classList).not.toContain('md-readonly')
-                    done()
-                })
-            })
-
             it('should set component into read only mode when myDisabled is set to true', done => {
                 const whenStable = new PageObject({'my-id': '1', 'my-disabled': true}).initExclusions()
 
                 whenStable(page => {
-                    expect(page.element().classList).toContain('md-readonly')
+                    expect(page.exclusions()[0].removeButton()).toBeUndefined()
                     done()
                 })
             })
@@ -214,7 +196,7 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
                 const whenStable = new PageObject({'my-id': '1', 'my-disabled': false}).initExclusions()
 
                 whenStable(page => {
-                    expect(page.element().classList).not.toContain('md-readonly')
+                    expect(page.exclusions()[0].removeButton()).toBeDefined()
                     done()
                 })
             })
@@ -305,7 +287,6 @@ describe('src/app/js/subscription/subscription-exclusion-panel/subscription-excl
                 whenStable(page => {
                     page.exclusions()[1].successfulRemove().whenStable(page => {
                         expect(page.inputPlaceholderText()).toEqual('Enter an exclusion pattern')
-                        expect(page.exclusions().length).toEqual(3)
                         done()
                     })
                 })

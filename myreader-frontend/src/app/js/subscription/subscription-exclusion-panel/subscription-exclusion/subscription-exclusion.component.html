@@ -1,15 +1,12 @@
 <p ng-if="$ctrl.loading">Loading exclusion patterns...</p>
 
-<md-chips placeholder="{{$ctrl.placeholder()}}"
-          ng-if="!$ctrl.loading"
-          readonly="$ctrl.isDisabled()"
-          ng-model="$ctrl.exclusions"
-          md-on-remove="$ctrl.onRemove($chip)"
-          md-transform-chip="$ctrl.onTransform($chip)">
-    <md-chip-template>
-        <span>
-          <strong>{{$chip.pattern}}</strong>
-            <em>({{$chip.hitCount}})</em>
-        </span>
-    </md-chip-template>
-</md-chips>
+<my-chips ng-if="!$ctrl.loading"
+          my-placeholder="$ctrl.placeholder()"
+          my-disabled="$ctrl.isDisabled()"
+          my-on-add="$ctrl.onAdd(value)"
+          my-on-remove="$ctrl.onRemove(key)">
+    <my-chip ng-repeat="exclusion in $ctrl.exclusions" my-key="exclusion.uuid">
+      <strong>{{::exclusion.pattern}}</strong>
+      <em>({{::exclusion.hitCount}})</em>
+    </my-chip>
+</my-chips>

@@ -55,9 +55,9 @@ class controller {
         this.processing = false
     }
 
-    onRemove(exclusion) {
+    onRemove(uuid) {
         this.startProcessing()
-        this.$ngRedux.dispatch(removeSubscriptionExclusionPattern(this.id, exclusion.uuid))
+        this.$ngRedux.dispatch(removeSubscriptionExclusionPattern(this.id, uuid))
             .then(() => this.endProcessing())
             .catch(error => {
                 this.handleError(error)
@@ -65,9 +65,9 @@ class controller {
             })
     }
 
-    onTransform($chip) {
+    onAdd(value) {
         this.startProcessing()
-        this.$ngRedux.dispatch(addSubscriptionExclusionPattern(this.id, $chip))
+        this.$ngRedux.dispatch(addSubscriptionExclusionPattern(this.id, value))
             .then(() => this.endProcessing())
             .catch(error => {
                 this.endProcessing()
@@ -81,7 +81,7 @@ class controller {
     }
 
     isDisabled() {
-        return this.id === undefined || this.myDisabled === true
+        return this.id === undefined || this.myDisabled === true || this.processing
     }
 }
 
