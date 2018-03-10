@@ -13,12 +13,8 @@ class controller {
         }
     }
 
-    select() {
-        this.selected = true
-    }
-
-    equals(other) {
-        return this.myKey === other
+    onRemove() {
+        this.myChips.removeChip(this)
     }
 }
 

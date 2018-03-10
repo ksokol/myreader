@@ -1,3 +1,11 @@
-<ng-transclude ng-class="{'my-chip--selected': $ctrl.selected}"
+<ng-transclude ng-class="{'my-chip--selected': $ctrl.selected, 'my-chip--selectable': $ctrl.selectable}"
                ng-click="$ctrl.onSelect()">
 </ng-transclude>
+
+<button class="my-chip__remove-button"
+        type="button"
+        tabindex="-1"
+        ng-if="!$ctrl.disabled"
+        ng-click="$ctrl.onRemove()">
+    <my-icon my-type="close"></my-icon>
+</button>
