@@ -1,9 +1,8 @@
-<md-chips placeholder="Enter a tag..."
+<my-chips my-placeholder="'Enter a tag...'"
           ng-if="$ctrl.myShow"
-          ng-model="$ctrl.tags"
-          md-on-add="$ctrl.onTagChange()"
-          md-on-remove="$ctrl.onTagChange()">
-    <md-chip-template>
-        <strong>{{$chip}}</strong>
-    </md-chip-template>
-</md-chips>
+          my-on-add="$ctrl.onTagAdd(value)"
+          my-on-remove="$ctrl.onTagRemove(key)">
+    <my-chip ng-repeat="tag in $ctrl.tags track by $index" my-key="tag">
+        <strong>{{tag}}</strong>
+    </my-chip>
+</my-chips>
