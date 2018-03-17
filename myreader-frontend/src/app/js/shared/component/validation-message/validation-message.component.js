@@ -4,19 +4,12 @@ import './validation-message.component.css'
 class controller {
 
     $doCheck() {
-        if (!this.isTranscluded) {
+        if (!this.myInputContainer) {
             return
         }
         Object.keys(this.myFormControl.$error).length > 0
             ? (this.myInputContainer.error = true)
             : (this.myInputContainer.error = false)
-    }
-
-    /**
-     * @deprecated
-     */
-    get isTranscluded() {
-        return this.myInputContainer
     }
 }
 
