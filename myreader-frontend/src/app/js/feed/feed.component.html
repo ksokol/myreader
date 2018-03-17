@@ -1,6 +1,6 @@
 <div class="admin-feed-form">
     <form name="feedForm">
-        <md-input-container class="md-block">
+        <my-input-container>
             <label>Title</label>
             <input name="title"
                    autocomplete="off"
@@ -8,25 +8,22 @@
                    my-backend-validation my-validations="$ctrl.validations">
 
             <my-validation-message my-form-control="feedForm.title"></my-validation-message>
-        </md-input-container>
+        </my-input-container>
 
-        <md-input-container md-no-float class="md-icon-float md-icon-right md-block">
-            <label>Url</label>
-            <input name="url"
-                   autocomplete="off"
-                   ng-model="$ctrl.feed.url"
-                   my-backend-validation my-validations="$ctrl.validations">
+        <div class="admin-feed-form__origin">
+            <my-input-container>
+                <label>Url</label>
+                <input name="url"
+                       autocomplete="off"
+                       ng-model="$ctrl.feed.url"
+                       my-backend-validation my-validations="$ctrl.validations">
+                <my-validation-message my-form-control="feedForm.url"></my-validation-message>
+            </my-input-container>
 
             <a ng-href="{{$ctrl.feed.url}}" target="_blank" rel="noopener noreferrer">
-                <my-icon class="my-feed__url-icon"
-                         my-type="open-in-new">
-                </my-icon>
+                <my-icon my-type="open-in-new"></my-icon>
             </a>
-
-            <my-validation-message my-form-control="feedForm.url"></my-validation-message>
-        </md-input-container>
-
-        <br>
+        </div>
 
         <my-button-group layout="row" layout-align="end center">
             <my-button
