@@ -11,7 +11,7 @@ describe('src/app/js/shared/component/list-page/list-page-component.spec.js', ()
     beforeEach(inject(($rootScope, $compile, $stateParams) => {
         rootScope = $rootScope
         stateParams = $stateParams
-        scope = $rootScope.$new()
+        scope = $rootScope.$new(true)
         stateParams['q'] = 'expected q value'
         stateParams['other'] = 'expected other value'
 
@@ -44,16 +44,6 @@ describe('src/app/js/shared/component/list-page/list-page-component.spec.js', ()
         }
 
         mySearchInput.bindings.myOnChange({value: 'search value changed'})
-        scope.$digest()
-    })
-
-    it('should set q value to undefined when myOnClear event received', done => {
-        scope.onSearch = params => {
-            expect(params).toEqual({q: undefined, other: 'expected other value'})
-            done()
-        }
-
-        mySearchInput.bindings.myOnClear()
         scope.$digest()
     })
 

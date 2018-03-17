@@ -1,8 +1,7 @@
 <div class="my-list-page__action-panel">
     <my-search-input class="my-list-page__search-action"
                      my-value="$ctrl.$stateParams['q']"
-                     my-on-change="$ctrl.onSearchChange(value)"
-                     my-on-clear="$ctrl.onSearchClear()">
+                     my-on-change="$ctrl.onSearchChange(value)">
     </my-search-input>
 
     <ng-transclude ng-transclude-slot="action-panel"></ng-transclude>

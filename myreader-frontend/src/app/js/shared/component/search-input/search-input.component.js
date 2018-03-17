@@ -1,31 +1,18 @@
-import template from './search-input.component.html';
-import './search-input.component.css';
+import template from './search-input.component.html'
+import './search-input.component.css'
 
 class controller {
 
     $onInit() {
-        this.value = this.myValue || '';
+        this.value = this.myValue || ''
     }
 
     $onChanges(obj) {
-        this.value = obj.myValue.currentValue || '';
-    }
-
-    isEmpty() {
-        return this.value.length === 0;
+        this.value = obj.myValue.currentValue || ''
     }
 
     onChange() {
-        if (this.isEmpty()) {
-            this.myOnClear();
-        } else {
-            this.myOnChange({value: this.value});
-        }
-    }
-
-    onClear() {
-        this.value = '';
-        this.myOnClear();
+        this.myOnChange({value: this.value})
     }
 }
 
@@ -33,7 +20,6 @@ export const SearchInputComponent = {
     template, controller,
     bindings: {
         myValue: '<',
-        myOnChange: '&',
-        myOnClear: '&'
+        myOnChange: '&'
     }
-};
+}
