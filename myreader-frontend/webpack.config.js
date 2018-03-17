@@ -225,8 +225,8 @@ module.exports = function makeWebpackConfig() {
                 // which icons should be generated (see https://github.com/haydenbleasel/favicons#usage)
                 icons: {
                     android: true,
-                    appleIcon: true,
-                    appleStartup: true,
+                    appleIcon: false,
+                    appleStartup: false,
                     coast: false,
                     favicons: true,
                     firefox: true,
