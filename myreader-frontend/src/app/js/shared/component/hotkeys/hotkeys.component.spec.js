@@ -1,8 +1,11 @@
-import * as Mousetrap from 'mousetrap'
-import {onKey} from '../../test-utils'
+import {onKey} from 'shared/test-utils'
 
-const y = 89
-const z = 90
+const enter = {key: 'Enter', keyCode: 13}
+const down = {key: 'ArrowDown', keyCode: 40}
+const up = {key: 'ArrowUp', keyCode: 38}
+const a = {key: 'a', keyCode: 65}
+const y = {key: 'y', keyCode: 89}
+const z = {key: 'z', keyCode: 90}
 
 describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => {
 
@@ -17,6 +20,9 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
         scope.parentScope = parentScope
 
         scope.onKeyPressY = jasmine.createSpy('onKeyPressY')
+        scope.onKeyPressEnter = jasmine.createSpy('onKeyPressEnter')
+        scope.onKeyPressDown = jasmine.createSpy('onKeyPressDown')
+        scope.onKeyPressUp = jasmine.createSpy('onKeyPressUp')
 
         scope.onKeyPressZ = function() {
             this.called = true
@@ -25,36 +31,35 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
         scope.onKeyPressZ.and.callThrough()
 
         element = $compile(`<my-hotkeys my-bind-to="parentScope" 
-                                        my-hotkeys="{'z': onKeyPressZ, 'y': onKeyPressY}">
+                                        my-hotkeys="{'z': onKeyPressZ, 'y': onKeyPressY, 'enter': onKeyPressEnter, 'down': onKeyPressDown, 'up': onKeyPressUp}">
                                         <p>expected transcluded content</p>
                             </my-hotkeys>`)(scope)
         scope.$digest()
     }))
 
-    afterEach(() => Mousetrap.reset())
-
-    it('should not thrown an error on initialization when bindings are undefined', () =>
-        expect(() => compile(`<my-hotkeys></my-hotkeys>`)(scope)).not.toThrowError())
+    it('should not thrown an error on initialization when bindings are undefined', () => {
+        expect(() => compile(`<my-hotkeys></my-hotkeys>`)(scope)).not.toThrowError()
+    })
 
     it('should transclude content', () => {
         expect(element.find('p')[0].innerText).toEqual('expected transcluded content')
     })
 
     it('should call function in myBindTo context', () => {
-        onKey('press', z)
+        onKey('down', z)
 
         expect(parentScope.called).toEqual(true)
     })
 
     it('should call function mapped to "z" key', () => {
-        onKey('press', z)
+        onKey('down', z)
 
         expect(scope.onKeyPressZ).toHaveBeenCalledWith()
         expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
     })
 
     it('should call function mapped to "y" key', () => {
-        onKey('press', y)
+        onKey('down', y)
 
         expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
         expect(scope.onKeyPressY).toHaveBeenCalledWith()
@@ -63,10 +68,35 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
     it('should unbind hotkeys on destroy', () => {
         scope.$emit('$destroy')
 
-        onKey('press', z)
-        onKey('press', y)
+        onKey('down', z)
+        onKey('down', y)
 
         expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
         expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
+    })
+
+    it('should not call any mapped function when key is not registered', () => {
+        onKey('down', a)
+
+        expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
+        expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
+    })
+
+    it('should call function mapped to "enter" key', () => {
+        onKey('down', enter)
+
+        expect(scope.onKeyPressEnter).toHaveBeenCalledWith()
+    })
+
+    it('should call function mapped to "down" key', () => {
+        onKey('down', down)
+
+        expect(scope.onKeyPressDown).toHaveBeenCalledWith()
+    })
+
+    it('should call function mapped to "up" key', () => {
+        onKey('down', up)
+
+        expect(scope.onKeyPressUp).toHaveBeenCalledWith()
     })
 })

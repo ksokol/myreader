@@ -9,7 +9,6 @@ import 'redux'
 import 'redux-thunk'
 import 'reselect'
 import 'ng-redux'
-import 'mousetrap'
 
 import 'angular-material/modules/js/autocomplete/autocomplete'
 import 'angular-material/modules/js/autocomplete/autocomplete.css'

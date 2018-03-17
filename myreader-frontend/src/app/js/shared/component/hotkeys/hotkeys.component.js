@@ -1,23 +1,30 @@
-import * as Mousetrap from 'mousetrap'
+const keyCodeMap = {
+    13: 'enter',
+    38: 'up',
+    40: 'down'
+}
 
 class controller {
 
     $onInit() {
         this.myHotkeys = this.myHotkeys || {}
-
-        Object.entries(this.myHotkeys).forEach(([key, fn]) => {
-            Mousetrap.bind(key, event => {
-                event.preventDefault()
-                fn.call(this.myBindTo)
-            })
-        })
+        this.keyDownBindFn = this.onKeyDown.bind(this)
+        document.addEventListener('keydown', this.keyDownBindFn)
     }
 
     $onDestroy() {
-        Object.keys(this.myHotkeys).forEach(it => Mousetrap.unbind(it))
+        document.removeEventListener('keydown', this.keyDownBindFn)
+    }
+
+    onKeyDown(event) {
+        Object.entries(this.myHotkeys).forEach(([key, fn]) => {
+            if (keyCodeMap[event.keyCode] === key || event.key === key) {
+                event.preventDefault()
+                fn.call(this.myBindTo)
+            }
+        })
     }
 }
-
 
 export const HotkeysComponent = {
     controller,

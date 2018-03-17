@@ -19,7 +19,6 @@
     "angular-messages": "1.6.9",
     "angular-sanitize": "1.6.9",
     "material-design-icons": "3.0.1",
-    "mousetrap": "1.6.1",
     "ng-redux": "3.5.2",
     "redux": "3.7.2",
     "redux-thunk": "2.2.0",

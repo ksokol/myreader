@@ -1,9 +1,8 @@
-import * as Mousetrap from 'mousetrap'
-import {mockNgRedux, mock, componentMock, onKey} from '../shared/test-utils'
+import {mockNgRedux, mock, componentMock, onKey} from 'shared/test-utils'
 
-const enter = 13
-const arrowDown = 40
-const arrowUp = 38
+const enter = {key: 'Enter', keyCode: 13}
+const arrowDown = {key: 'ArrowDown', keyCode: 40}
+const arrowUp = {key: 'ArrowUp', keyCode: 38}
 
 describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
@@ -11,8 +10,6 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
     const givenState = (entries = [], entryInFocus = '1', nextFocusableEntry = '2') =>
         ngReduxMock.setState({entry: {entries, entryInFocus, nextFocusableEntry}})
-
-    afterEach(() => Mousetrap.reset())
 
     describe('', () => {
 
@@ -39,8 +36,9 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
             scope.$digest()
         }))
 
-        it('should navigate to route with parameters on initialization', () =>
-            expect(state.go).toHaveBeenCalledWith('app.entries', {param1: 'expected param1', param2: 'expected param2'}, {notify: false}))
+        it('should navigate to route with parameters on initialization', () => {
+            expect(state.go).toHaveBeenCalledWith('app.entries', {param1: 'expected param1', param2: 'expected param2'}, {notify: false})
+        })
 
         it('should fetch entries for given route when route resolved', done => {
             state.go.and.returnValue(Promise.resolve({}))
@@ -56,21 +54,25 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
         it('should focus previous entry when previous button clicked', () => {
             element.find('button')[0].click()
+
             expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_PREVIOUS'])
         })
 
         it('should focus previous entry when arrow up key pressed', () => {
             onKey('down', arrowUp)
+
             expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_PREVIOUS'])
         })
 
         it('should focus next entry when next button clicked', () => {
             element.find('button')[1].click()
+
             expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_NEXT'])
         })
 
         it('should focus next entry when arrow down key pressed', () => {
             onKey('down', arrowDown)
+
             expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_NEXT'])
         })
 
