@@ -2,10 +2,11 @@
     padding: 10px;
 }
 
-.my-subscription__origin-link {
-    margin: 0;
-    right: 2px;
-    left: auto;
-    position: absolute;
-    top: 8px;
+.subscription-form__origin {
+    display: flex;
+    align-items: center;
+}
+
+.subscription-form__origin my-input-container {
+    flex-grow: 1;
 }

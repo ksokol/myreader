@@ -1,14 +1,12 @@
 <form name="subscriptionForm" class="subscribe-form">
-    <md-input-container class="md-block">
+    <my-input-container>
         <label>Url</label>
         <input autocomplete="off"
                name="origin"
                ng-model="$ctrl.origin"
                my-backend-validation my-validations="$ctrl.validations">
         <my-validation-message my-form-control="subscriptionForm.origin"></my-validation-message>
-    </md-input-container>
-
-    <br>
+    </my-input-container>
 
     <my-button-group layout="row" layout-align="end center">
         <my-button

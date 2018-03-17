@@ -1,24 +1,23 @@
 <form name="subscriptionForm" class="subscription-form" ng-if="$ctrl.subscription">
-    <md-input-container class="md-block">
+    <my-input-container>
         <label>Title</label>
         <input name="title"
                ng-model="$ctrl.subscription.title"
                ng-disabled="$ctrl.pendingAction"
                my-backend-validation my-validations="$ctrl.validations">
         <my-validation-message my-form-control="subscriptionForm.title"></my-validation-message>
-    </md-input-container>
+    </my-input-container>
 
-    <md-input-container md-no-float class="md-icon-float md-icon-right md-block">
-        <label>Url</label>
-        <input disabled
-               ng-model="$ctrl.subscription.origin">
-
+    <div class="subscription-form__origin">
+        <my-input-container>
+            <label>Url</label>
+            <input disabled
+                   ng-model="$ctrl.subscription.origin">
+        </my-input-container>
         <a ng-href="{{$ctrl.subscription.origin}}" target="_blank" rel="noopener noreferrer">
-            <my-icon class="my-subscription__origin-link"
-                     my-type="open-in-new">
-            </my-icon>
+            <my-icon my-type="open-in-new"></my-icon>
         </a>
-    </md-input-container>
+    </div>
 
     <my-subscription-tag-panel my-disabled="$ctrl.pendingAction"
                                my-selected-item="$ctrl.subscription.tag"

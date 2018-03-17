@@ -5,6 +5,7 @@ my-login {
 }
 
 .login {
+    display: flex;
     flex-direction: column;
     margin-top: 100px;
     width: 300px;

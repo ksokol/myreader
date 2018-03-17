@@ -1,20 +1,20 @@
 <form class="login">
-    <md-input-container>
+    <my-input-container>
         <label for="email">Email</label>
         <input id="email"
                name="username"
                ng-model="$ctrl.loginForm.username"
                ng-disabled="$ctrl.actionPending">
-    </md-input-container>
+    </my-input-container>
 
-    <md-input-container>
+    <my-input-container>
         <label for="password">Password</label>
         <input id="password"
                type="password"
                name="password"
                ng-model="$ctrl.loginForm.password"
                ng-disabled="$ctrl.actionPending">
-    </md-input-container>
+    </my-input-container>
 
     <div class="login__message">
         <span ng-if="$ctrl.loginError">Username or password wrong</span>
