@@ -56,6 +56,7 @@ import {ChooseComponent} from 'shared/component/choose/choose.component'
 import {ChipsComponent} from 'shared/component/chips/chips.component'
 import {ChipComponent} from 'shared/component/chips/chip.component'
 import {ChipsInputComponent} from 'shared/component/chips/chips-input.component'
+import {InputContainer} from 'shared/component/input-container/input-container'
 
 import './config'
 
@@ -124,6 +125,7 @@ angular
     .component('myChip', ChipComponent)
     .component('myChips', ChipsComponent)
     .component('myChipsInput', ChipsInputComponent)
+    .component('myInputContainer', InputContainer)
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)

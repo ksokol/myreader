@@ -1,0 +1,58 @@
+my-input-container {
+    --error-color: rgb(221, 44, 0);
+    --input-border: 0 0 2px 0;
+    display: block;
+    margin: 18px 0;
+}
+
+my-input-container > ng-transclude {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+my-input-container > ng-transclude > label {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 13px;
+    flex-grow: 1;
+    padding-left: 3px;
+}
+
+my-input-container > ng-transclude > input {
+    margin-top: 0;
+    background: none;
+    padding: 2px 2px 1px;
+    line-height: 26px;
+    height: 30px;
+    border-radius: 0;
+    width: 100%;
+    box-sizing: border-box;
+    border: 0 solid rgba(0, 0, 0, 0.12);
+    border-bottom-width: 1px;
+}
+
+my-input-container input:disabled {
+    border-bottom: 2px dotted rgba(0, 0, 0, 0.12);
+    color: rgba(0,0,0,0.38);
+}
+
+my-input-container input:focus {
+    border-color: rgb(63, 81, 181);
+    border-width: var(--input-border);
+}
+
+.my-input-container--error, .my-input-container--error > * {
+    color: var(--error-color);
+}
+
+.my-input-container--error > my-validation-message {
+    font-size: 12px;
+}
+
+.my-input-container--error > my-validation-message > * {
+    padding-top: 5px;
+}
+
+.my-input-container--error input, .my-input-container--error input:focus {
+    border-color: var(--error-color);
+    border-width: var(--input-border);
+}
