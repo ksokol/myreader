@@ -1,12 +1,13 @@
+my-search-input {
+    display: flex;
+}
+
 .my-search-input-container {
+    flex-grow: 1;
     margin: 0;
-    padding-left: 36px;
 }
 
 .my-search-input-container__search-icon {
-    position: absolute;
-    top: 8px;
-    left: 2px;
-    right: auto;
-    width: 24px;
+    padding: 5px;
+    margin-top: 2px;
 }
