@@ -1,5 +1,6 @@
 const keyCodeMap = {
     13: 'enter',
+    27: 'esc',
     38: 'up',
     40: 'down'
 }

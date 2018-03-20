@@ -6,6 +6,7 @@ const up = {key: 'ArrowUp', keyCode: 38}
 const a = {key: 'a', keyCode: 65}
 const y = {key: 'y', keyCode: 89}
 const z = {key: 'z', keyCode: 90}
+const esc = {key: 'esc', keyCode: 27}
 
 describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => {
 
@@ -23,6 +24,7 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
         scope.onKeyPressEnter = jasmine.createSpy('onKeyPressEnter')
         scope.onKeyPressDown = jasmine.createSpy('onKeyPressDown')
         scope.onKeyPressUp = jasmine.createSpy('onKeyPressUp')
+        scope.onKeyPressEsc = jasmine.createSpy('onKeyPressEsc')
 
         scope.onKeyPressZ = function() {
             this.called = true
@@ -31,7 +33,7 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
         scope.onKeyPressZ.and.callThrough()
 
         element = $compile(`<my-hotkeys my-bind-to="parentScope" 
-                                        my-hotkeys="{'z': onKeyPressZ, 'y': onKeyPressY, 'enter': onKeyPressEnter, 'down': onKeyPressDown, 'up': onKeyPressUp}">
+                                        my-hotkeys="{'z': onKeyPressZ, 'y': onKeyPressY, 'enter': onKeyPressEnter, 'down': onKeyPressDown, 'up': onKeyPressUp, 'esc': onKeyPressEsc}">
                                         <p>expected transcluded content</p>
                             </my-hotkeys>`)(scope)
         scope.$digest()
@@ -107,5 +109,12 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
         tick()
 
         expect(scope.onKeyPressUp).toHaveBeenCalledWith()
+    })
+
+    it('should call function mapped to "esc" key', () => {
+        onKey('down', esc)
+        tick()
+
+        expect(scope.onKeyPressEsc).toHaveBeenCalledWith()
     })
 })
