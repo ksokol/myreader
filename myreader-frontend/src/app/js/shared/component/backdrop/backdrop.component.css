@@ -6,6 +6,7 @@
     left: 0;
     background-color: #000;
     opacity: 0;
+    z-index: 10;
 }
 
 @keyframes my-backdrop-fade-in {
