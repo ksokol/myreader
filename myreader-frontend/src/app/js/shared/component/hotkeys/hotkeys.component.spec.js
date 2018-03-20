@@ -1,4 +1,4 @@
-import {onKey} from 'shared/test-utils'
+import {onKey, tick} from 'shared/test-utils'
 
 const enter = {key: 'Enter', keyCode: 13}
 const down = {key: 'ArrowDown', keyCode: 40}
@@ -47,12 +47,14 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
 
     it('should call function in myBindTo context', () => {
         onKey('down', z)
+        tick()
 
         expect(parentScope.called).toEqual(true)
     })
 
     it('should call function mapped to "z" key', () => {
         onKey('down', z)
+        tick()
 
         expect(scope.onKeyPressZ).toHaveBeenCalledWith()
         expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
@@ -60,6 +62,7 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
 
     it('should call function mapped to "y" key', () => {
         onKey('down', y)
+        tick()
 
         expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
         expect(scope.onKeyPressY).toHaveBeenCalledWith()
@@ -69,7 +72,9 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
         scope.$emit('$destroy')
 
         onKey('down', z)
+        tick()
         onKey('down', y)
+        tick()
 
         expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
         expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
@@ -77,6 +82,7 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
 
     it('should not call any mapped function when key is not registered', () => {
         onKey('down', a)
+        tick()
 
         expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
         expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
@@ -84,18 +90,21 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
 
     it('should call function mapped to "enter" key', () => {
         onKey('down', enter)
+        tick()
 
         expect(scope.onKeyPressEnter).toHaveBeenCalledWith()
     })
 
     it('should call function mapped to "down" key', () => {
         onKey('down', down)
+        tick()
 
         expect(scope.onKeyPressDown).toHaveBeenCalledWith()
     })
 
     it('should call function mapped to "up" key', () => {
         onKey('down', up)
+        tick()
 
         expect(scope.onKeyPressUp).toHaveBeenCalledWith()
     })

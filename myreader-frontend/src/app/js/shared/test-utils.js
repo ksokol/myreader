@@ -125,3 +125,7 @@ export function onKey(type, event) {
     keyEvent.initEvent(`key${type}`)
     document.dispatchEvent(keyEvent)
 }
+
+export function tick(millis = 0) {
+    jasmine.clock().tick(millis)
+}
