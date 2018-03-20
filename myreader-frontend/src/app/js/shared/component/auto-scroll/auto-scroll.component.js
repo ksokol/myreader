@@ -9,7 +9,7 @@ class controller {
     $onChanges(obj) {
         if (obj.myScrollOn) {
             const [attrKey, attrValue] = Object.entries(obj.myScrollOn.currentValue)[0]
-            if (attrKey && attrValue) {
+            if (attrKey && typeof attrValue !== 'undefined') {
                 this.scrollTo(attrKey, attrValue + '')
             }
         }

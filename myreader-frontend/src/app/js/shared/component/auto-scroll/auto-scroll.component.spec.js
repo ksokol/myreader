@@ -1,20 +1,20 @@
-function createElement(html) {
-    const element = angular.element(html)
-    element.scrollIntoView = jasmine.createSpy('scrollIntoView')
-    return element
-}
-
 describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js', () => {
 
     beforeEach(angular.mock.module('myreader'))
 
-    let component, $element
+    let component, $element, createElement
 
     beforeEach(inject($componentController => {
         $element = jasmine.createSpyObj('$element', ['children'])
         $element.children.and.returnValue([])
 
         component = $componentController('myAutoScroll', {$element})
+
+        createElement = html => {
+            const element = angular.element(html)
+            element.scrollIntoView = jasmine.createSpy('scrollIntoView')
+            return element
+        }
     }))
 
     it('should not scroll to element when element is not in focus', () => {
@@ -90,6 +90,15 @@ describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js'
         $element.children.and.returnValue([element1])
 
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': 1}}})
+
+        expect(element1.scrollIntoView).toHaveBeenCalled()
+    })
+
+    it('should not evaluate to false when attribute value has value "0"', () => {
+        const element1 = createElement(`<div data-uuid="0"></div>`)
+        $element.children.and.returnValue([element1])
+
+        component.$onChanges({myScrollOn: {currentValue: {'data-uuid': 0}}})
 
         expect(element1.scrollIntoView).toHaveBeenCalled()
     })
