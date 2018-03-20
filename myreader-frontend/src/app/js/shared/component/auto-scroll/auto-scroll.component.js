@@ -10,7 +10,7 @@ class controller {
         if (obj.myScrollOn) {
             const [attrKey, attrValue] = Object.entries(obj.myScrollOn.currentValue)[0]
             if (attrKey && attrValue) {
-                this.scrollTo(attrKey, attrValue)
+                this.scrollTo(attrKey, attrValue + '')
             }
         }
     }

@@ -84,4 +84,13 @@ describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js'
 
         expect(element10.scrollIntoView).toHaveBeenCalledWith({block: 'start', behavior: 'smooth'})
     })
+
+    it('should convert number to string before comparing', () => {
+        const element1 = createElement(`<div data-uuid="1"></div>`)
+        $element.children.and.returnValue([element1])
+
+        component.$onChanges({myScrollOn: {currentValue: {'data-uuid': 1}}})
+
+        expect(element1.scrollIntoView).toHaveBeenCalled()
+    })
 })
