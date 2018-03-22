@@ -20,11 +20,10 @@ class controller {
     onKeyDown(event) {
         Object.entries(this.myHotkeys).forEach(([key, fn]) => {
             if (keyCodeMap[event.keyCode] === key || event.key === key) {
+                event.stopPropagation()
+                event.preventDefault()
                 // TODO patched setTimeout required for Angular's digest cycle
-                setTimeout(() => {
-                    event.preventDefault()
-                    fn.call(this.myBindTo)
-                })
+                setTimeout(() => fn.call(this.myBindTo))
             }
         })
     }

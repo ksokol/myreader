@@ -117,4 +117,16 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
 
         expect(scope.onKeyPressEsc).toHaveBeenCalledWith()
     })
+
+    it('should prevent event propagation immediately', () => {
+        const stopPropagation = jasmine.createSpy('stopPropagation()')
+        const preventDefault = jasmine.createSpy('preventDefault()')
+        onKey('down', esc, {stopPropagation, preventDefault})
+
+        expect(stopPropagation).toHaveBeenCalled()
+        expect(preventDefault).toHaveBeenCalled()
+        tick()
+
+        expect(scope.onKeyPressEsc).toHaveBeenCalledWith()
+    })
 })

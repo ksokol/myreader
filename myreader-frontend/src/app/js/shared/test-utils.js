@@ -117,10 +117,11 @@ export function mockNgRedux() {
     return _mock
 }
 
-export function onKey(type, event) {
+export function onKey(type, event, funcs = {}) {
     let keyEvent = document.createEvent('Event')
     keyEvent.keyCode = event.keyCode
     keyEvent.key = event.key
+    Object.assign(keyEvent, funcs)
 
     keyEvent.initEvent(`key${type}`)
     document.dispatchEvent(keyEvent)
