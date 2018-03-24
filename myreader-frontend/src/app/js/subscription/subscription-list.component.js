@@ -8,11 +8,10 @@ class controller {
         this.$ngRedux = $ngRedux
         this.$state = $state
         this.$stateParams = $stateParams
-        this.unsubscribe = this.$ngRedux.connect(getSubscriptions)(this)
     }
 
     $onInit() {
-        this.refresh()
+        this.unsubscribe = this.$ngRedux.connect(getSubscriptions)(this)
     }
 
     $onDestroy() {

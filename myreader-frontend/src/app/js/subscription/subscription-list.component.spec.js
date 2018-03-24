@@ -62,9 +62,6 @@ describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
             scope.$digest()
         }))
 
-        it('should dispatch expected action on component initialization', () =>
-            expect(ngReduxMock.getActionTypes()).toEqual(['GET_SUBSCRIPTIONS']))
-
         it('should render subscriptions', () => {
             const items = new ListItems(element.find('md-list-item'))
 

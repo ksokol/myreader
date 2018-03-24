@@ -1,6 +1,6 @@
 import template from './subscriptions-item.component.html'
 import './subscriptions-item.component.css'
-import {fetchSubscriptions, filteredByUnseenSubscriptionsSelector} from 'store'
+import {filteredByUnseenSubscriptionsSelector} from 'store'
 import {navigationBuilder} from './navigation-builder'
 
 class controller {
@@ -12,7 +12,6 @@ class controller {
 
     $onInit() {
         this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
-        this.$ngRedux.dispatch(fetchSubscriptions())
     }
 
     $onDestroy() {

@@ -7,11 +7,13 @@ import {
     fetchEntryTags,
     fetchFeed,
     fetchFeedFetchFailures,
-    fetchFeeds
+    fetchFeeds,
+    fetchSubscriptions
 } from 'store'
 
 export const routeConfiguration = {
     app: {
+        before: fetchSubscriptions,
         children: {
             bookmarks: {
                 query: {seenEqual: '*', entryTagEqual: ''},

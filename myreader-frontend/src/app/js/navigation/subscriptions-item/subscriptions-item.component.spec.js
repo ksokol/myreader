@@ -57,9 +57,6 @@ describe('src/app/js/navigation/subscriptions-item/subscriptions-item.component.
         scope.$digest()
     }))
 
-    it('should fetch subscriptions on initialization', () =>
-        expect(ngReduxMock.getActionTypes()).toEqual(['GET_SUBSCRIPTIONS']))
-
     it('should render all subscriptions', () => {
         const navigation = new Navigation(element)
 

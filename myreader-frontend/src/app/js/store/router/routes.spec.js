@@ -53,6 +53,13 @@ describe('src/app/js/store/router/routes.spec.js', () => {
 
         beforeEach(() => store = createMockStore())
 
+        describe('app', () => {
+
+            beforeEach(() => routeConfig = routeConfiguration['app'])
+
+            it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('GET_SUBSCRIPTIONS'))
+        })
+
         describe('app bookmarks', () => {
 
             beforeEach(() => routeConfig = routeConfiguration['app'].children['bookmarks'])
