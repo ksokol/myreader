@@ -1,33 +1,34 @@
 import template from './subscription-list.component.html'
-import {getSubscriptions, fetchSubscriptions} from 'store'
+import {fetchSubscriptions, getSubscriptions, routeChange, routeSelector} from 'store'
 
 class controller {
 
-    constructor($ngRedux, $state, $stateParams) {
+    constructor($ngRedux) {
         'ngInject'
         this.$ngRedux = $ngRedux
-        this.$state = $state
-        this.$stateParams = $stateParams
     }
 
     $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(getSubscriptions)(this)
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
     }
 
     $onDestroy() {
         this.unsubscribe()
     }
 
-    navigateTo(subscription) {
-        this.$state.go('app.subscription', {uuid: subscription.uuid})
+    mapStateToThis(state) {
+        return {
+            ...routeSelector(state),
+            ...getSubscriptions(state)
+        }
     }
 
-    refresh() {
-        this.$ngRedux.dispatch(fetchSubscriptions())
-    }
-
-    onSearch(params) {
-        this.$state.go('app.subscriptions', params, {notify: false})
+    mapDispatchToThis(dispatch) {
+        return {
+            navigateTo: subscription => dispatch(routeChange(['app', 'subscription'], {uuid: subscription.uuid})),
+            refresh: () => dispatch(fetchSubscriptions()),
+            onSearch: params => dispatch(routeChange(['app', 'subscriptions'], {...params}))
+        }
     }
 }
 

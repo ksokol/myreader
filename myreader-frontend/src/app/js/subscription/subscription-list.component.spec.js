@@ -32,21 +32,17 @@ class ListItems {
 
 describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
 
-    let rootScope, scope, compile, state, stateParams, ngReduxMock, element
+    let rootScope, scope, compile, ngReduxMock, element
 
     describe('', () => {
 
-        beforeEach(() => angular.mock.module('myreader', mock('$state'), mock('$stateParams'), filterMock('timeago'), mockNgRedux()))
+        beforeEach(() => angular.mock.module('myreader', filterMock('timeago'), mockNgRedux()))
 
-        beforeEach(inject(($rootScope, $compile, $state, $stateParams, $ngRedux) => {
+        beforeEach(inject(($rootScope, $compile, $ngRedux) => {
             rootScope = $rootScope
-            state = $state
             compile = $compile
-            stateParams = $stateParams
             ngReduxMock = $ngRedux
-            scope = $rootScope.$new()
-
-            state.go = jasmine.createSpy('$state.go')
+            scope = $rootScope.$new(true)
 
             ngReduxMock.setState({
                 subscription: {
@@ -79,15 +75,17 @@ describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
 
         it('should navigate to subscription detail page on click', () => {
             const items = new ListItems(element.find('md-list-item'))
-
             items.itemAtIndex(2).click()
-            scope.$digest()
 
-            expect(state.go).toHaveBeenCalledWith('app.subscription', {uuid: '3'})
+            expect(ngReduxMock.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['app', 'subscription'], query: {uuid: '3'}})
         })
 
         it('should render subscriptions matching search value', () => {
-            stateParams.q = 'title2'
+            ngReduxMock.setState({
+                router: {
+                    query: {q: 'title2'}
+                }
+            })
             scope.$digest()
 
             const items = new ListItems(element.find('md-list-item'))
@@ -101,16 +99,13 @@ describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
 
         const listPage = componentMock('myListPage')
 
-        beforeEach(() => angular.mock.module('myreader', listPage, mock('$state'), mockNgRedux()))
+        beforeEach(() => angular.mock.module('myreader', listPage, mockNgRedux()))
 
         beforeEach(inject(($rootScope, $compile, $state, $ngRedux) => {
             rootScope = $rootScope
-            state = $state
             compile = $compile
             ngReduxMock = $ngRedux
-            scope = $rootScope.$new()
-
-            state.go = jasmine.createSpy('$state.go')
+            scope = $rootScope.$new(true)
 
             element = $compile('<my-subscription-list></my-subscription-list>')(scope)
             scope.$digest()
@@ -118,9 +113,8 @@ describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
 
         it('should update url when search executed', () => {
             listPage.bindings.myOnSearch({params: {q: 'b'}})
-            scope.$digest()
 
-            expect(state.go).toHaveBeenCalledWith('app.subscriptions', {q: 'b'}, {notify: false})
+            expect(ngReduxMock.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['app', 'subscriptions'], query: {q: 'b'}})
         })
 
         it('should refresh state', () => {
