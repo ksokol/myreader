@@ -33,3 +33,14 @@ export const subscriptionExclusionPatternsSelector = uuid => {
         exclusions => (exclusions[uuid] || []).map(cloneObject)
     )
 }
+
+export const subscriptionByUuidSelector = uuid => {
+    return createSelector(
+        subscriptionsSelector,
+        subscriptions => {
+            return {
+                subscription: cloneObject(subscriptions.find(it => it.uuid === uuid))
+            }
+        }
+    )
+}

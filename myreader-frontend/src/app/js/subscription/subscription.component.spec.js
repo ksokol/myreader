@@ -1,25 +1,24 @@
-import {componentMock, mock, mockNgRedux} from '../shared/test-utils'
+import {componentMock, mock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
     const mySubscriptionTagPanel = componentMock('mySubscriptionTagPanel')
     const mySubscriptionExclusionPanel = componentMock('mySubscriptionExclusionPanel')
 
-    let rootScope, scope, element, state, stateParams, ngReduxMock, subscription, timeout
+    let rootScope, scope, element, state, ngReduxMock, subscription, timeout
 
     beforeEach(angular.mock.module('myreader',
         mock('$state'),
-        mock('$stateParams'),
         mySubscriptionTagPanel,
         mySubscriptionExclusionPanel,
         mockNgRedux()
     ))
 
-    beforeEach(inject(($rootScope, $compile, $state, $stateParams, $ngRedux, $timeout) => {
+    beforeEach(inject(($rootScope, $compile, $state, $ngRedux, $timeout) => {
         jasmine.clock().uninstall()
 
         rootScope = $rootScope
-        scope = $rootScope.$new()
+        scope = $rootScope.$new(true)
         ngReduxMock = $ngRedux
         timeout = $timeout
 
@@ -30,20 +29,22 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
             tag: 'expected tag'
         }
 
-        ngReduxMock.setState({subscription: {subscriptions: [subscription]}})
+        ngReduxMock.setState({
+            router: {query: {uuid: subscription.uuid}},
+            subscription: {subscriptions: [subscription]}
+        })
 
         state = $state
         state.go = jasmine.createSpy('$state.go()')
-
-        stateParams = $stateParams
-        stateParams.uuid = subscription.uuid
 
         element = $compile('<my-subscription></my-subscription>')(scope)
         scope.$digest()
     }))
 
     it('should not render page when subscription with given uuid is not available in store', inject($compile => {
-        stateParams.uuid = 'other uuid'
+        ngReduxMock.setState({
+            router: {query: {uuid: 'other uuid'}}
+        })
         element = $compile('<my-subscription></my-subscription>')(scope)
         scope.$digest()
 
