@@ -2,19 +2,15 @@ import {componentMock, mock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
-    const mySubscriptionTagPanel = componentMock('mySubscriptionTagPanel')
-    const mySubscriptionExclusionPanel = componentMock('mySubscriptionExclusionPanel')
+    let rootScope, scope, element, ngReduxMock, subscription, timeout, mySubscriptionTagPanel, mySubscriptionExclusionPanel
 
-    let rootScope, scope, element, state, ngReduxMock, subscription, timeout
+    beforeEach(() => {
+        mySubscriptionTagPanel = componentMock('mySubscriptionTagPanel')
+        mySubscriptionExclusionPanel = componentMock('mySubscriptionExclusionPanel')
+        angular.mock.module('myreader', mySubscriptionTagPanel, mySubscriptionExclusionPanel, mockNgRedux())
+    })
 
-    beforeEach(angular.mock.module('myreader',
-        mock('$state'),
-        mySubscriptionTagPanel,
-        mySubscriptionExclusionPanel,
-        mockNgRedux()
-    ))
-
-    beforeEach(inject(($rootScope, $compile, $state, $ngRedux, $timeout) => {
+    beforeEach(inject(($rootScope, $compile, $ngRedux, $timeout) => {
         jasmine.clock().uninstall()
 
         rootScope = $rootScope
@@ -33,9 +29,6 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
             router: {query: {uuid: subscription.uuid}},
             subscription: {subscriptions: [subscription]}
         })
-
-        state = $state
-        state.go = jasmine.createSpy('$state.go()')
 
         element = $compile('<my-subscription></my-subscription>')(scope)
         scope.$digest()
@@ -132,9 +125,9 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         timeout.flush(1000)
         element.find('button')[1].click() //confirm
 
-        expect(ngReduxMock.getActionTypes()).toEqual(['DELETE_SUBSCRIPTION'])
+        expect(ngReduxMock.getActionTypes()).toEqual(['DELETE_SUBSCRIPTION', 'ROUTE_CHANGED'])
         expect(ngReduxMock.getActions()[0].url).toContain('expected uuid')
-        expect(state.go).toHaveBeenCalledWith('app.subscriptions')
+        expect(ngReduxMock.getActions()[1].route).toEqual(['app', 'subscriptions'])
     })
 
     it('should disable page elements while ajax call is pending', () => {

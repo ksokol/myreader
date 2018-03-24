@@ -2,6 +2,7 @@ import template from './subscription.component.html'
 import './subscription.component.css'
 import {
     deleteSubscription,
+    routeChange,
     routeSelector,
     saveSubscription,
     showErrorNotification,
@@ -10,9 +11,8 @@ import {
 
 class controller {
 
-    constructor($state, $ngRedux) {
+    constructor($ngRedux) {
         'ngInject'
-        this.$state = $state
         this.$ngRedux = $ngRedux
     }
 
@@ -65,7 +65,7 @@ class controller {
     }
 
     onSuccessDelete() {
-        this.$state.go('app.subscriptions')
+        this.$ngRedux.dispatch(routeChange(['app', 'subscriptions']))
     }
 }
 
