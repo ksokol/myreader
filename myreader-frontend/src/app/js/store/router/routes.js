@@ -8,13 +8,18 @@ import {
     fetchFeed,
     fetchFeedFetchFailures,
     fetchFeeds,
-    fetchSubscriptions
+    fetchSubscriptions,
+    fetchSubscriptionTags,
+    subscriptionTagsLoaded
 } from 'store'
 
 export const routeConfiguration = {
     app: {
         before: fetchSubscriptions,
         children: {
+            subscription: {
+              resolve: ({query, getState}) => subscriptionTagsLoaded(getState()).loaded ? undefined : fetchSubscriptionTags()
+            },
             bookmarks: {
                 query: {seenEqual: '*', entryTagEqual: ''},
                 before: fetchEntryTags,

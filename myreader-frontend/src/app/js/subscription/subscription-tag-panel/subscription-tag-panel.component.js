@@ -1,22 +1,13 @@
 import template from './subscription-tag-panel.component.html'
-import {fetchSubscriptionTags} from 'store'
 
-class controller {
-
-    constructor($ngRedux) {
-        'ngInject'
-        this.$ngRedux = $ngRedux
-    }
-
-    loadTags() {
-        return this.$ngRedux.dispatch(fetchSubscriptionTags())
-    }
-}
-
+/**
+ * @deprecated
+ */
 export const SubscriptionTagPanelComponent = {
-    template, controller,
+    template,
     bindings: {
         mySelectedItem: '<',
+        myValues: '<',
         myDisabled: '<',
         myOnSelect: '&',
         myOnClear: '&'

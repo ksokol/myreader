@@ -60,6 +60,21 @@ describe('src/app/js/store/router/routes.spec.js', () => {
             it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('GET_SUBSCRIPTIONS'))
         })
 
+        describe('app subscription', () => {
+
+            beforeEach(() => routeConfig = routeConfiguration['app'].children['subscription'])
+
+            it('should contain expected resolve action when tags not loaded', () => {
+                store.dispatch(routeConfig.resolve({getState: () => ({subscription: {tags: {loaded: false}}})}))
+                expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTION_TAGS'])
+            })
+
+            it('should not contain expected resolve action when tags loaded', () => {
+                const action = routeConfig.resolve({getState: () => ({subscription: {tags: {loaded: true}}})})
+                expect(action).toEqual(undefined)
+            })
+        })
+
         describe('app bookmarks', () => {
 
             beforeEach(() => routeConfig = routeConfiguration['app'].children['bookmarks'])

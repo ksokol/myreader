@@ -28,7 +28,16 @@ function subscriptionSaved({state, action}) {
     let subscriptions = !state.subscriptions.some(it => it.uuid === action.subscription.uuid) ?
                             [...state.subscriptions, action.subscription] :
                             state.subscriptions.map(it => it.uuid === action.subscription.uuid ? action.subscription : it)
-    return {...state, subscriptions}
+
+    let tags = state.tags
+    const tag = action.subscription.tag
+
+    if (tag && tags.items.findIndex(it => it === tag) === -1) {
+        const items = [...tags.items, tag].sort((left, right) => left < right ? -1 : left === right ? 0 : 1)
+        tags = {...tags, items}
+    }
+
+    return {...state, subscriptions, tags}
 }
 
 function subscriptionTagsReceived({state, action}) {

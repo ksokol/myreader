@@ -124,7 +124,8 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
 
         beforeEach(() => {
             state = {
-                subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}]
+                subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}],
+                tags: {loaded: true, items: ['t1', 't3']}
             }
         })
 
@@ -136,6 +137,34 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
         it('should add subscription to store when not in store', () => {
             expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'})))
                 .toContainObject({subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}, {uuid: '3', title: 'title3'}]})
+        })
+
+        it('should append subscription tag to empty tags', () => {
+            state = {
+                subscriptions: [],
+                tags: {loaded: false, items: []}
+            }
+            expect(subscriptionReducers(state, action({uuid: '3', tag: 't1'}))).toContainObject({tags: {loaded: false, items: ['t1']}})
+        })
+
+        it('should not change tags loaded flag', () => {
+            state = {
+                subscriptions: [],
+                tags: {loaded: false, items: []}
+            }
+            expect(subscriptionReducers(state, action({uuid: '3', tag: 't1'}))).toContainObject({tags: {loaded: false}})
+        })
+
+        it('should not append subscription tag to tags when tag already exists', () => {
+            expect(subscriptionReducers(state, action({uuid: '3', tag: 't1'}))).toContainObject({tags: {loaded: true, items: ['t1', 't3']}})
+        })
+
+        it('should sort tags after appending new tag', () => {
+            expect(subscriptionReducers(state, action({uuid: '3', tag: 't2'}))).toContainObject({tags: {loaded: true, items: ['t1', 't2', 't3']}})
+        })
+
+        it('should not change tags when subscription tag is null', () => {
+            expect(subscriptionReducers(state, action({uuid: '3', tag: null}))).toContainObject({tags: {loaded: true, items: ['t1', 't3']}})
         })
     })
 

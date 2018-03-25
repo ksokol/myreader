@@ -1,4 +1,4 @@
-import {componentMock, mock, mockNgRedux} from 'shared/test-utils'
+import {componentMock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
@@ -27,7 +27,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
         ngReduxMock.setState({
             router: {query: {uuid: subscription.uuid}},
-            subscription: {subscriptions: [subscription]}
+            subscription: {subscriptions: [subscription], tags: {items: ['t1', 't2']}}
         })
 
         element = $compile('<my-subscription></my-subscription>')(scope)
@@ -49,8 +49,9 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         expect(element.find('input')[1].value).toEqual('expected origin')
         expect(element.find('input')[1].disabled).toEqual(true)
         expect(mySubscriptionTagPanel.bindings.mySelectedItem).toEqual('expected tag')
-        expect(mySubscriptionExclusionPanel.bindings.myId).toEqual('expected uuid')
         expect(mySubscriptionTagPanel.bindings.myDisabled).toBeUndefined()
+        expect(mySubscriptionTagPanel.bindings.myValues).toEqual(['t1', 't2'])
+        expect(mySubscriptionExclusionPanel.bindings.myId).toEqual('expected uuid')
         expect(mySubscriptionExclusionPanel.bindings.myDisabled).toBeUndefined()
     })
 

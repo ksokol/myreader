@@ -6,7 +6,8 @@ import {
     routeSelector,
     saveSubscription,
     showErrorNotification,
-    subscriptionByUuidSelector
+    subscriptionByUuidSelector,
+    subscriptionTagsSelector
 } from 'store'
 
 class controller {
@@ -26,7 +27,8 @@ class controller {
 
     mapStateToThis(state) {
         return {
-            ...subscriptionByUuidSelector(routeSelector(state).router.query.uuid)(state)
+            ...subscriptionByUuidSelector(routeSelector(state).router.query.uuid)(state),
+            ...subscriptionTagsSelector(state)
         }
     }
 
