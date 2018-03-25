@@ -32,7 +32,7 @@ function subscriptionSaved({state, action}) {
 }
 
 function subscriptionTagsReceived({state, action}) {
-    return {...state, tags: action.tags}
+    return {...state, tags: {loaded: true, items: action.tags}}
 }
 
 function subscriptionExclusionPatternsReceived({state, action}) {

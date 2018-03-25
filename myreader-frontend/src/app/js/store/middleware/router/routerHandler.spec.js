@@ -4,7 +4,7 @@ describe('src/app/js/store/middleware/router/routerHandler.spec.js', () => {
 
     let routerAdapter, dispatch
 
-    const execute = (givenAction = {}, givenState = {}) => routerHandler(routerAdapter)({action: givenAction, dispatch, state: givenState})
+    const execute = (givenAction = {}, givenState = {}, getState = () => {}) => routerHandler(routerAdapter)({action: givenAction, dispatch, routerState: givenState, getState})
 
     beforeEach(() => {
         routerAdapter = jasmine.createSpy('routerAdapter')
@@ -23,7 +23,7 @@ describe('src/app/js/store/middleware/router/routerHandler.spec.js', () => {
 
     it('should dispatch one resolve action object', () => {
         const action = {
-            resolve: query => {
+            resolve: ({query}) => {
                 return {...query, c: 'd'}
             },
             query: {a: 'b'}
@@ -36,10 +36,10 @@ describe('src/app/js/store/middleware/router/routerHandler.spec.js', () => {
     it('should dispatch resolve actions array', () => {
         const action = {
             resolve: [
-                query => {
+                ({query}) => {
                     return {...query, c: 'd'}
                 },
-                query => {
+                ({query}) => {
                     return {...query, e: 'f'}
                 }
             ],
@@ -185,5 +185,27 @@ describe('src/app/js/store/middleware/router/routerHandler.spec.js', () => {
 
         execute(action, {currentRoute: ['r']})
         expect(dispatch.calls.allArgs()).toEqual([['expected1'], ['expected2'], ['expected3']])
+    })
+
+    it('should pass getState to resolve action', () => {
+        const action = {
+            resolve: ({query, getState}) => {
+                return {...getState(), c: 'd'}
+            }
+        }
+
+        execute(action, {}, () => ({a: 'b'}))
+        expect(dispatch).toHaveBeenCalledWith({a: 'b', c: 'd'})
+    })
+
+    it('should pass getState to before action', () => {
+        const action = {
+            before: ({query, getState}) => {
+                return {...getState(), c: 'd'}
+            }
+        }
+
+        execute(action, {}, () => ({a: 'b'}))
+        expect(dispatch).toHaveBeenCalledWith({a: 'b', c: 'd'})
     })
 })

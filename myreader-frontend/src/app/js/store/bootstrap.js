@@ -1,5 +1,6 @@
 import {applyMiddleware, combineReducers, compose  as reduxCompose, createStore} from 'redux'
 import thunk from 'redux-thunk'
+import guardMiddleware from './middleware/guard/guardMiddleware'
 import fetchMiddleware from './middleware/fetch'
 import {adminReducers} from './admin/reducers'
 import {settingsReducers} from './settings'
@@ -26,7 +27,7 @@ function determineComposeFn(enabled) {
 }
 
 function enhancer(enabled, middlewares = []) {
-    return determineComposeFn(enabled)(applyMiddleware(thunk, fetchMiddleware, ...middlewares))
+    return determineComposeFn(enabled)(applyMiddleware(thunk, guardMiddleware, fetchMiddleware, ...middlewares))
 }
 
 const reducers = combineReducers({

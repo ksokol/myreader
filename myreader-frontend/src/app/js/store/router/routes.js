@@ -18,7 +18,7 @@ export const routeConfiguration = {
             bookmarks: {
                 query: {seenEqual: '*', entryTagEqual: ''},
                 before: fetchEntryTags,
-                resolve: query => fetchEntries({path: SUBSCRIPTION_ENTRIES, query})
+                resolve: ({query}) => fetchEntries({path: SUBSCRIPTION_ENTRIES, query})
             }
         }
     },
@@ -31,8 +31,8 @@ export const routeConfiguration = {
             'feed-detail': {
                 before: [feedClear, feedFetchFailuresClear],
                 resolve: [
-                    query => fetchFeed(query.uuid),
-                    query => fetchFeedFetchFailures({path: `${FEEDS}/${query.uuid}/fetchError`})
+                    ({query}) => fetchFeed(query.uuid),
+                    ({query}) => fetchFeedFetchFailures({path: `${FEEDS}/${query.uuid}/fetchError`})
                 ]
             }
         }

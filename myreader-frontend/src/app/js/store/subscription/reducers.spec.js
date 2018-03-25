@@ -147,8 +147,8 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
                 tags: ['tag1', 'tag2']
             }
 
-            const currentState = {tags: []}
-            const expectedState = {tags: ['tag1', 'tag2']}
+            const currentState = {tags: {loaded: false, items: []}}
+            const expectedState = {tags: {loaded: true, items: ['tag1', 'tag2']}}
 
             expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
         })

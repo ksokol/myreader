@@ -1,18 +1,18 @@
 import {arrayIncludes, toArray} from 'shared/utils'
 
-function traverseAndDispatch({action, dispatch, state}) {
+function traverseAndDispatch({action, dispatch, routerState, getState}) {
     if (action.parent) {
-        traverseAndDispatch({action: action.parent, dispatch, state})
+        traverseAndDispatch({action: action.parent, dispatch, routerState, getState})
     }
-    if (!arrayIncludes(action.route, state.currentRoute)) {
-        toArray(action.before).forEach(beforeAction => dispatch(beforeAction()))
+    if (!arrayIncludes(action.route, routerState.currentRoute)) {
+        toArray(action.before).forEach(beforeAction => dispatch(beforeAction({getState})))
     }
-    toArray(action.resolve).forEach(resolveAction => dispatch(resolveAction(action.query)))
+    toArray(action.resolve).forEach(resolveAction => dispatch(resolveAction({query: action.query, getState})))
 }
 
 export default function routerHandler(routerAdapter) {
-    return ({action, dispatch, state}) => {
-        traverseAndDispatch({action, dispatch, state})
+    return ({action, dispatch, routerState, getState}) => {
+        traverseAndDispatch({action, dispatch, routerState, getState})
         return routerAdapter(action)
     }
 }

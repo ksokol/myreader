@@ -1,9 +1,9 @@
 export default function routerMiddleware(routerHandler) {
      return ({dispatch, getState}) => next => action => {
          if ('ROUTE_CHANGED' === action.type) {
-             const state = {...getState().router}
+             const routerState = {...getState().router}
              next(action)
-             return routerHandler({action, dispatch, state})
+             return routerHandler({action, dispatch, routerState, getState})
          }
          return next(action)
      }

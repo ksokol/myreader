@@ -5,7 +5,10 @@ export * from './selectors'
 export default function initialState() {
     return {
         subscriptions: [],
-        tags: [],
+        tags: {
+            loaded: false,
+            items: []
+        },
         exclusions: {}
     }
 }

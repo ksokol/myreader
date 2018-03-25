@@ -94,6 +94,12 @@ describe('src/app/js/store/bootstrap.spec.js', () => {
             })
         })
 
+        it('should integrate with custom guard middleware', () => {
+            const store = createApplicationStore(OTHER)
+
+            expect(() => store.dispatch(undefined)).not.toThrowError()
+        })
+
         it('should add given middlewares', done => {
             const middleware1 = () => next => action => {
                 return next({...action, middleware1: true})

@@ -2,6 +2,10 @@ function isFunction(value) {
     return typeof value === 'function'
 }
 
+export function isString(value) {
+    return value !== null && typeof value === 'string'
+}
+
 export function isObject(value) {
     return value !== null && typeof value === 'object'
 }

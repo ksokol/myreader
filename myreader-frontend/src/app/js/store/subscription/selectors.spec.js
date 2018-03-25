@@ -1,4 +1,11 @@
-import {filteredByUnseenSubscriptionsSelector, getSubscriptions, subscriptionExclusionPatternsSelector, subscriptionByUuidSelector} from 'store'
+import {
+    filteredByUnseenSubscriptionsSelector,
+    getSubscriptions,
+    subscriptionByUuidSelector,
+    subscriptionExclusionPatternsSelector,
+    subscriptionTagsSelector,
+    subscriptionTagsLoaded
+} from 'store'
 import settingsInitialState from '../settings'
 
 describe('src/app/js/store/subscription/selectors.spec.js', () => {
@@ -74,5 +81,24 @@ describe('src/app/js/store/subscription/selectors.spec.js', () => {
         state.subscription.subscriptions[0].a = 'x'
 
         expect(selection).toEqual({subscription: {uuid: '1', a: 'b'}})
+    })
+
+    it('should return subscription tags', () => {
+        state.subscription.tags = {loaded: true, items: ['a', 'b']}
+
+        expect(subscriptionTagsSelector(state)).toEqual({tags: ['a', 'b']})
+    })
+
+    it('should return copy of subscription tags', () => {
+        state.subscription.tags = {loaded: true, items: ['a', 'b']}
+        const selection = subscriptionTagsSelector(state)
+        state.subscription.tags.items[0] = 'x'
+
+        expect(selection).toEqual({tags: ['a', 'b']})
+    })
+
+    it('should return subscription tags loaded flag', () => {
+        state.subscription.tags = {loaded: false}
+        expect(subscriptionTagsLoaded(state)).toEqual({loaded: false})
     })
 })

@@ -2,17 +2,17 @@ import routerMiddleware from './routerMiddleware'
 
 describe('src/app/js/store/middleware/router/routerMiddleware.spec.js', () => {
 
-    let dispatch, next, routerHandler, getState
-
-    let routerState = {
-        router: {
-            a: 'b'
-        }
-    }
+    let dispatch, next, routerHandler, state, getState
 
     beforeEach(() => {
+        state = {
+            router: {
+                a: 'b'
+            }
+        }
+
         dispatch = 'expected dispatch'
-        getState = () => routerState
+        getState = () => state
         next = jasmine.createSpy('next')
         routerHandler = jasmine.createSpy('routerHandler')
     })
@@ -33,17 +33,26 @@ describe('src/app/js/store/middleware/router/routerMiddleware.spec.js', () => {
         expect(next).toHaveBeenCalledWith(action)
     })
 
-    it('should call routerHandler with action and router state', () => {
+    it('should call routerHandler with action and routerState', () => {
         const action = {type: 'ROUTE_CHANGED', payload: 'expected payload'}
         execute(action)
 
-        expect(routerHandler).toHaveBeenCalledWith({action, dispatch: 'expected dispatch', state: {a: 'b'}})
+        expect(routerHandler).toHaveBeenCalledWith(jasmine.objectContaining({action, dispatch: 'expected dispatch', routerState: {a: 'b'}}))
     })
 
     it('should pass copy of router state to routerHandler', done => {
-        routerHandler.and.callFake(({action, dispatch, state}) => {
-            routerState.router.a = 'c'
-            expect(state).toEqual({a: 'b'})
+        routerHandler.and.callFake(({action, dispatch, routerState}) => {
+            state.router.a = 'c'
+            expect(routerState).toEqual({a: 'b'})
+            done()
+        })
+
+        execute({type: 'ROUTE_CHANGED'})
+    })
+
+    it('should pass getState to routerHandler', done => {
+        routerHandler.and.callFake(({action, dispatch, routerState, getState}) => {
+            expect(getState()).toEqual({router: {a: 'b'}})
             done()
         })
 

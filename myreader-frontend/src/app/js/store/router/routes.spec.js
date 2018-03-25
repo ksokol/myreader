@@ -69,7 +69,7 @@ describe('src/app/js/store/router/routes.spec.js', () => {
             it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('GET_ENTRY_TAGS'))
 
             it('should contain expected resolve action(s)', () => {
-                store.dispatch(routeConfig.resolve({a: 'b', c: 'd'}))
+                store.dispatch(routeConfig.resolve({query: {a: 'b', c: 'd'}}))
                 expect(store.getActionTypes()).toEqual(['GET_ENTRIES'])
                 expect(store.getActions()[0].url).toContain('/subscriptionEntries')
                 expect(store.getActions()[0].url).toContain('c=d&a=b')
@@ -104,7 +104,7 @@ describe('src/app/js/store/router/routes.spec.js', () => {
             })
 
             it('should contain expected resolve action(s)', () => {
-                routeConfig.resolve.forEach(action => store.dispatch(action({uuid: 'expectedUuid'})))
+                routeConfig.resolve.forEach(action => store.dispatch(action({query: {uuid: 'expectedUuid'}})))
                 expect(store.getActionTypes()).toEqual(['GET_FEED', 'GET_FEED_FETCH_FAILURES'])
                 expect(store.getActions()[0].url).toContain('/feeds/expectedUuid')
                 expect(store.getActions()[1].url).toContain('/feeds/expectedUuid/fetchError')
