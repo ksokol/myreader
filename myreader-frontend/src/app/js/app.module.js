@@ -141,12 +141,17 @@ angular
         return () => () => {
             const routerMiddleware = createRouterMiddleware(uiRouterAdapter($state))
 
+            const digestMiddleware = () => next => action => {
+                const result = next(action)
+                $rootScope.$evalAsync(result)
+                return result
+            }
+
             const store = createApplicationStore(
                 ENVIRONMENT,
                 [installAuthorizationChangeActionDispatcher, installMediaBreakpointActionDispatcher],
-                [routerMiddleware]
+                [routerMiddleware, digestMiddleware]
             )
-            store.subscribe($rootScope.$evalAsync)
             return store
         }
     })
