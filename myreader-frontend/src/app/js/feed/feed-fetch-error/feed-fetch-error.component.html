@@ -3,7 +3,6 @@
 <md-list ng-if="$ctrl.failures.length > 0">
     <ng-repeat ng-repeat="item in $ctrl.failures track by item.uuid">
         <my-feed-fetch-error-list-item my-item="item"></my-feed-fetch-error-list-item>
-        <md-divider></md-divider>
     </ng-repeat>
 
     <md-list-item>

@@ -1,4 +1,5 @@
 import template from './subscription-list.component.html'
+import './subscription-list.component.css'
 import {fetchSubscriptions, getSubscriptions, routeChange, routeSelector} from 'store'
 
 class controller {

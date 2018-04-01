@@ -2,7 +2,7 @@
               my-on-refresh="$ctrl.refresh()">
     <my-list-panel>
         <md-list>
-            <md-list-item class="md-2-line"
+            <md-list-item class="md-2-line subscription-list__item"
                           ng-click="$ctrl.navigateTo(subscription)"
                           ng-repeat="subscription in $ctrl.subscriptions | filter: $ctrl.router.query.q">
                 <div layout="row">
@@ -13,7 +13,6 @@
                         </div>
                     </div>
                 </div>
-                <md-divider></md-divider>
             </md-list-item>
         </md-list>
     </my-list-panel>
