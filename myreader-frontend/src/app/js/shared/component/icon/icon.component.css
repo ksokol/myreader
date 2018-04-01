@@ -1,5 +1,14 @@
-.my-icon {
+my-icon {
+    background-repeat: no-repeat no-repeat;
     cursor: pointer;
+    display: inline-block;
+    fill: currentColor;
+    height: 24px;
+    margin: auto;
+    min-height: 24px;
+    min-width: 24px;
+    vertical-align: middle;
+    width: 24px;
 }
 
 .my-icon__icon--white {

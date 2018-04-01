@@ -76,7 +76,6 @@ angular
         'material.core',
         'material.core.animate',
         'material.components.button',
-        'material.components.icon',
         'material.components.list'
     ])
     .component('myEntryActions', EntryActionsComponent)

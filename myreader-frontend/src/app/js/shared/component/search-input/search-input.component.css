@@ -6,8 +6,3 @@ my-search-input {
     flex-grow: 1;
     margin: 0;
 }
-
-.my-search-input-container__search-icon {
-    padding: 5px;
-    margin-top: 2px;
-}

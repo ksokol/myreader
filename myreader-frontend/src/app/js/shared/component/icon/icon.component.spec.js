@@ -1,37 +1,32 @@
-describe('src/app/js/shared/component/icon/icon.component.spec.js', function () {
+describe('src/app/js/shared/component/icon/icon.component.spec.js', () => {
 
-    var angular = require('angular');
+    let scope, compile
 
-    beforeEach(angular.mock.module('myreader'));
+    beforeEach(angular.mock.module('myreader'))
 
-    describe('with html', function () {
+    beforeEach(inject(($rootScope, $compile) => {
+        compile = $compile
+        scope = $rootScope.$new(true)
+    }))
 
-        var scope, compile;
+    it('should render close icon', () => {
+        const element = compile('<my-icon my-type="close"></my-icon>')(scope)
+        scope.$digest()
 
-        beforeEach(inject(function ($rootScope, $compile) {
-            compile = $compile;
-            scope = $rootScope.$new();
-        }));
+        expect(element[0].classList).toContain('my-icon__icon--close')
+    })
 
-        it('should render close icon', function () {
-            var element = compile('<my-icon my-type="close"></my-icon>')(scope);
-            scope.$digest();
+    it('should render icon with default color', () => {
+        const element = compile('<my-icon my-type="close"></my-icon>')(scope)
+        scope.$digest()
 
-            expect(element.find('md-icon')[0].classList).toContain('my-icon__icon--close');
-        });
+        expect(element[0].classList).toContain('my-icon__icon--grey')
+    })
 
-        it('should render icon with default color', function () {
-            var element = compile('<my-icon my-type="close"></my-icon>')(scope);
-            scope.$digest();
+    it('should render icon with given color', () => {
+        const element = compile('<my-icon my-color="white"></my-icon>')(scope)
+        scope.$digest()
 
-            expect(element.find('md-icon')[0].classList).toContain('my-icon__icon--grey');
-        });
-
-        it('should render icon with given color', function () {
-            var element = compile('<my-icon my-color="white"></my-icon>')(scope);
-            scope.$digest();
-
-            expect(element.find('md-icon')[0].classList).toContain('my-icon__icon--white');
-        });
-    });
-});
+        expect(element[0].classList).toContain('my-icon__icon--white')
+    })
+})

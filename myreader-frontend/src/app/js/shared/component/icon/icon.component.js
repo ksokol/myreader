@@ -1,24 +1,24 @@
-import './icon.component.css';
+import './icon.component.css'
 
 class controller {
 
-    constructor() {
-        this.iconColor = 'my-icon__icon--grey';
+    constructor($element) {
+        'ngInject'
+        this.element = $element[0]
     }
-    $onInit() {
-        this.iconClass = 'my-icon__icon--' + this.myType;
 
-        if (this.myColor) {
-            this.iconColor = 'my-icon__icon--' + this.myColor;
-        }
+    $onInit() {
+        this.element.classList.add(
+            `my-icon__icon--${this.myType}`,
+            `my-icon__icon--${this.myColor ? this.myColor : 'grey'}`
+        )
     }
 }
 
 export const IconComponent = {
-    template: '<md-icon class="my-icon" ng-class="[$ctrl.iconClass, $ctrl.iconColor]"></md-icon>',
     controller,
     bindings: {
         myType: '@',
         myColor: '@'
     }
-};
+}
