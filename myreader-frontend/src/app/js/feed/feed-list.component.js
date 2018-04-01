@@ -1,4 +1,5 @@
 import template from './feed-list.component.html'
+import './feed-list.component.css'
 import {routeChange, routeSelector, fetchFeeds, feedsSelector} from 'store'
 
 class controller {

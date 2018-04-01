@@ -1,16 +1,14 @@
 <my-list-page my-on-search="$ctrl.onSearch(params)"
               my-on-refresh="$ctrl.refresh()">
     <my-list-panel>
-        <md-list>
-            <md-list-item ng-click="$ctrl.open(feed)" class="md-2-line" ng-repeat="feed in $ctrl.feeds | filter: $ctrl.router.query.q">
-                <div class="md-list-item-text">
-                    <h3 ng-bind-html="feed.title"></h3>
-                    <p>
-                        <my-icon my-type="error" ng-if="feed.hasErrors"></my-icon>
-                        {{::feed.createdAt | timeago}}
-                    </p>
-                </div>
-            </md-list-item>
-        </md-list>
+        <div class="feed-list__item"
+             ng-click="$ctrl.open(feed)"
+             ng-repeat="feed in $ctrl.feeds | filter: $ctrl.router.query.q">
+            <h3 ng-bind-html="feed.title"></h3>
+            <span>
+                <my-icon my-type="error" ng-if="feed.hasErrors"></my-icon>
+                {{::feed.createdAt | timeago}}
+            </span>
+        </div>
     </my-list-panel>
 </my-list-page>

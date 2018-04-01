@@ -19,12 +19,12 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
     const Feed = el => {
         return {
             title: () => el.find('h3')[0],
-            createdAt: () => el.find('p')[0],
+            createdAt: () => el.find('span')[0],
             errorIcon: () => {
                 const item = el.find('my-icon')[0]
                 return item ? angular.element(item) : undefined
             },
-            click: () => angular.element(el.find('button')[0]).triggerHandler('click')
+            click: () => el.triggerHandler('click')
         }
     }
 
@@ -32,7 +32,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         return {
             feedList: () => {
                 const feeds = []
-                const items = el.find('md-list-item')
+                const items = el[0].querySelectorAll('.feed-list__item')
                 for (let i=0; i < items.length; i++) {
                     feeds.push(new Feed(angular.element(items[i])))
                 }
