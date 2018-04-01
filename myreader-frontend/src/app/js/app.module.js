@@ -12,7 +12,6 @@ import {EntryComponent} from './entry/entry.component'
 import {EntryContentSanitizerDirective} from "./entry/entry-content/entry-content-sanitizer/entry-content-sanitizer.directive"
 import {TimeagoFilter} from "shared/timeago/timeago.filter"
 import {FeedFetchErrorComponent} from "./feed/feed-fetch-error/feed-fetch-error.component"
-import {FeedFetchErrorListItemComponent} from "./feed/feed-fetch-error/feed-fetch-error-list-item.component"
 import {LoadMoreComponent} from "shared/component/load-more/load-more.component"
 import {IconComponent} from "shared/component/icon/icon.component"
 import {BackendValidationDirective} from "shared/directive/backend-validation/backend-validation.directive"
@@ -84,7 +83,6 @@ angular
     .component('myEntryTitle', EntryTitleComponent)
     .component('myEntry', EntryComponent)
     .component('myFeedFetchError', FeedFetchErrorComponent)
-    .component('myFeedFetchErrorListItem', FeedFetchErrorListItemComponent)
     .component('myValidationMessage', ValidationMessageComponent)
     .component('myFeed', FeedComponent)
     .component('myFeedList', FeedListComponent)

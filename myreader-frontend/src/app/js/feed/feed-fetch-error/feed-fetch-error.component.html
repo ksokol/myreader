@@ -1,9 +1,12 @@
 <p ng-if="$ctrl.failures.length === 0">no errors</p>
 
 <md-list ng-if="$ctrl.failures.length > 0">
-    <ng-repeat ng-repeat="item in $ctrl.failures track by item.uuid">
-        <my-feed-fetch-error-list-item my-item="item"></my-feed-fetch-error-list-item>
-    </ng-repeat>
+    <md-list-item md-no-ink class="md-3-line" ng-repeat="item in $ctrl.failures track by item.uuid">
+        <div class="md-list-item-text">
+            <p>{{::item.message}}</p>
+            <p>{{::item.createdAt | timeago}}</p>
+        </div>
+    </md-list-item>
 
     <md-list-item>
         <my-load-more my-next="$ctrl.links.next" my-on-more="$ctrl.onMore(more)"></my-load-more>
