@@ -1,7 +1,11 @@
 import {cloneObject} from '../shared/objects'
 
+export function toSubscription(raw = {}) {
+    return cloneObject(raw)
+}
+
 export function toSubscriptions(raw = {}) {
-    return (raw.content || []).map(it => cloneObject(it))
+    return (raw.content || []).map(toSubscription)
 }
 
 export function byPattern(left, right) {

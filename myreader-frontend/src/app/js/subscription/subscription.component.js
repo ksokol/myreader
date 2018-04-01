@@ -3,11 +3,10 @@ import './subscription.component.css'
 import {
     deleteSubscription,
     routeChange,
-    routeSelector,
     saveSubscription,
     showErrorNotification,
-    subscriptionByUuidSelector,
-    subscriptionTagsSelector
+    subscriptionTagsSelector,
+    subscriptionEditFormSelector
 } from 'store'
 
 class controller {
@@ -27,7 +26,7 @@ class controller {
 
     mapStateToThis(state) {
         return {
-            ...subscriptionByUuidSelector(routeSelector(state).router.query.uuid)(state),
+            ...subscriptionEditFormSelector(state),
             ...subscriptionTagsSelector(state)
         }
     }

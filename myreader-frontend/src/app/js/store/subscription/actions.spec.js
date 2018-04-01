@@ -1,10 +1,22 @@
 import {
-    addSubscriptionExclusionPattern, deleteSubscription, fetchSubscriptionExclusionPatterns, fetchSubscriptions,
-    fetchSubscriptionTags, removeSubscriptionExclusionPattern, saveSubscription, subscriptionDeleted,
-    subscriptionExclusionPatternsAdded, subscriptionExclusionPatternsReceived, subscriptionExclusionPatternsRemoved,
-    subscriptionSaved, subscriptionsReceived, subscriptionTagsReceived
+    addSubscriptionExclusionPattern,
+    clearSubscriptionEditForm,
+    deleteSubscription,
+    fetchSubscriptionExclusionPatterns,
+    fetchSubscriptions,
+    fetchSubscriptionTags,
+    loadSubscriptionIntoEditForm,
+    removeSubscriptionExclusionPattern,
+    saveSubscription,
+    subscriptionDeleted,
+    subscriptionExclusionPatternsAdded,
+    subscriptionExclusionPatternsReceived,
+    subscriptionExclusionPatternsRemoved,
+    subscriptionSaved,
+    subscriptionsReceived,
+    subscriptionTagsReceived
 } from 'store'
-import {createMockStore} from '../../shared/test-utils'
+import {createMockStore} from 'shared/test-utils'
 
 describe('src/app/js/store/subscription/actions.spec.js', () => {
 
@@ -303,6 +315,54 @@ describe('src/app/js/store/subscription/actions.spec.js', () => {
 
             expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED'])
             expect(store.getActions()[0]).toContainActionData({subscriptionUuid: '1', uuid: '2'})
+        })
+    })
+
+    describe('action creator clearSubscriptionEditForm', () => {
+
+        it('should contain expected action type', () => {
+            store.dispatch(clearSubscriptionEditForm())
+
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CLEAR'])
+        })
+    })
+
+    describe('action creator loadSubscriptionIntoEditForm', () => {
+
+        it('should fetch subscription by uuid when not in store', () => {
+            store.dispatch(loadSubscriptionIntoEditForm())
+
+            expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTION'])
+        })
+
+        it('should contain expected subscription resource url', () => {
+            store.dispatch(loadSubscriptionIntoEditForm('uuid1'))
+
+            expect(store.getActions()[0].url).toMatch(/\/subscriptions\/uuid1$/)
+        })
+
+        it('should dispatch load action when subscription fetched', () => {
+            store.dispatch(loadSubscriptionIntoEditForm('uuid1'))
+            const success = store.getActions()[0].success
+            store.clearActions()
+            success({uuid: 'uuid1', a: 'b', c: 'd'})
+
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_LOAD'])
+            expect(store.getActions()[0]).toContainActionData({subscription: {uuid: 'uuid1', a: 'b', c: 'd'}})
+        })
+
+        it('should dispatch load action when subscription exists in store', () => {
+            store.setState({subscription: {subscriptions: [{uuid: 'uuid1'}]}})
+            store.dispatch(loadSubscriptionIntoEditForm('uuid1'))
+
+            expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_LOAD'])
+        })
+
+        it('should contain subscription in load action', () => {
+            store.setState({subscription: {subscriptions: [{uuid: 'uuid1'}, {uuid: 'uuid2'}]}})
+            store.dispatch(loadSubscriptionIntoEditForm('uuid1'))
+
+            expect(store.getActions()[0]).toContainActionData({subscription: {uuid: 'uuid1'}})
         })
     })
 })

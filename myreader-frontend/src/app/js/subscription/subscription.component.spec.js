@@ -26,8 +26,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         }
 
         ngReduxMock.setState({
-            router: {query: {uuid: subscription.uuid}},
-            subscription: {subscriptions: [subscription], tags: {items: ['t1', 't2']}}
+            subscription: {editForm: subscription, tags: {items: ['t1', 't2']}}
         })
 
         element = $compile('<my-subscription></my-subscription>')(scope)
@@ -35,9 +34,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     }))
 
     it('should not render page when subscription with given uuid is not available in store', inject($compile => {
-        ngReduxMock.setState({
-            router: {query: {uuid: 'other uuid'}}
-        })
+        ngReduxMock.setState({subscription: {editForm: null, tags: {items: []}}})
         element = $compile('<my-subscription></my-subscription>')(scope)
         scope.$digest()
 

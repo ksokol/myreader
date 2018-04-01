@@ -64,14 +64,30 @@ describe('src/app/js/store/router/routes.spec.js', () => {
 
             beforeEach(() => routeConfig = routeConfiguration['app'].children['subscription'])
 
-            it('should contain expected resolve action when tags not loaded', () => {
-                store.dispatch(routeConfig.resolve({getState: () => ({subscription: {tags: {loaded: false}}})}))
+            it('should clear edit form on before', () => {
+                store.dispatch(routeConfig.before())
+                expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CLEAR'])
+            })
+
+            it('should fetch subscription tags when not loaded', () => {
+                store.dispatch(routeConfig.resolve[0]({getState: () => ({subscription: {tags: {loaded: false}}})}))
                 expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTION_TAGS'])
             })
 
-            it('should not contain expected resolve action when tags loaded', () => {
-                const action = routeConfig.resolve({getState: () => ({subscription: {tags: {loaded: true}}})})
+            it('should not fetch subscription tags when loaded', () => {
+                const action = routeConfig.resolve[0]({getState: () => ({subscription: {tags: {loaded: true}}})})
                 expect(action).toEqual(undefined)
+            })
+
+            it('should load subscription into edit form', () => {
+                store.setState({subscription: {subscriptions: [{uuid: 'uuid1'}]}})
+                store.dispatch(routeConfig.resolve[1]({query: {uuid: 'uuid1'}}))
+                expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_LOAD'])
+            })
+
+            it('should fetch subscription before loading into edit form', () => {
+                store.dispatch(routeConfig.resolve[1]({query: {}}))
+                expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTION'])
             })
         })
 

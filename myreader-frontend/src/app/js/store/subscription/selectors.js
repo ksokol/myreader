@@ -56,3 +56,8 @@ export const subscriptionTagsLoaded = createSelector(
     subscriptionTagSelector,
     tags => ({loaded: tags.loaded})
 )
+
+export const subscriptionEditFormSelector = createSelector(
+    state => state.subscription.editForm,
+    editForm => ({subscription: cloneObject(editForm)})
+)

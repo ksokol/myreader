@@ -166,6 +166,20 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
         it('should not change tags when subscription tag is null', () => {
             expect(subscriptionReducers(state, action({uuid: '3', tag: null}))).toContainObject({tags: {loaded: true, items: ['t1', 't3']}})
         })
+
+        it('should update editForm when uuid matches', () => {
+            state = {...state, editForm:  {uuid: '2', title: 'a title'}}
+
+            expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'})))
+                .toContainObject({editForm: {uuid: '2', title: 'new title'}})
+        })
+
+        it('should not update editForm when uuid does not match', () => {
+            state = {...state, editForm:  {uuid: '1', title: 'a title'}}
+
+            expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'})))
+                .toContainObject({editForm: {uuid: '1', title: 'a title'}})
+        })
     })
 
     describe('action SUBSCRIPTION_TAGS_RECEIVED', () => {
@@ -270,6 +284,35 @@ describe('src/app/js/store/subscription/reducers.spec.js', () => {
         it('should not remove exclusion pattern when exclusion patterns for subscription are not present in store', () => {
             const currentState = {exclusions: {'2': [{uuid: '1'}, {uuid: '2'}]}}
             const expectedState = {exclusions: {'2': [{uuid: '1'}, {uuid: '2'}]}}
+
+            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+        })
+    })
+
+    describe('action SUBSCRIPTION_EDIT_FORM_CLEAR', () => {
+
+        const action = {
+            type: 'SUBSCRIPTION_EDIT_FORM_CLEAR'
+        }
+
+        it('should reset editForm', () => {
+            const currentState = {editForm: {uuid: 'uuid1'}}
+            const expectedState = {editForm: null}
+
+            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+        })
+    })
+
+    describe('action SUBSCRIPTION_EDIT_FORM_LOAD', () => {
+
+        const action = {
+            type: 'SUBSCRIPTION_EDIT_FORM_LOAD',
+            subscription: {uuid: 'uuid1', a: 'b'}
+        }
+
+        it('should set editForm', () => {
+            const currentState = {editForm: null}
+            const expectedState = {editForm: {uuid: 'uuid1', a: 'b'}}
 
             expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
         })

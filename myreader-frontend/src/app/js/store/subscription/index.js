@@ -9,6 +9,7 @@ export default function initialState() {
             loaded: false,
             items: []
         },
-        exclusions: {}
+        exclusions: {},
+        editForm: null
     }
 }

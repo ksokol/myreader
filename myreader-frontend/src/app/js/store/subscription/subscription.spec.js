@@ -1,6 +1,19 @@
-import {byPattern, toExclusionPattern, toExclusionPatterns, toSubscriptions} from './subscription'
+import {byPattern, toExclusionPattern, toExclusionPatterns, toSubscription, toSubscriptions} from './subscription'
 
 describe('src/app/js/store/subscription/subscription.spec.js', () => {
+
+    describe('toSubscription', () => {
+
+        it('should convert raw data', () => {
+            const raw = {uuid: 1, key: 'value'}
+
+            expect(toSubscription(raw)).toEqual({uuid: 1, key: 'value'})
+        })
+
+        it('should return valid object when input is undefined', () => {
+            expect(toSubscription(undefined)).toEqual({})
+        })
+    })
 
     describe('toSubscriptions', () => {
 

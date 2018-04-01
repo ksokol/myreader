@@ -1,5 +1,6 @@
 import {FEEDS, SUBSCRIPTION_ENTRIES} from 'constants'
 import {
+    clearSubscriptionEditForm,
     feedClear,
     feedFetchFailuresClear,
     fetchApplicationInfo,
@@ -10,6 +11,7 @@ import {
     fetchFeeds,
     fetchSubscriptions,
     fetchSubscriptionTags,
+    loadSubscriptionIntoEditForm,
     subscriptionTagsLoaded
 } from 'store'
 
@@ -18,7 +20,11 @@ export const routeConfiguration = {
         before: fetchSubscriptions,
         children: {
             subscription: {
-              resolve: ({query, getState}) => subscriptionTagsLoaded(getState()).loaded ? undefined : fetchSubscriptionTags()
+              before: clearSubscriptionEditForm,
+              resolve: [
+                  ({query, getState}) => subscriptionTagsLoaded(getState()).loaded ? undefined : fetchSubscriptionTags(),
+                  ({query}) => loadSubscriptionIntoEditForm(query.uuid)
+              ]
             },
             bookmarks: {
                 query: {seenEqual: '*', entryTagEqual: ''},

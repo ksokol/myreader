@@ -1,7 +1,7 @@
 import * as types from 'store/action-types'
-import {toSubscriptions, toExclusionPattern, toExclusionPatterns} from './subscription'
-import {SUBSCRIPTION_AVAILABLE_TAGS, SUBSCRIPTIONS, EXCLUSION_TAGS} from '../../constants'
-import {showSuccessNotification} from 'store'
+import {toExclusionPattern, toExclusionPatterns, toSubscription, toSubscriptions} from './subscription'
+import {EXCLUSION_TAGS, SUBSCRIPTION_AVAILABLE_TAGS, SUBSCRIPTIONS} from 'constants'
+import {showSuccessNotification, subscriptionByUuidSelector} from 'store'
 
 export const subscriptionsReceived = raw => {
     return {type: types.SUBSCRIPTIONS_RECEIVED, subscriptions: toSubscriptions(raw)}
@@ -92,5 +92,26 @@ export const removeSubscriptionExclusionPattern = (subscriptionUuid, uuid) => {
         type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS',
         url : `${EXCLUSION_TAGS}/${subscriptionUuid}/pattern/${uuid}`,
         success: response => subscriptionExclusionPatternsRemoved(subscriptionUuid, uuid)
+    }
+}
+
+export const clearSubscriptionEditForm = () => {
+    return {type: types.SUBSCRIPTION_EDIT_FORM_CLEAR}
+}
+
+const loadSubscriptionEditForm = subscription => {
+    return {type: types.SUBSCRIPTION_EDIT_FORM_LOAD, subscription}
+}
+
+export const loadSubscriptionIntoEditForm = uuid => {
+    return (dispatch, getState) => {
+        const {subscription} = subscriptionByUuidSelector(uuid)(getState())
+        return subscription ?
+            dispatch(loadSubscriptionEditForm(subscription)) :
+            dispatch({
+                type: 'GET_SUBSCRIPTION',
+                url: `${SUBSCRIPTIONS}/${uuid}`,
+                success: response => dispatch(loadSubscriptionEditForm(toSubscription(response)))
+            })
     }
 }

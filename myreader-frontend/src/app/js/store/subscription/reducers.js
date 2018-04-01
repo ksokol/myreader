@@ -75,6 +75,22 @@ function subscriptionExclusionPatternsRemoved({state, action}) {
     return {...state, exclusions}
 }
 
+function subscriptionEditFormClear({state}) {
+    return {...state, editForm: null}
+}
+
+function subscriptionEditFormLoad({state, action}) {
+    return {...state, editForm: {...action.subscription}}
+}
+
+function subscriptionEditFormUpdate({state, action}) {
+    let editForm = state.editForm
+    if (editForm && editForm.uuid === action.subscription.uuid) {
+        editForm = {...action.subscription}
+    }
+    return {...state, editForm}
+}
+
 function securityUpdate({state, action}) {
     return action.authorized ? state : initialApplicationState().subscription
 }
@@ -91,7 +107,8 @@ export function subscriptionReducers(state = initialApplicationState().subscript
             return subscriptionDeleted({state, action})
         }
         case types.SUBSCRIPTION_SAVED: {
-            return subscriptionSaved({state, action})
+            const newState = subscriptionSaved({state, action})
+            return subscriptionEditFormUpdate({state: newState, action})
         }
         case types.SUBSCRIPTION_TAGS_RECEIVED: {
             return subscriptionTagsReceived({state, action})
@@ -104,6 +121,12 @@ export function subscriptionReducers(state = initialApplicationState().subscript
         }
         case types.SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED: {
             return subscriptionExclusionPatternsRemoved({state, action})
+        }
+        case types.SUBSCRIPTION_EDIT_FORM_CLEAR: {
+            return subscriptionEditFormClear({state, action})
+        }
+        case types.SUBSCRIPTION_EDIT_FORM_LOAD: {
+            return subscriptionEditFormLoad({state, action})
         }
         case types.SECURITY_UPDATE: {
             return securityUpdate({state, action})

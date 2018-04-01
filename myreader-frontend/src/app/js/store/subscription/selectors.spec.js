@@ -2,9 +2,10 @@ import {
     filteredByUnseenSubscriptionsSelector,
     getSubscriptions,
     subscriptionByUuidSelector,
+    subscriptionEditFormSelector,
     subscriptionExclusionPatternsSelector,
-    subscriptionTagsSelector,
-    subscriptionTagsLoaded
+    subscriptionTagsLoaded,
+    subscriptionTagsSelector
 } from 'store'
 import settingsInitialState from '../settings'
 
@@ -100,5 +101,19 @@ describe('src/app/js/store/subscription/selectors.spec.js', () => {
     it('should return subscription tags loaded flag', () => {
         state.subscription.tags = {loaded: false}
         expect(subscriptionTagsLoaded(state)).toEqual({loaded: false})
+    })
+
+    it('should return subscription edit form data', () => {
+        state.subscription.editForm = {a: 'b', c: 'd'}
+
+        expect(subscriptionEditFormSelector(state)).toEqual({subscription: {a: 'b', c: 'd'}})
+    })
+
+    it('should return copy of subscription edit form data', () => {
+        state.subscription.editForm = {a: 'b', c: 'd'}
+        const selection = subscriptionEditFormSelector(state)
+        state.subscription.editForm.a = 'x'
+
+        expect(selection).toEqual({subscription: {a: 'b', c: 'd'}})
     })
 })
