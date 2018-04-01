@@ -1,6 +1,15 @@
-import {arrayIncludes, isBoolean, isDate, isObject, isPromiseLike, toArray, isString} from './utils'
+import {arrayIncludes, isBoolean, isDate, isDefined, isObject, isPromiseLike, isString, toArray} from './utils'
 
 describe('src/app/js/shared/spec.js', () => {
+
+    describe('isDefined() should return', () => {
+
+        it('false when given parameter is undefined', () => expect(isDefined()).toEqual(false))
+
+        it('true when given parameter is a number', () => expect(isDefined(1)).toEqual(true))
+
+        it('true when given parameter is null', () => expect(isDefined(null)).toEqual(true))
+    })
 
     describe('isString() should return', () => {
 

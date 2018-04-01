@@ -19,7 +19,7 @@ describe('src/app/js/subscription/subscription-tag-panel/subscription-tag-panel.
         scope.myValues = ['t1', 't2']
 
         element = $compile(`<my-autocomplete-input
-                              my-label="label"
+                              my-label="'label'"
                               my-selected-item="mySelectedItem"
                               my-on-select="myOnSelect({value: value})"
                               my-on-clear="myOnClear()"

@@ -31,7 +31,6 @@ import {SettingsComponent} from "./settings/settings.component"
 import {SubscribeComponent} from "./subscription/subscribe/subscribe.component"
 import {SubscriptionExclusionComponent} from "./subscription/subscription-exclusion-panel/subscription-exclusion/subscription-exclusion.component"
 import {SubscriptionExclusionPanelComponent} from "./subscription/subscription-exclusion-panel/subscription-exclusion-panel.component"
-import {AutoCompleteInputComponent} from "shared/component/autocomplete-input/autocomplete-input.component"
 import {SubscriptionTagPanelComponent} from "./subscription/subscription-tag-panel/subscription-tag-panel.component"
 import {SubscriptionComponent} from "./subscription/subscription.component"
 import {ClickIfInViewDirective} from "shared/component/load-more/click-if-in-view.directive"
@@ -57,6 +56,11 @@ import {ChipsComponent} from 'shared/component/chips/chips.component'
 import {ChipComponent} from 'shared/component/chips/chip.component'
 import {ChipsInputComponent} from 'shared/component/chips/chips-input.component'
 import {InputContainer} from 'shared/component/input-container/input-container'
+import {
+    AutoCompleteInputComponent,
+    AutocompleteSuggestionsComponent,
+    AutocompleteSuggestionsItemTextComponent
+} from './shared/component/autocomplete-input'
 
 import './config'
 
@@ -71,14 +75,10 @@ angular
         'ngAria',
         'material.core',
         'material.core.animate',
-        'material.components.autocomplete',
         'material.components.button',
         'material.components.divider',
         'material.components.icon',
-        'material.components.input',
-        'material.components.list',
-        'material.components.showHide',
-        'material.components.virtualRepeat'
+        'material.components.list'
     ])
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)
@@ -98,7 +98,6 @@ angular
     .component('mySubscribe', SubscribeComponent)
     .component('mySubscriptionExclusion', SubscriptionExclusionComponent)
     .component('mySubscriptionExclusionPanel', SubscriptionExclusionPanelComponent)
-    .component('myAutocompleteInput', AutoCompleteInputComponent)
     .component('mySubscriptionTagPanel', SubscriptionTagPanelComponent)
     .component('mySubscription', SubscriptionComponent)
     .component('myEntryList', EntryListComponent)
@@ -126,6 +125,9 @@ angular
     .component('myChips', ChipsComponent)
     .component('myChipsInput', ChipsInputComponent)
     .component('myInputContainer', InputContainer)
+    .component('myAutocompleteInput', AutoCompleteInputComponent)
+    .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
+    .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)

@@ -1,0 +1,32 @@
+my-autocomplete-suggestions {
+    background-color: white;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
+    position: fixed;
+    width: inherit;
+    top: 45px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.my-autocomplete-suggestions {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+}
+
+.my-autocomplete-suggestions > * >li {
+    cursor: pointer;
+    font-size: 14px;
+    overflow: hidden;
+    padding: 0 15px;
+    line-height: 48px;
+    height: 48px;
+    transition: background .15s linear;
+    margin: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.my-autocomplete-suggestions__item--selected, .my-autocomplete-suggestions > * > li:hover {
+    background-color: rgb(238,238,238);
+}

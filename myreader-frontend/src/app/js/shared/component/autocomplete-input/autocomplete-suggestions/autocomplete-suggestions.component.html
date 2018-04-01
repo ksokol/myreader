@@ -1,0 +1,16 @@
+<my-hotkeys my-bind-to="$ctrl" my-hotkeys="{'down': $ctrl.onDown, 'up': $ctrl.onUp, 'enter': $ctrl.onEnter, 'esc': $ctrl.onEscape}">
+    <ul class="my-autocomplete-suggestions">
+        <my-auto-scroll my-scroll-on="{'data-index': $ctrl.indexSelected}">
+            <li ng-repeat="term in $ctrl.filteredValues | filter: $ctrl.filterSuggestions()"
+                ng-click="$ctrl.onSelectSuggestion(term)"
+                data-index="{{$index}}"
+                ng-class="{'my-autocomplete-suggestions__item--selected': $index === $ctrl.indexSelected}"
+                tabindex="-1">
+                <my-autocomplete-suggestions-item-text
+                        my-term="term"
+                        my-term-fragment="$ctrl.myCurrentTerm">
+                </my-autocomplete-suggestions-item-text>
+            </li>
+        </my-auto-scroll>
+    </ul>
+</my-hotkeys>

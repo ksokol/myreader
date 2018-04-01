@@ -2,6 +2,10 @@ function isFunction(value) {
     return typeof value === 'function'
 }
 
+export function isDefined(value) {
+    return typeof value !== 'undefined'
+}
+
 export function isString(value) {
     return value !== null && typeof value === 'string'
 }

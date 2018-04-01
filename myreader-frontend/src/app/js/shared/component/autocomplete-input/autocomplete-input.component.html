@@ -1,16 +1,18 @@
-<md-autocomplete
-        ng-disabled="$ctrl.myDisabled"
-        md-floating-label="{{$ctrl.myLabel}}"
-        md-selected-item="$ctrl.selectedItem"
-        md-search-text="term"
-        md-item-text="selectedValue"
-        md-items="selectedValue in $ctrl.filterValues(term)"
-        md-selected-item-change="$ctrl.onSelect(term)"
-        md-search-text-change="$ctrl.onSelect(term)"
-        md-delay="250"
-        md-min-length="0"
-        md-clear-button="true">
-    <md-item-template>
-        <span md-highlight-text="term" md-highlight-flags="^i">{{selectedValue}}</span>
-    </md-item-template>
-</md-autocomplete>
+<my-input-container class="my-autocomplete__input">
+    <label ng-if="$ctrl.myLabel">{{$ctrl.myLabel}}</label>
+    <input type="text"
+           autocomplete="off"
+           ng-disabled="$ctrl.myDisabled"
+           ng-model="$ctrl.mySelectedItem"
+           ng-model-options="{debounce: 100}"
+           ng-focus="$ctrl.onFocus()"
+           ng-change="$ctrl.onChange($event)"
+           ng-blur="$ctrl.onBlur()">
+
+    <my-autocomplete-suggestions
+            my-values="$ctrl.myValues"
+            my-current-term="$ctrl.mySelectedItem"
+            my-on-select="$ctrl.onSelectSuggestion(term)"
+            ng-if="$ctrl.showSuggestions">
+    </my-autocomplete-suggestions>
+</my-input-container>

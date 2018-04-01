@@ -1,264 +1,192 @@
-describe('src/app/js/shared/component/autocomplete-input/autocomplete-input.component.spec.js', function () {
+import {componentMock} from 'shared/test-utils'
 
-    beforeEach(require('angular').mock.module('myreader', 'ngMaterial-mock'));
+class AutcompletePage {
 
-    describe('controller', function () {
+    constructor(el, $scope, $timeout) {
+        this.el = el
+        this.$scope = $scope
+        this.$timeout = $timeout
+    }
 
-        var rootScope, componentController, myAsyncValues;
+    get label() {
+        return this.el.find('label')[0]
+    }
 
-        beforeEach(inject(function ($rootScope, $q, _$componentController_) {
-            rootScope = $rootScope;
-            componentController = _$componentController_;
-            myAsyncValues = jasmine.createSpy('myAsyncValues()');
+    get input() {
+        return this.el.find('input')
+    }
 
-            var deferred = $q.defer();
-            deferred.resolve(['v3', 'v4']);
-            myAsyncValues.and.returnValue(deferred.promise);
-        }));
+    get autocompleteSuggestionsComponent() {
+        return this.el.find('my-autocomplete-suggestions')[0]
+    }
 
-        it('should throw error when myLabel is not set', function () {
-            var component = componentController('myAutocompleteInput');
-            expect(function () {
-                component.$onInit();
-            }).toThrowError('myLabel is undefined');
-        });
+    focusInput() {
+        this.input.triggerHandler('focus')
+        this.$scope.$digest()
+    }
 
-        it('should cache result of myAsyncValues()', function () {
-            var component = componentController('myAutocompleteInput', null, { myLabel: 'label', myAsyncValues: myAsyncValues });
+    blurInput() {
+        this.input.triggerHandler('blur')
+        this.$timeout.flush(100)
+        this.$scope.$digest()
+    }
 
-            component.filterValues('v');
-            rootScope.$digest();
-            expect(myAsyncValues).toHaveBeenCalledTimes(1);
+    enterInput(value) {
+        this.input.val(value).triggerHandler('change')
+        this.$timeout.flush(100)
+        this.$scope.$digest()
+    }
+}
 
-            component.filterValues('v');
-            rootScope.$digest();
-            expect(myAsyncValues).toHaveBeenCalledTimes(1);
-        });
+describe('src/app/js/shared/component/autocomplete-input/autocomplete-input.component.spec.js', () => {
 
-        it('should call myAsyncValues() a second time when myValues changed', function () {
-            var component = componentController('myAutocompleteInput', null, { myLabel: 'label', myAsyncValues: myAsyncValues });
+    let page, rootScope, scope, compile, timeout, element, myOnSelect, myOnClear, myAutocompleteSuggestions
 
-            component.filterValues('');
-            rootScope.$digest();
+    beforeEach(() => {
+        jasmine.clock().uninstall()
+        myAutocompleteSuggestions = componentMock('myAutocompleteSuggestions')
+        angular.mock.module('myreader', myAutocompleteSuggestions)
+    })
 
-            component.$onChanges({ myValues: { currentValue: [ 'value' ]}});
+    beforeEach(inject(($rootScope, $compile, $timeout) => {
+        myOnSelect = jasmine.createSpy('myOnSelect')
+        myOnClear = jasmine.createSpy('myOnClear')
 
-            component.filterValues('');
-            rootScope.$digest();
-            expect(myAsyncValues).toHaveBeenCalledTimes(2);
-        });
-    });
+        compile = $compile
+        rootScope = $rootScope
+        timeout = $timeout
+        scope = rootScope.$new(true)
+        scope.myOnSelect = myOnSelect
+        scope.myOnClear = myOnClear
+        scope.label = 'a label'
 
-    describe('with html', function () {
+        element = compile(`<my-autocomplete-input
+                               my-label="label"
+                               my-selected-item="selectedValue"
+                               my-disabled="disabled"
+                               my-values="values"
+                               my-selected-item="selectedValue"
+                               my-on-select="myOnSelect(value)"
+                               my-on-clear="myOnClear()">
+                           </my-autocomplete-input>`)(scope)
+        page = new AutcompletePage(element, scope, $timeout)
+        scope.$digest()
+    }))
 
-        var rootScope, scope, compile, element, myOnSelect, myOnClear;
+    it('should render label text', () => {
+        expect(page.label.innerText).toEqual('a label')
+    })
 
-        beforeEach(inject(function ($rootScope, $compile) {
-            myOnSelect = jasmine.createSpy('myOnSelect');
-            myOnClear = jasmine.createSpy('myOnClear');
+    it('should not render label text when binding value is undefined', () => {
+        scope.label = undefined
+        scope.$digest()
+        expect(page.label).toBeUndefined()
+    })
 
-            compile = $compile;
-            rootScope = $rootScope;
-            scope = rootScope.$new();
-            scope.myOnSelect = myOnSelect;
-            scope.myOnClear = myOnClear;
-            scope.label = 'a label';
+    it('should enable input element when myDisabled is false', () => {
+        expect(page.input.attr('disabled')).toBeUndefined()
+    })
 
-            element = compile('<my-autocomplete-input ' +
-                                'my-label="{{label}}" ' +
-                                'my-values="values" ' +
-                                'my-selected-item="selectedValue" ' +
-                                'my-on-select="myOnSelect(value)" ' +
-                                'my-on-clear="myOnClear()">' +
-                              '</my-autocomplete-input>')(scope);
-            scope.$digest();
-        }));
+    it('should disable input element when myDisabled is true', () => {
+        scope.disabled = true
+        scope.$digest()
 
-        it('should render myLabel', function () {
-            expect(element.find('label')[0].innerText).toEqual('a label');
-        });
+        expect(page.input.attr('disabled')).toEqual('disabled')
+    })
 
-        it('should enable input element when myDisabled is false', function () {
-            expect(element.find('input').attr('disabled')).toBeUndefined();
-        });
+    it('should preset input with mySelectedItem', () => {
+        scope.selectedValue = 'selected-value'
+        scope.$digest()
 
-        it('should disable input element when myDisabled is true', function () {
-            scope.myDisabled = true;
-            element = compile('<my-autocomplete-input ' +
-                'my-label="{{label}}" ' +
-                'my-disabled="myDisabled">' +
-                '</my-autocomplete-input>')(scope);
-            scope.$digest();
+        expect(page.input.val()).toEqual('selected-value')
+    })
 
-            expect(element.find('input').attr('disabled')).toEqual('disabled');
-        });
+    it('should not create suggestions component when input is not focused', () => {
+        expect(page.autocompleteSuggestionsComponent).toBeUndefined()
+    })
 
-        it('should preset input with mySelectedItem', function () {
-            scope.selectedValue = 'selected-value';
+    it('should create suggestions component when input is focused', () => {
+        scope.values = ['irrelevant']
+        scope.$digest()
+        page.focusInput()
 
-            element = compile('<my-autocomplete-input ' +
-                'my-label="{{label}}" ' +
-                'my-selected-item="selectedValue">' +
-                '</my-autocomplete-input>')(scope);
-            scope.$digest();
+        expect(page.autocompleteSuggestionsComponent).toBeDefined()
+    })
 
-            expect(element.find('input').val()).toEqual('selected-value');
-        });
+    it('should pass values to suggestions component bindings', () => {
+        scope.values = ['tag1', 'tag2']
+        scope.selectedValue = 'expected term value'
+        scope.$digest()
+        page.focusInput()
 
-        it('should not update input value when mySelectedItem changed', function () {
-            scope.selectedValue = 'selected-value';
+        expect(myAutocompleteSuggestions.bindings.myValues).toEqual(['tag1', 'tag2'])
+        expect(myAutocompleteSuggestions.bindings.myCurrentTerm).toEqual('expected term value')
+    })
 
-            element = compile('<my-autocomplete-input ' +
-                'my-label="{{label}}" ' +
-                'my-selected-item="selectedValue">' +
-                '</my-autocomplete-input>')(scope);
-            scope.$digest();
+    it('should pass changed input value to suggestions component', () => {
+        scope.values = ['tag']
+        scope.$digest()
+        page.focusInput()
 
-            scope.selectedValue = 'change';
-            scope.$digest();
+        page.enterInput('ta')
+        expect(myAutocompleteSuggestions.bindings.myCurrentTerm).toEqual('ta')
 
-            expect(element.find('input').val()).toEqual('selected-value');
-        });
+        page.enterInput('tag')
+        expect(myAutocompleteSuggestions.bindings.myCurrentTerm).toEqual('tag')
+    })
 
-        it('should render myValues', inject(function ($timeout, $material) {
-            scope.values = ['tag1', 'tag2'];
-            scope.$digest();
+    it('should destroy suggestions component when input field left', () => {
+        scope.values = ['tag']
+        scope.$digest()
 
-            element.find('input').triggerHandler('focus');
-            $timeout.flush();
-            $material.flushOutstandingAnimations();
-            scope.$digest();
+        page.focusInput()
+        expect(page.autocompleteSuggestionsComponent).toBeDefined()
 
-            var tags = angular.element(document).find('md-virtual-repeat-container').find('span');
+        page.blurInput()
+        expect(page.autocompleteSuggestionsComponent).toBeUndefined()
+    })
 
-            expect(tags.length).toBe(2);
-            expect(tags[0].innerText).toBe('tag1');
-            expect(tags[1].innerText).toBe('tag2');
-        }));
+    it('should emit entered value', () => {
+        page.enterInput('expected value')
 
-        it('should reduce suggestions to current input value', inject(function ($timeout, $material) {
-            scope.values = ['tag', 'other'];
-            scope.$digest();
+        expect(myOnClear).not.toHaveBeenCalled()
+        expect(myOnSelect).toHaveBeenCalledWith('expected value')
+    })
 
-            element.find('input').triggerHandler('focus');
-            $timeout.flush(250);
-            $material.flushOutstandingAnimations();
-            scope.$digest();
-            element.find('input').val('oth').triggerHandler('input');
-            $timeout.flush(250);
-            scope.$digest();
+    it('should emit onClear event when input value is null', () => {
+        page.enterInput(null)
 
-            var tags = angular.element(document).find('md-autocomplete-parent-scope');
+        expect(myOnClear).toHaveBeenCalledWith()
+        expect(myOnSelect).not.toHaveBeenCalled()
+    })
 
-            expect(tags.length).toBe(1);
-            expect(tags[0].innerText).toBe('other');
-        }));
+    it('should emit onClear event when input value is empty', () => {
+        page.enterInput('')
 
-        it('should suggest current input value', inject(function ($timeout, $material) {
-            element.find('input').triggerHandler('focus');
-            $timeout.flush(250);
-            $material.flushOutstandingAnimations();
-            scope.$digest();
+        expect(myOnClear).toHaveBeenCalledWith()
+        expect(myOnSelect).not.toHaveBeenCalled()
+    })
 
-            element.find('input').val('oth').triggerHandler('input');
-            $timeout.flush(250);
-            scope.$digest();
+    it('should emit myOnSelect event from suggestions component', () => {
+        scope.values = ['irrelevant']
+        scope.$digest()
 
-            var tags = angular.element(document).find('md-autocomplete-parent-scope');
+        page.focusInput()
+        myAutocompleteSuggestions.bindings.myOnSelect({term: 'expected value'})
 
-            expect(tags.length).toBe(1);
-            expect(tags[0].innerText).toBe('oth');
-        }));
+        expect(myOnClear).not.toHaveBeenCalled()
+        expect(myOnSelect).toHaveBeenCalledWith('expected value')
+    })
 
-        it('should emit onClear event when input value is empty', inject(function ($timeout) {
-            scope.selectedValue = 'selected-value';
+    it('should destroy suggestions component when myOnSelect event emitted', () => {
+        scope.values = ['irrelevant']
+        scope.$digest()
 
-            element = compile('<my-autocomplete-input ' +
-                'my-label="{{label}}" ' +
-                'my-selected-item="selectedValue" ' +
-                'my-on-select="myOnSelect(value)" ' +
-                'my-on-clear="myOnClear()">' +
-                '</my-autocomplete-input>')(scope);
+        page.focusInput()
+        myAutocompleteSuggestions.bindings.myOnSelect({term: 'expected value'})
+        timeout.flush(100)
+        scope.$digest()
 
-            scope.$digest();
-
-            element.find('input').val('').triggerHandler('input');
-            $timeout.flush(250);
-            scope.$digest();
-
-            expect(myOnClear).toHaveBeenCalled();
-            expect(myOnSelect).not.toHaveBeenCalled();
-        }));
-
-        it('should emit onClear event when clear button clicked', inject(function ($timeout) {
-            scope.selectedValue = 'selected-value';
-
-            element = compile('<my-autocomplete-input ' +
-                'my-label="{{label}}" ' +
-                'my-selected-item="selectedValue" ' +
-                'my-on-select="myOnSelect(value)" ' +
-                'my-on-clear="myOnClear()">' +
-                '</my-autocomplete-input>')(scope);
-
-            $timeout.flush();
-            scope.$digest();
-
-            element.find('button')[0].click();
-            $timeout.flush();
-            scope.$digest();
-
-            expect(myOnClear).toHaveBeenCalled();
-            expect(myOnSelect).not.toHaveBeenCalled();
-        }));
-
-        describe('with async values', function () {
-
-            var deferred;
-
-            beforeEach(inject(function ($q) {
-                deferred = $q.defer();
-
-                scope.myAsyncValues = jasmine.createSpy('myAsyncValues()');
-                scope.myAsyncValues.and.callFake(function () { return deferred.promise; });
-
-                element = compile('<my-autocomplete-input ' +
-                    'my-label="{{label}}" ' +
-                    'my-values="myValues" ' +
-                    'my-async-values="myAsyncValues()" ' +
-                    'my-on-select="myOnSelect(value)">' +
-                    '</my-autocomplete-input>')(scope);
-                scope.$digest();
-            }));
-
-            it('should render suggestion when loaded', inject(function ($timeout, $material) {
-                element.find('input').triggerHandler('focus');
-                $timeout.flush(250);
-                $material.flushOutstandingAnimations();
-                deferred.resolve(['value1', 'value2']);
-                scope.$digest();
-
-                var tags = angular.element(document).find('md-virtual-repeat-container').find('span');
-                expect(tags.length).toBe(2);
-                expect(tags[0].innerText).toBe('value1');
-                expect(tags[1].innerText).toBe('value2');
-            }));
-
-            it('should render suggestions merged from myValues and myAsyncValues', inject(function ($timeout, $material) {
-                scope.myValues = [ 'value1', 'value2' ];
-                element.find('input').triggerHandler('focus');
-                $timeout.flush(250);
-                $material.flushOutstandingAnimations();
-                deferred.resolve(['value3', 'value4']);
-                scope.$digest();
-
-                var tags = angular.element(document).find('md-virtual-repeat-container').find('span');
-
-                expect(tags.length).toBe(4);
-                expect(tags[0].innerText).toBe('value1');
-                expect(tags[1].innerText).toBe('value2');
-                expect(tags[2].innerText).toBe('value3');
-                expect(tags[3].innerText).toBe('value4');
-            }));
-        });
-    });
-});
+        expect(page.autocompleteSuggestionsComponent).toBeUndefined()
+    })
+})
