@@ -10,6 +10,7 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_ATOM_XML;
+import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 
@@ -27,8 +29,6 @@ import static org.springframework.http.MediaType.TEXT_PLAIN;
  * @author Kamill Sokol
  */
 public class ContentTypeAdjusterInterceptorTest {
-
-    private static final MediaType RSS_MEDIA_TYPE = new MediaType("application", "rss+xml");
 
     private ClientHttpRequestExecution execution = mock(ClientHttpRequestExecution.class);
     private ClientHttpResponse mockResponse = mock(ClientHttpResponse.class);
@@ -50,7 +50,7 @@ public class ContentTypeAdjusterInterceptorTest {
     public void shouldAdjustContentTypeWhenFileExtensionMatchesSupportedTypes() throws IOException {
         givenRequest("/index.rss", TEXT_PLAIN);
 
-        assertContentType(RSS_MEDIA_TYPE);
+        assertContentType(new MediaType("application", "rss+xml", UTF_8));
     }
 
     @Test
@@ -90,9 +90,39 @@ public class ContentTypeAdjusterInterceptorTest {
         assertContentType(TEXT_PLAIN);
     }
 
+    @Test
+    public void shouldSetRssContentTypeFromFileExtensionWhenContentTypeHeaderIsMissing() throws IOException {
+        givenRequest("/index.rss", null);
+
+        assertContentType(new MediaType("application", "rss+xml", UTF_8));
+    }
+
+    @Test
+    public void shouldSetAtomContentTypeFromFileExtensionWhenContentTypeHeaderIsMissing() throws IOException {
+        givenRequest("/index.atom", null);
+
+        assertContentType(new MediaType("application", "atom+xml", Charset.forName("UTF-8")));
+    }
+
+    @Test
+    public void shouldNotTextSetContentTypeFromFileExtensionWhenContentTypeHeaderIsMissing() throws IOException {
+        givenRequest("/index.txt", null);
+
+        assertContentType(APPLICATION_OCTET_STREAM);
+    }
+
+    @Test
+    public void shouldNotSetContentTypeFromQueryStringWhenContentTypeHeaderIsMissing() throws IOException {
+        givenRequest("/index.txt?key=.rss", null);
+
+        assertContentType(APPLICATION_OCTET_STREAM);
+    }
+
     private void givenRequest(String pathOrPathAndQueryString, MediaType mediaType) {
         httpRequest = new MockClientHttpRequest(GET, URI.create("http://localhost" + pathOrPathAndQueryString));
-        mockResponse.getHeaders().setContentType(mediaType);
+        if (mediaType != null) {
+            mockResponse.getHeaders().setContentType(mediaType);
+        }
     }
 
     private void assertContentType(MediaType mediaType) throws IOException {
