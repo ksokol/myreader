@@ -6,8 +6,8 @@ class ChooseItem {
         this.el = el
     }
 
-    text() {
-        return this.el.innerText
+    get text() {
+        return this.el[0].innerText.trim()
     }
 
     get selected() {
@@ -55,9 +55,11 @@ describe('src/app/js/shared/component/choose/choose.component.spec.js', () => {
         })
 
         it('should create button component for every value in myOptions', () => {
-            expect(myButtons.bindings[0].myText).toEqual('1')
-            expect(myButtons.bindings[1].myText).toEqual('2')
-            expect(myButtons.bindings[2].myText).toEqual('3')
+            const items = choose.items()
+
+            expect(items[0].text).toEqual('1')
+            expect(items[1].text).toEqual('2')
+            expect(items[2].text).toEqual('3')
         })
 
         it('should highlight selected option', () => {
@@ -83,9 +85,11 @@ describe('src/app/js/shared/component/choose/choose.component.spec.js', () => {
         })
 
         it('should create button component for every value in myOptions', () => {
-            expect(myButtons.bindings[0].myText).toEqual('one')
-            expect(myButtons.bindings[1].myText).toEqual('two')
-            expect(myButtons.bindings[2].myText).toEqual('three')
+            const items = choose.items()
+
+            expect(items[0].text).toEqual('one')
+            expect(items[1].text).toEqual('two')
+            expect(items[2].text).toEqual('three')
         })
 
         it('should highlight selected option', () => {

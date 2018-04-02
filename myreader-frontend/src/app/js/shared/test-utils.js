@@ -31,7 +31,8 @@ export function multipleComponentMock(name) {
 
         $provide.decorator(name + 'Directive', function($delegate) {
             const component = $delegate[0]
-            component.template = ''
+            component.template = '<ng-transclude></ng-transclude>'
+            component.transclude = true
             component.controller = function () {
                 multipleComponentMock.bindings.push(this)
             }

@@ -108,7 +108,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
         const Button = button => {
             return {
                 click: () => button.click(),
-                title: () => button.innerText,
+                title: () => button.innerText.trim(),
                 disabled: () => button.disabled,
                 classes: () => button.classList,
                 type: () => button.type
@@ -125,7 +125,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
                 }
 
                 const deferred = $q.defer()
-                scope = $rootScope.$new()
+                scope = $rootScope.$new(true)
 
                 scope.buttonGroupCtrl = {}
                 scope.disableButton = false
@@ -141,12 +141,11 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
 
                 const element = $compile(`<my-button-group>
                                             <my-button my-type="warn"
-                                                       my-text="Test"
                                                        my-confirm="${myConfirm}"
                                                        my-disabled="disableButton"
                                                        my-on-click="onClickFn()"
                                                        my-on-success="onSuccessFn(data)"
-                                                       my-on-error="onErrorFn(error)">
+                                                       my-on-error="onErrorFn(error)">Test
                                             </my-button>
                                           </my-button-group>`)(scope)
 

@@ -88,11 +88,11 @@ class controller {
 
 export const ButtonComponent = {
     template, controller,
+    transclude: true,
     require: {
         buttonGroupCtrl: '?^myButtonGroup'
     },
     bindings: {
-        myText: '@',
         myType: '@',
         myButtonType: '@',
         myConfirm: '@',
