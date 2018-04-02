@@ -1,3 +1,25 @@
 .subscription-list__item {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    padding: 16px;
+}
+
+.subscription-list__item > h3 {
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: .01em;
+    line-height: 1.2em;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.subscription-list__item > span {
+    color: rgba(0,0,0,0.54);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: .01em;
+    line-height: 1.6em;
+    margin: 0;
 }

@@ -1,4 +1,4 @@
-import {mock, mockNgRedux, filterMock, componentMock} from '../shared/test-utils'
+import {mockNgRedux, filterMock, componentMock} from 'shared/test-utils'
 
 class ListItem {
 
@@ -11,11 +11,11 @@ class ListItem {
     }
 
     createdAt() {
-        return this.el.find('h4').text()
+        return this.el.find('span').text()
     }
 
     click() {
-        this.el.find('button')[0].click()
+        this.el[0].click()
     }
 }
 
@@ -30,9 +30,20 @@ class ListItems {
     }
 }
 
+class Page {
+
+    constructor(el) {
+        this.el = el
+    }
+
+    items() {
+        return new ListItems(this.el[0].querySelectorAll('.subscription-list__item'))
+    }
+}
+
 describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
 
-    let rootScope, scope, compile, ngReduxMock, element
+    let page, rootScope, scope, compile, ngReduxMock, element
 
     describe('', () => {
 
@@ -55,11 +66,12 @@ describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
             })
 
             element = $compile('<my-subscription-list></my-subscription-list>')(scope)
+            page = new Page(element)
             scope.$digest()
         }))
 
         it('should render subscriptions', () => {
-            const items = new ListItems(element.find('md-list-item'))
+            const items = page.items()
 
             expect(items.el.length).toEqual(3)
 
@@ -74,7 +86,7 @@ describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
         })
 
         it('should navigate to subscription detail page on click', () => {
-            const items = new ListItems(element.find('md-list-item'))
+            const items = page.items()
             items.itemAtIndex(2).click()
 
             expect(ngReduxMock.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['app', 'subscription'], query: {uuid: '3'}})
@@ -88,7 +100,7 @@ describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
             })
             scope.$digest()
 
-            const items = new ListItems(element.find('md-list-item'))
+            const items = page.items()
 
             expect(items.el.length).toEqual(1)
             expect(items.itemAtIndex(0).title()).toEqual('title2')
