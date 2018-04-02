@@ -74,8 +74,7 @@ angular
         'ngAria',
         'material.core',
         'material.core.animate',
-        'material.components.button',
-        'material.components.list'
+        'material.components.button'
     ])
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)
