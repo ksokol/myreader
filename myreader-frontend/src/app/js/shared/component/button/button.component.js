@@ -86,6 +86,9 @@ class controller {
     }
 }
 
+/**
+ * @deprecated
+ */
 export const ButtonComponent = {
     template, controller,
     transclude: true,
