@@ -19,12 +19,12 @@
         </a>
     </div>
 
-    <my-subscription-tag-panel my-disabled="$ctrl.pendingAction"
-                               my-selected-item="$ctrl.subscription.tag"
-                               my-values="$ctrl.tags"
-                               my-on-select="$ctrl.onSelectTag(value)"
-                               my-on-clear="$ctrl.onClearTag()">
-    </my-subscription-tag-panel>
+    <my-autocomplete-input my-label="'Tag'"
+                           my-disabled="$ctrl.pendingAction"
+                           my-selected-item="$ctrl.subscription.tag"
+                           my-values="$ctrl.tags"
+                           my-on-select="$ctrl.onSelectTag(value)">
+    </my-autocomplete-input>
 
     <my-subscription-exclusion-panel my-id="$ctrl.subscription.uuid"
                                      my-disabled="$ctrl.pendingAction"

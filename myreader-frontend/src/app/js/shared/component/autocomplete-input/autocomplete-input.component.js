@@ -9,7 +9,9 @@ class controller {
     }
 
     onSelect() {
-        this.mySelectedItem && this.mySelectedItem.length !== 0 ? this.myOnSelect({value: this.mySelectedItem}) : this.myOnClear()
+        this.mySelectedItem && this.mySelectedItem.length !== 0 ?
+            this.myOnSelect({value: this.mySelectedItem}) :
+            this.myOnSelect({value: null})
     }
 
     onChange() {
@@ -39,10 +41,6 @@ export const AutoCompleteInputComponent = {
         myDisabled: '<',
         mySelectedItem: '<',
         myValues: '<',
-        myOnSelect: '&',
-        /**
-         * @deprecated
-         */
-        myOnClear: '&'
+        myOnSelect: '&'
     }
 }

@@ -153,18 +153,16 @@ describe('src/app/js/shared/component/autocomplete-input/autocomplete-input.comp
         expect(myOnSelect).toHaveBeenCalledWith('expected value')
     })
 
-    it('should emit onClear event when input value is null', () => {
+    it('should emit myOnSelect event with null value when input value is null', () => {
         page.enterInput(null)
 
-        expect(myOnClear).toHaveBeenCalledWith()
-        expect(myOnSelect).not.toHaveBeenCalled()
+        expect(myOnSelect).toHaveBeenCalledWith(null)
     })
 
-    it('should emit onClear event when input value is empty', () => {
+    it('should emit myOnSelect event with null value when input value is empty string', () => {
         page.enterInput('')
 
-        expect(myOnClear).toHaveBeenCalledWith()
-        expect(myOnSelect).not.toHaveBeenCalled()
+        expect(myOnSelect).toHaveBeenCalledWith(null)
     })
 
     it('should emit myOnSelect event from suggestions component', () => {

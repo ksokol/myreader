@@ -40,10 +40,6 @@ class controller {
         this.subscription.tag = value
     }
 
-    onClearTag() {
-        this.subscription.tag = null
-    }
-
     onSave() {
         this.pendingAction = true
         return this.$ngRedux.dispatch(saveSubscription(this.subscription))

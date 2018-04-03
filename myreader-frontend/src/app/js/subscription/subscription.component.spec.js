@@ -2,12 +2,12 @@ import {componentMock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
-    let rootScope, scope, element, ngReduxMock, subscription, timeout, mySubscriptionTagPanel, mySubscriptionExclusionPanel
+    let rootScope, scope, element, ngReduxMock, subscription, timeout, myAutocompleteInput, mySubscriptionExclusionPanel
 
     beforeEach(() => {
-        mySubscriptionTagPanel = componentMock('mySubscriptionTagPanel')
+        myAutocompleteInput = componentMock('myAutocompleteInput')
         mySubscriptionExclusionPanel = componentMock('mySubscriptionExclusionPanel')
-        angular.mock.module('myreader', mySubscriptionTagPanel, mySubscriptionExclusionPanel, mockNgRedux())
+        angular.mock.module('myreader', myAutocompleteInput, mySubscriptionExclusionPanel, mockNgRedux())
     })
 
     beforeEach(inject(($rootScope, $compile, $ngRedux, $timeout) => {
@@ -45,9 +45,9 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         expect(element.find('input')[0].value).toEqual('expected title')
         expect(element.find('input')[1].value).toEqual('expected origin')
         expect(element.find('input')[1].disabled).toEqual(true)
-        expect(mySubscriptionTagPanel.bindings.mySelectedItem).toEqual('expected tag')
-        expect(mySubscriptionTagPanel.bindings.myDisabled).toBeUndefined()
-        expect(mySubscriptionTagPanel.bindings.myValues).toEqual(['t1', 't2'])
+        expect(myAutocompleteInput.bindings.mySelectedItem).toEqual('expected tag')
+        expect(myAutocompleteInput.bindings.myDisabled).toBeUndefined()
+        expect(myAutocompleteInput.bindings.myValues).toEqual(['t1', 't2'])
         expect(mySubscriptionExclusionPanel.bindings.myId).toEqual('expected uuid')
         expect(mySubscriptionExclusionPanel.bindings.myDisabled).toBeUndefined()
     })
@@ -97,17 +97,17 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     })
 
     it('should propagate updated subscription tag', () => {
-        mySubscriptionTagPanel.bindings.myOnSelect({value: 'expected value'})
+        myAutocompleteInput.bindings.myOnSelect({value: 'expected value'})
         scope.$digest()
 
-        expect(mySubscriptionTagPanel.bindings.mySelectedItem).toEqual('expected value')
+        expect(myAutocompleteInput.bindings.mySelectedItem).toEqual('expected value')
     })
 
     it('should propagate removed subscription tag', () => {
-        mySubscriptionTagPanel.bindings.myOnClear()
+        myAutocompleteInput.bindings.myOnSelect({value: null})
         scope.$digest()
 
-        expect(mySubscriptionTagPanel.bindings.mySelectedItem).toEqual(null)
+        expect(myAutocompleteInput.bindings.mySelectedItem).toEqual(null)
     })
 
     it('should show notification message when action failed in subscription exclusion panel component', () => {
@@ -136,7 +136,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
         expect(element.find('input')[0].disabled).toEqual(true)
         expect(element.find('input')[1].disabled).toEqual(true)
-        expect(mySubscriptionTagPanel.bindings.myDisabled).toEqual(true)
+        expect(myAutocompleteInput.bindings.myDisabled).toEqual(true)
         expect(mySubscriptionExclusionPanel.bindings.myDisabled).toEqual(true)
     })
 
@@ -152,7 +152,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
             expect(element.find('input')[0].disabled).toEqual(false)
             expect(element.find('input')[1].disabled).toEqual(true)
-            expect(mySubscriptionTagPanel.bindings.myDisabled).toEqual(false)
+            expect(myAutocompleteInput.bindings.myDisabled).toEqual(false)
             expect(mySubscriptionExclusionPanel.bindings.myDisabled).toEqual(false)
             done()
         }, 0)

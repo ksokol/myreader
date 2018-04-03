@@ -30,7 +30,6 @@ import {SettingsComponent} from "./settings/settings.component"
 import {SubscribeComponent} from "./subscription/subscribe/subscribe.component"
 import {SubscriptionExclusionComponent} from "./subscription/subscription-exclusion-panel/subscription-exclusion/subscription-exclusion.component"
 import {SubscriptionExclusionPanelComponent} from "./subscription/subscription-exclusion-panel/subscription-exclusion-panel.component"
-import {SubscriptionTagPanelComponent} from "./subscription/subscription-tag-panel/subscription-tag-panel.component"
 import {SubscriptionComponent} from "./subscription/subscription.component"
 import {ClickIfInViewDirective} from "shared/component/load-more/click-if-in-view.directive"
 import {ToastComponent} from 'shared/component/toast/toast.component'
@@ -93,7 +92,6 @@ angular
     .component('mySubscribe', SubscribeComponent)
     .component('mySubscriptionExclusion', SubscriptionExclusionComponent)
     .component('mySubscriptionExclusionPanel', SubscriptionExclusionPanelComponent)
-    .component('mySubscriptionTagPanel', SubscriptionTagPanelComponent)
     .component('mySubscription', SubscriptionComponent)
     .component('myEntryList', EntryListComponent)
     .component('myBookmark', BookmarkComponent)
