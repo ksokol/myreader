@@ -9,6 +9,7 @@ import 'redux'
 import 'redux-thunk'
 import 'reselect'
 import 'ng-redux'
+import 'timeago.js'
 
 import 'angular-material/modules/js/button/button'
 import 'angular-material/modules/js/button/button.css'
