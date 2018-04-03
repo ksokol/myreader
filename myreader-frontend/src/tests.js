@@ -1,6 +1,5 @@
 import 'angular'
 import 'angular-mocks'
-import 'angular-material/angular-material-mocks'
 import {toContainActionData, toContainObject, toEqualActionType} from './app/js/shared/jasmine-matcher'
 
 const context = require.context('./app/js', true, /\.js$/)
