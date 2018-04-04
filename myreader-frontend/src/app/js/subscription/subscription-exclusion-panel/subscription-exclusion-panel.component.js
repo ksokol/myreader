@@ -1,5 +1,4 @@
 import template from './subscription-exclusion-panel.component.html';
-import './subscription-exclusion-panel.component.css';
 
 class controller {
 
@@ -13,6 +12,9 @@ class controller {
     }
 }
 
+/**
+ * @deprecated
+ */
 export const SubscriptionExclusionPanelComponent = {
     template, controller,
     bindings: {
