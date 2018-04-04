@@ -1,5 +1,4 @@
 import template from './validation-message.component.html'
-import './validation-message.component.css'
 
 class controller {
 
