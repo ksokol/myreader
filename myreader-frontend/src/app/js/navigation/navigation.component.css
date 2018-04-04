@@ -15,23 +15,56 @@
 .my-navigation > li:nth-child(-n+2) {
     border-top: none;
 }
-
-.my-navigation .md-button {
-    border-radius: 0;
-    color: inherit;
+.my-navigation__item {
     cursor: pointer;
-    display: block;
+    display: flex;
+    font-weight: 500;
+    font-size: 14px;
     line-height: 40px;
-    margin: 0;
     max-height: 40px;
     overflow: hidden;
     text-align: left;
     text-decoration: none;
     white-space: normal;
     width: 100%;
+    letter-spacing: 0.010em;
+    margin: 0;
+    user-select: none;
+    text-transform: uppercase;
 }
 
-.my-navigation__item--raised {
+.my-navigation__item:hover {
+    background-color: rgba(158,158,158,0.2);
+}
+
+.my-navigation__item > span:first-child {
+    padding-left: 6px;
+    flex-grow: 1;
+}
+
+.my-navigation__item--selected {
+    background-color: #e5e5e5;
+}
+
+.my-navigation__item__sub > span:first-child {
+    padding: 0 16px 0 16px;
+    text-transform: none;
+}
+
+.my-navigation__item--blue {
     background-color: rgb(63,81,181);
     color: rgb(255,255,255);
+}
+
+.my-navigation__item--blue:hover {
+    background-color: rgba(63,81,181,0.7);
+}
+
+.my-navigation__item--red {
+    background-color: rgb(255,87,34);
+    color: rgb(255,255,255);
+}
+
+.my-navigation__item--red:hover {
+    background-color: rgba(255,87,34,0.7);
 }

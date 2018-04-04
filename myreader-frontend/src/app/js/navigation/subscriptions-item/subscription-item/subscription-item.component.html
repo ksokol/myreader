@@ -1,28 +1,22 @@
-<li class="my-subscription-item"
-    ng-class="{'my-subscription-item--selected': $ctrl.isSelected($ctrl.item)}">
-    <md-button md-no-ink
-               ng-click="$ctrl.onSelect($ctrl.item.tag, $ctrl.item.uuid)">
-        <div class="my-subscription-item__title-container">
-            <div class="my-subscription-item__title">{{$ctrl.item.title}}</div>
-            <div>
-                <span class="my-subscription-item__badge">{{$ctrl.item.unseen}}</span>
-            </div>
-        </div>
-    </md-button>
+<li class="my-navigation__item my-subscription-item"
+    ng-click="$ctrl.onSelect($ctrl.item.tag, $ctrl.item.uuid)"
+    ng-class="{'my-navigation__item--selected': $ctrl.isSelected($ctrl.item)}">
+
+    <span>{{$ctrl.item.title}}</span>
+    <div class="my-subscription-item__badge-container">
+        <span class="my-subscription-item__badge">{{$ctrl.item.unseen}}</span>
+    </div>
 </li>
 
 <ul ng-if="$ctrl.isVisible()">
-    <li ng-repeat="subscription in $ctrl.item.subscriptions track by $ctrl.trackBy(subscription)"
-        ng-class="{'my-subscription-item--selected': $ctrl.isSelected(subscription)}">
+    <li class="my-navigation__item my-navigation__item__sub"
+        ng-repeat="subscription in $ctrl.item.subscriptions track by $ctrl.trackBy(subscription)"
+        ng-click="$ctrl.onSelect(subscription.tag, subscription.uuid)"
+        ng-class="{'my-navigation__item--selected': $ctrl.isSelected(subscription)}">
 
-        <md-button md-no-ink
-                   ng-click="$ctrl.onSelect(subscription.tag, subscription.uuid)">
-            <div class="my-subscription-item__title-container">
-                <div class="my-subscription-item__subscription-title">{{subscription.title}}</div>
-                <div>
-                    <span class="my-subscription-item__badge">{{subscription.unseen}}</span>
-                </div>
-            </div>
-        </md-button>
+        <span>{{subscription.title}}</span>
+        <div class="my-subscription-item__badge-container">
+            <span class="my-subscription-item__badge">{{subscription.unseen}}</span>
+        </div>
     </li>
 </ul>

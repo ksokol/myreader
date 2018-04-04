@@ -2,23 +2,8 @@
     border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.my-subscription-item--selected {
-    background-color: #e5e5e5;
-}
-
-.my-subscription-item__title-container {
-    display: flex;
-    flex-direction: row;
-}
-
-.my-subscription-item__title {
-    flex-grow: 1;
-}
-
-.my-subscription-item__subscription-title {
-    flex-grow: 1;
-    padding: 0 16px 0 16px;
-    text-transform: none;
+.my-subscription-item__badge-container {
+    padding-right: 6px;
 }
 
 .my-subscription-item__badge {

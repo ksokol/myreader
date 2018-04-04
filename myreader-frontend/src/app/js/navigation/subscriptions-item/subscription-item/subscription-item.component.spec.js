@@ -1,4 +1,45 @@
-import {mock} from '../../../shared/test-utils'
+import {mock} from 'shared/test-utils'
+
+class SubscriptionItem {
+
+    constructor(el) {
+        this.el = el
+    }
+
+    get text() {
+        return this.el.querySelector('span:first-of-type').innerText
+    }
+
+    get badge() {
+        return this.el.querySelector('.my-subscription-item__badge').innerText
+    }
+
+    get selected() {
+        return this.el.classList.contains('my-navigation__item--selected')
+    }
+}
+
+class SubscriptionItemPage {
+
+    constructor(el) {
+        this.el = el[0]
+    }
+
+    get parent() {
+        return new SubscriptionItem(this.el.querySelector('li:first-of-type'))
+    }
+
+    get subList() {
+        return this.el.querySelector('ul')
+    }
+
+    get subItems() {
+        const items = []
+        this.subList.querySelectorAll('li').forEach(it => items.push(new SubscriptionItem(it)))
+        return items
+    }
+
+}
 
 describe('src/app/js/navigation/subscriptions-item/subscription-item/subscription-item.component.spec.js', () => {
 
@@ -102,7 +143,7 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
 
     describe('with html', () => {
 
-        let scope, element, state, stateParams
+        let page, scope, element, state, stateParams
 
         const item = {
             title: 'item title',
@@ -119,7 +160,7 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
             state = $state
             stateParams = $stateParams
 
-            scope = $rootScope.$new()
+            scope = $rootScope.$new(true)
             scope.item = item
 
             state.go = jasmine.createSpy('$state.go()')
@@ -128,6 +169,7 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
 
             element = $compile('<my-navigation-subscription-item my-item="item"></my-navigation-subscription-item>')(scope)
             scope.$digest()
+            page = new SubscriptionItemPage(element)
         }))
 
         describe('parent item', () => {
@@ -138,19 +180,18 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
 
                 element = $compile('<my-navigation-subscription-item my-item="item"></my-navigation-subscription-item>')(scope)
                 scope.$digest()
+                page = new SubscriptionItemPage(element)
 
-                expect(element.find('li')[0].classList).not.toContain('my-subscription-item--selected')
+                expect(page.parent.selected).toEqual(false)
             }))
 
             it('should mark as selected', () => {
-                expect(element.find('li')[0].classList).toContain('my-subscription-item--selected')
+                expect(page.parent.selected).toEqual(true)
             })
 
             it('should render title and unseen count', () => {
-                const div = angular.element(element.find('li')[0]).find('div')
-
-                expect(div.find('div')[0].innerText).toEqual('item title')
-                expect(angular.element(div.find('div')[1]).find('span').text()).toEqual('2')
+                expect(page.parent.text).toEqual('item title')
+                expect(page.parent.badge).toEqual('2')
             })
         })
 
@@ -163,8 +204,9 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
                 element = $compile(`<my-navigation-subscription-item my-item="item">
                                     </my-navigation-subscription-item>`)(scope)
                 scope.$digest()
+                page = new SubscriptionItemPage(element)
 
-                expect(element.find('ul')[0]).toBeUndefined()
+                expect(page.subList).toBeNull()
             }))
 
             it('should not render items when no subscriptions available', inject($compile => {
@@ -173,29 +215,30 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
                 element = $compile(`<my-navigation-subscription-item my-item="item">
                                     </my-navigation-subscription-item>`)(scope)
                 scope.$digest()
+                page = new SubscriptionItemPage(element)
 
-                expect(element.find('ul')[0]).toBeUndefined()
+                expect(page.subList).toBeNull()
             }))
 
             it('should render every item', () => {
-                expect(element.find('ul').find('li').length).toEqual(2)
+                expect(page.subItems.length).toEqual(2)
             })
 
             it('should not mark as selected', () => {
-                const items = element.find('ul').find('li')
+                const items = page.subItems
 
-                expect(items[0].classList).not.toContain('my-subscription-item--selected')
-                expect(items[1].classList).not.toContain('my-subscription-item--selected')
+                expect(items[0].selected).toEqual(false)
+                expect(items[1].selected).toEqual(false)
             })
 
             it('should not render items when item is selected but subscriptions property is undefined', inject($compile => {
                 scope.item = {...scope.item}
                 delete scope.item.subscriptions
-                element = $compile(`<my-navigation-subscription-item my-item="item">
-                                    </my-navigation-subscription-item>`)(scope)
+                element = $compile(`<my-navigation-subscription-item my-item="item"></my-navigation-subscription-item>`)(scope)
                 scope.$digest()
+                page = new SubscriptionItemPage(element)
 
-                expect(element.find('ul')[0]).toBeUndefined()
+                expect(page.subList).toBeNull()
             }))
 
             it('should mark as selected', () => {
@@ -203,17 +246,17 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
                 stateParams['feedUuidEqual'] = 'uuid1'
                 scope.$digest()
 
-                const items = element.find('ul').find('li')
+                const items = page.subItems
 
-                expect(items[0].classList).toContain('my-subscription-item--selected')
-                expect(items[1].classList).not.toContain('my-subscription-item--selected')
+                expect(items[0].selected).toEqual(true)
+                expect(items[1].selected).toEqual(false)
             })
 
             it('should render item title with unseen count', () => {
-                const div1 = angular.element(angular.element(element.find('ul').find('button')[0]).find('div')).find('div')
+                const item = page.subItems[0]
 
-                expect(div1[0].innerText).toEqual('subscription 1')
-                expect(angular.element(div1[1]).find('span').text()).toEqual('1')
+                expect(item.text).toEqual('subscription 1')
+                expect(item.badge).toEqual('1')
             })
         })
     })

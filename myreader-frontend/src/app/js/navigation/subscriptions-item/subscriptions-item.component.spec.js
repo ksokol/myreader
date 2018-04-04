@@ -1,28 +1,25 @@
-import {mockNgRedux} from '../../shared/test-utils'
+import {mockNgRedux} from 'shared/test-utils'
 
 class NavigationItem {
 
     constructor(el) {
-        this.el = angular.element(el)
+        this.el = el
     }
 
     title() {
-        return angular.element(this.el.find('button').children()).find('div')[0].innerText
+        return this.el.querySelector('span:first-of-type').innerText
     }
 }
 
 class Navigation {
 
     constructor(el) {
-        this.el = el
+        this.el = el[0]
     }
 
     items() {
-        const elements = this.el.find('my-navigation-subscription-item')
         const items = []
-        for (let i = 0; i < elements.length; i++) {
-            items.push(new NavigationItem(elements[i]))
-        }
+        this.el.querySelectorAll('my-navigation-subscription-item').forEach(it => items.push(new NavigationItem(it)))
         return items
     }
 

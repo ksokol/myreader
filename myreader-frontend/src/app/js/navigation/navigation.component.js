@@ -1,6 +1,6 @@
 import template from './navigation.component.html'
 import './navigation.component.css'
-import {adminPermissionSelector, routeChange} from 'store'
+import {adminPermissionSelector, logout, routeChange} from 'store'
 
 class controller {
 
@@ -25,7 +25,8 @@ class controller {
 
     mapDispatch(dispatch) {
         return {
-            routeTo: route => dispatch(routeChange(route))
+            routeTo: route => dispatch(routeChange(route)),
+            logout: () => dispatch(logout())
         }
     }
 }

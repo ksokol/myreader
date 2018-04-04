@@ -1,27 +1,33 @@
 <ul class="my-navigation" ng-if="!$ctrl.isAdmin">
     <my-navigation-subscriptions-item></my-navigation-subscriptions-item>
 
-    <li>
-        <md-button md-no-ink ng-click="$ctrl.routeTo(['app', 'subscriptions'])">Subscriptions</md-button>
+    <li class="my-navigation__item" ng-click="$ctrl.routeTo(['app', 'subscriptions'])">
+        <span>Subscriptions</span>
     </li>
-    <li>
-        <md-button md-no-ink ng-click="$ctrl.routeTo(['app', 'bookmarks'])">Bookmarks</md-button>
+    <li class="my-navigation__item" ng-click="$ctrl.routeTo(['app', 'bookmarks'])">
+        <span>Bookmarks</span>
     </li>
-    <li>
-        <md-button md-no-ink ng-click="$ctrl.routeTo(['app', 'settings'])">Settings</md-button>
+    <li class="my-navigation__item" ng-click="$ctrl.routeTo(['app', 'settings'])">
+        <span>Settings</span>
     </li>
-    <li class="my-navigation__item--raised">
-        <md-button md-no-ink ng-click="$ctrl.routeTo(['app', 'subscription-add'])">Add subscription</md-button>
+    <li class="my-navigation__item my-navigation__item--blue" ng-click="$ctrl.routeTo(['app', 'subscription-add'])">
+        <span>Add subscription</span>
     </li>
-    <my-logout></my-logout>
+
+    <li class="my-navigation__item my-navigation__item--red" ng-click="$ctrl.logout()">
+        <span>Logout</span>
+    </li>
 </ul>
 
 <ul class="my-navigation" ng-if="$ctrl.isAdmin">
-    <li>
-        <md-button md-no-ink ng-click="$ctrl.routeTo(['admin', 'overview'])">Admin</md-button>
+    <li class="my-navigation__item" ng-click="$ctrl.routeTo(['admin', 'overview'])">
+        <span>Admin</span>
     </li>
-    <li>
-        <md-button md-no-ink ng-click="$ctrl.routeTo(['admin', 'feed'])">Feeds</md-button>
+    <li class="my-navigation__item" ng-click="$ctrl.routeTo(['admin', 'feed'])">
+        <span>Feeds</span>
     </li>
-    <my-logout></my-logout>
+
+    <li class="my-navigation__item my-navigation__item--red" ng-click="$ctrl.logout()">
+        <span>Logout</span>
+    </li>
 </ul>
