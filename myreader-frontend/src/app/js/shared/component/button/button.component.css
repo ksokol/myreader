@@ -1,4 +1,27 @@
-.my-button-confirm-left {
+.my-button {
+    cursor: pointer;
+    min-height: 36px;
+    min-width: 88px;
+    line-height: 36px;
+    letter-spacing: 0.010em;
+    vertical-align: middle;
+    align-items: center;
+    text-align: center;
+    border-radius: 2px;
+    user-select: none;
+    outline: none;
+    border: 0;
+    padding: 0 6px;
+    margin: 6px 8px;
+    background: transparent;
+    color: currentColor;
+    white-space: nowrap;
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.my-button--confirm-left {
     margin-right: -2px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -6,10 +29,28 @@
     max-width: 44px;
 }
 
-.my-button-confirm-right {
+.my-button--confirm-right {
     margin-left: -2px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     min-width: 44px;
     max-width: 44px;
+}
+
+.my-button.my-primary {
+    color: rgba(255,255,255,0.87);
+    background-color: rgb(63,81,181);
+}
+
+.my-button.my-warn {
+    color: rgb(255,255,255);
+    background-color: rgb(255,87,34);
+}
+
+.my-button:not([disabled]) {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+.my-button[disabled] {
+    background-color: rgba(0,0,0,0.12);
 }

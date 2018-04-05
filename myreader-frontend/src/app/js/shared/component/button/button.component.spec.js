@@ -171,7 +171,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
 
         it('should set my-type and my-text', () => {
             const page = Page(withoutConfirmation)
-            expect(page.button().classes()).toContain('md-warn')
+            expect(page.button().classes()).toContain('my-warn')
             expect(page.button().type()).toContain('button')
             expect(page.button().title()).toEqual('Test')
         })
@@ -222,7 +222,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
             page.button().click()
 
             expect(page.confirm().title()).toEqual('Yes')
-            expect(page.confirm().classes()).toContain('md-warn')
+            expect(page.confirm().classes()).toContain('my-warn')
             expect(page.cancel().title()).toEqual('No')
         })
 

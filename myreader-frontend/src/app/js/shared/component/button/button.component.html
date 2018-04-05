@@ -1,22 +1,19 @@
-<md-button
-        class="md-raised"
+<button class="my-button"
         type="{{$ctrl.myButtonType}}"
-        ng-class="$ctrl.myType ? 'md-' + $ctrl.myType : ''"
+        ng-class="$ctrl.myType ? 'my-' + $ctrl.myType : ''"
         ng-if="!$ctrl.showConfirmButton"
         ng-click="$ctrl.onClick()"
         ng-disabled="$ctrl.isDisabled()">
     <ng-transclude></ng-transclude>
-</md-button>
+</button>
 
-<md-button
-        class="md-raised my-button-confirm-left"
-        ng-class="$ctrl.myType ? 'md-' + $ctrl.myType : ''"
+<button class="my-button my-button--confirm-left"
+        ng-class="$ctrl.myType ? 'my-' + $ctrl.myType : ''"
         ng-if="$ctrl.showConfirmButton"
         ng-click="$ctrl.processOnClick()"
-        ng-disabled="$ctrl.isDisabled()">Yes</md-button>
+        ng-disabled="$ctrl.isDisabled()">Yes</button>
 
-<md-button
-        class="md-primary md-raised my-button-confirm-right"
+<button class="my-button my-primary my-button--confirm-right"
         ng-if="$ctrl.showConfirmButton"
         ng-click="$ctrl.reset()"
-        ng-disabled="$ctrl.isDisabled()">No</md-button>
+        ng-disabled="$ctrl.isDisabled()">No</button>
