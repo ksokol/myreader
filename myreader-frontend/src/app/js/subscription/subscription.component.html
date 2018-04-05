@@ -26,10 +26,13 @@
                            my-on-select="$ctrl.onSelectTag(value)">
     </my-autocomplete-input>
 
-    <my-subscription-exclusion-panel my-id="$ctrl.subscription.uuid"
-                                     my-disabled="$ctrl.pendingAction"
-                                     my-on-error="$ctrl.onError(error)">
-    </my-subscription-exclusion-panel>
+    <h2 class="subscription-form__pattern-title">Patterns to ignore</h2>
+
+    <my-subscription-exclusion my-id="$ctrl.subscription.uuid"
+                               my-exclusions="$ctrl.exclusions"
+                               my-disabled="$ctrl.pendingAction"
+                               my-on-error="$ctrl.onError(error)">
+    </my-subscription-exclusion>
 
     <br>
 

@@ -5,8 +5,9 @@ import {
     routeChange,
     saveSubscription,
     showErrorNotification,
-    subscriptionTagsSelector,
-    subscriptionEditFormSelector
+    subscriptionEditFormSelector,
+    subscriptionExclusionPatternsSelector,
+    subscriptionTagsSelector
 } from 'store'
 
 class controller {
@@ -27,7 +28,8 @@ class controller {
     mapStateToThis(state) {
         return {
             ...subscriptionEditFormSelector(state),
-            ...subscriptionTagsSelector(state)
+            ...subscriptionTagsSelector(state),
+            ...subscriptionExclusionPatternsSelector(state)
         }
     }
 

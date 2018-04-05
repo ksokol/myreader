@@ -8,6 +8,7 @@ import {
     subscriptionTagsSelector
 } from 'store'
 import settingsInitialState from '../settings'
+import routerInitialState from '../router'
 
 describe('src/app/js/store/subscription/selectors.spec.js', () => {
 
@@ -22,7 +23,8 @@ describe('src/app/js/store/subscription/selectors.spec.js', () => {
     beforeEach(() => {
         state = {
             subscription: {...subscriptions(), exclusions: {}},
-            settings: settingsInitialState()
+            settings: settingsInitialState(),
+            router: routerInitialState()
         }
     })
 
@@ -53,21 +55,23 @@ describe('src/app/js/store/subscription/selectors.spec.js', () => {
     })
 
     it('should return empty array when exclusions for uuid not present', () => {
-        expect(subscriptionExclusionPatternsSelector('1')(state)).toEqual([])
+        expect(subscriptionExclusionPatternsSelector(state)).toEqual({exclusions: []})
     })
 
     it('should return exclusions for given uuid', () => {
+        state.router.query.uuid = '2'
         state.subscription.exclusions = {'1': [{a: 'b'}, {c: 'd'}], '2': [{e: 'f', g: 'h'}]}
 
-        expect(subscriptionExclusionPatternsSelector('2')(state)).toEqual([{e: 'f', g: 'h'}])
+        expect(subscriptionExclusionPatternsSelector(state)).toEqual({exclusions: [{e: 'f', g: 'h'}]})
     })
 
     it('should return copy of exclusions', () => {
+        state.router.query.uuid = '1'
         state.subscription.exclusions = {'1': [{a: 'b'}]}
-        const selection = subscriptionExclusionPatternsSelector('1')(state)
+        const selection = subscriptionExclusionPatternsSelector(state)
         state.subscription.exclusions['1'][0].a = 'x'
 
-        expect(selection).toEqual([{a: 'b'}])
+        expect(selection).toEqual({exclusions: [{a: 'b'}]})
     })
 
     it('should return subscription for given uuid', () => {

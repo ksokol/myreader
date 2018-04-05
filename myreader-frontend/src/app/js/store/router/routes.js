@@ -9,6 +9,7 @@ import {
     fetchFeed,
     fetchFeedFetchFailures,
     fetchFeeds,
+    fetchSubscriptionExclusionPatterns,
     fetchSubscriptions,
     fetchSubscriptionTags,
     loadSubscriptionIntoEditForm,
@@ -23,7 +24,8 @@ export const routeConfiguration = {
               before: clearSubscriptionEditForm,
               resolve: [
                   ({query, getState}) => subscriptionTagsLoaded(getState()).loaded ? undefined : fetchSubscriptionTags(),
-                  ({query}) => loadSubscriptionIntoEditForm(query.uuid)
+                  ({query}) => loadSubscriptionIntoEditForm(query.uuid),
+                  ({query}) => fetchSubscriptionExclusionPatterns(query.uuid)
               ]
             },
             bookmarks: {

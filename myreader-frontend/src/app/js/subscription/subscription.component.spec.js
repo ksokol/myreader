@@ -2,12 +2,12 @@ import {componentMock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
-    let rootScope, scope, element, ngReduxMock, subscription, timeout, myAutocompleteInput, mySubscriptionExclusionPanel
+    let rootScope, scope, element, ngReduxMock, subscription, timeout, myAutocompleteInput, mySubscriptionExclusion
 
     beforeEach(() => {
         myAutocompleteInput = componentMock('myAutocompleteInput')
-        mySubscriptionExclusionPanel = componentMock('mySubscriptionExclusionPanel')
-        angular.mock.module('myreader', myAutocompleteInput, mySubscriptionExclusionPanel, mockNgRedux())
+        mySubscriptionExclusion = componentMock('mySubscriptionExclusion')
+        angular.mock.module('myreader', myAutocompleteInput, mySubscriptionExclusion, mockNgRedux())
     })
 
     beforeEach(inject(($rootScope, $compile, $ngRedux, $timeout) => {
@@ -26,7 +26,11 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         }
 
         ngReduxMock.setState({
-            subscription: {editForm: subscription, tags: {items: ['t1', 't2']}}
+            router: {query: {uuid: '1'}},
+            subscription: {
+                editForm: subscription, tags: {items: ['t1', 't2']},
+                exclusions: {'1': ['e1', '2']}
+            }
         })
 
         element = $compile('<my-subscription></my-subscription>')(scope)
@@ -34,7 +38,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     }))
 
     it('should not render page when subscription with given uuid is not available in store', inject($compile => {
-        ngReduxMock.setState({subscription: {editForm: null, tags: {items: []}}})
+        ngReduxMock.setState({subscription: {editForm: null, tags: {items: []}, exclusions: {}}})
         element = $compile('<my-subscription></my-subscription>')(scope)
         scope.$digest()
 
@@ -48,8 +52,9 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         expect(myAutocompleteInput.bindings.mySelectedItem).toEqual('expected tag')
         expect(myAutocompleteInput.bindings.myDisabled).toBeUndefined()
         expect(myAutocompleteInput.bindings.myValues).toEqual(['t1', 't2'])
-        expect(mySubscriptionExclusionPanel.bindings.myId).toEqual('expected uuid')
-        expect(mySubscriptionExclusionPanel.bindings.myDisabled).toBeUndefined()
+        expect(mySubscriptionExclusion.bindings.myId).toEqual('expected uuid')
+        expect(mySubscriptionExclusion.bindings.myDisabled).toBeUndefined()
+        expect(mySubscriptionExclusion.bindings.myExclusions).toEqual(['e1', '2'])
     })
 
     it('should save updated subscription', () => {
@@ -111,7 +116,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     })
 
     it('should show notification message when action failed in subscription exclusion panel component', () => {
-        mySubscriptionExclusionPanel.bindings.myOnError({error: 'expected error'})
+        mySubscriptionExclusion.bindings.myOnError({error: 'expected error'})
         scope.$digest()
 
         expect(ngReduxMock.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
@@ -137,7 +142,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         expect(element.find('input')[0].disabled).toEqual(true)
         expect(element.find('input')[1].disabled).toEqual(true)
         expect(myAutocompleteInput.bindings.myDisabled).toEqual(true)
-        expect(mySubscriptionExclusionPanel.bindings.myDisabled).toEqual(true)
+        expect(mySubscriptionExclusion.bindings.myDisabled).toEqual(true)
     })
 
     it('should enable page elements as soon as ajax call finished', done => {
@@ -153,7 +158,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
             expect(element.find('input')[0].disabled).toEqual(false)
             expect(element.find('input')[1].disabled).toEqual(true)
             expect(myAutocompleteInput.bindings.myDisabled).toEqual(false)
-            expect(mySubscriptionExclusionPanel.bindings.myDisabled).toEqual(false)
+            expect(mySubscriptionExclusion.bindings.myDisabled).toEqual(false)
             done()
         }, 0)
     })

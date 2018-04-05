@@ -2,10 +2,9 @@ import {createSelector} from 'reselect'
 import {settingsShowUnseenEntriesSelector} from 'store'
 import {cloneObject} from '../shared/objects'
 
+const routerQuerySelector = state => state.router.query
 const subscriptionsSelector = state => state.subscription.subscriptions
-
 const exclusionsSelector = state => state.subscription.exclusions
-
 const subscriptionTagSelector = state => state.subscription.tags
 
 export const getSubscriptions = createSelector(
@@ -29,12 +28,11 @@ export const filteredByUnseenSubscriptionsSelector = createSelector(
     }
 )
 
-export const subscriptionExclusionPatternsSelector = uuid => {
-    return createSelector(
-        exclusionsSelector,
-        exclusions => (exclusions[uuid] || []).map(cloneObject)
-    )
-}
+export const subscriptionExclusionPatternsSelector = createSelector(
+    routerQuerySelector,
+    exclusionsSelector,
+    (query, exclusions) => ({exclusions: (exclusions[query.uuid] || []).map(cloneObject)})
+)
 
 export const subscriptionByUuidSelector = uuid => {
     return createSelector(

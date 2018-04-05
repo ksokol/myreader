@@ -89,6 +89,12 @@ describe('src/app/js/store/router/routes.spec.js', () => {
                 store.dispatch(routeConfig.resolve[1]({query: {}}))
                 expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTION'])
             })
+
+            it('should fetch exclusion patterns for given subscription uuid', () => {
+                store.dispatch(routeConfig.resolve[2]({query: {uuid: 'uuid1'}}))
+                expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTION_EXCLUSION_PATTERNS'])
+                expect(store.getActions()[0].url).toMatch(/exclusions\/uuid1\/pattern$/)
+            })
         })
 
         describe('app bookmarks', () => {
