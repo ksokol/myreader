@@ -11,7 +11,5 @@ import 'reselect'
 import 'ng-redux'
 import 'timeago.js'
 
-import 'angular-material/modules/js/button/button'
-import 'angular-material/modules/js/button/button.css'
 import 'angular-material/modules/js/core/core'
 import 'angular-material/modules/js/core/core.css'
