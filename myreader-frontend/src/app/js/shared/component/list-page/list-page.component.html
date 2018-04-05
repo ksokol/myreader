@@ -6,10 +6,9 @@
 
     <ng-transclude ng-transclude-slot="action-panel"></ng-transclude>
 
-    <md-button class="md-icon-button"
-               ng-click="$ctrl.onRefresh()">
-        <my-icon my-type="refresh"></my-icon>
-    </md-button>
+    <my-icon-button my-type="refresh"
+                    ng-click="$ctrl.onRefresh()">
+    </my-icon-button>
 </div>
 
 <div class="my-list-page__list-panel">

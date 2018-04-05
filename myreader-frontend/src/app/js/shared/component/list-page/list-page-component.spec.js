@@ -1,4 +1,4 @@
-import {componentMock, mock} from '../../test-utils'
+import {componentMock, mock} from 'shared/test-utils'
 
 describe('src/app/js/shared/component/list-page/list-page-component.spec.js', () => {
 
@@ -50,7 +50,7 @@ describe('src/app/js/shared/component/list-page/list-page-component.spec.js', ()
     it('should emit myOnRefresh event when refresh button clicked', done => {
         scope.onRefresh = () => done()
 
-        element.find('button').triggerHandler('click')
+        element.find('my-icon-button').triggerHandler('click')
         scope.$digest()
     })
 })

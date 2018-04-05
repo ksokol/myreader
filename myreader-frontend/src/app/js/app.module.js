@@ -57,6 +57,7 @@ import {
     AutocompleteSuggestionsComponent,
     AutocompleteSuggestionsItemTextComponent
 } from './shared/component/autocomplete-input'
+import {IconButton} from 'shared/component/buttons'
 
 import './config'
 
@@ -117,6 +118,7 @@ angular
     .component('myAutocompleteInput', AutoCompleteInputComponent)
     .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
     .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)
+    .component('myIconButton', IconButton)
 
     .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)

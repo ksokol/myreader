@@ -1,22 +1,14 @@
-import template from './entry-actions.component.html';
+import template from './entry-actions.component.html'
 
 class controller {
 
-    $onInit() {
-        this.item = this.myItem;
-    }
-
-    $onChanges(obj) {
-        this.item = obj.myItem.currentValue;
-    }
-
     toggleMore() {
-        this.showMore = !this.showMore;
-        this.myOnMore({showMore: this.showMore});
+        this.showMore = !this.showMore
+        this.myOnMore({showMore: this.showMore})
     }
 
     onCheckClick(value) {
-        this.myOnCheck({item: {seen: value}});
+        this.myOnCheck({item: {seen: value}})
     }
 }
 

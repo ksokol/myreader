@@ -1,27 +1,19 @@
-<md-button class="md-icon-button"
-           aria-label="Show more"
-           ng-click="$ctrl.toggleMore()"
-           ng-if="!$ctrl.showMore">
-    <my-icon my-type="expand-more"></my-icon>
-</md-button>
+<my-icon-button my-type="expand-more"
+                ng-click="$ctrl.toggleMore()"
+                ng-if="!$ctrl.showMore">
+</my-icon-button>
 
-<md-button class="md-icon-button"
-           aria-label="Show less"
-           ng-click="$ctrl.toggleMore()"
-           ng-if="$ctrl.showMore">
-    <my-icon my-type="expand-less"></my-icon>
-</md-button>
+<my-icon-button my-type="expand-less"
+                ng-click="$ctrl.toggleMore()"
+                ng-if="$ctrl.showMore">
+</my-icon-button>
 
-<md-button class="md-icon-button"
-           aria-label="Mark as unseen"
-           ng-if="$ctrl.item.seen"
-           ng-click="$ctrl.onCheckClick(false)">
-    <my-icon my-type="check-circle"></my-icon>
-</md-button>
+<my-icon-button my-type="check-circle"
+                ng-if="$ctrl.myItem.seen"
+                ng-click="$ctrl.onCheckClick(false)">
+</my-icon-button>
 
-<md-button class="md-icon-button"
-           aria-label="Mark as seen"
-           ng-if="!$ctrl.item.seen"
-           ng-click="$ctrl.onCheckClick(true)">
-    <my-icon my-type="check"></my-icon>
-</md-button>
+<my-icon-button my-type="check"
+                ng-if="!$ctrl.myItem.seen"
+                ng-click="$ctrl.onCheckClick(true)">
+</my-icon-button>
