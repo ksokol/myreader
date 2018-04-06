@@ -68,10 +68,7 @@ angular
         'ngSanitize',
         'ui.router',
         'ngMessages',
-        'ngAnimate',
-        'ngAria',
-        'material.core',
-        'material.core.animate'
+        'ngAria'
     ])
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)
