@@ -7,4 +7,11 @@
     <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
     <cpe>cpe:/a:apache:tomcat</cpe>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: AppleJavaExtensions-1.4.jar
+   ]]></notes>
+    <gav regex="true">^com\.apple:AppleJavaExtensions:.*$</gav>
+    <cpe>cpe:/a:apple:java</cpe>
+  </suppress>
 </suppressions>
