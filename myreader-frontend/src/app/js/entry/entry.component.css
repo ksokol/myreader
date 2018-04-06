@@ -14,12 +14,3 @@ my-entry {
 .my-entry__header > :last-child {
     flex-shrink: 0;
 }
-
-.my-entry__entry-tags {
-    margin: 0 1rem 1rem;
-    width: 100%;
-}
-
-.my-entry__entry-content {
-    margin: 0.5rem 1rem 0;
-}
