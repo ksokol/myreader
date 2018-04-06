@@ -45,19 +45,8 @@ module.exports = function makeWebpackConfig() {
      * Karma will handle setting it up for you when it's a test build
      */
     config.output = isTest ? {} : {
-        // Absolute output directory
         path: __dirname + '/dist',
-
-        // Output path from the view of the page
-        // Uses webpack-dev-server in development
-        publicPath: isProd ? '' : 'http://localhost:8080/',
-
-        // Filename for entry points
-        // Only adds hash in build mode
         filename: isProd ? 'app/[name].[chunkhash].js' : '[name].bundle.js',
-
-        // Filename for non-entry points
-        // Only adds hash in build mode
         chunkFilename: isProd ? 'app/[name].[chunkhash].js' : '[name].bundle.js'
     }
 
@@ -242,6 +231,7 @@ module.exports = function makeWebpackConfig() {
     config.devServer = {
         contentBase: './src',
         stats: 'minimal',
+        host: '0.0.0.0',
         proxy: [{
             context: ['/myreader/api', '/myreader/info', '/api', '/check', '/logout', '/info'], // deprecated: '/myreader/api', '/myreader/info'
             target: `http://localhost:${BACKEND_PORT}`,
