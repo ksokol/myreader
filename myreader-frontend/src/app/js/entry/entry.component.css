@@ -1,11 +1,18 @@
-/* host */  my-entry {
+my-entry {
     width: 100%;
+    padding: 16px 0;
 }
 
-.my-entry {
-    flex: 1 1 0;
-    padding: 16px 0;
-    text-overflow: ellipsis;
+.my-entry__header {
+    display: flex;
+}
+
+.my-entry__header > :first-child {
+    flex-grow: 1;
+}
+
+.my-entry__header > :last-child {
+    flex-shrink: 0;
 }
 
 .my-entry__entry-tags {
