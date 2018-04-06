@@ -1,3 +1,7 @@
 .subscribe-form {
     padding: 10px;
 }
+
+.subscribe-form__buttons {
+    float: right;
+}
