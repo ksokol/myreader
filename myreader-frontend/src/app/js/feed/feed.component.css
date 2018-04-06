@@ -10,3 +10,7 @@
 .admin-feed-form__origin my-input-container {
     flex-grow: 1;
 }
+
+.admin-feed-form__buttons {
+    float: right;
+}
