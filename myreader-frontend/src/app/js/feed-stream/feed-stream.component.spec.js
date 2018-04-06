@@ -8,8 +8,9 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
     let scope, compile, element, ngReduxMock, state, stateParams
 
-    const givenState = (entries = [], entryInFocus = '1', nextFocusableEntry = '2') =>
-        ngReduxMock.setState({entry: {entries, entryInFocus, nextFocusableEntry}})
+    const givenState = (entries = [], entryInFocus = '1', nextFocusableEntry = '2', mediaBreakpoint = 'desktop') => {
+        ngReduxMock.setState({entry: {entries, entryInFocus, nextFocusableEntry}, common: {mediaBreakpoint}})
+    }
 
     describe('', () => {
 
@@ -163,6 +164,27 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
             expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_CLEAR', 'GET_SUBSCRIPTIONS'])
             expect(state.go).toHaveBeenCalledWith('app.entries', {param1: 'expected param1', param2: 'expected param2'}, {notify: false})
+        })
+
+        it('should show action panel when media breakpoint is "desktop"', () => {
+            givenState([], null, null, 'desktop')
+            scope.$digest()
+
+            expect(element[0].querySelector('my-action-panel')).not.toBeNull()
+        })
+
+        it('should not show action panel when media breakpoint is "tablet"', () => {
+            givenState([], null, null, 'tablet')
+            scope.$digest()
+
+            expect(element[0].querySelector('my-action-panel')).toBeNull()
+        })
+
+        it('should not show action panel when media breakpoint is "phone"', () => {
+            givenState([], null, null, 'phone')
+            scope.$digest()
+
+            expect(element[0].querySelector('my-action-panel')).toBeNull()
         })
     })
 })

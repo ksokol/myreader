@@ -7,9 +7,10 @@ import {
     fetchEntries,
     fetchSubscriptions,
     getEntryInFocus,
-    getNextFocusableEntry
+    getNextFocusableEntry,
+    mediaBreakpointIsDesktopSelector
 } from 'store'
-import {SUBSCRIPTION_ENTRIES} from '../constants'
+import {SUBSCRIPTION_ENTRIES} from 'constants'
 
 class controller {
 
@@ -32,7 +33,8 @@ class controller {
     mapStateToThis(state) {
         return {
             entryInFocus: getEntryInFocus(state),
-            nextFocusableEntry: getNextFocusableEntry(state)
+            nextFocusableEntry: getNextFocusableEntry(state),
+            isDesktop: mediaBreakpointIsDesktopSelector(state)
         }
     }
 
