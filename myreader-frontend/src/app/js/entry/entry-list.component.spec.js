@@ -39,9 +39,11 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
     })
 
     it('should highlight entry that corresponds to entryInFocus', () => {
-        expect(element.find('my-auto-scroll').children()[0].classList).not.toContain('focus')
-        expect(element.find('my-auto-scroll').children()[1].classList).toContain('focus')
-        expect(element.find('my-auto-scroll').children()[2].classList).not.toContain('focus')
+        const entries = element.find('ng-transclude').children()
+
+        expect(entries[0].classList).not.toContain('focus')
+        expect(entries[1].classList).toContain('focus')
+        expect(entries[2].classList).not.toContain('focus')
     })
 
     it('should dispatch action for next page', () => {
