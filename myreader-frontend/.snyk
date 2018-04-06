@@ -1,0 +1,10 @@
+version: v1.10.2
+ignore:
+  'npm:lodash:20180130':
+    - ng-redux > redux > lodash:
+        reason: obsolete with ng-redux 4.0
+        expires: '2018-05-06T08:33:51.330Z'
+    - redux > lodash:
+        reason: obsolete with redux 4.0
+        expires: '2018-05-06T08:33:51.330Z'
+patch: {}
