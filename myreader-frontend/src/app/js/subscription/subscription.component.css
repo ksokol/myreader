@@ -17,3 +17,7 @@
     letter-spacing: 0.005em;
     user-select: none;
 }
+
+.subscription-form__buttons {
+    float: right;
+}
