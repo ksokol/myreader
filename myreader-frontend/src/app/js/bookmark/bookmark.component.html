@@ -1,7 +1,8 @@
 <my-list-page my-on-search="$ctrl.retrieveEntries(params)"
               my-on-refresh="$ctrl.refresh()">
     <my-list-panel>
-        <my-chips my-selected="$ctrl.router.query.entryTagEqual"
+        <my-chips class="bookmark__tags"
+                  my-selected="$ctrl.router.query.entryTagEqual"
                   my-on-select="$ctrl.onTagSelect(key)">
             <my-chip ng-repeat="tag in $ctrl.entryTags" my-key="tag">{{::tag}}</my-chip>
         </my-chips>
