@@ -11,6 +11,13 @@
     flex-grow: 1;
 }
 
+.admin-feed-form__fetch-error-title {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    user-select: none;
+}
+
 .admin-feed-form__buttons {
     float: right;
 }
