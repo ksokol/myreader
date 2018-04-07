@@ -26,7 +26,8 @@ class controller {
 
     mapDispatchToThis(dispatch) {
         return {
-            onSelect: (feedTagEqual, feedUuidEqual) => dispatch(routeChange(['app', 'entries'], {feedTagEqual, feedUuidEqual}))
+            // TODO Remove q query parameter from UI Router
+            onSelect: (feedTagEqual, feedUuidEqual) => dispatch(routeChange(['app', 'entries'], {feedTagEqual, feedUuidEqual, q: null}))
         }
     }
 

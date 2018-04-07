@@ -118,17 +118,20 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
 
         it('should navigate to route with feedTagEqual and feedUuidEqual set', () => {
             component.onSelect('selected tag', 'selected uuid')
-            expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['app', 'entries'], query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'}})
+            expect(ngReduxMock.getActions()[0])
+                .toContainActionData({route: ['app', 'entries'], query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid', q: null}})
         })
 
         it('should navigate to route with feedTagEqual to null when value is null', () => {
             component.onSelect(null, 'selected uuid')
-            expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['app', 'entries'], query: {feedTagEqual: null, feedUuidEqual: 'selected uuid'}})
+            expect(ngReduxMock.getActions()[0])
+                .toContainActionData({route: ['app', 'entries'], query: {feedTagEqual: null, feedUuidEqual: 'selected uuid', q: null}})
         })
 
         it('should navigate to route with feedTagEqual given value and feedUuidEqual set to null when value is null', () => {
             component.onSelect('selected tag', null)
-            expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['app', 'entries'], query: {feedTagEqual: 'selected tag', feedUuidEqual: null}})
+            expect(ngReduxMock.getActions()[0])
+                .toContainActionData({route: ['app', 'entries'], query: {feedTagEqual: 'selected tag', feedUuidEqual: null, q: null}})
         })
 
         it('should construct comparison value for ng-repeat track by', () => {

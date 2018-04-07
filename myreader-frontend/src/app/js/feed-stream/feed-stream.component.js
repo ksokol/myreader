@@ -1,29 +1,25 @@
 import template from './feed-stream.component.html'
 import {
     changeEntry,
-    entryClear,
     entryFocusNext,
     entryFocusPrevious,
-    fetchEntries,
     fetchSubscriptions,
     getEntryInFocus,
     getNextFocusableEntry,
-    mediaBreakpointIsDesktopSelector
+    mediaBreakpointIsDesktopSelector,
+    routeChange,
+    routeSelector
 } from 'store'
-import {SUBSCRIPTION_ENTRIES} from 'constants'
 
 class controller {
 
-    constructor($ngRedux, $state, $stateParams) {
+    constructor($ngRedux) {
         'ngInject'
         this.$ngRedux = $ngRedux
-        this.$state = $state
-        this.$stateParams = $stateParams
     }
 
     $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
-        this.navigateTo(this.$stateParams)
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis.bind(this))(this)
     }
 
     $onDestroy() {
@@ -34,34 +30,27 @@ class controller {
         return {
             entryInFocus: getEntryInFocus(state),
             nextFocusableEntry: getNextFocusableEntry(state),
-            isDesktop: mediaBreakpointIsDesktopSelector(state)
+            isDesktop: mediaBreakpointIsDesktopSelector(state),
+            ...routeSelector(state)
         }
     }
 
-    nextEntry() {
-        if (this.nextFocusableEntry.seen === false) {
-            this.$ngRedux.dispatch(changeEntry({...this.nextFocusableEntry, seen: true}))
+    mapDispatchToThis(dispatch) {
+        return {
+            navigateTo: params => dispatch(routeChange(['app', 'entries'], params)),
+            previousEntry: () => dispatch(entryFocusPrevious()),
+            toggleEntryReadFlag: () => dispatch(changeEntry({...this.entryInFocus, seen: !this.entryInFocus.seen})),
+            nextEntry: () => {
+                if (this.nextFocusableEntry.seen === false) {
+                    dispatch(changeEntry({...this.nextFocusableEntry, seen: true}))
+                }
+                dispatch(entryFocusNext())
+            },
+            refresh: () => {
+                dispatch(fetchSubscriptions())
+                this.navigateTo(this.router.query)
+            }
         }
-        this.$ngRedux.dispatch(entryFocusNext())
-    }
-
-    previousEntry() {
-        this.$ngRedux.dispatch(entryFocusPrevious())
-    }
-
-    navigateTo(params) {
-        this.$state.go('app.entries', params, {notify: false})
-            .then(() => this.$ngRedux.dispatch(fetchEntries({path: SUBSCRIPTION_ENTRIES, query: params})))
-    }
-
-    toggleEntryReadFlag() {
-        this.$ngRedux.dispatch(changeEntry({...this.entryInFocus, seen: !this.entryInFocus.seen}))
-    }
-
-    refresh() {
-        this.$ngRedux.dispatch(entryClear())
-        this.$ngRedux.dispatch(fetchSubscriptions())
-        this.navigateTo(this.$stateParams)
     }
 }
 

@@ -1,6 +1,7 @@
 import {FEEDS, SUBSCRIPTION_ENTRIES} from 'constants'
 import {
     clearSubscriptionEditForm,
+    entryClear,
     feedClear,
     feedFetchFailuresClear,
     fetchApplicationInfo,
@@ -20,6 +21,12 @@ export const routeConfiguration = {
     app: {
         before: fetchSubscriptions,
         children: {
+            entries: {
+                resolve: [
+                    entryClear,
+                    ({query}) => fetchEntries({path: SUBSCRIPTION_ENTRIES, query})
+                ]
+            },
             subscription: {
               before: clearSubscriptionEditForm,
               resolve: [

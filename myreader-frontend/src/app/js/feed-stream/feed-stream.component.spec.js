@@ -1,4 +1,4 @@
-import {mockNgRedux, mock, componentMock, onKey, tick} from 'shared/test-utils'
+import {mockNgRedux, componentMock, onKey, tick} from 'shared/test-utils'
 
 const enter = {key: 'Enter', keyCode: 13}
 const arrowDown = {key: 'ArrowDown', keyCode: 40}
@@ -6,7 +6,7 @@ const arrowUp = {key: 'ArrowUp', keyCode: 38}
 
 describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
-    let scope, compile, element, ngReduxMock, state, stateParams
+    let scope, element, ngReduxMock
 
     const givenState = (entries = [], entryInFocus = '1', nextFocusableEntry = '2', mediaBreakpoint = 'desktop') => {
         ngReduxMock.setState({entry: {entries, entryInFocus, nextFocusableEntry}, common: {mediaBreakpoint}})
@@ -14,49 +14,17 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
     describe('', () => {
 
-        beforeEach(() => angular.mock.module('myreader', mockNgRedux(), mock('$state'), mock('$stateParams'), componentMock('myEntryList')))
+        beforeEach(() => angular.mock.module('myreader', mockNgRedux(), componentMock('myEntryList')))
 
-        beforeEach(inject(($rootScope, $compile, $ngRedux, $state, $stateParams) => {
+        beforeEach(inject(($rootScope, $compile, $ngRedux) => {
             scope = $rootScope.$new(true)
-
-            compile = $compile
             ngReduxMock = $ngRedux
-            state = $state
-            stateParams = $stateParams
-
-            stateParams['param1'] = 'expected param1'
-            stateParams['param2'] = 'expected param2'
-
-            state.go = jasmine.createSpy('$state.go()')
-            state.go.and.returnValue(new Promise(() => {}))
 
             givenState([{uuid: '1'}, {uuid: '2'}], '1', '2')
 
             element = $compile('<my-feed-stream></my-feed-stream>')(scope)
             scope.$digest()
         }))
-
-        describe('', () => {
-
-            // TODO remove clock uninstall after $state service has been removed from component
-            beforeEach(jasmine.clock().uninstall)
-
-            it('should fetch entries for given route when route resolved', done => {
-                state.go.and.returnValue(Promise.resolve({}))
-                element = compile('<my-feed-stream></my-feed-stream>')(scope)
-                scope.$digest()
-
-                setTimeout(() => {
-                    expect(ngReduxMock.getActionTypes()).toEqual(['GET_ENTRIES'])
-                    expect(ngReduxMock.getActions()[0].url).toContain('&param2=expected param2&param1=expected param1')
-                    done()
-                })
-            })
-        })
-
-        it('should navigate to route with parameters on initialization', () => {
-            expect(state.go).toHaveBeenCalledWith('app.entries', {param1: 'expected param1', param2: 'expected param2'}, {notify: false})
-        })
 
         it('should focus previous entry when previous button clicked', () => {
             element.find('button')[0].click()
@@ -123,24 +91,18 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
     describe('', () => {
 
-        const listPage = componentMock('myListPage')
+        let listPage
 
-        beforeEach(() => angular.mock.module('myreader', mockNgRedux(), mock('$state'), mock('$stateParams'), listPage))
+        beforeEach(() => {
+            listPage = componentMock('myListPage')
+            angular.mock.module('myreader', mockNgRedux(), listPage)
+        })
 
-        beforeEach(inject(($rootScope, $compile, $ngRedux, $state, $stateParams) => {
-            jasmine.clock().uninstall()
+        beforeEach(inject(($rootScope, $compile, $ngRedux) => {
             scope = $rootScope.$new(true)
-
-            compile = $compile
             ngReduxMock = $ngRedux
-            state = $state
-            stateParams = $stateParams
 
-            stateParams['param1'] = 'expected param1'
-            stateParams['param2'] = 'expected param2'
-
-            state.go = jasmine.createSpy('$state.go()')
-            state.go.and.returnValue(new Promise(() => {}))
+            ngReduxMock.setState({router: {query: {param1: 'expected param1', param2: 'expected param2'}}})
 
             givenState([{uuid: '1'}, {uuid: '2'}])
 
@@ -149,21 +111,20 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
         }))
 
         it('should update url when search executed', () => {
-            state.go.calls.reset()
             listPage.bindings.myOnSearch({params: {q: 'b'}})
             scope.$digest()
 
-            expect(state.go).toHaveBeenCalledWith('app.entries', {q: 'b'}, {notify: false})
+            expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['app', 'entries'], query: {q: 'b'}})
         })
 
         it('should refresh state', () => {
-            ngReduxMock.clearActions()
-
             listPage.bindings.myOnRefresh()
             scope.$digest()
 
-            expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_CLEAR', 'GET_SUBSCRIPTIONS'])
-            expect(state.go).toHaveBeenCalledWith('app.entries', {param1: 'expected param1', param2: 'expected param2'}, {notify: false})
+            expect(ngReduxMock.getActionTypes()).toEqual(['GET_SUBSCRIPTIONS', 'ROUTE_CHANGED'])
+
+            expect(ngReduxMock.getActions()[1])
+                .toContainActionData({route: ['app', 'entries'], query: {param1: 'expected param1', param2: 'expected param2'}})
         })
 
         it('should show action panel when media breakpoint is "desktop"', () => {
