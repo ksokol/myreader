@@ -66,8 +66,7 @@ angular
         ngRedux,
         'common.config',
         'ngSanitize',
-        'ui.router',
-        'ngMessages'
+        'ui.router'
     ])
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)
