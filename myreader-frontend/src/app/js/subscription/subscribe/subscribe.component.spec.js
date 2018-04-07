@@ -1,18 +1,16 @@
-import {mock, mockNgRedux} from '../../shared/test-utils'
+import {mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => {
 
-    let scope, element, state, ngReduxMock
+    let scope, element, ngReduxMock
 
-    beforeEach(angular.mock.module('myreader', mock('$state'), mockNgRedux()))
+    beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
-    beforeEach(inject(($rootScope, $compile, $state, $ngRedux) => {
+    beforeEach(inject(($rootScope, $compile, $ngRedux) => {
         jasmine.clock().uninstall()
 
-        scope = $rootScope.$new()
+        scope = $rootScope.$new(true)
         ngReduxMock = $ngRedux
-        state = $state
-        state.go = jasmine.createSpy('$state.go()')
 
         element = $compile('<my-subscribe></my-subscribe>')(scope)
         scope.$digest()
@@ -58,12 +56,14 @@ describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => 
         ngReduxMock.dispatch.and.returnValue(Promise.resolve({uuid: 'expected uuid'}))
         element.find('input').val('expected url').triggerHandler('input')
         element.find('button')[0].click()
+        ngReduxMock.dispatch.calls.reset()
 
         setTimeout(() => {
             scope.$digest()
-            expect(state.go).toHaveBeenCalledWith('app.subscription', {uuid: 'expected uuid'})
+            const action = ngReduxMock.dispatch.calls.allArgs()[0][0]
+            expect(action).toContainObject({type: 'ROUTE_CHANGED', route: ['app', 'subscription'], query: {uuid: 'expected uuid'}})
             done()
-        }, 0)
+        })
     })
 
     it('should show backend validation message', done => {

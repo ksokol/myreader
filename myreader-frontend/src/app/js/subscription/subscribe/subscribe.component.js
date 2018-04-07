@@ -1,12 +1,11 @@
 import template from './subscribe.component.html'
 import './subscribe.component.css'
-import {saveSubscription} from 'store'
+import {routeChange, saveSubscription} from 'store'
 
 class controller {
 
-    constructor($state, $ngRedux) {
+    constructor($ngRedux) {
         'ngInject'
-        this.$state = $state
         this.$ngRedux = $ngRedux
     }
 
@@ -15,7 +14,7 @@ class controller {
     }
 
     onSuccessSave(data) {
-        this.$state.go('app.subscription', {uuid: data.uuid})
+        this.$ngRedux.dispatch(routeChange(['app', 'subscription'], {uuid: data.uuid}))
     }
 
     onErrorSave(error) {
