@@ -113,7 +113,7 @@ describe('src/app/js/subscription/subscription-list.component.spec.js', () => {
 
         beforeEach(() => angular.mock.module('myreader', listPage, mockNgRedux()))
 
-        beforeEach(inject(($rootScope, $compile, $state, $ngRedux) => {
+        beforeEach(inject(($rootScope, $compile, $ngRedux) => {
             rootScope = $rootScope
             compile = $compile
             ngReduxMock = $ngRedux
