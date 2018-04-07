@@ -1,19 +1,20 @@
-import {componentMock, mock} from 'shared/test-utils'
+import {componentMock, mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/shared/component/list-page/list-page-component.spec.js', () => {
 
-    const mySearchInput = componentMock('mySearchInput')
-    const myIcon = componentMock('myIcon')
-    let rootScope, scope, element, stateParams
+    let rootScope, scope, element, myIcon, mySearchInput
 
-    beforeEach(() => angular.mock.module('myreader', mySearchInput, myIcon, mock('$stateParams')))
+    beforeEach(() => {
+        mySearchInput = componentMock('mySearchInput')
+        myIcon = componentMock('myIcon')
+        angular.mock.module('myreader', mySearchInput, myIcon, mockNgRedux())
+    })
 
-    beforeEach(inject(($rootScope, $compile, $stateParams) => {
+    beforeEach(inject(($rootScope, $compile, $ngRedux) => {
         rootScope = $rootScope
-        stateParams = $stateParams
         scope = $rootScope.$new(true)
-        stateParams['q'] = 'expected q value'
-        stateParams['other'] = 'expected other value'
+
+        $ngRedux.setState({router: {query: {q: 'expected q value', other: 'expected other value'}}})
 
         element = $compile(`<my-list-page my-on-search="onSearch(params)"
                                           my-on-refresh="onRefresh()">
