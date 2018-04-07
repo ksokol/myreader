@@ -121,7 +121,7 @@ describe('src/app/js/store/admin/reducers.spec.js', () => {
                 }
             }
 
-            expect(adminReducers(state, {type: 'FEED_FETCH_FAILURES_CLEAR'}).fetchFailures).toEqual({})
+            expect(adminReducers(state, {type: 'FEED_FETCH_FAILURES_CLEAR'}).fetchFailures).toEqual({failures: []})
         })
     })
 

@@ -26,7 +26,6 @@ import javax.validation.Valid;
 
 import static myreader.resource.ResourceConstants.FEED_FETCH_ERROR_URL;
 import static myreader.resource.ResourceConstants.FEED_URL;
-import static myreader.resource.ResourceConstants.fetchErrorsLink;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
@@ -101,7 +100,7 @@ public class FeedResource {
     @RequestMapping(value = FEED_FETCH_ERROR_URL, method = GET)
     public PagedResources<FetchErrorGetResponse> getFetchError(@PathVariable("id") Long id, Pageable pageable) {
         Page<FetchError> page = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(id, pageable);
-        return pagedResourcesAssembler.toResource(page, fetchErrorAssembler, fetchErrorsLink(id));
+        return pagedResourcesAssembler.toResource(page, fetchErrorAssembler);
     }
 
     private Feed findOrThrowException(Long id) {

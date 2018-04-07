@@ -2,12 +2,14 @@ package myreader.resource.feed.assembler;
 
 import myreader.entity.Feed;
 import myreader.repository.FetchErrorRepository;
+import myreader.resource.feed.FeedResource;
 import myreader.resource.feed.beans.FeedGetResponse;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import static java.util.Objects.requireNonNull;
-import static myreader.resource.ResourceConstants.fetchErrorsLink;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * @author Kamill Sokol
@@ -34,7 +36,7 @@ public class FeedGetResponseAssemblerSupport extends ResourceAssemblerSupport<Fe
         target.setHasErrors(fetchErrorRepository.countByFeedId(source.getId()) > 0);
         target.setCreatedAt(source.getCreatedAt());
 
-        target.add(fetchErrorsLink(source.getId()));
+        target.add(linkTo(methodOn(FeedResource.class).getFetchError(source.getId(), null)).withRel("fetchErrors"));
 
         return target;
     }

@@ -4,8 +4,12 @@ import myreader.entity.Feed;
 import myreader.repository.FetchErrorRepository;
 import myreader.resource.feed.beans.FeedGetResponse;
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Instant;
 import java.util.Date;
@@ -16,7 +20,6 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 
@@ -35,6 +38,12 @@ public class FeedGetResponseAssemblerSupportTest {
     @Before
     public void setUp() {
         assembler = new FeedGetResponseAssemblerSupport(fetchErrorRepository);
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(new MockHttpServletRequest()));
+    }
+
+    @After
+    public void after() {
+        RequestContextHolder.resetRequestAttributes();
     }
 
     @Test
@@ -72,7 +81,7 @@ public class FeedGetResponseAssemblerSupportTest {
                 hasProperty("links",
                         contains(allOf(
                                 hasProperty("rel", is("fetchErrors")),
-                                hasProperty("href", is("/api/2/feeds/1/fetchError"))
+                                hasProperty("href", is("http://localhost/api/2/feeds/1/fetchError"))
                         ))
                 )
         );

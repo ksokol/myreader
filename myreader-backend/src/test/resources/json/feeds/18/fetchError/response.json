@@ -2,7 +2,7 @@
   "links": [
     {
       "rel": "self",
-      "href": "/api/2/feeds/18/fetchError"
+      "href": "http://localhost/api/2/feeds/18/fetchError?page=0&size=20"
     }
   ],
   "content": [
