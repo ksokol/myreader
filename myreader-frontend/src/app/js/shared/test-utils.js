@@ -62,13 +62,6 @@ export function filterMock(name) {
     return _filterMock
 }
 
-export function mock(name) {
-    function _mock($provide) {
-        $provide.value(name, {})
-    }
-    return _mock
-}
-
 export function createMockStore() {
     let state = initialApplicationState()
     const store = configureMockStore([thunk])(() => state)

@@ -1,10 +1,10 @@
-import {mock, mockNgRedux} from '../../shared/test-utils'
+import {mockNgRedux} from 'shared/test-utils'
 
 describe('src/app/js/maintenance/maintenance-actions/maintenance-actions.component.spec.js', () => {
 
     let scope, element, ngReduxMock
 
-    beforeEach(angular.mock.module('myreader', mock('processingService'), mockNgRedux()))
+    beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
         scope = $rootScope.$new()
