@@ -13,7 +13,6 @@
   "dependencies": {
     "@uirouter/angularjs": "1.0.14",
     "angular": "1.6.9",
-    "angular-material": "1.1.7",
     "angular-messages": "1.6.9",
     "angular-sanitize": "1.6.9",
     "material-design-icons": "3.0.1",

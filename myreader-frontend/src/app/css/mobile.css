@@ -1,6 +1,13 @@
+html, body {
+    height: 100%;
+    min-height: 100%;
+    position: relative;
+}
+
 body {
     display: flex;
     flex-direction: row;
+    margin: 0;
     width: 100%;
 }
 
@@ -13,6 +20,11 @@ body {
     border: 0;
 }
 
-.md-title {
-    user-select: none;
+button, select, html, textarea, input {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+select, button, textarea, input {
+    font-size: 100%;
+    vertical-align: baseline;
 }

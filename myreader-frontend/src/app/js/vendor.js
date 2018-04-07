@@ -8,5 +8,3 @@ import 'redux-thunk'
 import 'reselect'
 import 'ng-redux'
 import 'timeago.js'
-
-import 'angular-material/modules/js/core/core.css'
