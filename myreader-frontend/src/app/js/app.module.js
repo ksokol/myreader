@@ -67,8 +67,7 @@ angular
         'common.config',
         'ngSanitize',
         'ui.router',
-        'ngMessages',
-        'ngAria'
+        'ngMessages'
     ])
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)

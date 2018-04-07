@@ -1,10 +1,11 @@
 describe('src/app/js/shared/component/input-container/input-container.spec.js', () => {
 
-    let scope, element
+    let rootScope, scope, element
 
     beforeEach(angular.mock.module('myreader'))
 
     beforeEach(inject(($rootScope, $compile) => {
+        rootScope = $rootScope
         scope = $rootScope.$new(true)
 
         element = $compile(`<form name="theForm">
@@ -24,14 +25,14 @@ describe('src/app/js/shared/component/input-container/input-container.spec.js', 
 
     it('should add error class to transcluded content', () => {
         scope.validations = [{field: 'propLabel', message: 'may not be empty'}]
-        scope.$digest()
+        rootScope.$digest()
 
         expect(element.find('ng-transclude')[0].classList).toContain('my-input-container--error')
     })
 
     it('should remove error class from transcluded content when input changes', () => {
         scope.validations = [{field: 'propLabel', message: 'may not be empty'}]
-        scope.$digest()
+        rootScope.$digest()
 
         element.find('input').triggerHandler({type: 'keydown'})
         scope.$digest()
