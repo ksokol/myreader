@@ -2,7 +2,13 @@ my-search-input {
     display: flex;
 }
 
-.my-search-input-container {
+.my-search-input__search-icon {
+    cursor: initial;
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+.my-search-input__container {
     flex-grow: 1;
     margin: 0;
 }

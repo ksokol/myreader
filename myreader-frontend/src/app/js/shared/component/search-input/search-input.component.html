@@ -1,9 +1,7 @@
-<my-icon my-type="search"></my-icon>
+<my-icon class="my-search-input__search-icon" my-type="search"></my-icon>
 
-<my-input-container class="my-search-input-container">
-    <input name="search"
-           aria-label="Search"
-           ng-model-options="{debounce: 250}"
+<my-input-container class="my-search-input__container">
+    <input ng-model-options="{debounce: 250}"
            ng-change="$ctrl.onChange()"
            ng-model="$ctrl.value">
 </my-input-container>
