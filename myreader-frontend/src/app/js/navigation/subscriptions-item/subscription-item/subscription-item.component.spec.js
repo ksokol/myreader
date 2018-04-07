@@ -1,4 +1,4 @@
-import {mock} from 'shared/test-utils'
+import {mockNgRedux} from 'shared/test-utils'
 
 class SubscriptionItem {
 
@@ -43,7 +43,15 @@ class SubscriptionItemPage {
 
 describe('src/app/js/navigation/subscriptions-item/subscription-item/subscription-item.component.spec.js', () => {
 
-    beforeEach(angular.mock.module('myreader', mock('$state'), mock('$stateParams')))
+    let ngReduxMock
+
+    beforeEach(angular.mock.module('myreader', mockNgRedux()))
+
+    beforeEach(inject((_$componentController_, $ngRedux) => {
+        ngReduxMock = $ngRedux
+
+        ngReduxMock.setState({router: {query: {feedTagEqual: 'tag', feedUuidEqual: 'uuid'}}})
+    }))
 
     describe('$onInit', () => {
 
@@ -67,83 +75,70 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
 
     describe('controller', () => {
 
-        let component, state, stateParams
+        let component
 
-        beforeEach(inject(_$componentController_ => {
-            state = jasmine.createSpyObj('state', ['go'])
-
-            stateParams = {
-                feedTagEqual: 'tag',
-                feedUuidEqual: 'uuid'
-            }
-
-            component = _$componentController_('myNavigationSubscriptionItem', {$state: state, $stateParams: stateParams})
+        beforeEach(inject((_$componentController_, $ngRedux) => {
+            component = _$componentController_('myNavigationSubscriptionItem', {$ngRedux})
             component.$onInit()
         }))
 
         it('should not mark item as selected when uuid does not match', () => {
-            const item = {
-                tag: stateParams.feedTagEqual,
-                uuid: 'other uuid'
-            }
-
+            const item = {tag: 'tag', uuid: 'other uuid'}
             expect(component.isSelected(item)).toEqual(false)
         })
 
         it('should not mark item as selected when tag does not match', () => {
-            const item = {
-                tag: 'other tag',
-                uuid: stateParams.feedUuidEqual
-            }
-
+            const item = {tag: 'other tag', uuid: 'uuid'}
             expect(component.isSelected(item)).toEqual(false)
         })
 
         it('should mark item as selected when tag and uuid match', () => {
-            const item = {
-                tag: stateParams.feedTagEqual,
-                uuid: stateParams.feedUuidEqual
-            }
-
+            const item = {tag: 'tag', uuid: 'uuid'}
             expect(component.isSelected(item)).toEqual(true)
         })
 
         it('should mark submenu as open when tag matches', inject(_$componentController_ => {
-            component = _$componentController_('myNavigationSubscriptionItem', {$stateParams: stateParams}, {myItem: {tag: stateParams.feedTagEqual}})
+            component = _$componentController_('myNavigationSubscriptionItem', {$ngRedux: ngReduxMock}, {myItem: {tag: 'tag'}})
             component.$onInit()
 
             expect(component.isOpen()).toEqual(true)
         }))
 
         it('should not mark submenu as open when tag does not match', inject(_$componentController_ => {
-            component = _$componentController_('myNavigationSubscriptionItem', {$stateParams: stateParams}, {myItem: {tag: 'other tag'}})
+            component = _$componentController_('myNavigationSubscriptionItem', {$ngRedux: ngReduxMock}, {myItem: {tag: 'other tag'}})
             component.$onInit()
 
             expect(component.isOpen()).toEqual(false)
         }))
 
+        it('should dispatch route changed action', () => {
+            component.onSelect()
+            expect(ngReduxMock.getActionTypes()).toEqual(['ROUTE_CHANGED'])
+        })
+
         it('should navigate to route with feedTagEqual and feedUuidEqual set', () => {
             component.onSelect('selected tag', 'selected uuid')
-            expect(state.go).toHaveBeenCalledWith('app.entries', {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'}, {inherit: false})
+            expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['app', 'entries'], query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'}})
         })
 
         it('should navigate to route with feedTagEqual to null when value is null', () => {
             component.onSelect(null, 'selected uuid')
-            expect(state.go).toHaveBeenCalledWith('app.entries', {feedTagEqual: null, feedUuidEqual: 'selected uuid'}, {inherit: false})
+            expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['app', 'entries'], query: {feedTagEqual: null, feedUuidEqual: 'selected uuid'}})
         })
 
         it('should navigate to route with feedTagEqual given value and feedUuidEqual set to null when value is null', () => {
             component.onSelect('selected tag', null)
-            expect(state.go).toHaveBeenCalledWith('app.entries', {feedTagEqual: 'selected tag', feedUuidEqual: null}, {inherit: false})
+            expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['app', 'entries'], query: {feedTagEqual: 'selected tag', feedUuidEqual: null}})
         })
 
-        it('should construct comparison value for ng-repeat track by', () =>
-            expect(component.trackBy({uuid: '1', unseen: 2})).toEqual('{"uuid":"1","unseen":2}'))
+        it('should construct comparison value for ng-repeat track by', () => {
+            expect(component.trackBy({uuid: '1', unseen: 2})).toEqual('{"uuid":"1","unseen":2}')
+        })
     })
 
     describe('with html', () => {
 
-        let page, scope, element, state, stateParams
+        let page, scope, element
 
         const item = {
             title: 'item title',
@@ -156,16 +151,9 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
             ]
         }
 
-        beforeEach(inject(($rootScope, $compile, $state, $stateParams) => {
-            state = $state
-            stateParams = $stateParams
-
+        beforeEach(inject(($rootScope, $compile) => {
             scope = $rootScope.$new(true)
             scope.item = item
-
-            state.go = jasmine.createSpy('$state.go()')
-            stateParams['feedTagEqual'] = scope.item.tag
-            stateParams['feedUuidEqual'] = scope.item.uuid
 
             element = $compile('<my-navigation-subscription-item my-item="item"></my-navigation-subscription-item>')(scope)
             scope.$digest()
@@ -175,8 +163,7 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
         describe('parent item', () => {
 
             it('should not mark as selected', inject($compile => {
-                stateParams['feedTagEqual'] = null
-                stateParams['feedUuidEqual'] = null
+                ngReduxMock.setState({router: {currentRoute: [], query: {feedTagEqual: null, feedUuidEqual: null}}})
 
                 element = $compile('<my-navigation-subscription-item my-item="item"></my-navigation-subscription-item>')(scope)
                 scope.$digest()
@@ -198,11 +185,9 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
         describe('sub items', () => {
 
             it('should not render items when not selected', inject($compile => {
-                stateParams['feedTagEqual'] = null
-                stateParams['feedUuidEqual'] = null
+                ngReduxMock.setState({router: {currentRoute: [], query: {feedTagEqual: null, feedUuidEqual: null}}})
 
-                element = $compile(`<my-navigation-subscription-item my-item="item">
-                                    </my-navigation-subscription-item>`)(scope)
+                element = $compile(`<my-navigation-subscription-item my-item="item"></my-navigation-subscription-item>`)(scope)
                 scope.$digest()
                 page = new SubscriptionItemPage(element)
 
@@ -212,8 +197,7 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
             it('should not render items when no subscriptions available', inject($compile => {
                 scope.item = {...scope.item, subscriptions: []}
 
-                element = $compile(`<my-navigation-subscription-item my-item="item">
-                                    </my-navigation-subscription-item>`)(scope)
+                element = $compile(`<my-navigation-subscription-item my-item="item"></my-navigation-subscription-item>`)(scope)
                 scope.$digest()
                 page = new SubscriptionItemPage(element)
 
@@ -242,8 +226,7 @@ describe('src/app/js/navigation/subscriptions-item/subscription-item/subscriptio
             }))
 
             it('should mark as selected', () => {
-                stateParams['feedTagEqual'] = scope.item.tag
-                stateParams['feedUuidEqual'] = 'uuid1'
+                ngReduxMock.setState({router: {currentRoute: [], query: {feedTagEqual: 'tag', feedUuidEqual: 'uuid1'}}})
                 scope.$digest()
 
                 const items = page.subItems

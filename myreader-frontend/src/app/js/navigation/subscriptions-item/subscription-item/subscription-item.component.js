@@ -1,28 +1,41 @@
 import template from './subscription-item.component.html'
 import './subscription-item.component.css'
+import {routeChange, routeSelector} from 'store'
 
 class controller {
 
-    constructor($state, $stateParams) {
+    constructor($ngRedux) {
         'ngInject'
-        this.$state = $state
-        this.$stateParams = $stateParams
+        this.$ngRedux = $ngRedux
     }
 
     $onInit() {
         this.item = this.myItem || {}
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
+    }
+
+    $onDestroy() {
+        this.unsubscribe()
+    }
+
+    mapStateToThis(state) {
+        return {
+            ...routeSelector(state)
+        }
+    }
+
+    mapDispatchToThis(dispatch) {
+        return {
+            onSelect: (feedTagEqual, feedUuidEqual) => dispatch(routeChange(['app', 'entries'], {feedTagEqual, feedUuidEqual}))
+        }
     }
 
     isSelected(item) {
-        return this.$stateParams['feedUuidEqual'] === item.uuid && this.$stateParams['feedTagEqual'] === item.tag
+        return this.router.query.feedUuidEqual === item.uuid && this.router.query.feedTagEqual === item.tag
     }
 
     isOpen() {
-        return this.$stateParams['feedTagEqual'] === this.item.tag
-    }
-
-    onSelect(feedTagEqual, feedUuidEqual) {
-        this.$state.go('app.entries', {feedTagEqual, feedUuidEqual}, {inherit: false})
+        return this.router.query.feedTagEqual === this.item.tag
     }
 
     isVisible() {
