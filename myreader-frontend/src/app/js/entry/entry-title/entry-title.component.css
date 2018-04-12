@@ -8,6 +8,7 @@
 .my-entry-title__title > a {
     color: rgba(0,0,0,0.87);
     text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .my-entry-title__subtitle {
