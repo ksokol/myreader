@@ -94,6 +94,20 @@ describe('src/app/js/store/bootstrap.spec.js', () => {
             })
         })
 
+        it('should integrate with custom array middleware', done => {
+            let remainingActions = ['ACTION1', 'ACTION2']
+
+            const assertMiddleware = () => () => action => {
+                remainingActions = remainingActions.filter(it => it !== action.type)
+                if (remainingActions.length === 0) {
+                    done()
+                }
+            }
+
+            const store = createApplicationStore(OTHER, undefined, [assertMiddleware])
+            store.dispatch([{type: 'ACTION1'}, {type: 'ACTION2'}])
+        })
+
         it('should integrate with custom guard middleware', () => {
             const store = createApplicationStore(OTHER)
 

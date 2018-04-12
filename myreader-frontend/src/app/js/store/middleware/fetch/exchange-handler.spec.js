@@ -1,12 +1,13 @@
 import {createMockStore} from '../../../shared/test-utils'
 import {createExchangeHandler} from './exchange-handler'
+import arrayMiddleware from '../array/arrayMiddleware'
 
 describe('src/app/js/store/middleware/fetch/exchange-handler.spec.js', () => {
 
     let exchange, store, responseHandler, exchangeHandler
 
     beforeEach(() => {
-        store = createMockStore()
+        store = createMockStore([arrayMiddleware])
         exchange = jasmine.createSpy('exchange')
         responseHandler = jasmine.createSpy('responseHandler')
         exchangeHandler = createExchangeHandler(exchange, responseHandler)

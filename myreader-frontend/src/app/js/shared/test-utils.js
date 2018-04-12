@@ -62,9 +62,9 @@ export function filterMock(name) {
     return _filterMock
 }
 
-export function createMockStore() {
+export function createMockStore(middlewares = []) {
     let state = initialApplicationState()
-    const store = configureMockStore([thunk])(() => state)
+    const store = configureMockStore([thunk, ...middlewares])(() => state)
 
     store.getActionTypes = () => store.getActions().map(it => it.type)
     store.setState = stateSlice => state = {...state, ...stateSlice}
