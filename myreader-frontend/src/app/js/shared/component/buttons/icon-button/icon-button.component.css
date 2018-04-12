@@ -6,6 +6,7 @@ my-icon-button {
     background-color: inherit;
     border-radius: 50%;
     border: 1px;
+    cursor: pointer;
     height: 30px;
     margin: 10px;
     padding: 0;
