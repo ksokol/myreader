@@ -1,7 +1,6 @@
-import {isBoolean} from '../../shared/utils'
-import {redirectToLoginPage, STORAGE_SECURITY_KEY} from '../../constants'
+import {isBoolean} from 'shared/utils'
+import {STORAGE_SECURITY_KEY} from 'constants'
 import {readFromStorage, writeToStorage} from '../shared/storage-util'
-import {authorizedSelector} from 'store'
 
 const key = STORAGE_SECURITY_KEY
 
@@ -13,19 +12,3 @@ export function getLastSecurityState() {
 export function setLastSecurityState({authorized, role}) {
     writeToStorage(key, {...readFromStorage(key), authorized, role})
 }
-
-/**
- * @deprecated
- */
-function createSecurityListener(store) {
-    store.subscribe(() => {
-        if (!authorizedSelector(store.getState())) {
-            redirectToLoginPage()
-        }
-    })
-}
-
-/**
- * @deprecated
- */
-export const installAuthorizationChangeActionDispatcher = store => createSecurityListener(store)

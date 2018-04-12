@@ -10,7 +10,7 @@ export const updateSecurity = () => {
 
 export const unauthorized = () => {
     setLastSecurityState({authorized: false, role: ''})
-    return updateSecurity()
+    return [updateSecurity(), routeChange(['login'])]
 }
 
 export const authorized = ({role}) => {
@@ -19,7 +19,7 @@ export const authorized = ({role}) => {
 }
 
 export const logout = () => {
-    return {type: 'POST_LOGOUT', url: LOGOUT, success: [unauthorized, () => routeChange(['login'])]}
+    return {type: 'POST_LOGOUT', url: LOGOUT, success: unauthorized}
 }
 
 export const tryLogin = ({username, password}) => {

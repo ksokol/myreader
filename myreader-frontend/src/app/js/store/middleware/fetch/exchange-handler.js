@@ -16,7 +16,7 @@ export function createExchangeHandler(exchange, responseHandler) {
         return new Promise((resolve, reject) =>
             exchange(toArguments(action)).then(response => {
                 const result = responseHandler(action, response)
-                result.actions.forEach(action => dispatch(action))
+                dispatch(result.actions)
                 result.ok ? resolve(response.data) : reject(response)
             })
         )

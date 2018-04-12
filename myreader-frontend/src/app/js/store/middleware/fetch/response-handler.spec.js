@@ -1,11 +1,12 @@
 import {responseHandler} from './response-handler'
 import {createMockStore} from '../../../shared/test-utils'
+import arrayMiddleware from '../array/arrayMiddleware'
 
 describe('src/app/js/store/middleware/fetch/response-handler.spec.js', () => {
 
     let store, actual
 
-    beforeEach(() => store = createMockStore())
+    beforeEach(() => store = createMockStore([arrayMiddleware]))
 
     const givenHandledResponse = (action, response) => {
         actual = responseHandler(action, response)
@@ -17,7 +18,7 @@ describe('src/app/js/store/middleware/fetch/response-handler.spec.js', () => {
         givenHandledResponse({}, {status: 401, data: 'response'})
 
         expect(actual).toContainObject({ok: false})
-        expect(store.getActions().length).toEqual(2)
+        expect(store.getActions().length).toBeGreaterThanOrEqual(2)
         expect(store.getActions()[0]).toEqualActionType('FETCH_END')
         expect(store.getActions()[1]).toEqual({type: 'SECURITY_UPDATE', authorized: false, role: ''})
     })

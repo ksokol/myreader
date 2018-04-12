@@ -1,11 +1,12 @@
 import {authorized, unauthorized, updateSecurity, logout, tryLogin} from 'store'
 import {createMockStore} from 'shared/test-utils'
+import arrayMiddleware from '../middleware/array/arrayMiddleware'
 
 describe('src/app/js/store/security/action.spec.js', () => {
 
     let store
 
-    beforeEach(() => store = createMockStore())
+    beforeEach(() => store = createMockStore([arrayMiddleware]))
 
     describe('action creator updateSecurity', () => {
 
@@ -23,7 +24,7 @@ describe('src/app/js/store/security/action.spec.js', () => {
     describe('action creator unauthorized', () => {
 
         it('should persist last security state to local storage', () => {
-            expect(unauthorized()).toEqual({
+            expect(unauthorized()[0]).toEqual({
                 type: 'SECURITY_UPDATE',
                 authorized: false,
                 role: ''
@@ -34,6 +35,17 @@ describe('src/app/js/store/security/action.spec.js', () => {
                 role: ''
             })
         })
+
+        it('should route to login page', () => {
+            expect(unauthorized()[1]).toEqual({
+                type: 'ROUTE_CHANGED',
+                route: ['login'],
+                query: {}
+            })
+        })
+    })
+
+    describe('action creator authorized', () => {
 
         it('should return SECURITY_UPDATE action with updated last security state', () => {
             expect(authorized({role: 'expected role'})).toEqual({
@@ -52,7 +64,7 @@ describe('src/app/js/store/security/action.spec.js', () => {
         })
 
         it('should contain expected success actions', () => {
-            logout().success.forEach(success => store.dispatch(success()))
+            store.dispatch(logout().success())
 
             expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
             expect(store.getActions()[0]).toContainActionData({authorized: false})

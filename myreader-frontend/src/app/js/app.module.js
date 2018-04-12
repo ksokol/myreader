@@ -2,7 +2,6 @@ import angular from 'angular'
 import ngRedux from 'ng-redux'
 
 import {ENVIRONMENT, isInDevMode, isInProdMode} from 'constants'
-import {installAuthorizationChangeActionDispatcher} from './store/security/security'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
 import {EntryActionsComponent} from './entry/entry-actions/entry-actions.component'
 import {EntryContentComponent} from './entry/entry-content/entry-content.component'
@@ -136,7 +135,7 @@ angular
 
             const store = createApplicationStore(
                 ENVIRONMENT,
-                [installAuthorizationChangeActionDispatcher, installMediaBreakpointActionDispatcher],
+                [installMediaBreakpointActionDispatcher],
                 [routerMiddleware, digestMiddleware]
             )
             return store
