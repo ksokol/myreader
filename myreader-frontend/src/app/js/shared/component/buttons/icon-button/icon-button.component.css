@@ -10,6 +10,7 @@ my-icon-button {
     height: 30px;
     margin: 10px;
     padding: 0;
+    user-select: none;
     width: 30px;
     -webkit-tap-highlight-color: transparent;
 }
