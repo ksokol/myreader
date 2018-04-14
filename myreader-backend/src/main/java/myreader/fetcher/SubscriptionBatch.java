@@ -39,12 +39,11 @@ public class SubscriptionBatch {
         int newCount = 0;
 
         for (FetcherEntry dto : fetchResult.getEntries()) {
-            int result = feedEntryRepository.countByTitleOrGuidOrUrl(dto.getTitle(), dto.getGuid(), dto.getUrl());
+            int result = feedEntryRepository.countByTitleOrGuidOrUrlAndFeedId(dto.getTitle(), dto.getGuid(), dto.getUrl(), feed.getId());
 
             if (result == 0) {
-                FeedEntry feedEntry = new FeedEntry();
+                FeedEntry feedEntry = new FeedEntry(feed);
                 feedEntry.setContent(dto.getContent());
-                feedEntry.setFeed(feed);
                 feedEntry.setGuid(dto.getGuid());
                 feedEntry.setTitle(dto.getTitle());
                 feedEntry.setUrl(dto.getUrl());

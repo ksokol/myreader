@@ -14,8 +14,8 @@ import java.util.Date;
  */
 public interface FeedEntryRepository extends PagingAndSortingRepository<FeedEntry, Long> {
 
-    @Query("select count(fe) from FeedEntry fe where fe.title = ?1 or fe.guid = ?2 or fe.url = ?3")
-    int countByTitleOrGuidOrUrl(String title, String guid, String url);
+    @Query("select count(fe) from FeedEntry fe where (fe.title = ?1 or fe.guid = ?2 or fe.url = ?3) and fe.feed.id = ?4")
+    int countByTitleOrGuidOrUrlAndFeedId(String title, String guid, String url, Long feedId);
 
     @Query("select fe from FeedEntry fe where fe.feed.id = ?1")
     Page<FeedEntry> findByFeedId(Long id, Pageable pageable);

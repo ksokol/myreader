@@ -1,6 +1,7 @@
 package myreader.fetcher;
 
 import myreader.entity.Feed;
+import myreader.entity.FeedEntry;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedEntryRepository;
@@ -70,6 +71,12 @@ public class SubscriptionBatchTest {
     @Test
     public void shouldNotIncrementFetchedCountWhenNoNewFeedEntrySaved() {
         FetcherEntry fetcherEntry = createFetcherEntry();
+
+        FeedEntry feedEntry = new FeedEntry(feedRepository.findByUrl(KNOWN_FEED_URL));
+        feedEntry.setGuid(fetcherEntry.getGuid());
+        feedEntry.setTitle(fetcherEntry.getTitle());
+        feedEntry.setUrl(fetcherEntry.getUrl());
+        feedEntryRepository.save(feedEntry);
 
         subscriptionBatch.updateUserSubscriptions(new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL, 0));
 
