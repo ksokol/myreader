@@ -8,7 +8,7 @@ import {
     subscriptionEditFormSelector,
     subscriptionExclusionPatternsSelector,
     subscriptionTagsSelector
-} from 'store'
+} from '../store'
 
 class controller {
 

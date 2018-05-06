@@ -1,4 +1,4 @@
-import {routeChange} from 'store'
+import {routeChange} from '../../store'
 
 function uiRouterStartTransitionHandler(criteria, $ngRedux) {
     if (criteria.from().name !== '') {

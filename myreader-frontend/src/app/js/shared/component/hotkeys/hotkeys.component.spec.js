@@ -1,4 +1,4 @@
-import {onKey, tick} from 'shared/test-utils'
+import {onKey, tick} from '../../../shared/test-utils'
 
 const enter = {key: 'Enter', keyCode: 13}
 const down = {key: 'ArrowDown', keyCode: 40}

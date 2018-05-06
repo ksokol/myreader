@@ -5,7 +5,7 @@ import {
     getPendingRequests,
     mediaBreakpointIsDesktopSelector,
     sidenavSlideIn
-} from 'store'
+} from '../../store'
 
 describe('src/app/js/store/common/selectors.spec.js', () => {
 

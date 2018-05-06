@@ -1,7 +1,7 @@
 import template from './button.component.html'
 import './button.component.css'
 import {isPromiseLike} from '../../utils'
-import {getPendingRequests} from 'store'
+import {getPendingRequests} from '../../../store'
 
 class controller {
 

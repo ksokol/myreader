@@ -1,4 +1,4 @@
-import {mockNgRedux} from 'shared/test-utils'
+import {mockNgRedux} from '../../shared/test-utils'
 
 describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.component.spec.js', () => {
 

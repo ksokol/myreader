@@ -1,4 +1,4 @@
-import {componentMock, mockNgRedux, filterMock} from 'shared/test-utils'
+import {componentMock, mockNgRedux, filterMock} from '../../shared/test-utils'
 
 describe('src/app/js/feed/feed-fetch-error/feed-fetch-error.component.spec.js', () => {
 

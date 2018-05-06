@@ -1,6 +1,6 @@
 import template from './autocomplete-suggestions.component.html'
 import './autocomplete-suggestions.component.css'
-import {isDefined} from 'shared/utils'
+import {isDefined} from '../../../../shared/utils'
 
 class controller {
 

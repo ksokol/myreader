@@ -1,4 +1,4 @@
-import {componentMock, multipleComponentMock, onKey, tick} from 'shared/test-utils'
+import {componentMock, multipleComponentMock, onKey, tick} from '../../../../shared/test-utils'
 
 class AutocompleteSuggestionsPage {
 

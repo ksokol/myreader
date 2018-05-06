@@ -1,6 +1,6 @@
 import template from './feed-fetch-error.component.html'
 import './feed-fetch-error.component.css'
-import {feedFetchFailuresSelector, fetchFeedFetchFailures} from 'store'
+import {feedFetchFailuresSelector, fetchFeedFetchFailures} from '../../store'
 
 class controller {
 

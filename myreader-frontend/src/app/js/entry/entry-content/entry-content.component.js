@@ -1,6 +1,6 @@
 import template from './entry-content.component.html'
 import './entry-content.component.css'
-import {settingsShowEntryDetailsSelector, mediaBreakpointIsDesktopSelector} from 'store'
+import {settingsShowEntryDetailsSelector, mediaBreakpointIsDesktopSelector} from '../../store'
 
 class controller {
 

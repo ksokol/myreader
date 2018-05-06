@@ -1,4 +1,4 @@
-import {mockNgRedux, multipleComponentMock} from 'shared/test-utils'
+import {mockNgRedux, multipleComponentMock} from '../shared/test-utils'
 
 describe('src/app/js/settings/settings.component.spec.js', () => {
 

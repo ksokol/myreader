@@ -1,6 +1,6 @@
-import * as types from 'store/action-types'
+import * as types from '../../store/action-types'
 import {cloneObject} from '../shared/objects'
-import {initialApplicationState} from 'store'
+import {initialApplicationState} from '../../store'
 import {byPattern} from './subscription'
 
 function subscriptionsReceived({state, action}) {

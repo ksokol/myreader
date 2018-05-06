@@ -1,6 +1,6 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import {initialApplicationState} from 'store'
+import {initialApplicationState} from '../store'
 
 /*
  * https://velesin.io/2016/08/23/unit-testing-angular-1-5-components/

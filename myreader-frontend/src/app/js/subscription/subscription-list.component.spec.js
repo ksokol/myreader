@@ -1,4 +1,4 @@
-import {mockNgRedux, filterMock, componentMock} from 'shared/test-utils'
+import {mockNgRedux, filterMock, componentMock} from '../shared/test-utils'
 
 class ListItem {
 

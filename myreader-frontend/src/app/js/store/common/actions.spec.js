@@ -7,8 +7,8 @@ import {
     showSuccessNotification,
     hideBackdrop,
     toggleSidenav
-} from 'store'
-import {createMockStore} from 'shared/test-utils'
+} from '../../store'
+import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/common/actions.spec.js', () => {
 

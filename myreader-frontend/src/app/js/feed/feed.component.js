@@ -1,6 +1,6 @@
 import template from './feed.component.html'
 import './feed.component.css'
-import {changeFeed, deleteFeed, feedSelector} from 'store'
+import {changeFeed, deleteFeed, feedSelector} from '../store'
 
 class controller {
 

@@ -1,5 +1,5 @@
-import * as types from 'store/action-types'
-import {getNextNotificationId} from 'store'
+import * as types from '../../store/action-types'
+import {getNextNotificationId} from '../../store'
 
 export const fetchStart = () => {
     return {type: types.FETCH_START}

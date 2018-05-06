@@ -1,4 +1,4 @@
-import {loadSettings, setPageSize, setShowEntryDetails, setShowUnseenEntries, updateSettings} from 'store'
+import {loadSettings, setPageSize, setShowEntryDetails, setShowUnseenEntries, updateSettings} from '../../store'
 
 describe('src/app/js/store/settings/actions.spec.js', () => {
 

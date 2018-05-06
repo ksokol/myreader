@@ -1,6 +1,6 @@
 import template from './login.component.html'
 import './login.component.css'
-import {authorizedSelector, adminPermissionSelector, tryLogin, routeChange} from 'store'
+import {authorizedSelector, adminPermissionSelector, tryLogin, routeChange} from '../store'
 
 class controller {
 

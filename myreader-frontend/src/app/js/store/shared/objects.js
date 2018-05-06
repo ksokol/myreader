@@ -1,4 +1,4 @@
-import {isDate, isObject} from 'shared/utils'
+import {isDate, isObject} from '../../shared/utils'
 
 export function cloneObject(object) {
     if (!isObject(object)) {

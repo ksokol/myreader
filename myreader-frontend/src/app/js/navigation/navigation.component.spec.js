@@ -1,4 +1,4 @@
-import {componentMock, mockNgRedux} from 'shared/test-utils'
+import {componentMock, mockNgRedux} from '../shared/test-utils'
 
 describe('src/app/js/navigation/navigation.component.spec.js', () => {
 

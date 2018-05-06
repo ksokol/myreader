@@ -1,4 +1,4 @@
-import {mediaBreakpointChanged} from 'store'
+import {mediaBreakpointChanged} from '../../store'
 import {supportedBreakpoints} from '../../constants'
 
 function createMediaBreakpoints() {

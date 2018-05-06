@@ -1,6 +1,6 @@
 import template from './entry-list.component.html'
 import './entry-list.component.css'
-import {entryClear, fetchEntries, getEntries} from 'store'
+import {entryClear, fetchEntries, getEntries} from '../store'
 
 class controller {
 

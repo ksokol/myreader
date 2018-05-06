@@ -1,5 +1,5 @@
-import {authorized, unauthorized, updateSecurity, logout, tryLogin} from 'store'
-import {createMockStore} from 'shared/test-utils'
+import {authorized, unauthorized, updateSecurity, logout, tryLogin} from '../../store'
+import {createMockStore} from '../../shared/test-utils'
 import arrayMiddleware from '../middleware/array/arrayMiddleware'
 
 describe('src/app/js/store/security/action.spec.js', () => {

@@ -1,6 +1,6 @@
 import template from './entry.component.html'
 import './entry.component.css'
-import {changeEntry} from 'store'
+import {changeEntry} from '../store'
 
 class controller {
 

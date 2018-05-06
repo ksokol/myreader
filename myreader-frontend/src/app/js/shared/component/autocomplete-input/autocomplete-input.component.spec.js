@@ -1,4 +1,4 @@
-import {componentMock} from 'shared/test-utils'
+import {componentMock} from '../../../shared/test-utils'
 
 class AutcompletePage {
 

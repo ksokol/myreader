@@ -1,5 +1,5 @@
 import {findRouteConfiguration, routeConfiguration} from './routes'
-import {createMockStore} from 'shared/test-utils'
+import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/router/routes.spec.js', () => {
 

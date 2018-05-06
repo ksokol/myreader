@@ -1,5 +1,5 @@
-import {fetchEnd, unauthorized} from 'store'
-import {toArray} from 'shared/utils'
+import {fetchEnd, unauthorized} from '../../../store'
+import {toArray} from '../../../shared/utils'
 
 function invokeActionCreator(actionCreator, response) {
     return actionCreator(response.data, response.headers, response.status)

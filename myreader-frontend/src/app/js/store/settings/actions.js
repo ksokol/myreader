@@ -1,4 +1,4 @@
-import * as settingsTypes from 'store/action-types'
+import * as settingsTypes from '../../store/action-types'
 import {
     getPageSize,
     isShowEntryDetails,
@@ -6,7 +6,7 @@ import {
     setPageSize,
     setShowEntryDetails,
     setShowUnseenEntries
-} from 'store'
+} from '../../store'
 
 export const loadSettings = () => {
     const settings = {

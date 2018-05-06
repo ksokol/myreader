@@ -1,5 +1,5 @@
-import * as types from 'store/action-types'
-import {initialApplicationState} from 'store'
+import * as types from '../../store/action-types'
+import {initialApplicationState} from '../../store'
 
 export function routerReducers(state = initialApplicationState().router, action) {
     switch (action.type) {

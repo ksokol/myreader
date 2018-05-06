@@ -1,4 +1,4 @@
-import {mockNgRedux} from 'shared/test-utils'
+import {mockNgRedux} from '../../../shared/test-utils'
 
 class SubscriptionItem {
 

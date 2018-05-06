@@ -1,4 +1,4 @@
-import {multipleComponentMock} from 'shared/test-utils'
+import {multipleComponentMock} from '../../../shared/test-utils'
 
 class ChooseItem {
 

@@ -15,8 +15,8 @@ import {
     subscriptionSaved,
     subscriptionsReceived,
     subscriptionTagsReceived
-} from 'store'
-import {createMockStore} from 'shared/test-utils'
+} from '../../store'
+import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/subscription/actions.spec.js', () => {
 

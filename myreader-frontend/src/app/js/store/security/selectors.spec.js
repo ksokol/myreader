@@ -1,4 +1,4 @@
-import {authorizedSelector, adminPermissionSelector} from 'store'
+import {authorizedSelector, adminPermissionSelector} from '../../store'
 
 describe('src/app/js/store/security/selectors.spec.js', () => {
 

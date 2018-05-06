@@ -1,4 +1,4 @@
-import {getEntries, getEntry, getEntryTags, getNextFocusableEntry} from 'store'
+import {getEntries, getEntry, getEntryTags, getNextFocusableEntry} from '../../store'
 
 describe('src/app/js/store/entry/selectors.spec.js', () => {
 

@@ -1,6 +1,6 @@
-import * as types from 'store/action-types'
+import * as types from '../../store/action-types'
 import {equalLinks} from '../shared/links'
-import {initialApplicationState} from 'store'
+import {initialApplicationState} from '../../store'
 
 function entryPageReceived({state, action}) {
     const links = action.links

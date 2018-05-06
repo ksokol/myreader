@@ -1,4 +1,4 @@
-import {mockNgRedux, componentMock, onKey, tick} from 'shared/test-utils'
+import {mockNgRedux, componentMock, onKey, tick} from '../shared/test-utils'
 
 const enter = {key: 'Enter', keyCode: 13}
 const arrowDown = {key: 'ArrowDown', keyCode: 40}

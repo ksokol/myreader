@@ -1,4 +1,4 @@
-import {componentMock} from 'shared/test-utils'
+import {componentMock} from '../../../../shared/test-utils'
 
 describe('src/app/js/shared/component/buttons/icon-button/icon-button.component.spec.js', () => {
 

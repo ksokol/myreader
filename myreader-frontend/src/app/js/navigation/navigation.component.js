@@ -1,6 +1,6 @@
 import template from './navigation.component.html'
 import './navigation.component.css'
-import {adminPermissionSelector, logout, routeChange} from 'store'
+import {adminPermissionSelector, logout, routeChange} from '../store'
 
 class controller {
 
