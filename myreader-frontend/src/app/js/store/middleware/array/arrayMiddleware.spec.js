@@ -10,7 +10,7 @@ describe('src/app/js/store/middleware/array/arrayMiddleware.spec.js', () => {
         dispatch = jasmine.createSpy('dispatch')
     })
 
-    const execute = action => arrayMiddleware({dispatch, getState})(next)(action)
+    const execute = action => (arrayMiddleware({dispatch, getState})(next)(action))
 
     it('should trigger next when action value is single action', () => {
         execute({type: 'AN_ACTION'})
@@ -26,5 +26,15 @@ describe('src/app/js/store/middleware/array/arrayMiddleware.spec.js', () => {
         execute([{type: 'ACTION1'}, {type: 'ACTION2'}])
 
         expect(dispatch.calls.allArgs()).toEqual([[{type: 'ACTION1'}, 'expected state fn'], [{type: 'ACTION2'}, 'expected state fn']]);
+    })
+
+    it('should return result from next', () => {
+        next.and.returnValue('expected')
+        expect(execute({type: 'AN_ACTION'})).toEqual('expected')
+    })
+
+    it('should return result from dispatch', () => {
+        dispatch.and.returnValue('expected')
+        expect(execute([{type: 'AN_ACTION'}])).toEqual(['expected'])
     })
 })
