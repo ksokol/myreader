@@ -98,11 +98,7 @@ module.exports = function makeWebpackConfig() {
         {
             test: /\.js$/,
             loader: 'babel-loader',
-            exclude: /node_modules/,
-            query: {
-                presets: ['env'],
-                plugins: ['transform-object-rest-spread', ['angularjs-annotate', { 'explicitOnly' : true}]]
-            }
+            exclude: /node_modules/
         }]
     }
 
