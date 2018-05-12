@@ -28,6 +28,10 @@ task dependencyCheckAnalyze(type: NpmTask, dependsOn: npm_install) {
     args = ['run', 'snyk']
 }
 
+task lint(type: NpmTask, dependsOn: npm_install) {
+    args = ['run', 'lint']
+}
+
 task test(overwrite: true, dependsOn: [npm_install, npm_test]) {
     inputs.files files('src', 'test', 'webpack.config.js', 'src/tests.webpack.js', 'package.json', 'karma.conf.js')
 }
@@ -43,7 +47,7 @@ task clean() {
     delete "dist"
 }
 
-task check(dependsOn: test)
+task check(dependsOn: [lint, test])
 
 task startServer(type: SpawnProcessTask) {
     command 'npm start'
