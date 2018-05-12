@@ -20,7 +20,7 @@ module.exports = function karmaConfig (config) {
         singleRun: true,
         coverageIstanbulReporter: {
             type: 'lcov',
-            dir : 'build/reports/istanbul/'
+            dir : 'build/reports/coverage/'
         },
         sonarQubeUnitReporter: {
             sonarQubeVersion: 'LATEST',
