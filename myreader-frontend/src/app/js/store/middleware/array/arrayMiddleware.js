@@ -1,10 +1,8 @@
 export function createArrayMiddleware() {
     return ({dispatch, getState}) => next => action => {
-        if (Array.isArray(action)) {
-            action.forEach(it => dispatch(it, getState))
-        } else {
+        return Array.isArray(action) ?
+            action.map(it => dispatch(it, getState)) :
             next(action)
-        }
     }
 }
 
