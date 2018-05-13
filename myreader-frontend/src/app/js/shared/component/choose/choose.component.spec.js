@@ -7,22 +7,24 @@ class ChooseItem {
     }
 
     get text() {
-        return this.el[0].innerText.trim()
+        return this.el.textContent.trim()
     }
 
     get selected() {
-        return this.el[0].classList.contains('my-choose__button--selected')
+        return this.el.classList.contains('my-choose__button--selected')
     }
 }
 
 class Choose {
 
     constructor(el) {
-        this.el = el
+        this.el = el[0]
     }
 
     items() {
-        return Object.values(this.el.children()).map(it => new ChooseItem(angular.element(it)))
+        let items = []
+        this.el.querySelectorAll('my-button').forEach(it => items.push(new ChooseItem(it)))
+        return items
     }
 }
 
@@ -37,7 +39,7 @@ describe('src/app/js/shared/component/choose/choose.component.spec.js', () => {
 
     beforeEach(inject(($rootScope, $compile) => {
         scope = $rootScope.$new(true)
-        scope.onChoose = jasmine.createSpy('onChoose()')
+        scope.onChoose = jest.fn()
         scope.value = 2
 
         const element = $compile(`<my-choose my-value="value"

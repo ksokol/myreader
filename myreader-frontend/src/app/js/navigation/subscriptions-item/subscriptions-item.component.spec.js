@@ -7,7 +7,7 @@ class NavigationItem {
     }
 
     title() {
-        return this.el.querySelector('span:first-of-type').innerText
+        return this.el.querySelector('span:first-of-type').textContent
     }
 }
 

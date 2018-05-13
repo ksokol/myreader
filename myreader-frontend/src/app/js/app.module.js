@@ -149,6 +149,7 @@ angular
             $transitions.onStart({}, t => uiRouterStartTransitionHandler(t, $ngRedux, ENVIRONMENT))
         }
 
+        // TODO Deletion hint: Don't forget to remove jest.useFakeTimers() in several tests
         const setTimeoutFn = window.setTimeout
         window.setTimeout = (fn, delay) => {
             return setTimeoutFn(() => {

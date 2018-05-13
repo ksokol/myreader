@@ -26,7 +26,7 @@ describe('src/app/js/feed/feed-fetch-error/feed-fetch-error.component.spec.js', 
         givenState()
 
         expect(element.find('p').length).toEqual(1)
-        expect(element.find('p')[0].innerText).toContain('no errors')
+        expect(element.find('p')[0].textContent).toContain('no errors')
     })
 
     it('should pass next link to load more component', () => {
@@ -46,13 +46,13 @@ describe('src/app/js/feed/feed-fetch-error/feed-fetch-error.component.spec.js', 
     it('should render message', () => {
         givenState({failures: [{uuid: 1, message: 'error1'}]})
 
-        expect(element.find('span')[0].innerText).toEqual('error1')
+        expect(element.find('span')[0].textContent).toEqual('error1')
     })
 
     it('should render createdAt', () => {
         givenState({failures: [{uuid: 1, createdAt: '2017-04-28T18:01:03Z'}]})
 
-        expect(element.find('span')[1].innerText).toEqual('timeago("2017-04-28T18:01:03Z")')
+        expect(element.find('span')[1].textContent).toEqual('timeago("2017-04-28T18:01:03Z")')
     })
 
     it('should render all errors', () => {

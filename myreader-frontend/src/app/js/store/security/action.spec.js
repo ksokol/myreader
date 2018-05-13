@@ -6,7 +6,14 @@ describe('src/app/js/store/security/action.spec.js', () => {
 
     let store
 
-    beforeEach(() => store = createMockStore([arrayMiddleware]))
+    beforeEach(() => {
+        store = createMockStore([arrayMiddleware])
+        localStorage.clear()
+    })
+
+    afterEach(() => {
+        localStorage.clear()
+    })
 
     describe('action creator updateSecurity', () => {
 

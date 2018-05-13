@@ -1,14 +1,20 @@
 import 'angular'
 import 'angular-mocks'
-import {toContainActionData, toContainObject, toEqualActionType} from './app/js/shared/jasmine-matcher'
+import 'mock-local-storage'
+import 'whatwg-fetch'
+import 'intersection-observer'
+import './app/js/vendor'
+import './app/js/main'
+import {toContainActionData, toContainObject, toEqualActionType} from './app/js/shared/custom-matcher'
 
-const context = require.context('./app/js', true, /\.js$/)
-context.keys().forEach(context)
+global.fetch = require('jest-fetch-mock')
 
-beforeEach(() => localStorage.clear())
-afterEach(() => localStorage.clear())
+window.matchMedia = () => ({matches: false, addListener: () => {}})
 
-beforeEach(() => jasmine.clock().install())
-afterEach(() => jasmine.clock().uninstall())
+afterEach(() => {
+    localStorage.clear()
+    fetch.resetMocks()
+    fetch.mockResponse('')
+})
 
-beforeEach(() => jasmine.addMatchers({toEqualActionType, toContainObject, toContainActionData}))
+expect.extend({toEqualActionType, toContainObject, toContainActionData})

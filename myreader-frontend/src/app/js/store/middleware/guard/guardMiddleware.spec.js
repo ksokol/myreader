@@ -5,7 +5,7 @@ describe('src/app/js/store/middleware/guard/guardMiddleware.spec.js', () => {
     let next
 
     beforeEach(() => {
-        next = jasmine.createSpy('next')
+        next = jest.fn()
     })
 
     const execute = action => guardMiddleware()(next)(action)

@@ -110,7 +110,7 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
         beforeEach(inject(($rootScope, $compile) => {
             compile = $compile
 
-            scope = $rootScope.$new()
+            scope = $rootScope.$new(true)
             scope.item = {
                 content: 'entry content'
             }
@@ -118,18 +118,18 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
         }))
 
         it('should render entry content', () => {
-            element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)
+            element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)[0]
             scope.$digest()
 
-            expect(element.find('div')[0].innerText).toEqual('entry content')
+            expect(element.querySelectorAll('div')[0].textContent).toEqual('entry content')
         })
 
         it('should render html encoded entry content', () => {
             scope.item.content = '&quotentry content&quot'
-            element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)
+            element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)[0]
             scope.$digest()
 
-            expect(element.find('div')[0].innerText).toEqual('"entry content"')
+            expect(element.querySelectorAll('div')[0].textContent).toEqual('"entry content"')
         })
 
         it('should not render entry content when myShow is set to false', () => {
@@ -137,13 +137,12 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
             element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)
             scope.$digest()
 
-            expect(element.find('div')[0]).toBeUndefined()
+            expect(element[0].querySelectorAll('div')[0]).toBeUndefined()
         })
 
         it('should contain myEntryContentSanitizer directive', () => {
             element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)
             scope.$digest()
-
             expect(element.children()[0].hasAttribute('my-entry-content-sanitizer')).toEqual(true)
         })
     })

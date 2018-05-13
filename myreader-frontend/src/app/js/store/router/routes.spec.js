@@ -20,17 +20,21 @@ describe('src/app/js/store/router/routes.spec.js', () => {
             }
         }
 
-        it('should return empty route when given route is undefined', () =>
-            expect(findRouteConfiguration(), exampleConfiguration).toEqual({route: []}))
+        it('should return empty route when given route is undefined', () => {
+            expect(findRouteConfiguration()).toEqual({route: []})
+        })
 
-        it('should return empty route when given route is empty', () =>
-            expect(findRouteConfiguration([], exampleConfiguration)).toEqual({route: []}))
+        it('should return empty route when given route is empty', () => {
+            expect(findRouteConfiguration([], exampleConfiguration)).toEqual({route: []})
+        })
 
-        it('should return given route with one component when route was not found in route configuration', () =>
-            expect(findRouteConfiguration(['some-route'], exampleConfiguration)).toEqual({route: ['some-route']}))
+        it('should return given route with one component when route was not found in route configuration', () => {
+            expect(findRouteConfiguration(['some-route'], exampleConfiguration)).toEqual({route: ['some-route']})
+        })
 
-        it('should return given route with two components when route was not found in route configuration', () =>
-            expect(findRouteConfiguration(['some', 'route'], exampleConfiguration)).toEqual({route: ['some', 'route']}))
+        it('should return given route with two components when route was not found in route configuration', () => {
+            expect(findRouteConfiguration(['some', 'route'], exampleConfiguration)).toEqual({route: ['some', 'route']})
+        })
 
         it('should return configured route', () => {
             const route = findRouteConfiguration(['parent-route', 'child-route'], exampleConfiguration)
@@ -159,8 +163,8 @@ describe('src/app/js/store/router/routes.spec.js', () => {
             it('should contain expected resolve action(s)', () => {
                 routeConfig.resolve.forEach(action => store.dispatch(action({query: {uuid: 'expectedUuid'}})))
                 expect(store.getActionTypes()).toEqual(['GET_FEED', 'GET_FEED_FETCH_FAILURES'])
-                expect(store.getActions()[0].url).toContain('/feeds/expectedUuid')
-                expect(store.getActions()[1].url).toContain('/feeds/expectedUuid/fetchError')
+                expect(store.getActions()[0].url).toMatch(/\/feeds\/expectedUuid$/)
+                expect(store.getActions()[1].url).toMatch(/\/feeds\/expectedUuid\/fetchError$/)
             })
         })
     })

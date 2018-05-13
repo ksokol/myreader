@@ -51,9 +51,9 @@ describe('src/app/js/shared/component/toast/toast.component.spec.js', () => {
         scope.$digest()
 
         expect(notifications().length).toEqual(3)
-        expect(notification(0).innerText.trim()).toEqual('text4')
-        expect(notification(1).innerText.trim()).toEqual('text3')
-        expect(notification(2).innerText.trim()).toEqual('text2')
+        expect(notification(0).textContent.trim()).toEqual('text4')
+        expect(notification(1).textContent.trim()).toEqual('text3')
+        expect(notification(2).textContent.trim()).toEqual('text2')
     })
 
     it('should show success and error notifications', () => {

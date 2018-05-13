@@ -18,13 +18,10 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
 
     const Feed = el => {
         return {
-            title: () => el.find('h3')[0],
-            createdAt: () => el.find('span')[0],
-            errorIcon: () => {
-                const item = el.find('my-icon')[0]
-                return item ? angular.element(item) : undefined
-            },
-            click: () => el.triggerHandler('click')
+            title: () => el.querySelector('h3'),
+            createdAt: () => el.querySelector('span'),
+            errorIcon: () => el.querySelector('my-icon') || undefined,
+            click: () => el.click()
         }
     }
 
@@ -32,9 +29,9 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         return {
             feedList: () => {
                 const feeds = []
-                const items = el[0].querySelectorAll('.feed-list__item')
+                const items = el.querySelectorAll('.feed-list__item')
                 for (let i=0; i < items.length; i++) {
-                    feeds.push(new Feed(angular.element(items[i])))
+                    feeds.push(new Feed(items[i]))
                 }
                 return feeds
             }
@@ -57,13 +54,13 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
             ngReduxMock.setState({admin: {feeds}})
 
             element = $compile('<my-feed-list></my-feed-list>')(scope)
-            page = new PageObject(element)
+            page = new PageObject(element[0])
             scope.$digest()
         }))
 
         it('should show feed items', () => {
-            expect(page.feedList()[0].title().innerText).toEqual('title 1')
-            expect(page.feedList()[1].title().innerText).toEqual('title 2')
+            expect(page.feedList()[0].title().textContent).toEqual('title 1')
+            expect(page.feedList()[1].title().textContent).toEqual('title 2')
         })
 
         it('should sanitize feed title', () => {
@@ -76,11 +73,11 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         })
 
         it('should render error icon when feed err', () => {
-            expect(page.feedList()[1].errorIcon().attr('my-type')).toEqual('error')
+            expect(page.feedList()[1].errorIcon().attributes['my-type'].value).toEqual('error')
         })
 
         it('should pass feed creation date to timeago pipe', () => {
-            expect(page.feedList()[0].createdAt().innerText).toContain('timeago("createdAt 1")')
+            expect(page.feedList()[0].createdAt().textContent).toContain('timeago("createdAt 1")')
         })
 
         it('should navigate to feed detail page', () => {
@@ -93,11 +90,11 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
         it('should filter feeds', () => {
             givenState({query: {q: 'title 1'}})
             expect(page.feedList().length).toEqual(1)
-            expect(page.feedList()[0].title().innerText).toEqual('title 1')
+            expect(page.feedList()[0].title().textContent).toEqual('title 1')
 
             givenState({query: {q: 'title 2'}})
             expect(page.feedList().length).toEqual(1)
-            expect(page.feedList()[0].title().innerText).toEqual('title 2')
+            expect(page.feedList()[0].title().textContent).toEqual('title 2')
         })
 
         it('should clear filter', () => {

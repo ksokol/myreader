@@ -47,8 +47,7 @@ export function multipleComponentMock(name) {
 
 export function filterMock(name) {
     function _filterMock($provide) {
-        const filter = jasmine.createSpy(name + 'Filter')
-        filter.and.callFake(function (value) {
+        const filter = jest.fn(value => {
             if (typeof value === 'object') {
                 // remove Angular specific attributes
                 delete value.$$hashKey
@@ -74,8 +73,8 @@ export function createMockStore(middlewares = []) {
 
 export function ngReduxMock() {
     const store = createMockStore()
-    spyOn(store, 'dispatch')
-    store.dispatch.and.callThrough()
+    const storeDispatch = store.dispatch
+    store.dispatch = jest.fn(action => storeDispatch(action))
 
     const storeSetState = store.setState
     let mapDispatchToTargets = []
@@ -83,8 +82,7 @@ export function ngReduxMock() {
     const createMapToTarget = (component, mapStateToTarget) => state =>
         typeof mapStateToTarget === 'function' ? Object.assign(component, mapStateToTarget(state)) : () => null
 
-    store.connect = jasmine.createSpy('$ngRedux.connect')
-    store.connect.and.callFake((mapStateToTarget, mapDispatchToTarget) => {
+        store.connect = jest.fn((mapStateToTarget, mapDispatchToTarget) => {
         return component => {
             const fn = createMapToTarget(component, mapStateToTarget)
             fn(store.getState())
@@ -123,5 +121,5 @@ export function onKey(type, event, funcs = {}) {
 }
 
 export function tick(millis = 0) {
-    jasmine.clock().tick(millis)
+    jest.advanceTimersByTime(millis)
 }

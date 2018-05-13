@@ -2,27 +2,32 @@ import {componentMock, mockNgRedux} from '../shared/test-utils'
 
 describe('src/app/js/feed/feed.component.spec.js', () => {
 
-    let scope, element, page, ngReduxMock, feed
+    let scope, $timeout, page, ngReduxMock, feed
 
     const PageObject = el => {
-        const _title = () => angular.element(el.find('input')[0])
-        const _url = () => angular.element(el.find('input')[1])
-        const _validationErrorText = validationEl => {
-            const firstDiv = angular.element(angular.element(validationEl).find('div'))
-            return firstDiv.find('div')[0].innerText
-        }
+        const _title = () => el.querySelectorAll('input')[0]
+        const _url = () => el.querySelectorAll('input')[1]
+        const _validationErrorText = validationEl => validationEl.querySelector('div > div').textContent
 
         return {
             title: () =>_title(),
             url: () => _url(),
-            feedUrlLink: () => el.find('a')[0],
-            enterTitle: value => _title().val(value).triggerHandler('input'),
-            enterUrl: value => _url().val(value).triggerHandler('input'),
-            titleValidationErrorText: () => _validationErrorText(element.find('my-validation-message')[0]),
-            urlValidationErrorText: () => _validationErrorText(element.find('my-validation-message')[1]),
-            clickSaveButton: () => angular.element(element.find('button')[0]).triggerHandler('click'),
-            clickDeleteButton: () => angular.element(element.find('button')[1]).triggerHandler('click'),
-            clickYesButton: () => angular.element(element.find('button')[1]).triggerHandler('click'),
+            feedUrlLink: () => el.querySelector('a'),
+            enterTitle: value => {
+                _title().value = value
+                _title().dispatchEvent(new Event('input'))
+                scope.$digest()
+            },
+            enterUrl: value => {
+                _url().value = value
+                _url().dispatchEvent(new Event('input'))
+                scope.$digest()
+            },
+            titleValidationErrorText: () => _validationErrorText(el.querySelectorAll('my-validation-message')[0]),
+            urlValidationErrorText: () => _validationErrorText(el.querySelectorAll('my-validation-message')[1]),
+            clickSaveButton: () => el.querySelectorAll('button')[0].click(),
+            clickDeleteButton: () => el.querySelectorAll('button')[1].click(),
+            clickYesButton: () => el.querySelectorAll('button')[1].click(),
         }
     }
 
@@ -33,9 +38,8 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
 
     beforeEach(angular.mock.module('myreader', componentMock('myFeedFetchError'), mockNgRedux()))
 
-    beforeEach(inject(($rootScope, $compile, $ngRedux) => {
-        jasmine.clock().uninstall()
-
+    beforeEach(inject(($rootScope, $compile, $ngRedux, _$timeout_) => {
+        $timeout = _$timeout_
         scope = $rootScope.$new(true)
         ngReduxMock = $ngRedux
 
@@ -46,16 +50,16 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
             other: 'other field'
         }
 
-        element = $compile('<my-feed></my-feed>')(scope)
-        page = new PageObject(element)
+        const element = $compile('<my-feed></my-feed>')(scope)
+        page = new PageObject(element[0])
         scope.$digest()
     }))
 
     it('should render title and url', () => {
         givenState(feed)
 
-        expect(page.title().val()).toEqual(feed.title)
-        expect(page.url().val()).toEqual(feed.url)
+        expect(page.title().value).toEqual(feed.title)
+        expect(page.url().value).toEqual(feed.url)
     })
 
     it('should save feed when save button clicked', () => {
@@ -70,14 +74,15 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
     })
 
     it('should render validation messages', done => {
-        ngReduxMock.dispatch.and.returnValue(Promise.reject({
+        jest.useRealTimers()
+        ngReduxMock.dispatch.mockRejectedValueOnce({
             status: 400,
             data: {fieldErrors: [
                     {"field":"url","message":"expected url error"},
                     {"field":"title","message": "expected title error"}
                 ]
             }
-        }))
+        })
 
         page.clickSaveButton()
 
@@ -91,8 +96,8 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
 
     it('should delete feed', () => {
         givenState(feed)
-
         page.clickDeleteButton()
+        $timeout.flush(250)
         page.clickYesButton()
 
         expect(ngReduxMock.getActions()[0]).toEqualActionType('DELETE_FEED')

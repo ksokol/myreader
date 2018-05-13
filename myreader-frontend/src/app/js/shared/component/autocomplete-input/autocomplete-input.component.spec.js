@@ -9,30 +9,31 @@ class AutcompletePage {
     }
 
     get label() {
-        return this.el.find('label')[0]
+        return this.el.querySelectorAll('label')[0]
     }
 
     get input() {
-        return this.el.find('input')
+        return this.el.querySelector('input')
     }
 
     get autocompleteSuggestionsComponent() {
-        return this.el.find('my-autocomplete-suggestions')[0]
+        return this.el.querySelectorAll('my-autocomplete-suggestions')[0]
     }
 
     focusInput() {
-        this.input.triggerHandler('focus')
+        this.input.dispatchEvent(new Event('focus'))
         this.$scope.$digest()
     }
 
     blurInput() {
-        this.input.triggerHandler('blur')
+        this.input.dispatchEvent(new Event('blur'))
         this.$timeout.flush(100)
         this.$scope.$digest()
     }
 
     enterInput(value) {
-        this.input.val(value).triggerHandler('change')
+        this.input.value = value
+        this.input.dispatchEvent(new Event('change'))
         this.$timeout.flush(100)
         this.$scope.$digest()
     }
@@ -40,17 +41,16 @@ class AutcompletePage {
 
 describe('src/app/js/shared/component/autocomplete-input/autocomplete-input.component.spec.js', () => {
 
-    let page, rootScope, scope, compile, timeout, element, myOnSelect, myOnClear, myAutocompleteSuggestions
+    let page, rootScope, scope, compile, timeout, myOnSelect, myOnClear, myAutocompleteSuggestions
 
     beforeEach(() => {
-        jasmine.clock().uninstall()
         myAutocompleteSuggestions = componentMock('myAutocompleteSuggestions')
         angular.mock.module('myreader', myAutocompleteSuggestions)
     })
 
     beforeEach(inject(($rootScope, $compile, $timeout) => {
-        myOnSelect = jasmine.createSpy('myOnSelect')
-        myOnClear = jasmine.createSpy('myOnClear')
+        myOnSelect = jest.fn()
+        myOnClear = jest.fn()
 
         compile = $compile
         rootScope = $rootScope
@@ -60,7 +60,7 @@ describe('src/app/js/shared/component/autocomplete-input/autocomplete-input.comp
         scope.myOnClear = myOnClear
         scope.label = 'a label'
 
-        element = compile(`<my-autocomplete-input
+        const element = compile(`<my-autocomplete-input
                                my-label="label"
                                my-selected-item="selectedValue"
                                my-disabled="disabled"
@@ -68,13 +68,13 @@ describe('src/app/js/shared/component/autocomplete-input/autocomplete-input.comp
                                my-selected-item="selectedValue"
                                my-on-select="myOnSelect(value)"
                                my-on-clear="myOnClear()">
-                           </my-autocomplete-input>`)(scope)
+                           </my-autocomplete-input>`)(scope)[0]
         page = new AutcompletePage(element, scope, $timeout)
         scope.$digest()
     }))
 
     it('should render label text', () => {
-        expect(page.label.innerText).toEqual('a label')
+        expect(page.label.textContent).toEqual('a label')
     })
 
     it('should not render label text when binding value is undefined', () => {
@@ -84,21 +84,21 @@ describe('src/app/js/shared/component/autocomplete-input/autocomplete-input.comp
     })
 
     it('should enable input element when myDisabled is false', () => {
-        expect(page.input.attr('disabled')).toBeUndefined()
+        expect(page.input.disabled).toEqual(false)
     })
 
     it('should disable input element when myDisabled is true', () => {
         scope.disabled = true
         scope.$digest()
 
-        expect(page.input.attr('disabled')).toEqual('disabled')
+        expect(page.input.disabled).toEqual(true)
     })
 
     it('should preset input with mySelectedItem', () => {
         scope.selectedValue = 'selected-value'
         scope.$digest()
 
-        expect(page.input.val()).toEqual('selected-value')
+        expect(page.input.value).toEqual('selected-value')
     })
 
     it('should not create suggestions component when input is not focused', () => {

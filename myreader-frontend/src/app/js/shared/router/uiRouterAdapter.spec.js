@@ -5,8 +5,9 @@ describe('src/app/js/shared/router/uiRouterAdapter.spec.js', () => {
     let state, adapter
 
     beforeEach(() => {
-        state = jasmine.createSpyObj('state', ['go'])
-        state.go.and.returnValue(Promise.resolve('expected resolved value'))
+        state = {
+            go: jest.fn().mockResolvedValueOnce('expected resolved value')
+        }
         adapter = uiRouterAdapter(state)
     })
 

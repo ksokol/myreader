@@ -4,22 +4,20 @@ describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js'
 
     let component, $element, createElement
 
-    beforeEach(inject($componentController => {
-        $element = jasmine.createSpyObj('$element', ['children'])
-        $element.children.and.returnValue([])
-
+    beforeEach(inject(($rootScope, $compile, $componentController) => {
+        $element = {children: jest.fn()}
         component = $componentController('myAutoScroll', {$element})
 
         createElement = html => {
-            const element = angular.element(html)
-            element.scrollIntoView = jasmine.createSpy('scrollIntoView')
+            const element = $compile(html)($rootScope.$new(true))
+            element.scrollIntoView = jest.fn()
             return element
         }
     }))
 
     it('should not scroll to element when element is not in focus', () => {
         const element = createElement(`<div data-uuid="1"></div>`)
-        $element.children.and.returnValue([element])
+        $element.children.mockReturnValueOnce([element])
 
         component.$onChanges({})
 
@@ -28,7 +26,7 @@ describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js'
 
     it('should not scroll to element when currentValue is invalid', () => {
         const element = createElement(`<div data-uuid="1"></div>`)
-        $element.children.and.returnValue([element])
+        $element.children.mockReturnValueOnce([element])
 
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': undefined}}})
 
@@ -37,7 +35,7 @@ describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js'
 
     it('should scroll to element when in focus', () => {
         const element = createElement(`<div data-uuid="1"></div>`)
-        $element.children.and.returnValue([element])
+        $element.children.mockReturnValueOnce([element])
 
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': '1'}}})
 
@@ -47,7 +45,7 @@ describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js'
     it('should scroll back to first element', () => {
         const element1 = createElement(`<div data-uuid="1"></div>`)
         const element2 = createElement(`<div data-uuid="2"></div>`)
-        $element.children.and.returnValue([element1, element2])
+        $element.children.mockReturnValue([element1, element2])
 
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': '1'}}})
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': '2'}}})
@@ -60,7 +58,7 @@ describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js'
         const element1 = createElement(`<div data-uuid="1"></div>`)
         const element2 = createElement(`<div data-uuid="2"></div>`)
         const element3 = createElement(`<div data-uuid="3"></div>`)
-        $element.children.and.returnValue([element1, element2, element3])
+        $element.children.mockReturnValue([element1, element2, element3])
 
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': '1'}}})
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': '2'}}})
@@ -72,14 +70,15 @@ describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js'
     it('should smooth scroll to first element after DOM changed', () => {
         const element1 = createElement(`<div data-uuid="1"></div>`)
         const element2 = createElement(`<div data-uuid="2"></div>`)
-        $element.children.and.returnValue([element1, element2])
+        $element.children.mockReturnValue([element1, element2])
 
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': '1'}}})
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': '2'}}})
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': '1'}}})
 
         const element10 = createElement(`<div data-uuid="10"></div>`)
-        $element.children.and.returnValue([element10])
+        //$element.children.and.returnValue([element10])
+        $element.children.mockReturnValueOnce([element10])
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': '10'}}})
 
         expect(element10.scrollIntoView).toHaveBeenCalledWith({block: 'start', behavior: 'smooth'})
@@ -87,7 +86,7 @@ describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js'
 
     it('should convert number to string before comparing', () => {
         const element1 = createElement(`<div data-uuid="1"></div>`)
-        $element.children.and.returnValue([element1])
+        $element.children.mockReturnValueOnce([element1])
 
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': 1}}})
 
@@ -96,7 +95,7 @@ describe('src/app/js/shared/component/auto-scroll/auto-scroll.component.spec.js'
 
     it('should not evaluate to false when attribute value has value "0"', () => {
         const element1 = createElement(`<div data-uuid="0"></div>`)
-        $element.children.and.returnValue([element1])
+        $element.children.mockReturnValueOnce([element1])
 
         component.$onChanges({myScrollOn: {currentValue: {'data-uuid': 0}}})
 

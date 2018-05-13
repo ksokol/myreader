@@ -2,16 +2,17 @@ import {componentMock, multipleComponentMock, onKey, tick} from '../../../../sha
 
 class AutocompleteSuggestionsPage {
 
-    constructor(el) {
+    constructor(el, scope) {
         this.el = el
+        this.scope = scope
     }
 
     get suggestions() {
-        return this.el.find('li')
+        return this.el.querySelectorAll('li')
     }
 
     get highlightedSuggestionIndex() {
-        const node = this.el[0].querySelector('.my-autocomplete-suggestions__item--selected')
+        const node = this.el.querySelector('.my-autocomplete-suggestions__item--selected')
         return node ? node.dataset['index'] : undefined
     }
 
@@ -22,21 +23,25 @@ class AutocompleteSuggestionsPage {
     keyDown() {
         onKey('down', {key: 'ArrowDown', keyCode: 40})
         tick()
+        this.scope.$digest()
     }
 
     keyUp() {
         onKey('down', {key: 'ArrowUp', keyCode: 38})
         tick()
+        this.scope.$digest()
     }
 
     keyEnter() {
         onKey('down', {key: 'Enter', keyCode: 13})
         tick()
+        this.scope.$digest()
     }
 
     keyEscape() {
         onKey('down', {key: 'esc', keyCode: 27})
         tick()
+        this.scope.$digest()
     }
 }
 
@@ -51,17 +56,18 @@ describe('src/app/js/shared/component/autocomplete-input/autocomplete-suggestion
     })
 
     beforeEach(inject(($rootScope, $compile) => {
+        jest.useFakeTimers() // TODO Remove me together with patched setTimeout function in app.module.js.
         scope = $rootScope.$new(true)
         scope.values = ['term1', 'term2']
-        scope.onSelectSuggestion = jasmine.createSpy('onSelectSuggestion()')
+        scope.onSelectSuggestion = jest.fn()
 
         const element = $compile(`<my-autocomplete-suggestions
                                     my-values="values"
                                     my-current-term="searchTerm"
                                     my-on-select="onSelectSuggestion(term)">
-                                  </my-autocomplete-suggestions>`)(scope)
+                                  </my-autocomplete-suggestions>`)(scope)[0]
         scope.$digest()
-        page = new AutocompleteSuggestionsPage(element)
+        page = new AutocompleteSuggestionsPage(element, scope)
     }))
 
     it('should not show suggestions when no suggestions given', () => {

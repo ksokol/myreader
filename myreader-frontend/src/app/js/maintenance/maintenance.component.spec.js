@@ -1,29 +1,22 @@
-describe('src/app/js/maintenance/maintenance.component.spec.js', function () {
+import {componentMock} from '../shared/test-utils'
 
-    describe('with html', function () {
+describe('src/app/js/maintenance/maintenance.component.spec.js', () => {
 
-        var testUtils = require('../shared/test-utils');
+    let element
 
-        var scope, element;
+    beforeEach(require('angular').mock.module('myreader', componentMock('myMaintenanceActions'), componentMock('myAbout')))
 
-        beforeEach(require('angular')
-            .mock.module('myreader',
-                         testUtils.componentMock('myMaintenanceActions'),
-                         testUtils.componentMock('myAbout'))
-            );
+    beforeEach(inject(($rootScope, $compile) => {
+        const scope = $rootScope.$new(true)
+        element = $compile('<my-maintenance></my-maintenance>')(scope)[0]
+        scope.$digest()
+    }))
 
-        beforeEach(inject(function ($rootScope, $compile) {
-            scope = $rootScope.$new();
-            element = $compile('<my-maintenance></my-maintenance>')(scope);
-            scope.$digest();
-        }));
+    it('should contain maintenance actions component', () => {
+        expect(element.querySelector('my-maintenance-actions')).not.toBeNull()
+    })
 
-        it('should contain maintenance actions component', function () {
-            expect(element.find('my-maintenance-actions').length).toEqual(1);
-        });
-
-        it('should contain about component', function () {
-            expect(element.find('my-about').length).toEqual(1);
-        });
-    });
-});
+    it('should contain about component', () => {
+        expect(element.querySelector('my-about')).not.toBeNull()
+    })
+})

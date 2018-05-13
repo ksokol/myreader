@@ -2,11 +2,10 @@ module.exports = {
     "env": {
         "browser": true,
         "es6": true,
-        "jasmine": true
+        "jest/globals": true
     },
     "extends": [
-        "eslint:recommended",
-        "plugin:jasmine/recommended"
+        "eslint:recommended"
     ],
     "parserOptions": {
         "ecmaVersion": 6,
@@ -16,7 +15,7 @@ module.exports = {
         }
     },
     "plugins": [
-        "jasmine"
+        "jest"
     ],
     "rules": {
         "indent": [
@@ -37,6 +36,10 @@ module.exports = {
         ],
         "no-undef": "warn",
         "no-unused-vars": "warn",
-        "jasmine/new-line-before-expect": "warn"
+        "jest/no-disabled-tests": "warn",
+        "jest/no-focused-tests": "error",
+        "jest/no-identical-title": "warn",
+        "jest/prefer-to-have-length": "warn",
+        "jest/valid-expect": "error"
     }
 }

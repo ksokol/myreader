@@ -15,7 +15,7 @@ describe('src/app/js/shared/component/search-input/search-input.component.spec.j
     }
 
     beforeEach(inject(($rootScope, $compile, $timeout) => {
-        myOnChange = jasmine.createSpy('myOnChange')
+        myOnChange = jest.fn()
         timeout = $timeout
         scope = $rootScope.$new(true)
         scope.value = 'a value'

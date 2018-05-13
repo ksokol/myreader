@@ -1,4 +1,5 @@
 import {mockNgRedux} from '../../../shared/test-utils'
+import {tick} from "../../test-utils";
 
 class Backdrop {
 
@@ -7,7 +8,7 @@ class Backdrop {
     }
 
     get el() {
-        return this.host.find('div')[0]
+        return this.host.querySelectorAll('div')[0]
     }
 
     get isMounted() {
@@ -39,17 +40,20 @@ describe('src/app/js/shared/component/backdrop/backdrop.component.spec.js', () =
     beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
+        jest.useFakeTimers() // TODO Remove me together with patched setTimeout function in app.module.js.
         rootScope = $rootScope
         scope = $rootScope.$new(true)
         ngReduxMock = $ngRedux
         givenState({backdropVisible: false})
 
-        const element = $compile('<my-backdrop></my-backdrop>')(scope)
+        const element = $compile('<my-backdrop></my-backdrop>')(scope)[0]
         scope.$digest()
         backdrop = new Backdrop(element)
     }))
 
-    it('should not mount backdrop after initialization', () => expect(backdrop.isMounted).toEqual(false))
+    it('should not mount backdrop after initialization', () => {
+        expect(backdrop.isMounted).toEqual(false)
+    })
 
     it('should mount backdrop when state changes to true', () => {
         givenState({backdropVisible: true})
@@ -83,20 +87,24 @@ describe('src/app/js/shared/component/backdrop/backdrop.component.spec.js', () =
         givenState({backdropVisible: true})
         givenState({backdropVisible: false})
 
-        jasmine.clock().tick(299)
+        tick(299)
+        scope.$digest()
         expect(backdrop.isMounted).toEqual(true)
 
-        jasmine.clock().tick(1)
+        tick(1)
+        scope.$digest()
         expect(backdrop.isMounted).toEqual(false)
     })
 
     it('should not unmount backdrop when state changed to true within 300ms', () => {
         givenState({backdropVisible: true})
         givenState({backdropVisible: false})
-        jasmine.clock().tick(299)
+        tick(299)
+        scope.$digest()
 
         givenState({backdropVisible: true})
-        jasmine.clock().tick(1)
+        tick(1)
+        scope.$digest()
 
         expect(backdrop.isMounted).toEqual(true)
     })
@@ -104,10 +112,12 @@ describe('src/app/js/shared/component/backdrop/backdrop.component.spec.js', () =
     it('should not hide backdrop when state changed to true within 300ms', () => {
         givenState({backdropVisible: true})
         givenState({backdropVisible: false})
-        jasmine.clock().tick(299)
+        tick(299)
+        scope.$digest()
 
         givenState({backdropVisible: true})
-        jasmine.clock().tick(1)
+        tick(1)
+        scope.$digest()
 
         expect(backdrop.isVisible).toEqual(true)
         expect(backdrop.isClosing).toEqual(false)
@@ -116,7 +126,9 @@ describe('src/app/js/shared/component/backdrop/backdrop.component.spec.js', () =
     it('should show backdrop when state changed to true again', () => {
         givenState({backdropVisible: true})
         givenState({backdropVisible: false})
-        jasmine.clock().tick(300)
+
+        tick(300)
+        scope.$digest()
 
         givenState({backdropVisible: true})
 

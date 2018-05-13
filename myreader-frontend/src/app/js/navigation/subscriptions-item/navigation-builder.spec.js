@@ -12,14 +12,18 @@ describe('src/app/js/navigation/subscriptions-item/navigation-builder.spec.js', 
         {title: '7', uuid: '7', unseen: 4},
     ]
 
-    beforeEach(() => jasmine.clock().mockDate(new Date(1)))
+    beforeEach(() => {
+        global['Date'] = jest.fn(() => ({getTime: () => 1}))
+    })
 
-    it('should return empty array for subscriptionsWithoutTag property', () =>
-        expect(navigationBuilder([]).subscriptionsWithoutTag).toEqual([]))
+    it('should return empty array for subscriptionsWithoutTag property', () => {
+        expect(navigationBuilder([]).subscriptionsWithoutTag).toEqual([])
+    })
 
-    it('should return subscriptions without a tag assigned in property subscriptionsWithoutTag', () =>
+    it('should return subscriptions without a tag assigned in property subscriptionsWithoutTag', () => {
         expect(navigationBuilder(subscriptionsWithTag).subscriptionsWithoutTag)
-            .toEqual([{title: '6', uuid: '6', tag: null, unseen: 3}, {title: '7', uuid: '7', unseen: 4}]))
+            .toEqual([{title: '6', uuid: '6', tag: null, unseen: 3}, {title: '7', uuid: '7', unseen: 4}])
+    })
 
     it('should return bucket "t1" with all subscriptions whose tag is "t1"', () =>
         expect(navigationBuilder(subscriptionsWithTag).subscriptionsGroupedByTag.t1).toEqual({
@@ -49,10 +53,10 @@ describe('src/app/js/navigation/subscriptions-item/navigation-builder.spec.js', 
         }))
 
     it('should return generic "all" bucket with different key on every creation', () => {
-        jasmine.clock().mockDate(new Date(2))
+        global['Date'] = jest.fn(() => ({getTime: () => 2}))
         expect(navigationBuilder([]).subscriptionsGroupedByTag).toEqual({'__all__2': {title: 'all', tag: null, uuid: null, unseen: 0}})
 
-        jasmine.clock().mockDate(new Date(3))
+        global['Date'] = jest.fn(() => ({getTime: () => 3}))
         expect(navigationBuilder([]).subscriptionsGroupedByTag).toEqual({'__all__3': {title: 'all', tag: null, uuid: null, unseen: 0}})
     })
 

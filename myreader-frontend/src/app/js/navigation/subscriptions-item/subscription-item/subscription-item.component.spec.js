@@ -7,11 +7,11 @@ class SubscriptionItem {
     }
 
     get text() {
-        return this.el.querySelector('span:first-of-type').innerText
+        return this.el.querySelector('span:first-of-type').textContent
     }
 
     get badge() {
-        return this.el.querySelector('.my-subscription-item__badge').innerText
+        return this.el.querySelector('.my-subscription-item__badge').textContent
     }
 
     get selected() {

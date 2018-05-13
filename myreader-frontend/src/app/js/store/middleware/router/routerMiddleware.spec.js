@@ -13,8 +13,8 @@ describe('src/app/js/store/middleware/router/routerMiddleware.spec.js', () => {
 
         dispatch = 'expected dispatch'
         getState = () => state
-        next = jasmine.createSpy('next')
-        routerHandler = jasmine.createSpy('routerHandler')
+        next = jest.fn()
+        routerHandler = jest.fn()
     })
 
     const execute = action => routerMiddleware(routerHandler)({dispatch, getState})(next)(action)
@@ -37,11 +37,11 @@ describe('src/app/js/store/middleware/router/routerMiddleware.spec.js', () => {
         const action = {type: 'ROUTE_CHANGED', payload: 'expected payload'}
         execute(action)
 
-        expect(routerHandler).toHaveBeenCalledWith(jasmine.objectContaining({action, dispatch: 'expected dispatch', routerState: {a: 'b'}}))
+        expect(routerHandler).toHaveBeenCalledWith(expect.objectContaining({action, dispatch: 'expected dispatch', routerState: {a: 'b'}}))
     })
 
     it('should pass copy of router state to routerHandler', done => {
-        routerHandler.and.callFake(({action, dispatch, routerState}) => {
+        routerHandler.mockImplementationOnce(({action, dispatch, routerState}) => {
             state.router.a = 'c'
             expect(routerState).toEqual({a: 'b'})
             done()
@@ -51,7 +51,7 @@ describe('src/app/js/store/middleware/router/routerMiddleware.spec.js', () => {
     })
 
     it('should pass getState to routerHandler', done => {
-        routerHandler.and.callFake(({action, dispatch, routerState, getState}) => {
+        routerHandler.mockImplementationOnce(({action, dispatch, routerState, getState}) => {
             expect(getState()).toEqual({router: {a: 'b'}})
             done()
         })
