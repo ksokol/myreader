@@ -1,6 +1,6 @@
 import template from './settings.component.html'
 import './settings.component.css'
-import {getSettings, updateSettings} from 'store'
+import {getSettings, updateSettings} from '../store'
 
 class controller {
 

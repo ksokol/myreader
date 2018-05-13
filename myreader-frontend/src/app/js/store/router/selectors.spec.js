@@ -1,4 +1,4 @@
-import {routeSelector} from 'store'
+import {routeSelector} from '../../store'
 
 describe('src/app/js/store/router/selectors.spec.js', () => {
 

@@ -6,8 +6,8 @@ describe('src/app/js/store/middleware/array/arrayMiddleware.spec.js', () => {
     let getState = 'expected state fn'
 
     beforeEach(() => {
-        next = jasmine.createSpy('next')
-        dispatch = jasmine.createSpy('dispatch')
+        next = jest.fn()
+        dispatch = jest.fn()
     })
 
     const execute = action => (arrayMiddleware({dispatch, getState})(next)(action))
@@ -25,16 +25,16 @@ describe('src/app/js/store/middleware/array/arrayMiddleware.spec.js', () => {
     it('should dispatch each action', () => {
         execute([{type: 'ACTION1'}, {type: 'ACTION2'}])
 
-        expect(dispatch.calls.allArgs()).toEqual([[{type: 'ACTION1'}, 'expected state fn'], [{type: 'ACTION2'}, 'expected state fn']]);
+        expect(dispatch.mock.calls).toEqual([[{type: 'ACTION1'}, 'expected state fn'], [{type: 'ACTION2'}, 'expected state fn']]);
     })
 
     it('should return result from next', () => {
-        next.and.returnValue('expected')
+        next.mockReturnValueOnce('expected')
         expect(execute({type: 'AN_ACTION'})).toEqual('expected')
     })
 
     it('should return result from dispatch', () => {
-        dispatch.and.returnValue('expected')
+        dispatch.mockReturnValueOnce('expected')
         expect(execute([{type: 'AN_ACTION'}])).toEqual(['expected'])
     })
 })

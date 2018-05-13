@@ -5,8 +5,8 @@ describe('src/app/js/maintenance/about/about.component.spec.js', () => {
     const Table = table => {
         return {
             rowValue: index => {
-                const tr = angular.element(table).find('tr')[index]
-                return angular.element(tr).find('td')[1].innerText
+                const tr = table.querySelectorAll('tr')[index]
+                return tr.querySelectorAll('td')[1].textContent
             }
         }
     }
@@ -23,8 +23,9 @@ describe('src/app/js/maintenance/about/about.component.spec.js', () => {
         scope.$digest()
     }))
 
-    it('should hide content when no application info is present', () =>
-        expect(element.children().length).toEqual(0))
+    it('should hide content when no application info is present', () => {
+        expect(element[0].textContent.trim()).toEqual('')
+    })
 
     it('should show application build information', () => {
         ngReduxMock.setState({
@@ -40,9 +41,7 @@ describe('src/app/js/maintenance/about/about.component.spec.js', () => {
 
         scope.$digest()
 
-        expect(element.find('p').length).toEqual(0)
-
-        table = new Table(element.find('table'))
+        table = new Table(element[0].querySelector('table'))
         expect(table.rowValue(0)).toEqual('a')
         expect(table.rowValue(1)).toEqual('b')
         expect(table.rowValue(2)).toEqual('c')

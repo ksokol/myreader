@@ -1,6 +1,6 @@
 import template from './app.component.html'
 import './app.component.css'
-import {toggleSidenav, sidenavSlideIn, mediaBreakpointIsDesktopSelector} from 'store'
+import {toggleSidenav, sidenavSlideIn, mediaBreakpointIsDesktopSelector} from './store'
 
 class controller {
 

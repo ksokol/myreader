@@ -5,9 +5,9 @@ describe('src/app/js/entry/entry-tags/entry-tags.component.spec.js', () => {
     beforeEach(angular.mock.module('myreader'))
 
     beforeEach(inject(($rootScope, $compile) => {
-        myOnChange = jasmine.createSpy('myOnChange')
+        myOnChange = jest.fn()
 
-        scope = $rootScope.$new()
+        scope = $rootScope.$new(true)
         scope.item = {tag: 'tag1 tag2'}
         scope.show = true
         scope.myOnChange = myOnChange
@@ -31,8 +31,8 @@ describe('src/app/js/entry/entry-tags/entry-tags.component.spec.js', () => {
     it('should render tags', () => {
         const chips = element.find('my-chip')
 
-        expect(chips[0].querySelector('strong').innerText).toEqual('tag1')
-        expect(chips[1].querySelector('strong').innerText).toEqual('tag2')
+        expect(chips[0].querySelector('strong').textContent).toEqual('tag1')
+        expect(chips[1].querySelector('strong').textContent).toEqual('tag2')
     })
 
     it('should trigger onChange event when tag has been removed', () => {

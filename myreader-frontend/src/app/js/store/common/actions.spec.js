@@ -7,14 +7,17 @@ import {
     showSuccessNotification,
     hideBackdrop,
     toggleSidenav
-} from 'store'
-import {createMockStore} from 'shared/test-utils'
+} from '../../store'
+import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/common/actions.spec.js', () => {
 
     let store
 
-    beforeEach(() => store = createMockStore())
+    beforeEach(() => {
+        store = createMockStore()
+        jest.useFakeTimers() // TODO Remove me together with patched setTimeout function in app.module.js.
+    })
 
     it('action creator removeNotification', () => {
         store.dispatch(removeNotification({id: 1}))
@@ -29,7 +32,7 @@ describe('src/app/js/store/common/actions.spec.js', () => {
 
     it('action creator showSuccessNotification should trigger action creator removeNotification action after 3 seconds', () => {
         store.dispatch(showSuccessNotification('expected text'))
-        jasmine.clock().tick(3000)
+        jest.advanceTimersByTime(3000)
 
         expect(store.getActions()[1]).toContainObject({type: 'REMOVE_NOTIFICATION', id: 0})
     })
@@ -43,7 +46,7 @@ describe('src/app/js/store/common/actions.spec.js', () => {
 
     it('action creator showErrorNotification should trigger action creator removeNotification action after 3 seconds', () => {
         store.dispatch(showErrorNotification('expected text'))
-        jasmine.clock().tick(3000)
+        jest.advanceTimersByTime(3000)
 
         expect(store.getActions()[1]).toEqual({type: 'REMOVE_NOTIFICATION', id: 0})
     })

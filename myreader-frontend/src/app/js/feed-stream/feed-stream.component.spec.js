@@ -1,4 +1,4 @@
-import {mockNgRedux, componentMock, onKey, tick} from 'shared/test-utils'
+import {mockNgRedux, componentMock, onKey, tick} from '../shared/test-utils'
 
 const enter = {key: 'Enter', keyCode: 13}
 const arrowDown = {key: 'ArrowDown', keyCode: 40}
@@ -14,7 +14,7 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
     describe('', () => {
 
-        beforeEach(() => angular.mock.module('myreader', mockNgRedux(), componentMock('myEntryList')))
+        beforeEach(angular.mock.module('myreader', mockNgRedux(), componentMock('myEntryList')))
 
         beforeEach(inject(($rootScope, $compile, $ngRedux) => {
             scope = $rootScope.$new(true)
@@ -22,17 +22,18 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
             givenState([{uuid: '1'}, {uuid: '2'}], '1', '2')
 
-            element = $compile('<my-feed-stream></my-feed-stream>')(scope)
+            element = $compile('<my-feed-stream></my-feed-stream>')(scope)[0]
             scope.$digest()
         }))
 
         it('should focus previous entry when previous button clicked', () => {
-            element.find('button')[0].click()
+            element.querySelectorAll('button')[0].click()
 
             expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_PREVIOUS'])
         })
 
         it('should focus previous entry when arrow up key pressed', () => {
+            jest.useFakeTimers() // TODO Remove me together with patched setTimeout function in app.module.js.
             onKey('down', arrowUp)
             tick()
 
@@ -40,12 +41,13 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
         })
 
         it('should focus next entry when next button clicked', () => {
-            element.find('button')[1].click()
+            element.querySelectorAll('button')[1].click()
 
             expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_NEXT'])
         })
 
         it('should focus next entry when arrow down key pressed', () => {
+            jest.useFakeTimers() // TODO Remove me together with patched setTimeout function in app.module.js.
             onKey('down', arrowDown)
             tick()
 
@@ -54,7 +56,7 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
         it('should flag next focusable entry as read before it is focused', () => {
             givenState([{uuid: '2', seen: false, tag: 'expected tag'}])
-            element.find('button')[1].click()
+            element.querySelectorAll('button')[1].click()
 
             expect(ngReduxMock.getActionTypes()).toEqual(['PATCH_ENTRY', 'ENTRY_FOCUS_NEXT'])
             expect(ngReduxMock.getActions()[0]).toContainActionData({body: {seen: true, tag: 'expected tag'}})
@@ -63,12 +65,13 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
         it('should not flag next focusable entry as read when it is already flagged as read', () => {
             givenState([{uuid: '2', seen: true}])
-            element.find('button')[1].click()
+            element.querySelectorAll('button')[1].click()
 
             expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_NEXT'])
         })
 
         it('should flag new entry as read when enter button pressed', () => {
+            jest.useFakeTimers() // TODO Remove me together with patched setTimeout function in app.module.js.
             givenState([{uuid: '1', tag: 'expected tag'}])
             onKey('down', enter)
             tick()
@@ -79,6 +82,7 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
         })
 
         it('should flag old entry as unread when enter button pressed', () => {
+            jest.useFakeTimers() // TODO Remove me together with patched setTimeout function in app.module.js.
             givenState([{uuid: '1', seen: true, tag: 'expected tag'}])
             onKey('down', enter)
             tick()
@@ -106,7 +110,7 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
             givenState([{uuid: '1'}, {uuid: '2'}])
 
-            element = $compile('<my-feed-stream></my-feed-stream>')(scope)
+            element = $compile('<my-feed-stream></my-feed-stream>')(scope)[0]
             scope.$digest()
         }))
 
@@ -131,21 +135,21 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
             givenState([], null, null, 'desktop')
             scope.$digest()
 
-            expect(element[0].querySelector('my-action-panel')).not.toBeNull()
+            expect(element.querySelector('my-action-panel')).not.toBeNull()
         })
 
         it('should not show action panel when media breakpoint is "tablet"', () => {
             givenState([], null, null, 'tablet')
             scope.$digest()
 
-            expect(element[0].querySelector('my-action-panel')).toBeNull()
+            expect(element.querySelector('my-action-panel')).toBeNull()
         })
 
         it('should not show action panel when media breakpoint is "phone"', () => {
             givenState([], null, null, 'phone')
             scope.$digest()
 
-            expect(element[0].querySelector('my-action-panel')).toBeNull()
+            expect(element.querySelector('my-action-panel')).toBeNull()
         })
     })
 })

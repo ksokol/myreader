@@ -9,7 +9,7 @@ import {
     mediaBreakpointIsDesktopSelector,
     routeChange,
     routeSelector
-} from 'store'
+} from '../store'
 
 class controller {
 

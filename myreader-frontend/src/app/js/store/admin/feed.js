@@ -1,4 +1,4 @@
-import {extractLinks} from 'store/shared/links'
+import {extractLinks} from '../../store/shared/links'
 
 export function toFeed(raw = {}) {
     const {links, ...rest} = raw

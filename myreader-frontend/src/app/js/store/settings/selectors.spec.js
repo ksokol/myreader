@@ -1,4 +1,4 @@
-import {getSettings, settingsShowUnseenEntriesSelector, settingsShowEntryDetailsSelector} from 'store'
+import {getSettings, settingsShowUnseenEntriesSelector, settingsShowEntryDetailsSelector} from '../../store'
 
 describe('src/app/js/store/settings/selectors.spec.js', () => {
 

@@ -1,4 +1,4 @@
-import * as types from 'store/action-types'
+import * as types from '../../store/action-types'
 import {findRouteConfiguration} from './routes'
 
 export const routeChange = (route, query = {}) => {

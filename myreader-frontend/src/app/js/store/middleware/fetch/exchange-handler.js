@@ -1,4 +1,4 @@
-import {fetchStart} from 'store'
+import {fetchStart} from '../../../store'
 
 function toArguments(action) {
     return {

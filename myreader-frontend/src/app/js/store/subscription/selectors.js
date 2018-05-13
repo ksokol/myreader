@@ -1,5 +1,5 @@
 import {createSelector} from 'reselect'
-import {settingsShowUnseenEntriesSelector} from 'store'
+import {settingsShowUnseenEntriesSelector} from '../../store'
 import {cloneObject} from '../shared/objects'
 
 const routerQuerySelector = state => state.router.query

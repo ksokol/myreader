@@ -1,6 +1,6 @@
 import template from './backdrop.component.html'
 import './backdrop.component.css'
-import {backdropIsVisible, hideBackdrop} from 'store'
+import {backdropIsVisible, hideBackdrop} from '../../../store'
 
 class controller {
 

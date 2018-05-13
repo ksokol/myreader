@@ -1,5 +1,5 @@
 import {createSelector} from 'reselect'
-import {cloneObject} from 'store/shared/objects'
+import {cloneObject} from '../../store/shared/objects'
 
 const adminSelector = state => state.admin
 

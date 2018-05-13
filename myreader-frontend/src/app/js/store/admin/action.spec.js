@@ -13,8 +13,8 @@ import {
     fetchFeedFetchFailures,
     fetchFeeds,
     rebuildSearchIndex
-} from 'store'
-import {createMockStore} from 'shared/test-utils'
+} from '../../store'
+import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/admin/action.spec.js', () => {
 

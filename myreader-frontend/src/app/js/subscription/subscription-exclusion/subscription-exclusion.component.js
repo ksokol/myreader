@@ -1,5 +1,5 @@
 import template from './subscription-exclusion.component.html'
-import {addSubscriptionExclusionPattern, removeSubscriptionExclusionPattern} from 'store'
+import {addSubscriptionExclusionPattern, removeSubscriptionExclusionPattern} from '../../store'
 
 class controller {
 

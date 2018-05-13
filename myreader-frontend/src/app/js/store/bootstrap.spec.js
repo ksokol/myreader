@@ -9,8 +9,8 @@ describe('src/app/js/store/bootstrap.spec.js', () => {
     describe('redux dev tools', () => {
 
         beforeEach(() => {
-            window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] = jasmine.createSpy('compose')
-            window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'].and.returnValue(() => {})
+            window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] = jest.fn()
+            window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'].mockReturnValueOnce(() => {})
         })
 
         it('should enable dev tools when running in development mode', () => {
@@ -72,8 +72,8 @@ describe('src/app/js/store/bootstrap.spec.js', () => {
         })
 
         it('should invoke given actionDispatchers', () => {
-            const actionDispatcher1 = jasmine.createSpy('actionDispatcher1')
-            const actionDispatcher2 = jasmine.createSpy('actionDispatcher2')
+            const actionDispatcher1 = jest.fn()
+            const actionDispatcher2 = jest.fn()
             createApplicationStore(OTHER, [actionDispatcher1, actionDispatcher2])
 
             expect(actionDispatcher1).toHaveBeenCalled()

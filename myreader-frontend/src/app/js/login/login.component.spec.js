@@ -1,4 +1,4 @@
-import {mockNgRedux} from 'shared/test-utils'
+import {mockNgRedux} from '../shared/test-utils'
 
 describe('src/app/js/login/login.component.spec.js', () => {
 
@@ -40,46 +40,50 @@ describe('src/app/js/login/login.component.spec.js', () => {
         let scope, element
 
         beforeEach(inject(($rootScope, $compile) => {
-            jasmine.clock().uninstall()
+            jest.useRealTimers()
 
             scope = $rootScope.$new(true)
 
-            element = $compile('<my-login></my-login>')(scope)
+            element = $compile('<my-login></my-login>')(scope)[0]
 
-            angular.element(element.find('input')[0]).val('email').triggerHandler('input')
-            angular.element(element.find('input')[1]).val('password').triggerHandler('input')
+            element.querySelectorAll('input')[0].value = 'email'
+            element.querySelectorAll('input')[0].dispatchEvent(new Event('input'))
+
+            element.querySelectorAll('input')[1].value = 'password'
+            element.querySelectorAll('input')[1].dispatchEvent(new Event('input'))
+
             scope.$digest()
         }))
 
         it('should post credentials', () => {
-            element.find('button')[0].click()
+            element.querySelector('button').click()
 
             expect(ngReduxMock.getActionTypes()).toEqual(['POST_LOGIN'])
             expect(ngReduxMock.getActions()[0].body.toString()).toEqual('username=email&password=password')
         })
 
         it('should indicate wrong credentials on page', done => {
-            ngReduxMock.dispatch.and.returnValue(Promise.reject(null))
-            element.find('button')[0].click()
+            ngReduxMock.dispatch.mockRejectedValueOnce()
+            element.querySelector('button').click()
 
             setTimeout(() => {
                 scope.$digest()
-                expect(element.find('span')[0].innerText).toEqual('Username or password wrong')
+                expect(element.querySelector('span').textContent).toEqual('Username or password wrong')
                 done()
-            }, 0)
+            })
         })
 
         it('should disable elements on page while post request is pending', done => {
-            ngReduxMock.dispatch.and.returnValue(new Promise(() => {}))
-            element.find('button')[0].click()
+            ngReduxMock.dispatch.mockReturnValueOnce(new Promise(() => {}))
+            element.querySelector('button').click()
 
             setTimeout(() => {
                 scope.$digest()
-                expect(element.find('button')[0].disabled).toBe(true)
-                expect(element.find('input')[0].disabled).toBe(true)
-                expect(element.find('input')[1].disabled).toBe(true)
+                expect(element.querySelector('button').disabled).toBe(true)
+                expect(element.querySelectorAll('input')[0].disabled).toBe(true)
+                expect(element.querySelectorAll('input')[1].disabled).toBe(true)
                 done()
-            }, 0)
+            })
         })
     })
 })

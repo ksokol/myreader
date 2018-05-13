@@ -1,5 +1,5 @@
 import template from './about.component.html'
-import {applicationInfoSelector} from 'store'
+import {applicationInfoSelector} from '../../store'
 
 class controller {
 

@@ -1,4 +1,4 @@
-import {isObject, isString} from 'shared/utils'
+import {isObject, isString} from '../../../shared/utils'
 
 export function createGuardMiddleware() {
     return () => next => action => {

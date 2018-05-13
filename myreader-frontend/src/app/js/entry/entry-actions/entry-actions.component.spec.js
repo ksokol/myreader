@@ -25,8 +25,8 @@ describe('src/app/js/entry/entry-actions/entry-actions.component.spec.js', () =>
     beforeEach(angular.mock.module('myreader'))
 
     beforeEach(inject(function ($rootScope, $compile) {
-        const myOnMore = jasmine.createSpy('myOnMore')
-        const myOnCheck = jasmine.createSpy('myOnCheck')
+        const myOnMore = jest.fn()
+        const myOnCheck = jest.fn()
         scope = $rootScope.$new(true)
         scope.myOnMore = myOnMore
         scope.myOnCheck = myOnCheck

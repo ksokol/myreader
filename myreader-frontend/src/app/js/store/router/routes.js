@@ -1,4 +1,4 @@
-import {FEEDS, SUBSCRIPTION_ENTRIES} from 'constants'
+import {FEEDS, SUBSCRIPTION_ENTRIES} from '../../constants'
 import {
     clearSubscriptionEditForm,
     entryClear,
@@ -15,7 +15,7 @@ import {
     fetchSubscriptionTags,
     loadSubscriptionIntoEditForm,
     subscriptionTagsLoaded
-} from 'store'
+} from '../../store'
 
 export const routeConfiguration = {
     app: {

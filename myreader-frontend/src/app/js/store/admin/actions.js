@@ -1,9 +1,9 @@
-import * as types from 'store/action-types'
-import {FEEDS, INFO, PROCESSING} from 'constants'
-import {routeChange, showErrorNotification, showSuccessNotification} from 'store'
+import * as types from '../../store/action-types'
+import {FEEDS, INFO, PROCESSING} from '../../constants'
+import {routeChange, showErrorNotification, showSuccessNotification} from '../../store'
 import {toApplicationInfo} from './application-info'
 import {toFeed, toFeedFetchFailures, toFeeds} from './feed'
-import {toUrlString} from 'store/shared/links'
+import {toUrlString} from '../../store/shared/links'
 
 export const rebuildSearchIndex = () => {
     return {

@@ -1,5 +1,5 @@
-import * as types from 'store/action-types'
-import {initialApplicationState} from 'store'
+import * as types from '../../store/action-types'
+import {initialApplicationState} from '../../store'
 
 function applicationInfoReceived({state, action}) {
     return {...state, applicationInfo: action.applicationInfo}

@@ -1,7 +1,7 @@
-import * as types from 'store/action-types'
+import * as types from '../../store/action-types'
 import {getLastSecurityState, setLastSecurityState} from './security'
-import {LOGIN, LOGOUT} from 'constants'
-import {routeChange} from 'store'
+import {LOGIN, LOGOUT} from '../../constants'
+import {routeChange} from '../../store'
 
 export const updateSecurity = () => {
     const {authorized, role} = getLastSecurityState()

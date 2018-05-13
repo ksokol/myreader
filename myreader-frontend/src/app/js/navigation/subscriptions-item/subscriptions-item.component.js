@@ -1,6 +1,6 @@
 import template from './subscriptions-item.component.html'
 import './subscriptions-item.component.css'
-import {filteredByUnseenSubscriptionsSelector} from 'store'
+import {filteredByUnseenSubscriptionsSelector} from '../../store'
 import {navigationBuilder} from './navigation-builder'
 
 class controller {

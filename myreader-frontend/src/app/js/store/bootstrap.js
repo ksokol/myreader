@@ -12,7 +12,7 @@ import {subscriptionReducers} from './subscription'
 import {routerReducers} from './router'
 import {settings} from './settings/settings'
 import {getLastSecurityState} from './security/security'
-import {isInDevMode, isInProdMode} from 'constants'
+import {isInDevMode, isInProdMode} from '../constants'
 
 function devToolsExtensionCompose() {
     return window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']

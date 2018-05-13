@@ -6,7 +6,7 @@ import {
     subscriptionExclusionPatternsSelector,
     subscriptionTagsLoaded,
     subscriptionTagsSelector
-} from 'store'
+} from '../../store'
 import settingsInitialState from '../settings'
 import routerInitialState from '../router'
 

@@ -1,4 +1,4 @@
-import {mockNgRedux} from 'shared/test-utils'
+import {mockNgRedux} from '../../shared/test-utils'
 
 describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.component.spec.js', () => {
 
@@ -7,16 +7,16 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
     const ExclusionPageObject = (el, parent) => {
 
         const _pendingRemove = () => {
-            angular.element(el).find('button')[0].click()
+            el.querySelectorAll('button')[0].click()
             scope.$digest()
         }
 
         return {
-            text: () => angular.element(el).find('strong')[0].innerText,
-            hitCount: () => angular.element(el).find('em')[0].innerText,
-            removeButton: () => angular.element(el).find('button')[0],
+            text: () => el.querySelectorAll('strong')[0].textContent,
+            hitCount: () => el.querySelectorAll('em')[0].textContent,
+            removeButton: () => el.querySelectorAll('button')[0],
             pendingRemove: function() {
-                ngReduxMock.dispatch.and.returnValue(new Promise(()  => {}))
+                ngReduxMock.dispatch.mockReturnValueOnce(new Promise(() => {}))
                 scope.$digest()
                 _pendingRemove()
                 return {
@@ -24,11 +24,11 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
                         setTimeout(() => {
                             scope.$digest()
                             callback(parent)
-                        }, 0)
+                        })
                 }
             },
             successfulRemove: function () {
-                ngReduxMock.dispatch.and.returnValue(Promise.resolve())
+                ngReduxMock.dispatch.mockResolvedValueOnce()
                 scope.$digest()
                 _pendingRemove()
                 return {
@@ -36,11 +36,11 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
                         setTimeout(() => {
                             scope.$digest()
                             callback(parent)
-                        }, 0)
+                        })
                 }
             },
             failedRemove: function (value) {
-                ngReduxMock.dispatch.and.returnValue(Promise.reject(value))
+                ngReduxMock.dispatch.mockRejectedValueOnce(value)
                 scope.$digest()
                 _pendingRemove()
                 return {
@@ -48,7 +48,7 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
                         setTimeout(() => {
                             scope.$digest()
                             callback(parent)
-                        }, 0)
+                        })
                 }
             }
         }
@@ -57,8 +57,10 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
     const PageObject = el => {
 
         const _input = value => {
-            el.find('input').val(value).triggerHandler('input')
-            el.find('input').triggerHandler({type: 'keyup', keyCode: 13})
+            const input = el.querySelector('input')
+            input.value = value
+            input.dispatchEvent(new Event('input'))
+            input.dispatchEvent(new KeyboardEvent('keyup', {keyCode: 13}))
             scope.$digest()
         }
 
@@ -67,7 +69,7 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
                 return el.find('my-chips')
             },
             exclusions: function () {
-                const exclusionElements = el.find('my-chip')
+                const exclusionElements = el.querySelectorAll('my-chip')
                 const exclusions = []
                 for(let i=0; i < exclusionElements.length; i++) {
                     exclusions.push(new ExclusionPageObject(exclusionElements[i], this))
@@ -75,26 +77,27 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
                 return exclusions
             },
             inputPlaceholderText: function () {
-                return el.find('input').attr('placeholder')
+                return el.querySelector('input').attributes['placeholder'].value
             },
             removeExclusionAtPosition: function (index) {
-                angular.element(el.find('my-chip')[index]).find('button')[0].click()
+                el.querySelectorAll('my-chip')[index].querySelectorAll('button')[0].click()
                 return this
             },
             pendingInput: function (value) {
-                ngReduxMock.dispatch.and.returnValue(new Promise(() => {}))
+                ngReduxMock.dispatch.mockReturnValueOnce(new Promise(() => {}))
                 scope.$digest()
                 _input(value)
+                scope.$digest()
                 return {
                     whenStable: callback =>
                         setTimeout(() => {
                             scope.$digest()
                             callback(this)
-                        }, 0)
+                        })
                 }
             },
             successfulSave: function (value) {
-                ngReduxMock.dispatch.and.returnValue(Promise.resolve(value))
+                ngReduxMock.dispatch.mockResolvedValueOnce(value)
                 scope.$digest()
                 _input(value)
                 return {
@@ -102,11 +105,11 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
                         setTimeout(() => {
                             scope.$digest()
                             callback(this)
-                        }, 0)
+                        })
                 }
             },
             failedSave: function (value) {
-                ngReduxMock.dispatch.and.returnValue(Promise.reject(value))
+                ngReduxMock.dispatch.mockRejectedValueOnce(value)
                 scope.$digest()
                 _input(value)
                 return {
@@ -114,7 +117,7 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
                         setTimeout(() => {
                             scope.$digest()
                             callback(this)
-                        }, 0)
+                        })
                 }
             }
         }
@@ -123,11 +126,8 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
     beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
-        jasmine.clock().uninstall()
-
+        jest.useRealTimers()
         ngReduxMock = $ngRedux
-        ngReduxMock.dispatch = jasmine.createSpy('dispatch()')
-        ngReduxMock.dispatch.and.returnValue(new Promise(() => {}))
 
         exclusions = [
             {uuid: '2', pattern: 'a', hitCount: 11},
@@ -138,14 +138,14 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
 
         scope = $rootScope.$new(true)
         scope.exclusions = exclusions
-        scope.myOnError = myOnError = jasmine.createSpy('myOnError(error)')
+        scope.myOnError = myOnError = jest.fn()
 
         const element = $compile(`<my-subscription-exclusion
                                     my-id="1"
                                     my-disabled="disabled"
                                     my-on-error="myOnError(error)"
                                     my-exclusions="exclusions">
-                                  </my-subscription-exclusion>`)(scope)
+                                  </my-subscription-exclusion>`)(scope)[0]
         scope.$digest()
         page = new PageObject(element)
     }))
@@ -169,6 +169,7 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
     })
 
     it('should indicate pending delete', () => {
+        ngReduxMock.dispatch.mockReturnValueOnce(new Promise(() => {}))
         page.removeExclusionAtPosition(1)
         expect(page.inputPlaceholderText()).toEqual('processing...')
     })
@@ -189,8 +190,8 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
 
     it('should indicate pending remove', done => {
         page.exclusions()[1].pendingRemove().whenStable(page => {
-            expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS'}))
-            expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({url: '/myreader/api/2/exclusions/1/pattern/3'}))
+            expect(ngReduxMock.dispatch).toHaveBeenCalledWith(expect.objectContaining({type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS'}))
+            expect(ngReduxMock.dispatch).toHaveBeenCalledWith(expect.objectContaining({url: '/myreader/api/2/exclusions/1/pattern/3'}))
             expect(page.inputPlaceholderText()).toEqual('processing...')
             done()
         })
@@ -212,6 +213,7 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
     })
 
     it('should indicate pending save', done => {
+        ngReduxMock.dispatch.mockReturnValueOnce(new Promise(() => {}))
         page.pendingInput('expected value').whenStable(page => {
             expect(page.inputPlaceholderText()).toEqual('processing...')
             done()
@@ -228,9 +230,9 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
     it('should add new exclusion when save finished', () => {
         page.successfulSave('expected pattern')
 
-        expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({type: 'POST_SUBSCRIPTION_EXCLUSION_PATTERN'}))
-        expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({url: '/myreader/api/2/exclusions/1/pattern'}))
-        expect(ngReduxMock.dispatch).toHaveBeenCalledWith(jasmine.objectContaining({body: {pattern: 'expected pattern'}}))
+        expect(ngReduxMock.dispatch).toHaveBeenCalledWith(expect.objectContaining({type: 'POST_SUBSCRIPTION_EXCLUSION_PATTERN'}))
+        expect(ngReduxMock.dispatch).toHaveBeenCalledWith(expect.objectContaining({url: '/myreader/api/2/exclusions/1/pattern'}))
+        expect(ngReduxMock.dispatch).toHaveBeenCalledWith(expect.objectContaining({body: {pattern: 'expected pattern'}}))
     })
 
     it('should indicate failing save', done => {

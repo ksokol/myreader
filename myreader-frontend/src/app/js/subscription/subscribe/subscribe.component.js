@@ -1,6 +1,6 @@
 import template from './subscribe.component.html'
 import './subscribe.component.css'
-import {routeChange, saveSubscription} from 'store'
+import {routeChange, saveSubscription} from '../../store'
 
 class controller {
 

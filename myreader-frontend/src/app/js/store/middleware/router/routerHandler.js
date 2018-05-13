@@ -1,4 +1,4 @@
-import {arrayIncludes, toArray} from 'shared/utils'
+import {arrayIncludes, toArray} from '../../../shared/utils'
 
 function traverseAndDispatch({action, dispatch, routerState, getState}) {
     if (action.parent) {

@@ -8,7 +8,7 @@ import {
     entryTagsReceived,
     fetchEntries,
     fetchEntryTags
-} from 'store'
+} from '../../store'
 import {createMockStore} from '../../shared/test-utils'
 
 describe('src/app/js/store/entry/actions.spec.js', () => {

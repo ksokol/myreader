@@ -8,13 +8,13 @@ describe('src/app/js/store/middleware/fetch/exchange-handler.spec.js', () => {
 
     beforeEach(() => {
         store = createMockStore([arrayMiddleware])
-        exchange = jasmine.createSpy('exchange')
-        responseHandler = jasmine.createSpy('responseHandler')
+        exchange = jest.fn()
+        responseHandler = jest.fn()
         exchangeHandler = createExchangeHandler(exchange, responseHandler)
     })
 
-    const resolve = value => exchange.and.returnValue(Promise.resolve(value))
-    const handleResponse = value => responseHandler.and.returnValue(value)
+    const resolve = value => exchange.mockResolvedValueOnce(value)
+    const handleResponse = value => responseHandler.mockReturnValueOnce(value)
 
     it('should call exchange with given action and default headers when not set', done => {
         resolve({})

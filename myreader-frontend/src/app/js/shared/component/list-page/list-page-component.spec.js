@@ -1,4 +1,4 @@
-import {componentMock, mockNgRedux} from 'shared/test-utils'
+import {componentMock, mockNgRedux} from '../../../shared/test-utils'
 
 describe('src/app/js/shared/component/list-page/list-page-component.spec.js', () => {
 

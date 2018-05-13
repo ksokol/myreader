@@ -1,57 +1,51 @@
-describe('src/app/js/shared/component/validation-message/validation-message.component.spec.js', function () {
+describe('src/app/js/shared/component/validation-message/validation-message.component.spec.js', () => {
 
-    beforeEach(require('angular').mock.module('myreader'));
+    let scope, element
 
-    describe('with html', function () {
+    beforeEach(angular.mock.module('myreader'))
 
-        var scope, element;
+    beforeEach(inject(($rootScope, $compile) => {
+        scope = $rootScope.$new(true)
+        scope.control = {$pristine: false}
 
-        beforeEach(inject(function ($rootScope, $compile) {
-            scope = $rootScope.$new();
+        element = $compile('<my-validation-message my-form-control="control"></my-validation-message>')(scope)[0]
+        scope.$digest()
+    }))
 
-            scope.control = {
-                $pristine: false
-            };
+    it('should hide validation messages when no error occurred', () => {
+        const messages = element.querySelectorAll('div > div')
 
-            element = $compile('<my-validation-message my-form-control="control"></my-validation-message>')(scope);
-            scope.$digest();
-        }));
+        expect(messages.length).toEqual(0)
+    })
 
-        it('should hide validation messages when no error occurred', function () {
-            var messages = element.children().find('div');
+    it('should show one validation message', () => {
+        scope.control.$error = {'expected error': true}
+        scope.$digest()
 
-            expect(messages.length).toEqual(0);
-        });
+        const messages = element.querySelectorAll('div > div')
 
-        it('should show one validation message', function () {
-            scope.control.$error = { 'expected error': true };
-            scope.$digest();
+        expect(messages.length).toEqual(1)
+        expect(messages[0].textContent).toEqual('expected error')
+    })
 
-            var messages = element.children().find('div');
+    it('should show multiple validation messages', () => {
+        scope.control.$error = {'expected error1': true, 'expected error2': true}
+        scope.$digest()
 
-            expect(messages.length).toEqual(1);
-            expect(messages[0].innerText).toEqual('expected error');
-        });
+        const messages = element.querySelectorAll('div > div')
 
-        it('should show multiple validation messages', function () {
-            scope.control.$error = { 'expected error1': true, 'expected error2': true };
-            scope.$digest();
+        expect(messages.length).toEqual(2)
+        expect(messages[0].textContent).toEqual('expected error1')
+        expect(messages[1].textContent).toEqual('expected error2')
+    })
 
-            var messages = element.children().find('div');
+    it('should hide validation messages when control is pristine', () => {
+        scope.control.$pristine = true
+        scope.control.$error = {'expected error': true}
+        scope.$digest()
 
-            expect(messages.length).toEqual(2);
-            expect(messages[0].innerText).toEqual('expected error1');
-            expect(messages[1].innerText).toEqual('expected error2');
-        });
+        const messages = element.querySelectorAll('div > div')
 
-        it('should hide validation messages when control is pristine', function () {
-            scope.control.$pristine = true;
-            scope.control.$error = { 'expected error': true };
-            scope.$digest();
-
-            var messages = element.children().find('div');
-
-            expect(messages.length).toEqual(0);
-        });
-    });
-});
+        expect(messages.length).toEqual(0)
+    })
+})

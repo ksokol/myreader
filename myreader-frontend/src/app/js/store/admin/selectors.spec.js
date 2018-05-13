@@ -1,4 +1,4 @@
-import {applicationInfoSelector, feedFetchFailuresSelector, feedSelector, feedsSelector} from 'store'
+import {applicationInfoSelector, feedFetchFailuresSelector, feedSelector, feedsSelector} from '../../store'
 
 describe('src/app/js/store/admin/selectors.spec.js', () => {
 

@@ -53,7 +53,7 @@ describe('src/app/js/shared/component/chips/chips.spec.js', () => {
         beforeEach(inject($compile => {
             scope.values = ['chip1', 'chip2', 'chip3']
             scope.selected = 'chip2'
-            scope.onSelect = jasmine.createSpy('scope.onSelect()')
+            scope.onSelect = jest.fn()
 
             const element = $compile(`<my-chips my-selected="selected"
                                                 my-on-select="onSelect(key)">
@@ -104,7 +104,7 @@ describe('src/app/js/shared/component/chips/chips.spec.js', () => {
 
         beforeEach(inject($compile => {
             scope.values = ['chip1', 'chip2', 'chip3']
-            scope.onRemove = jasmine.createSpy('scope.onRemove()')
+            scope.onRemove = jest.fn()
 
             const element = $compile(`<my-chips my-disabled="disabled"
                                                 my-on-remove="onRemove(key)">
@@ -150,8 +150,8 @@ describe('src/app/js/shared/component/chips/chips.spec.js', () => {
         beforeEach(inject($compile => {
             scope.values = []
             scope.placeholder = 'expected placeholder'
-            scope.onAdd = jasmine.createSpy('scope.onAdd()')
-            scope.onRemove = jasmine.createSpy('scope.onRemove()')
+            scope.onAdd = jest.fn()
+            scope.onRemove = jest.fn()
 
             const element = $compile(`<my-chips my-placeholder="placeholder"
                                                 my-disabled="disabled"

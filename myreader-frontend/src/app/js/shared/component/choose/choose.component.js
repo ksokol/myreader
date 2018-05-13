@@ -1,6 +1,6 @@
 import template from './choose.component.html'
 import './choose.component.css'
-import {isObject} from 'shared/utils'
+import {isObject} from '../../../shared/utils'
 
 class controller {
 

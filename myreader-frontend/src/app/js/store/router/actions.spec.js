@@ -1,5 +1,5 @@
-import {createMockStore} from 'shared/test-utils'
-import {routeChange} from 'store'
+import {createMockStore} from '../../shared/test-utils'
+import {routeChange} from '../../store'
 
 describe('src/app/js/store/router/actions.spec.js', () => {
 

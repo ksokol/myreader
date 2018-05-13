@@ -6,8 +6,8 @@ describe('src/app/js/store/middleware/fetch/fetch-middleware.spec.js', () => {
 
     beforeEach(() => {
         dispatch = 'expected dispatch'
-        next = jasmine.createSpy('next')
-        exchangeHandler = jasmine.createSpy('exchangeHandler')
+        next = jest.fn()
+        exchangeHandler = jest.fn()
     })
 
     const execute = action => createFetchMiddleware(exchangeHandler)({dispatch})(next)(action)
@@ -29,8 +29,8 @@ describe('src/app/js/store/middleware/fetch/fetch-middleware.spec.js', () => {
     it('should only forward actions to exchangeHandler when type starts with an HTTP verb', () => {
         const exchangeWithActionType = type => {
             execute({type})
-            expect(exchangeHandler.calls.allArgs()).toEqual([[{type}, 'expected dispatch']])
-            exchangeHandler.calls.reset()
+            expect(exchangeHandler.mock.calls).toEqual([[{type}, 'expected dispatch']])
+            exchangeHandler.mockClear()
         }
 
         exchangeWithActionType('POST_SOMETHING')

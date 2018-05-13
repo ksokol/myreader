@@ -1,4 +1,4 @@
-import {onKey, tick} from 'shared/test-utils'
+import {onKey, tick} from '../../../shared/test-utils'
 
 const enter = {key: 'Enter', keyCode: 13}
 const down = {key: 'ArrowDown', keyCode: 40}
@@ -15,27 +15,27 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
     beforeEach(() => angular.mock.module('myreader'))
 
     beforeEach(inject(($rootScope, $compile) => {
+        jest.useFakeTimers() // TODO Remove me together with patched setTimeout function in app.module.js.
         compile = $compile
         scope = $rootScope.$new(true)
         parentScope = $rootScope.$new(true)
         scope.parentScope = parentScope
 
-        scope.onKeyPressY = jasmine.createSpy('onKeyPressY')
-        scope.onKeyPressEnter = jasmine.createSpy('onKeyPressEnter')
-        scope.onKeyPressDown = jasmine.createSpy('onKeyPressDown')
-        scope.onKeyPressUp = jasmine.createSpy('onKeyPressUp')
-        scope.onKeyPressEsc = jasmine.createSpy('onKeyPressEsc')
+        scope.onKeyPressY = jest.fn()
+        scope.onKeyPressEnter = jest.fn()
+        scope.onKeyPressDown = jest.fn()
+        scope.onKeyPressUp = jest.fn()
+        scope.onKeyPressEsc = jest.fn()
 
         scope.onKeyPressZ = function() {
             this.called = true
         }
-        spyOn(scope, 'onKeyPressZ')
-        scope.onKeyPressZ.and.callThrough()
+        jest.spyOn(scope, 'onKeyPressZ')
 
         element = $compile(`<my-hotkeys my-bind-to="parentScope" 
                                         my-hotkeys="{'z': onKeyPressZ, 'y': onKeyPressY, 'enter': onKeyPressEnter, 'down': onKeyPressDown, 'up': onKeyPressUp, 'esc': onKeyPressEsc}">
                                         <p>expected transcluded content</p>
-                            </my-hotkeys>`)(scope)
+                            </my-hotkeys>`)(scope)[0]
         scope.$digest()
     }))
 
@@ -44,7 +44,7 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
     })
 
     it('should transclude content', () => {
-        expect(element.find('p')[0].innerText).toEqual('expected transcluded content')
+        expect(element.querySelectorAll('p')[0].textContent).toEqual('expected transcluded content')
     })
 
     it('should call function in myBindTo context', () => {
@@ -119,8 +119,8 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => 
     })
 
     it('should prevent event propagation immediately', () => {
-        const stopPropagation = jasmine.createSpy('stopPropagation()')
-        const preventDefault = jasmine.createSpy('preventDefault()')
+        const stopPropagation = jest.fn()
+        const preventDefault = jest.fn()
         onKey('down', esc, {stopPropagation, preventDefault})
 
         expect(stopPropagation).toHaveBeenCalled()

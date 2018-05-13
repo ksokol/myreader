@@ -1,6 +1,6 @@
 import template from './subscription-item.component.html'
 import './subscription-item.component.css'
-import {routeChange, routeSelector} from 'store'
+import {routeChange, routeSelector} from '../../../store'
 
 class controller {
 

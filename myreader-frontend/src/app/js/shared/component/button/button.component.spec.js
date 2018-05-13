@@ -1,4 +1,4 @@
-import {mockNgRedux} from 'shared/test-utils'
+import {mockNgRedux} from '../../../shared/test-utils'
 
 describe('src/app/js/shared/component/button/button.component.spec.js', () => {
 
@@ -7,16 +7,20 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
     beforeEach(angular.mock.module('myreader', mockNgRedux()))
 
     beforeEach(() => {
-        buttonGroupCtrl = jasmine.createSpyObj('buttonGroupCtrl', ['addButton', 'enableButtons', 'disableButtons'])
+        buttonGroupCtrl = {
+            addButton: jest.fn(),
+            enableButtons: jest.fn(),
+            disableButtons: jest.fn()
+        }
 
-        myOnClick = jasmine.createSpy('myOnClick')
+        myOnClick = jest.fn()
 
         bindings = {
             buttonGroupCtrl: buttonGroupCtrl,
             myButtonType: 'submit',
             myOnClick: myOnClick,
-            myOnSuccess: jasmine.createSpy('myOnSuccess'),
-            myOnError: jasmine.createSpy('myOnError')
+            myOnSuccess: jest.fn(),
+            myOnError: jest.fn()
         }
     })
 
@@ -43,7 +47,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
         it('should enable other buttons in same button group when error occurred', inject(($rootScope, $q) => {
             const deferred = $q.defer()
             deferred.reject('expected error')
-            myOnClick.and.returnValue(deferred.promise)
+            myOnClick.mockReturnValueOnce(deferred.promise)
 
             component.onClick()
             $rootScope.$digest()
@@ -51,8 +55,9 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
             expect(buttonGroupCtrl.enableButtons).toHaveBeenCalled()
         }))
 
-        it('should use provided myButtonType value', () =>
-            expect(component.myButtonType).toBe('submit'))
+        it('should use provided myButtonType value', () => {
+            expect(component.myButtonType).toBe('submit')
+        })
     })
 
     describe('with confirmation', () => {
@@ -78,7 +83,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
 
         it('should enable other buttons in same button group when error occurred', inject(($q, $timeout) => {
             const deferred = $q.defer()
-            myOnClick.and.returnValue(deferred.promise)
+            myOnClick.mockReturnValueOnce(deferred.promise)
 
             component.onClick()
             $timeout.flush(250)
@@ -105,13 +110,13 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
         const withoutConfirmation = false
         const withConfirmation = true
 
-        const Button = button => {
+        const Button = el => {
             return {
-                click: () => button.click(),
-                title: () => button.innerText.trim(),
-                disabled: () => button.disabled,
-                classes: () => button.classList,
-                type: () => button.type
+                click: () => el.click(),
+                title: () => el.textContent.trim(),
+                disabled: () => el.disabled,
+                classes: () => el.classList,
+                type: () => el.type
             }
         }
 
@@ -147,7 +152,7 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
                                                        my-on-success="onSuccessFn(data)"
                                                        my-on-error="onErrorFn(error)">Test
                                             </my-button>
-                                          </my-button-group>`)(scope)
+                                          </my-button-group>`)(scope)[0]
 
                 scope.$digest()
 
@@ -156,9 +161,9 @@ describe('src/app/js/shared/component/button/button.component.spec.js', () => {
                         scope.disableButton = true
                         $rootScope.$digest()
                     },
-                    button: () => new Button(element.find('button')[0]),
-                    confirm: () => new Button(element.find('button')[0]),
-                    cancel: () => new Button(element.find('button')[1]),
+                    button: () => new Button(element.querySelectorAll('button')[0]),
+                    confirm: () => new Button(element.querySelectorAll('button')[0]),
+                    cancel: () => new Button(element.querySelectorAll('button')[1]),
                     onClickSuccess: () => deferred.resolve('onClickSuccess'),
                     onClickError: () => deferred.reject('onClickError'),
                     onClickFn: () => expected.onClickFn,

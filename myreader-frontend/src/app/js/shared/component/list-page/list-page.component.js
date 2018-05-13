@@ -1,6 +1,6 @@
 import template from './list-page.component.html'
 import './list-page.component.css'
-import {routeSelector} from 'store'
+import {routeSelector} from '../../../store'
 
 class controller {
 

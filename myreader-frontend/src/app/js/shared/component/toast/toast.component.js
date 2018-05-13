@@ -1,6 +1,6 @@
 import template from './toast.component.html'
 import './toast.component.css'
-import {getNotifications, removeNotification} from 'store'
+import {getNotifications, removeNotification} from '../../../store'
 
 class controller {
 

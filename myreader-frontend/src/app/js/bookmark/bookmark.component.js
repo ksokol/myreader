@@ -1,6 +1,6 @@
 import template from './bookmark.component.html'
 import './bookmark.component.css'
-import {fetchEntries, getEntryTags, routeChange, routeSelector} from 'store'
+import {fetchEntries, getEntryTags, routeChange, routeSelector} from '../store'
 import {SUBSCRIPTION_ENTRIES} from '../constants'
 
 class controller {

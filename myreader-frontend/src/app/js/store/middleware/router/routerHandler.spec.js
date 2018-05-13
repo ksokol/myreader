@@ -7,8 +7,8 @@ describe('src/app/js/store/middleware/router/routerHandler.spec.js', () => {
     const execute = (givenAction = {}, givenState = {}, getState = () => {}) => routerHandler(routerAdapter)({action: givenAction, dispatch, routerState: givenState, getState})
 
     beforeEach(() => {
-        routerAdapter = jasmine.createSpy('routerAdapter')
-        dispatch = jasmine.createSpy('dispatch')
+        routerAdapter = jest.fn()
+        dispatch = jest.fn()
     })
 
     it('should not dispatch any actions when before and resolve are undefined', () => {
@@ -47,7 +47,7 @@ describe('src/app/js/store/middleware/router/routerHandler.spec.js', () => {
         }
 
         execute(action)
-        expect(dispatch.calls.allArgs()).toEqual([[{a: 'b', c: 'd'}], [{a: 'b', e: 'f'}]])
+        expect(dispatch.mock.calls).toEqual([[{a: 'b', c: 'd'}], [{a: 'b', e: 'f'}]])
     })
 
     it('should dispatch one before action object', () => {
@@ -76,7 +76,7 @@ describe('src/app/js/store/middleware/router/routerHandler.spec.js', () => {
         }
 
         execute(action, {currentRoute: ['r2']})
-        expect(dispatch.calls.allArgs()).toEqual([[{a: 'b'}], [{c: 'd'}]])
+        expect(dispatch.mock.calls).toEqual([[{a: 'b'}], [{c: 'd'}]])
     })
 
     it('should not dispatch before action when current route equals new route', () => {
@@ -166,7 +166,7 @@ describe('src/app/js/store/middleware/router/routerHandler.spec.js', () => {
         }
 
         execute(action, {currentRoute: ['r']})
-        expect(dispatch.calls.allArgs()).toEqual([['expected1'], ['expected2'], ['expected3']])
+        expect(dispatch.mock.calls).toEqual([['expected1'], ['expected2'], ['expected3']])
     })
 
     it('should dispatch before action of all parent routes', () => {
@@ -184,7 +184,7 @@ describe('src/app/js/store/middleware/router/routerHandler.spec.js', () => {
         }
 
         execute(action, {currentRoute: ['r']})
-        expect(dispatch.calls.allArgs()).toEqual([['expected1'], ['expected2'], ['expected3']])
+        expect(dispatch.mock.calls).toEqual([['expected1'], ['expected2'], ['expected3']])
     })
 
     it('should pass getState to resolve action', () => {
