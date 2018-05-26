@@ -1,6 +1,8 @@
+import React from 'react'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import {initialApplicationState} from '../store'
+import ShallowRenderer from 'react-test-renderer/shallow'
 
 /*
  * https://velesin.io/2016/08/23/unit-testing-angular-1-5-components/
@@ -22,6 +24,16 @@ export function componentMock(name) {
     }
 
     return _componentMock
+}
+
+export function reactComponent(name) {
+    function _reactComponentMock($provide) {
+        $provide.value(name, props => {
+            _reactComponentMock.bindings = {...props}
+            return ''
+        })
+    }
+    return _reactComponentMock
 }
 
 export function multipleComponentMock(name) {
@@ -122,4 +134,10 @@ export function onKey(type, event, funcs = {}) {
 
 export function tick(millis = 0) {
     jest.advanceTimersByTime(millis)
+}
+
+export function shallow(component) {
+    const renderer = new ShallowRenderer()
+    renderer.render(component)
+    return renderer.getRenderOutput()
 }

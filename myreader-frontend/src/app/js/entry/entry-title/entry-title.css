@@ -1,17 +1,15 @@
 .my-entry-title__title {
+    color: rgba(0,0,0,0.87);
+    display: block;
     font-size: 16px;
     font-weight: 400;
     letter-spacing: .01em;
     margin: 0 0 6px;
-}
-
-.my-entry-title__title > a {
-    color: rgba(0,0,0,0.87);
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
 }
 
-.my-entry-title__title > a:active {
+.my-entry-title__title:active {
     background-color: transparent;
 }
 

@@ -6,7 +6,7 @@ import {installMediaBreakpointActionDispatcher} from './store/common/media-break
 import {EntryActionsComponent} from './entry/entry-actions/entry-actions.component'
 import {EntryContentComponent} from './entry/entry-content/entry-content.component'
 import {EntryTagsComponent} from './entry/entry-tags/entry-tags.component'
-import {EntryTitleComponent} from './entry/entry-title/entry-title.component'
+import {EntryTitle} from './entry/entry-title/entry-title'
 import {EntryComponent} from './entry/entry.component'
 import {TimeagoFilter} from "./shared/timeago/timeago.filter"
 import {FeedFetchErrorComponent} from "./feed/feed-fetch-error/feed-fetch-error.component"
@@ -64,12 +64,13 @@ angular
         ngRedux,
         'common.config',
         'ngSanitize',
-        'ui.router'
+        'ui.router',
+        'react'
     ])
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryContent', EntryContentComponent)
     .component('myEntryTags', EntryTagsComponent)
-    .component('myEntryTitle', EntryTitleComponent)
+    .value('EntryTitle', EntryTitle)
     .component('myEntry', EntryComponent)
     .component('myFeedFetchError', FeedFetchErrorComponent)
     .component('myValidationMessage', ValidationMessageComponent)
