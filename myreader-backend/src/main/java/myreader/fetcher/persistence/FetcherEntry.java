@@ -1,7 +1,7 @@
 package myreader.fetcher.persistence;
 
 import myreader.fetcher.sanitizer.EntryLinkSanitizer;
-import myreader.fetcher.sanitizer.StringDecoder;
+import myreader.fetcher.sanitizer.HtmlSanitizer;
 
 /**
  * @author Kamill Sokol
@@ -19,7 +19,7 @@ public class FetcherEntry {
 
     public String getTitle() {
         if(titleSanitized == null) {
-            titleSanitized = StringDecoder.escapeSimpleHtml(title);
+            titleSanitized = HtmlSanitizer.sanitizeTitle(title);
         }
         return titleSanitized;
     }
@@ -53,7 +53,7 @@ public class FetcherEntry {
 
     public String getContent() {
         if(contentSanitized == null) {
-            contentSanitized = StringDecoder.escapeHtmlContent(content, getUrl());
+            contentSanitized = HtmlSanitizer.sanitizeContent(content);
         }
         return contentSanitized;
     }

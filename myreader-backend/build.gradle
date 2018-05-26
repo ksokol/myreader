@@ -49,6 +49,7 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'com.google.guava', name: 'guava', version: '21.0'
+    compile group: 'com.googlecode.owasp-java-html-sanitizer', name: 'owasp-java-html-sanitizer', version: '20180219.1'
 
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
     testCompile group: 'org.springframework.security', name: 'spring-security-test'

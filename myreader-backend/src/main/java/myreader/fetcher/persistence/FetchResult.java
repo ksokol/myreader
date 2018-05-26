@@ -1,7 +1,10 @@
 package myreader.fetcher.persistence;
 
-import java.util.Collections;
+import myreader.fetcher.sanitizer.HtmlSanitizer;
+
 import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 /**
  * @author Kamill Sokol
@@ -15,8 +18,7 @@ public class FetchResult {
     private int resultSizePerFetch;
 
     public FetchResult(String url) {
-        this(Collections.<FetcherEntry>emptyList(), null, null);
-        setUrl(url);
+        this(emptyList(), null, null, url, 0);
     }
 
     @Deprecated
@@ -27,7 +29,7 @@ public class FetchResult {
     public FetchResult(List<FetcherEntry> entries, String lastModified, String title, String url, int resultSizePerFetch) {
         this.entries = entries;
         this.lastModified = lastModified;
-        this.title = title;
+        this.title = HtmlSanitizer.sanitizeTitle(title);
         this.url = url;
         this.resultSizePerFetch = resultSizePerFetch;
     }
@@ -48,6 +50,7 @@ public class FetchResult {
         return url;
     }
 
+    @Deprecated
     public void setUrl(final String url) {
         this.url = url;
     }

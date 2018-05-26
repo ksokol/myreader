@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -25,6 +24,7 @@ import java.util.List;
 
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
@@ -67,12 +67,12 @@ public class FeedParserTest {
     private MockRestServiceServer mockServer;
 
     @Before
-    public void beforeTest() throws Exception {
+    public void beforeTest() {
         mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
     }
 
     @Test
-    public void testFeed1() throws Exception {
+    public void testFeed1() {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed1.xml"), TEXT_XML));
 
@@ -82,7 +82,7 @@ public class FeedParserTest {
     }
 
     @Test
-    public void testFeed2() throws Exception {
+    public void testFeed2() {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
 
@@ -94,7 +94,7 @@ public class FeedParserTest {
     }
 
     @Test
-    public void testFeed3() throws Exception {
+    public void testFeed3() {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed3.xml"), TEXT_XML));
 
@@ -106,18 +106,18 @@ public class FeedParserTest {
     }
 
     @Test
-    public void testFeed4() throws Exception {
+    public void testFeed4() {
         mockServer.expect(requestTo("https://github.com/ksokol.private.atom")).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed4.xml"), TEXT_XML));
 
         FetchResult result = parser.parse("https://github.com/ksokol.private.atom");
         assertThat(result.getEntries(), hasItems(
-                hasProperty("content", startsWith("<!-- issue_comment -->"))
+                hasProperty("content", containsString(" Have a look through "))
         ));
     }
 
     @Test
-    public void testFeed5() throws Exception {
+    public void testFeed5() {
         mockServer.expect(requestTo("http://neusprech.org/feed/")).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed5.xml"), TEXT_XML));
 
@@ -128,7 +128,7 @@ public class FeedParserTest {
     }
 
     @Test
-    public void testFeed7() throws Exception {
+    public void testFeed7() {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
 
@@ -139,7 +139,7 @@ public class FeedParserTest {
     }
 
     @Test
-    public void testFeed8() throws Exception {
+    public void testFeed8() {
         mockServer.expect(requestTo("irrelevant")).andExpect(method(GET))
                 .andExpect(header("If-Modified-Since", is("lastModified")))
                 .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
@@ -149,7 +149,7 @@ public class FeedParserTest {
     }
 
     @Test
-    public void testFeed9() throws Exception {
+    public void testFeed9() {
         mockServer.expect(requestTo("irrelevant")).andExpect(method(GET))
                 .andExpect(header("User-Agent", startsWith("Mozilla")))
                 .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
@@ -158,7 +158,7 @@ public class FeedParserTest {
     }
 
     @Test
-    public void testInvalidCharacter() throws Exception {
+    public void testInvalidCharacter() {
         // test [^\u0020-\uD7FF]+
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_XML));
@@ -192,7 +192,7 @@ public class FeedParserTest {
     }
 
     @Test
-    public void shouldExtractFromResponseWithTextHtmlContentType() throws Exception {
+    public void shouldExtractFromResponseWithTextHtmlContentType() {
         String url = "https://example.com/path-without-extension";
 
         mockServer.expect(requestTo(url)).andExpect(method(GET))
