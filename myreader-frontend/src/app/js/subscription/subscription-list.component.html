@@ -4,7 +4,7 @@
         <div class="subscription-list__item"
              ng-click="$ctrl.navigateTo(subscription)"
              ng-repeat="subscription in $ctrl.subscriptions | filter: $ctrl.router.query.q">
-            <h3 ng-bind-html="subscription.title"></h3>
+            <h3>{{subscription.title}}</h3>
             <span>{{::subscription.createdAt | timeago}}</span>
         </div>
     </my-list-panel>

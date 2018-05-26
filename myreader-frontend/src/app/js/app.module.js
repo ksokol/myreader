@@ -8,7 +8,6 @@ import {EntryContentComponent} from './entry/entry-content/entry-content.compone
 import {EntryTagsComponent} from './entry/entry-tags/entry-tags.component'
 import {EntryTitleComponent} from './entry/entry-title/entry-title.component'
 import {EntryComponent} from './entry/entry.component'
-import {EntryContentSanitizerDirective} from "./entry/entry-content/entry-content-sanitizer/entry-content-sanitizer.directive"
 import {TimeagoFilter} from "./shared/timeago/timeago.filter"
 import {FeedFetchErrorComponent} from "./feed/feed-fetch-error/feed-fetch-error.component"
 import {LoadMoreComponent} from "./shared/component/load-more/load-more.component"
@@ -113,7 +112,6 @@ angular
     .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)
     .component('myIconButton', IconButton)
 
-    .directive('myEntryContentSanitizer', EntryContentSanitizerDirective)
     .directive('myBackendValidation', BackendValidationDirective)
     .directive('myClickIfInView', ClickIfInViewDirective)
 

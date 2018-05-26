@@ -4,7 +4,7 @@
         <div class="feed-list__item"
              ng-click="$ctrl.open(feed)"
              ng-repeat="feed in $ctrl.feeds | filter: $ctrl.router.query.q">
-            <h3 ng-bind-html="feed.title"></h3>
+            <h3>{{feed.title}}</h3>
             <span>
                 <my-icon my-type="error" ng-if="feed.hasErrors"></my-icon>
                 {{::feed.createdAt | timeago}}

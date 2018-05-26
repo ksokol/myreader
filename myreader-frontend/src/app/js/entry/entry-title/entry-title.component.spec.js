@@ -27,17 +27,9 @@ describe('src/app/js/entry/entry-title/entry-title.component.spec.js', () => {
         expect(element[0].querySelector('h3').textContent.trim()).toEqual('entry title')
     })
 
-    it('should render feed title', () => {
-        expect(element[0].querySelector('h4 > span').textContent).toEqual(item.feedTitle)
+    it('should render subtitle', () => {
+        expect(element[0].querySelector('h4').textContent).toEqual('timeago("creation date") on ' + item.feedTitle)
     })
-
-    it('should render html encoded feed title', inject($compile => {
-        item.feedTitle = '&quotfeed title&quot'
-        element = $compile('<my-entry-title my-item="item"></my-entry-title>')(scope)
-        scope.$digest()
-
-        expect(element[0].querySelector('h4 > span').textContent).toEqual('"feed title"')
-    }))
 
     it('should open entry url safely', () => {
         const title = element[0].querySelector('a')
@@ -45,9 +37,5 @@ describe('src/app/js/entry/entry-title/entry-title.component.spec.js', () => {
         expect(title.attributes['ng-href'].value).toEqual('entry url')
         expect(title.attributes['target'].value).toEqual('_blank')
         expect(title.attributes['rel'].value).toEqual('noopener noreferrer')
-    })
-
-    it('should render creation date with timeago filter before feed title', () => {
-        expect(element[0].querySelector('h4').textContent).toEqual('timeago("creation date") on feed title')
     })
 })

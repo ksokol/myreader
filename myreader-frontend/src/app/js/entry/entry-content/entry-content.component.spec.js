@@ -139,11 +139,5 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
 
             expect(element[0].querySelectorAll('div')[0]).toBeUndefined()
         })
-
-        it('should contain myEntryContentSanitizer directive', () => {
-            element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)
-            scope.$digest()
-            expect(element.children()[0].hasAttribute('my-entry-content-sanitizer')).toEqual(true)
-        })
     })
 })
