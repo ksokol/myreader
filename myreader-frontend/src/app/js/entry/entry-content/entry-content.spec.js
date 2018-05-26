@@ -10,6 +10,6 @@ describe('src/app/js/entry/entry-content/entry-content.spec.js', () => {
 
     it('should set content as innerHTML', () => {
         expect(shallow(<EntryContent {...item} />))
-            .toEqual(<div dangerouslySetInnerHTML={{__html: 'expected content'}}></div>)
+            .toEqual(<div className="my-entry-content" dangerouslySetInnerHTML={{__html: 'expected content'}}></div>)
     })
 })
