@@ -56,6 +56,7 @@ import {
     AutocompleteSuggestionsItemTextComponent
 } from './shared/component/autocomplete-input'
 import {IconButton} from './shared/component/buttons'
+import {EntryContent} from './entry/entry-content/entry-content'
 
 import './config'
 
@@ -63,7 +64,6 @@ angular
     .module('myreader', [
         ngRedux,
         'common.config',
-        'ngSanitize',
         'ui.router',
         'react'
     ])
@@ -71,6 +71,7 @@ angular
     .component('myEntryContent', EntryContentComponent)
     .component('myEntryTags', EntryTagsComponent)
     .value('EntryTitle', EntryTitle)
+    .value('EntryContent', EntryContent)
     .component('myEntry', EntryComponent)
     .component('myFeedFetchError', FeedFetchErrorComponent)
     .component('myValidationMessage', ValidationMessageComponent)

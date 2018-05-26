@@ -1,4 +1,4 @@
 <div class="my-entry-content"
-     ng-if="$ctrl.showEntryContent()"
-     ng-bind-html="$ctrl.item.content">
+     ng-if="$ctrl.showEntryContent()">
+    <react-component name="EntryContent" props="$ctrl.item"></react-component>
 </div>

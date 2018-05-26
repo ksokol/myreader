@@ -1,4 +1,4 @@
-import {mockNgRedux} from '../../shared/test-utils'
+import {mockNgRedux, reactComponent} from '../../shared/test-utils'
 
 describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () => {
 
@@ -103,9 +103,12 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
 
     describe('with html', () => {
 
-        let compile, scope, element
+        let compile, scope, element, entryContent
 
-        beforeEach(angular.mock.module('myreader', mockNgRedux()))
+        beforeEach(() => {
+            entryContent = reactComponent('EntryContent')
+            angular.mock.module('myreader', entryContent, mockNgRedux())
+        })
 
         beforeEach(inject(($rootScope, $compile) => {
             compile = $compile
@@ -118,18 +121,10 @@ describe('src/app/js/entry/entry-content/entry-content.component.spec.js', () =>
         }))
 
         it('should render entry content', () => {
-            element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)[0]
+            compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)[0]
             scope.$digest()
 
-            expect(element.querySelectorAll('div')[0].textContent).toEqual('entry content')
-        })
-
-        it('should render html encoded entry content', () => {
-            scope.item.content = '&quotentry content&quot'
-            element = compile('<my-entry-content my-item="item" my-show="show"></my-entry-content>')(scope)[0]
-            scope.$digest()
-
-            expect(element.querySelectorAll('div')[0].textContent).toEqual('"entry content"')
+            expect(entryContent.bindings).toEqual({...scope.item})
         })
 
         it('should not render entry content when myShow is set to false', () => {

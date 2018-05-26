@@ -1,7 +1,5 @@
 import 'angular'
-import 'angular-sanitize'
 import '@uirouter/angularjs'
-import 'angular-sanitize'
 import 'redux'
 import 'redux-thunk'
 import 'reselect'
