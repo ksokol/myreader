@@ -1,6 +1,6 @@
 import template from './entry.component.html'
 import './entry.component.css'
-import {changeEntry} from '../store'
+import {changeEntry, mediaBreakpointIsDesktopSelector, settingsShowEntryDetailsSelector} from '../store'
 
 class controller {
 
@@ -9,8 +9,27 @@ class controller {
         this.$ngRedux = $ngRedux
     }
 
+    $onInit() {
+        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
+    }
+
     $onChanges(changes) {
         this.item = changes.myItem.currentValue
+    }
+
+    $onDestroy() {
+        this.unsubscribe()
+    }
+
+    mapStateToThis(state) {
+        return {
+            showEntryDetails: settingsShowEntryDetailsSelector(state),
+            isDesktop: mediaBreakpointIsDesktopSelector(state)
+        }
+    }
+
+    showEntryContent() {
+        return this.isDesktop ? this.showEntryDetails || this.showMore : this.showMore
     }
 
     updateItem(item) {

@@ -1,6 +1,6 @@
 import React from 'react'
 import {EntryContent} from './entry-content'
-import {shallow} from "../../shared/test-utils";
+import {shallow} from '../../shared/test-utils'
 
 describe('src/app/js/entry/entry-content/entry-content.spec.js', () => {
 

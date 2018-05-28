@@ -4,7 +4,6 @@ import ngRedux from 'ng-redux'
 import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
 import {EntryActionsComponent} from './entry/entry-actions/entry-actions.component'
-import {EntryContentComponent} from './entry/entry-content/entry-content.component'
 import {EntryTagsComponent} from './entry/entry-tags/entry-tags.component'
 import {EntryTitle} from './entry/entry-title/entry-title'
 import {EntryComponent} from './entry/entry.component'
@@ -68,7 +67,6 @@ angular
         'react'
     ])
     .component('myEntryActions', EntryActionsComponent)
-    .component('myEntryContent', EntryContentComponent)
     .component('myEntryTags', EntryTagsComponent)
     .value('EntryTitle', EntryTitle)
     .value('EntryContent', EntryContent)

@@ -12,6 +12,7 @@
                my-on-change="$ctrl.onTagUpdate(tag)">
 </my-entry-tags>
 
-<my-entry-content my-item="$ctrl.item"
-                  my-show="$ctrl.showMore">
-</my-entry-content>
+<react-component ng-if="$ctrl.showEntryContent()"
+                 name="EntryContent"
+                 props="$ctrl.item">
+</react-component>
