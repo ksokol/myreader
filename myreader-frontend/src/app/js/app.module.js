@@ -56,6 +56,7 @@ import {
 } from './shared/component/autocomplete-input'
 import {IconButton} from './shared/component/buttons'
 import {EntryContent} from './entry/entry-content/entry-content'
+import {Icon} from './shared/component/icon/icon'
 
 import './config'
 
@@ -66,10 +67,12 @@ angular
         'ui.router',
         'react'
     ])
-    .component('myEntryActions', EntryActionsComponent)
-    .component('myEntryTags', EntryTagsComponent)
     .value('EntryTitle', EntryTitle)
     .value('EntryContent', EntryContent)
+    .value('Icon', Icon)
+
+    .component('myEntryActions', EntryActionsComponent)
+    .component('myEntryTags', EntryTagsComponent)
     .component('myEntry', EntryComponent)
     .component('myFeedFetchError', FeedFetchErrorComponent)
     .component('myValidationMessage', ValidationMessageComponent)

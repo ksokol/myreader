@@ -1,12 +1,12 @@
-import {componentMock} from '../../../../shared/test-utils'
+import {reactComponent} from '../../../../shared/test-utils'
 
 describe('src/app/js/shared/component/buttons/icon-button/icon-button.component.spec.js', () => {
 
-    let myIcon
+    let icon
 
     beforeEach(() => {
-        myIcon = componentMock('myIcon')
-        angular.mock.module('myreader', myIcon)
+        icon = reactComponent('Icon')
+        angular.mock.module('myreader', icon)
     })
 
     it('should pass binding values to icon component', inject(($rootScope, $compile) => {
@@ -14,7 +14,6 @@ describe('src/app/js/shared/component/buttons/icon-button/icon-button.component.
         $compile(`<my-icon-button my-type="refresh" my-color="white"></my-icon-button>`)(scope)
         scope.$digest()
 
-        expect(myIcon.bindings.myType).toEqual('refresh')
-        expect(myIcon.bindings.myColor).toEqual('white')
+        expect(icon.bindings).toEqual({color: 'white', type: 'refresh'})
     }))
 })

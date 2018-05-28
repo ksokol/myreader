@@ -15,6 +15,9 @@ class controller {
     }
 }
 
+/**
+ * @deprecated
+ */
 export const IconComponent = {
     controller,
     bindings: {

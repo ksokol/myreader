@@ -1,13 +1,13 @@
-import {componentMock, mockNgRedux} from '../../../shared/test-utils'
+import {componentMock, mockNgRedux, reactComponent} from '../../../shared/test-utils'
 
 describe('src/app/js/shared/component/list-page/list-page-component.spec.js', () => {
 
-    let rootScope, scope, element, myIcon, mySearchInput
+    let rootScope, scope, element, icon, mySearchInput
 
     beforeEach(() => {
         mySearchInput = componentMock('mySearchInput')
-        myIcon = componentMock('myIcon')
-        angular.mock.module('myreader', mySearchInput, myIcon, mockNgRedux())
+        icon = reactComponent('Icon')
+        angular.mock.module('myreader', mySearchInput, icon, mockNgRedux())
     })
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
@@ -35,7 +35,7 @@ describe('src/app/js/shared/component/list-page/list-page-component.spec.js', ()
 
     it('should pass properties to child components', () => {
         expect(mySearchInput.bindings.myValue).toEqual('expected q value')
-        expect(myIcon.bindings.myType).toEqual('refresh')
+        expect(icon.bindings).toEqual({color: undefined, type: "refresh"})
     })
 
     it('should set q to expected value when myOnChange event received', done => {

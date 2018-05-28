@@ -4,7 +4,14 @@ describe('src/app/js/entry/entry-actions/entry-actions.component.spec.js', () =>
 
     const Button = el => {
         return {
-            iconType: () => el.find('my-icon').attr('my-type'),
+            iconType: () => {
+                const classNames = []
+                const values = el[0].querySelector('react-component').querySelector('span').classList.values()
+                for(const className of values) {
+                    classNames.push(className)
+                }
+                return classNames
+            },
             click: () => el.triggerHandler('click')
         }
     }
@@ -44,20 +51,20 @@ describe('src/app/js/entry/entry-actions/entry-actions.component.spec.js', () =>
         scope.item.seen = false
         scope.$digest()
 
-        expect(page.expandIcon().iconType()).toEqual('expand-more')
-        expect(page.checkButton().iconType()).toEqual('check')
+        expect(page.expandIcon().iconType()).toContain('my-icon__expand-more')
+        expect(page.checkButton().iconType()).toContain('my-icon__check')
     })
 
     it('should toggle "expand more" action', () => {
         page.expandIcon().click()
-        expect(page.expandIcon().iconType()).toEqual('expand-less')
+        expect(page.expandIcon().iconType()).toContain('my-icon__expand-less')
 
         page.expandIcon().click()
-        expect(page.expandIcon().iconType()).toEqual('expand-more')
+        expect(page.expandIcon().iconType()).toContain('my-icon__expand-more')
     })
 
     it('should show "seen item" action when seen flag is set to true', () => {
-        expect(page.checkButton().iconType()).toEqual('check-circle')
+        expect(page.checkButton().iconType()).toContain('my-icon__check-circle')
     })
 
     it('should propagate "onMore" event when "expand more" action triggered', () => {
