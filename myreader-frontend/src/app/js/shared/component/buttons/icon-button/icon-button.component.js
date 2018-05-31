@@ -11,7 +11,10 @@ class controller {
     }
 }
 
-export const IconButton = {
+/**
+ * @deprecated
+ */
+export const IconButtonComponent = {
     template, controller,
     bindings: {
         myType: '@',

@@ -54,9 +54,10 @@ import {
     AutocompleteSuggestionsComponent,
     AutocompleteSuggestionsItemTextComponent
 } from './shared/component/autocomplete-input'
-import {IconButton} from './shared/component/buttons'
+import {IconButtonComponent} from './shared/component/buttons'
 import {EntryContent} from './entry/entry-content/entry-content'
 import {Icon} from './shared/component/icon/icon'
+import {IconButton} from './shared/component/buttons'
 
 import './config'
 
@@ -70,6 +71,7 @@ angular
     .value('EntryTitle', EntryTitle)
     .value('EntryContent', EntryContent)
     .value('Icon', Icon)
+    .value('IconButton', IconButton)
 
     .component('myEntryActions', EntryActionsComponent)
     .component('myEntryTags', EntryTagsComponent)
@@ -113,7 +115,7 @@ angular
     .component('myAutocompleteInput', AutoCompleteInputComponent)
     .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
     .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)
-    .component('myIconButton', IconButton)
+    .component('myIconButton', IconButtonComponent)
 
     .directive('myBackendValidation', BackendValidationDirective)
     .directive('myClickIfInView', ClickIfInViewDirective)

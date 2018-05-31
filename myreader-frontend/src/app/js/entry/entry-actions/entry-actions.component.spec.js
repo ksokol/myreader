@@ -6,7 +6,7 @@ describe('src/app/js/entry/entry-actions/entry-actions.component.spec.js', () =>
         return {
             iconType: () => {
                 const classNames = []
-                const values = el[0].querySelector('react-component').querySelector('span').classList.values()
+                const values = el[0].querySelector('span').classList.values()
                 for(const className of values) {
                     classNames.push(className)
                 }
@@ -19,11 +19,11 @@ describe('src/app/js/entry/entry-actions/entry-actions.component.spec.js', () =>
     const PageObject = el => {
         return {
             expandIcon: () => {
-                const buttons = el.find('my-icon-button')
+                const buttons = el.find('react-component')
                 return new Button(angular.element(buttons[0]))
             },
             checkButton: () => {
-                const buttons = el.find('my-icon-button')
+                const buttons = el.find('react-component')
                 return new Button(angular.element(buttons[1]))
             }
         }

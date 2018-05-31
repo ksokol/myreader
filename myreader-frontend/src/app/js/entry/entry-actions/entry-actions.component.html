@@ -1,19 +1,27 @@
-<my-icon-button my-type="expand-more"
-                ng-click="$ctrl.toggleMore()"
-                ng-if="!$ctrl.showMore">
-</my-icon-button>
+<react-component
+        name="IconButton"
+        props="{type: 'expand-more'}"
+        ng-click="$ctrl.toggleMore()"
+        ng-if="!$ctrl.showMore">
+</react-component>
 
-<my-icon-button my-type="expand-less"
-                ng-click="$ctrl.toggleMore()"
-                ng-if="$ctrl.showMore">
-</my-icon-button>
+<react-component
+        name="IconButton"
+        props="{type: 'expand-less'}"
+        ng-click="$ctrl.toggleMore()"
+        ng-if="$ctrl.showMore">
+</react-component>
 
-<my-icon-button my-type="check-circle"
-                ng-if="$ctrl.myItem.seen"
-                ng-click="$ctrl.onCheckClick(false)">
-</my-icon-button>
+<react-component
+        name="IconButton"
+        props="{type: 'check-circle'}"
+        ng-click="$ctrl.onCheckClick(false)"
+        ng-if="$ctrl.myItem.seen">
+</react-component>
 
-<my-icon-button my-type="check"
-                ng-if="!$ctrl.myItem.seen"
-                ng-click="$ctrl.onCheckClick(true)">
-</my-icon-button>
+<react-component
+        name="IconButton"
+        props="{type: 'check'}"
+        ng-click="$ctrl.onCheckClick(true)"
+        ng-if="!$ctrl.myItem.seen">
+</react-component>
