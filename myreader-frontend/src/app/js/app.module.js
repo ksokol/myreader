@@ -3,7 +3,6 @@ import ngRedux from 'ng-redux'
 
 import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
-import {EntryActionsComponent} from './entry/entry-actions/entry-actions.component'
 import {EntryTagsComponent} from './entry/entry-tags/entry-tags.component'
 import {EntryTitle} from './entry/entry-title/entry-title'
 import {EntryComponent} from './entry/entry.component'
@@ -58,6 +57,7 @@ import {IconButtonComponent} from './shared/component/buttons'
 import {EntryContent} from './entry/entry-content/entry-content'
 import {Icon} from './shared/component/icon/icon'
 import {IconButton} from './shared/component/buttons'
+import {EntryActions} from './entry/entry-actions/entry-actions'
 
 import './config'
 
@@ -72,8 +72,8 @@ angular
     .value('EntryContent', EntryContent)
     .value('Icon', Icon)
     .value('IconButton', IconButton)
+    .value('EntryActions', EntryActions)
 
-    .component('myEntryActions', EntryActionsComponent)
     .component('myEntryTags', EntryTagsComponent)
     .component('myEntry', EntryComponent)
     .component('myFeedFetchError', FeedFetchErrorComponent)

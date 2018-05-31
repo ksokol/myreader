@@ -36,16 +36,12 @@ class controller {
         this.$ngRedux.dispatch(changeEntry(item))
     }
 
-    toggleMore(showMore) {
-        this.showMore = showMore
+    toggleMore() {
+        this.showMore = !this.showMore
     }
 
-    onCheck(item) {
-        this.updateItem({
-            uuid: this.item.uuid,
-            seen: item.seen,
-            tag: this.item.tag
-        })
+    toggleSeen() {
+        this.updateItem({...this.item, seen: !this.item.seen})
     }
 
     onTagUpdate(tag) {
@@ -54,6 +50,15 @@ class controller {
             seen: this.item.seen,
             tag
         })
+    }
+
+    get props() {
+        return {
+            onToggleShowMore: this.toggleMore.bind(this),
+            onToggleSeen: this.toggleSeen.bind(this),
+            showMore: this.showMore,
+            seen: this.item.seen
+        }
     }
 }
 

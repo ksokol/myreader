@@ -1,10 +1,7 @@
 <div class="my-entry__header">
     <react-component name="EntryTitle" props="$ctrl.item"></react-component>
 
-    <my-entry-actions my-item="$ctrl.item"
-                      my-on-more="$ctrl.toggleMore(showMore)"
-                      my-on-check="$ctrl.onCheck(item)">
-    </my-entry-actions>
+    <react-component name="EntryActions" props="$ctrl.props"></react-component>
 </div>
 
 <my-entry-tags my-item="$ctrl.item"

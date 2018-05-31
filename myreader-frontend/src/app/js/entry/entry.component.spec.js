@@ -6,7 +6,7 @@ describe('src/app/js/entry/entry.component.spec.js', () => {
 
     beforeEach(() => {
         entryTitle = reactComponent('EntryTitle')
-        entryActions = componentMock('myEntryActions')
+        entryActions = reactComponent('EntryActions')
         entryTags = componentMock('myEntryTags')
         entryContent = reactComponent('EntryContent')
         angular.mock.module('myreader', entryTitle, entryActions, entryTags, entryContent, mockNgRedux())
@@ -31,18 +31,18 @@ describe('src/app/js/entry/entry.component.spec.js', () => {
 
     it('should propagate item to child components', () => {
         expect(entryTitle.bindings).toEqual({...item})
-        expect(entryActions.bindings.myItem).toEqual(item)
+        expect(entryActions.bindings).toEqual(expect.objectContaining({seen: item.seen}))
         expect(entryTags.bindings.myItem).toEqual(item)
         expect(entryContent.bindings).toEqual({...item})
     })
 
     it('should show or hide entryTags component based on showMore flag', () => {
-        entryActions.bindings.myOnMore({showMore: true})
+        entryActions.bindings.onToggleShowMore()
         rootScope.$digest()
 
         expect(entryTags.bindings.myShow).toEqual(true)
 
-        entryActions.bindings.myOnMore({showMore: false})
+        entryActions.bindings.onToggleShowMore()
         rootScope.$digest()
 
         expect(entryTags.bindings.myShow).toEqual(false)
@@ -50,19 +50,19 @@ describe('src/app/js/entry/entry.component.spec.js', () => {
 
     it('should show or hide entryContent component based on showMore flag', () => {
         ngReduxMock.setState({common: {mediaBreakpoint: 'phone'}})
-        entryActions.bindings.myOnMore({showMore: true})
+        entryActions.bindings.onToggleShowMore()
         rootScope.$digest()
 
         expect(element.querySelector('react-component[name="EntryContent"]')).not.toBeNull()
 
-        entryActions.bindings.myOnMore({showMore: false})
+        entryActions.bindings.onToggleShowMore()
         rootScope.$digest()
 
         expect(element.querySelector('react-component[name="EntryContent"]')).toBeNull()
     })
 
     it('should update seen flag when entryActions component fired myOnCheck event', () => {
-        entryActions.bindings.myOnCheck({item: {seen: true}})
+        entryActions.bindings.onToggleSeen()
 
         expect(ngReduxMock.getActions()[0]).toContainObject({type: 'PATCH_ENTRY', body: {seen: true, tag: 'tag'}})
     })
@@ -89,6 +89,8 @@ describe('src/app/js/entry/entry.component.spec.js', () => {
         describe('showEntryContent()', () => {
 
             describe('with showMore set to false', function () {
+
+                beforeEach(inject(() => component.toggleMore()))
 
                 it('should return false when showEntryDetails is false and media breakpoint is not of type desktop', () => {
                     ngReduxMock.setState({common: {mediaBreakpoint: 'phone'}, settings: {showEntryDetails: false}})
