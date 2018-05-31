@@ -3,6 +3,7 @@ import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import {initialApplicationState} from '../store'
 import ShallowRenderer from 'react-test-renderer/shallow'
+import TestRenderer from 'react-test-renderer'
 
 /*
  * https://velesin.io/2016/08/23/unit-testing-angular-1-5-components/
@@ -140,4 +141,8 @@ export function shallow(component) {
     const renderer = new ShallowRenderer()
     renderer.render(component)
     return renderer.getRenderOutput()
+}
+
+export function renderer(component) {
+    return TestRenderer.create(component).root
 }

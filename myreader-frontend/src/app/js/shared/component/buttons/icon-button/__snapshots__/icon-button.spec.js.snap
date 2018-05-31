@@ -3,6 +3,7 @@
 exports[`src/app/js/shared/component/buttons/icon-button/icon-button.spec.js should render icon button with close icon and white color 1`] = `
 <button
   className="my-icon-button"
+  onClick={undefined}
   type="button"
 >
   <Icon
