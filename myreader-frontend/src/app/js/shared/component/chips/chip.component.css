@@ -24,3 +24,7 @@ my-chip {
     padding: 0;
     background-color: transparent;
 }
+
+.my-chip__remove-button > .my-icon-button {
+    margin: 0;
+}

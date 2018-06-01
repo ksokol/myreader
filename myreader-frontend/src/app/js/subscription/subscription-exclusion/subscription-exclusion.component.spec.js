@@ -1,4 +1,5 @@
 import {mockNgRedux} from '../../shared/test-utils'
+import ReactTestUtils from 'react-dom/test-utils'
 
 describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.component.spec.js', () => {
 
@@ -7,7 +8,8 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
     const ExclusionPageObject = (el, parent) => {
 
         const _pendingRemove = () => {
-            el.querySelectorAll('button')[0].click()
+            const button = el.querySelectorAll('button')[0]
+            ReactTestUtils.Simulate.click(button)
             scope.$digest()
         }
 
@@ -80,7 +82,8 @@ describe('src/app/js/subscription/subscription-exclusion/subscription-exclusion.
                 return el.querySelector('input').attributes['placeholder'].value
             },
             removeExclusionAtPosition: function (index) {
-                el.querySelectorAll('my-chip')[index].querySelectorAll('button')[0].click()
+                const button = el.querySelectorAll('my-chip')[index].querySelectorAll('button')[0]
+                ReactTestUtils.Simulate.click(button)
                 return this
             },
             pendingInput: function (value) {

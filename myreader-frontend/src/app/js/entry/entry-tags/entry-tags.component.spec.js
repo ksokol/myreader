@@ -1,3 +1,5 @@
+import ReactTestUtils from 'react-dom/test-utils'
+
 describe('src/app/js/entry/entry-tags/entry-tags.component.spec.js', () => {
 
     let myOnChange, scope, element
@@ -36,7 +38,7 @@ describe('src/app/js/entry/entry-tags/entry-tags.component.spec.js', () => {
     })
 
     it('should trigger onChange event when tag has been removed', () => {
-        element.find('my-chip').find('button')[0].click()
+        ReactTestUtils.Simulate.click(element.find('my-chip').find('button')[0])
         expect(myOnChange).toHaveBeenCalledWith('tag2')
     })
 
@@ -68,7 +70,7 @@ describe('src/app/js/entry/entry-tags/entry-tags.component.spec.js', () => {
         scope.item = {tag: 'tag1'}
         scope.$digest()
 
-        element.find('my-chip').find('button')[0].click()
+        ReactTestUtils.Simulate.click(element.find('my-chip').find('button')[0])
         expect(myOnChange).toHaveBeenCalledWith(null)
     })
 })

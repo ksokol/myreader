@@ -1,3 +1,5 @@
+import ReactTestUtils from 'react-dom/test-utils'
+
 class Chip {
 
     constructor(el) {
@@ -121,7 +123,7 @@ describe('src/app/js/shared/component/chips/chips.spec.js', () => {
         })
 
         it('should emit onRemove event when chip has been clicked', () => {
-            chips.chips()[1].removeButton().click()
+            ReactTestUtils.Simulate.click(chips.chips()[1].removeButton())
 
             expect(scope.onRemove).toHaveBeenCalledWith('chip2')
         })

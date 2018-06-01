@@ -16,6 +16,13 @@ class controller {
     onRemove() {
         this.myChips.removeChip(this)
     }
+
+    get props() {
+        return {
+            type: 'close',
+            onClick: this.onRemove.bind(this)
+        }
+    }
 }
 
 export const ChipComponent = {
