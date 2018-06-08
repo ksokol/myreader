@@ -1,11 +1,7 @@
 <my-list-page my-on-search="$ctrl.retrieveEntries(params)"
               my-on-refresh="$ctrl.refresh()">
     <my-list-panel>
-        <my-chips class="bookmark__tags"
-                  my-selected="$ctrl.router.query.entryTagEqual"
-                  my-on-select="$ctrl.onTagSelect(key)">
-            <my-chip ng-repeat="tag in $ctrl.entryTags" my-key="tag">{{::tag}}</my-chip>
-        </my-chips>
+        <react-component class="bookmark__tags" name="Chips" props="$ctrl.props"></react-component>
         <my-entry-list></my-entry-list>
     </my-list-panel>
 </my-list-page>

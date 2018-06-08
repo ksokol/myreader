@@ -32,6 +32,14 @@ class controller {
             retrieveEntries: params => dispatch(routeChange(['app', 'bookmarks'], params))
         }
     }
+
+    get props() {
+        return {
+            values: this.entryTags,
+            selected: this.router.query.entryTagEqual,
+            onSelect: tag => this.onTagSelect(tag)
+        }
+    }
 }
 
 export const BookmarkComponent = {

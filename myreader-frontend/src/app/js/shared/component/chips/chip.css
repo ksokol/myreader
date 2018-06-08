@@ -1,0 +1,21 @@
+.my-chip {
+    border-radius: 16px;
+    display: flex;
+    height: 32px;
+    line-height: 32px;
+    margin: 4px;
+    padding: 0 12px;
+    float: left;
+    background: rgb(224,224,224);
+    user-select: none;
+}
+
+.my-chip--selectable {
+    cursor: pointer;
+}
+
+.my-chip--selected {
+    color: rgb(63, 81, 181);
+    font-weight: bold;
+    cursor: default;
+}

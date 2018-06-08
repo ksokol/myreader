@@ -58,6 +58,7 @@ import {EntryContent} from './entry/entry-content/entry-content'
 import {Icon} from './shared/component/icon/icon'
 import {IconButton} from './shared/component/buttons'
 import {EntryActions} from './entry/entry-actions/entry-actions'
+import {Chips} from './shared/component/chips/chips'
 
 import './config'
 
@@ -73,6 +74,7 @@ angular
     .value('Icon', Icon)
     .value('IconButton', IconButton)
     .value('EntryActions', EntryActions)
+    .value('Chips', Chips)
 
     .component('myEntryTags', EntryTagsComponent)
     .component('myEntry', EntryComponent)

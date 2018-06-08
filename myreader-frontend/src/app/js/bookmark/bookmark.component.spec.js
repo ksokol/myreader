@@ -1,37 +1,18 @@
-import {componentMock, mockNgRedux} from '../shared/test-utils'
-
-class Bookmark {
-
-    constructor(el) {
-        this.el = el
-    }
-
-    chips() {
-        return Object.values(this.el.find('my-chip')).filter(it => angular.element(it).children().length > 0).map(it => {
-            return {
-                selected: angular.element(it).children()[0].classList.contains('my-chip--selected'),
-                click: () => angular.element(it).children()[0].click()
-            }
-        })
-    }
-
-    entryList() {
-        return this.el.find('my-entry-list')[0]
-    }
-}
+import {componentMock, mockNgRedux, reactComponent} from '../shared/test-utils'
 
 describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
 
-    const entryList = componentMock('myEntryList')
-    let rootScope, scope, compile, ngReduxMock, bookmark, element
+    let scope, ngReduxMock, element, entryList, chips
 
     describe('', () => {
 
-        beforeEach(angular.mock.module('myreader', entryList, mockNgRedux()))
+        beforeEach(() => {
+            entryList = componentMock('myEntryList')
+            chips = reactComponent('Chips')
+            angular.mock.module('myreader', entryList, mockNgRedux(), chips)
+        })
 
         beforeEach(inject(($rootScope, $compile, $ngRedux) => {
-            rootScope = $rootScope
-            compile = $compile
             ngReduxMock = $ngRedux
             scope = $rootScope.$new(true)
 
@@ -42,32 +23,36 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
 
             element = $compile('<my-bookmark></my-bookmark>')(scope)
             scope.$digest()
-            bookmark = new Bookmark(element)
         }))
 
-        it('should pass properties to Chip components', () => {
-            expect(bookmark.chips()[1].selected).toEqual(true)
+        it('should pass properties to Chips component', () => {
+            expect(chips.bindings.values).toEqual(['tag1', 'tag2'])
+            expect(chips.bindings.selected).toEqual('tag2')
         })
 
         it('should update url with selected entry tag', () => {
-            bookmark.chips()[0].click()
+            chips.bindings.onSelect('tag1')
 
             expect(ngReduxMock.getActionTypes()).toEqual(['ROUTE_CHANGED'])
             expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['app', 'bookmarks'], query: {entryTagEqual: 'tag1'}})
         })
 
-        it('should contain EntryListComponent', () => expect(bookmark.entryList()).toBeDefined())
+        it('should contain EntryListComponent', () => {
+            expect(element.find('my-entry-list')[0]).toBeDefined()
+        })
     })
 
     describe('', () => {
 
-        const listPage = componentMock('myListPage')
+        let listPage
 
-        beforeEach(angular.mock.module('myreader', entryList, listPage, mockNgRedux()))
+        beforeEach(() => {
+            entryList = componentMock('myEntryList')
+            listPage = componentMock('myListPage')
+            angular.mock.module('myreader', entryList, listPage, mockNgRedux())
+        })
 
         beforeEach(inject(($rootScope, $compile, $ngRedux) => {
-            rootScope = $rootScope
-            compile = $compile
             ngReduxMock = $ngRedux
             scope = $rootScope.$new(true)
 
