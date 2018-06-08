@@ -1,6 +1,7 @@
 import React from 'react'
-import {renderer, shallow} from '../../../test-utils'
+import {shallow} from '../../../test-utils'
 import {IconButton} from './icon-button'
+import TestRenderer from 'react-test-renderer'
 
 describe('src/app/js/shared/component/buttons/icon-button/icon-button.spec.js', () => {
 
@@ -10,7 +11,7 @@ describe('src/app/js/shared/component/buttons/icon-button/icon-button.spec.js', 
 
     it('should trigger onClick function when clicked', () => {
         const onClick = jest.fn()
-        const instance = renderer(<IconButton type="close" onClick={onClick} />)
+        const instance = TestRenderer.create(<IconButton type="close" onClick={onClick} />).root
         instance.findByProps({onClick}).props.onClick()
 
         expect(onClick).toHaveBeenCalled()

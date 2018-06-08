@@ -1,6 +1,7 @@
 import React from 'react'
-import {renderer, shallow} from '../../shared/test-utils'
+import {shallow} from '../../shared/test-utils'
 import {EntryActions} from './entry-actions'
+import TestRenderer from 'react-test-renderer'
 
 describe('src/app/js/entry/entry-actions/entry-actions.spec.js', () => {
 
@@ -25,14 +26,14 @@ describe('src/app/js/entry/entry-actions/entry-actions.spec.js', () => {
     })
 
     it('should trigger onToggleShowMore with expand-more icon button', () => {
-        const instance = renderer(<EntryActions {...props} />)
+        const instance = TestRenderer.create(<EntryActions {...props} />).root
         instance.findByProps({type: 'expand-more'}).props.onClick()
 
         expect(props.onToggleShowMore).toHaveBeenCalled()
     })
 
     it('should trigger onToggleSeen with check-circle icon button', () => {
-        const instance = renderer(<EntryActions {...props} />)
+        const instance = TestRenderer.create(<EntryActions {...props} />).root
         instance.findByProps({type: 'check-circle'}).props.onClick()
 
         expect(props.onToggleSeen).toHaveBeenCalledWith()
@@ -40,7 +41,7 @@ describe('src/app/js/entry/entry-actions/entry-actions.spec.js', () => {
 
     it('should trigger onToggleShowMore with expand-less icon button', () => {
         props.showMore = true
-        const instance = renderer(<EntryActions {...props} />)
+        const instance = TestRenderer.create(<EntryActions {...props} />).root
         instance.findByProps({type: 'expand-less'}).props.onClick()
 
         expect(props.onToggleShowMore).toHaveBeenCalled()
@@ -48,7 +49,7 @@ describe('src/app/js/entry/entry-actions/entry-actions.spec.js', () => {
 
     it('should trigger onToggleSeen with check icon button', () => {
         props.seen = false
-        const instance = renderer(<EntryActions {...props} />)
+        const instance = TestRenderer.create(<EntryActions {...props} />).root
         instance.findByProps({type: 'check'}).props.onClick()
 
         expect(props.onToggleSeen).toHaveBeenCalledWith()
