@@ -7,7 +7,7 @@
     right: 15px;
 }
 
-@media only screen and (max-width: 1280px){
+@media only screen and (max-width: 1280px) {
     .my-notification {
         margin-left: auto;
         margin-right: auto;
@@ -20,7 +20,7 @@
 
 .my-notification__item {
     padding: 12px 20px;
-    color: #ffffff;
+    color: #fff;
     display: inline-block;
     box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.12), 0 10px 36px -4px rgba(160, 160, 160, 0.3);
     background-color: #333;

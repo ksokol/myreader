@@ -10,23 +10,23 @@ my-app {
     grid-template-columns: 320px 1fr;
     grid-template-rows: 64px;
     grid-template-areas:
-            "header main"
-            "nav    main";
+        "header main"
+        "nav    main";
 }
 
 @media (max-width: 1279px) {
     .app {
         grid-template-areas:
-                "header header"
-                "nav    main";
+            "header header"
+            "nav    main";
         grid-template-columns: 0 1fr;
     }
 }
 
 .app__header {
     grid-area: header;
-    background-color: rgb(63,81,181);
-    box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+    background-color: rgb(63, 81, 181);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
     z-index: 20;
     display: flex;
     align-items: center;
@@ -34,7 +34,7 @@ my-app {
 
 .app__nav {
     grid-area: nav;
-    box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
     background-color: white;
     z-index: 30;
     display: flex;

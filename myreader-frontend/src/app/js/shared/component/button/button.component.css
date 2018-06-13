@@ -3,7 +3,7 @@
     min-height: 36px;
     min-width: 88px;
     line-height: 36px;
-    letter-spacing: 0.010em;
+    letter-spacing: 0.01em;
     vertical-align: middle;
     align-items: center;
     text-align: center;
@@ -38,13 +38,13 @@
 }
 
 .my-button.my-primary {
-    color: rgba(255,255,255,0.87);
-    background-color: rgb(63,81,181);
+    color: rgba(255, 255, 255, 0.87);
+    background-color: rgb(63, 81, 181);
 }
 
 .my-button.my-warn {
-    color: rgb(255,255,255);
-    background-color: rgb(255,87,34);
+    color: rgb(255, 255, 255);
+    background-color: rgb(255, 87, 34);
 }
 
 .my-button:not([disabled]) {
@@ -52,5 +52,5 @@
 }
 
 .my-button[disabled] {
-    background-color: rgba(0,0,0,0.12);
+    background-color: rgba(0, 0, 0, 0.12);
 }

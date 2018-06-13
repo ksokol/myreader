@@ -9,7 +9,9 @@
     "test-watch": "export NODE_ENV=test && jest --watch",
     "start": "npm run server",
     "report": "export NODE_ENV=production && webpack --bail --progress --profile && webpack-bundle-analyzer dist/stats.json",
-    "lint": "eslint -c .eslintrc.js src/app/js"
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:js": "eslint -c .eslintrc.js src/app/js",
+    "lint:css": "stylelint \"src/app/js/**/*.css\" && stylelint \"src/app/css/**/*.css\""
   },
   "dependencies": {
     "@uirouter/angularjs": "1.0.14",
@@ -60,6 +62,8 @@
     "redux-mock-store": "1.3.0",
     "snyk": "1.71.0",
     "style-loader": "0.19.0",
+    "stylelint": "9.2.1",
+    "stylelint-config-standard": "18.2.0",
     "svg-url-loader": "2.2.1",
     "webpack": "3.8.1",
     "webpack-bundle-analyzer": "2.9.0",
