@@ -12,11 +12,11 @@
 }
 
 .my-icon--white {
-    background-color: rgba(255,255,255,0.87);
+    background-color: rgba(255, 255, 255, 0.87);
 }
 
 .my-icon--grey {
-    background-color: rgba(0,0,0,0.54);
+    background-color: rgba(0, 0, 0, 0.54);
 }
 
 .my-icon__open-in-new {
@@ -50,7 +50,7 @@
 }
 
 .my-icon__clear {
-    -webkit-mask:  url(~material-design-icons/content/svg/production/ic_clear_24px.svg) no-repeat;
+    -webkit-mask: url(~material-design-icons/content/svg/production/ic_clear_24px.svg) no-repeat;
     mask: url(~material-design-icons/content/svg/production/ic_clear_24px.svg) no-repeat;
 }
 
@@ -75,7 +75,7 @@
 }
 
 .my-icon__navigate-next {
-    -webkit-mask:  url(~material-design-icons/image/svg/production/ic_navigate_next_24px.svg) no-repeat;
+    -webkit-mask: url(~material-design-icons/image/svg/production/ic_navigate_next_24px.svg) no-repeat;
     mask: url(~material-design-icons/image/svg/production/ic_navigate_next_24px.svg) no-repeat;
 }
 

@@ -1,4 +1,5 @@
-.my-navigation, .my-navigation ul {
+.my-navigation,
+.my-navigation ul {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -15,6 +16,7 @@
 .my-navigation > li:nth-child(-n+2) {
     border-top: none;
 }
+
 .my-navigation__item {
     cursor: pointer;
     display: flex;
@@ -27,14 +29,14 @@
     text-decoration: none;
     white-space: normal;
     width: 100%;
-    letter-spacing: 0.010em;
+    letter-spacing: 0.01em;
     margin: 0;
     user-select: none;
     text-transform: uppercase;
 }
 
 .my-navigation__item:hover {
-    background-color: rgba(158,158,158,0.2);
+    background-color: rgba(158, 158, 158, 0.2);
 }
 
 .my-navigation__item > span:first-child {
@@ -52,19 +54,19 @@
 }
 
 .my-navigation__item--blue {
-    background-color: rgb(63,81,181);
-    color: rgb(255,255,255);
+    background-color: rgb(63, 81, 181);
+    color: rgb(255, 255, 255);
 }
 
 .my-navigation__item--blue:hover {
-    background-color: rgba(63,81,181,0.7);
+    background-color: rgba(63, 81, 181, 0.7);
 }
 
 .my-navigation__item--red {
-    background-color: rgb(255,87,34);
-    color: rgb(255,255,255);
+    background-color: rgb(255, 87, 34);
+    color: rgb(255, 255, 255);
 }
 
 .my-navigation__item--red:hover {
-    background-color: rgba(255,87,34,0.7);
+    background-color: rgba(255, 87, 34, 0.7);
 }
