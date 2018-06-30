@@ -1,6 +1,6 @@
 import {arrayIncludes, isBoolean, isDate, isDefined, isObject, isPromiseLike, isString, toArray} from './utils'
 
-describe('src/app/js/shared/spec.js', () => {
+describe('src/app/js/shared/utils.spec.js', () => {
 
     describe('isDefined() should return', () => {
 
