@@ -9,6 +9,18 @@ import {
     subscriptionExclusionPatternsSelector,
     subscriptionTagsSelector
 } from '../store'
+import React from 'react'
+import {Input, withValidations} from '../shared/component/input'
+
+/**
+ * @deprecated
+ */
+export const SubscriptionTitleInput = withValidations(Input)
+
+/**
+ * @deprecated
+ */
+export const SubscriptionUrlInput = Input
 
 class controller {
 
@@ -18,6 +30,7 @@ class controller {
     }
 
     $onInit() {
+        this.validations = []
         this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
     }
 
@@ -43,6 +56,7 @@ class controller {
     }
 
     onSave() {
+        this.validations = []
         this.pendingAction = true
         return this.$ngRedux.dispatch(saveSubscription(this.subscription))
     }
@@ -65,6 +79,26 @@ class controller {
 
     onSuccessDelete() {
         this.$ngRedux.dispatch(routeChange(['app', 'subscriptions']))
+    }
+
+    get titleProps() {
+        return {
+            name: 'title',
+            value: this.subscription.title,
+            label: 'Title',
+            disabled: this.pendingAction,
+            validations: this.validations,
+            onChange: value => this.subscription.title = value
+        }
+    }
+
+    get urlProps() {
+        return {
+            name: 'origin',
+            value: this.subscription.origin,
+            label: 'Url',
+            disabled: true
+        }
     }
 }
 

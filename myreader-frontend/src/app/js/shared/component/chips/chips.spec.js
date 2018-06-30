@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactTestUtils from 'react-dom/test-utils'
-import {shallow} from '../../test-utils'
+import {shallowOutput} from '../../test-utils'
 import {Chips} from './chips'
 
 class ChipPageObject {
@@ -55,7 +55,7 @@ describe('src/app/js/shared/component/chips/chips.spec.js', () => {
                 selected: 'value2',
                 onSelect: () => null
             }
-            const children = shallow(<Chips {...props} />).props.children
+            const children = shallowOutput(<Chips {...props} />).props.children
             expect(children[0].props).toContainObject({value: 'value1', selected: 'value2', onSelect: props.onSelect})
             expect(children[1].props).toContainObject({value: 'value2', selected: 'value2', onSelect: props.onSelect})
         })

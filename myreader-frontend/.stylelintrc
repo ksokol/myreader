@@ -2,6 +2,6 @@
   "extends": "stylelint-config-standard",
   "rules": {
     "indentation": 4,
-    "selector-type-no-unknown": [true, {"ignoreTypes": ["/^my-/", "/^ng-/"]}]
+    "selector-type-no-unknown": [true, {"ignoreTypes": ["/^my-/", "/^ng-/", "react-component"]}]
   }
 }

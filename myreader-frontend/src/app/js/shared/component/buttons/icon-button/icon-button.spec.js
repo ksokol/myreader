@@ -1,12 +1,12 @@
 import React from 'react'
-import {shallow} from '../../../test-utils'
+import {shallowOutput} from '../../../test-utils'
 import {IconButton} from './icon-button'
 import TestRenderer from 'react-test-renderer'
 
 describe('src/app/js/shared/component/buttons/icon-button/icon-button.spec.js', () => {
 
     it('should render icon button with close icon and white color', () => {
-        expect(shallow(<IconButton type="close" color="white" />)).toMatchSnapshot()
+        expect(shallowOutput(<IconButton type="close" color="white" />)).toMatchSnapshot()
     })
 
     it('should trigger onClick function when clicked', () => {

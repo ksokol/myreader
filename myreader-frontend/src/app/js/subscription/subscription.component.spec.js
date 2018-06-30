@@ -1,13 +1,15 @@
-import {componentMock, mockNgRedux} from '../shared/test-utils'
+import {componentMock, mockNgRedux, reactComponent} from '../shared/test-utils'
 
 describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
-    let scope, element, ngReduxMock, subscription, timeout, myAutocompleteInput, mySubscriptionExclusion
+    let scope, element, ngReduxMock, subscription, timeout, myAutocompleteInput, mySubscriptionExclusion, title, url
 
     beforeEach(() => {
+        title = reactComponent('SubscriptionTitleInput')
+        url = reactComponent('SubscriptionUrlInput')
         myAutocompleteInput = componentMock('myAutocompleteInput')
         mySubscriptionExclusion = componentMock('mySubscriptionExclusion')
-        angular.mock.module('myreader', myAutocompleteInput, mySubscriptionExclusion, mockNgRedux())
+        angular.mock.module('myreader', myAutocompleteInput, mySubscriptionExclusion, title, url, mockNgRedux())
     })
 
     beforeEach(inject(($rootScope, $compile, $ngRedux, $timeout) => {
@@ -43,9 +45,6 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     }))
 
     it('should render page when subscription has been loaded', () => {
-        expect(element.querySelectorAll('input')[0].value).toEqual('expected title')
-        expect(element.querySelectorAll('input')[1].value).toEqual('expected origin')
-        expect(element.querySelectorAll('input')[1].disabled).toEqual(true)
         expect(myAutocompleteInput.bindings.mySelectedItem).toEqual('expected tag')
         expect(myAutocompleteInput.bindings.myDisabled).toBeUndefined()
         expect(myAutocompleteInput.bindings.myValues).toEqual(['t1', 't2'])
@@ -54,36 +53,53 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         expect(mySubscriptionExclusion.bindings.myExclusions).toEqual(['e1', '2'])
     })
 
+    it('should pass props to InputWithValidation component for title', () => {
+        expect(title.bindings).toContainObject({
+            disabled: undefined,
+            label: 'Title',
+            name: 'title',
+            value: subscription.title,
+            validations: []
+        })
+    })
+
+    it('should pass props to Input component for origin', () => {
+        expect(url.bindings).toContainObject({
+            disabled: true,
+            label: 'Url',
+            name: 'origin',
+            value: subscription.origin
+        })
+    })
+
     it('should save updated subscription', () => {
-        element.querySelectorAll('input')[0].value = 'new title'
-        element.querySelectorAll('input')[0].dispatchEvent(new Event('input'))
+        title.bindings.onChange('expected new title')
         element.querySelectorAll('button')[0].click()
 
         expect(ngReduxMock.getActionTypes()).toEqual(['PATCH_SUBSCRIPTION'])
         expect(ngReduxMock.getActions()[0])
-            .toContainActionData({body: {uuid: 'expected uuid', title: 'new title', origin: 'expected origin', tag: 'expected tag'}})
+            .toContainActionData({body: {uuid: 'expected uuid', title: 'expected new title', origin: 'expected origin', tag: 'expected tag'}})
     })
 
     it('should update page when save completed', () => {
-        element.querySelectorAll('input')[0].value = 'expected new title'
-        element.querySelectorAll('input')[0].dispatchEvent(new Event('input'))
+        title.bindings.onChange('expected new title')
         element.querySelectorAll('button')[0].click()
 
-        expect(element.querySelectorAll('input')[0].value).toEqual('expected new title')
+        expect(title.bindings.value).toEqual('expected new title')
     })
 
     it('should show validation message when validation failed', done => {
         jest.useRealTimers()
-        ngReduxMock.dispatch.mockRejectedValueOnce({status: 400, data: {fieldErrors: [{field: 'title', message: 'expected validation message'}]}})
 
-        element.querySelectorAll('input')[0].value = 'new title'
-        element.querySelectorAll('input')[0].dispatchEvent(new Event('input'))
+        const fieldErrors = [{field: 'title', message: 'expected validation message'}, {field: 'other', message: 'validation message'}]
+        ngReduxMock.dispatch.mockRejectedValueOnce({status: 400, data: {fieldErrors}})
+
+        title.bindings.onChange('some title')
         element.querySelectorAll('button')[0].click()
 
         setTimeout(() => {
             scope.$digest()
-            expect(element.querySelectorAll('button')[0].disabled).toEqual(true)
-            expect(element.querySelectorAll('my-validation-message > div')[0].textContent.trim()).toEqual('expected validation message')
+            expect(title.bindings.validations).toEqual(fieldErrors)
             done()
         })
     })
@@ -92,14 +108,12 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         jest.useRealTimers()
         ngReduxMock.dispatch.mockRejectedValueOnce({status: 500})
 
-        element.querySelectorAll('input')[0].value = 'new title'
-        element.querySelectorAll('input')[0].dispatchEvent(new Event('input'))
+        title.bindings.onChange('some title')
         element.querySelectorAll('button')[0].click()
 
         setTimeout(() => {
             scope.$digest()
-            expect(element.querySelectorAll('button')[0].disabled).toEqual(false)
-            expect(element.querySelectorAll('my-validation-message > div')[0].textContent.trim()).toEqual('')
+            expect(title.bindings.validations).toEqual([])
             done()
         })
     })
@@ -142,8 +156,8 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         element.querySelectorAll('button')[0].click()
         scope.$digest()
 
-        expect(element.querySelectorAll('input')[0].disabled).toEqual(true)
-        expect(element.querySelectorAll('input')[1].disabled).toEqual(true)
+        expect(title.bindings.disabled).toEqual(true)
+        expect(url.bindings.disabled).toEqual(true)
         expect(myAutocompleteInput.bindings.myDisabled).toEqual(true)
         expect(mySubscriptionExclusion.bindings.myDisabled).toEqual(true)
     })
@@ -159,8 +173,8 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
         setTimeout(() => {
             scope.$digest()
 
-            expect(element.querySelectorAll('input')[0].disabled).toEqual(false)
-            expect(element.querySelectorAll('input')[1].disabled).toEqual(true)
+            expect(title.bindings.disabled).toEqual(false)
+            expect(url.bindings.disabled).toEqual(true)
             expect(myAutocompleteInput.bindings.myDisabled).toEqual(false)
             expect(mySubscriptionExclusion.bindings.myDisabled).toEqual(false)
             done()

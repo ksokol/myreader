@@ -1,5 +1,5 @@
 import React from 'react'
-import {shallow} from '../../shared/test-utils'
+import {shallowOutput} from '../../shared/test-utils'
 import {EntryActions} from './entry-actions'
 import TestRenderer from 'react-test-renderer'
 
@@ -16,13 +16,13 @@ describe('src/app/js/entry/entry-actions/entry-actions.spec.js', () => {
     })
 
     it('should render expand-more and check-circle icon buttons', () => {
-        expect(shallow(<EntryActions {...props} />)).toMatchSnapshot()
+        expect(shallowOutput(<EntryActions {...props} />)).toMatchSnapshot()
     })
 
     it('should render expand-less and check icon buttons', () => {
         props.seen = false
         props.showMore = true
-        expect(shallow(<EntryActions {...props} />)).toMatchSnapshot()
+        expect(shallowOutput(<EntryActions {...props} />)).toMatchSnapshot()
     })
 
     it('should trigger onToggleShowMore with expand-more icon button', () => {

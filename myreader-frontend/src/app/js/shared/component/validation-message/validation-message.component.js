@@ -12,6 +12,9 @@ class controller {
     }
 }
 
+/**
+ * @deprecated
+ */
 export const ValidationMessageComponent = {
     template,
     controller,

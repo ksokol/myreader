@@ -25,7 +25,7 @@ import {NavigationSubscriptionItemComponent} from "./navigation/subscriptions-it
 import {SettingsComponent} from "./settings/settings.component"
 import {SubscribeComponent} from "./subscription/subscribe/subscribe.component"
 import {SubscriptionExclusionComponent} from "./subscription/subscription-exclusion/subscription-exclusion.component"
-import {SubscriptionComponent} from "./subscription/subscription.component"
+import {SubscriptionComponent, SubscriptionTitleInput, SubscriptionUrlInput} from './subscription/subscription.component'
 import {ClickIfInViewDirective} from "./shared/component/load-more/click-if-in-view.directive"
 import {ToastComponent} from './shared/component/toast/toast.component'
 import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
@@ -75,6 +75,9 @@ angular
     .value('IconButton', IconButton)
     .value('EntryActions', EntryActions)
     .value('Chips', Chips)
+
+    .value('SubscriptionTitleInput', SubscriptionTitleInput)
+    .value('SubscriptionUrlInput', SubscriptionUrlInput)
 
     .component('myEntryTags', EntryTagsComponent)
     .component('myEntry', EntryComponent)

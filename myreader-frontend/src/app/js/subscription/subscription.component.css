@@ -7,7 +7,7 @@
     align-items: center;
 }
 
-.subscription-form__origin my-input-container {
+.subscription-form__origin react-component {
     flex-grow: 1;
 }
 
