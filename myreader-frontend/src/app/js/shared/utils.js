@@ -1,36 +1,39 @@
 function isFunction(value) {
-    return typeof value === 'function'
+  return typeof value === 'function'
 }
 
 export function isDefined(value) {
-    return typeof value !== 'undefined'
+  return typeof value !== 'undefined'
 }
 
 export function isString(value) {
-    return value !== null && typeof value === 'string'
+  return value !== null && typeof value === 'string'
 }
 
 export function isObject(value) {
-    return value !== null && typeof value === 'object'
+  return value !== null && typeof value === 'object'
 }
 
 export function isPromiseLike(value) {
-    return !!(isObject(value) && isFunction(value.then) && isFunction(value.catch))
+  return !!(isObject(value) && isFunction(value.then) && isFunction(value.catch))
 }
 
 export function isBoolean(value) {
-    return typeof value === 'boolean'
+  return typeof value === 'boolean'
 }
 
 export function isDate(value) {
-    return value instanceof Date
+  return value instanceof Date
 }
 
 export function toArray(value) {
-    return value ? Array.isArray(value) ? value : [value] : []
+  return value ? Array.isArray(value) ? value : [value] : []
 }
 
 export function arrayIncludes(left, right) {
-    return Array.isArray(left) && Array.isArray(right) &&
-        left.every((leftValue, leftIndex) => leftValue === right[leftIndex])
+  return Array.isArray(left) && Array.isArray(right) &&
+    left.every((leftValue, leftIndex) => leftValue === right[leftIndex])
+}
+
+export function noop() {
 }

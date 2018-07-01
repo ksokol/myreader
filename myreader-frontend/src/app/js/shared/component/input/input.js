@@ -2,6 +2,7 @@ import './input.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
+import {noop} from '../../../shared/utils'
 
 const Input = props => {
   return (
@@ -36,8 +37,8 @@ Input.propTypes = {
 Input.defaultProps = {
   className: '',
   disabled: false,
-  onChange: () => {},
-  renderValidations: () => {}
+  onChange: noop,
+  renderValidations: noop
 }
 
 export default Input
