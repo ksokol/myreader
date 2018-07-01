@@ -29,6 +29,9 @@ class controller {
     }
 }
 
+/**
+ * @deprecated
+ */
 export const HotkeysComponent = {
     controller,
     template: '<ng-transclude></ng-transclude>',
