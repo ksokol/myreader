@@ -1,6 +1,6 @@
 import React from 'react'
 import {shallowOutput} from '../../test-utils'
-import {Icon} from './icon'
+import Icon from './icon'
 
 describe('src/app/js/shared/component/icon/icon.spec.js', () => {
 
