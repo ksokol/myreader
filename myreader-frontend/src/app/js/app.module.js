@@ -59,7 +59,7 @@ import {
 } from './shared/component/autocomplete-input'
 import {IconButton, IconButtonComponent} from './shared/component/buttons'
 import {EntryContent} from './entry/entry-content/entry-content'
-import {Icon} from './shared/component/icon/icon'
+import {Icon} from './shared/component/icon'
 import {EntryActions} from './entry/entry-actions/entry-actions'
 
 import './config'
