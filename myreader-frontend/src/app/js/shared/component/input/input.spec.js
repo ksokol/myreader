@@ -1,6 +1,8 @@
 import React from 'react'
 import TestRenderer from 'react-test-renderer'
+import ReactTestUtils from 'react-dom/test-utils'
 import Input from './input'
+import * as ReactDOM from 'react-dom'
 
 describe('src/app/js/shared/component/input/input.spec.js', () => {
 
@@ -44,7 +46,7 @@ describe('src/app/js/shared/component/input/input.spec.js', () => {
     const {onChange, ...props} = createInstance().root.findByType('input').props
 
     expect(onChange).toBeDefined()
-    expect(props).toEqual({
+    expect(props).toContainObject({
       type: 'text',
       id: 'expectedName',
       name: 'expectedName',
@@ -97,5 +99,38 @@ describe('src/app/js/shared/component/input/input.spec.js', () => {
     const instance = createInstance().root
 
     expect(instance.props.renderValidations()).toEqual('expected validation')
+  })
+
+  it('should not focus input field after mount', () => {
+    const instance = ReactTestUtils.renderIntoDocument(<Input {...props} />)
+
+    expect(document.activeElement).not.toEqual(instance)
+  })
+
+  it('should focus input field', () => {
+    const instance = ReactTestUtils.renderIntoDocument(<Input {...props} />)
+    ReactTestUtils.Simulate.focus(instance.myRef.current)
+
+    expect(document.activeElement).toEqual(instance.myRef.current)
+  })
+
+  it('should restore focus when prop "disabled" changed back to true and input field was focused before', () => {
+    const node = document.createElement('div')
+    const instance = React.createRef()
+
+    ReactDOM.render(<Input ref={instance} {...props} />, node)
+    ReactTestUtils.Simulate.focus(instance.current.myRef.current)
+    const focusSpy = jest.spyOn(instance.current.myRef.current, 'focus')
+
+    props.disabled = true
+    ReactDOM.render(<Input {...props} />, node)
+
+    expect(focusSpy).not.toHaveBeenCalled()
+
+    focusSpy.mockReset()
+    props.disabled = false
+    ReactDOM.render(<Input {...props} />, node)
+
+    expect(focusSpy).toHaveBeenCalled()
   })
 })

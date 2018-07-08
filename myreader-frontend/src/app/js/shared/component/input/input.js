@@ -1,26 +1,58 @@
 import './input.css'
-import React from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {noop} from '../../../shared/utils'
 
-const Input = props => {
-  return (
-    <div className={classNames('my-input', props.className)}>
-      {props.label && <label htmlFor={props.name}>{props.label}</label>}
+class Input extends Component {
 
-      <input id={props.name}
-             type="text"
-             name={props.name}
-             value={props.value}
-             placeholder={props.placeholder}
-             autoComplete="off"
-             disabled={props.disabled}
-             onChange={event => props.onChange(event.target.value)}/>
+  constructor(props) {
+    super(props)
 
-      {props.renderValidations()}
-    </div>
-  )
+    this.state = {
+      focused: false
+    }
+    this.myRef = React.createRef()
+
+    this.onFocus = this.onFocus.bind(this)
+    this.onBlur = this.onBlur.bind(this)
+  }
+
+  componentDidUpdate() {
+    if (this.state.focused && !this.props.disabled) {
+      this.myRef.current.focus()
+    }
+  }
+
+  onFocus() {
+    this.setState({focused: true})
+  }
+
+  onBlur() {
+    this.setState({focused: false})
+  }
+
+  render() {
+    return (
+      <div className={classNames('my-input', this.props.className)}>
+        {this.props.label && <label htmlFor={this.props.name}>{this.props.label}</label>}
+
+        <input ref={this.myRef}
+               id={this.props.name}
+               type="text"
+               name={this.props.name}
+               value={this.props.value}
+               placeholder={this.props.placeholder}
+               autoComplete="off"
+               disabled={this.props.disabled}
+               onChange={event => this.props.onChange(event.target.value)}
+               onFocus={this.onFocus}
+               onBlur={this.onBlur}/>
+
+        {this.props.renderValidations()}
+      </div>
+    )
+  }
 }
 
 Input.propTypes = {
@@ -35,7 +67,6 @@ Input.propTypes = {
 }
 
 Input.defaultProps = {
-  className: '',
   disabled: false,
   onChange: noop,
   renderValidations: noop
