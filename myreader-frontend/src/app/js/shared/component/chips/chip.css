@@ -19,3 +19,15 @@
     font-weight: bold;
     cursor: default;
 }
+
+.my-chip--disabled {
+    color: rgba(0, 0, 0, 0.24);
+    cursor: default;
+}
+
+.my-chip__remove-button {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+}

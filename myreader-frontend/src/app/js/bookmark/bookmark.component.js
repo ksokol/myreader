@@ -35,9 +35,11 @@ class controller {
 
     get props() {
         return {
+            keyFn: props => props,
             values: this.entryTags,
             selected: this.router.query.entryTagEqual,
-            onSelect: tag => this.onTagSelect(tag)
+            onSelect: tag => this.onTagSelect(tag),
+            renderItem: props => props
         }
     }
 }

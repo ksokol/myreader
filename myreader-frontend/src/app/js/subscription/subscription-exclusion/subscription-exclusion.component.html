@@ -1,9 +1,0 @@
-<my-chips my-placeholder="$ctrl.placeholder()"
-          my-disabled="$ctrl.isDisabled()"
-          my-on-add="$ctrl.onAdd(value)"
-          my-on-remove="$ctrl.onRemove(key)">
-    <my-chip ng-repeat="exclusion in $ctrl.myExclusions" my-key="exclusion.uuid">
-      <strong>{{::exclusion.pattern}}</strong>
-      <em>({{::exclusion.hitCount}})</em>
-    </my-chip>
-</my-chips>

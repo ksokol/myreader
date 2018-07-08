@@ -35,6 +35,9 @@ class controller {
 
 }
 
+/**
+ * @deprecated
+ */
 export const ChipsComponent = {
     template, controller,
     transclude: true,

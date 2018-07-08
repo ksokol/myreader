@@ -25,6 +25,9 @@ class controller {
     }
 }
 
+/**
+ * @deprecated
+ */
 export const ChipComponent = {
     template, controller,
     transclude: true,

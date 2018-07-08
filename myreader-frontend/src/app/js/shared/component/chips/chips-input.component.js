@@ -17,6 +17,9 @@ class controller {
     }
 }
 
+/**
+ * @deprecated
+ */
 export const ChipsInputComponent = {
     template, controller,
     bindings: {

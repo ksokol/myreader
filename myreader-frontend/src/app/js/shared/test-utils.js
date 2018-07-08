@@ -148,12 +148,26 @@ export function tick(millis = 0) {
   jest.advanceTimersByTime(millis)
 }
 
+/**
+ * @deprecated Use {@link shallow(Component)} instead.
+ */
 export function shallowInstance(Component) {
   const renderer = new ShallowRenderer()
   renderer.render(Component)
   return renderer
 }
 
+/**
+ * @deprecated Use {@link shallow(Component)} instead.
+ */
 export function shallowOutput(Component) {
   return shallowInstance(Component).getRenderOutput()
+}
+
+export function shallow(Component) {
+  const renderer = new ShallowRenderer()
+  renderer.render(Component)
+  return {
+    output: () => renderer.getRenderOutput()
+  }
 }
