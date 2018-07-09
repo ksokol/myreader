@@ -19,6 +19,7 @@ describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => 
 
   it('should pass expected props to origin input component', () => {
     expect(originInput.bindings).toContainObject({
+      type: 'url',
       label: 'Url',
       name: 'origin',
       value: ''

@@ -34,6 +34,7 @@ class controller {
 
   get props() {
     return {
+      type: 'url',
       label: 'Url',
       name: 'origin',
       value: this.origin,
