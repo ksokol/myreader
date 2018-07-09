@@ -23,7 +23,7 @@ import {MaintenanceActionsComponent} from './maintenance/maintenance-actions/mai
 import {MaintenanceComponent} from './maintenance/maintenance.component'
 import {NavigationSubscriptionItemComponent} from './navigation/subscriptions-item/subscription-item/subscription-item.component'
 import {SettingsComponent} from './settings/settings.component'
-import {SubscribeComponent} from './subscription/subscribe/subscribe.component'
+import {SubscribeComponent, SubscribeOriginInput} from './subscription/subscribe/subscribe.component'
 import {SubscriptionExclusionComponent} from './subscription/subscription-exclusion/subscription-exclusion.component'
 import {
   SubscriptionComponent,
@@ -73,6 +73,7 @@ angular
 
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
   .value('SubscriptionUrlInput', SubscriptionUrlInput)
+  .value('SubscribeOriginInput', SubscribeOriginInput)
 
   .component('myEntryTags', EntryTagsComponent)
   .component('myEntry', EntryComponent)

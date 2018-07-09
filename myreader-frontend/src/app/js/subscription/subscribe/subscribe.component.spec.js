@@ -1,111 +1,145 @@
-import {mockNgRedux} from '../../shared/test-utils'
+import {mockNgRedux, reactComponent} from '../../shared/test-utils'
 
 describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => {
 
-    let scope, element, ngReduxMock
+  let scope, element, ngReduxMock, originInput
 
-    beforeEach(angular.mock.module('myreader', mockNgRedux()))
+  beforeEach(() => {
+    originInput = reactComponent('SubscribeOriginInput')
+    angular.mock.module('myreader', mockNgRedux(), originInput)
+  })
 
-    beforeEach(inject(($rootScope, $compile, $ngRedux) => {
-        scope = $rootScope.$new(true)
-        ngReduxMock = $ngRedux
+  beforeEach(inject(($rootScope, $compile, $ngRedux) => {
+    scope = $rootScope.$new(true)
+    ngReduxMock = $ngRedux
 
-        element = $compile('<my-subscribe></my-subscribe>')(scope)[0]
-        scope.$digest()
-    }))
+    element = $compile('<my-subscribe></my-subscribe>')(scope)[0]
+    scope.$digest()
+  }))
 
-    it('should disable button when action is pending', done => {
-        jest.useRealTimers()
-        ngReduxMock.dispatch.mockReturnValueOnce(new Promise(() => {}))
+  it('should pass expected props to origin input component', () => {
+    expect(originInput.bindings).toContainObject({
+      label: 'Url',
+      name: 'origin',
+      value: ''
+    })
+  })
 
-        element.querySelector('button').click()
+  it('should disable button when action is pending', done => {
+    jest.useRealTimers()
+    ngReduxMock.dispatch.mockReturnValueOnce(new Promise(() => {}))
 
-        setTimeout(() => {
-            scope.$digest()
-            expect(element.querySelector('button').disabled).toEqual(true)
-            done()
-        })
+    element.querySelector('button').click()
+
+    setTimeout(() => {
+      scope.$digest()
+      expect(element.querySelector('button').disabled).toEqual(true)
+      done()
+    })
+  })
+
+  it('should enable button when action finished', done => {
+    jest.useRealTimers()
+    ngReduxMock.dispatch.mockResolvedValueOnce({uuid: 'expected uuid'})
+    originInput.bindings.onChange('expected url')
+
+    element.querySelector('button').click()
+
+    setTimeout(() => {
+      scope.$digest()
+      expect(element.querySelector('button').disabled).toEqual(false)
+      done()
+    })
+  })
+
+  it('should dispatch save subscription action with given url', done => {
+    jest.useRealTimers()
+
+    ngReduxMock.dispatch.mockImplementationOnce(action => {
+      expect(action).toEqualActionType('POST_SUBSCRIPTION')
+      expect(action).toContainActionData({body: {origin: 'expected url'}})
+      done()
+      return new Promise(() => {})
     })
 
-    it('should enable button when action finished', done => {
-        jest.useRealTimers()
-        ngReduxMock.dispatch.mockResolvedValueOnce({uuid: 'expected uuid'})
+    originInput.bindings.onChange('expected url')
+    element.querySelector('button').click()
+  })
 
-        element.querySelector('input').value = 'expected url'
-        element.querySelector('input').dispatchEvent(new Event('input'))
-        element.querySelector('button').click()
+  it('should navigate user to detail page when action completed successfully', done => {
+    jest.useRealTimers()
+    ngReduxMock.dispatch.mockResolvedValueOnce({uuid: 'expected uuid'})
+    originInput.bindings.onChange('expected url')
+    element.querySelector('button').click()
+    ngReduxMock.dispatch.mockClear()
 
-        setTimeout(() => {
-            scope.$digest()
-            expect(element.querySelector('button').disabled).toEqual(false)
-            done()
-        })
+    setTimeout(() => {
+      scope.$digest()
+      const action = ngReduxMock.dispatch.mock.calls[0][0]
+      expect(action).toContainObject({
+        type: 'ROUTE_CHANGED',
+        route: ['app', 'subscription'],
+        query: {uuid: 'expected uuid'}
+      })
+      done()
+    })
+  })
+
+  it('should show backend validation message', done => {
+    jest.useRealTimers()
+    ngReduxMock.dispatch.mockRejectedValueOnce({
+      status: 400,
+      data: {
+        fieldErrors: [
+          {field: 'origin', message: 'expected validation message'}
+        ]
+      }
     })
 
-    it('should dispatch save subscription action with given url', done => {
-        jest.useRealTimers()
+    originInput.bindings.onChange('expected url')
+    element.querySelector('button').click()
 
-        ngReduxMock.dispatch.mockImplementationOnce(action => {
-            expect(action).toEqualActionType('POST_SUBSCRIPTION')
-            expect(action).toContainActionData({body: {origin: 'expected url'}})
-            done()
-            return new Promise(() => {})
-        })
+    setTimeout(() => {
+      scope.$digest()
+      expect(originInput.bindings.validations).toEqual([{field: 'origin', message: 'expected validation message'}])
+      done()
+    })
+  })
 
-        element.querySelector('input').value = 'expected url'
-        element.querySelector('input').dispatchEvent(new Event('input'))
-        element.querySelector('button').click()
+  it('should clear backend validation message when save button clicked again', done => {
+    jest.useRealTimers()
+    ngReduxMock.dispatch.mockRejectedValueOnce({
+      status: 400,
+      data: {
+        fieldErrors: [
+          {field: 'origin', message: 'expected validation message'}
+        ]
+      }
     })
 
-    it('should navigate user to detail page when action completed successfully', done => {
-        jest.useRealTimers()
-        ngReduxMock.dispatch.mockResolvedValueOnce({uuid: 'expected uuid'})
-        element.querySelector('input').value = 'expected url'
-        element.querySelector('input').dispatchEvent(new Event('input'))
-        element.querySelector('button').click()
-        ngReduxMock.dispatch.mockClear()
+    originInput.bindings.onChange('expected url')
+    element.querySelector('button').click()
 
-        setTimeout(() => {
-            scope.$digest()
-            const action = ngReduxMock.dispatch.mock.calls[0][0]
-            expect(action).toContainObject({type: 'ROUTE_CHANGED', route: ['app', 'subscription'], query: {uuid: 'expected uuid'}})
-            done()
-        })
+    setTimeout(() => {
+      scope.$digest()
+      expect(originInput.bindings.validations).toEqual([{field: 'origin', message: 'expected validation message'}])
+      element.querySelector('button').click()
+      expect(originInput.bindings.validations).toBeUndefined()
+      done()
     })
+  })
 
-    it('should show backend validation message', done => {
-        jest.useRealTimers()
-        ngReduxMock.dispatch.mockRejectedValueOnce({
-            status: 400,
-            data: {fieldErrors: [
-                    {field: 'origin', message: 'expected validation message'}
-                ]
-            }
-        })
+  it('should not show validation message when request failed', done => {
+    jest.useRealTimers()
+    ngReduxMock.dispatch.mockRejectedValueOnce({status: 500})
 
-        element.querySelector('input').value = 'expected url'
-        element.querySelector('input').dispatchEvent(new Event('input'))
-        element.querySelector('button').click()
+    originInput.bindings.onChange('expected url')
+    element.querySelector('button').click()
 
-        setTimeout(() => {
-            scope.$digest()
-            expect(element.querySelector('my-validation-message > div > div').textContent).toEqual('expected validation message')
-            done()
-        })
+    setTimeout(() => {
+      scope.$digest()
+      expect(originInput.bindings.validations).toBeUndefined()
+      done()
     })
-
-    it('should not show validation message when request failed', done => {
-        jest.useRealTimers()
-        ngReduxMock.dispatch.mockRejectedValueOnce({status: 500})
-
-        element.querySelector('input').value = 'expected url'
-        element.querySelector('input').dispatchEvent(new Event('input'))
-        element.querySelector('button').click()
-
-        setTimeout(() => {
-            scope.$digest()
-            expect(element.querySelector('my-validation-message > div > div')).toBeNull()
-            done()
-        })
-    })
+  })
 })

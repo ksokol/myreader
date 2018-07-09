@@ -1,17 +1,9 @@
-<form name="subscriptionForm" class="subscribe-form">
-    <my-input-container>
-        <label>Url</label>
-        <input autocomplete="off"
-               name="origin"
-               ng-model="$ctrl.origin"
-               my-backend-validation my-validations="$ctrl.validations">
-        <my-validation-message my-form-control="subscriptionForm.origin"></my-validation-message>
-    </my-input-container>
+<form class="subscribe-form">
+    <react-component name="SubscribeOriginInput" props="$ctrl.props"></react-component>
 
     <my-button-group class="subscribe-form__buttons">
         <my-button
                 my-type="primary"
-                my-disabled="subscriptionForm.$invalid"
                 my-on-click="$ctrl.onSave()"
                 my-on-success="$ctrl.onSuccessSave(data)"
                 my-on-error="$ctrl.onErrorSave(error)">Save
