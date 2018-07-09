@@ -133,4 +133,16 @@ describe('src/app/js/shared/component/input/input.spec.js', () => {
 
     expect(focusSpy).toHaveBeenCalled()
   })
+
+  it('should set input type value to "some-type"', () => {
+    props.type = 'some-type'
+
+    expect(createInstance().root.findByType('input').props.type).toEqual('some-type')
+  })
+
+  it('should set input autocomplete value to "some-autocomplete"', () => {
+    props.autoComplete = 'some-autocomplete'
+
+    expect(createInstance().root.findByType('input').props.autoComplete).toEqual('some-autocomplete')
+  })
 })

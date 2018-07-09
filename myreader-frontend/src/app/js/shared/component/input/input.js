@@ -33,23 +33,36 @@ class Input extends Component {
   }
 
   render() {
+    const {
+      type,
+      className,
+      label,
+      name,
+      value,
+      placeholder,
+      autoComplete,
+      disabled,
+      onChange,
+      renderValidations
+    } = this.props
+
     return (
-      <div className={classNames('my-input', this.props.className)}>
-        {this.props.label && <label htmlFor={this.props.name}>{this.props.label}</label>}
+      <div className={classNames('my-input', className)}>
+        {label && <label htmlFor={name}>{label}</label>}
 
         <input ref={this.myRef}
-               id={this.props.name}
-               type="text"
-               name={this.props.name}
-               value={this.props.value}
-               placeholder={this.props.placeholder}
-               autoComplete="off"
-               disabled={this.props.disabled}
-               onChange={event => this.props.onChange(event.target.value)}
+               id={name}
+               type={type}
+               name={name}
+               value={value}
+               placeholder={placeholder}
+               autoComplete={autoComplete}
+               disabled={disabled}
+               onChange={event => onChange(event.target.value)}
                onFocus={this.onFocus}
                onBlur={this.onBlur}/>
 
-        {this.props.renderValidations()}
+        {renderValidations()}
       </div>
     )
   }
@@ -57,17 +70,21 @@ class Input extends Component {
 
 Input.propTypes = {
   className: PropTypes.string,
+  type: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   value: PropTypes.string,
   placeholder: PropTypes.string,
+  autoComplete: PropTypes.string,
   disabled: PropTypes.bool,
   onChange: PropTypes.func,
   renderValidations: PropTypes.func
 }
 
 Input.defaultProps = {
+  type: 'text',
   disabled: false,
+  autoComplete: 'off',
   onChange: noop,
   renderValidations: noop
 }
