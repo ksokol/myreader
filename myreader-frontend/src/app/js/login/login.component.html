@@ -1,20 +1,6 @@
 <form class="login">
-    <my-input-container>
-        <label for="email">Email</label>
-        <input id="email"
-               name="username"
-               ng-model="$ctrl.loginForm.username"
-               ng-disabled="$ctrl.actionPending">
-    </my-input-container>
-
-    <my-input-container>
-        <label for="password">Password</label>
-        <input id="password"
-               type="password"
-               name="password"
-               ng-model="$ctrl.loginForm.password"
-               ng-disabled="$ctrl.actionPending">
-    </my-input-container>
+    <react-component name="LoginEmailInput" props="$ctrl.emailProps"></react-component>
+    <react-component name="LoginPasswordInput" props="$ctrl.passwordProps"></react-component>
 
     <div class="login__message">
         <span ng-if="$ctrl.loginError">Username or password wrong</span>

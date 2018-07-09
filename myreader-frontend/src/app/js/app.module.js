@@ -17,7 +17,7 @@ import {ButtonComponent} from './shared/component/button/button.component'
 import {FeedComponent} from './feed/feed.component'
 import {SearchInputComponent} from './shared/component/search-input/search-input.component'
 import {FeedListComponent} from './feed/feed-list.component'
-import {LoginComponent} from './login/login.component'
+import {LoginComponent, LoginEmailInput, LoginPasswordInput} from './login/login.component'
 import {AboutComponent} from './maintenance/about/about.component'
 import {MaintenanceActionsComponent} from './maintenance/maintenance-actions/maintenance-actions.component'
 import {MaintenanceComponent} from './maintenance/maintenance.component'
@@ -74,6 +74,8 @@ angular
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
   .value('SubscriptionUrlInput', SubscriptionUrlInput)
   .value('SubscribeOriginInput', SubscribeOriginInput)
+  .value('LoginEmailInput', LoginEmailInput)
+  .value('LoginPasswordInput', LoginPasswordInput)
 
   .component('myEntryTags', EntryTagsComponent)
   .component('myEntry', EntryComponent)
