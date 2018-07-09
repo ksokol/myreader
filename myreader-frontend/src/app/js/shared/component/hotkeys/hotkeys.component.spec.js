@@ -10,123 +10,111 @@ const esc = {key: 'esc', keyCode: 27}
 
 describe('src/app/js/shared/component/hotkeys/hotkeys.component.spec.js', () => {
 
-    let compile, scope, parentScope, element
+  let compile, scope, parentScope, element
 
-    beforeEach(() => angular.mock.module('myreader'))
+  beforeEach(() => angular.mock.module('myreader'))
 
-    beforeEach(inject(($rootScope, $compile) => {
-        jest.useFakeTimers() // TODO Remove me together with patched setTimeout function in app.module.js.
-        compile = $compile
-        scope = $rootScope.$new(true)
-        parentScope = $rootScope.$new(true)
-        scope.parentScope = parentScope
+  beforeEach(inject(($rootScope, $compile) => {
+    jest.useFakeTimers() // TODO Remove me together with patched setTimeout function in app.module.js.
+    compile = $compile
+    scope = $rootScope.$new(true)
+    parentScope = $rootScope.$new(true)
+    scope.parentScope = parentScope
 
-        scope.onKeyPressY = jest.fn()
-        scope.onKeyPressEnter = jest.fn()
-        scope.onKeyPressDown = jest.fn()
-        scope.onKeyPressUp = jest.fn()
-        scope.onKeyPressEsc = jest.fn()
+    scope.onKeyPressY = jest.fn()
+    scope.onKeyPressEnter = jest.fn()
+    scope.onKeyPressDown = jest.fn()
+    scope.onKeyPressUp = jest.fn()
+    scope.onKeyPressEsc = jest.fn()
 
-        scope.onKeyPressZ = function() {
-            this.called = true
-        }
-        jest.spyOn(scope, 'onKeyPressZ')
+    scope.onKeyPressZ = function () {
+      this.called = true
+    }
+    jest.spyOn(scope, 'onKeyPressZ')
 
-        element = $compile(`<my-hotkeys my-bind-to="parentScope" 
-                                        my-hotkeys="{'z': onKeyPressZ, 'y': onKeyPressY, 'enter': onKeyPressEnter, 'down': onKeyPressDown, 'up': onKeyPressUp, 'esc': onKeyPressEsc}">
-                                        <p>expected transcluded content</p>
-                            </my-hotkeys>`)(scope)[0]
-        scope.$digest()
-    }))
+    element = $compile(`<my-hotkeys my-bind-to="parentScope" 
+                                    my-hotkeys="{'z': onKeyPressZ, 'y': onKeyPressY, 'enter': onKeyPressEnter, 'down': onKeyPressDown, 'up': onKeyPressUp, 'esc': onKeyPressEsc}">
+                                    <p>expected transcluded content</p>
+                        </my-hotkeys>`)(scope)[0]
+    scope.$digest()
+  }))
 
-    it('should not thrown an error on initialization when bindings are undefined', () => {
-        expect(() => compile(`<my-hotkeys></my-hotkeys>`)(scope)).not.toThrowError()
-    })
+  it('should not thrown an error on initialization when bindings are undefined', () => {
+    expect(() => compile(`<my-hotkeys></my-hotkeys>`)(scope)).not.toThrowError()
+  })
 
-    it('should transclude content', () => {
-        expect(element.querySelectorAll('p')[0].textContent).toEqual('expected transcluded content')
-    })
+  it('should transclude content', () => {
+    expect(element.querySelectorAll('p')[0].textContent).toEqual('expected transcluded content')
+  })
 
-    it('should call function in myBindTo context', () => {
-        onKey('down', z)
-        tick()
+  it('should call function in myBindTo context', () => {
+    onKey('down', z)
+    tick()
 
-        expect(parentScope.called).toEqual(true)
-    })
+    expect(parentScope.called).toEqual(true)
+  })
 
-    it('should call function mapped to "z" key', () => {
-        onKey('down', z)
-        tick()
+  it('should call function mapped to "z" key', () => {
+    onKey('down', z)
+    tick()
 
-        expect(scope.onKeyPressZ).toHaveBeenCalledWith()
-        expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
-    })
+    expect(scope.onKeyPressZ).toHaveBeenCalledWith()
+    expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
+  })
 
-    it('should call function mapped to "y" key', () => {
-        onKey('down', y)
-        tick()
+  it('should call function mapped to "y" key', () => {
+    onKey('down', y)
+    tick()
 
-        expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
-        expect(scope.onKeyPressY).toHaveBeenCalledWith()
-    })
+    expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
+    expect(scope.onKeyPressY).toHaveBeenCalledWith()
+  })
 
-    it('should unbind hotkeys on destroy', () => {
-        scope.$emit('$destroy')
+  it('should unbind hotkeys on destroy', () => {
+    scope.$emit('$destroy')
 
-        onKey('down', z)
-        tick()
-        onKey('down', y)
-        tick()
+    onKey('down', z)
+    tick()
+    onKey('down', y)
+    tick()
 
-        expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
-        expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
-    })
+    expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
+    expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
+  })
 
-    it('should not call any mapped function when key is not registered', () => {
-        onKey('down', a)
-        tick()
+  it('should not call any mapped function when key is not registered', () => {
+    onKey('down', a)
+    tick()
 
-        expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
-        expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
-    })
+    expect(scope.onKeyPressZ).not.toHaveBeenCalledWith()
+    expect(scope.onKeyPressY).not.toHaveBeenCalledWith()
+  })
 
-    it('should call function mapped to "enter" key', () => {
-        onKey('down', enter)
-        tick()
+  it('should call function mapped to "enter" key', () => {
+    onKey('down', enter)
+    tick()
 
-        expect(scope.onKeyPressEnter).toHaveBeenCalledWith()
-    })
+    expect(scope.onKeyPressEnter).toHaveBeenCalledWith()
+  })
 
-    it('should call function mapped to "down" key', () => {
-        onKey('down', down)
-        tick()
+  it('should call function mapped to "down" key', () => {
+    onKey('down', down)
+    tick()
 
-        expect(scope.onKeyPressDown).toHaveBeenCalledWith()
-    })
+    expect(scope.onKeyPressDown).toHaveBeenCalledWith()
+  })
 
-    it('should call function mapped to "up" key', () => {
-        onKey('down', up)
-        tick()
+  it('should call function mapped to "up" key', () => {
+    onKey('down', up)
+    tick()
 
-        expect(scope.onKeyPressUp).toHaveBeenCalledWith()
-    })
+    expect(scope.onKeyPressUp).toHaveBeenCalledWith()
+  })
 
-    it('should call function mapped to "esc" key', () => {
-        onKey('down', esc)
-        tick()
+  it('should call function mapped to "esc" key', () => {
+    onKey('down', esc)
+    tick()
 
-        expect(scope.onKeyPressEsc).toHaveBeenCalledWith()
-    })
-
-    it('should prevent event propagation immediately', () => {
-        const stopPropagation = jest.fn()
-        const preventDefault = jest.fn()
-        onKey('down', esc, {stopPropagation, preventDefault})
-
-        expect(stopPropagation).toHaveBeenCalled()
-        expect(preventDefault).toHaveBeenCalled()
-        tick()
-
-        expect(scope.onKeyPressEsc).toHaveBeenCalledWith()
-    })
+    expect(scope.onKeyPressEsc).toHaveBeenCalledWith()
+  })
 })

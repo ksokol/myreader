@@ -14,22 +14,18 @@ class Hotkeys extends Component {
     super(props)
 
     this.myRef = React.createRef()
-    this.onKeyDown = this.onKeyDown.bind(this)
+    this.onKeyPress = this.onKeyPress.bind(this)
   }
 
   componentDidMount() {
-    this.myRef.current.addEventListener('keypress', this.onKeyDown)
+    this.myRef.current.addEventListener('keypress', this.onKeyPress)
   }
 
-  onKeyDown(event) {
+  onKeyPress(event) {
     Object.entries(this.props.onKeys)
-    .filter(([key]) => keyCodeMap[event.keyCode] === key || event.key === key)
-    .map(([, keyFn]) => keyFn)
-    .forEach(keyFn => {
-      event.stopPropagation()
-      event.preventDefault()
-      keyFn()
-    })
+      .filter(([key]) => keyCodeMap[event.keyCode] === key || event.key === key)
+      .map(([, keyFn]) => keyFn)
+      .forEach(keyFn => keyFn())
   }
 
   render() {

@@ -78,13 +78,4 @@ describe('src/app/js/shared/component/hotkeys/hotkeys.spec.js', () => {
 
     expect(onKeys.esc).toHaveBeenCalledWith()
   })
-
-  it('should prevent event propagation immediately', () => {
-    const stopPropagation = jest.fn()
-    const preventDefault = jest.fn()
-    onKey(esc , {stopPropagation, preventDefault})
-
-    expect(stopPropagation).toHaveBeenCalled()
-    expect(preventDefault).toHaveBeenCalled()
-  })
 })
