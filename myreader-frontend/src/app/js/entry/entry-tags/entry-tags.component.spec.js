@@ -1,76 +1,79 @@
-import ReactTestUtils from 'react-dom/test-utils'
+import {reactComponent} from '../../shared/test-utils'
 
 describe('src/app/js/entry/entry-tags/entry-tags.component.spec.js', () => {
 
-    let myOnChange, scope, element
+  let myOnChange, scope, element, chips
 
-    beforeEach(angular.mock.module('myreader'))
+  beforeEach(() => {
+    chips = reactComponent('Chips')
+    angular.mock.module('myreader', chips)
+  })
 
-    beforeEach(inject(($rootScope, $compile) => {
-        myOnChange = jest.fn()
+  beforeEach(inject(($rootScope, $compile) => {
+    myOnChange = jest.fn()
 
-        scope = $rootScope.$new(true)
-        scope.item = {tag: 'tag1 tag2'}
-        scope.show = true
-        scope.myOnChange = myOnChange
-        element = $compile(`<my-entry-tags my-item="item"
+    scope = $rootScope.$new(true)
+    scope.item = {tag: 'tag1 tag2'}
+    scope.show = true
+    scope.myOnChange = myOnChange
+    element = $compile(`<my-entry-tags my-item="item"
                                           my-show="show"
                                           my-on-change="myOnChange(tag)">
                            </my-entry-tags>`)(scope)
-        scope.$digest()
-    }))
+    scope.$digest()
+  }))
 
-    it('should show tags component when myShow is true', () =>
-        expect(element.children().length).toBeGreaterThan(0))
+  it('should show tags component when myShow is true', () => {
+    expect(element.children().length).toBeGreaterThan(0)
+  })
 
-    it('should not show render tags component when myShow is false', () => {
-        scope.show = false
-        scope.$digest()
+  it('should not show render tags component when myShow is false', () => {
+    scope.show = false
+    scope.$digest()
 
-        expect(element.children().length).toEqual(0)
-    })
+    expect(element.children().length).toEqual(0)
+  })
 
-    it('should render tags', () => {
-        const chips = element.find('my-chip')
+  it('should return key for given value in prop "values" when prop "keyFn" function called', () => {
+    expect(chips.bindings.keyFn(chips.bindings.values[0])).toEqual('tag1')
+  })
 
-        expect(chips[0].querySelector('strong').textContent).toEqual('tag1')
-        expect(chips[1].querySelector('strong').textContent).toEqual('tag2')
-    })
+  it('should render tags', () => {
+    expect(chips.bindings.values).toEqual(['tag1', 'tag2'])
+  })
 
-    it('should trigger onChange event when tag has been removed', () => {
-        ReactTestUtils.Simulate.click(element.find('my-chip').find('button')[0])
-        expect(myOnChange).toHaveBeenCalledWith('tag2')
-    })
+  it('should trigger onChange event when tag has been removed', () => {
+    chips.bindings.onRemove('tag1')
 
-    it('should trigger onChange event when first tag has been added', () => {
-        scope.item = {tag: null}
-        scope.$digest()
+    expect(myOnChange).toHaveBeenCalledWith('tag2')
+  })
 
-        element.find('input').val('tag1').triggerHandler('input')
-        element.find('input').triggerHandler({type: 'keyup', keyCode: 13})
+  it('should trigger onChange event when first tag has been added', () => {
+    scope.item = {tag: null}
+    scope.$digest()
 
-        expect(myOnChange).toHaveBeenCalledWith('tag1')
-    })
+    chips.bindings.onAdd('tag1')
 
-    it('should trigger onChange event when tag has been added', () => {
-        element.find('input').val('tag3').triggerHandler('input')
-        element.find('input').triggerHandler({type: 'keyup', keyCode: 13})
+    expect(myOnChange).toHaveBeenCalledWith('tag1')
+  })
 
-        expect(myOnChange).toHaveBeenCalledWith('tag1, tag2, tag3')
-    })
+  it('should trigger onChange event when tag has been added', () => {
+    chips.bindings.onAdd('tag3')
 
-    it('should prevent duplicate tags', () => {
-        element.find('input').val('tag2').triggerHandler('input')
-        element.find('input').triggerHandler({type: 'keyup', keyCode: 13})
+    expect(myOnChange).toHaveBeenCalledWith('tag1, tag2, tag3')
+  })
 
-        expect(myOnChange).not.toHaveBeenCalled()
-    })
+  it('should prevent duplicate tags', () => {
+    chips.bindings.onAdd('tag2')
 
-    it('should trigger onChange with null value when tag has been removed', () => {
-        scope.item = {tag: 'tag1'}
-        scope.$digest()
+    expect(myOnChange).not.toHaveBeenCalled()
+  })
 
-        ReactTestUtils.Simulate.click(element.find('my-chip').find('button')[0])
-        expect(myOnChange).toHaveBeenCalledWith(null)
-    })
+  it('should trigger onChange with null value when tag has been removed', () => {
+    scope.item = {tag: 'tag1'}
+    scope.$digest()
+    chips.bindings.onRemove('tag1')
+
+    expect(myOnChange).toHaveBeenCalledWith(null)
+  })
 })

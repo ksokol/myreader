@@ -1,8 +1,0 @@
-<my-chips my-placeholder="'Enter a tag...'"
-          ng-if="$ctrl.myShow"
-          my-on-add="$ctrl.onTagAdd(value)"
-          my-on-remove="$ctrl.onTagRemove(key)">
-    <my-chip ng-repeat="tag in $ctrl.tags track by $index" my-key="tag">
-        <strong>{{tag}}</strong>
-    </my-chip>
-</my-chips>
