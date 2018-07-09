@@ -7,7 +7,7 @@
     align-items: center;
 }
 
-.admin-feed-form__origin my-input-container {
+.admin-feed-form__origin > react-component {
     flex-grow: 1;
 }
 

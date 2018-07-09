@@ -14,7 +14,7 @@ import {BackendValidationDirective} from './shared/directive/backend-validation/
 import {ValidationMessageComponent} from './shared/component/validation-message/validation-message.component'
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
-import {FeedComponent} from './feed/feed.component'
+import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
 import {SearchInputComponent} from './shared/component/search-input/search-input.component'
 import {FeedListComponent} from './feed/feed-list.component'
 import {LoginComponent, LoginEmailInput, LoginPasswordInput} from './login/login.component'
@@ -76,6 +76,8 @@ angular
   .value('SubscribeOriginInput', SubscribeOriginInput)
   .value('LoginEmailInput', LoginEmailInput)
   .value('LoginPasswordInput', LoginPasswordInput)
+  .value('FeedTitleInput', FeedTitleInput)
+  .value('FeedUrlInput', FeedUrlInput)
 
   .component('myEntryTags', EntryTagsComponent)
   .component('myEntry', EntryComponent)

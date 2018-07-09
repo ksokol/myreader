@@ -1,24 +1,9 @@
 <div class="admin-feed-form">
     <form name="feedForm">
-        <my-input-container>
-            <label>Title</label>
-            <input name="title"
-                   autocomplete="off"
-                   ng-model="$ctrl.feed.title"
-                   my-backend-validation my-validations="$ctrl.validations">
-
-            <my-validation-message my-form-control="feedForm.title"></my-validation-message>
-        </my-input-container>
+        <react-component name="FeedTitleInput" props="$ctrl.titleProps"></react-component>
 
         <div class="admin-feed-form__origin">
-            <my-input-container>
-                <label>Url</label>
-                <input name="url"
-                       autocomplete="off"
-                       ng-model="$ctrl.feed.url"
-                       my-backend-validation my-validations="$ctrl.validations">
-                <my-validation-message my-form-control="feedForm.url"></my-validation-message>
-            </my-input-container>
+            <react-component name="FeedUrlInput" props="$ctrl.urlProps"></react-component>
 
             <a ng-href="{{$ctrl.feed.url}}" target="_blank" rel="noopener noreferrer">
                 <my-icon my-type="open-in-new"></my-icon>
