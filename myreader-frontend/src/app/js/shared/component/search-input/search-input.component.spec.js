@@ -1,50 +1,56 @@
+import ReactTestUtils from 'react-dom/test-utils'
+
 describe('src/app/js/shared/component/search-input/search-input.component.spec.js', () => {
 
-    beforeEach(angular.mock.module('myreader'))
+  beforeEach(angular.mock.module('myreader'))
 
-    let scope, timeout, myOnChange, page
+  let scope, myOnChange, page
 
-    const PageObject = el => {
-        return {
-            searchInput: () => el.find('input'),
-            enterSearchInput: (value, tick) => {
-                el.find('input').val(value).triggerHandler('input')
-                timeout.flush(tick || 250)
-            }
-        }
+  const PageObject = el => {
+    return {
+      searchInput: () => el.find('input'),
+      enterSearchInput: value => {
+        const input = el[0].querySelectorAll('input')[0]
+        input.value = value
+        ReactTestUtils.Simulate.change(input)
+      }
     }
+  }
 
-    beforeEach(inject(($rootScope, $compile, $timeout) => {
-        myOnChange = jest.fn()
-        timeout = $timeout
-        scope = $rootScope.$new(true)
-        scope.value = 'a value'
-        scope.myOnChange = myOnChange
+  beforeEach(inject(($rootScope, $compile) => {
+    jest.useRealTimers()
 
-        const element = $compile('<my-search-input my-value="value" my-on-change="myOnChange(value)"></my-search-input>')(scope)
-        scope.$digest()
-        page = new PageObject(element)
-    }))
+    myOnChange = jest.fn()
+    scope = $rootScope.$new(true)
+    scope.value = 'a value'
+    scope.myOnChange = myOnChange
 
-    it('should set initial value', () => {
-        expect(page.searchInput().val()).toEqual('a value')
-    })
+    const element = $compile('<my-search-input my-value="value" my-on-change="myOnChange(value)"></my-search-input>')(scope)
+    scope.$digest()
+    page = new PageObject(element)
+  }))
 
-    it('should set no initial value', inject($compile => {
-        scope.value = null
-        const element = $compile('<my-search-input my-value="value"></my-search-input>')(scope)
-        scope.$digest()
-        page = new PageObject(element)
+  it('should set initial value', () => {
+    expect(page.searchInput().val()).toEqual('a value')
+  })
 
-        expect(page.searchInput().val()).toEqual('')
-    }))
+  it('should set no initial value', inject($compile => {
+    scope.value = null
+    const element = $compile('<my-search-input my-value="value"></my-search-input>')(scope)
+    scope.$digest()
+    page = new PageObject(element)
 
-    it('should emit myOnChange event after a predefined amount of time when value is not empty', inject($timeout => {
-        page.enterSearchInput('changed value', 249)
+    expect(page.searchInput().val()).toEqual('')
+  }))
 
-        expect(myOnChange).not.toHaveBeenCalled()
+  it('should emit myOnChange event after a predefined amount of time', done => {
+    page.enterSearchInput('changed value')
+    expect(myOnChange).not.toHaveBeenCalled()
 
-        $timeout.flush(1)
-        expect(myOnChange).toHaveBeenCalledWith('changed value')
-    }))
+    // TODO Workaround for https://github.com/facebook/jest/issues/5165
+    setTimeout(() => {
+      expect(myOnChange).toHaveBeenCalledWith('changed value')
+      done()
+    }, 300)
+  })
 })

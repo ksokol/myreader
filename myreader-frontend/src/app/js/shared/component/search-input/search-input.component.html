@@ -1,9 +1,6 @@
 <my-icon class="my-search-input__search-icon" my-type="search"></my-icon>
 
-<my-input-container class="my-search-input__container">
-    <input ng-model-options="{debounce: 250}"
-           ng-change="$ctrl.onChange()"
-           ng-model="$ctrl.value">
-</my-input-container>
-
-
+<react-component class="my-search-input__container"
+                 name="SearchInput"
+                 props="$ctrl.inputProps">
+</react-component>

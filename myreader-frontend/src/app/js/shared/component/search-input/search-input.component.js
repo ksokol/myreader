@@ -1,25 +1,31 @@
 import template from './search-input.component.html'
 import './search-input.component.css'
+import {Input, withDebounce} from '../input'
+
+/**
+ * @deprecated
+ */
+export const SearchInput = withDebounce(Input, 250)
 
 class controller {
 
-    $onInit() {
-        this.value = this.myValue || ''
-    }
+  $onInit() {
+    this.value = this.myValue || ''
+  }
 
-    $onChanges(obj) {
-        this.value = obj.myValue.currentValue || ''
+  get inputProps() {
+    return {
+      name: 'search-input',
+      value: this.value,
+      onChange: value => this.myOnChange({value})
     }
-
-    onChange() {
-        this.myOnChange({value: this.value})
-    }
+  }
 }
 
 export const SearchInputComponent = {
-    template, controller,
-    bindings: {
-        myValue: '<',
-        myOnChange: '&'
-    }
+  template, controller,
+  bindings: {
+    myValue: '<',
+    myOnChange: '&'
+  }
 }

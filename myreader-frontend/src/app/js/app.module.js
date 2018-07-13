@@ -15,7 +15,7 @@ import {ValidationMessageComponent} from './shared/component/validation-message/
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
 import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
-import {SearchInputComponent} from './shared/component/search-input/search-input.component'
+import {SearchInput, SearchInputComponent} from './shared/component/search-input/search-input.component'
 import {FeedListComponent} from './feed/feed-list.component'
 import {LoginComponent, LoginEmailInput, LoginPasswordInput} from './login/login.component'
 import {AboutComponent} from './maintenance/about/about.component'
@@ -78,6 +78,7 @@ angular
   .value('LoginPasswordInput', LoginPasswordInput)
   .value('FeedTitleInput', FeedTitleInput)
   .value('FeedUrlInput', FeedUrlInput)
+  .value('SearchInput', SearchInput)
 
   .component('myEntryTags', EntryTagsComponent)
   .component('myEntry', EntryComponent)
