@@ -14,11 +14,21 @@ describe('src/app/js/shared/component/input/input.spec.js', () => {
       name: 'expectedName',
       value: 'expectedValue',
       placeholder: 'expected placeholder',
-      onChange: jest.fn()
+      onChange: jest.fn(),
+      onFocus: jest.fn(),
+      onBlur: jest.fn()
     }
   })
 
   const createInstance = () => TestRenderer.create(<Input {...props} />)
+
+  const inputRef = () => {
+    const node = document.createElement('div')
+    const instance = React.createRef()
+
+    ReactDOM.render(<Input ref={instance} {...props} />, node)
+    return {node, input: instance.current.myRef.current}
+  }
 
   it('should render label when prop "label" is defined', () => {
     const instance = createInstance().root
@@ -108,19 +118,16 @@ describe('src/app/js/shared/component/input/input.spec.js', () => {
   })
 
   it('should focus input field', () => {
-    const instance = ReactTestUtils.renderIntoDocument(<Input {...props} />)
-    ReactTestUtils.Simulate.focus(instance.myRef.current)
+    const {input} = inputRef()
+    ReactTestUtils.Simulate.focus(input)
 
-    expect(document.activeElement).toEqual(instance.myRef.current)
+    expect(document.activeElement).toEqual(input)
   })
 
   it('should restore focus when prop "disabled" changed back to true and input field was focused before', () => {
-    const node = document.createElement('div')
-    const instance = React.createRef()
-
-    ReactDOM.render(<Input ref={instance} {...props} />, node)
-    ReactTestUtils.Simulate.focus(instance.current.myRef.current)
-    const focusSpy = jest.spyOn(instance.current.myRef.current, 'focus')
+    const {node, input} = inputRef()
+    ReactTestUtils.Simulate.focus(input)
+    const focusSpy = jest.spyOn(input, 'focus')
 
     props.disabled = true
     ReactDOM.render(<Input {...props} />, node)
@@ -144,5 +151,35 @@ describe('src/app/js/shared/component/input/input.spec.js', () => {
     props.autoComplete = 'some-autocomplete'
 
     expect(createInstance().root.findByType('input').props.autoComplete).toEqual('some-autocomplete')
+  })
+
+  it('should trigger prop "onFocus" function when input focused', () => {
+    const {input} = inputRef()
+    ReactTestUtils.Simulate.focus(input)
+
+    expect(props.onFocus).toHaveBeenCalled()
+  })
+
+  it('should not throw an error when prop "onFocus" function is undefined', () => {
+    props.onFocus = undefined
+    const {input} = inputRef()
+
+    ReactTestUtils.Simulate.focus(input)
+  })
+
+  it('should trigger prop "onBlur" function when input leaved', () => {
+    const {input} = inputRef()
+    ReactTestUtils.Simulate.focus(input)
+    ReactTestUtils.Simulate.blur(input)
+
+    expect(props.onBlur).toHaveBeenCalled()
+  })
+
+  it('should not throw an error when prop "onBlur" function is undefined', () => {
+    props.onBlur = undefined
+    const {input} = inputRef()
+
+    ReactTestUtils.Simulate.focus(input)
+    ReactTestUtils.Simulate.blur(input)
   })
 })

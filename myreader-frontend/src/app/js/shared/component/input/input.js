@@ -26,10 +26,12 @@ class Input extends Component {
 
   onFocus() {
     this.setState({focused: true})
+    this.props.onFocus()
   }
 
   onBlur() {
     this.setState({focused: false})
+    this.props.onBlur()
   }
 
   render() {
@@ -78,6 +80,8 @@ Input.propTypes = {
   autoComplete: PropTypes.string,
   disabled: PropTypes.bool,
   onChange: PropTypes.func,
+  onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
   renderValidations: PropTypes.func
 }
 
@@ -86,6 +90,8 @@ Input.defaultProps = {
   disabled: false,
   autoComplete: 'off',
   onChange: noop,
+  onFocus: noop,
+  onBlur: noop,
   renderValidations: noop
 }
 
