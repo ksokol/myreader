@@ -1,13 +1,5 @@
-<my-input-container class="my-autocomplete__input">
-    <label ng-if="$ctrl.myLabel">{{$ctrl.myLabel}}</label>
-    <input type="text"
-           autocomplete="off"
-           ng-disabled="$ctrl.myDisabled"
-           ng-model="$ctrl.mySelectedItem"
-           ng-model-options="{debounce: 100}"
-           ng-focus="$ctrl.onFocus()"
-           ng-change="$ctrl.onChange($event)"
-           ng-blur="$ctrl.onBlur()">
+<div>
+    <react-component name="AutocompleteInput" props="$ctrl.inputProps"></react-component>
 
     <my-autocomplete-suggestions
             my-values="$ctrl.myValues"
@@ -15,4 +7,5 @@
             my-on-select="$ctrl.onSelectSuggestion(term)"
             ng-if="$ctrl.showSuggestions">
     </my-autocomplete-suggestions>
-</my-input-container>
+</div>
+

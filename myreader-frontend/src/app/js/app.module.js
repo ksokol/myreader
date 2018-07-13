@@ -50,6 +50,7 @@ import {BackdropComponent} from './shared/component/backdrop/backdrop.component'
 import {ChooseComponent} from './shared/component/choose/choose.component'
 import {InputContainer} from './shared/component/input-container/input-container'
 import {
+  AutocompleteInput,
   AutoCompleteInputComponent,
   AutocompleteSuggestionsComponent,
   AutocompleteSuggestionsItemTextComponent
@@ -79,6 +80,7 @@ angular
   .value('FeedTitleInput', FeedTitleInput)
   .value('FeedUrlInput', FeedUrlInput)
   .value('SearchInput', SearchInput)
+  .value('AutocompleteInput', AutocompleteInput)
 
   .component('myEntryTags', EntryTagsComponent)
   .component('myEntry', EntryComponent)

@@ -1,66 +1,39 @@
-import {componentMock} from '../../../shared/test-utils'
+import {componentMock, reactComponent} from '../../../shared/test-utils'
 
 class AutcompletePage {
 
-    constructor(el, $scope, $timeout) {
-        this.el = el
-        this.$scope = $scope
-        this.$timeout = $timeout
-    }
+  constructor(el) {
+    this.el = el
+  }
 
-    get label() {
-        return this.el.querySelectorAll('label')[0]
-    }
-
-    get input() {
-        return this.el.querySelector('input')
-    }
-
-    get autocompleteSuggestionsComponent() {
-        return this.el.querySelectorAll('my-autocomplete-suggestions')[0]
-    }
-
-    focusInput() {
-        this.input.dispatchEvent(new Event('focus'))
-        this.$scope.$digest()
-    }
-
-    blurInput() {
-        this.input.dispatchEvent(new Event('blur'))
-        this.$timeout.flush(100)
-        this.$scope.$digest()
-    }
-
-    enterInput(value) {
-        this.input.value = value
-        this.input.dispatchEvent(new Event('change'))
-        this.$timeout.flush(100)
-        this.$scope.$digest()
-    }
+  get autocompleteSuggestionsComponent() {
+    return this.el.querySelectorAll('my-autocomplete-suggestions')[0]
+  }
 }
 
 describe('src/app/js/shared/component/autocomplete-input/autocomplete-input.component.spec.js', () => {
 
-    let page, rootScope, scope, compile, timeout, myOnSelect, myOnClear, myAutocompleteSuggestions
+  let page, rootScope, scope, compile, timeout, myOnSelect, myOnClear, autocompleteInput, myAutocompleteSuggestions
 
-    beforeEach(() => {
-        myAutocompleteSuggestions = componentMock('myAutocompleteSuggestions')
-        angular.mock.module('myreader', myAutocompleteSuggestions)
-    })
+  beforeEach(() => {
+    autocompleteInput = reactComponent('AutocompleteInput')
+    myAutocompleteSuggestions = componentMock('myAutocompleteSuggestions')
+    angular.mock.module('myreader', autocompleteInput, myAutocompleteSuggestions)
+  })
 
-    beforeEach(inject(($rootScope, $compile, $timeout) => {
-        myOnSelect = jest.fn()
-        myOnClear = jest.fn()
+  beforeEach(inject(($rootScope, $compile, $timeout) => {
+    myOnSelect = jest.fn()
+    myOnClear = jest.fn()
 
-        compile = $compile
-        rootScope = $rootScope
-        timeout = $timeout
-        scope = rootScope.$new(true)
-        scope.myOnSelect = myOnSelect
-        scope.myOnClear = myOnClear
-        scope.label = 'a label'
+    compile = $compile
+    rootScope = $rootScope
+    timeout = $timeout
+    scope = rootScope.$new(true)
+    scope.myOnSelect = myOnSelect
+    scope.myOnClear = myOnClear
+    scope.label = 'a label'
 
-        const element = compile(`<my-autocomplete-input
+    const element = compile(`<my-autocomplete-input
                                my-label="label"
                                my-selected-item="selectedValue"
                                my-disabled="disabled"
@@ -69,122 +42,128 @@ describe('src/app/js/shared/component/autocomplete-input/autocomplete-input.comp
                                my-on-select="myOnSelect(value)"
                                my-on-clear="myOnClear()">
                            </my-autocomplete-input>`)(scope)[0]
-        page = new AutcompletePage(element, scope, $timeout)
-        scope.$digest()
-    }))
+    page = new AutcompletePage(element)
+    scope.$digest()
+  }))
 
-    it('should render label text', () => {
-        expect(page.label.textContent).toEqual('a label')
+  it('should pass expected props to input component', () => {
+    expect(autocompleteInput.bindings).toContainObject({
+      label: 'a label',
+      name: 'autocomplete-input',
+      value: '',
+      disabled: undefined
     })
+  })
 
-    it('should not render label text when binding value is undefined', () => {
-        scope.label = undefined
-        scope.$digest()
-        expect(page.label).toBeUndefined()
+  it('should disable input element when myDisabled is true', () => {
+    scope.disabled = true
+    scope.$digest()
+
+    expect(autocompleteInput.bindings).toContainObject({
+      disabled: true
     })
+  })
 
-    it('should enable input element when myDisabled is false', () => {
-        expect(page.input.disabled).toEqual(false)
+  it('should preset input with mySelectedItem', () => {
+    scope.selectedValue = 'selected-value'
+    scope.$digest()
+
+    expect(autocompleteInput.bindings).toContainObject({
+      value: 'selected-value'
     })
+  })
 
-    it('should disable input element when myDisabled is true', () => {
-        scope.disabled = true
-        scope.$digest()
+  it('should not create suggestions component when input is not focused', () => {
+    expect(page.autocompleteSuggestionsComponent).toBeUndefined()
+  })
 
-        expect(page.input.disabled).toEqual(true)
-    })
+  it('should create suggestions component when input is focused', () => {
+    scope.values = ['irrelevant']
+    scope.$digest()
+    autocompleteInput.bindings.onFocus()
 
-    it('should preset input with mySelectedItem', () => {
-        scope.selectedValue = 'selected-value'
-        scope.$digest()
+    expect(page.autocompleteSuggestionsComponent).toBeDefined()
+  })
 
-        expect(page.input.value).toEqual('selected-value')
-    })
+  it('should pass values to suggestions component bindings', () => {
+    scope.values = ['tag1', 'tag2']
+    scope.selectedValue = 'expected term value'
+    scope.$digest()
+    autocompleteInput.bindings.onFocus()
 
-    it('should not create suggestions component when input is not focused', () => {
-        expect(page.autocompleteSuggestionsComponent).toBeUndefined()
-    })
+    expect(myAutocompleteSuggestions.bindings.myValues).toEqual(['tag1', 'tag2'])
+    expect(myAutocompleteSuggestions.bindings.myCurrentTerm).toEqual('expected term value')
+  })
 
-    it('should create suggestions component when input is focused', () => {
-        scope.values = ['irrelevant']
-        scope.$digest()
-        page.focusInput()
+  it('should pass changed input value to suggestions component', () => {
+    scope.values = ['tag']
+    scope.$digest()
 
-        expect(page.autocompleteSuggestionsComponent).toBeDefined()
-    })
+    autocompleteInput.bindings.onChange('ta')
+    expect(myAutocompleteSuggestions.bindings.myCurrentTerm).toEqual('ta')
 
-    it('should pass values to suggestions component bindings', () => {
-        scope.values = ['tag1', 'tag2']
-        scope.selectedValue = 'expected term value'
-        scope.$digest()
-        page.focusInput()
+    autocompleteInput.bindings.onChange('tag')
+    expect(myAutocompleteSuggestions.bindings.myCurrentTerm).toEqual('tag')
+  })
 
-        expect(myAutocompleteSuggestions.bindings.myValues).toEqual(['tag1', 'tag2'])
-        expect(myAutocompleteSuggestions.bindings.myCurrentTerm).toEqual('expected term value')
-    })
+  it('should destroy suggestions component when input field left', () => {
+    scope.values = ['tag']
+    scope.$digest()
 
-    it('should pass changed input value to suggestions component', () => {
-        scope.values = ['tag']
-        scope.$digest()
-        page.focusInput()
+    autocompleteInput.bindings.onFocus()
+    expect(page.autocompleteSuggestionsComponent).toBeDefined()
 
-        page.enterInput('ta')
-        expect(myAutocompleteSuggestions.bindings.myCurrentTerm).toEqual('ta')
+    autocompleteInput.bindings.onBlur()
+    timeout.flush(100)
+    scope.$digest()
+    expect(page.autocompleteSuggestionsComponent).toBeUndefined()
+  })
 
-        page.enterInput('tag')
-        expect(myAutocompleteSuggestions.bindings.myCurrentTerm).toEqual('tag')
-    })
+  it('should emit entered value', () => {
+    autocompleteInput.bindings.onChange('expected value')
 
-    it('should destroy suggestions component when input field left', () => {
-        scope.values = ['tag']
-        scope.$digest()
+    expect(myOnClear).not.toHaveBeenCalled()
+    expect(myOnSelect).toHaveBeenCalledWith('expected value')
+  })
 
-        page.focusInput()
-        expect(page.autocompleteSuggestionsComponent).toBeDefined()
+  it('should emit myOnSelect event with null value when input value is null', () => {
+    autocompleteInput.bindings.onChange(null)
 
-        page.blurInput()
-        expect(page.autocompleteSuggestionsComponent).toBeUndefined()
-    })
+    expect(myOnSelect).toHaveBeenCalledWith(null)
+  })
 
-    it('should emit entered value', () => {
-        page.enterInput('expected value')
+  it('should pass empty string to prop "value" when entered input value is null', () => {
+    autocompleteInput.bindings.onChange(null)
 
-        expect(myOnClear).not.toHaveBeenCalled()
-        expect(myOnSelect).toHaveBeenCalledWith('expected value')
-    })
+    expect(autocompleteInput.bindings.value).toEqual('')
+  })
 
-    it('should emit myOnSelect event with null value when input value is null', () => {
-        page.enterInput(null)
+  it('should emit myOnSelect event with null value when input value is empty string', () => {
+    autocompleteInput.bindings.onChange('')
 
-        expect(myOnSelect).toHaveBeenCalledWith(null)
-    })
+    expect(myOnSelect).toHaveBeenCalledWith(null)
+  })
 
-    it('should emit myOnSelect event with null value when input value is empty string', () => {
-        page.enterInput('')
+  it('should emit myOnSelect event from suggestions component', () => {
+    scope.values = ['irrelevant']
+    scope.$digest()
 
-        expect(myOnSelect).toHaveBeenCalledWith(null)
-    })
+    autocompleteInput.bindings.onFocus()
+    myAutocompleteSuggestions.bindings.myOnSelect({term: 'expected value'})
 
-    it('should emit myOnSelect event from suggestions component', () => {
-        scope.values = ['irrelevant']
-        scope.$digest()
+    expect(myOnClear).not.toHaveBeenCalled()
+    expect(myOnSelect).toHaveBeenCalledWith('expected value')
+  })
 
-        page.focusInput()
-        myAutocompleteSuggestions.bindings.myOnSelect({term: 'expected value'})
+  it('should destroy suggestions component when myOnSelect event emitted', () => {
+    scope.values = ['irrelevant']
+    scope.$digest()
 
-        expect(myOnClear).not.toHaveBeenCalled()
-        expect(myOnSelect).toHaveBeenCalledWith('expected value')
-    })
+    autocompleteInput.bindings.onFocus()
+    myAutocompleteSuggestions.bindings.myOnSelect({term: 'expected value'})
+    timeout.flush(100)
+    scope.$digest()
 
-    it('should destroy suggestions component when myOnSelect event emitted', () => {
-        scope.values = ['irrelevant']
-        scope.$digest()
-
-        page.focusInput()
-        myAutocompleteSuggestions.bindings.myOnSelect({term: 'expected value'})
-        timeout.flush(100)
-        scope.$digest()
-
-        expect(page.autocompleteSuggestionsComponent).toBeUndefined()
-    })
+    expect(page.autocompleteSuggestionsComponent).toBeUndefined()
+  })
 })
