@@ -1,13 +1,13 @@
 <div class="my-entry__header">
     <react-component name="EntryTitle" props="$ctrl.item"></react-component>
 
-    <react-component name="EntryActions" props="$ctrl.props"></react-component>
+    <react-component name="EntryActions" props="$ctrl.entryActionsProps"></react-component>
 </div>
 
-<my-entry-tags my-item="$ctrl.item"
-               my-show="$ctrl.showMore"
-               my-on-change="$ctrl.onTagUpdate(tag)">
-</my-entry-tags>
+<react-component ng-if="$ctrl.showMore"
+                 name="EntryTags"
+                 props="$ctrl.entryTagsProps">
+</react-component>
 
 <react-component ng-if="$ctrl.showEntryContent()"
                  name="EntryContent"

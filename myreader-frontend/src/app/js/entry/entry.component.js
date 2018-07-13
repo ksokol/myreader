@@ -4,67 +4,76 @@ import {changeEntry, mediaBreakpointIsDesktopSelector, settingsShowEntryDetailsS
 
 class controller {
 
-    constructor($ngRedux) {
-        'ngInject'
-        this.$ngRedux = $ngRedux
-    }
+  constructor($ngRedux) {
+    'ngInject'
+    this.$ngRedux = $ngRedux
 
-    $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
-    }
+    this.onTagUpdate = this.onTagUpdate.bind(this)
+  }
 
-    $onChanges(changes) {
-        this.item = changes.myItem.currentValue
-    }
+  $onInit() {
+    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
+  }
 
-    $onDestroy() {
-        this.unsubscribe()
-    }
+  $onChanges(changes) {
+    this.item = changes.myItem.currentValue
+  }
 
-    mapStateToThis(state) {
-        return {
-            showEntryDetails: settingsShowEntryDetailsSelector(state),
-            isDesktop: mediaBreakpointIsDesktopSelector(state)
-        }
-    }
+  $onDestroy() {
+    this.unsubscribe()
+  }
 
-    showEntryContent() {
-        return this.isDesktop ? this.showEntryDetails || this.showMore : this.showMore
+  mapStateToThis(state) {
+    return {
+      showEntryDetails: settingsShowEntryDetailsSelector(state),
+      isDesktop: mediaBreakpointIsDesktopSelector(state)
     }
+  }
 
-    updateItem(item) {
-        this.$ngRedux.dispatch(changeEntry(item))
-    }
+  showEntryContent() {
+    return this.isDesktop ? this.showEntryDetails || this.showMore : this.showMore
+  }
 
-    toggleMore() {
-        this.showMore = !this.showMore
-    }
+  updateItem(item) {
+    this.$ngRedux.dispatch(changeEntry(item))
+  }
 
-    toggleSeen() {
-        this.updateItem({...this.item, seen: !this.item.seen})
-    }
+  toggleMore() {
+    this.showMore = !this.showMore
+  }
 
-    onTagUpdate(tag) {
-        this.updateItem({
-            uuid: this.item.uuid,
-            seen: this.item.seen,
-            tag
-        })
-    }
+  toggleSeen() {
+    this.updateItem({...this.item, seen: !this.item.seen})
+  }
 
-    get props() {
-        return {
-            onToggleShowMore: this.toggleMore.bind(this),
-            onToggleSeen: this.toggleSeen.bind(this),
-            showMore: this.showMore,
-            seen: this.item.seen
-        }
+  onTagUpdate(tag) {
+    this.updateItem({
+      uuid: this.item.uuid,
+      seen: this.item.seen,
+      tag
+    })
+  }
+
+  get entryActionsProps() {
+    return {
+      onToggleShowMore: this.toggleMore.bind(this),
+      onToggleSeen: this.toggleSeen.bind(this),
+      showMore: this.showMore,
+      seen: this.item.seen
     }
+  }
+
+  get entryTagsProps() {
+    return {
+      tags: this.item.tag,
+      onChange: this.onTagUpdate
+    }
+  }
 }
 
 export const EntryComponent = {
-    template, controller,
-    bindings: {
-        myItem: '<'
-    }
+  template, controller,
+  bindings: {
+    myItem: '<'
+  }
 }

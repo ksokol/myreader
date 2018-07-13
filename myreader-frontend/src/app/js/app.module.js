@@ -3,7 +3,6 @@ import ngRedux from 'ng-redux'
 
 import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
-import {EntryTagsComponent} from './entry/entry-tags/entry-tags.component'
 import {EntryTitle} from './entry/entry-title/entry-title'
 import {EntryComponent} from './entry/entry.component'
 import {TimeagoFilter} from './shared/timeago/timeago.filter'
@@ -59,6 +58,7 @@ import {EntryContent} from './entry/entry-content/entry-content'
 import {Icon} from './shared/component/icon'
 import {EntryActions} from './entry/entry-actions/entry-actions'
 import {Chips} from './shared/component/chips'
+import {EntryTags} from './entry'
 
 import './config'
 
@@ -70,6 +70,7 @@ angular
   .value('IconButton', IconButton)
   .value('EntryActions', EntryActions)
   .value('Chips', Chips)
+  .value('EntryTags', EntryTags)
 
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
   .value('SubscriptionUrlInput', SubscriptionUrlInput)
@@ -81,7 +82,6 @@ angular
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
 
-  .component('myEntryTags', EntryTagsComponent)
   .component('myEntry', EntryComponent)
   .component('myFeedFetchError', FeedFetchErrorComponent)
   .component('myValidationMessage', ValidationMessageComponent)
