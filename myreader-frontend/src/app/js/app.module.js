@@ -48,7 +48,6 @@ import uiRouterAdapter from './shared/router/uiRouterAdapter'
 import uiRouterStartTransitionHandler from './shared/router/uiRouterStartTransitionHandler'
 import {BackdropComponent} from './shared/component/backdrop/backdrop.component'
 import {ChooseComponent} from './shared/component/choose/choose.component'
-import {InputContainer} from './shared/component/input-container/input-container'
 import {
   AutocompleteInput,
   AutoCompleteInputComponent,
@@ -116,7 +115,6 @@ angular
   .component('myListPage', ListPageComponent)
   .component('myHotkeys', HotkeysComponent)
   .component('myChoose', ChooseComponent)
-  .component('myInputContainer', InputContainer)
   .component('myAutocompleteInput', AutoCompleteInputComponent)
   .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
   .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)
