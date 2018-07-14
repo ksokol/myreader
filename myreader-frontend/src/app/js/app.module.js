@@ -9,7 +9,6 @@ import {TimeagoFilter} from './shared/timeago/timeago.filter'
 import {FeedFetchErrorComponent} from './feed/feed-fetch-error/feed-fetch-error.component'
 import {LoadMoreComponent} from './shared/component/load-more/load-more.component'
 import {IconComponent} from './shared/component/icon/icon.component'
-import {ValidationMessageComponent} from './shared/component/validation-message/validation-message.component'
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
 import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
@@ -83,7 +82,6 @@ angular
 
   .component('myEntry', EntryComponent)
   .component('myFeedFetchError', FeedFetchErrorComponent)
-  .component('myValidationMessage', ValidationMessageComponent)
   .component('myFeed', FeedComponent)
   .component('myFeedList', FeedListComponent)
   .component('myLogin', LoginComponent)
