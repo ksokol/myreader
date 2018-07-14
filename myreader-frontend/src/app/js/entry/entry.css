@@ -1,5 +1,4 @@
-my-entry {
-    width: 100%;
+.my-entry {
     padding: 16px 0;
 }
 
@@ -7,10 +6,10 @@ my-entry {
     display: flex;
 }
 
-.my-entry__header > :first-child {
+.my-entry__header > .my-entry__title {
     flex-grow: 1;
 }
 
-.my-entry__header > :last-child {
+.my-entry__header > .my-entry__actions {
     flex-shrink: 0;
 }

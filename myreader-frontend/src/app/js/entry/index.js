@@ -1,1 +1,1 @@
-export {default as EntryTags}  from './entry-tags/entry-tags'
+export {default as Entry}  from './entry'

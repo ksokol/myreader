@@ -4,7 +4,7 @@
          data-uuid="{{entry.uuid}}"
          ng-repeat="entry in $ctrl.entries track by entry.uuid">
         <div class="my-entry-list__item-content">
-            <my-entry my-item="entry"></my-entry>
+            <react-component name="Entry" props="$ctrl.entryProps(entry)"></react-component>
             <div class="my-entry-list__item-divider"></div>
         </div>
     </div>

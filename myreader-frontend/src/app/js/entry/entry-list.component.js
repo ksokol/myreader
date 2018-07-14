@@ -1,29 +1,53 @@
 import template from './entry-list.component.html'
 import './entry-list.component.css'
-import {entryClear, fetchEntries, getEntries} from '../store'
+import {
+  changeEntry,
+  entryClear,
+  fetchEntries,
+  getEntries,
+  mediaBreakpointIsDesktopSelector,
+  settingsShowEntryDetailsSelector
+} from '../store'
 
 class controller {
 
-    constructor($ngRedux) {
-        'ngInject'
-        this.$ngRedux = $ngRedux
-        this.unsubscribe = this.$ngRedux.connect(getEntries)(this)
-    }
+  constructor($ngRedux) {
+    'ngInject'
+    this.$ngRedux = $ngRedux
+    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
+  }
 
-    $onDestroy() {
-        this.unsubscribe()
-        this.$ngRedux.dispatch(entryClear())
-    }
+  $onDestroy() {
+    this.unsubscribe()
+    this.$ngRedux.dispatch(entryClear())
+  }
 
-    isFocused(item) {
-        return this.entryInFocus.uuid === item.uuid
+  mapStateToThis(state) {
+    return {
+      ...getEntries(state),
+      showEntryDetails: settingsShowEntryDetailsSelector(state),
+      isDesktop: mediaBreakpointIsDesktopSelector(state)
     }
+  }
 
-    loadMore(more) {
-        this.$ngRedux.dispatch(fetchEntries(more))
+  isFocused(item) {
+    return this.entryInFocus.uuid === item.uuid
+  }
+
+  loadMore(more) {
+    this.$ngRedux.dispatch(fetchEntries(more))
+  }
+
+  entryProps(entry) {
+    return {
+      item: entry,
+      showEntryDetails: this.showEntryDetails,
+      isDesktop: this.isDesktop,
+      onChange: item => this.$ngRedux.dispatch(changeEntry(item))
     }
+  }
 }
 
 export const EntryListComponent = {
-    template, controller
+  template, controller
 }

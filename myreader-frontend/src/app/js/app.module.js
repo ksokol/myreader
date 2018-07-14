@@ -3,8 +3,6 @@ import ngRedux from 'ng-redux'
 
 import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
-import {EntryTitle} from './entry/entry-title/entry-title'
-import {EntryComponent} from './entry/entry.component'
 import {TimeagoFilter} from './shared/timeago/timeago.filter'
 import {FeedFetchErrorComponent} from './feed/feed-fetch-error/feed-fetch-error.component'
 import {LoadMoreComponent} from './shared/component/load-more/load-more.component'
@@ -52,23 +50,18 @@ import {
   AutocompleteSuggestionsItemTextComponent
 } from './shared/component/autocomplete-input'
 import {IconButton, IconButtonComponent} from './shared/component/buttons'
-import {EntryContent} from './entry/entry-content/entry-content'
 import {Icon} from './shared/component/icon'
-import {EntryActions} from './entry/entry-actions/entry-actions'
 import {Chips} from './shared/component/chips'
-import {EntryTags} from './entry'
+import {Entry} from './entry'
 
 import './config'
 
 angular
   .module('myreader', [ngRedux, 'common.config', 'ui.router', 'react'])
-  .value('EntryTitle', EntryTitle)
-  .value('EntryContent', EntryContent)
   .value('Icon', Icon)
   .value('IconButton', IconButton)
-  .value('EntryActions', EntryActions)
   .value('Chips', Chips)
-  .value('EntryTags', EntryTags)
+  .value('Entry', Entry)
 
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
   .value('SubscriptionUrlInput', SubscriptionUrlInput)
@@ -80,7 +73,6 @@ angular
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
 
-  .component('myEntry', EntryComponent)
   .component('myFeedFetchError', FeedFetchErrorComponent)
   .component('myFeed', FeedComponent)
   .component('myFeedList', FeedListComponent)

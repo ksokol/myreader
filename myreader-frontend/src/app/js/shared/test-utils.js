@@ -36,6 +36,21 @@ export function reactComponent(name) {
   return _reactComponentMock
 }
 
+export function multipleReactComponents(name) {
+  multipleReactComponents.bindings = []
+
+  function _reactComponentMock($provide) {
+    _reactComponentMock.bindings = multipleReactComponents.bindings
+
+    $provide.value(name, props => {
+      multipleReactComponents.bindings.push({...props})
+      return ''
+    })
+  }
+
+  return _reactComponentMock
+}
+
 export function multipleComponentMock(name) {
   multipleComponentMock.bindings = []
 

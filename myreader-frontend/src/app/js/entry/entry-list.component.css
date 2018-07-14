@@ -21,3 +21,7 @@
     position: absolute;
     width: 100%;
 }
+
+.my-entry-list__item-content > react-component {
+    width: 100%;
+}
