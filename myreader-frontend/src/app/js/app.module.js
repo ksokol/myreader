@@ -9,7 +9,6 @@ import {TimeagoFilter} from './shared/timeago/timeago.filter'
 import {FeedFetchErrorComponent} from './feed/feed-fetch-error/feed-fetch-error.component'
 import {LoadMoreComponent} from './shared/component/load-more/load-more.component'
 import {IconComponent} from './shared/component/icon/icon.component'
-import {BackendValidationDirective} from './shared/directive/backend-validation/backend-validation.directive'
 import {ValidationMessageComponent} from './shared/component/validation-message/validation-message.component'
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
@@ -120,7 +119,6 @@ angular
   .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)
   .component('myIconButton', IconButtonComponent)
 
-  .directive('myBackendValidation', BackendValidationDirective)
   .directive('myClickIfInView', ClickIfInViewDirective)
 
   .filter('timeago', TimeagoFilter)
