@@ -34,12 +34,12 @@ class EntryTags extends Component {
 
   render() {
     return (
-      <Chips keyFn={props => props}
+      <Chips keyFn={tag => tag}
              values={this.state.tags}
              placeholder='Enter a tag...'
              onAdd={this.onTagAdd}
              onRemove={this.onTagRemove}
-             renderItem={props => props} />
+             renderItem={tag => tag} />
     )
   }
 }

@@ -23,7 +23,11 @@ describe('src/app/js/entry/entry-tags/entry-tags.spec.js', () => {
   })
 
   it('should return key for given value when prop "keyFn" function called', () => {
-    expect(createShallow().props.keyFn('expected key')).toEqual('expected key')
+    expect(createShallow().props.keyFn('expected tag')).toEqual('expected tag')
+  })
+
+  it('should return renderer tag for given value when prop "renderItem" function called', () => {
+    expect(createShallow().props.renderItem('expected tag')).toEqual('expected tag')
   })
 
   it('should trigger prop "onChange" function when tag has been removed', () => {
