@@ -5,7 +5,6 @@ import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
 import {TimeagoFilter} from './shared/timeago/timeago.filter'
 import {FeedFetchErrorComponent, FeedFetchErrorLoadMore} from './feed/feed-fetch-error/feed-fetch-error.component'
-import {LoadMoreComponent} from './shared/component/load-more/load-more.component'
 import {IconComponent} from './shared/component/icon/icon.component'
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
@@ -25,7 +24,6 @@ import {
   SubscriptionTitleInput,
   SubscriptionUrlInput
 } from './subscription/subscription.component'
-import {ClickIfInViewDirective} from './shared/component/load-more/click-if-in-view.directive'
 import {ToastComponent} from './shared/component/toast/toast.component'
 import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
 import {EntryListComponent, EntryListLoadMore} from './entry/entry-list.component'
@@ -99,7 +97,6 @@ angular
 
   .component('myButtonGroup', ButtonGroupComponent)
   .component('myButton', ButtonComponent)
-  .component('myLoadMore', LoadMoreComponent)
   .component('myIcon', IconComponent)
   .component('mySearchInput', SearchInputComponent)
   .component('myToast', ToastComponent)
@@ -111,8 +108,6 @@ angular
   .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
   .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)
   .component('myIconButton', IconButtonComponent)
-
-  .directive('myClickIfInView', ClickIfInViewDirective)
 
   .filter('timeago', TimeagoFilter)
 
