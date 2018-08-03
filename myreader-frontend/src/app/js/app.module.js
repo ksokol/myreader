@@ -4,7 +4,7 @@ import ngRedux from 'ng-redux'
 import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
 import {TimeagoFilter} from './shared/timeago/timeago.filter'
-import {FeedFetchErrorComponent} from './feed/feed-fetch-error/feed-fetch-error.component'
+import {FeedFetchErrorComponent, FeedFetchErrorLoadMore} from './feed/feed-fetch-error/feed-fetch-error.component'
 import {LoadMoreComponent} from './shared/component/load-more/load-more.component'
 import {IconComponent} from './shared/component/icon/icon.component'
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
@@ -74,6 +74,7 @@ angular
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
   .value('EntryListLoadMore', EntryListLoadMore)
+  .value('FeedFetchErrorLoadMore', FeedFetchErrorLoadMore)
 
   .component('myFeedFetchError', FeedFetchErrorComponent)
   .component('myFeed', FeedComponent)

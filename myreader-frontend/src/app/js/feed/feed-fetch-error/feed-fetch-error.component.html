@@ -5,7 +5,7 @@
     <span>{{::item.createdAt | timeago}}</span>
 </div>
 
-<my-load-more my-next="$ctrl.links.next"
-              my-on-more="$ctrl.onMore(more)"
-              ng-if="$ctrl.failures.length > 0">
-</my-load-more>
+<react-component ng-if="$ctrl.links.next"
+                 name="FeedFetchErrorLoadMore"
+                 props="$ctrl.loadMoreProps">
+</react-component>

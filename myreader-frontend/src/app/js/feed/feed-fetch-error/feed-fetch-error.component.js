@@ -1,35 +1,65 @@
 import template from './feed-fetch-error.component.html'
 import './feed-fetch-error.component.css'
+import React from 'react'
+import PropTypes from 'prop-types'
 import {feedFetchFailuresSelector, fetchFeedFetchFailures} from '../../store'
+import {Button} from '../../shared/component/buttons'
+import {IntersectionObserver} from '../../shared/component/intersection-observer'
+
+/**
+ * @deprecated
+ */
+export const FeedFetchErrorLoadMore = props => {
+  return (
+    <IntersectionObserver onIntersection={props.onClick}>
+      <Button disabled={props.disabled} onClick={props.onClick}>
+        Load More
+      </Button>
+    </IntersectionObserver>
+  )
+}
+
+FeedFetchErrorLoadMore.propTypes = {
+  disabled: PropTypes.bool,
+  onClick: PropTypes.func.isRequired
+}
 
 class controller {
 
-    constructor($ngRedux) {
-        'ngInject'
-        this.$ngRedux = $ngRedux
-    }
+  constructor($ngRedux) {
+    'ngInject'
+    this.$ngRedux = $ngRedux
+  }
 
-    $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
-    }
+  $onInit() {
+    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis.bind(this))(this)
+  }
 
-    $onDestroy() {
-        this.unsubscribe()
-    }
+  $onDestroy() {
+    this.unsubscribe()
+  }
 
-    mapStateToThis(state) {
-        return {
-            ...feedFetchFailuresSelector(state)
-        }
+  mapStateToThis(state) {
+    return {
+      ...feedFetchFailuresSelector(state)
     }
+  }
 
-    mapDispatchToThis(dispatch) {
-        return {
-            onMore: link => dispatch(fetchFeedFetchFailures(link))
-        }
+  mapDispatchToThis(dispatch) {
+    return {
+      onMore: () => dispatch(fetchFeedFetchFailures(this.links.next))
     }
+  }
+
+  get loadMoreProps() {
+    return {
+      disabled: this.fetchFailuresLoading,
+      onClick: this.onMore,
+      onIntersection: this.onMore
+    }
+  }
 }
 
 export const FeedFetchErrorComponent = {
-    template, controller
+  template, controller
 }
