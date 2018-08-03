@@ -26,5 +26,6 @@
 }
 
 .my-button[disabled] {
+    cursor: default;
     background-color: rgba(0, 0, 0, 0.12);
 }
