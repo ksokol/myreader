@@ -14,7 +14,7 @@
     "lint:css": "stylelint \"src/app/js/**/*.css\" && stylelint \"src/app/css/**/*.css\""
   },
   "dependencies": {
-    "@uirouter/angularjs": "1.0.14",
+    "@uirouter/angularjs": "1.0.19",
     "angular": "1.7.2",
     "classnames": "2.2.6",
     "lodash.debounce": "4.0.8",
