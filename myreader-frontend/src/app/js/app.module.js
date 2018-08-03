@@ -28,7 +28,7 @@ import {
 import {ClickIfInViewDirective} from './shared/component/load-more/click-if-in-view.directive'
 import {ToastComponent} from './shared/component/toast/toast.component'
 import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
-import {EntryListComponent} from './entry/entry-list.component'
+import {EntryListComponent, EntryListLoadMore} from './entry/entry-list.component'
 import createApplicationStore from './store/bootstrap'
 import {ListPageComponent} from './shared/component/list-page/list-page.component'
 import {BookmarkComponent} from './bookmark/bookmark.component'
@@ -73,6 +73,7 @@ angular
   .value('FeedUrlInput', FeedUrlInput)
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
+  .value('EntryListLoadMore', EntryListLoadMore)
 
   .component('myFeedFetchError', FeedFetchErrorComponent)
   .component('myFeed', FeedComponent)

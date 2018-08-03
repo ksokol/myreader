@@ -3,10 +3,11 @@ export * from './selectors'
 export {entryReducers} from './reducers'
 
 export default function initialState() {
-    return {
-        links: {},
-        entries: [],
-        entryInFocus: null,
-        tags: []
-    }
+  return {
+    links: {},
+    entries: [],
+    loading: false,
+    entryInFocus: null,
+    tags: []
+  }
 }

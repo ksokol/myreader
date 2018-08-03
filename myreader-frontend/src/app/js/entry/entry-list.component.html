@@ -9,4 +9,8 @@
         </div>
     </div>
 </my-auto-scroll>
-<my-load-more my-next="$ctrl.links.next" my-on-more="$ctrl.loadMore(more)"></my-load-more>
+
+<react-component ng-if="$ctrl.links.next"
+                 name="EntryListLoadMore"
+                 props="$ctrl.loadMoreProps">
+</react-component>
