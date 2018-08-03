@@ -19,7 +19,7 @@
     "classnames": "2.2.6",
     "lodash.debounce": "4.0.8",
     "material-design-icons": "3.0.1",
-    "ng-redux": "3.5.2",
+    "ng-redux": "4.0.3",
     "ngreact": "0.5.1",
     "prop-types": "15.6.2",
     "react": "16.4.2",
