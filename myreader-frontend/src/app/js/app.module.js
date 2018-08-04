@@ -1,5 +1,7 @@
 import angular from 'angular'
 import ngRedux from 'ng-redux'
+import '@uirouter/angularjs'
+import 'ngreact'
 
 import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
