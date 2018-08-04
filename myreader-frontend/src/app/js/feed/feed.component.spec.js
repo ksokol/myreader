@@ -37,7 +37,7 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
     }
 
     const element = $compile('<my-feed></my-feed>')(scope)
-    page = new PageObject(element[0])
+    page = PageObject(element[0])
     scope.$digest()
   }))
 

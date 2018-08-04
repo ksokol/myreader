@@ -27,7 +27,7 @@ describe('src/app/js/shared/component/search-input/search-input.component.spec.j
 
     const element = $compile('<my-search-input my-value="value" my-on-change="myOnChange(value)"></my-search-input>')(scope)
     scope.$digest()
-    page = new PageObject(element)
+    page = PageObject(element)
   }))
 
   it('should set initial value', () => {
@@ -38,7 +38,7 @@ describe('src/app/js/shared/component/search-input/search-input.component.spec.j
     scope.value = null
     const element = $compile('<my-search-input my-value="value"></my-search-input>')(scope)
     scope.$digest()
-    page = new PageObject(element)
+    page = PageObject(element)
 
     expect(page.searchInput().val()).toEqual('')
   }))
