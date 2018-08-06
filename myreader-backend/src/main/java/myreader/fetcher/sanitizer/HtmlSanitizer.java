@@ -23,7 +23,7 @@ public final class HtmlSanitizer {
     }
 
     public static String sanitizeContent(String value) {
-        return trim(CONTENT_POLICY.sanitize(value));
+        return CONTENT_POLICY.sanitize(value);
     }
 
     private static String trim(String value) {

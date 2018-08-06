@@ -135,7 +135,7 @@ public class FetcherEntryTest {
 
     @Test
     public void shouldRemoveJavascript() {
-        assertThat(fetchEntryWithContent("string <script>alert('')</script> string").getContent(), is("string string"));
+        assertThat(fetchEntryWithContent("string <script>alert('')</script> string").getContent(), is("string  string"));
     }
 
     @Test
@@ -145,11 +145,16 @@ public class FetcherEntryTest {
 
     @Test
     public void shouldRemoveXhtmlElementsFromContent() {
-        String raw = "<xhtml:div xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n" +
-                "      Less: <xhtml:em> &lt; </xhtml:em>\n" +
-                "    </xhtml:div>";
+        String raw = "<xhtml:div xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">Less: <xhtml:em> &lt; </xhtml:em></xhtml:div>";
 
-        assertThat(fetchEntryWithContent(raw).getContent(), is("Less: &lt;"));
+        assertThat(fetchEntryWithContent(raw).getContent(), is("Less:  &lt; "));
+    }
+
+    @Test
+    public void shouldRetainWhitespaces() {
+        String raw = "\ntest\ttest1\ntest2\ntest3  test4";
+
+        assertThat(fetchEntryWithContent(raw).getContent(), is("\ntest\ttest1\ntest2\ntest3  test4"));
     }
 
     @Test
