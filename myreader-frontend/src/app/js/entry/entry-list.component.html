@@ -1,14 +1,8 @@
-<my-auto-scroll my-scroll-on="{'data-uuid': $ctrl.entryInFocus.uuid}">
-    <div ng-class="{'focus': $ctrl.isFocused(entry)}"
-         class="my-entry-list__item"
-         data-uuid="{{entry.uuid}}"
-         ng-repeat="entry in $ctrl.entries track by entry.uuid">
-        <div class="my-entry-list__item-content">
-            <react-component name="Entry" props="$ctrl.entryProps(entry)"></react-component>
-            <div class="my-entry-list__item-divider"></div>
-        </div>
-    </div>
-</my-auto-scroll>
+<div class="my-entry-list__item"
+     ng-repeat="entry in $ctrl.entries track by entry.uuid">
+    <react-component name="EntryAutoFocus" props="$ctrl.entryProps(entry)"></react-component>
+    <div class="my-entry-list__item-divider"></div>
+</div>
 
 <react-component ng-if="$ctrl.links.next"
                  name="EntryListLoadMore"

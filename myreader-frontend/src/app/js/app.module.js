@@ -52,7 +52,7 @@ import {
 import {Button, IconButton, IconButtonComponent} from './shared/component/buttons'
 import {Icon} from './shared/component/icon'
 import {Chips} from './shared/component/chips'
-import {Entry} from './entry'
+import {EntryAutoFocus} from './entry'
 
 import './config'
 
@@ -61,7 +61,7 @@ angular
   .value('Icon', Icon)
   .value('IconButton', IconButton)
   .value('Chips', Chips)
-  .value('Entry', Entry)
+  .value('EntryAutoFocus', EntryAutoFocus)
   .value('Button', Button)
 
   .value('SubscriptionTitleInput', SubscriptionTitleInput)

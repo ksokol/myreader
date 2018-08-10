@@ -1,6 +1,7 @@
 import './entry.css'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 import {EntryTitle} from './entry-title/entry-title'
 import {EntryActions} from './entry-actions/entry-actions'
 import {EntryContent} from './entry-content/entry-content'
@@ -22,18 +23,22 @@ class Entry extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    const showContent = props.isDesktop ? props.showEntryDetails || state.showMore : state.showMore
     return {
-      showContent
+      showContent: props.isDesktop ? props.showEntryDetails || state.showMore : state.showMore
     }
   }
 
   toggleMore() {
-    this.setState({showMore: !this.state.showMore})
+    this.setState({
+      showMore: !this.state.showMore
+    })
   }
 
   toggleSeen() {
-    this.props.onChange({...this.props.item, seen: !this.props.item.seen})
+    this.props.onChange({
+      ...this.props.item,
+      seen: !this.props.item.seen
+    })
   }
 
   onTagUpdate(tag) {
@@ -46,17 +51,23 @@ class Entry extends Component {
 
   render() {
     const {
-      title,
-      feedTitle,
-      origin,
-      seen,
-      tag: tags,
-      content,
-      createdAt
-    } = this.props.item
+      item: {
+        title,
+        feedTitle,
+        origin,
+        seen,
+        tag: tags,
+        content,
+        createdAt
+      },
+      className,
+      entryRef
+    } = this.props
+
+    const classes = classNames('my-entry', className)
 
     return (
-      <div className='my-entry'>
+      <div className={classes} ref={entryRef}>
         <div className='my-entry__header'>
           <div className='my-entry__title'>
             <EntryTitle origin={origin}
@@ -71,8 +82,12 @@ class Entry extends Component {
           </div>
         </div>
 
-        {this.state.showMore && <EntryTags tags={tags} onChange={this.onTagUpdate} />}
-        {this.state.showContent && <EntryContent content={content} />}
+        {this.state.showMore &&
+          <EntryTags tags={tags}
+                     onChange={this.onTagUpdate} />}
+
+        {this.state.showContent &&
+          <EntryContent content={content} />}
       </div>
     )
   }
@@ -91,7 +106,9 @@ Entry.propTypes = {
   }).isRequired,
   showEntryDetails: PropTypes.bool.isRequired,
   isDesktop: PropTypes.bool.isRequired,
-  onChange: PropTypes.func.isRequired
+  className: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  entryRef: PropTypes.func
 }
 
 export default Entry

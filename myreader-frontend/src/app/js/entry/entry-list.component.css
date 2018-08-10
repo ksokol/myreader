@@ -1,8 +1,4 @@
-.my-entry-list__item.focus {
-    background-color: rgba(158, 158, 158, 0.2);
-}
-
-.my-entry-list__item-content {
+.my-entry-list__item {
     align-items: center;
     display: flex;
     flex: 1 1 0;
@@ -12,6 +8,10 @@
     position: relative;
 }
 
+.my-entry-list__item > react-component {
+    width: 100%;
+}
+
 .my-entry-list__item-divider {
     border-top: 1px solid rgba(0, 0, 0, 0.12);
     bottom: 0;
@@ -19,9 +19,5 @@
     left: 0;
     margin: 0;
     position: absolute;
-    width: 100%;
-}
-
-.my-entry-list__item-content > react-component {
     width: 100%;
 }

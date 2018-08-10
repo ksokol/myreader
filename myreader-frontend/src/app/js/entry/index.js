@@ -1,1 +1,1 @@
-export {default as Entry}  from './entry'
+export {default as EntryAutoFocus} from './entry-auto-focus'

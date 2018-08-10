@@ -55,10 +55,6 @@ class controller {
     }
   }
 
-  isFocused(item) {
-    return this.entryInFocus.uuid === item.uuid
-  }
-
   loadMore() {
     this.$ngRedux.dispatch(fetchEntries(this.links.next))
   }
@@ -68,6 +64,7 @@ class controller {
       item: entry,
       showEntryDetails: this.showEntryDetails,
       isDesktop: this.isDesktop,
+      focusUuid: this.entryInFocus && this.entryInFocus.uuid,
       onChange: item => this.$ngRedux.dispatch(changeEntry(item))
     }
   }

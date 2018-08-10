@@ -183,6 +183,8 @@ export function shallow(Component) {
   const renderer = new ShallowRenderer()
   renderer.render(Component)
   return {
-    output: () => renderer.getRenderOutput()
+    output: () => renderer.getRenderOutput(),
+    instance: renderer.getMountedInstance(),
+    rerender: () => renderer.render(Component)
   }
 }

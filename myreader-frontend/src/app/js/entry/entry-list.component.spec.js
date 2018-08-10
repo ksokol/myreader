@@ -1,15 +1,14 @@
-import {componentMock, mockNgRedux, multipleReactComponents, reactComponent} from '../shared/test-utils'
+import {mockNgRedux, multipleReactComponents, reactComponent} from '../shared/test-utils'
 
 describe('src/app/js/entry/entry-list.component.spec.js', () => {
 
-  let scope, element, compile, ngReduxMock, autoScroll, loadMore, entries
+  let scope, element, compile, ngReduxMock, loadMore, entries
 
   beforeEach(() => {
-    autoScroll = componentMock('myAutoScroll')
     loadMore = reactComponent('EntryListLoadMore')
-    entries = multipleReactComponents('Entry')
+    entries = multipleReactComponents('EntryAutoFocus')
 
-    angular.mock.module('myreader', autoScroll, loadMore, entries, mockNgRedux())
+    angular.mock.module('myreader', loadMore, entries, mockNgRedux())
   })
 
   beforeEach(inject(($rootScope, $compile, $ngRedux) => {
@@ -39,11 +38,10 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
     element = compile('<my-entry-list></my-entry-list>')(scope)
     scope.$digest()
 
-    expect(autoScroll.bindings.myScrollOn).toEqual({'data-uuid': '2'})
     expect(entries.bindings).toContainObject([
-      {item: {uuid: '1'}, showEntryDetails: false, isDesktop: false},
-      {item: {uuid: '2'}, showEntryDetails: false, isDesktop: false},
-      {item: {uuid: '3'}, showEntryDetails: false, isDesktop: false}
+      {item: {uuid: '1'}, showEntryDetails: false, isDesktop: false, focusUuid: '2'},
+      {item: {uuid: '2'}, showEntryDetails: false, isDesktop: false, focusUuid: '2'},
+      {item: {uuid: '3'}, showEntryDetails: false, isDesktop: false, focusUuid: '2'}
     ])
     expect(loadMore.bindings.disabled).toEqual(false)
   })
@@ -71,17 +69,6 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
       {item: {uuid: '3'}, showEntryDetails: true, isDesktop: true}
     ])
     expect(loadMore.bindings.disabled).toEqual(true)
-  })
-
-  it('should highlight entry that corresponds to entryInFocus', () => {
-    element = compile('<my-entry-list></my-entry-list>')(scope)
-    scope.$digest()
-
-    const entries = element.find('ng-transclude').children()
-
-    expect(entries[0].classList).not.toContain('focus')
-    expect(entries[1].classList).toContain('focus')
-    expect(entries[2].classList).not.toContain('focus')
   })
 
   it('should dispatch action for next page when load more button clicked', () => {

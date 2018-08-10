@@ -1,6 +1,7 @@
 import React from 'react'
 import Entry from './entry'
 import {shallow} from '../shared/test-utils'
+import ReactTestUtils from 'react-dom/test-utils'
 
 class EntryPage {
 
@@ -47,7 +48,8 @@ describe('src/app/js/entry/entry.spec.js', () => {
       },
       showEntryDetails: false,
       isDesktop: true,
-      onChange: jest.fn()
+      onChange: jest.fn(),
+      entryRef: jest.fn()
     }
 
     page = new EntryPage(shallow(<Entry {...props} />))
@@ -101,6 +103,25 @@ describe('src/app/js/entry/entry.spec.js', () => {
       tag: 'tag1',
       uuid: 'expected uuid'
     })
+  })
+
+  it('should trigger prop "entryRef" function with entry ref as argument', done => {
+    props.entryRef = actualRef => {
+      expect(actualRef.classList.toString()).toEqual('my-entry')
+      done()
+    }
+
+    ReactTestUtils.renderIntoDocument(<Entry {...props} />)
+  })
+
+  it('should append prop "className" to entry ref classList', done => {
+    props.className = 'expected-class'
+    props.entryRef = actualRef => {
+      expect(actualRef.classList.toString()).toEqual('my-entry expected-class')
+      done()
+    }
+
+    ReactTestUtils.renderIntoDocument(<Entry {...props} />)
   })
 
   describe('showContent', () => {
