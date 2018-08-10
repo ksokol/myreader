@@ -37,9 +37,8 @@ class controller {
   constructor($ngRedux) {
     'ngInject'
     this.$ngRedux = $ngRedux
-    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
 
-    this.loadMore = this.loadMore.bind(this)
+    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis.bind(this))(this)
   }
 
   $onDestroy() {
@@ -55,8 +54,10 @@ class controller {
     }
   }
 
-  loadMore() {
-    this.$ngRedux.dispatch(fetchEntries(this.links.next))
+  mapDispatchToThis(dispatch) {
+    return {
+      loadMore: () => dispatch(fetchEntries(this.links.next))
+    }
   }
 
   entryProps(entry) {
