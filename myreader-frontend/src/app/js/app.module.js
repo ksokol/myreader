@@ -52,7 +52,7 @@ import {
 import {Button, IconButton, IconButtonComponent} from './shared/component/buttons'
 import {Icon} from './shared/component/icon'
 import {Chips} from './shared/component/chips'
-import {EntryAutoFocus} from './entry'
+import {EntryAutoFocus} from './components'
 
 import './config'
 

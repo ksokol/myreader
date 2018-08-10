@@ -1,6 +1,6 @@
 import React from 'react'
 import Entry from './entry'
-import {shallow} from '../shared/test-utils'
+import {shallow} from '../../shared/test-utils'
 import ReactTestUtils from 'react-dom/test-utils'
 
 class EntryPage {
@@ -30,7 +30,7 @@ class EntryPage {
   }
 }
 
-describe('src/app/js/entry/entry.spec.js', () => {
+describe('src/app/js/components/entry/entry.spec.js', () => {
 
   let props, page
 

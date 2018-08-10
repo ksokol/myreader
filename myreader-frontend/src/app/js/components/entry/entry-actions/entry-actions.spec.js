@@ -2,7 +2,7 @@ import React from 'react'
 import {EntryActions} from './entry-actions'
 import TestRenderer from 'react-test-renderer'
 
-describe('src/app/js/entry/entry-actions/entry-actions.spec.js', () => {
+describe('src/app/js/components/entry/entry-actions/entry-actions.spec.js', () => {
 
   let props
 
