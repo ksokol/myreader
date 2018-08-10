@@ -4,7 +4,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {
   changeEntry,
-  entryClear,
   fetchEntries,
   getEntries,
   mediaBreakpointIsDesktopSelector,
@@ -43,7 +42,6 @@ class controller {
 
   $onDestroy() {
     this.unsubscribe()
-    this.$ngRedux.dispatch(entryClear())
   }
 
   mapStateToThis(state) {

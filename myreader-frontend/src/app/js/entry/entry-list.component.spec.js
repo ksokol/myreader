@@ -91,14 +91,6 @@ describe('src/app/js/entry/entry-list.component.spec.js', () => {
     expect(ngReduxMock.getActions()[0].url).toContain('expected-path')
   })
 
-  it('should purge entries from store when component is about to be destroyed', () => {
-    element = compile('<my-entry-list></my-entry-list>')(scope)
-    scope.$digest()
-
-    scope.$destroy()
-    expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_CLEAR'])
-  })
-
   it('should dispatch ENTRY_PATCH action when prop "onChange" function triggered', () => {
     element = compile('<my-entry-list></my-entry-list>')(scope)
     scope.$digest()
