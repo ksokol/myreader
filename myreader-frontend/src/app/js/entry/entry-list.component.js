@@ -35,9 +35,8 @@ class controller {
 
   constructor($ngRedux) {
     'ngInject'
-    this.$ngRedux = $ngRedux
 
-    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis.bind(this))(this)
+    this.unsubscribe = $ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis.bind(this))(this)
   }
 
   $onDestroy() {
@@ -54,7 +53,8 @@ class controller {
 
   mapDispatchToThis(dispatch) {
     return {
-      loadMore: () => dispatch(fetchEntries(this.links.next))
+      loadMore: () => dispatch(fetchEntries(this.links.next)),
+      onChange: item => dispatch(changeEntry(item))
     }
   }
 
@@ -64,7 +64,7 @@ class controller {
       showEntryDetails: this.showEntryDetails,
       isDesktop: this.isDesktop,
       focusUuid: this.entryInFocus && this.entryInFocus.uuid,
-      onChange: item => this.$ngRedux.dispatch(changeEntry(item))
+      onChange: this.onChange
     }
   }
 
