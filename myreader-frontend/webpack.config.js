@@ -1,13 +1,15 @@
 'use strict'
 
+const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+const WebpackPwaManifest = require('webpack-pwa-manifest')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 require('babel-plugin-angularjs-annotate')
 
 const ENV = process.env.npm_lifecycle_event
@@ -20,11 +22,9 @@ const environment = isTest ? 'test' : isServed ? 'development' : 'production'
 
 const BACKEND_PORT = 19340
 const BACKEND_CONTEXT = 'myreader'
+const PUBLIC_URL = environment === 'production' ? `/${BACKEND_CONTEXT}` : ''
 
 module.exports = function makeWebpackConfig() {
-  /**
-   * Reference: http://webpack.github.io/docs/configuration.html
-   */
   const config = {}
 
   config.mode = isProd ? 'production' : 'development'
@@ -41,15 +41,11 @@ module.exports = function makeWebpackConfig() {
     app: './src/app/js/main.js'
   }
 
-  /**
-   * Reference: http://webpack.github.io/docs/configuration.html#output
-   * Should be an empty object if it's generating a test build
-   * Karma will handle setting it up for you when it's a test build
-   //  */
   config.output = isTest ? {} : {
-    path: __dirname + '/dist',
+    path: path.resolve('./dist'),
     filename: isProd ? 'app/[name].[contenthash].js' : '[name].bundle.js',
-    chunkFilename: isProd ? 'app/[name].[contenthash].js' : '[name].bundle.js'
+    chunkFilename: isProd ? 'app/[name].[contenthash].js' : '[name].bundle.js',
+    publicPath: `${PUBLIC_URL}/`
   }
 
   config.optimization = {
@@ -135,17 +131,17 @@ module.exports = function makeWebpackConfig() {
     new CleanWebpackPlugin(['dist']),
     new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'}),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(environment)
+      'process.env.NODE_ENV': JSON.stringify(environment),
+      'process.env.PUBLIC_URL': JSON.stringify(PUBLIC_URL),
     })
   ]
 
-  // Skip rendering index.html in test mode
   if (!isTest) {
-    // Reference: https://github.com/ampedandwired/html-webpack-plugin
     config.plugins.push(
       new HtmlWebpackPlugin({
         template: './src/index.html',
         inject: 'body',
+        favicon: './src/app/img/favicon.ico',
         minify: {
           collapseWhitespace: true
         }
@@ -161,37 +157,29 @@ module.exports = function makeWebpackConfig() {
 
   if (isProd) {
     config.plugins.push(
-      new FaviconsWebpackPlugin({
-        logo: './src/app/img/favicon.png',
-        // The prefix for all image files (might be a folder or a name)
-        prefix: 'app/icons-[hash]/',
-        // Emit all stats of the generated icons
-        emitStats: false,
-        // The name of the json containing all favicon information
-        statsFilename: 'iconstats-[hash].json',
-        // Generate a cache file with control hashes and
-        // don't rebuild the favicons until those hashes change
-        persistentCache: true,
-        // Inject the html into the html-webpack-plugin
-        inject: true,
-        // favicon background color (see https://github.com/haydenbleasel/favicons#usage)
-        background: '#fff',
-        // favicon app title (see https://github.com/haydenbleasel/favicons#usage)
-        title: 'MyReader',
+      new SWPrecacheWebpackPlugin({
+        filename: 'service-worker.js',
+        minify: true,
+        navigateFallback: PUBLIC_URL + '/index.html'
+      }),
 
-        // which icons should be generated (see https://github.com/haydenbleasel/favicons#usage)
-        icons: {
-          android: true,
-          appleIcon: false,
-          appleStartup: false,
-          coast: false,
-          favicons: true,
-          firefox: true,
-          opengraph: false,
-          twitter: false,
-          yandex: false,
-          windows: false
-        }
+      new WebpackPwaManifest({
+        name: 'Myreader',
+        short_name: 'Myreader',
+        lang: 'en-US',
+        background_color: '#fff',
+        orientation: 'any',
+        display: 'standalone',
+        start_url: '.',
+        scope: PUBLIC_URL,
+        icons: [
+          {
+            src: path.resolve('./src/app/img/favicon.png'),
+            destination: 'assets',
+            sizes: [36, 48, 72, 96, 128, 192, 256, 384, 512],
+            type: 'image/png'
+          }
+        ]
       })
     )
   }
