@@ -8,6 +8,7 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 require('babel-plugin-angularjs-annotate')
 
 const ENV = process.env.npm_lifecycle_event
@@ -20,6 +21,7 @@ const environment = isTest ? 'test' : isServed ? 'development' : 'production'
 
 const BACKEND_PORT = 19340
 const BACKEND_CONTEXT = 'myreader'
+const PUBLIC_URL = environment === 'production' ? `/${BACKEND_CONTEXT}` : ''
 
 module.exports = function makeWebpackConfig() {
   /**
@@ -135,7 +137,8 @@ module.exports = function makeWebpackConfig() {
     new CleanWebpackPlugin(['dist']),
     new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'}),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(environment)
+      'process.env.NODE_ENV': JSON.stringify(environment),
+      'process.env.PUBLIC_URL': JSON.stringify(PUBLIC_URL),
     })
   ]
 
@@ -161,6 +164,11 @@ module.exports = function makeWebpackConfig() {
 
   if (isProd) {
     config.plugins.push(
+      new SWPrecacheWebpackPlugin({
+        filename: 'service-worker.js',
+        minify: true,
+        navigateFallback: PUBLIC_URL + '/index.html'
+      }),
       new FaviconsWebpackPlugin({
         logo: './src/app/img/favicon.png',
         // The prefix for all image files (might be a folder or a name)

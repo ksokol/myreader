@@ -65,6 +65,7 @@
     "stylelint": "9.4.0",
     "stylelint-config-standard": "18.2.0",
     "svg-url-loader": "2.3.2",
+    "sw-precache-webpack-plugin": "0.11.5",
     "webpack": "4.16.4",
     "webpack-bundle-analyzer": "2.13.1",
     "webpack-cli": "3.1.0",
