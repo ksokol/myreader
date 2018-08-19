@@ -160,7 +160,7 @@ module.exports = function makeWebpackConfig() {
       new SWPrecacheWebpackPlugin({
         filename: 'service-worker.js',
         minify: true,
-        navigateFallback: PUBLIC_URL + '/index.html'
+        navigateFallback: PUBLIC_URL
       }),
 
       new WebpackPwaManifest({
