@@ -164,6 +164,8 @@ module.exports = function makeWebpackConfig() {
       }),
 
       new WebpackPwaManifest({
+        filename: "app/manifest.[hash].json",
+        includeDirectory: true,
         name: 'Myreader',
         short_name: 'Myreader',
         lang: 'en-US',
