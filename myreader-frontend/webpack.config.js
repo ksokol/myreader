@@ -172,7 +172,7 @@ module.exports = function makeWebpackConfig() {
         background_color: '#fff',
         orientation: 'any',
         display: 'standalone',
-        start_url: '.',
+        start_url: PUBLIC_URL,
         scope: PUBLIC_URL,
         icons: [
           {
