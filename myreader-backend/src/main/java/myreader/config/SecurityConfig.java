@@ -69,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void configure(WebSecurity webSecurity) throws Exception {
             webSecurity
                     .ignoring()
-                    .antMatchers(LANDING_PAGE.mapping(), "/app/**", "/index.html");
+                    .antMatchers(LANDING_PAGE.mapping(), "/app/**", "/index.html", "/favicon.ico", "/service-worker.js");
         }
 
         @Override
