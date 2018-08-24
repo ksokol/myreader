@@ -172,8 +172,8 @@ module.exports = function makeWebpackConfig() {
         background_color: '#fff',
         orientation: 'any',
         display: 'standalone',
-        start_url: PUBLIC_URL,
-        scope: PUBLIC_URL,
+        start_url: `${PUBLIC_URL}/`,
+        scope: `${PUBLIC_URL}/`,
         icons: [
           {
             src: path.resolve('./src/app/img/favicon.png'),
