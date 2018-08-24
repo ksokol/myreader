@@ -170,6 +170,7 @@ module.exports = function makeWebpackConfig() {
         short_name: 'Myreader',
         lang: 'en-US',
         background_color: '#fff',
+        theme_color: '#3f51b5',
         orientation: 'any',
         display: 'standalone',
         start_url: `${PUBLIC_URL}/`,
