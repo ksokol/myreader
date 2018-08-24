@@ -12,11 +12,12 @@ import java.util.regex.Pattern;
  */
 public final class HtmlSanitizer {
 
-    private static final Pattern PROTOCOL = Pattern.compile("^http(s)?://.*", Pattern.DOTALL);
+    private static final Pattern HTTP_PROTOCOLS = Pattern.compile("^http(s)?://.*", Pattern.DOTALL);
+    private static final Pattern SECURE_HTTP_PROTOCOL = Pattern.compile("^https://.*", Pattern.DOTALL);
     private static final PolicyFactory TITLE_POLICY = initializeTitlePolicyFactory();
     private static final PolicyFactory CONTENT_POLICY = initializeContentPolicyFactory();
 
-    private HtmlSanitizer() { /* prevent initialization */}
+    private HtmlSanitizer() {/* prevent initialization */}
 
     public static String sanitizeTitle(String value) {
         return trim(StringEscapeUtils.unescapeHtml4(TITLE_POLICY.sanitize(value)));
@@ -41,14 +42,14 @@ public final class HtmlSanitizer {
                 .and(Sanitizers.TABLES)
                 .and(new HtmlPolicyBuilder()
                         .allowAttributes("src")
-                        .matching(PROTOCOL)
+                        .matching(SECURE_HTTP_PROTOCOL)
                         .onElements("img")
 
                         .allowAttributes("alt")
                         .onElements("img")
 
                         .allowAttributes("href")
-                        .matching(PROTOCOL)
+                        .matching(HTTP_PROTOCOLS)
                         .onElements("a")
                         .allowElements((elementName, attributes) -> {
                             if (attributes.contains("href")) {

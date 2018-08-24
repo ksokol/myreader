@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
@@ -110,18 +111,18 @@ public class FetcherEntryTest {
     }
 
     @Test
-    public void shouldAllowImageTagWithInsecureUrl() {
+    public void shouldDisallowImageTagWithInsecureUrl() {
         assertThat(
                 fetchEntryWithContent("<img src=\"http://example.com/test.html\"></img>").getContent(),
-                is("<img src=\"http://example.com/test.html\" />")
+                isEmptyString()
         );
     }
 
     @Test
     public void shouldRemoveWidthAndHeightAttributesFromImage() {
         assertThat(
-                fetchEntryWithContent("<img width=\"800\" height=\"600\" alt=\"alt text\" src=\"http://example.com\"></img>").getContent(),
-                is("<img alt=\"alt text\" src=\"http://example.com\" />")
+                fetchEntryWithContent("<img width=\"800\" height=\"600\" alt=\"alt text\" src=\"https://example.com\"></img>").getContent(),
+                is("<img alt=\"alt text\" src=\"https://example.com\" />")
         );
     }
 
