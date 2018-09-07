@@ -1,17 +1,21 @@
 import './button.css'
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 const Button = props => {
   const {
     type,
     disabled,
+    className,
     onClick,
     children
   } = props
 
+  const classes = classNames('my-button', className)
+
   return (
-    <button className='my-button'
+    <button className={classes}
             type={type}
             onClick={onClick}
             disabled={disabled}>
@@ -23,6 +27,7 @@ const Button = props => {
 Button.propTypes = {
   type: PropTypes.string,
   disabled: PropTypes.bool,
+  className: PropTypes.string,
   onClick: PropTypes.func.isRequired,
   children: PropTypes.node
 }

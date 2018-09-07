@@ -1,5 +1,5 @@
 import React from 'react'
-import TestRenderer from 'react-test-renderer'
+import {shallow} from 'enzyme'
 import Button from './button'
 
 describe('src/app/js/shared/component/buttons/button/button.spec.js', () => {
@@ -8,16 +8,18 @@ describe('src/app/js/shared/component/buttons/button/button.spec.js', () => {
 
   beforeEach(() => {
     props = {
+      className: 'expected-class',
       onClick: jest.fn(),
       children: 'expected children'
     }
   })
 
-  const createInstance = () => TestRenderer.create(<Button {...props} />).root
+  const shallowRender = () => shallow(<Button {...props} />)
 
   it('should pass expected props with default values to button', () => {
-    expect(createInstance().props).toContainObject({
+    expect(shallowRender().find('button').props()).toContainObject({
       type: 'button',
+      className: 'my-button expected-class',
       disabled: false,
       children: 'expected children'
     })
@@ -27,14 +29,14 @@ describe('src/app/js/shared/component/buttons/button/button.spec.js', () => {
     props.type = 'submit'
     props.disabled = true
 
-    expect(createInstance().props).toContainObject({
+    expect(shallowRender().find('button').props()).toContainObject({
       type: 'submit',
       disabled: true
     })
   })
 
   it('should trigger prop "onClick" function when button clicked', () => {
-    createInstance().props.onClick()
+    shallowRender().find('button').props().onClick()
 
     expect(props.onClick).toHaveBeenCalled()
   })
