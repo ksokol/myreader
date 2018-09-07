@@ -19,7 +19,7 @@ describe('src/app/js/components/entry/entry-auto-focus.spec.js', () => {
       },
       showEntryDetails: true,
       isDesktop: true,
-      onChange: jest.fn()
+      onChangeEntry: jest.fn()
     }
 
     el = {

@@ -28,7 +28,7 @@ import {
 } from './subscription/subscription.component'
 import {ToastComponent} from './shared/component/toast/toast.component'
 import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
-import {EntryListComponent, EntryListLoadMore} from './entry/entry-list.component'
+import {EntryListComponent} from './entry/entry-list.component'
 import createApplicationStore from './store/bootstrap'
 import {ListPageComponent} from './shared/component/list-page/list-page.component'
 import {BookmarkComponent} from './bookmark/bookmark.component'
@@ -52,7 +52,7 @@ import {
 import {Button, IconButton, IconButtonComponent} from './shared/component/buttons'
 import {Icon} from './shared/component/icon'
 import {Chips} from './shared/component/chips'
-import {EntryAutoFocus} from './components'
+import {EntryList} from './components'
 
 import './config'
 
@@ -61,7 +61,7 @@ angular
   .value('Icon', Icon)
   .value('IconButton', IconButton)
   .value('Chips', Chips)
-  .value('EntryAutoFocus', EntryAutoFocus)
+  .value('EntryList', EntryList)
   .value('Button', Button)
 
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
@@ -73,7 +73,6 @@ angular
   .value('FeedUrlInput', FeedUrlInput)
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
-  .value('EntryListLoadMore', EntryListLoadMore)
   .value('FeedFetchErrorLoadMore', FeedFetchErrorLoadMore)
 
   .component('myFeedFetchError', FeedFetchErrorComponent)

@@ -1,7 +1,3 @@
-import template from './entry-list.component.html'
-import './entry-list.component.css'
-import React from 'react'
-import PropTypes from 'prop-types'
 import {
   changeEntry,
   fetchEntries,
@@ -9,27 +5,6 @@ import {
   mediaBreakpointIsDesktopSelector,
   settingsShowEntryDetailsSelector
 } from '../store'
-import {Button} from '../shared/component/buttons'
-import {IntersectionObserver} from '../shared/component/intersection-observer'
-
-/**
- * @deprecated
- */
-export const EntryListLoadMore = props => {
-  return (
-    <IntersectionObserver onIntersection={props.onClick}>
-      <Button onClick={props.onClick}
-              disabled={props.disabled}>
-        Load More
-      </Button>
-    </IntersectionObserver>
-  )
-}
-
-EntryListLoadMore.propTypes = {
-  disabled: PropTypes.bool,
-  onClick: PropTypes.func.isRequired
-}
 
 class controller {
 
@@ -53,30 +28,29 @@ class controller {
 
   mapDispatchToThis(dispatch) {
     return {
-      loadMore: () => dispatch(fetchEntries(this.links.next)),
+      loadMore: link => dispatch(fetchEntries(link)),
       onChange: item => dispatch(changeEntry(item))
     }
   }
 
-  entryProps(entry) {
+  get props() {
     return {
-      item: entry,
+      links: this.links,
+      entries: [...this.entries],
       showEntryDetails: this.showEntryDetails,
       isDesktop: this.isDesktop,
       focusUuid: this.entryInFocus && this.entryInFocus.uuid,
-      onChange: this.onChange
-    }
-  }
-
-  get loadMoreProps() {
-    return {
-      disabled: this.loading,
-      onClick: this.loadMore,
-      onIntersection: this.loadMore
+      loading: this.loading,
+      onChangeEntry: this.onChange,
+      onLoadMore: this.loadMore
     }
   }
 }
 
+/**
+ * @deprecated
+ */
 export const EntryListComponent = {
-  template, controller
+  template: '<react-component name="EntryList" props="$ctrl.props"></react-component>',
+  controller
 }

@@ -35,14 +35,14 @@ class Entry extends Component {
   }
 
   toggleSeen() {
-    this.props.onChange({
+    this.props.onChangeEntry({
       ...this.props.item,
       seen: !this.props.item.seen
     })
   }
 
   onTagUpdate(tag) {
-    this.props.onChange({
+    this.props.onChangeEntry({
       uuid: this.props.item.uuid,
       seen: this.props.item.seen,
       tag
@@ -107,7 +107,7 @@ Entry.propTypes = {
   showEntryDetails: PropTypes.bool.isRequired,
   isDesktop: PropTypes.bool.isRequired,
   className: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
+  onChangeEntry: PropTypes.func.isRequired,
   entryRef: PropTypes.func
 }
 

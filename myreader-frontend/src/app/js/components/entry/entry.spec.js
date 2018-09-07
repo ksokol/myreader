@@ -48,7 +48,7 @@ describe('src/app/js/components/entry/entry.spec.js', () => {
       },
       showEntryDetails: false,
       isDesktop: true,
-      onChange: jest.fn(),
+      onChangeEntry: jest.fn(),
       entryRef: jest.fn()
     }
 
@@ -91,14 +91,14 @@ describe('src/app/js/components/entry/entry.spec.js', () => {
   it('should update seen flag when entryActions component fired myOnCheck event', () => {
     page.entryActions().props.onToggleSeen()
 
-    expect(props.onChange).toHaveBeenCalledWith({...props.item, seen: !props.item.seen})
+    expect(props.onChangeEntry).toHaveBeenCalledWith({...props.item, seen: !props.item.seen})
   })
 
   it('should update tag when entryTags component fired onSelect event', () => {
     page.entryActions().props.onToggleShowMore()
     page.entryTags().props.onChange('tag1')
 
-    expect(props.onChange).toHaveBeenCalledWith({
+    expect(props.onChangeEntry).toHaveBeenCalledWith({
       seen: false,
       tag: 'tag1',
       uuid: 'expected uuid'

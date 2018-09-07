@@ -1,0 +1,79 @@
+import './entry-list.css'
+import React from 'react'
+import PropTypes from 'prop-types'
+import {IntersectionObserver} from '../../shared/component/intersection-observer'
+import {Button} from '../../shared/component/buttons'
+import {EntryAutoFocus} from '../'
+
+class EntryList extends React.Component {
+
+  constructor(props) {
+    super(props)
+
+    this.loadMore = this.loadMore.bind(this)
+  }
+
+  get hasNextPage() {
+    return !!this.props.links.next
+  }
+
+  loadMore() {
+    this.props.onLoadMore(this.props.links.next)
+  }
+
+  render() {
+    const {
+      entries,
+      showEntryDetails,
+      isDesktop,
+      focusUuid,
+      loading,
+      onChangeEntry
+    } = this.props
+
+    const props = {
+      isDesktop,
+      showEntryDetails,
+      onChangeEntry,
+      focusUuid
+    }
+
+    return [
+      <div className='my-entry-list' key='entry-list'>
+        {entries.map(entryProps =>
+          <div className="my-entry-list__item" key={entryProps.uuid}>
+            <EntryAutoFocus {...{item: {...entryProps}, ...props}} />
+          </div>
+        )}
+      </div>,
+      this.hasNextPage &&
+        <IntersectionObserver onIntersection={this.loadMore} key='load-more'>
+          <Button className='my-button__load-more' disabled={loading} onClick={this.loadMore}>Load More</Button>
+        </IntersectionObserver>
+    ]
+  }
+}
+
+EntryList.propTypes = {
+  links: PropTypes.shape({
+    next: PropTypes.any
+  }).isRequired,
+  entries: PropTypes.arrayOf(
+    PropTypes.shape({
+      uuid: PropTypes.string.isRequired
+    })
+  ),
+  focusUuid: PropTypes.string,
+  showEntryDetails: PropTypes.bool.isRequired,
+  isDesktop: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
+  onChangeEntry: PropTypes.func.isRequired,
+  onLoadMore: PropTypes.func.isRequired
+}
+
+EntryList.defaultTypes = {
+  links: {},
+  entries: []
+}
+
+export default EntryList
