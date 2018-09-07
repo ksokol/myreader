@@ -164,7 +164,7 @@ export function tick(millis = 0) {
 }
 
 /**
- * @deprecated Use {@link shallow(Component)} instead.
+ * @deprecated Use enzyme instead.
  */
 export function shallowInstance(Component) {
   const renderer = new ShallowRenderer()
@@ -173,12 +173,15 @@ export function shallowInstance(Component) {
 }
 
 /**
- * @deprecated Use {@link shallow(Component)} instead.
+ * @deprecated Use enzyme instead.
  */
 export function shallowOutput(Component) {
   return shallowInstance(Component).getRenderOutput()
 }
 
+/**
+ * @deprecated Use enzyme instead.
+ */
 export function shallow(Component) {
   const renderer = new ShallowRenderer()
   renderer.render(Component)
