@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
+import './intersection-observer.css'
 
 class IntersectionObserver extends Component {
 
@@ -27,7 +28,7 @@ class IntersectionObserver extends Component {
 
   render() {
     return (
-      <div ref={this.myRef}>
+      <div className='my-intersection-observer' ref={this.myRef}>
         {this.props.children}
       </div>
     )
