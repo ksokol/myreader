@@ -4,7 +4,7 @@ import ReactTestUtils from 'react-dom/test-utils'
 import Input from './input'
 import * as ReactDOM from 'react-dom'
 
-describe('src/app/js/shared/component/input/input.spec.js', () => {
+describe('src/app/js/components/input/input.spec.js', () => {
 
   let props
 

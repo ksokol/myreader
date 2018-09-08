@@ -2,7 +2,7 @@ import template from './login.component.html'
 import './login.component.css'
 import {adminPermissionSelector, authorizedSelector, routeChange, tryLogin} from '../store'
 import React from 'react'
-import {Input} from '../shared/component/input'
+import {Input} from '../components'
 
 /**
  * @deprecated

@@ -1,6 +1,6 @@
 import template from './search-input.component.html'
 import './search-input.component.css'
-import {Input, withDebounce} from '../input'
+import {Input, withDebounce} from '../../../components'
 
 /**
  * @deprecated

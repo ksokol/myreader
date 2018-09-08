@@ -1,6 +1,6 @@
 import template from './autocomplete-input.component.html'
 import './autocomplete-input.component.css'
-import {Input} from '../input'
+import {Input} from '../../../components'
 
 /**
  * @deprecated

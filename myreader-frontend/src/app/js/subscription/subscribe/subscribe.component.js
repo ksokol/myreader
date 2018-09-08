@@ -2,7 +2,7 @@ import template from './subscribe.component.html'
 import './subscribe.component.css'
 import {routeChange, saveSubscription} from '../../store'
 import React from 'react'
-import {Input, withValidations} from '../../shared/component/input'
+import {Input, withValidations} from '../../components'
 
 /**
  * @deprecated

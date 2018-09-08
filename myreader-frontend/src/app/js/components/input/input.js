@@ -2,7 +2,7 @@ import './input.css'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import {noop} from '../../../shared/utils'
+import {noop} from '../../shared/utils'
 
 class Input extends Component {
 

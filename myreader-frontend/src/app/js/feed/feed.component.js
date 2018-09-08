@@ -1,7 +1,7 @@
 import template from './feed.component.html'
 import './feed.component.css'
 import {changeFeed, deleteFeed, feedSelector} from '../store'
-import {Input, withValidations} from '../shared/component/input'
+import {Input, withValidations} from '../components'
 
 /**
  * @deprecated

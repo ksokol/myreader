@@ -4,7 +4,7 @@ import ReactTestRenderer from 'react-test-renderer'
 
 const ComponentToWrap = () => <wrapped-component />
 
-describe('src/app/js/shared/component/input/with-debounce.spec.js', () => {
+describe('src/app/js/components/input/with-debounce.spec.js', () => {
 
   let props
 
