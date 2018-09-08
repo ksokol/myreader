@@ -2,7 +2,7 @@ import Chip from './chip'
 import React from 'react'
 import TestRenderer from 'react-test-renderer'
 
-describe('src/app/js/shared/component/chips/chip.spec.js', () => {
+describe('src/app/js/components/chips/chip.spec.js', () => {
 
   let props
 

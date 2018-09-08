@@ -2,8 +2,8 @@ import './chips.css'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Chip from './chip'
-import {Input} from '../input'
-import {Hotkeys} from '../hotkeys'
+import {Input} from '../../shared/component/input'
+import {Hotkeys} from '../../shared/component/hotkeys'
 
 class Chips extends Component {
 

@@ -51,8 +51,7 @@ import {
 } from './shared/component/autocomplete-input'
 import {IconButton, IconButtonComponent} from './shared/component/buttons'
 import {Icon} from './shared/component/icon'
-import {Chips} from './shared/component/chips'
-import {EntryList, Button} from './components'
+import {EntryList, Button, Chips} from './components'
 
 import './config'
 

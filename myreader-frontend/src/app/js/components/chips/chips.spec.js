@@ -1,8 +1,8 @@
 import React from 'react'
-import {shallow} from '../../test-utils'
+import {shallow} from '../../shared/test-utils'
 import Chips from './chips'
 
-describe('src/app/js/shared/component/chips/chips.spec.js', () => {
+describe('src/app/js/components/chips/chips.spec.js', () => {
 
   let props
 

@@ -2,8 +2,8 @@ import './chip.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import {IconButton} from '../buttons'
-import {noop} from '../../../shared/utils'
+import {IconButton} from '../../shared/component/buttons'
+import {noop} from '../../shared/utils'
 
 const Chip = props => {
   const isDisabled = props.disabled

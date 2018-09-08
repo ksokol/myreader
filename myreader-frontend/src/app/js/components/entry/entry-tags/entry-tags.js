@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {Chips} from '../../../shared/component/chips'
+import {Chips} from '../../../components'
 
 class EntryTags extends Component {
 
