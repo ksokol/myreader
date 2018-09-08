@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {IconButton} from '../..'
+import {IconButton} from '../../..'
 
 export const EntryActions = props => [
   <IconButton

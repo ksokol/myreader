@@ -1,7 +1,7 @@
 import './entry-title.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {TimeAgo} from '../..'
+import {TimeAgo} from '../../..'
 
 export const EntryTitle = props => [
   <a key="title"

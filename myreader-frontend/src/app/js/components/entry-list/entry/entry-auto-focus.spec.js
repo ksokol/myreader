@@ -1,8 +1,8 @@
 import React from 'react'
-import {shallow} from '../../shared/test-utils'
+import {shallow} from '../../../shared/test-utils'
 import EntryAutoFocus from './entry-auto-focus'
 
-describe('src/app/js/components/entry/entry-auto-focus.spec.js', () => {
+describe('src/app/js/components/entry-list/entry/entry-auto-focus.spec.js', () => {
 
   let props, el
 
