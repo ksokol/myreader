@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Chip from './chip'
 import {Input} from '../../shared/component/input'
-import {Hotkeys} from '../../shared/component/hotkeys'
+import {Hotkeys} from '..'
 
 class Chips extends Component {
 
