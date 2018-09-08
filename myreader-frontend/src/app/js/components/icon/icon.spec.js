@@ -1,8 +1,8 @@
 import React from 'react'
-import {shallowOutput} from '../../test-utils'
+import {shallowOutput} from '../../shared/test-utils'
 import Icon from './icon'
 
-describe('src/app/js/shared/component/icon/icon.spec.js', () => {
+describe('src/app/js/components/icon/icon.spec.js', () => {
 
   it('should render close icon with default color', () => {
     expect(shallowOutput(<Icon type="close"/>))
