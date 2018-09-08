@@ -2,7 +2,7 @@ my-icon-button {
     background: transparent;
 }
 
-.my-icon-button {
+.my-icon-button-deprecated {
     background-color: inherit;
     border-radius: 50%;
     border: 1px;
@@ -16,7 +16,7 @@ my-icon-button {
 }
 
 @media (min-width: 1280px) {
-    .my-icon-button {
+    .my-icon-button-deprecated {
         height: inherit;
         width: inherit;
     }
