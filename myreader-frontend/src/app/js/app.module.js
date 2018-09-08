@@ -49,8 +49,8 @@ import {
   AutocompleteSuggestionsComponent,
   AutocompleteSuggestionsItemTextComponent
 } from './shared/component/autocomplete-input'
-import {IconButton, IconButtonComponent} from './shared/component/buttons'
-import {Button, Chips, EntryList, Icon} from './components'
+import {IconButtonComponent} from './shared/component/buttons/icon-button/icon-button.component'
+import {Button, Chips, EntryList, Icon, IconButton} from './components'
 
 import './config'
 

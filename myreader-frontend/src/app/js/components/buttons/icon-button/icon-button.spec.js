@@ -1,9 +1,9 @@
 import React from 'react'
-import {shallowOutput} from '../../../test-utils'
+import {shallowOutput} from '../../../shared/test-utils'
 import IconButton from './icon-button'
 import TestRenderer from 'react-test-renderer'
 
-describe('src/app/js/shared/component/buttons/icon-button/icon-button.spec.js', () => {
+describe('src/app/js/components/buttons/icon-button/icon-button.spec.js', () => {
 
   it('should contain expected props', () => {
     const instance = shallowOutput(<IconButton className="expected-className" type="close" color="white" disabled={true}/>)
