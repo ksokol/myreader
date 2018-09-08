@@ -1,8 +1,7 @@
 import './entry-list.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {IntersectionObserver} from '../../shared/component/intersection-observer'
-import {EntryAutoFocus, Button} from '../'
+import {EntryAutoFocus, Button, IntersectionObserver} from '../'
 
 const entry = (entryProps, props) => (
   <div className="my-entry-list__item" key={entryProps.uuid}>
