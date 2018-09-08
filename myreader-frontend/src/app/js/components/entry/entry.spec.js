@@ -1,32 +1,35 @@
 import React from 'react'
 import Entry from './entry'
-import {shallow} from '../../shared/test-utils'
-import ReactTestUtils from 'react-dom/test-utils'
+import {shallow, mount} from 'enzyme'
+import {EntryActions} from './entry-actions/entry-actions'
+import EntryTags from './entry-tags/entry-tags'
+import {EntryTitle} from './entry-title/entry-title'
+import {EntryContent} from './entry-content/entry-content'
 
 class EntryPage {
 
-  constructor({output}) {
-    this.output = output
+  constructor(wrapper) {
+    this.wrapper = wrapper
   }
 
-  entryHeader() {
-    return this.output().props.children[0].props.children
+  setProps(props) {
+    this.wrapper.setProps(props)
   }
 
   entryTitle() {
-    return this.entryHeader()[0].props.children
+    return this.wrapper.find(EntryTitle)
   }
 
   entryActions() {
-    return this.entryHeader()[1].props.children
+    return this.wrapper.find(EntryActions)
   }
 
   entryTags() {
-    return this.output().props.children[1]
+    return this.wrapper.find(EntryTags)
   }
 
   entryContent() {
-    return this.output().props.children[2]
+    return this.wrapper.find(EntryContent)
   }
 }
 
@@ -56,47 +59,36 @@ describe('src/app/js/components/entry/entry.spec.js', () => {
   })
 
   it('should propagate item to child components', () => {
-    page.entryActions().props.onToggleShowMore()
+    page.entryActions().props().onToggleShowMore()
 
-    expect(page.entryTitle().props).toContainObject({
+    expect(page.entryTitle().props()).toContainObject({
       title: props.item.title,
       feedTitle: props.item.feedTitle,
       origin: props.item.origin,
       createdAt: props.item.createdAt
     })
-    expect(page.entryActions().props).toContainObject({seen: props.item.seen})
-    expect(page.entryTags().props).toContainObject({tags: props.item.tag})
-    expect(page.entryContent().props).toEqual({content: props.item.content})
+    expect(page.entryActions().props()).toContainObject({seen: props.item.seen})
+    expect(page.entryTags().props()).toContainObject({tags: props.item.tag})
+    expect(page.entryContent().props()).toEqual({content: props.item.content})
   })
 
-  it('should show or hide entryTags component based on showMore flag', () => {
-    page.entryActions().props.onToggleShowMore()
-    expect(page.entryTags()).toBeDefined()
+  it('should pass expected prop "showMore" to entry actions', () => {
+    page.entryActions().props().onToggleShowMore()
+    expect(page.entryActions().props().showMore).toEqual(true)
 
-    page.entryActions().props.onToggleShowMore()
-    expect(page.entryTags()).toEqual(false)
+    page.entryActions().props().onToggleShowMore()
+    expect(page.entryActions().props().showMore).toEqual(false)
   })
 
-  it('should show or hide entryContent component based on showMore flag', () => {
-    props.isDesktop = false
-    page.entryActions().props.onToggleShowMore()
-
-    expect(page.entryContent()).toBeDefined()
-
-    page.entryActions().props.onToggleShowMore()
-
-    expect(page.entryContent()).toEqual(false)
-  })
-
-  it('should update seen flag when entryActions component fired myOnCheck event', () => {
-    page.entryActions().props.onToggleSeen()
+  it('should trigger prop function "onChangeEntry" when entry actions prop function "onToggleSeen" called', () => {
+    page.entryActions().props().onToggleSeen()
 
     expect(props.onChangeEntry).toHaveBeenCalledWith({...props.item, seen: !props.item.seen})
   })
 
-  it('should update tag when entryTags component fired onSelect event', () => {
-    page.entryActions().props.onToggleShowMore()
-    page.entryTags().props.onChange('tag1')
+  it('should trigger prop function "onChangeEntry" when entry tags prop function "onChange" called', () => {
+    page.entryActions().props().onToggleShowMore()
+    page.entryTags().props().onChange('tag1')
 
     expect(props.onChangeEntry).toHaveBeenCalledWith({
       seen: false,
@@ -111,7 +103,7 @@ describe('src/app/js/components/entry/entry.spec.js', () => {
       done()
     }
 
-    ReactTestUtils.renderIntoDocument(<Entry {...props} />)
+    mount(<Entry {...props} />)
   })
 
   it('should append prop "className" to entry ref classList', done => {
@@ -121,71 +113,102 @@ describe('src/app/js/components/entry/entry.spec.js', () => {
       done()
     }
 
-    ReactTestUtils.renderIntoDocument(<Entry {...props} />)
+    mount(<Entry {...props} />)
   })
 
-  describe('showContent', () => {
+  it('should not render tags and content on tablet and phone', () => {
+    page.setProps({isDesktop: false, showEntryDetails: false})
 
-    describe('with showMore set to false', () => {
+    expect(page.entryTags().exists()).toEqual(false)
+    expect(page.entryContent().exists()).toEqual(false)
+  })
 
-      beforeEach(() => props.showMore = false)
+  it('should render tags and content on tablet and phone when show more toggle triggered', () => {
+    page.setProps({isDesktop: false, showEntryDetails: false})
+    page.entryActions().props().onToggleShowMore()
 
-      it('should return false when showEntryDetails is false and media breakpoint is not of type desktop', () => {
-        props.isDesktop = false
+    expect(page.entryTags().exists()).toEqual(true)
+    expect(page.entryContent().exists()).toEqual(true)
+  })
 
-        expect(page.entryContent()).toEqual(false)
-      })
+  it('should toggle visibility of tags and content on tablet and phone when show more toggle triggered', () => {
+    page.setProps({isDesktop: false, showEntryDetails: false})
+    page.entryActions().props().onToggleShowMore()
+    page.entryActions().props().onToggleShowMore()
 
-      it('should return false when showEntryDetails is true and media breakpoint is not of type desktop', () => {
-        props.isDesktop = false
-        props.showMore = true
+    expect(page.entryTags().exists()).toEqual(false)
+    expect(page.entryContent().exists()).toEqual(false)
+  })
 
-        expect(page.entryContent()).toEqual(false)
-      })
+  it('should not render tags and content on desktop when entry details visibility is turned off', () => {
+    page.setProps({isDesktop: true, showEntryDetails: false})
 
-      it('should return false when showEntryDetails is false and media breakpoint is of type desktop', () => {
-        props.isDesktop = true
+    expect(page.entryTags().exists()).toEqual(false)
+    expect(page.entryContent().exists()).toEqual(false)
+  })
 
-        expect(page.entryContent()).toEqual(false)
-      })
+  it('should render tags and content on desktop when entry details visibility is turned off but show more toggle triggered', () => {
+    page.setProps({isDesktop: true, showEntryDetails: false})
+    page.entryActions().props().onToggleShowMore()
 
-      it('should return true when showEntryDetails is true and media breakpoint is of type desktop', () => {
-        props.isDesktop = true
-        props.showMore = true
+    expect(page.entryTags().exists()).toEqual(true)
+    expect(page.entryContent().exists()).toEqual(true)
+  })
 
-        expect(page.entryContent()).toBeDefined()
-      })
-    })
+  it('should toggle visibility of tags and content on desktop when entry details visibility is turned off but show more toggle triggered', () => {
+    page.setProps({isDesktop: true, showEntryDetails: false})
+    page.entryActions().props().onToggleShowMore()
+    page.entryActions().props().onToggleShowMore()
 
-    describe('with showMore set to true', () => {
+    expect(page.entryTags().exists()).toEqual(false)
+    expect(page.entryContent().exists()).toEqual(false)
+  })
 
-      beforeEach(() => props.showMore = true)
+  it('should not render tags and content on phone and tablet despite entry details visibility is turned on', () => {
+    page.setProps({isDesktop: false, showEntryDetails: true})
 
-      it('should return true when showEntryDetails and media breakpoint is not of type desktop', () => {
-        props.isDesktop = false
-        props.showMore = false
+    expect(page.entryTags().exists()).toEqual(false)
+    expect(page.entryContent().exists()).toEqual(false)
+  })
 
-        expect(page.entryContent()).toBeDefined()
-      })
+  it('should render tags and content on phone and tablet when entry details visibility is turned on and show more toggle triggered', () => {
+    page.setProps({isDesktop: false, showEntryDetails: true})
+    page.entryActions().props().onToggleShowMore()
 
-      it('should return true when showEntryDetails is true and media breakpoint is not of type desktop', () => {
-        props.isDesktop = false
+    expect(page.entryTags().exists()).toEqual(true)
+    expect(page.entryContent().exists()).toEqual(true)
+  })
 
-        expect(page.entryContent()).toBeDefined()
-      })
+  it('should toggle visibility of tags and content on phone and tablet ignoring entry details visibility setting when show more toggle triggered', () => {
+    page.setProps({isDesktop: false, showEntryDetails: true})
+    page.entryActions().props().onToggleShowMore()
+    page.entryActions().props().onToggleShowMore()
 
-      it('should return true when showEntryDetails is false and media breakpoint is of type desktop', () => {
-        props.isDesktop = true
-        props.showMore = false
+    expect(page.entryTags().exists()).toEqual(false)
+    expect(page.entryContent().exists()).toEqual(false)
+  })
 
-        expect(page.entryContent()).toBeDefined()
-      })
+  it('should render content without tags on desktop', () => {
+    page.setProps({isDesktop: true, showEntryDetails: true})
 
-      it('should return true when showEntryDetails is true and media breakpoint is of type desktop', () => {
-        props.isDesktop = true
+    expect(page.entryTags().exists()).toEqual(false)
+    expect(page.entryContent().exists()).toEqual(true)
+  })
 
-        expect(page.entryContent()).toBeDefined()
-      })
-    })
+  it('should render tags and content on desktop when show more toggle triggered', () => {
+    page.setProps({isDesktop: true, showEntryDetails: true})
+    page.entryActions().props().onToggleShowMore()
+
+    expect(page.entryTags().exists()).toEqual(true)
+    expect(page.entryContent().exists()).toEqual(true)
+  })
+
+  it('should toggle visibility of tags on desktop when show more toggle triggered', () => {
+    page.setProps({isDesktop: true, showEntryDetails: true})
+    page.entryActions().props().onToggleShowMore()
+    page.entryActions().props().onToggleShowMore()
+
+    expect(page.entryTags().exists()).toEqual(false)
+    expect(page.entryContent().exists()).toEqual(true)
   })
 })

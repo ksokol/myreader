@@ -64,30 +64,31 @@ class Entry extends Component {
       entryRef
     } = this.props
 
+    const {
+      showMore,
+      showContent
+    } = this.state
+
     const classes = classNames('my-entry', className)
 
     return (
       <div className={classes} ref={entryRef}>
         <div className='my-entry__header'>
           <div className='my-entry__title'>
-            <EntryTitle origin={origin}
-                        title={title}
-                        feedTitle={feedTitle}
-                        createdAt={createdAt} />
+            <EntryTitle origin={origin} title={title} feedTitle={feedTitle} createdAt={createdAt} />
           </div>
           <div className='my-entry__actions'>
-            <EntryActions onToggleShowMore={this.toggleMore}
-                          seen={seen}
-                          onToggleSeen={this.toggleSeen} />
+            <EntryActions seen={seen} showMore={showMore} onToggleShowMore={this.toggleMore} onToggleSeen={this.toggleSeen} />
           </div>
         </div>
 
-        {this.state.showMore &&
-          <EntryTags tags={tags}
-                     onChange={this.onTagUpdate} />}
+        {showMore &&
+          <EntryTags tags={tags} onChange={this.onTagUpdate}/>
+        }
 
-        {this.state.showContent &&
-          <EntryContent content={content} />}
+        {showContent &&
+          <EntryContent content={content} />
+        }
       </div>
     )
   }
