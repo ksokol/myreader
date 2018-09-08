@@ -5,6 +5,12 @@ import {IntersectionObserver} from '../../shared/component/intersection-observer
 import {Button} from '../../shared/component/buttons'
 import {EntryAutoFocus} from '../'
 
+const entry = (entryProps, props) => (
+  <div className="my-entry-list__item" key={entryProps.uuid}>
+    <EntryAutoFocus {...{item: {...entryProps}, ...props}} />
+  </div>
+)
+
 class EntryList extends React.Component {
 
   constructor(props) {
@@ -38,19 +44,27 @@ class EntryList extends React.Component {
       focusUuid
     }
 
-    return [
-      <div className='my-entry-list' key='entry-list'>
-        {entries.map(entryProps =>
-          <div className="my-entry-list__item" key={entryProps.uuid}>
-            <EntryAutoFocus {...{item: {...entryProps}, ...props}} />
-          </div>
-        )}
-      </div>,
-      this.hasNextPage &&
-        <IntersectionObserver onIntersection={this.loadMore} key='load-more'>
-          <Button className='my-button__load-more' disabled={loading} onClick={this.loadMore}>Load More</Button>
-        </IntersectionObserver>
-    ]
+    const entriesCopy = [...entries]
+    const lastEntry = entriesCopy.pop()
+
+    return (
+      <div className='my-entry-list'>
+        {entriesCopy.map(entryProps => entry(entryProps, props))}
+
+        {lastEntry && this.hasNextPage
+          ? <IntersectionObserver onIntersection={this.loadMore}>
+              {entry(lastEntry, props)}
+            </IntersectionObserver>
+          : lastEntry && entry(lastEntry, props)
+        }
+
+        {this.hasNextPage &&
+          <Button className='my-button__load-more' disabled={loading} onClick={this.loadMore}>
+            Load More
+          </Button>
+        }
+      </div>
+    )
   }
 }
 
