@@ -1,6 +1,6 @@
-import {TimeAgo} from './time-ago'
+import TimeAgo from './time-ago'
 
-describe('src/app/js/shared/time-ago/time-ago.spec.js', () => {
+describe('src/app/js/components/time-ago/time-ago.spec.js', () => {
 
   beforeEach(() => {
     const _Date = Date
