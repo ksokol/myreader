@@ -3,7 +3,7 @@ import './feed-fetch-error.component.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {feedFetchFailuresSelector, fetchFeedFetchFailures} from '../../store'
-import {Button} from '../../shared/component/buttons'
+import {Button} from '../../components'
 import {IntersectionObserver} from '../../shared/component/intersection-observer'
 
 /**

@@ -2,7 +2,7 @@ import React from 'react'
 import {shallow} from 'enzyme'
 import Button from './button'
 
-describe('src/app/js/shared/component/buttons/button/button.spec.js', () => {
+describe('src/app/js/components/buttons/button/button.spec.js', () => {
 
   let props
 
