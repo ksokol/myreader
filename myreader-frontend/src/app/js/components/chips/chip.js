@@ -2,7 +2,7 @@ import './chip.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import {IconButton} from '../../components'
+import {IconButton} from '..'
 import {noop} from '../../shared/utils'
 
 const Chip = props => {

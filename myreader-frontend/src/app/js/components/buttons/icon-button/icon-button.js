@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import {Icon} from '../../../components'
+import {Icon} from '../..'
 import {noop} from '../../../shared/utils'
 
 const IconButton = props =>
