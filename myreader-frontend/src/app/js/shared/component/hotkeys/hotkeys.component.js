@@ -5,6 +5,9 @@ const keyCodeMap = {
   40: 'down'
 }
 
+/**
+ * @deprecated
+ */
 class controller {
 
   $onInit() {
