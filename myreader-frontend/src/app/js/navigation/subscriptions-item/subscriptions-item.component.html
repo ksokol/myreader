@@ -1,9 +1,13 @@
 <my-navigation-subscription-item
         ng-repeat="item in $ctrl.subscriptionsGroupedByTag track by $ctrl.trackBy(item)"
-        my-item="item">
+        my-item="item"
+        my-query="$ctrl.router.query"
+        my-on-select="$ctrl.onSelect(query)">
 </my-navigation-subscription-item>
 
 <my-navigation-subscription-item
         ng-repeat="item in $ctrl.subscriptionsWithoutTag track by $ctrl.trackBy(item)"
-        my-item="item">
+        my-item="item"
+        my-query="$ctrl.router.query"
+        my-on-select="$ctrl.onSelect(query)">
 </my-navigation-subscription-item>
