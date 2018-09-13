@@ -17,7 +17,6 @@ import {LoginComponent, LoginEmailInput, LoginPasswordInput} from './login/login
 import {AboutComponent} from './maintenance/about/about.component'
 import {MaintenanceActionsComponent} from './maintenance/maintenance-actions/maintenance-actions.component'
 import {MaintenanceComponent} from './maintenance/maintenance.component'
-import {NavigationSubscriptionItemComponent} from './navigation/subscriptions-item/subscription-item/subscription-item.component'
 import {SettingsComponent} from './settings/settings.component'
 import {SubscribeComponent, SubscribeOriginInput} from './subscription/subscribe/subscribe.component'
 import {SubscriptionExclusionComponent} from './subscription/subscription-exclusion/subscription-exclusion.component'
@@ -50,7 +49,7 @@ import {
   AutocompleteSuggestionsItemTextComponent
 } from './shared/component/autocomplete-input'
 import {IconButtonComponent} from './shared/component/buttons/icon-button/icon-button.component'
-import {Button, Chips, EntryList, Icon, IconButton} from './components'
+import {Button, Chips, EntryList, Icon, IconButton, SubscriptionNavigationItem} from './components'
 
 import './config'
 
@@ -59,7 +58,6 @@ angular
   .value('Icon', Icon)
   .value('IconButton', IconButton)
   .value('Chips', Chips)
-  .value('EntryList', EntryList)
   .value('Button', Button)
 
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
@@ -72,6 +70,8 @@ angular
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
   .value('FeedFetchErrorLoadMore', FeedFetchErrorLoadMore)
+  .value('EntryList', EntryList)
+  .value('SubscriptionNavigationItem', SubscriptionNavigationItem)
 
   .component('myFeedFetchError', FeedFetchErrorComponent)
   .component('myFeed', FeedComponent)
@@ -88,7 +88,6 @@ angular
   .component('myBookmark', BookmarkComponent)
   .component('mySubscriptionList', SubscriptionListComponent)
   .component('myFeedStream', FeedStreamComponent)
-  .component('myNavigationSubscriptionItem', NavigationSubscriptionItemComponent)
   .component('myNavigationSubscriptionsItem', NavigationSubscriptionsItemComponent)
   .component('myApp', AppComponent)
   .component('myNavigation', NavigationComponent)

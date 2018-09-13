@@ -1,0 +1,11 @@
+.my-subscription-navigation-item__subscriptions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.my-subscription-navigation-item__subscriptions > .my-navigation-item {
+    border-color: transparent;
+    padding-left: 6px;
+    text-transform: none;
+}

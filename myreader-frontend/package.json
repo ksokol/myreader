@@ -6,7 +6,7 @@
     "build": "export NODE_ENV=production && webpack --bail --progress --profile --display-optimization-bailout",
     "server": "export NODE_ENV=development && webpack-dev-server --history-api-fallback --inline --progress",
     "test": "export NODE_ENV=test && jest --coverage --ci --silent",
-    "test-watch": "export NODE_ENV=test && jest --watch",
+    "test-watch": "export NODE_ENV=test && jest --watch --verbose false",
     "start": "npm run server",
     "report": "export NODE_ENV=production && webpack --bail --progress --profile && webpack-bundle-analyzer dist/stats.json",
     "lint": "npm run lint:js && npm run lint:css",

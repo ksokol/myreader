@@ -1,20 +1,13 @@
 .my-navigation,
-.my-navigation ul {
+.my-navigation > ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.my-navigation li {
-    margin: 0;
-}
-
 .my-navigation > li {
     border-top: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.my-navigation > li:nth-child(-n+2) {
-    border-top: none;
+    margin: 0;
 }
 
 .my-navigation__item {

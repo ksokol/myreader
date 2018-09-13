@@ -1,12 +1,8 @@
-.my-subscription-item {
-    border-top: 1px solid rgba(0, 0, 0, 0.12);
+.my-badge {
+    padding: 0 6px;
 }
 
-.my-subscription-item__badge-container {
-    padding-right: 6px;
-}
-
-.my-subscription-item__badge {
+.my-badge > span {
     display: inline-block;
     min-width: 10px;
     padding: 3px 7px;

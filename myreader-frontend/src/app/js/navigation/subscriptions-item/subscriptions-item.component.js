@@ -38,6 +38,14 @@ class controller {
       subscriptions: item.subscriptions ? item.subscriptions.length : null
     })
   }
+
+  props(item) {
+    return {
+      item,
+      query: this.router.query,
+      onSelect: this.onSelect
+    }
+  }
 }
 
 export const NavigationSubscriptionsItemComponent = {

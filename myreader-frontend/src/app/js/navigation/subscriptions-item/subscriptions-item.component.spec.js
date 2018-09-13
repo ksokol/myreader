@@ -1,4 +1,4 @@
-import {mockNgRedux, multipleComponentMock} from '../../shared/test-utils'
+import {mockNgRedux, multipleReactComponents} from '../../shared/test-utils'
 import {NavigationSubscriptionsItemComponent} from './subscriptions-item.component'
 
 describe('src/app/js/navigation/subscriptions-item/subscriptions-item.component.spec.js', () => {
@@ -12,7 +12,7 @@ describe('src/app/js/navigation/subscriptions-item/subscriptions-item.component.
   let compile, scope, ngReduxMock, subscriptionItems, router
 
   beforeEach(() => {
-    subscriptionItems = multipleComponentMock('myNavigationSubscriptionItem')
+    subscriptionItems = multipleReactComponents('SubscriptionNavigationItem')
     angular.mock.module('myreader', mockNgRedux(), subscriptionItems)
   })
 
@@ -36,9 +36,9 @@ describe('src/app/js/navigation/subscriptions-item/subscriptions-item.component.
     scope.$digest()
 
     expect(subscriptionItems.bindings.length).toEqual(3)
-    expect(subscriptionItems.bindings[0]).toContainObject({myItem: {title: 'all'}})
-    expect(subscriptionItems.bindings[1]).toContainObject({myItem: {title: 'group 1'}})
-    expect(subscriptionItems.bindings[2]).toContainObject({myItem: {title: 'group 2'}})
+    expect(subscriptionItems.bindings[0]).toContainObject({item: {title: 'all'}})
+    expect(subscriptionItems.bindings[1]).toContainObject({item: {title: 'group 1'}})
+    expect(subscriptionItems.bindings[2]).toContainObject({item: {title: 'group 2'}})
   })
 
   it('should construct comparison value for ng-repeat track by', () => {
@@ -63,47 +63,44 @@ describe('src/app/js/navigation/subscriptions-item/subscriptions-item.component.
       scope.$digest()
     })
 
-    it('should pass properties to subscription item components', () => {
+    it('should pass properties to subscription subscription item components', () => {
       expect(subscriptionItems.bindings.length).toEqual(4)
-      expect(subscriptionItems.bindings[0]).toContainObject({myItem: {title: 'all'}, myQuery: router.query})
-      expect(subscriptionItems.bindings[1]).toContainObject({myItem: {title: 'group 1'}, myQuery: router.query})
-      expect(subscriptionItems.bindings[2]).toContainObject({myItem: {title: 'group 2'}, myQuery: router.query})
-      expect(subscriptionItems.bindings[3]).toContainObject({myItem: {title: 'subscription 3'}, myQuery: router.query})
+      expect(subscriptionItems.bindings[0]).toContainObject({item: {title: 'all'}, query: router.query})
+      expect(subscriptionItems.bindings[1]).toContainObject({item: {title: 'group 1'}, query: router.query})
+      expect(subscriptionItems.bindings[2]).toContainObject({item: {title: 'group 2'}, query: router.query})
+      expect(subscriptionItems.bindings[3]).toContainObject({item: {title: 'subscription 3'}, query: router.query})
     })
 
     it('should dispatch route changed action', () => {
-      subscriptionItems.bindings[0].myOnSelect()
+      subscriptionItems.bindings[0].onSelect()
       expect(ngReduxMock.getActionTypes()).toEqual(['ROUTE_CHANGED'])
     })
 
     it('should navigate to route with feedTagEqual and feedUuidEqual set', () => {
-      subscriptionItems.bindings[0].myOnSelect({query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'}})
+      subscriptionItems.bindings[0].onSelect({feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'})
 
-      expect(ngReduxMock.getActions()[0])
-        .toContainActionData({
-          route: ['app', 'entries'],
-          query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'}
-        })
+      expect(ngReduxMock.getActions()[0]).toContainActionData({
+        route: ['app', 'entries'],
+        query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'}
+      })
     })
 
     it('should navigate to route with feedTagEqual to null when value is null', () => {
-      subscriptionItems.bindings[0].myOnSelect({query: {feedTagEqual: null, feedUuidEqual: 'selected uuid'}})
+      subscriptionItems.bindings[0].onSelect({feedTagEqual: null, feedUuidEqual: 'selected uuid'})
 
-      expect(ngReduxMock.getActions()[0])
-        .toContainActionData({
-          route: ['app', 'entries'],
-          query: {feedTagEqual: null, feedUuidEqual: 'selected uuid'}
-        })
+      expect(ngReduxMock.getActions()[0]).toContainActionData({
+        route: ['app', 'entries'],
+        query: {feedTagEqual: null, feedUuidEqual: 'selected uuid'}
+      })
     })
 
     it('should navigate to route with feedTagEqual given value and feedUuidEqual set to null when value is null', () => {
-      subscriptionItems.bindings[0].myOnSelect({query: {feedTagEqual: 'selected tag', feedUuidEqual: null}})
+      subscriptionItems.bindings[0].onSelect({feedTagEqual: 'selected tag', feedUuidEqual: null})
 
-      expect(ngReduxMock.getActions()[0])
-        .toContainActionData({
-          route: ['app', 'entries'],
-          query: {feedTagEqual: 'selected tag', feedUuidEqual: null}
-        })
+      expect(ngReduxMock.getActions()[0]).toContainActionData({
+        route: ['app', 'entries'],
+        query: {feedTagEqual: 'selected tag', feedUuidEqual: null}
+      })
     })
   })
 })
