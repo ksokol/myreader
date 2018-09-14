@@ -1,4 +1,4 @@
-import './entry-title.css'
+import './EntryTitle.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {TimeAgo} from '../../..'

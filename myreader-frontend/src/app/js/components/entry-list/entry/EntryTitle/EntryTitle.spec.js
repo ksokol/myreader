@@ -1,9 +1,9 @@
 import React from 'react'
-import {EntryTitle} from './entry-title'
+import {EntryTitle} from './EntryTitle'
 import {shallow} from '../../../../shared/test-utils'
 import {TimeAgo} from '../../..'
 
-describe('src/app/js/components/entry-list/entry/entry-title/entry-title.spec.js', () => {
+describe('src/app/js/components/entry-list/entry/EntryTitle/EntryTitle.spec.js', () => {
 
   let item, component
 
