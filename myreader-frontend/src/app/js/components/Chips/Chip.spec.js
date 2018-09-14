@@ -1,8 +1,8 @@
-import Chip from './chip'
+import Chip from './Chip'
 import React from 'react'
 import TestRenderer from 'react-test-renderer'
 
-describe('src/app/js/components/chips/chip.spec.js', () => {
+describe('src/app/js/components/Chips/Chip.spec.js', () => {
 
   let props
 

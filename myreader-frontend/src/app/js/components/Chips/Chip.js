@@ -1,4 +1,4 @@
-import './chip.css'
+import './Chip.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'

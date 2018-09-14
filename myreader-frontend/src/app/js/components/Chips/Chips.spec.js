@@ -1,6 +1,6 @@
 import React from 'react'
 import {shallow} from '../../shared/test-utils'
-import Chips from './chips'
+import Chips from './Chips'
 
 describe('src/app/js/components/chips/chips.spec.js', () => {
 
