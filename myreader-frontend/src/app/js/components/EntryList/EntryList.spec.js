@@ -1,10 +1,10 @@
 import React from 'react'
 import {shallow} from 'enzyme'
-import EntryList from './entry-list'
+import EntryList from './EntryList'
 import {IntersectionObserver} from '..'
 import {EntryAutoFocus} from './Entry'
 
-describe('src/app/js/components/entry-list/entry-list.spec.js', () => {
+describe('src/app/js/components/EntryList/EntryList.spec.js', () => {
 
   let props, commonProps, entries
 

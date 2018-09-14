@@ -1,4 +1,4 @@
-export * from './entry-list'
+export * from './EntryList'
 export * from './Buttons'
 export * from './IntersectionObserver'
 export * from './Chips'
