@@ -1,7 +1,6 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import {initialApplicationState} from '../store'
-import ShallowRenderer from 'react-test-renderer/shallow'
 
 /*
  * https://velesin.io/2016/08/23/unit-testing-angular-1-5-components/
@@ -161,17 +160,4 @@ export function dispatchKeyEventOnElement(element, {type, event, funcs = {}}) {
 
 export function tick(millis = 0) {
   jest.advanceTimersByTime(millis)
-}
-
-/**
- * @deprecated Use enzyme instead.
- */
-export function shallow(Component) {
-  const renderer = new ShallowRenderer()
-  renderer.render(Component)
-  return {
-    output: () => renderer.getRenderOutput(),
-    instance: renderer.getMountedInstance(),
-    rerender: () => renderer.render(Component)
-  }
 }

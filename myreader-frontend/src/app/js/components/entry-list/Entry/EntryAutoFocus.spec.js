@@ -1,6 +1,6 @@
 import React from 'react'
-import {shallow} from '../../../shared/test-utils'
 import EntryAutoFocus from './EntryAutoFocus'
+import {mount} from 'enzyme'
 
 describe('src/app/js/components/entry-list/Entry/EntryAutoFocus.spec.js', () => {
 
@@ -27,53 +27,48 @@ describe('src/app/js/components/entry-list/Entry/EntryAutoFocus.spec.js', () => 
     }
   })
 
-  const renderShallow = () => {
-    const rendered = shallow(<EntryAutoFocus {...props} />)
-    rendered.output().props.entryRef(el)
-    rendered.instance.componentDidUpdate()
-    return rendered
+  const createMount = () => {
+    const wrapper = mount(<EntryAutoFocus {...props} />)
+    wrapper.children().props().entryRef(el)
+    wrapper.instance().componentDidUpdate()
+    return wrapper
   }
 
   it('should pass expected props to child component', () => {
-    const {output} = renderShallow()
+    const wrapper = createMount()
     const {entryRef, focusUuid, ...expectedProps} = props
 
-    expect(output().props).toContainObject(expectedProps)
+    expect(wrapper.props()).toContainObject(expectedProps)
   })
 
   it('should scroll to child component when prop "item.uuid" is equal to prop "focusUuid"', () => {
-    renderShallow()
+    createMount()
 
     expect(el.scrollIntoView).toHaveBeenCalledWith({behavior: 'smooth', block: 'start'})
   })
 
   it('should focus child component when prop "item.uuid" is equal to prop "focusUuid"', () => {
-    const {output} = renderShallow()
-
-    expect(output().props.className).toEqual('my-entry--focus')
+    expect(createMount().children().prop('className')).toEqual('my-entry--focus')
   })
 
   it('should not scroll a second time to child component when prop "item.uuid" is equal to prop "focusUuid"', () => {
-    const {output, rerender, instance} = renderShallow()
-
-    rerender()
-    instance.componentDidUpdate()
+    createMount().setProps({focusUuid: props.focusUuid})
 
     expect(el.scrollIntoView).toHaveReturnedTimes(1)
-    expect(output().props.className).toEqual('my-entry--focus')
   })
 
   it('should not scroll to child component when prop "item.uuid" is not equal to prop "focusUuid"', () => {
-    props.focusUuid = '2'
-    renderShallow()
+    const wrapper = createMount()
+    el.scrollIntoView.mockReset()
+    wrapper.setProps({focusUuid: '2'})
 
     expect(el.scrollIntoView).not.toHaveBeenCalled()
   })
 
   it('should not focus child component when prop "item.uuid" is not equal to prop "focusUuid"', () => {
-    props.focusUuid = '2'
-    const {output} = renderShallow()
+    const wrapper = createMount()
+    wrapper.setProps({focusUuid: '2'})
 
-    expect(output().props.className).toBeUndefined()
+    expect(wrapper.children().prop('className')).toBeUndefined()
   })
 })
