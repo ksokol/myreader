@@ -1,6 +1,6 @@
 import React from 'react'
 import {EntryActions} from './EntryActions'
-import TestRenderer from 'react-test-renderer'
+import {shallow} from 'enzyme'
 
 describe('src/app/js/components/entry-list/entry/EntryActions/EntryActions.spec.js', () => {
 
@@ -14,48 +14,48 @@ describe('src/app/js/components/entry-list/entry/EntryActions/EntryActions.spec.
     }
   })
 
-  const createInstance = () => TestRenderer.create(<EntryActions {...props} />).root
+  const createShallow = () => shallow(<EntryActions {...props} />)
 
   it('should render expand-more and check-circle icon buttons', () => {
-    const instance = createInstance()
+    const wrapper = createShallow()
 
-    expect(instance.children[0].props).toContainObject({type: 'expand-more'})
-    expect(instance.children[1].props).toContainObject({type: 'check-circle'})
+    expect(wrapper.at(0).prop('type')).toEqual('expand-more')
+    expect(wrapper.at(1).prop('type')).toEqual('check-circle')
   })
 
   it('should render expand-less and check icon buttons', () => {
     props.seen = false
     props.showMore = true
-    const instance = createInstance()
+    const wrapper = createShallow()
 
-    expect(instance.children[0].props).toContainObject({type: 'expand-less'})
-    expect(instance.children[1].props).toContainObject({type: 'check'})
+    expect(wrapper.at(0).prop('type')).toEqual('expand-less')
+    expect(wrapper.at(1).prop('type')).toEqual('check')
   })
 
   it('should trigger onToggleShowMore with expand-more icon button', () => {
-    createInstance().findByProps({type: 'expand-more'}).props.onClick()
+    createShallow().find('[type="expand-more"]').props().onClick()
 
     expect(props.onToggleShowMore).toHaveBeenCalled()
   })
 
   it('should trigger onToggleSeen with check-circle icon button', () => {
-    createInstance().findByProps({type: 'check-circle'}).props.onClick()
+    createShallow().find('[type="check-circle"]').props().onClick()
 
     expect(props.onToggleSeen).toHaveBeenCalledWith()
   })
 
   it('should trigger onToggleShowMore with expand-less icon button', () => {
     props.showMore = true
-    const instance = createInstance()
-    instance.findByProps({type: 'expand-less'}).props.onClick()
+    const wrapper = createShallow()
+    wrapper.find('[type="expand-less"]').props().onClick()
 
     expect(props.onToggleShowMore).toHaveBeenCalled()
   })
 
   it('should trigger onToggleSeen with check icon button', () => {
     props.seen = false
-    const instance = createInstance()
-    instance.findByProps({type: 'check'}).props.onClick()
+    const wrapper = createShallow()
+    wrapper.find('[type="check"]').props().onClick()
 
     expect(props.onToggleSeen).toHaveBeenCalledWith()
   })
