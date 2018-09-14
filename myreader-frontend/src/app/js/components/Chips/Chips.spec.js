@@ -1,8 +1,10 @@
 import React from 'react'
-import {shallow} from '../../shared/test-utils'
 import Chips from './Chips'
+import {shallow} from 'enzyme'
+import Chip from './Chip'
+import {Hotkeys, Input} from '..'
 
-describe('src/app/js/components/chips/chips.spec.js', () => {
+describe('src/app/js/components/Chips/Chips.spec.js', () => {
 
   let props
 
@@ -18,61 +20,55 @@ describe('src/app/js/components/chips/chips.spec.js', () => {
     }
   })
 
-  it('should create a chip component instance for every value in prop "values"', () => {
-    const {output} = shallow(<Chips {...props} />)
-    const children = output().props.children[0].props.children
+  const createShallow = () => shallow(<Chips {...props} />)
 
-    expect(children[0]).toContainObject({
-      key: 'keyFn: value1',
-      props: {
-        value: 'value1',
-        selected: 'value2',
-        disabled: false,
-        children: 'rendered: value1',
-        onSelect: props.onSelect,
-        onRemove: props.onRemove
-      }
+  it('should create a chip component instance for every value in prop "values"', () => {
+    const children = createShallow().find(Chip)
+
+    expect(children.at(0).props()).toContainObject({
+      value: 'value1',
+      selected: 'value2',
+      disabled: false,
+      children: 'rendered: value1',
+      onSelect: props.onSelect,
+      onRemove: props.onRemove
     })
 
-    expect(children[1]).toContainObject({
-      key: 'keyFn: value2',
-      props: {
-        value: 'value2',
-        selected: 'value2',
-        disabled: false,
-        children: 'rendered: value2',
-        onSelect: props.onSelect,
-        onRemove: props.onRemove
-      }
+    expect(children.at(1).props()).toContainObject({
+      value: 'value2',
+      selected: 'value2',
+      disabled: false,
+      children: 'rendered: value2',
+      onSelect: props.onSelect,
+      onRemove: props.onRemove
     })
   })
 
   it('should return key from prop "keyFn" function for every chip component instance' , () => {
-    const {output} = shallow(<Chips {...props} />)
-    const children = output().props.children[0].props.children
+    const children = createShallow().find(Chip)
 
-    expect(children[0].props.keyFn()).toEqual('keyFn: value1')
-    expect(children[1].props.keyFn()).toEqual('keyFn: value2')
+    expect(children.at(0).key()).toEqual('keyFn: value1')
+    expect(children.at(1).key()).toEqual('keyFn: value2')
   })
 
   it('should not render input component when prop "onAdd" function is undefined', () => {
-    const {output} = shallow(<Chips {...props} />)
+    const hotkeys = createShallow().find(Hotkeys)
 
-    expect(output().props.children[1]).toBeUndefined()
+    expect(hotkeys.exists()).toEqual(false)
   })
 
   it('should render input component when prop "onAdd" function is defined', () => {
     props.onAdd = jest.fn()
-    const {output} = shallow(<Chips {...props} />)
+    const hotkeys = createShallow().find(Hotkeys)
 
-    expect(output().props.children[1]).toBeDefined()
+    expect(hotkeys.exists()).toEqual(true)
   })
 
   it('should pass expected props to input component', () => {
     props.onAdd = jest.fn()
-    const {output} = shallow(<Chips {...props} />)
+    const input = createShallow().find(Input)
 
-    expect(output().props.children[1].props.children.props).toContainObject({
+    expect(input.props()).toContainObject({
       disabled: false,
       placeholder: 'expected placeholder',
       value: ''
@@ -81,46 +77,47 @@ describe('src/app/js/components/chips/chips.spec.js', () => {
 
   it('should trigger prop "onAdd" function when input value changed and enter key pressed', () => {
     props.onAdd = jest.fn()
-    const {output} = shallow(<Chips {...props} />)
-    const hotkeysProps = output().props.children[1].props
+    const wrapper = createShallow()
+    const hotkeys = wrapper.find(Hotkeys)
+    const input = wrapper.find(Input)
 
-    hotkeysProps.children.props.onChange('expected value')
-    hotkeysProps.onKeys.enter()
+    input.props().onChange('expected value')
+    hotkeys.props().onKeys.enter()
 
     expect(props.onAdd).toHaveBeenCalledWith('expected value')
   })
 
   it('should not trigger prop "onAdd" function when input value is an empty string and enter key pressed', () => {
     props.onAdd = jest.fn()
-    const {output} = shallow(<Chips {...props} />)
-    const hotkeysProps = output().props.children[1].props
+    const wrapper = createShallow()
+    const hotkeys = wrapper.find(Hotkeys)
+    const input = wrapper.find(Input)
 
-    hotkeysProps.children.props.onChange('')
-    hotkeysProps.onKeys.enter()
+    input.props().onChange('')
+    hotkeys.props().onKeys.enter()
 
     expect(props.onAdd).not.toHaveBeenCalled()
   })
 
   it('should reset prop "value" of input component when input value changed and enter key pressed', () => {
     props.onAdd = jest.fn()
-    const {output} = shallow(<Chips {...props} />)
-    let hotkeysProps = output().props.children[1].props
+    const wrapper = createShallow()
+    const hotkeys = wrapper.find(Hotkeys)
+    const input = wrapper.find(Input)
 
-    hotkeysProps.children.props.onChange('expected value')
-    hotkeysProps.onKeys.enter()
-    hotkeysProps = output().props.children[1].props
+    input.props().onChange('expected value')
+    hotkeys.props().onKeys.enter()
 
-    expect(hotkeysProps.children.props).toContainObject({value: ''})
+    expect(wrapper.find(Input).prop('value')).toEqual('')
   })
 
   it('should not reset prop "value" of input component when input value changed but enter key not pressed', () => {
     props.onAdd = jest.fn()
-    const {output} = shallow(<Chips {...props} />)
-    let hotkeysProps = output().props.children[1].props
+    const wrapper = createShallow()
+    const input = wrapper.find(Input)
 
-    hotkeysProps.children.props.onChange('expected value')
-    hotkeysProps = output().props.children[1].props
+    input.props().onChange('expected value')
 
-    expect(hotkeysProps.children.props).toContainObject({value: 'expected value'})
+    expect(wrapper.find(Input).prop('value')).toEqual('expected value')
   })
 })
