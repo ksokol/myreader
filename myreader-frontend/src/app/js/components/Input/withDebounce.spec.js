@@ -1,10 +1,10 @@
-import withDebounce from './with-debounce'
 import React from 'react'
+import withDebounce from './withDebounce'
 import ReactTestRenderer from 'react-test-renderer'
 
 const ComponentToWrap = () => <wrapped-component />
 
-describe('src/app/js/components/input/with-debounce.spec.js', () => {
+describe('src/app/js/components/Input/withDebounce.spec.js', () => {
 
   let props
 

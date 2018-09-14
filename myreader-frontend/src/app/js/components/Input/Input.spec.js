@@ -1,10 +1,10 @@
 import React from 'react'
 import TestRenderer from 'react-test-renderer'
 import ReactTestUtils from 'react-dom/test-utils'
-import Input from './input'
+import Input from './Input'
 import * as ReactDOM from 'react-dom'
 
-describe('src/app/js/components/input/input.spec.js', () => {
+describe('src/app/js/components/Input/Input.spec.js', () => {
 
   let props
 

@@ -1,10 +1,10 @@
 import React from 'react'
-import withValidations from './with-validations'
+import withValidations from './withValidations'
 import {shallowOutput, shallowInstance} from '../../shared/test-utils'
 
 const ComponentToWrap = () => <wrapped-component />
 
-describe('src/app/js/components/input/with-validations.spec.js', () => {
+describe('src/app/js/components/Input/withValidations.spec.js', () => {
 
     let WrappedComponent, props
 
