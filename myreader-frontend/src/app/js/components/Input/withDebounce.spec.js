@@ -1,8 +1,8 @@
 import React from 'react'
 import withDebounce from './withDebounce'
-import ReactTestRenderer from 'react-test-renderer'
+import {mount} from 'enzyme'
 
-const ComponentToWrap = () => <wrapped-component />
+const ComponentToWrap = () => <p>wrapped component</p>
 
 describe('src/app/js/components/Input/withDebounce.spec.js', () => {
 
@@ -17,39 +17,38 @@ describe('src/app/js/components/Input/withDebounce.spec.js', () => {
     }
   })
 
-  const createInstance = ({debounceTime} = {}) => {
+  const createMount = ({debounceTime} = {}) => {
     const WrappedComponent = withDebounce(ComponentToWrap, debounceTime)
-    return ReactTestRenderer.create(<WrappedComponent {...props} />).root
+    return mount(<WrappedComponent {...props} />)
   }
 
   it('should render wrapped component', () => {
-    expect(createInstance().children[0].type().type).toEqual('wrapped-component')
+    expect(createMount().find('p').text()).toEqual('wrapped component')
   })
 
   it('should trigger prop "onChange" function immediately', () => {
-    const instance = createInstance()
-    instance.children[0].props.onChange('expected call')
+    createMount().children().props().onChange('expected call')
 
-    expect(instance.props.onChange).toHaveBeenCalledWith('expected call')
+    expect(props.onChange).toHaveBeenCalledWith('expected call')
   })
 
   it('should debounce prop "onChange" function for 250ms', done => {
-    const instance = createInstance({debounceTime: 250})
-    instance.children[0].props.onChange('expected call')
+    createMount({debounceTime: 250}).children().props().onChange('expected call')
 
-    expect(instance.props.onChange).not.toHaveBeenCalled()
+    expect(props.onChange).not.toHaveBeenCalled()
 
     // TODO Workaround for https://github.com/facebook/jest/issues/5165
     setTimeout(() => {
-      expect(instance.props.onChange).toHaveBeenCalledWith('expected call')
+      expect(props.onChange).toHaveBeenCalledWith('expected call')
       done()
     }, 250)
   })
 
   it('should pass changed prop "value" back to wrapped component immediately when prop "onChange" function triggered', () => {
-    const instance = createInstance({debounceTime: 250})
-    instance.children[0].props.onChange('expected value')
+    const wrapper = createMount({debounceTime: 250})
+    wrapper.children().props().onChange('expected value')
+    wrapper.update()
 
-    expect(instance.children[0].props.value).toEqual('expected value')
+    expect(wrapper.children().prop('value')).toEqual('expected value')
   })
 })
