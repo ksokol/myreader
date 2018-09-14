@@ -1,10 +1,10 @@
 import React from 'react'
 import IntersectionObserver from './IntersectionObserver'
-import {renderIntoDocument} from 'react-dom/test-utils'
+import {mount} from 'enzyme'
 
 describe('src/app/js/components/IntersectionObserver/IntersectionObserver.spec.js', () => {
 
-  let props, observer, instance
+  let props, observer, wrapper
 
   beforeEach(() => {
     props = {
@@ -17,19 +17,21 @@ describe('src/app/js/components/IntersectionObserver/IntersectionObserver.spec.j
     }
 
     jest.spyOn(window, 'IntersectionObserver').mockImplementationOnce(() => observer)
-    instance = renderIntoDocument(<IntersectionObserver {...props}>expected children</IntersectionObserver>)
+    wrapper = mount(<IntersectionObserver {...props}>expected children</IntersectionObserver>)
   })
 
-  const intersect = intersections => window.IntersectionObserver.mock.calls[0][0](intersections.map(isIntersecting => ({isIntersecting})))
+  const intersect = intersections => {
+    window.IntersectionObserver.mock.calls[0][0](intersections.map(isIntersecting => ({isIntersecting})))
+  }
 
   afterEach(() => window.IntersectionObserver.mockClear())
 
   it('should render children', () => {
-    expect(instance.props.children).toEqual('expected children')
+    expect(wrapper.props().children).toEqual('expected children')
   })
 
   it('should observe intersections on instance ref', () => {
-    expect(observer.observe).toHaveBeenCalledWith(instance.myRef.current)
+    expect(observer.observe).toHaveBeenCalledWith(wrapper.instance().myRef.current)
   })
 
   it('should not trigger prop "onIntersection" function when first target does not intersect', () => {
