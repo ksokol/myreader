@@ -1,5 +1,5 @@
 export * from './entry-list'
-export * from './buttons'
+export * from './Buttons'
 export * from './IntersectionObserver'
 export * from './chips'
 export * from './Icon'

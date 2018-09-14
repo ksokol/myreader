@@ -3,7 +3,7 @@ import IconButton from './IconButton'
 import {shallow} from 'enzyme'
 import {Icon} from '../..'
 
-describe('src/app/js/components/buttons/IconButton/IconButton.spec.js', () => {
+describe('src/app/js/components/Buttons/IconButton/IconButton.spec.js', () => {
 
   it('should contain expected props', () => {
     const wrapper = shallow(<IconButton className='expected-className' type='close' color='white' disabled={true}/>)
