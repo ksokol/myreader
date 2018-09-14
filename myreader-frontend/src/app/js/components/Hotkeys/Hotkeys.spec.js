@@ -1,5 +1,5 @@
 import React from 'react'
-import Hotkeys from './hotkeys'
+import Hotkeys from './Hotkeys'
 import ReactTestUtils from 'react-dom/test-utils'
 import {dispatchKeyEventOnElement} from '../../shared/test-utils'
 
@@ -11,7 +11,7 @@ const y = {key: 'y', keyCode: 89}
 const z = {key: 'z', keyCode: 90}
 const esc = {key: 'esc', keyCode: 27}
 
-describe('src/app/js/components/hotkeys/hotkeys.spec.js', () => {
+describe('src/app/js/components/Hotkeys/Hotkeys.spec.js', () => {
 
   let onKeys, instance
 
