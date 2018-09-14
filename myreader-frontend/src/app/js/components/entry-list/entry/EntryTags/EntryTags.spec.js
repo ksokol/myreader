@@ -1,8 +1,8 @@
-import EntryTags from './entry-tags'
+import EntryTags from './EntryTags'
 import React from 'react'
 import {shallow} from '../../../../shared/test-utils'
 
-describe('src/app/js/components/entry-list/entry/entry-tags/entry-tags.spec.js', () => {
+describe('src/app/js/components/entry-list/entry/EntryTags/EntryTags.spec.js', () => {
 
   let props
 
