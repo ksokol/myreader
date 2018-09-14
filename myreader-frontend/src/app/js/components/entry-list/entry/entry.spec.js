@@ -1,7 +1,7 @@
 import React from 'react'
 import Entry from './entry'
 import {shallow, mount} from 'enzyme'
-import {EntryActions} from './entry-actions/entry-actions'
+import {EntryActions} from './EntryActions/EntryActions'
 import EntryTags from './entry-tags/entry-tags'
 import {EntryTitle} from './entry-title/entry-title'
 import {EntryContent} from './entry-content/entry-content'

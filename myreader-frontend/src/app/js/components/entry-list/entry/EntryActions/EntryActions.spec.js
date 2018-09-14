@@ -1,8 +1,8 @@
 import React from 'react'
-import {EntryActions} from './entry-actions'
+import {EntryActions} from './EntryActions'
 import TestRenderer from 'react-test-renderer'
 
-describe('src/app/js/components/entry-list/entry/entry-actions/entry-actions.spec.js', () => {
+describe('src/app/js/components/entry-list/entry/EntryActions/EntryActions.spec.js', () => {
 
   let props
 

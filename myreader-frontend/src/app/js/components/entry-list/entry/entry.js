@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {EntryTitle} from './entry-title/entry-title'
-import {EntryActions} from './entry-actions/entry-actions'
+import {EntryActions} from './EntryActions/EntryActions'
 import {EntryContent} from './entry-content/entry-content'
 import EntryTags from './entry-tags/entry-tags'
 
