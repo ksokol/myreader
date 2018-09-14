@@ -4,7 +4,7 @@ import {shallow, mount} from 'enzyme'
 import {EntryActions} from './EntryActions/EntryActions'
 import EntryTags from './EntryTags/EntryTags'
 import {EntryTitle} from './EntryTitle/EntryTitle'
-import {EntryContent} from './entry-content/entry-content'
+import {EntryContent} from './EntryContent/EntryContent'
 
 class EntryPage {
 

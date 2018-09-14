@@ -1,4 +1,4 @@
-import './entry-content.css'
+import './EntryContent.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 
