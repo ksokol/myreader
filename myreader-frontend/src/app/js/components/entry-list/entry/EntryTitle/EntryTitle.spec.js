@@ -1,11 +1,11 @@
 import React from 'react'
 import {EntryTitle} from './EntryTitle'
-import {shallow} from '../../../../shared/test-utils'
 import {TimeAgo} from '../../..'
+import {shallow} from 'enzyme'
 
 describe('src/app/js/components/entry-list/entry/EntryTitle/EntryTitle.spec.js', () => {
 
-  let item, component
+  let item
 
   beforeEach(() => {
     item = {
@@ -14,31 +14,32 @@ describe('src/app/js/components/entry-list/entry/EntryTitle/EntryTitle.spec.js',
       createdAt: 'entry created date',
       feedTitle: 'feed title'
     }
-
-    component = <EntryTitle {...item} />
   })
 
-  const renderShallow = () => shallow(component)
+  const createShallow = () => shallow(<EntryTitle {...item} />)
 
   it('should render entry title', () => {
-    const {output} = renderShallow(component)
+    const wrapper = createShallow()
 
-    expect(output()[0].type).toEqual('a')
-    expect(output()[0].props.children).toEqual(item.title)
+    expect(wrapper.at(0).type()).toEqual('a')
+    expect(wrapper.at(0).children().text()).toEqual(item.title)
   })
 
   it('should render feed title', () => {
-    const {output} = renderShallow(component)
+    const wrapper = createShallow()
+    const result = wrapper
+      .at(1)
+      .children()
+      .reduce((value, node) => node.is(TimeAgo) ? `${value}${node.prop('date')}` : `${value}${node.text()}`, '')
 
-    expect(output()[1].type).toEqual('span')
-    expect(output()[1].props.children)
-      .toEqual([<TimeAgo date={item.createdAt}/>, ' on ', item.feedTitle]) // eslint-disable-line
+    expect(wrapper.at(1).type()).toEqual('span')
+    expect(result).toEqual('entry created date on feed title')
   })
 
   it('should open entry url in new window safely', () => {
-    const {output} = renderShallow(component)
+    const wrapper = createShallow()
 
-    expect(output()[0].props).toMatchObject({
+    expect(wrapper.at(0).props()).toMatchObject({
       href: item.origin,
       rel: 'noopener noreferrer',
       target: '_blank'
