@@ -2,7 +2,7 @@ import './entry-list.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {Button, IntersectionObserver} from '../'
-import {EntryAutoFocus} from './entry'
+import {EntryAutoFocus} from './Entry'
 
 const entry = (entryProps, props) => (
   <div className="my-entry-list__item" key={entryProps.uuid}>

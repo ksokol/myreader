@@ -1,5 +1,5 @@
 import React from 'react'
-import Entry from './entry'
+import Entry from './Entry'
 import {shallow, mount} from 'enzyme'
 import {EntryActions} from './EntryActions/EntryActions'
 import EntryTags from './EntryTags/EntryTags'
@@ -33,7 +33,7 @@ class EntryPage {
   }
 }
 
-describe('src/app/js/components/entry-list/entry/entry.spec.js', () => {
+describe('src/app/js/components/entry-list/Entry/Entry.spec.js', () => {
 
   let props, page
 

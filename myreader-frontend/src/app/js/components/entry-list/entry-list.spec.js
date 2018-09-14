@@ -2,7 +2,7 @@ import React from 'react'
 import {shallow} from 'enzyme'
 import EntryList from './entry-list'
 import {IntersectionObserver} from '..'
-import {EntryAutoFocus} from './entry'
+import {EntryAutoFocus} from './Entry'
 
 describe('src/app/js/components/entry-list/entry-list.spec.js', () => {
 

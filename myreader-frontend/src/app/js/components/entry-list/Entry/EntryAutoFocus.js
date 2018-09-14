@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Entry from './entry'
+import Entry from './Entry'
 
 class EntryAutoFocus extends Component {
 

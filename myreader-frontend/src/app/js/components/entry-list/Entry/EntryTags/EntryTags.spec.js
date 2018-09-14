@@ -2,7 +2,7 @@ import EntryTags from './EntryTags'
 import React from 'react'
 import {shallow} from 'enzyme'
 
-describe('src/app/js/components/entry-list/entry/EntryTags/EntryTags.spec.js', () => {
+describe('src/app/js/components/entry-list/Entry/EntryTags/EntryTags.spec.js', () => {
 
   let props
 
