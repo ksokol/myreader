@@ -1,8 +1,8 @@
 import React from 'react'
-import IntersectionObserver from './intersection-observer'
+import IntersectionObserver from './IntersectionObserver'
 import {renderIntoDocument} from 'react-dom/test-utils'
 
-describe('src/app/js/components/intersection-observer/intersection-observer.spec.js', () => {
+describe('src/app/js/components/IntersectionObserver/IntersectionObserver.spec.js', () => {
 
   let props, observer, instance
 

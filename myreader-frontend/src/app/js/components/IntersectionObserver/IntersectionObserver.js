@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import './intersection-observer.css'
+import './IntersectionObserver.css'
 
 class IntersectionObserver extends Component {
 

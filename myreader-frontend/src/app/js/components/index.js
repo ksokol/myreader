@@ -1,6 +1,6 @@
 export * from './entry-list'
 export * from './buttons'
-export * from './intersection-observer'
+export * from './IntersectionObserver'
 export * from './chips'
 export * from './icon'
 export * from './hotkeys'
