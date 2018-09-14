@@ -1,4 +1,4 @@
-import './icon-button.css'
+import './IconButton.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
