@@ -1,6 +1,6 @@
 import React from 'react'
 import {EntryContent} from './EntryContent'
-import {shallow} from '../../../../shared/test-utils'
+import {shallow} from 'enzyme'
 
 describe('src/app/js/components/entry-list/entry/EntryContent/EntryContent.spec.js', () => {
 
@@ -9,8 +9,9 @@ describe('src/app/js/components/entry-list/entry/EntryContent/EntryContent.spec.
   beforeEach(() => item = {content: 'expected content'})
 
   it('should set content as innerHTML', () => {
-    const {output} = shallow(<EntryContent {...item} />)
+    const result = shallow(<EntryContent {...item} />)
+      .matchesElement(<div className="my-entry-content" dangerouslySetInnerHTML={{__html: 'expected content'}} />)
 
-    expect(output()).toEqual(<div className="my-entry-content" dangerouslySetInnerHTML={{__html: 'expected content'}}></div>)
+    expect(result).toEqual(true)
   })
 })
