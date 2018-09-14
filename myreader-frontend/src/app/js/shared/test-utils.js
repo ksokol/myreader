@@ -166,17 +166,10 @@ export function tick(millis = 0) {
 /**
  * @deprecated Use enzyme instead.
  */
-export function shallowInstance(Component) {
+export function shallowOutput(Component) {
   const renderer = new ShallowRenderer()
   renderer.render(Component)
-  return renderer
-}
-
-/**
- * @deprecated Use enzyme instead.
- */
-export function shallowOutput(Component) {
-  return shallowInstance(Component).getRenderOutput()
+  return renderer.getRenderOutput()
 }
 
 /**
