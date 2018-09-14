@@ -1,7 +1,7 @@
 import React from 'react'
 import Hotkeys from './Hotkeys'
-import ReactTestUtils from 'react-dom/test-utils'
 import {dispatchKeyEventOnElement} from '../../shared/test-utils'
+import {mount} from 'enzyme'
 
 const enter = {key: 'Enter', keyCode: 13}
 const down = {key: 'ArrowDown', keyCode: 40}
@@ -13,7 +13,7 @@ const esc = {key: 'esc', keyCode: 27}
 
 describe('src/app/js/components/Hotkeys/Hotkeys.spec.js', () => {
 
-  let onKeys, instance
+  let onKeys, wrapper
 
   beforeEach(() => {
     onKeys = {
@@ -25,13 +25,14 @@ describe('src/app/js/components/Hotkeys/Hotkeys.spec.js', () => {
       esc: jest.fn()
     }
 
-    instance = ReactTestUtils.renderIntoDocument(<Hotkeys onKeys={onKeys}><wrapped-element/></Hotkeys>)
+    wrapper = mount(<Hotkeys onKeys={onKeys}><p>wrapped component</p></Hotkeys>)
   })
 
-  const onKey = (event, funcs = {}) => dispatchKeyEventOnElement(instance.myRef.current, {type: 'press', event, funcs})
+  const onKey = (event, funcs = {}) =>
+    dispatchKeyEventOnElement(wrapper.instance().myRef.current, {type: 'press', event, funcs})
 
   it('should render wrapped element', () => {
-    expect(instance.props.children.type).toEqual('wrapped-element')
+    expect(wrapper.find('p').text()).toEqual('wrapped component')
   })
 
   it('should call function mapped to "z" key', () => {
