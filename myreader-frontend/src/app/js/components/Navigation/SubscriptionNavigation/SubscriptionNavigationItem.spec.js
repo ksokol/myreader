@@ -134,6 +134,12 @@ describe('src/app/js/components/Navigation/SubscriptionNavigation/SubscriptionNa
       expect(createWrapper().subscriptions.exists).toEqual(false)
     })
 
+    it('should not render navigation subscriptions when prop "item.subscriptions" is undefined', () => {
+      props.item.subscriptions = undefined
+
+      expect(createWrapper().subscriptions.exists).toEqual(false)
+    })
+
     it('should render navigation subscriptions when prop "query.feedTagEqual" is equal to item tag', () => {
       expect(createWrapper().subscriptions.exists).toEqual(true)
     })
