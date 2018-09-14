@@ -1,6 +1,7 @@
 import Chip from './Chip'
 import React from 'react'
-import TestRenderer from 'react-test-renderer'
+import {shallow} from 'enzyme'
+import {IconButton} from '..'
 
 describe('src/app/js/components/Chips/Chip.spec.js', () => {
 
@@ -13,86 +14,104 @@ describe('src/app/js/components/Chips/Chip.spec.js', () => {
     }
   })
 
-  const createInstance = () => TestRenderer.create(<Chip {...props}>expected child</Chip>).root.children[0]
+  const createShallow = () => shallow(<Chip {...props}>expected child</Chip>)
 
   it('should not mark as selected', () => {
-    expect(createInstance().props.className).not.toEqual('my-chip my-chip--selected')
+    expect(createShallow().hasClass('my-chip my-chip--selected')).not.toEqual(true)
   })
 
   it('should mark as selected', () => {
-    props.selected = 'test'
+    const wrapper = createShallow()
+    wrapper.setProps({selected: 'test'})
 
-    expect(createInstance().props.className).toEqual('my-chip my-chip--selected')
+    expect(wrapper.hasClass('my-chip my-chip--selected')).toEqual(true)
   })
 
   it('should not mark as selectable when prop "selected" equals prop "keyFn" function return value but prop "onSelect" function is undefined', () => {
-    props.selected = 'test'
+    const wrapper = createShallow()
+    wrapper.setProps({selected: 'test'})
 
-    expect(createInstance().props.className).not.toEqual('my-chip my-chip--selectable')
+    expect(wrapper.hasClass('my-chip my-chip--selectable')).not.toEqual(true)
   })
 
   it('should not mark as selectable when already selected', () => {
-    props.selected = 'test'
-    props.onSelect = () => {}
+    const wrapper = createShallow()
+    wrapper.setProps({
+      selected: 'test',
+      onSelect: () => {}
+    })
 
-    expect(createInstance().props.className).not.toEqual('my-chip my-chip--selectable')
+    expect(wrapper.hasClass('my-chip my-chip--selectable')).not.toEqual(true)
   })
 
   it('should mark as selectable when not selected and prop "onSelect" function is defined', () => {
-    props.onSelect = () => {}
+    const wrapper = createShallow()
+    wrapper.setProps({onSelect: () => {}})
 
-    expect(createInstance().props.className).toEqual('my-chip my-chip--selectable')
+    expect(wrapper.hasClass('my-chip my-chip--selectable')).toEqual(true)
   })
 
   it('should not mark as selectable when prop "disabled" is true', () => {
-    props.onSelect = () => {}
-    props.disabled = true
+    const wrapper = createShallow()
+    wrapper.setProps({
+      disabled: true,
+      onSelect: () => {}
+    })
 
-    expect(createInstance().props.className).toEqual('my-chip my-chip--disabled')
+    expect(wrapper.hasClass('my-chip my-chip--disabled')).toEqual(true)
   })
 
   it('should mark as selectable when prop "keyFn" function returns "other"', () => {
-    props.keyFn = () => 'other'
-    props.onSelect = () => {}
+    const wrapper = createShallow()
+    wrapper.setProps({
+      keyFn: () => 'other',
+      onSelect: () => {}
+    })
 
-    expect(createInstance().props.className).toEqual('my-chip my-chip--selectable')
+    expect(wrapper.hasClass('my-chip my-chip--selectable')).toEqual(true)
   })
 
   it('should trigger prop "onSelect" function on click', () => {
+    const wrapper = createShallow()
     props.onSelect = jest.fn()
-    createInstance().props.children[0].props.onClick()
+    wrapper.setProps(props)
 
+    wrapper.children().props().onClick()
     expect(props.onSelect).toHaveBeenCalled()
   })
 
   it('should not trigger prop "onSelect" function on click when prop "disabled" is true', () => {
-    props.disabled = true
+    const wrapper = createShallow()
     props.onSelect = jest.fn()
-    createInstance().props.children[0].props.onClick()
+    props.disabled = true
+    wrapper.setProps(props)
 
+    wrapper.children().props().onClick()
     expect(props.onSelect).not.toHaveBeenCalled()
   })
 
   it('should render children', () => {
     props.onSelect = jest.fn()
 
-    expect(createInstance().children[0].children).toEqual(['expected child'])
+    expect(createShallow().children().text()).toEqual('expected child')
   })
 
   it('should not render remove icon button component when prop "onRemove" function is undefined', () => {
-    expect(createInstance().children[1]).toBeUndefined()
+    expect(createShallow().find(IconButton).exists()).toEqual(false)
   })
 
   it('should render remove icon button component when prop "onRemove" function is defined', () => {
-    props.onRemove = jest.fn()
+    const wrapper = createShallow()
+    wrapper.setProps({onRemove: () => {}})
 
-    expect(createInstance().children[1]).toBeDefined()
+    expect(wrapper.find(IconButton).exists()).toEqual(true)
   })
 
   it('should pass expected props to icon button component', () => {
-    props.onRemove = jest.fn()
+    const wrapper = createShallow()
+    wrapper.setProps({onRemove: () => {}})
 
-    expect(createInstance().children[1].props).toContainObject({
+    expect(wrapper.find(IconButton).props()).toContainObject({
       className: 'my-chip__remove-button',
       type: 'close',
       disabled: false
@@ -100,17 +119,20 @@ describe('src/app/js/components/Chips/Chip.spec.js', () => {
   })
 
   it('should disable icon button component when prop "disabled" is true', () => {
-    props.onRemove = jest.fn()
-    props.disabled = true
-
-    expect(createInstance().children[1].props).toContainObject({
-      disabled: true
+    const wrapper = createShallow()
+    wrapper.setProps({
+      disabled: true,
+      onRemove: () => {}
     })
+
+    expect(wrapper.find(IconButton).prop('disabled')).toEqual(true)
   })
 
   it('should trigger prop "onRemove" function with prop "value" when icon button component clicked', () => {
+    const wrapper = createShallow()
     props.onRemove = jest.fn()
-    createInstance().children[1].props.onClick()
+    wrapper.setProps(props)
+    wrapper.find(IconButton).props().onClick()
 
     expect(props.onRemove).toHaveBeenCalledWith('test')
   })
