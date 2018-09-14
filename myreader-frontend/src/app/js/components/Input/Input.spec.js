@@ -1,8 +1,6 @@
 import React from 'react'
-import TestRenderer from 'react-test-renderer'
-import ReactTestUtils from 'react-dom/test-utils'
 import Input from './Input'
-import * as ReactDOM from 'react-dom'
+import {shallow, mount} from 'enzyme'
 
 describe('src/app/js/components/Input/Input.spec.js', () => {
 
@@ -20,40 +18,33 @@ describe('src/app/js/components/Input/Input.spec.js', () => {
     }
   })
 
-  const createInstance = () => TestRenderer.create(<Input {...props} />)
-
-  const inputRef = () => {
-    const node = document.createElement('div')
-    const instance = React.createRef()
-
-    ReactDOM.render(<Input ref={instance} {...props} />, node)
-    return {node, input: instance.current.myRef.current}
-  }
+  const createShallow = () => shallow(<Input  {...props} />)
+  const createMount = () => mount(<Input  {...props} />)
 
   it('should render label when prop "label" is defined', () => {
-    const instance = createInstance().root
+    const wrapper = createShallow()
 
-    expect(instance.findByType('label')).toBeDefined()
-    expect(instance.findByType('input')).toBeDefined()
+    expect(wrapper.find('label').exists()).toEqual(true)
+    expect(wrapper.find('input').exists()).toEqual(true)
   })
 
   it('should not render label when prop "label" is undefined', () => {
     props.label = undefined
-    const instance = createInstance().root
+    const wrapper = createShallow()
 
-    expect(instance.findAllByType('label').length).toEqual(0)
-    expect(instance.findByType('input')).toBeDefined()
+    expect(wrapper.find('label').exists()).toEqual(false)
+    expect(wrapper.find('input').exists()).toEqual(true)
   })
 
   it('should pass expected props to label', () => {
-    expect(createInstance().root.findByType('label').props).toEqual({
+    expect(createShallow().find('label').props()).toEqual({
       htmlFor: 'expectedName',
       children: 'expectedLabel'
     })
   })
 
   it('should pass expected props to input', () => {
-    const {onChange, ...props} = createInstance().root.findByType('input').props
+    const {onChange, ...props} = createShallow().find('input').props()
 
     expect(onChange).toBeDefined()
     expect(props).toContainObject({
@@ -70,116 +61,104 @@ describe('src/app/js/components/Input/Input.spec.js', () => {
   it('should disable input when prop "disabled" is true', () => {
     props.disabled = true
 
-    expect(createInstance().root.findByType('input').props).toContainObject({
-      disabled: true
-    })
+    expect(createShallow().find('input').prop('disabled')).toEqual(true)
   })
 
   it('should not disable input when prop "disabled" is false', () => {
     props.disabled = false
 
-    expect(createInstance().root.findByType('input').props).toContainObject({
-      disabled: false
-    })
+    expect(createShallow().find('input').prop('disabled')).toEqual(false)
   })
 
   it('should trigger prop "onChange" function', () => {
-    const instance = createInstance().root
-    instance.findByType('input').props.onChange({target: {value: 'new value'}})
+    createShallow().find('input').props().onChange({target: {value: 'new value'}})
 
     expect(props.onChange).toHaveBeenCalledWith('new value')
   })
 
   it('should not throw error when prop "onChange" function is undefined', () => {
     props.onChange = undefined
-    const instance = createInstance().root
 
-    instance.findByType('input').props.onChange({target: {value: 'new value'}})
+    createShallow().find('input').props().onChange({target: {value: 'new value'}})
   })
 
   it('should merge prop "className"', () => {
     props.className = 'expected-class'
-    const instance = createInstance().root
 
-    expect(instance.children[0].props.className).toEqual('my-input expected-class')
+    expect(createShallow().find('.my-input').prop('className')).toContain('expected-class')
   })
 
   it('should render prop "renderValidations" function', () => {
-    props.renderValidations = () => 'expected validation'
-    const instance = createInstance().root
+    props.renderValidations = () => <p>expected validation</p>
 
-    expect(instance.props.renderValidations()).toEqual('expected validation')
+    expect(createShallow().find('input + p').text()).toEqual('expected validation')
   })
 
   it('should not focus input field after mount', () => {
-    const instance = ReactTestUtils.renderIntoDocument(<Input {...props} />)
+    const wrapper = createShallow()
 
-    expect(document.activeElement).not.toEqual(instance)
+    expect(document.activeElement).not.toEqual(wrapper.instance())
   })
 
   it('should focus input field', () => {
-    const {input} = inputRef()
-    ReactTestUtils.Simulate.focus(input)
+    const wrapper = createMount()
+    expect(document.activeElement).not.toEqual(wrapper.find('input').instance())
 
-    expect(document.activeElement).toEqual(input)
+    wrapper.find('input').simulate('focus')
+    expect(document.activeElement).toEqual(wrapper.find('input').instance())
   })
 
   it('should restore focus when prop "disabled" changed back to true and input field was focused before', () => {
-    const {node, input} = inputRef()
-    ReactTestUtils.Simulate.focus(input)
-    const focusSpy = jest.spyOn(input, 'focus')
-
     props.disabled = true
-    ReactDOM.render(<Input {...props} />, node)
+    const wrapper = createMount()
+    const input = wrapper.find('input')
+    const focusSpy = jest.spyOn(input.instance(), 'focus')
 
+    input.simulate('focus')
     expect(focusSpy).not.toHaveBeenCalled()
 
     focusSpy.mockReset()
-    props.disabled = false
-    ReactDOM.render(<Input {...props} />, node)
-
+    wrapper.setProps({disabled: false})
     expect(focusSpy).toHaveBeenCalled()
   })
 
   it('should set input type value to "some-type"', () => {
     props.type = 'some-type'
 
-    expect(createInstance().root.findByType('input').props.type).toEqual('some-type')
+    expect(createShallow().find('input').prop('type')).toEqual('some-type')
   })
 
   it('should set input autocomplete value to "some-autocomplete"', () => {
     props.autoComplete = 'some-autocomplete'
 
-    expect(createInstance().root.findByType('input').props.autoComplete).toEqual('some-autocomplete')
+    expect(createShallow().find('input').prop('autoComplete')).toEqual('some-autocomplete')
   })
 
   it('should trigger prop "onFocus" function when input focused', () => {
-    const {input} = inputRef()
-    ReactTestUtils.Simulate.focus(input)
+    createMount().find('input').simulate('focus')
 
     expect(props.onFocus).toHaveBeenCalled()
   })
 
   it('should not throw an error when prop "onFocus" function is undefined', () => {
     props.onFocus = undefined
-    const {input} = inputRef()
 
-    ReactTestUtils.Simulate.focus(input)
+    createMount().find('input').simulate('focus')
   })
 
   it('should trigger prop "onBlur" function when input leaved', () => {
-    const {input} = inputRef()
-    ReactTestUtils.Simulate.focus(input)
-    ReactTestUtils.Simulate.blur(input)
+    const input = createMount().find('input')
+    input.simulate('focus')
+    input.simulate('blur')
 
     expect(props.onBlur).toHaveBeenCalled()
   })
 
   it('should not throw an error when prop "onBlur" function is undefined', () => {
     props.onBlur = undefined
-    const {input} = inputRef()
+    const input = createMount().find('input')
 
-    ReactTestUtils.Simulate.focus(input)
-    ReactTestUtils.Simulate.blur(input)
+    input.simulate('focus')
+    input.simulate('blur')
   })
 })
