@@ -4,7 +4,7 @@ import {mount} from 'enzyme'
 
 const ComponentToWrap = () => <p>wrapped component</p>
 
-describe('src/app/js/components/Input/withValidations.spec.js', () => {
+describe('withValidations', () => {
 
   let WrappedComponent, props
 

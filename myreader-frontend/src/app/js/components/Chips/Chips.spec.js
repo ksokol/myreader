@@ -4,7 +4,7 @@ import {shallow} from 'enzyme'
 import Chip from './Chip'
 import {Hotkeys, Input} from '..'
 
-describe('src/app/js/components/Chips/Chips.spec.js', () => {
+describe('Chips', () => {
 
   let props
 

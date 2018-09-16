@@ -11,7 +11,7 @@ const y = {key: 'y', keyCode: 89}
 const z = {key: 'z', keyCode: 90}
 const esc = {key: 'esc', keyCode: 27}
 
-describe('src/app/js/components/Hotkeys/Hotkeys.spec.js', () => {
+describe('Hotkeys', () => {
 
   let onKeys, wrapper
 

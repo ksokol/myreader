@@ -2,7 +2,7 @@ import React from 'react'
 import Input from './Input'
 import {shallow, mount} from 'enzyme'
 
-describe('src/app/js/components/Input/Input.spec.js', () => {
+describe('Input', () => {
 
   let props
 

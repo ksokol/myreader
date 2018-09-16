@@ -33,7 +33,7 @@ class EntryPage {
   }
 }
 
-describe('src/app/js/components/EntryList/Entry/Entry.spec.js', () => {
+describe('Entry', () => {
 
   let props, page
 

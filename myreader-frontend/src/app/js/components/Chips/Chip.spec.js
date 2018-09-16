@@ -3,7 +3,7 @@ import React from 'react'
 import {shallow} from 'enzyme'
 import {IconButton} from '..'
 
-describe('src/app/js/components/Chips/Chip.spec.js', () => {
+describe('Chip', () => {
 
   let props
 

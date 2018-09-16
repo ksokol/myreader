@@ -3,7 +3,7 @@ import {NavigationItem} from '.'
 import {shallow} from 'enzyme'
 import {Badge} from '../Badge'
 
-describe('src/app/js/components/Navigation/NavigationItem.spec.js', () => {
+describe('NavigationItem', () => {
 
   let props
 

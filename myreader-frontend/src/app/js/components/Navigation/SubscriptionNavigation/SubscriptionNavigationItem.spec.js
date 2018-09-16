@@ -61,7 +61,7 @@ class SubscriptionNavigationItemWrapper {
   }
 }
 
-describe('src/app/js/components/Navigation/SubscriptionNavigation/SubscriptionNavigationItem.spec.js', () => {
+describe('SubscriptionNavigationItem', () => {
 
   let props
 

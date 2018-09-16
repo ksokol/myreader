@@ -4,7 +4,7 @@ import EntryList from './EntryList'
 import {IntersectionObserver} from '..'
 import {EntryAutoFocus} from './Entry'
 
-describe('src/app/js/components/EntryList/EntryList.spec.js', () => {
+describe('EntryList', () => {
 
   let props, commonProps, entries
 

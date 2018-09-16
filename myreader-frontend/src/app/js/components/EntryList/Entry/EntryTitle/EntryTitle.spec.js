@@ -3,7 +3,7 @@ import {EntryTitle} from './EntryTitle'
 import {TimeAgo} from '../../..'
 import {shallow} from 'enzyme'
 
-describe('src/app/js/components/EntryList/Entry/EntryTitle/EntryTitle.spec.js', () => {
+describe('EntryTitle', () => {
 
   let item
 

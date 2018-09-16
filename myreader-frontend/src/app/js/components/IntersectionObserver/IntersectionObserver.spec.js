@@ -2,7 +2,7 @@ import React from 'react'
 import IntersectionObserver from './IntersectionObserver'
 import {mount} from 'enzyme'
 
-describe('src/app/js/components/IntersectionObserver/IntersectionObserver.spec.js', () => {
+describe('IntersectionObserver', () => {
 
   let props, observer, wrapper
 

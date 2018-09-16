@@ -2,7 +2,7 @@ import React from 'react'
 import {EntryActions} from './EntryActions'
 import {shallow} from 'enzyme'
 
-describe('src/app/js/components/EntryList/Entry/EntryActions/EntryActions.spec.js', () => {
+describe('EntryActions', () => {
 
   let props
 

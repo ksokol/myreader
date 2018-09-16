@@ -2,7 +2,7 @@ import React from 'react'
 import EntryAutoFocus from './EntryAutoFocus'
 import {mount} from 'enzyme'
 
-describe('src/app/js/components/EntryList/Entry/EntryAutoFocus.spec.js', () => {
+describe('EntryAutoFocus', () => {
 
   let props, el
 

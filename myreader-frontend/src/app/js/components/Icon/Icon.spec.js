@@ -2,7 +2,7 @@ import React from 'react'
 import Icon from './Icon'
 import {shallow} from 'enzyme'
 
-describe('src/app/js/components/Icon/Icon.spec.js', () => {
+describe('Icon', () => {
 
   it('should render close icon with default color', () => {
     expect(shallow(<Icon type="close"/>).hasClass('my-icon my-icon__close my-icon--grey')).toEqual(true)
