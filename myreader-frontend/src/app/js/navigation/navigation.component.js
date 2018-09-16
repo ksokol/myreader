@@ -1,36 +1,45 @@
 import template from './navigation.component.html'
 import './navigation.component.css'
-import {adminPermissionSelector, logout, routeChange} from '../store'
+import {
+  adminPermissionSelector,
+  filteredByUnseenSubscriptionsSelector,
+  logout,
+  routeChange,
+  routeSelector
+} from '../store'
 
 class controller {
 
-    constructor($ngRedux) {
-        'ngInject'
-        this.$ngRedux = $ngRedux
-    }
+  constructor($ngRedux) {
+    'ngInject'
+    this.$ngRedux = $ngRedux
+  }
 
-    $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatch)(this)
-    }
+  $onInit() {
+    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
+  }
 
-    $onDestroy() {
-        this.unsubscribe()
-    }
+  $onDestroy() {
+    this.unsubscribe()
+  }
 
-    mapStateToThis(state) {
-        return {
-            isAdmin: adminPermissionSelector(state)
-        }
+  mapStateToThis(state) {
+    return {
+      isAdmin: adminPermissionSelector(state),
+      ...filteredByUnseenSubscriptionsSelector(state),
+      ...routeSelector(state)
     }
+  }
 
-    mapDispatch(dispatch) {
-        return {
-            routeTo: route => dispatch(routeChange(route)),
-            logout: () => dispatch(logout())
-        }
+  mapDispatchToThis(dispatch) {
+    return {
+      routeTo: route => dispatch(routeChange(route)),
+      logout: () => dispatch(logout()),
+      onSelect: query => dispatch(routeChange(['app', 'entries'], {...query, q: null /* TODO Remove q query parameter from UI Router */}))
     }
+  }
 }
 
 export const NavigationComponent = {
-    template, controller
+  template, controller
 }
