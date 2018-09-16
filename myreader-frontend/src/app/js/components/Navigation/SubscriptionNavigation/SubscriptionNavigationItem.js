@@ -6,11 +6,7 @@ import {NavigationItem} from '..'
 class SubscriptionNavigationItem extends React.Component {
 
   onSelect(feedTagEqual, feedUuidEqual) {
-    this.props.onSelect({
-      feedTagEqual,
-      feedUuidEqual,
-      q: null // TODO Remove q query parameter from UI Router
-    })
+    this.props.onSelect({feedTagEqual, feedUuidEqual})
   }
 
   get isOpen() {

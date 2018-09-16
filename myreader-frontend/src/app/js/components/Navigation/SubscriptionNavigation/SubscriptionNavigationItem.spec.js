@@ -98,7 +98,7 @@ describe('SubscriptionNavigationItem', () => {
   it('should trigger prop function "onSelect" when navigation item clicked', () => {
     createWrapper().itemClick()
 
-    expect(props.onSelect).toHaveBeenCalledWith({feedTagEqual: 'tag', feedUuidEqual: 'uuid', q: null})
+    expect(props.onSelect).toHaveBeenCalledWith({feedTagEqual: 'tag', feedUuidEqual: 'uuid'})
   })
 
   it('should flag navigation item as selected when prop "query.feedUuidEqual" and "query.feedTagEqual" is not equal to item uuid and tag', () => {
@@ -192,13 +192,13 @@ describe('SubscriptionNavigationItem', () => {
     it('should trigger prop function "onSelect" when first subscription navigation item clicked', () => {
       createWrapper().subscriptions.itemClickAt(0)
 
-      expect(props.onSelect).toHaveBeenCalledWith({feedTagEqual: 'tag', feedUuidEqual: 'uuid1', q: null})
+      expect(props.onSelect).toHaveBeenCalledWith({feedTagEqual: 'tag', feedUuidEqual: 'uuid1'})
     })
 
     it('should trigger prop function "onSelect" when second subscription navigation item clicked', () => {
       createWrapper().subscriptions.itemClickAt(1)
 
-      expect(props.onSelect).toHaveBeenCalledWith({feedTagEqual: 'tag', feedUuidEqual: 'uuid2', q: null})
+      expect(props.onSelect).toHaveBeenCalledWith({feedTagEqual: 'tag', feedUuidEqual: 'uuid2'})
     })
   })
 })
