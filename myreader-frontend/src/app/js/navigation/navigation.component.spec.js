@@ -1,12 +1,12 @@
-import {componentMock, mockNgRedux} from '../shared/test-utils'
+import {multipleReactComponents, mockNgRedux} from '../shared/test-utils'
 
 describe('src/app/js/navigation/navigation.component.spec.js', () => {
 
-  let scope, compile, router, subscriptions, ngReduxMock, navigationSubscriptionsItem
+  let scope, compile, router, subscriptions, ngReduxMock, subscriptionItems
 
   beforeEach(() => {
-    navigationSubscriptionsItem = componentMock('myNavigationSubscriptionsItem')
-    angular.mock.module('myreader', navigationSubscriptionsItem, mockNgRedux())
+    subscriptionItems = multipleReactComponents('SubscriptionNavigationItem')
+    angular.mock.module('myreader', subscriptionItems, mockNgRedux())
   })
 
   beforeEach(inject(($rootScope, $compile, $ngRedux) => {
@@ -49,7 +49,7 @@ describe('src/app/js/navigation/navigation.component.spec.js', () => {
     const element = compile('<my-navigation></my-navigation>')(scope)[0]
     scope.$digest()
 
-    expect(element.querySelector('my-navigation-subscriptions-item')).not.toBeNull()
+    expect(element.querySelector('react-component[name="SubscriptionNavigationItem"]')).not.toBeNull()
     expect(collectLinkTexts(element)).toEqual(['Subscriptions', 'Bookmarks', 'Settings', 'Add subscription', 'Logout'])
   })
 
@@ -104,21 +104,11 @@ describe('src/app/js/navigation/navigation.component.spec.js', () => {
     expect(ngReduxMock.getActionTypes()).toEqual(['POST_LOGOUT'])
   })
 
-  it('should pass expected bindings to navigation subscriptions item component', () => {
-    compile('<my-navigation></my-navigation>')(scope)[0]
-    scope.$digest()
-
-    expect(navigationSubscriptionsItem.bindings).toContainObject({
-      mySubscriptions: subscriptions,
-      myQuery: router.query
-    })
-  })
-
   it('should dispatch route changed action', () => {
     compile('<my-navigation></my-navigation>')(scope)[0]
     scope.$digest()
 
-    navigationSubscriptionsItem.bindings.myOnSelect()
+    subscriptionItems.bindings[0].onSelect()
     expect(ngReduxMock.getActionTypes()).toEqual(['ROUTE_CHANGED'])
   })
 
@@ -126,11 +116,22 @@ describe('src/app/js/navigation/navigation.component.spec.js', () => {
     compile('<my-navigation></my-navigation>')(scope)[0]
     scope.$digest()
 
-    navigationSubscriptionsItem.bindings.myOnSelect({query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'}})
+    subscriptionItems.bindings[0].onSelect({feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'})
 
     expect(ngReduxMock.getActions()[0]).toContainActionData({
       route: ['app', 'entries'],
       query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid', q: null}
     })
+  })
+
+  it('should create subscription item components', () => {
+    compile('<my-navigation></my-navigation>')(scope)[0]
+    scope.$digest()
+
+    expect(subscriptionItems.bindings.length).toEqual(4)
+    expect(subscriptionItems.bindings[0]).toContainObject({item: {title: 'all'}, query: router.query})
+    expect(subscriptionItems.bindings[1]).toContainObject({item: {title: 'group 1'}, query: router.query})
+    expect(subscriptionItems.bindings[2]).toContainObject({item: {title: 'group 2'}, query: router.query})
+    expect(subscriptionItems.bindings[3]).toContainObject({item: {title: 'subscription 3'}, query: router.query})
   })
 })

@@ -1,9 +1,9 @@
 <ul class="my-navigation" ng-if="!$ctrl.isAdmin">
-    <my-navigation-subscriptions-item
-        my-subscriptions="$ctrl.subscriptions"
-        my-query="$ctrl.router.query"
-        my-on-select="$ctrl.onSelect(query)">
-    </my-navigation-subscriptions-item>
+    <react-component
+            name="SubscriptionNavigationItem"
+            props="$ctrl.props(item)"
+            ng-repeat="item in $ctrl.subscriptionNavigation track by item.key">
+    </react-component>
 
     <li class="my-navigation__item" ng-click="$ctrl.routeTo(['app', 'subscriptions'])">
         <span>Subscriptions</span>

@@ -34,7 +34,6 @@ import {BookmarkComponent} from './bookmark/bookmark.component'
 import {SubscriptionListComponent} from './subscription/subscription-list.component'
 import {HotkeysComponent} from './shared/component/hotkeys/hotkeys.component'
 import {FeedStreamComponent} from './feed-stream/feed-stream.component'
-import {NavigationSubscriptionsItemComponent} from './navigation/subscriptions-item/subscriptions-item.component'
 import {AppComponent} from './app.component'
 import {NavigationComponent} from './navigation/navigation.component'
 import createRouterMiddleware from './store/middleware/router'
@@ -88,7 +87,6 @@ angular
   .component('myBookmark', BookmarkComponent)
   .component('mySubscriptionList', SubscriptionListComponent)
   .component('myFeedStream', FeedStreamComponent)
-  .component('myNavigationSubscriptionsItem', NavigationSubscriptionsItemComponent)
   .component('myApp', AppComponent)
   .component('myNavigation', NavigationComponent)
   .component('myBackdrop', BackdropComponent)

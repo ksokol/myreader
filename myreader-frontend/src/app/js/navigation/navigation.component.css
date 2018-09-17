@@ -41,11 +41,6 @@
     background-color: #e5e5e5;
 }
 
-.my-navigation__item__sub > span:first-child {
-    padding: 0 16px 0 16px;
-    text-transform: none;
-}
-
 .my-navigation__item--blue {
     background-color: rgb(63, 81, 181);
     color: rgb(255, 255, 255);

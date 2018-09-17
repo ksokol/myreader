@@ -7,6 +7,7 @@ import {
   routeChange,
   routeSelector
 } from '../store'
+import createSubscriptionNavigation from '../components/Navigation/SubscriptionNavigation/createSubscriptionNavigation'
 
 class controller {
 
@@ -26,7 +27,7 @@ class controller {
   mapStateToThis(state) {
     return {
       isAdmin: adminPermissionSelector(state),
-      ...filteredByUnseenSubscriptionsSelector(state),
+      subscriptionNavigation: createSubscriptionNavigation(filteredByUnseenSubscriptionsSelector(state).subscriptions),
       ...routeSelector(state)
     }
   }
@@ -36,6 +37,14 @@ class controller {
       routeTo: route => dispatch(routeChange(route)),
       logout: () => dispatch(logout()),
       onSelect: query => dispatch(routeChange(['app', 'entries'], {...query, q: null /* TODO Remove q query parameter from UI Router */}))
+    }
+  }
+
+  props(item) {
+    return {
+      item,
+      query: this.router.query,
+      onSelect: this.onSelect
     }
   }
 }
