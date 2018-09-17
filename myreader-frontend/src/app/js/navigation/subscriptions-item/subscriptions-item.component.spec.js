@@ -1,5 +1,4 @@
 import {multipleReactComponents} from '../../shared/test-utils'
-import {NavigationSubscriptionsItemComponent} from './subscriptions-item.component'
 
 describe('src/app/js/navigation/subscriptions-item/subscriptions-item.component.spec.js', () => {
 
@@ -36,21 +35,6 @@ describe('src/app/js/navigation/subscriptions-item/subscriptions-item.component.
     expect(subscriptionItems.bindings[1]).toContainObject({item: {title: 'group 1'}, query: scope.query})
     expect(subscriptionItems.bindings[2]).toContainObject({item: {title: 'group 2'}, query: scope.query})
     expect(subscriptionItems.bindings[3]).toContainObject({item: {title: 'subscription 3'}, query: scope.query})
-  })
-
-  it('should construct comparison value for ng-repeat track by', () => {
-    const controller = new NavigationSubscriptionsItemComponent.controller()
-
-    expect(controller.trackBy({
-      title: 'title',
-      unseen: 1
-    })).toEqual('{"title":"title","unseen":1,"subscriptions":null}')
-
-    expect(controller.trackBy({
-      title: 'title',
-      unseen: 1,
-      subscriptions: [{}, {}]
-    })).toEqual('{"title":"title","unseen":1,"subscriptions":2}')
   })
 
   it('should forward call to prop function "onSelect" to binding function "myOnSelect"', () => {
