@@ -3,7 +3,6 @@ import './navigation.component.css'
 import {
   adminPermissionSelector,
   filteredByUnseenSubscriptionsSelector,
-  logout,
   routeChange,
   routeSelector
 } from '../store'
@@ -35,7 +34,6 @@ class controller {
   mapDispatchToThis(dispatch) {
     return {
       routeTo: route => dispatch(routeChange(route)),
-      logout: () => dispatch(logout()),
       onSelect: query => dispatch(routeChange(['app', 'entries'], {...query, q: null /* TODO Remove q query parameter from UI Router */}))
     }
   }

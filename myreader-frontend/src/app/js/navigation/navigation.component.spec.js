@@ -76,7 +76,7 @@ describe('src/app/js/navigation/navigation.component.spec.js', () => {
     scope.$digest()
 
     expect(clickOnAllNavigationItems(element))
-      .toEqual([['app', 'subscriptions'], ['app', 'bookmarks'], ['app', 'settings'], ['app', 'subscription-add']])
+      .toEqual([['app', 'subscriptions'], ['app', 'bookmarks'], ['app', 'settings'], ['app', 'subscription-add'], ['logout']])
   })
 
   it('should route to configured admin components', () => {
@@ -84,40 +84,34 @@ describe('src/app/js/navigation/navigation.component.spec.js', () => {
     const element = compile('<my-navigation></my-navigation>')(scope)[0]
     scope.$digest()
 
-    expect(clickOnAllNavigationItems(element)).toEqual([['admin', 'overview'], ['admin', 'feed']])
+    expect(clickOnAllNavigationItems(element)).toEqual([['admin', 'overview'], ['admin', 'feed'], ['logout']])
   })
 
-  it('should dispatch logout action when user clicks on logout button', () => {
+  it('should navigate to logout when user clicks on logout button', () => {
     const element = compile('<my-navigation></my-navigation>')(scope)[0]
     scope.$digest()
     element.querySelector('li:last-of-type').click()
 
-    expect(ngReduxMock.getActionTypes()).toEqual(['POST_LOGOUT'])
+    expect(ngReduxMock.getActionTypes()).toEqual(['ROUTE_CHANGED'])
+    expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['logout']})
   })
 
-  it('should dispatch logout action when admin clicks on logout button', () => {
+  it('should navigate to logout when admin clicks on logout button', () => {
     ngReduxMock.setState({security: {authorized: true, role: 'ROLE_ADMIN'}})
     const element = compile('<my-navigation></my-navigation>')(scope)[0]
     scope.$digest()
     element.querySelector('li:last-of-type').click()
 
-    expect(ngReduxMock.getActionTypes()).toEqual(['POST_LOGOUT'])
-  })
-
-  it('should dispatch route changed action', () => {
-    compile('<my-navigation></my-navigation>')(scope)[0]
-    scope.$digest()
-
-    subscriptionItems.bindings[0].onSelect()
     expect(ngReduxMock.getActionTypes()).toEqual(['ROUTE_CHANGED'])
+    expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['logout']})
   })
 
   it('should navigate to route with feedTagEqual and feedUuidEqual set', () => {
     compile('<my-navigation></my-navigation>')(scope)[0]
     scope.$digest()
-
     subscriptionItems.bindings[0].onSelect({feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'})
 
+    expect(ngReduxMock.getActionTypes()).toEqual(['ROUTE_CHANGED'])
     expect(ngReduxMock.getActions()[0]).toContainActionData({
       route: ['app', 'entries'],
       query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid', q: null}
