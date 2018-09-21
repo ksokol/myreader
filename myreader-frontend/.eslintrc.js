@@ -9,11 +9,15 @@ module.exports = {
     'plugin:react/recommended'
   ],
   'parserOptions': {
-    'ecmaVersion': 6,
+    'ecmaVersion': 2018,
     'sourceType': 'module',
     'ecmaFeatures': {
-      'experimentalObjectRestSpread': true,
       'jsx': true
+    }
+  },
+  'settings': {
+    'react': {
+      'version': '16',
     }
   },
   'plugins': [
