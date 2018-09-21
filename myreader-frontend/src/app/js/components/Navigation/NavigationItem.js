@@ -15,7 +15,7 @@ const NavigationItem = props => {
     <li className={classes}
         onClick={props.onClick}>
       <span>{props.title}</span>
-      {props.badgeCount && <Badge count={props.badgeCount} />}
+      {typeof props.badgeCount !== 'undefined' && <Badge count={props.badgeCount} />}
     </li>
   )
 }

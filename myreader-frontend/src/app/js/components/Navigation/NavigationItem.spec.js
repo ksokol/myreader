@@ -42,4 +42,10 @@ describe('NavigationItem', () => {
 
     expect(createShallow().find('li').find(Badge).exists()).toEqual(false)
   })
+
+  it('should render badge component when value for prop "badgeCount" is zero', () => {
+    props.badgeCount = 0
+
+    expect(createShallow().find('li').find(Badge).prop('count')).toEqual(0)
+  })
 })
