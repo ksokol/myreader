@@ -10,10 +10,9 @@ export const EntryTitle = props => [
      target="_blank"
      rel="noopener noreferrer">{props.title}
   </a>,
-  <span key="subtitle"
-        className="my-entry-title__subtitle">
-        <TimeAgo date={props.createdAt}/> on {props.feedTitle}
-    </span>
+  <span key="subtitle" className="my-entry-title__subtitle">
+    <TimeAgo date={props.createdAt}/> on {props.feedTitle}
+  </span>
 ]
 
 EntryTitle.propTypes = {

@@ -49,16 +49,32 @@ class Entry extends Component {
     })
   }
 
+  get entryTitle() {
+    if (!this._entryTitle) {
+      const {
+        item: {
+          origin,
+          title,
+          feedTitle,
+          createdAt
+        }
+      } = this.props
+
+      this._entryTitle = <EntryTitle origin={origin}
+                               title={title}
+                               feedTitle={feedTitle}
+                               createdAt={createdAt} />
+    }
+
+    return this._entryTitle
+  }
+
   render() {
     const {
       item: {
-        title,
-        feedTitle,
-        origin,
         seen,
         tag: tags,
-        content,
-        createdAt
+        content
       },
       className,
       entryRef
@@ -75,15 +91,18 @@ class Entry extends Component {
       <div className={classes} ref={entryRef}>
         <div className='my-entry__header'>
           <div className='my-entry__title'>
-            <EntryTitle origin={origin} title={title} feedTitle={feedTitle} createdAt={createdAt} />
+            {this.entryTitle}
           </div>
           <div className='my-entry__actions'>
-            <EntryActions seen={seen} showMore={showMore} onToggleShowMore={this.toggleMore} onToggleSeen={this.toggleSeen} />
+            <EntryActions seen={seen}
+                          showMore={showMore}
+                          onToggleShowMore={this.toggleMore}
+                          onToggleSeen={this.toggleSeen} />
           </div>
         </div>
 
         {showMore &&
-          <EntryTags tags={tags} onChange={this.onTagUpdate}/>
+          <EntryTags tags={tags} onChange={this.onTagUpdate} />
         }
 
         {showContent &&
