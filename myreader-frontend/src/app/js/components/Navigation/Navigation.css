@@ -1,5 +1,4 @@
-.my-navigation,
-.my-navigation > ul {
+.my-navigation {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -30,15 +29,6 @@
 
 .my-navigation__item:hover {
     background-color: rgba(158, 158, 158, 0.2);
-}
-
-.my-navigation__item > span:first-child {
-    padding-left: 6px;
-    flex-grow: 1;
-}
-
-.my-navigation__item--selected {
-    background-color: #e5e5e5;
 }
 
 .my-navigation__item--blue {

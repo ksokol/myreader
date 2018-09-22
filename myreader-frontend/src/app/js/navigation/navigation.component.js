@@ -1,12 +1,9 @@
-import template from './navigation.component.html'
-import './navigation.component.css'
 import {
   adminPermissionSelector,
   filteredByUnseenSubscriptionsSelector,
   routeChange,
   routeSelector
 } from '../store'
-import createSubscriptionNavigation from '../components/Navigation/SubscriptionNavigation/createSubscriptionNavigation'
 
 class controller {
 
@@ -26,27 +23,31 @@ class controller {
   mapStateToThis(state) {
     return {
       isAdmin: adminPermissionSelector(state),
-      subscriptionNavigation: createSubscriptionNavigation(filteredByUnseenSubscriptionsSelector(state).subscriptions),
+      ...filteredByUnseenSubscriptionsSelector(state),
       ...routeSelector(state)
     }
   }
 
   mapDispatchToThis(dispatch) {
     return {
-      routeTo: route => dispatch(routeChange(route)),
-      onSelect: query => dispatch(routeChange(['app', 'entries'], {...query, q: undefined /* TODO Remove q query parameter from UI Router */}))
+      routeTo: (route, query) => dispatch(routeChange(route, query))
     }
   }
 
-  props(item) {
+  get props() {
     return {
-      item,
-      query: this.router.query,
-      onSelect: this.onSelect
+      isAdmin: this.isAdmin,
+      subscriptions: this.subscriptions,
+      router: this.router,
+      routeTo: this.routeTo
     }
   }
 }
 
+/**
+ * @deprecated
+ */
 export const NavigationComponent = {
-  template, controller
+  template: '<react-component name="Navigation" props="$ctrl.props"></react-component>',
+  controller
 }

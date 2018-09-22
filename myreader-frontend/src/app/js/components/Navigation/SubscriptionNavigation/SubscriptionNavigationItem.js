@@ -6,7 +6,7 @@ import {NavigationItem} from '..'
 class SubscriptionNavigationItem extends React.Component {
 
   onSelect(feedTagEqual, feedUuidEqual) {
-    this.props.onSelect({feedTagEqual, feedUuidEqual})
+    this.props.onClick({feedTagEqual, feedUuidEqual})
   }
 
   get isOpen() {
@@ -65,7 +65,7 @@ SubscriptionNavigationItem.propTypes = {
     feedTagEqual: PropTypes.string,
     feedUuidEqual: PropTypes.string
   }).isRequired,
-  onSelect: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired
 }
 
 export default SubscriptionNavigationItem

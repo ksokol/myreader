@@ -1,2 +1,3 @@
-export {default as SubscriptionNavigationItem} from './SubscriptionNavigation/SubscriptionNavigationItem'
+export * from './SubscriptionNavigation'
 export {default as NavigationItem} from './NavigationItem'
+export {default as Navigation} from './Navigation'

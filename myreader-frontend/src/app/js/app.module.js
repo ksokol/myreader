@@ -48,7 +48,7 @@ import {
   AutocompleteSuggestionsItemTextComponent
 } from './shared/component/autocomplete-input'
 import {IconButtonComponent} from './shared/component/buttons/icon-button/icon-button.component'
-import {Button, Chips, EntryList, Icon, IconButton, SubscriptionNavigationItem} from './components'
+import {Button, Chips, EntryList, Icon, IconButton, Navigation, SubscriptionNavigationItem} from './components'
 
 import './config'
 
@@ -71,6 +71,7 @@ angular
   .value('FeedFetchErrorLoadMore', FeedFetchErrorLoadMore)
   .value('EntryList', EntryList)
   .value('SubscriptionNavigationItem', SubscriptionNavigationItem)
+  .value('Navigation', Navigation)
 
   .component('myFeedFetchError', FeedFetchErrorComponent)
   .component('myFeed', FeedComponent)
@@ -121,12 +122,11 @@ angular
         return result
       }
 
-      const store = createApplicationStore(
+      return createApplicationStore(
         ENVIRONMENT,
         [installMediaBreakpointActionDispatcher],
         [routerMiddleware, digestMiddleware]
       )
-      return store
     }
   })
   // TODO part of AngularJS exit strategy
