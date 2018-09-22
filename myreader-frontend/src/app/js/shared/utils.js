@@ -1,39 +1,25 @@
-function isFunction(value) {
-  return typeof value === 'function'
-}
+import isEqual from 'lodash.isequal'
 
-export function isDefined(value) {
-  return typeof value !== 'undefined'
-}
+const isFunction = value => typeof value === 'function'
 
-export function isString(value) {
-  return value !== null && typeof value === 'string'
-}
+export const isDefined = value => typeof value !== 'undefined'
 
-export function isObject(value) {
-  return value !== null && typeof value === 'object'
-}
+export const isString = value => value !== null && typeof value === 'string'
 
-export function isPromiseLike(value) {
-  return !!(isObject(value) && isFunction(value.then) && isFunction(value.catch))
-}
+export const isObject = value => value !== null && typeof value === 'object'
 
-export function isBoolean(value) {
-  return typeof value === 'boolean'
-}
+export const isPromiseLike = value => !!(isObject(value) && isFunction(value.then) && isFunction(value.catch))
 
-export function isDate(value) {
-  return value instanceof Date
-}
+export const isBoolean = value => typeof value === 'boolean'
 
-export function toArray(value) {
-  return value ? Array.isArray(value) ? value : [value] : []
-}
+export const isDate = value => value instanceof Date
 
-export function arrayIncludes(left, right) {
-  return Array.isArray(left) && Array.isArray(right) &&
-    left.every((leftValue, leftIndex) => leftValue === right[leftIndex])
-}
+export const toArray = value => value ? Array.isArray(value) ? value : [value] : []
 
-export function noop() {
-}
+export const arrayIncludes = (left, right) =>
+  Array.isArray(left) && Array.isArray(right) &&
+  left.every((leftValue, leftIndex) => leftValue === right[leftIndex])
+
+export const objectEquals = (left, right) => isEqual(left, right)
+
+export const noop = () => {}

@@ -4,7 +4,7 @@ const enter = {key: 'Enter', keyCode: 13}
 const arrowDown = {key: 'ArrowDown', keyCode: 40}
 const arrowUp = {key: 'ArrowUp', keyCode: 38}
 
-describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
+describe('FeedStreamComponent', () => {
 
   let scope, element, ngReduxMock
 
@@ -118,7 +118,11 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
       listPage.bindings.myOnSearch({params: {q: 'b'}})
       scope.$digest()
 
-      expect(ngReduxMock.getActions()[0]).toContainActionData({route: ['app', 'entries'], query: {q: 'b'}})
+      expect(ngReduxMock.getActions()[0]).toContainActionData({
+        route: ['app', 'entries'],
+        query: {q: 'b'},
+        options: {}
+      })
     })
 
     it('should refresh state', () => {
@@ -127,8 +131,11 @@ describe('src/app/js/feed-stream/feed-stream.component.spec.js', () => {
 
       expect(ngReduxMock.getActionTypes()).toEqual(['GET_SUBSCRIPTIONS', 'ROUTE_CHANGED'])
 
-      expect(ngReduxMock.getActions()[1])
-        .toContainActionData({route: ['app', 'entries'], query: {param1: 'expected param1', param2: 'expected param2'}})
+      expect(ngReduxMock.getActions()[1]).toContainActionData({
+        route: ['app', 'entries'],
+        query: {param1: 'expected param1', param2: 'expected param2'},
+        options: {reload: true}
+      })
     })
 
     it('should show action panel when media breakpoint is "desktop"', () => {

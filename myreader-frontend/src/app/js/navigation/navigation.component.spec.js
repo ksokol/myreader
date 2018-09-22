@@ -1,6 +1,6 @@
 import {multipleReactComponents, mockNgRedux} from '../shared/test-utils'
 
-describe('src/app/js/navigation/navigation.component.spec.js', () => {
+describe('NavigationComponent', () => {
 
   let scope, compile, router, subscriptions, ngReduxMock, subscriptionItems
 
@@ -114,7 +114,7 @@ describe('src/app/js/navigation/navigation.component.spec.js', () => {
     expect(ngReduxMock.getActionTypes()).toEqual(['ROUTE_CHANGED'])
     expect(ngReduxMock.getActions()[0]).toContainActionData({
       route: ['app', 'entries'],
-      query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid', q: null}
+      query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid', q: undefined}
     })
   })
 

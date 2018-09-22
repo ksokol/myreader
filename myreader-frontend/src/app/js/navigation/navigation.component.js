@@ -34,7 +34,7 @@ class controller {
   mapDispatchToThis(dispatch) {
     return {
       routeTo: route => dispatch(routeChange(route)),
-      onSelect: query => dispatch(routeChange(['app', 'entries'], {...query, q: null /* TODO Remove q query parameter from UI Router */}))
+      onSelect: query => dispatch(routeChange(['app', 'entries'], {...query, q: undefined /* TODO Remove q query parameter from UI Router */}))
     }
   }
 
