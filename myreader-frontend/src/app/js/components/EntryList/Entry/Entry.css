@@ -15,5 +15,12 @@
 }
 
 .my-entry__header > .my-entry__actions {
+    display: flex;
     flex-shrink: 0;
+}
+
+@media (max-width: 599px) {
+    .my-entry__header > .my-entry__actions {
+        flex-direction: column-reverse;
+    }
 }
