@@ -3,6 +3,7 @@ import {Badge} from '..'
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
+import {isDefined} from '../../shared/utils'
 
 const NavigationItem = props => {
   const classes = classNames(
@@ -15,7 +16,7 @@ const NavigationItem = props => {
     <li className={classes}
         onClick={props.onClick}>
       <span>{props.title}</span>
-      {typeof props.badgeCount !== 'undefined' && <Badge count={props.badgeCount} />}
+      {isDefined(props.badgeCount) && <Badge text={props.badgeCount} />}
     </li>
   )
 }

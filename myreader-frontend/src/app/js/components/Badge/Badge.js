@@ -4,15 +4,11 @@ import PropTypes from 'prop-types'
 
 const Badge = props =>
   <div className='my-badge'>
-    <span>{props.count}</span>
+    <span>{props.text}</span>
   </div>
 
 Badge.propTypes = {
-  count: PropTypes.number
-}
-
-Badge.defaultProps = {
-  count: 0
+  text: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 }
 
 export default Badge

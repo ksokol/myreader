@@ -4,11 +4,7 @@ import {render} from 'enzyme'
 
 describe('Badge', () => {
 
-  it('should render Badge with count 2', () => {
-    expect(render(<Badge count={2} />).text()).toEqual('2')
-  })
-
-  it('should render badge with default count 0', () => {
-    expect(render(<Badge />).text()).toEqual('0')
+  it('should render Badge with given text', () => {
+    expect(render(<Badge text='sample text' />).text()).toEqual('sample text')
   })
 })

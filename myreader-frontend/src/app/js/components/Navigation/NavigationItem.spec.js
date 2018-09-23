@@ -34,18 +34,12 @@ describe('NavigationItem', () => {
   })
 
   it('should bass prop "badgeCount" to Badge component', () => {
-    expect(createShallow().find('li').find(Badge).prop('count')).toEqual(props.badgeCount)
+    expect(createShallow().find('li').find(Badge).prop('text')).toEqual(props.badgeCount)
   })
 
   it('should not render badge component when value for prop "badgeCount" is undefined', () => {
     props.badgeCount = undefined
 
     expect(createShallow().find('li').find(Badge).exists()).toEqual(false)
-  })
-
-  it('should render badge component when value for prop "badgeCount" is zero', () => {
-    props.badgeCount = 0
-
-    expect(createShallow().find('li').find(Badge).prop('count')).toEqual(0)
   })
 })
