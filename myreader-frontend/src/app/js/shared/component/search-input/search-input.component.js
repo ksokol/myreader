@@ -17,7 +17,10 @@ class controller {
     return {
       name: 'search-input',
       value: this.value,
-      onChange: value => this.myOnChange({value})
+      onChange: value => {
+        // TODO Remove q query parameter from UI Router
+        this.myOnChange({value: value.trim() === '' ? undefined : value})
+      }
     }
   }
 }
