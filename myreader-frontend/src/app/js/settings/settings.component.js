@@ -1,43 +1,41 @@
-import template from './settings.component.html'
-import './settings.component.css'
 import {getSettings, updateSettings} from '../store'
 
 class controller {
 
-    constructor($ngRedux) {
-        'ngInject'
-        this.$ngRedux = $ngRedux
-        this.unsubscribe = $ngRedux.connect(getSettings)(this)
-    }
+  constructor($ngRedux) {
+    'ngInject'
+    this.$ngRedux = $ngRedux
+    this.unsubscribe = $ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
+  }
 
-    $onDestroy() {
-        this.unsubscribe()
-    }
+  $onDestroy() {
+    this.unsubscribe()
+  }
 
-    save() {
-        this.$ngRedux.dispatch(updateSettings({
-            pageSize: this.pageSize,
-            showUnseenEntries: this.showUnseenEntries,
-            showEntryDetails: this.showEntryDetails
-        }))
+  mapStateToThis(state) {
+    return {
+      settings: getSettings(state)
     }
+  }
 
-    onPageSizeChoose(option) {
-        this.pageSize = option
-        this.save()
+  mapDispatchToThis(dispatch) {
+    return {
+      onChange: settings => dispatch(updateSettings(settings))
     }
+  }
 
-    onShowUnseenEntriesChoose(option) {
-        this.showUnseenEntries = option
-        this.save()
+  get settingsProps() {
+    return {
+      settings: this.settings,
+      onChange: this.onChange
     }
-
-    onShowEntryDetailsChoose(option) {
-        this.showEntryDetails = option
-        this.save()
-    }
+  }
 }
 
+/**
+ * @deprecated
+ */
 export const SettingsComponent = {
-    template, controller
+  template: '<react-component name="Settings" props="$ctrl.settingsProps"></react-component>',
+  controller
 }

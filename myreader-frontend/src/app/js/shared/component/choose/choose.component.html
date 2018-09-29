@@ -1,4 +1,0 @@
-<my-button ng-repeat="option in $ctrl.myOptions"
-           ng-class="{'my-choose__button--selected': $ctrl.myValue === $ctrl.getValue(option)}"
-           my-on-click="$ctrl.myOnChoose({option: $ctrl.getValue(option)})">{{$ctrl.getLabel(option)}}
-</my-button>

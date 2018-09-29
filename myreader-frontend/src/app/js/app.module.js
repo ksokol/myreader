@@ -40,7 +40,6 @@ import createRouterMiddleware from './store/middleware/router'
 import uiRouterAdapter from './shared/router/uiRouterAdapter'
 import uiRouterStartTransitionHandler from './shared/router/uiRouterStartTransitionHandler'
 import {BackdropComponent} from './shared/component/backdrop/backdrop.component'
-import {ChooseComponent} from './shared/component/choose/choose.component'
 import {
   AutocompleteInput,
   AutoCompleteInputComponent,
@@ -48,7 +47,16 @@ import {
   AutocompleteSuggestionsItemTextComponent
 } from './shared/component/autocomplete-input'
 import {IconButtonComponent} from './shared/component/buttons/icon-button/icon-button.component'
-import {Button, Chips, EntryList, Icon, IconButton, Navigation, SubscriptionNavigationItem} from './components'
+import {
+  Button,
+  Chips,
+  EntryList,
+  Icon,
+  IconButton,
+  Navigation,
+  Settings,
+  SubscriptionNavigationItem
+} from './components'
 
 import './config'
 
@@ -72,6 +80,7 @@ angular
   .value('EntryList', EntryList)
   .value('SubscriptionNavigationItem', SubscriptionNavigationItem)
   .value('Navigation', Navigation)
+  .value('Settings', Settings)
 
   .component('myFeedFetchError', FeedFetchErrorComponent)
   .component('myFeed', FeedComponent)
@@ -100,7 +109,6 @@ angular
   .component('myAutoScroll', AutoScrollComponent)
   .component('myListPage', ListPageComponent)
   .component('myHotkeys', HotkeysComponent)
-  .component('myChoose', ChooseComponent)
   .component('myAutocompleteInput', AutoCompleteInputComponent)
   .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
   .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)

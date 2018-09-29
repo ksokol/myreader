@@ -1,9 +1,9 @@
-my-settings {
+.my-settings {
     display: flex;
     flex-direction: column;
     padding: 10px;
 }
 
-my-settings > my-choose + label {
+.my-settings > .my-settings__item + .my-settings__item {
     padding-top: 25px;
 }
