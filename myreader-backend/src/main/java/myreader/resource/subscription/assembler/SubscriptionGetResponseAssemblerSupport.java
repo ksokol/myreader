@@ -1,7 +1,7 @@
 package myreader.resource.subscription.assembler;
 
-import myreader.entity.Feed;
 import myreader.entity.Subscription;
+import myreader.entity.SubscriptionTag;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -20,21 +20,24 @@ public class SubscriptionGetResponseAssemblerSupport extends ResourceAssemblerSu
     public SubscriptionGetResponse toResource(Subscription source) {
         SubscriptionGetResponse target = new SubscriptionGetResponse();
 
-        target.setUuid(String.valueOf(source.getId()));
-        target.setTag(source.getTag());
+        target.setUuid(source.getId().toString());
+        target.setOrigin(source.getFeed().getUrl());
         target.setCreatedAt(source.getCreatedAt());
         target.setSum(source.getFetchCount());
         target.setTitle(source.getTitle());
         target.setUnseen(source.getUnseen());
 
-        final Feed feed = source.getFeed();
-        if(feed == null) {
-            return target;
-        }
+        if (source.getSubscriptionTag() != null) {
+            SubscriptionTag subscriptionTag = source.getSubscriptionTag();
+            SubscriptionGetResponse.FeedTag feedTag = new SubscriptionGetResponse.FeedTag();
 
-        target.setOrigin(feed.getUrl());
+            target.setFeedTag(feedTag);
+            feedTag.setUuid(subscriptionTag.getId().toString());
+            feedTag.setName(subscriptionTag.getName());
+            feedTag.setColor(subscriptionTag.getColor());
+            feedTag.setCreatedAt(subscriptionTag.getCreatedAt());
+        }
 
         return target;
     }
-
 }

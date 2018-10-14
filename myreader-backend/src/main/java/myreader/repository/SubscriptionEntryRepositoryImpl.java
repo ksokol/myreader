@@ -43,7 +43,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     private static final String TAG = "tag";
     private static final String SUBSCRIPTION_ID = "subscription.subscriptionId";
     private static final String SEEN = "seen";
-    private static final String SUBSCRIPTION_TAG = "subscription.tag";
+    private static final String SUBSCRIPTION_TAG = "subscription.subscriptionTag.tag";
     private static final String ID = "id";
     private static final Pattern TAG_SPLIT_PATTERN = Pattern.compile("( |,)");
 

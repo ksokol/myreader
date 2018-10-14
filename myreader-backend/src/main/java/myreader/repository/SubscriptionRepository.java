@@ -13,24 +13,17 @@ import java.util.List;
  */
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
-    @Query("select s from Subscription s join fetch s.feed where s.id = ?1")
-    @Override
-    Subscription findOne(Long id);
-
-    @Query(value="select s from Subscription s join fetch s.feed where s.user.email = ?#{principal.username} " +
+    @Query(value="select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.user.email = ?#{principal.username} " +
                  "and (select count(1) from SubscriptionEntry se where se.subscription.id = s.id and se.seen = false) > ?1")
     List<Subscription> findAllByUnseenGreaterThanAndCurrentUser(long unseenCount);
 
-    @Query("select s from Subscription s join fetch s.feed where s.id = ?1 and s.user.email = ?#{principal.username}")
+    @Query("select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.id = ?1 and s.user.email = ?#{principal.username}")
     Subscription findByIdAndCurrentUser(Long id);
 
     @Query("select s from Subscription s where s.user.email = ?#{principal.username} and s.feed.url = ?1")
     Subscription findByFeedUrlAndCurrentUser(String url);
 
     Subscription findByUserEmailAndFeedUrl(String email, String url);
-
-    @Query("select distinct(s.tag) from Subscription as s where s.user.email = ?#{principal.username} and s.tag is not null")
-    List<String> findDistinctTagsByCurrentUser();
 
     @Transactional
     @Query("update Subscription set lastFeedEntryId = ?1 where id = ?2")

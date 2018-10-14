@@ -12,9 +12,7 @@ import {
   fetchFeeds,
   fetchSubscriptionExclusionPatterns,
   fetchSubscriptions,
-  fetchSubscriptionTags,
-  loadSubscriptionIntoEditForm,
-  subscriptionTagsLoaded
+  loadSubscriptionIntoEditForm
 } from '../../store'
 import {logout} from '../security'
 
@@ -34,7 +32,6 @@ export const routeConfiguration = {
       subscription: {
         before: clearSubscriptionEditForm,
         resolve: [
-          ({query, getState}) => subscriptionTagsLoaded(getState()).loaded ? undefined : fetchSubscriptionTags(),
           ({query}) => loadSubscriptionIntoEditForm(query.uuid),
           ({query}) => fetchSubscriptionExclusionPatterns(query.uuid)
         ]

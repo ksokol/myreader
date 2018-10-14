@@ -40,7 +40,6 @@ public class SubscriptionEntryEntityResource {
         return assembler.toResource(subscriptionEntry);
     }
 
-    @Transactional
     @RequestMapping(method = PATCH)
     public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @RequestBody SubscriptionEntryPatchRequest request) {
         final SubscriptionEntry subscriptionEntry = findOrThrowException(id);

@@ -12,7 +12,7 @@ public class SubscriptionGetResponse extends ResourceSupport {
 
     private String uuid;
     private String title;
-    private String tag;
+    private FeedTag feedTag;
     private int sum;
     private long unseen;
     private String origin;
@@ -34,12 +34,12 @@ public class SubscriptionGetResponse extends ResourceSupport {
         this.title = title;
     }
 
-    public String getTag() {
-        return tag;
+    public FeedTag getFeedTag() {
+        return feedTag;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setFeedTag(FeedTag feedTag) {
+        this.feedTag = feedTag;
     }
 
     public int getSum() {
@@ -82,5 +82,57 @@ public class SubscriptionGetResponse extends ResourceSupport {
     @Override
     public int hashCode() {
         return super.hashCode();
+    }
+
+    public static class FeedTag extends ResourceSupport {
+
+        private String uuid;
+        private String name;
+        private String color;
+        private Date createdAt;
+
+        public String getUuid() {
+            return uuid;
+        }
+
+        public void setUuid(String uuid) {
+            this.uuid = uuid;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public Date getCreatedAt() {
+            return new Date(createdAt.getTime());
+        }
+
+        public void setCreatedAt(Date createdAt) {
+            if (createdAt != null) {
+                this.createdAt = new Date(createdAt.getTime());
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return super.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
+        }
     }
 }

@@ -3,6 +3,7 @@ package myreader.test;
 /**
  * @author Kamill Sokol
  */
+@Deprecated
 public enum KnownUser {
 
     ADMIN(true),
@@ -11,18 +12,10 @@ public enum KnownUser {
     USER3,
     USER4,
     USER100,
-    USER102,
-    USER103,
-    USER104,
-    USER105,
-    USER106,
-    USER110,
     USER111,
-    USER112,
     USER113,
     USER114,
-    USER115,
-    USER116;
+    USER115;
 
     public final long id;
     public final String username;

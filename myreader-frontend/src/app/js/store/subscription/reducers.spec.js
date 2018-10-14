@@ -1,320 +1,290 @@
 import initialState from '.'
 import {subscriptionReducers} from '../../store'
 
-describe('src/app/js/store/subscription/reducers.spec.js', () => {
+describe('subscription reducer', () => {
 
-    let state
+  let state
 
-    beforeEach(() => state = initialState())
+  beforeEach(() => state = initialState())
 
-    it('initial state', () =>
-        expect(subscriptionReducers(state, {type: 'UNKNOWN_ACTION'})).toEqual(state))
+  it('initial state', () => {
+    expect(subscriptionReducers(state, {type: 'UNKNOWN_ACTION'})).toEqual(state)
+  })
 
-    describe('action SUBSCRIPTIONS_RECEIVED', () => {
+  describe('action SUBSCRIPTIONS_RECEIVED', () => {
 
-        let action
+    let action
 
-        beforeEach(() => {
-            action = {
-                type: 'SUBSCRIPTIONS_RECEIVED',
-                subscriptions: [1]
-            }
-        })
-
-        it('should set subscriptions', () => {
-            const expectedState = {subscriptions: [1]}
-
-            expect(subscriptionReducers(state, action)).toContainObject(expectedState)
-        })
+    beforeEach(() => {
+      action = {
+        type: 'SUBSCRIPTIONS_RECEIVED',
+        subscriptions: [1]
+      }
     })
 
-    describe('action SECURITY_UPDATE', () => {
+    it('should set subscriptions', () => {
+      const expectedState = {subscriptions: [1]}
 
-        let action
+      expect(subscriptionReducers(state, action)).toContainObject(expectedState)
+    })
+  })
 
-        beforeEach(() => {
-            action = {
-                type: 'SECURITY_UPDATE',
-                authorized: false
-            }
-        })
+  describe('action SECURITY_UPDATE', () => {
 
+    let action
 
-        it('should reset state when not authorized', () => {
-            const currentState = {other: 'expected'}
-
-            expect(subscriptionReducers(currentState, action)).toContainObject(initialState())
-        })
-
-        it('should do nothing when authorized', () => {
-            action.authorized = true
-
-            const currentState = {other: 'expected'}
-            const expectedState = {other: 'expected'}
-
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
+    beforeEach(() => {
+      action = {
+        type: 'SECURITY_UPDATE',
+        authorized: false
+      }
     })
 
-    describe('action ENTRY_CHANGED', () => {
 
-        let action
+    it('should reset state when not authorized', () => {
+      const currentState = {other: 'expected'}
 
-        beforeEach(() => {
-            state = {
-                subscriptions: [{uuid: '1', unseen: 2}, {uuid: '2', unseen: 3}]
-            }
-
-            action = {
-                type: 'ENTRY_CHANGED'
-            }
-        })
-
-        it('should decrease unseen count', () => {
-            action.newValue = {feedUuid: '1', seen: true}
-            action.oldValue = {feedUuid: '1', seen: false}
-
-            expect(subscriptionReducers(state, action))
-                .toContainObject({subscriptions: [{uuid: '1', unseen: 1}, {uuid: '2', unseen: 3}]})
-        })
-
-        it('should increase unseen count', () => {
-            action.newValue = {feedUuid: '1', seen: false}
-            action.oldValue = {feedUuid: '1', seen: true}
-
-            expect(subscriptionReducers(state, action))
-                .toContainObject({subscriptions: [{uuid: '1', unseen: 3}, {uuid: '2', unseen: 3}]})
-        })
-
-        it('should do nothing when seen flag not changed', () => {
-            action.newValue = {feedUuid: '1', seen: false}
-            action.oldValue = {feedUuid: '1', seen: false}
-
-            expect(subscriptionReducers(state, action))
-                .toContainObject({subscriptions: [{uuid: '1', unseen: 2}]})
-        })
-
-        it('should do nothing when subscription is not available', () => {
-            action.newValue = {feedUuid: '3', seen: false}
-            action.oldValue = {feedUuid: '3', seen: false}
-
-            expect(subscriptionReducers(state, action))
-                .toContainObject({subscriptions: [{uuid: '1', unseen: 2}, {uuid: '2', unseen: 3}]})
-        })
+      expect(subscriptionReducers(currentState, action)).toContainObject(initialState())
     })
 
-    describe('action SUBSCRIPTION_DELETED', () => {
+    it('should do nothing when authorized', () => {
+      action.authorized = true
 
-        it('should remove subscription for given uuid', () => {
-            const state = {subscriptions: [{uuid: '1'}, {uuid: '2'}, {uuid: '3'}]}
-            const action = {type: 'SUBSCRIPTION_DELETED', uuid: '2'}
+      const currentState = {other: 'expected'}
+      const expectedState = {other: 'expected'}
 
-            expect(subscriptionReducers(state, action)).toContainObject({subscriptions: [{uuid: '1'}, {uuid: '3'}]})
-        })
+      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+  })
+
+  describe('action ENTRY_CHANGED', () => {
+
+    let action
+
+    beforeEach(() => {
+      state = {
+        subscriptions: [{uuid: '1', unseen: 2}, {uuid: '2', unseen: 3}]
+      }
+
+      action = {
+        type: 'ENTRY_CHANGED'
+      }
     })
 
-    describe('SUBSCRIPTION_SAVED', () => {
+    it('should decrease unseen count', () => {
+      action.newValue = {feedUuid: '1', seen: true}
+      action.oldValue = {feedUuid: '1', seen: false}
 
-        const action = subscription => {
-            return {
-                type: 'SUBSCRIPTION_SAVED',
-                subscription
-            }
-        }
-
-        beforeEach(() => {
-            state = {
-                subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}],
-                tags: {loaded: true, items: ['t1', 't3']}
-            }
-        })
-
-        it('should update subscription in store when in store', () => {
-            expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'})))
-                .toContainObject({subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'new title'}]})
-        })
-
-        it('should add subscription to store when not in store', () => {
-            expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'})))
-                .toContainObject({subscriptions: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}, {uuid: '3', title: 'title3'}]})
-        })
-
-        it('should append subscription tag to empty tags', () => {
-            state = {
-                subscriptions: [],
-                tags: {loaded: false, items: []}
-            }
-            expect(subscriptionReducers(state, action({uuid: '3', tag: 't1'}))).toContainObject({tags: {loaded: false, items: ['t1']}})
-        })
-
-        it('should not change tags loaded flag', () => {
-            state = {
-                subscriptions: [],
-                tags: {loaded: false, items: []}
-            }
-            expect(subscriptionReducers(state, action({uuid: '3', tag: 't1'}))).toContainObject({tags: {loaded: false}})
-        })
-
-        it('should not append subscription tag to tags when tag already exists', () => {
-            expect(subscriptionReducers(state, action({uuid: '3', tag: 't1'}))).toContainObject({tags: {loaded: true, items: ['t1', 't3']}})
-        })
-
-        it('should sort tags after appending new tag', () => {
-            expect(subscriptionReducers(state, action({uuid: '3', tag: 't2'}))).toContainObject({tags: {loaded: true, items: ['t1', 't2', 't3']}})
-        })
-
-        it('should not change tags when subscription tag is null', () => {
-            expect(subscriptionReducers(state, action({uuid: '3', tag: null}))).toContainObject({tags: {loaded: true, items: ['t1', 't3']}})
-        })
-
-        it('should update editForm when uuid matches', () => {
-            state = {...state, editForm:  {uuid: '2', title: 'a title'}}
-
-            expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'})))
-                .toContainObject({editForm: {uuid: '2', title: 'new title'}})
-        })
-
-        it('should not update editForm when uuid does not match', () => {
-            state = {...state, editForm:  {uuid: '1', title: 'a title'}}
-
-            expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'})))
-                .toContainObject({editForm: {uuid: '1', title: 'a title'}})
-        })
+      expect(subscriptionReducers(state, action))
+        .toContainObject({subscriptions: [{uuid: '1', unseen: 1}, {uuid: '2', unseen: 3}]})
     })
 
-    describe('action SUBSCRIPTION_TAGS_RECEIVED', () => {
+    it('should increase unseen count', () => {
+      action.newValue = {feedUuid: '1', seen: false}
+      action.oldValue = {feedUuid: '1', seen: true}
 
-        it('should set tags', () => {
-            const action = {
-                type: 'SUBSCRIPTION_TAGS_RECEIVED',
-                tags: ['tag1', 'tag2']
-            }
-
-            const currentState = {tags: {loaded: false, items: []}}
-            const expectedState = {tags: {loaded: true, items: ['tag1', 'tag2']}}
-
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
+      expect(subscriptionReducers(state, action))
+        .toContainObject({subscriptions: [{uuid: '1', unseen: 3}, {uuid: '2', unseen: 3}]})
     })
 
-    describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED', () => {
+    it('should do nothing when seen flag not changed', () => {
+      action.newValue = {feedUuid: '1', seen: false}
+      action.oldValue = {feedUuid: '1', seen: false}
 
-        const action = {
-            type: 'SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED',
-            subscriptionUuid: '1',
-            patterns: [1, 2]
-        }
-
-        it('should set exclusions', () => {
-            const currentState = {exclusions: []}
-            const expectedState = {exclusions: {'1': [1, 2]}}
-
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
-
-        it('should append exclusions', () => {
-            const currentState = {exclusions: {'2': [3, 4]}}
-            const expectedState = {exclusions: {'1': [1, 2], '2': [3, 4]}}
-
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
+      expect(subscriptionReducers(state, action))
+        .toContainObject({subscriptions: [{uuid: '1', unseen: 2}]})
     })
 
-    describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED', () => {
+    it('should do nothing when subscription is not available', () => {
+      action.newValue = {feedUuid: '3', seen: false}
+      action.oldValue = {feedUuid: '3', seen: false}
 
-        const action = {
-            type: 'SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED',
-            subscriptionUuid: '1',
-            pattern: {uuid: '2'}
-        }
+      expect(subscriptionReducers(state, action))
+        .toContainObject({subscriptions: [{uuid: '1', unseen: 2}, {uuid: '2', unseen: 3}]})
+    })
+  })
 
-        it('should add subscription exclusion patterns', () => {
-            const currentState = {exclusions: {'2': [{uuid: '3'}, {uuid: '4'}]}}
-            const expectedState = {exclusions: {'2': [{uuid: '3'}, {uuid: '4'}], '1': [{uuid: '2'}]}}
+  describe('action SUBSCRIPTION_DELETED', () => {
 
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
+    it('should remove subscription for given uuid', () => {
+      const state = {subscriptions: [{uuid: '1'}, {uuid: '2'}, {uuid: '3'}]}
+      const action = {type: 'SUBSCRIPTION_DELETED', uuid: '2'}
 
-        it('should add new exclusion pattern to subscription', () => {
-            const currentState = {exclusions: {'1': [{uuid: '1'}]}}
-            const expectedState = {exclusions: {'1': [{uuid: '1'}, {uuid: '2'}]}}
+      expect(subscriptionReducers(state, action)).toContainObject({subscriptions: [{uuid: '1'}, {uuid: '3'}]})
+    })
+  })
 
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
+  describe('SUBSCRIPTION_SAVED', () => {
 
-        it('should update existing exclusion pattern for subscription', () => {
-            const currentState = {exclusions: {'1': [{uuid: '2', pattern: 'p2'}]}}
-            const expectedState = {exclusions: {'1': [{uuid: '2', pattern: 'expected'}]}}
+    const action = subscription => {
+      return {
+        type: 'SUBSCRIPTION_SAVED',
+        subscription
+      }
+    }
 
-            expect(subscriptionReducers(currentState, {...action, pattern: {uuid: '2', pattern: 'expected'}}))
-                .toContainObject(expectedState)
-        })
-
-        it('should sort exclusion patterns', () => {
-            const currentState = {exclusions: {'1': [{uuid: '1', pattern: 'p1'}, {uuid: '2', pattern: 'p2'}]}}
-            const expectedState = {exclusions: {'1': [{uuid: '2', pattern: 'a'}, {uuid: '1', pattern: 'p1'}]}}
-
-            expect(subscriptionReducers(currentState, {...action, pattern: {uuid: '2', pattern: 'a'}}))
-                .toContainObject(expectedState)
-        })
+    beforeEach(() => {
+      state = {
+        subscriptions: [
+          {uuid: '1', title: 'title1'},
+          {uuid: '2', title: 'title2'}
+        ]
+      }
     })
 
-    describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED', () => {
-
-        const action = {
-            type: 'SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED',
-            subscriptionUuid: '1',
-            uuid: 2
-        }
-
-        it('should remove exclusion pattern', () => {
-            const currentState = {exclusions: {'1': [{uuid: '1'}, {uuid: '2'}], '2': [{uuid: '3'}, {uuid: '4'}]}}
-            const expectedState = {exclusions: {'1': [{uuid: '1'}], '2': [{uuid: '3'}, {uuid: '4'}]}}
-
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
-
-        it('should not remove exclusion pattern when exclusion pattern is not present in store', () => {
-            const currentState = {exclusions: {'1': [{uuid: '1'}, {uuid: '3'}]}}
-            const expectedState = {exclusions: {'1': [{uuid: '1'}, {uuid: '3'}]}}
-
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
-
-        it('should not remove exclusion pattern when exclusion patterns for subscription are not present in store', () => {
-            const currentState = {exclusions: {'2': [{uuid: '1'}, {uuid: '2'}]}}
-            const expectedState = {exclusions: {'2': [{uuid: '1'}, {uuid: '2'}]}}
-
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
+    it('should update subscription in store when in store', () => {
+      expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'}))).toContainObject({
+        subscriptions: [
+          {uuid: '1', title: 'title1'},
+          {uuid: '2', title: 'new title'}
+        ]
+      })
     })
 
-    describe('action SUBSCRIPTION_EDIT_FORM_CLEAR', () => {
-
-        const action = {
-            type: 'SUBSCRIPTION_EDIT_FORM_CLEAR'
-        }
-
-        it('should reset editForm', () => {
-            const currentState = {editForm: {uuid: 'uuid1'}}
-            const expectedState = {editForm: null}
-
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
+    it('should add subscription to store when not in store', () => {
+      expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'}))).toContainObject({
+        subscriptions: [
+          {uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'},
+          {uuid: '3', title: 'title3'
+        }]
+      })
     })
 
-    describe('action SUBSCRIPTION_EDIT_FORM_LOAD', () => {
+    it('should update editForm when uuid matches', () => {
+      state = {...state, editForm: {uuid: '2', title: 'a title'}}
 
-        const action = {
-            type: 'SUBSCRIPTION_EDIT_FORM_LOAD',
-            subscription: {uuid: 'uuid1', a: 'b'}
-        }
-
-        it('should set editForm', () => {
-            const currentState = {editForm: null}
-            const expectedState = {editForm: {uuid: 'uuid1', a: 'b'}}
-
-            expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-        })
+      expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'}))).toContainObject({
+        editForm: {uuid: '2', title: 'new title'}
+      })
     })
+
+    it('should not update editForm when uuid does not match', () => {
+      state = {...state, editForm: {uuid: '1', title: 'a title'}}
+
+      expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'}))).toContainObject({
+        editForm: {uuid: '1', title: 'a title'}
+      })
+    })
+  })
+
+  describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED', () => {
+
+    const action = {
+      type: 'SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED',
+      subscriptionUuid: '1',
+      patterns: [1, 2]
+    }
+
+    it('should set exclusions', () => {
+      const currentState = {exclusions: []}
+      const expectedState = {exclusions: {'1': [1, 2]}}
+
+      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+
+    it('should append exclusions', () => {
+      const currentState = {exclusions: {'2': [3, 4]}}
+      const expectedState = {exclusions: {'1': [1, 2], '2': [3, 4]}}
+
+      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+  })
+
+  describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED', () => {
+
+    const action = {
+      type: 'SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED',
+      subscriptionUuid: '1',
+      pattern: {uuid: '2'}
+    }
+
+    it('should add subscription exclusion patterns', () => {
+      const currentState = {exclusions: {'2': [{uuid: '3'}, {uuid: '4'}]}}
+      const expectedState = {exclusions: {'2': [{uuid: '3'}, {uuid: '4'}], '1': [{uuid: '2'}]}}
+
+      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+
+    it('should add new exclusion pattern to subscription', () => {
+      const currentState = {exclusions: {'1': [{uuid: '1'}]}}
+      const expectedState = {exclusions: {'1': [{uuid: '1'}, {uuid: '2'}]}}
+
+      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+
+    it('should update existing exclusion pattern for subscription', () => {
+      const currentState = {exclusions: {'1': [{uuid: '2', pattern: 'p2'}]}}
+      const expectedState = {exclusions: {'1': [{uuid: '2', pattern: 'expected'}]}}
+
+      expect(subscriptionReducers(currentState, {...action, pattern: {uuid: '2', pattern: 'expected'}}))
+        .toContainObject(expectedState)
+    })
+
+    it('should sort exclusion patterns', () => {
+      const currentState = {exclusions: {'1': [{uuid: '1', pattern: 'p1'}, {uuid: '2', pattern: 'p2'}]}}
+      const expectedState = {exclusions: {'1': [{uuid: '2', pattern: 'a'}, {uuid: '1', pattern: 'p1'}]}}
+
+      expect(subscriptionReducers(currentState, {...action, pattern: {uuid: '2', pattern: 'a'}}))
+        .toContainObject(expectedState)
+    })
+  })
+
+  describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED', () => {
+
+    const action = {
+      type: 'SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED',
+      subscriptionUuid: '1',
+      uuid: 2
+    }
+
+    it('should remove exclusion pattern', () => {
+      const currentState = {exclusions: {'1': [{uuid: '1'}, {uuid: '2'}], '2': [{uuid: '3'}, {uuid: '4'}]}}
+      const expectedState = {exclusions: {'1': [{uuid: '1'}], '2': [{uuid: '3'}, {uuid: '4'}]}}
+
+      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+
+    it('should not remove exclusion pattern when exclusion pattern is not present in store', () => {
+      const currentState = {exclusions: {'1': [{uuid: '1'}, {uuid: '3'}]}}
+      const expectedState = {exclusions: {'1': [{uuid: '1'}, {uuid: '3'}]}}
+
+      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+
+    it('should not remove exclusion pattern when exclusion patterns for subscription are not present in store', () => {
+      const currentState = {exclusions: {'2': [{uuid: '1'}, {uuid: '2'}]}}
+      const expectedState = {exclusions: {'2': [{uuid: '1'}, {uuid: '2'}]}}
+
+      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+  })
+
+  describe('action SUBSCRIPTION_EDIT_FORM_CLEAR', () => {
+
+    const action = {
+      type: 'SUBSCRIPTION_EDIT_FORM_CLEAR'
+    }
+
+    it('should reset editForm', () => {
+      const currentState = {editForm: {uuid: 'uuid1'}}
+      const expectedState = {editForm: null}
+
+      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+  })
+
+  describe('action SUBSCRIPTION_EDIT_FORM_LOAD', () => {
+
+    const action = {
+      type: 'SUBSCRIPTION_EDIT_FORM_LOAD',
+      subscription: {uuid: 'uuid1', a: 'b'}
+    }
+
+    it('should set editForm', () => {
+      const currentState = {editForm: null}
+      const expectedState = {editForm: {uuid: 'uuid1', a: 'b'}}
+
+      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+  })
 })

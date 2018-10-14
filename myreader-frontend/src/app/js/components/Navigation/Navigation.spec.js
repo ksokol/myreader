@@ -37,9 +37,9 @@ describe('Navigation', () => {
 
   beforeEach(() => {
     subscriptions = [
-      {title: 'subscription 1', uuid: '1', tag: 'group 1', unseen: 2},
-      {title: 'subscription 2', uuid: '2', tag: 'group 2', unseen: 1},
-      {title: 'subscription 3', uuid: '3', tag: null, unseen: 0}
+      {title: 'subscription 1', uuid: '1', feedTag: {name: 'group 1'}, unseen: 2},
+      {title: 'subscription 2', uuid: '2', feedTag: {name: 'group 2'}, unseen: 1},
+      {title: 'subscription 3', uuid: '3', feedTag: {name: undefined}, unseen: 0}
     ]
 
     props = {

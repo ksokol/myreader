@@ -5,10 +5,6 @@ import {NavigationItem} from '..'
 
 class SubscriptionNavigationItem extends React.Component {
 
-  onSelect(feedTagEqual, feedUuidEqual) {
-    this.props.onClick({feedTagEqual, feedUuidEqual})
-  }
-
   get isOpen() {
     return this.props.query.feedTagEqual === this.props.item.tag
   }
@@ -17,8 +13,12 @@ class SubscriptionNavigationItem extends React.Component {
     return this.isOpen && (this.props.item.subscriptions ? this.props.item.subscriptions.length > 0 : false)
   }
 
-  isSelected(item) {
-    return this.props.query.feedUuidEqual === item.uuid && this.props.query.feedTagEqual === item.tag
+  onSelect(feedTagEqual, feedUuidEqual) {
+    this.props.onClick({feedTagEqual, feedUuidEqual})
+  }
+
+  isSelected(tag, uuid) {
+    return this.props.query.feedUuidEqual === uuid && this.props.query.feedTagEqual === tag
   }
 
   render() {
@@ -27,7 +27,7 @@ class SubscriptionNavigationItem extends React.Component {
     } = this.props
 
     return [
-      <NavigationItem selected={this.isSelected(item)}
+      <NavigationItem selected={this.isSelected(item.tag, item.uuid)}
                       onClick={() => this.onSelect(item.tag, item.uuid)}
                       key={item.uuid}
                       title={item.title}
@@ -35,8 +35,8 @@ class SubscriptionNavigationItem extends React.Component {
       this.isVisible &&
         <ul key='subscriptions' className='my-subscription-navigation-item__subscriptions'>
           {item.subscriptions.map(subscription => (
-            <NavigationItem selected={this.isSelected(subscription)}
-                            onClick={() => this.onSelect(subscription.tag, subscription.uuid)}
+            <NavigationItem selected={this.isSelected(subscription.feedTag.name, subscription.uuid)}
+                            onClick={() => this.onSelect(subscription.feedTag.name, subscription.uuid)}
                             key={subscription.uuid}
                             title={subscription.title}
                             badgeCount={subscription.unseen} />
@@ -57,7 +57,10 @@ SubscriptionNavigationItem.propTypes = {
       PropTypes.shape({
         uuid: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
-        tag: PropTypes.string
+        feedTag: PropTypes.shape({
+          uuid: PropTypes.string,
+          name: PropTypes.string
+        }).isRequired
       }).isRequired
     )
   }).isRequired,

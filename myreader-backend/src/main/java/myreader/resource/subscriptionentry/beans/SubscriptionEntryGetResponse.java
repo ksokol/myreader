@@ -19,6 +19,7 @@ public class SubscriptionEntryGetResponse extends ResourceSupport {
     private boolean seen;
     private String origin;
     private String feedTag;
+    private String feedTagColor;
     private Date createdAt;
 
     public String getUuid() {
@@ -91,6 +92,14 @@ public class SubscriptionEntryGetResponse extends ResourceSupport {
 
     public void setFeedTag(final String feedTag) {
         this.feedTag = feedTag;
+    }
+
+    public String getFeedTagColor() {
+        return feedTagColor;
+    }
+
+    public void setFeedTagColor(String feedTagColor) {
+        this.feedTagColor = feedTagColor;
     }
 
     public Date getCreatedAt() {

@@ -1,7 +1,9 @@
 package myreader.resource.subscription;
 
 import myreader.entity.Subscription;
+import myreader.entity.SubscriptionTag;
 import myreader.repository.SubscriptionRepository;
+import myreader.repository.SubscriptionTagRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPatchRequest;
@@ -27,13 +29,16 @@ import javax.validation.Valid;
 public class SubscriptionEntityResource {
 
     private final SubscriptionRepository subscriptionRepository;
+    private final SubscriptionTagRepository subscriptionTagRepository;
     private final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler;
 
     @Autowired
-    public SubscriptionEntityResource(final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler,
-                                      final SubscriptionRepository subscriptionRepository) {
+    public SubscriptionEntityResource(ResourceAssembler<Subscription, SubscriptionGetResponse> assembler,
+                                      SubscriptionTagRepository subscriptionTagRepository,
+                                      SubscriptionRepository subscriptionRepository) {
         this.assembler = assembler;
         this.subscriptionRepository = subscriptionRepository;
+        this.subscriptionTagRepository = subscriptionTagRepository;
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -48,15 +53,30 @@ public class SubscriptionEntityResource {
         subscriptionRepository.delete(findOrThrowException(id));
     }
 
-    //TODO remove RequestMethod.PUT after Android 2.x phased out
-    @RequestMapping(value = "", method = {RequestMethod.PATCH, RequestMethod.PUT})
+    @Transactional
+    @RequestMapping(value = "", method = RequestMethod.PATCH)
     public SubscriptionGetResponse patch(@PathVariable("id") Long id, @Valid @RequestBody SubscriptionPatchRequest request) {
         Subscription subscription = findOrThrowException(id);
+        SubscriptionTag subscriptionTag = null;
 
         subscription.setTitle(request.getTitle());
-        subscription.setTag(request.getTag());
 
+        if (request.getFeedTag() != null) {
+            SubscriptionPatchRequest.FeedTag feedTag = request.getFeedTag();
+            String name = feedTag.getName();
+
+            subscriptionTag = subscriptionTagRepository
+                    .findByCurrentUserAndTag(name)
+                    .orElse(new SubscriptionTag(name, subscription.getUser()));
+
+            subscriptionTag.setColor(feedTag.getColor());
+
+            subscriptionTagRepository.save(subscriptionTag);
+        }
+
+        subscription.setSubscriptionTag(subscriptionTag);
         subscriptionRepository.save(subscription);
+
         return get(id);
     }
 

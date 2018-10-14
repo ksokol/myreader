@@ -6,6 +6,7 @@
     "content": "content",
     "seen": true,
     "feedTag": "tag1",
+    "feedTagColor": "#777",
     "feedUuid": "1100",
     "origin": "http://martinfowler.com/bliki/TellDontAsk.html",
     "createdAt": "2011-04-15T19:20:46Z",

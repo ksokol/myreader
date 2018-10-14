@@ -27,7 +27,16 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Access(AccessType.PROPERTY)
-@AnalyzerDef(name = "tag" , tokenizer = @TokenizerDef(factory = PatternTokenizerFactory.class, params = @Parameter(name = "pattern" , value = "\\ |,")))
+@AnalyzerDef(
+    name = "tag" ,
+    tokenizer = @TokenizerDef(
+        factory = PatternTokenizerFactory.class,
+        params = @Parameter(
+            name = "pattern",
+            value = "\\ |,"
+        )
+    )
+)
 @Indexed
 @Entity
 @Table(name = "user_feed_entry")
@@ -40,7 +49,9 @@ public class SubscriptionEntry {
     private FeedEntry feedEntry;
     private Date createdAt;
 
-    @Deprecated
+    /**
+     * Default constructor for Hibernate.
+     */
     public SubscriptionEntry() {}
 
     public SubscriptionEntry(Subscription subscription, FeedEntry feedEntry) {
@@ -83,7 +94,7 @@ public class SubscriptionEntry {
     }
 
     @IndexedEmbedded
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_feed_entry_user_feed_id")
     public Subscription getSubscription() {
         return subscription;
@@ -94,7 +105,7 @@ public class SubscriptionEntry {
     }
 
     @IndexedEmbedded
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_feed_entry_entry_id")
     public FeedEntry getFeedEntry() {
         return feedEntry;

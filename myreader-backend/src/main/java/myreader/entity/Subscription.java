@@ -1,7 +1,6 @@
 package myreader.entity;
 
 import org.hibernate.annotations.Formula;
-import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
@@ -34,7 +33,6 @@ public class Subscription {
 
     private Long id;
     private String title;
-    private String tag;
     private User user;
     private int fetchCount;
     private int unseen;
@@ -43,12 +41,12 @@ public class Subscription {
     private Long lastFeedEntryId;
     private Set<SubscriptionEntry> subscriptionEntries;
     private Set<ExclusionPattern> exclusions;
+    private SubscriptionTag subscriptionTag;
     private long version;
 
     /**
-     * @deprecated Use {@link #Subscription(User, Feed)} instead.
+     * Default constructor for Hibernate.
      */
-    @Deprecated
     public Subscription() {}
 
     public Subscription(User user, Feed feed) {
@@ -76,16 +74,6 @@ public class Subscription {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    @Field(analyze = Analyze.NO)
-    @Column(name = "user_feed_tag")
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     @Column(name = "user_feed_sum")
@@ -133,7 +121,7 @@ public class Subscription {
         this.user = user;
     }
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
     public Feed getFeed() {
         return feed;
@@ -169,6 +157,17 @@ public class Subscription {
 
     public void setSubscriptionEntries(Set<SubscriptionEntry> subscriptionEntries) {
         this.subscriptionEntries = subscriptionEntries;
+    }
+
+    @IndexedEmbedded
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_feed_user_feed_tag_id")
+    public SubscriptionTag getSubscriptionTag() {
+        return subscriptionTag;
+    }
+
+    public void setSubscriptionTag(SubscriptionTag subscriptionTag) {
+        this.subscriptionTag = subscriptionTag;
     }
 
     @Column(columnDefinition = "INT DEFAULT 0", precision = 0)

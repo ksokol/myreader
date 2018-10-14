@@ -2,6 +2,8 @@ package myreader.resource.subscription.beans;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.Valid;
+
 /**
  * @author Kamill Sokol
  */
@@ -9,7 +11,9 @@ public class SubscriptionPatchRequest {
 
     @NotBlank(message = "may not be empty")
     private String title;
-    private String tag;
+
+    @Valid
+    private FeedTag feedTag;
 
     public String getTitle() {
         return title;
@@ -19,11 +23,36 @@ public class SubscriptionPatchRequest {
         this.title = title;
     }
 
-    public String getTag() {
-        return tag;
+    public FeedTag getFeedTag() {
+        return feedTag;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setFeedTag(FeedTag feedTag) {
+       this.feedTag = feedTag;
+    }
+
+    public static class FeedTag {
+
+        @NotBlank(message = "may not be empty")
+        private String name;
+        private String color;
+
+        public FeedTag() {}
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
     }
 }

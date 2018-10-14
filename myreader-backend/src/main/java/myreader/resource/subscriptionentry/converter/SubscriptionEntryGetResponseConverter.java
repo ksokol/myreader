@@ -1,10 +1,12 @@
 package myreader.resource.subscriptionentry.converter;
 
+import myreader.entity.FeedEntry;
+import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
+import myreader.entity.SubscriptionTag;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
-
 
 /**
  * @author Kamill Sokol
@@ -20,24 +22,24 @@ public class SubscriptionEntryGetResponseConverter extends ResourceAssemblerSupp
     public SubscriptionEntryGetResponse toResource(final SubscriptionEntry source) {
         SubscriptionEntryGetResponse target = new SubscriptionEntryGetResponse();
 
-        target.setUuid(String.valueOf(source.getId()));
+        target.setUuid(source.getId().toString());
         target.setTag(source.getTag());
         target.setCreatedAt(source.getCreatedAt());
         target.setSeen(source.isSeen());
 
-        if(source.getFeedEntry() != null) {
-            target.setTitle(source.getFeedEntry().getTitle());
-            target.setContent(source.getFeedEntry().getContent());
-        }
+        FeedEntry feedEntry = source.getFeedEntry();
+        target.setOrigin(feedEntry.getUrl());
+        target.setTitle(feedEntry.getTitle());
+        target.setContent(feedEntry.getContent());
 
-        if(source.getSubscription() != null) {
-            target.setFeedTitle(source.getSubscription().getTitle());
-            target.setFeedUuid(String.valueOf(source.getSubscription().getId()));
-            target.setFeedTag(source.getSubscription().getTag());
-        }
+        Subscription subscription = source.getSubscription();
+        target.setFeedTitle(subscription.getTitle());
+        target.setFeedUuid(subscription.getId().toString());
 
-        if(source.getFeedEntry() != null) {
-            target.setOrigin(source.getFeedEntry().getUrl());
+        if(subscription.getSubscriptionTag() != null) {
+            SubscriptionTag subscriptionTag = subscription.getSubscriptionTag();
+            target.setFeedTag(subscriptionTag.getName());
+            target.setFeedTagColor(subscriptionTag.getColor());
         }
 
         return target;

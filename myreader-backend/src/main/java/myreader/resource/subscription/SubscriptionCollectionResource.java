@@ -30,27 +30,30 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping(value = "api/2/subscriptions")
 public class SubscriptionCollectionResource {
 
-	private final SubscriptionService subscriptionService;
+    private final SubscriptionService subscriptionService;
     private final SubscriptionRepository subscriptionRepository;
     private final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler;
 
     @Autowired
-    public SubscriptionCollectionResource(final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler,
-                                          final SubscriptionService subscriptionService,
-                                          final SubscriptionRepository subscriptionRepository) {
+    public SubscriptionCollectionResource(ResourceAssembler<Subscription, SubscriptionGetResponse> assembler,
+                                          SubscriptionService subscriptionService,
+                                          SubscriptionRepository subscriptionRepository) {
         this.assembler = assembler;
         this.subscriptionService = subscriptionService;
         this.subscriptionRepository = subscriptionRepository;
     }
 
     @RequestMapping(method = POST)
-    public SubscriptionGetResponse post(@Valid @RequestBody SubscribePostRequest request, @AuthenticationPrincipal User user) {
+    public SubscriptionGetResponse post(
+            @Valid @RequestBody SubscribePostRequest request,
+            @AuthenticationPrincipal User user) {
         Subscription subscription = subscriptionService.subscribe(user.getUsername(), request.getOrigin());
         return assembler.toResource(subscription);
     }
 
     @RequestMapping(method = GET)
-    public Map<String, Object> get(@RequestParam(value = "unseenGreaterThan", required = false, defaultValue = "-1") long unseenCount) {
+    public Map<String, Object> get(
+            @RequestParam(value = "unseenGreaterThan", required = false, defaultValue = "-1") long unseenCount) {
         final List<Subscription> source = subscriptionRepository.findAllByUnseenGreaterThanAndCurrentUser(unseenCount);
         final List<SubscriptionGetResponse> target = new ArrayList<>(source.size());
         for (final Subscription subscription : source) {
@@ -60,10 +63,4 @@ public class SubscriptionCollectionResource {
         body.put("content", target);
         return body;
     }
-
-    @RequestMapping(value= "availableTags", method = GET)
-    public List<String> tags() {
-        return subscriptionRepository.findDistinctTagsByCurrentUser();
-    }
-
 }

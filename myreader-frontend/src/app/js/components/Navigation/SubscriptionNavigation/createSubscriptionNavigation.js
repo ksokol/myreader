@@ -13,10 +13,11 @@ function createAllBucket(subscriptions) {
 }
 
 function sortIntoBucket(buckets, subscription) {
-  const bucket = buckets[subscription.tag] || {
-    key: subscription.tag,
-    title: subscription.tag,
-    tag: subscription.tag,
+  const tag = subscription.feedTag.name
+  const bucket = buckets[tag] || {
+    key: tag,
+    title: tag,
+    tag,
     uuid: null,
     unseen: 0,
     subscriptions: []
@@ -24,7 +25,7 @@ function sortIntoBucket(buckets, subscription) {
 
   bucket.unseen += subscription.unseen
   bucket.subscriptions.push(subscription)
-  buckets[subscription.tag] = bucket
+  buckets[tag] = bucket
 
   return buckets
 }
@@ -37,11 +38,11 @@ function addKeyToSubscription(subscription) {
 }
 
 function tagIsAbsent(subscription) {
-  return !subscription.tag
+  return !subscription.feedTag.name
 }
 
 function tagIsPresent(subscription) {
-  return subscription.tag
+  return subscription.feedTag.name
 }
 
 function createBucketsByTag(subscriptions) {

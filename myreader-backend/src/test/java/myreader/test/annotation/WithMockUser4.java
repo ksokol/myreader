@@ -14,7 +14,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * @author Kamill Sokol
  */
-@Target({ METHOD, TYPE })
+@Deprecated
+@Target({METHOD, TYPE})
 @Retention(RUNTIME)
 @Inherited
 @Documented
