@@ -48,6 +48,7 @@ describe('Entry', () => {
         seen: false,
         createdAt: 'expected createdAt',
         content: 'expected content',
+        feedTag: 'tag'
       },
       showEntryDetails: false,
       isDesktop: true,
@@ -62,10 +63,13 @@ describe('Entry', () => {
     page.entryActions().props().onToggleShowMore()
 
     expect(page.entryTitle().props()).toContainObject({
-      title: props.item.title,
-      feedTitle: props.item.feedTitle,
-      origin: props.item.origin,
-      createdAt: props.item.createdAt
+      entry: {
+        title: props.item.title,
+        feedTitle: props.item.feedTitle,
+        origin: props.item.origin,
+        createdAt: props.item.createdAt,
+        feedTag: 'tag'
+      }
     })
     expect(page.entryActions().props()).toContainObject({seen: props.item.seen})
     expect(page.entryTags().props()).toContainObject({tags: props.item.tag})

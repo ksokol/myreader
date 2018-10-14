@@ -14,10 +14,14 @@
 }
 
 .my-entry-title__subtitle {
-    padding-top: 0.3rem;
-    font-weight: 400;
-    line-height: 1rem;
-    margin: 10px 0 5px;
+    display: flex;
+    align-items: center;
     font-size: 14px;
     letter-spacing: 0.01em;
+}
+
+@media (max-width: 599px) {
+    .my-entry-title__subtitle > span {
+        flex-grow: 1;
+    }
 }

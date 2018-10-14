@@ -52,18 +52,10 @@ class Entry extends Component {
   get entryTitle() {
     if (!this._entryTitle) {
       const {
-        item: {
-          origin,
-          title,
-          feedTitle,
-          createdAt
-        }
+        item
       } = this.props
 
-      this._entryTitle = <EntryTitle origin={origin}
-                               title={title}
-                               feedTitle={feedTitle}
-                               createdAt={createdAt} />
+      this._entryTitle = <EntryTitle entry={item} />
     }
 
     return this._entryTitle

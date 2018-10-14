@@ -22,12 +22,12 @@ class Badge extends React.Component {
   }
 
   componentDidMount() {
-    const color = this.props.color.toLowerCase()
+    const color = this.props.color ? this.props.color.toLowerCase() : DEFAULT_COLOR
     let rgb = colorCache.get(color)
 
     if (!rgb) {
       rgb = determineRGB(color)
-      colorCache.set(this.props.color, rgb)
+      colorCache.set(color, rgb)
     }
 
     const badgeRef = this.badgeRef.current
@@ -48,10 +48,6 @@ class Badge extends React.Component {
 Badge.propTypes = {
   text: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   color: PropTypes.string
-}
-
-Badge.defaultProps = {
-  color: DEFAULT_COLOR
 }
 
 export default Badge

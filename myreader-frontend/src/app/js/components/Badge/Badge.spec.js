@@ -46,8 +46,14 @@ describe('Badge', () => {
     expect(context2d.fillStyle).toEqual('#fff')
   })
 
-  it('should retrieve default RGB value from cache', () => {
+  it('should retrieve default RGB value from cache when prop "color" is undefined', () => {
     createMount()
+
+    expect(document.createElement.mock.calls.filter(byCanvas).length).toEqual(0)
+  })
+
+  it('should retrieve default RGB value from cache when prop "color" value is undefined', () => {
+    createMount({color: undefined})
 
     expect(document.createElement.mock.calls.filter(byCanvas).length).toEqual(0)
   })
