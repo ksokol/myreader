@@ -8,6 +8,10 @@
     padding: 0 6px;
 }
 
+.my-badge--clickable {
+    cursor: pointer;
+}
+
 /*
  * https://css-tricks.com/switch-font-color-for-different-backgrounds-with-css/
  */

@@ -1,6 +1,6 @@
 import {Badge} from '.'
 import React from 'react'
-import {render, mount} from 'enzyme'
+import {mount} from 'enzyme'
 
 describe('Badge', () => {
 
@@ -30,7 +30,7 @@ describe('Badge', () => {
   })
 
   it('should render component with given text', () => {
-    expect(render(<Badge text='sample text' />).text()).toEqual('sample text')
+    expect(createMount({text: 'sample text'}).text()).toEqual('sample text')
   })
 
   it('should initiate canvas with mandatory values in order to determine RGB value from prop "color"', () => {
@@ -82,5 +82,27 @@ describe('Badge', () => {
     expect(spy).toHaveBeenNthCalledWith(1, '--red', 100)
     expect(spy).toHaveBeenNthCalledWith(2, '--green', 101)
     expect(spy).toHaveBeenNthCalledWith(3, '--blue', 102)
+  })
+
+  it('should update CSS custom properties red, green and blue when prop "color" changed', () => {
+    context2d.getImageData = jest.fn()
+      .mockReturnValueOnce({data: [100, 101, 102]})
+      .mockReturnValueOnce({data: [103, 104, 105]})
+    const wrapper = createMount({color: uniqueColor()})
+    const spy = jest.spyOn(wrapper.instance().badgeRef.current.style, 'setProperty')
+    wrapper.instance().componentDidMount()
+    wrapper.setProps({color: 'other'})
+
+    expect(spy).toHaveBeenNthCalledWith(4, '--red', 103)
+    expect(spy).toHaveBeenNthCalledWith(5, '--green', 104)
+    expect(spy).toHaveBeenNthCalledWith(6, '--blue', 105)
+  })
+
+  it('should trigger function prop "onClick" when click on host node occurred', () => {
+    const onClick = jest.fn()
+    const wrapper = createMount({onClick})
+
+    wrapper.find('.my-badge').props().onClick()
+    expect(onClick).toHaveBeenCalledWith()
   })
 })
