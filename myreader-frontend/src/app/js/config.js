@@ -1,4 +1,20 @@
 import angular from 'angular'
+import {SettingsContainer} from './containers'
+
+/**
+ * part of AngularJS exit strategy
+ * @deprecated
+ */
+function containerComponent(component) {
+  return {
+    content: {
+      template: '<react-component name="ContainerComponentBridge" props="props"></react-component>',
+      controller: function ($scope) {
+        $scope.props = {component: () => component}
+      }
+    }
+  }
+}
 
 /**
  * @deprecated
@@ -106,14 +122,9 @@ angular.module('common.config', ['ui.router'])
           }
         }
       })
-
       .state('app.settings', {
         url: '/settings',
-        views: {
-          content: {
-            template: '<my-settings></my-settings>'
-          }
-        }
+        views: containerComponent(SettingsContainer)
       })
     $urlRouterProvider.otherwise('/login')
   }])

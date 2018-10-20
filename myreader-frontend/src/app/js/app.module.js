@@ -17,7 +17,6 @@ import {LoginComponent, LoginEmailInput, LoginPasswordInput} from './login/login
 import {AboutComponent} from './maintenance/about/about.component'
 import {MaintenanceActionsComponent} from './maintenance/maintenance-actions/maintenance-actions.component'
 import {MaintenanceComponent} from './maintenance/maintenance.component'
-import {SettingsComponent} from './settings/settings.component'
 import {SubscribeComponent, SubscribeOriginInput} from './subscription/subscribe/subscribe.component'
 import {SubscriptionExclusionComponent} from './subscription/subscription-exclusion/subscription-exclusion.component'
 import {
@@ -57,11 +56,13 @@ import {
   Settings,
   SubscriptionNavigationItem
 } from './components'
+import {ContainerComponentBridge} from './containers'
 
 import './config'
 
 angular
   .module('myreader', [ngRedux, 'common.config', 'ui.router', 'react'])
+  .value('ContainerComponentBridge', ContainerComponentBridge)
   .value('Icon', Icon)
   .value('IconButton', IconButton)
   .value('Chips', Chips)
@@ -89,7 +90,6 @@ angular
   .component('myAbout', AboutComponent)
   .component('myMaintenanceActions', MaintenanceActionsComponent)
   .component('myMaintenance', MaintenanceComponent)
-  .component('mySettings', SettingsComponent)
   .component('mySubscribe', SubscribeComponent)
   .component('mySubscriptionExclusion', SubscriptionExclusionComponent)
   .component('mySubscription', SubscriptionComponent)
