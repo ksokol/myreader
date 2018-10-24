@@ -75,7 +75,6 @@ jacocoTestReport {
 
 springBoot {
     buildInfo()
-    executable = true
     backupSource = false
 }
 
