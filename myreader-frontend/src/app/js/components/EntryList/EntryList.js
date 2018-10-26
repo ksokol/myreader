@@ -31,7 +31,7 @@ class EntryList extends React.Component {
       entries,
       showEntryDetails,
       isDesktop,
-      focusUuid,
+      entryInFocus,
       loading,
       onChangeEntry
     } = this.props
@@ -40,7 +40,7 @@ class EntryList extends React.Component {
       isDesktop,
       showEntryDetails,
       onChangeEntry,
-      focusUuid
+      focusUuid: entryInFocus && entryInFocus.uuid
     }
 
     const entriesCopy = [...entries]
@@ -76,7 +76,9 @@ EntryList.propTypes = {
       uuid: PropTypes.string.isRequired
     })
   ),
-  focusUuid: PropTypes.string,
+  entryInFocus: PropTypes.shape({
+    uuid: PropTypes.string
+  }),
   showEntryDetails: PropTypes.bool.isRequired,
   isDesktop: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,

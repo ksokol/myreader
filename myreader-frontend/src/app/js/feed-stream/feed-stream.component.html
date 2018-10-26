@@ -10,7 +10,7 @@
     </my-action-panel>
     <my-list-panel>
         <my-hotkeys my-bind-to="$ctrl" my-hotkeys="{'down': $ctrl.nextEntry, 'up': $ctrl.previousEntry, 'enter': $ctrl.toggleEntryReadFlag}">
-            <my-entry-list></my-entry-list>
+            <react-component name="ContainerComponentBridge" props="$ctrl.entryListContainerProps"></react-component>
         </my-hotkeys>
     </my-list-panel>
 </my-list-page>

@@ -26,7 +26,6 @@ import {
 } from './subscription/subscription.component'
 import {ToastComponent} from './shared/component/toast/toast.component'
 import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
-import {EntryListComponent} from './entry/entry-list.component'
 import createApplicationStore from './store/bootstrap'
 import {ListPageComponent} from './shared/component/list-page/list-page.component'
 import {BookmarkComponent} from './bookmark/bookmark.component'
@@ -49,7 +48,6 @@ import {IconButtonComponent} from './shared/component/buttons/icon-button/icon-b
 import {
   Button,
   Chips,
-  EntryList,
   Icon,
   IconButton,
   Navigation,
@@ -78,7 +76,6 @@ angular
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
   .value('FeedFetchErrorLoadMore', FeedFetchErrorLoadMore)
-  .value('EntryList', EntryList)
   .value('SubscriptionNavigationItem', SubscriptionNavigationItem)
   .value('Navigation', Navigation)
   .value('Settings', Settings)
@@ -93,7 +90,6 @@ angular
   .component('mySubscribe', SubscribeComponent)
   .component('mySubscriptionExclusion', SubscriptionExclusionComponent)
   .component('mySubscription', SubscriptionComponent)
-  .component('myEntryList', EntryListComponent)
   .component('myBookmark', BookmarkComponent)
   .component('mySubscriptionList', SubscriptionListComponent)
   .component('myFeedStream', FeedStreamComponent)

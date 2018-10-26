@@ -10,6 +10,7 @@ import {
   routeChange,
   routeSelector
 } from '../store'
+import {EntryListContainer} from '../containers'
 
 class controller {
 
@@ -50,6 +51,12 @@ class controller {
         dispatch(fetchSubscriptions())
         this.navigateTo(this.router.query, {reload: true})
       }
+    }
+  }
+
+  get entryListContainerProps() {
+    return {
+      component: () => EntryListContainer
     }
   }
 }

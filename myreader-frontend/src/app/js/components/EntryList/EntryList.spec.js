@@ -32,7 +32,9 @@ describe('EntryList', () => {
     commonProps = {
       isDesktop: true,
       showEntryDetails: true,
-      focusUuid: '2',
+      entryInFocus: {
+        uuid: '2'
+      },
       onChangeEntry: jest.fn(),
     }
 
@@ -64,8 +66,21 @@ describe('EntryList', () => {
   it('should pass each item of prop "entries" to an entry auto focus component', () =>  {
     const items = shallowRender().find('.my-entry-list__item')
 
-    expect(items.at(0).find(EntryAutoFocus).props()).toEqual({item: props.entries[0], ...commonProps})
-    expect(items.at(1).find(EntryAutoFocus).props()).toEqual({item: props.entries[1], ...commonProps})
+    expect(items.at(0).find(EntryAutoFocus).props()).toEqual({
+      item: props.entries[0],
+      isDesktop: commonProps.isDesktop,
+      showEntryDetails: commonProps.showEntryDetails,
+      onChangeEntry: commonProps.onChangeEntry,
+      focusUuid: '2'
+    })
+
+    expect(items.at(1).find(EntryAutoFocus).props()).toEqual({
+      item: props.entries[1],
+      isDesktop: commonProps.isDesktop,
+      showEntryDetails: commonProps.showEntryDetails,
+      onChangeEntry: commonProps.onChangeEntry,
+      focusUuid: '2'
+    })
   })
 
   it('should trigger prop function "onChangeEntry" when entry in entry auto focus component changed', () =>  {
@@ -91,14 +106,38 @@ describe('EntryList', () => {
   })
 
   it('should wrap last entry in intersection observer', () =>  {
-    expect(shallowRender().find(IntersectionObserver).find(EntryAutoFocus).props()).toEqual({item: props.entries[1], ...commonProps})
+    expect(shallowRender().find(IntersectionObserver).find(EntryAutoFocus).props()).toEqual({
+      item: props.entries[1],
+      isDesktop: commonProps.isDesktop,
+      showEntryDetails: commonProps.showEntryDetails,
+      onChangeEntry: commonProps.onChangeEntry,
+      focusUuid: '2'
+    })
   })
 
   it('should render last entry without intersection observer when next link does not exists', () =>  {
     props.links = {}
 
     expect(shallowRender().find(IntersectionObserver).exists()).toEqual(false)
-    expect(shallowRender().find('.my-entry-list__item').at(1).find(EntryAutoFocus).props()).toEqual({item: props.entries[1], ...commonProps})
+    expect(shallowRender().find('.my-entry-list__item').at(1).find(EntryAutoFocus).props()).toEqual({
+      item: props.entries[1],
+      isDesktop: commonProps.isDesktop,
+      showEntryDetails: commonProps.showEntryDetails,
+      onChangeEntry: commonProps.onChangeEntry,
+      focusUuid: '2',
+    })
+  })
+
+  it('should set prop "focusUuid" to undefined when no entry is in focus', () =>  {
+    props.entryInFocus = undefined
+
+    expect(shallowRender().find('.my-entry-list__item').at(0).find(EntryAutoFocus).props()).toContainObject({
+      focusUuid: undefined,
+    })
+
+    expect(shallowRender().find('.my-entry-list__item').at(1).find(EntryAutoFocus).props()).toContainObject({
+      focusUuid: undefined,
+    })
   })
 
   it('should trigger prop function "onLoadMore" when intersection observer children becomes visible', () =>  {

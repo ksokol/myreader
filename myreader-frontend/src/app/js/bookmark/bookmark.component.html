@@ -2,6 +2,6 @@
               my-on-refresh="$ctrl.refresh()">
     <my-list-panel>
         <react-component class="bookmark__tags" name="Chips" props="$ctrl.props"></react-component>
-        <my-entry-list></my-entry-list>
+        <react-component name="ContainerComponentBridge" props="$ctrl.entryListContainerProps"></react-component>
     </my-list-panel>
 </my-list-page>

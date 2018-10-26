@@ -1,5 +1,4 @@
-import React from 'react'
-import {componentMock, mockNgRedux, reactComponent} from '../shared/test-utils'
+import {componentMock, mockNgRedux, reactComponent, connectedReactComponent} from '../shared/test-utils'
 
 describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
 
@@ -8,7 +7,7 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
   describe('', () => {
 
     beforeEach(() => {
-      entryList = componentMock('myEntryList')
+      entryList = connectedReactComponent('ContainerComponentBridge')
       chips = reactComponent('Chips')
       angular.mock.module('myreader', entryList, mockNgRedux(), chips)
     })
@@ -39,7 +38,7 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
     })
 
     it('should contain EntryListComponent', () => {
-      expect(element.find('my-entry-list')[0]).toBeDefined()
+      expect(element[0].querySelector('react-component[props="$ctrl.entryListContainerProps"]')).not.toBeNull()
     })
 
     it('should return key for given value in prop "values" when prop "keyFn" function called', () => {
@@ -56,7 +55,7 @@ describe('src/app/js/bookmark/bookmark.component.spec.js', () => {
     let listPage
 
     beforeEach(() => {
-      entryList = componentMock('myEntryList')
+      entryList = connectedReactComponent('ContainerComponentBridge')
       listPage = componentMock('myListPage')
       angular.mock.module('myreader', entryList, listPage, mockNgRedux())
     })

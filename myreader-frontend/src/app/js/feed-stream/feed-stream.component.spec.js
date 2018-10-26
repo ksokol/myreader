@@ -1,4 +1,4 @@
-import {componentMock, mockNgRedux, onKey, reactComponent, tick} from '../shared/test-utils'
+import {componentMock, mockNgRedux, onKey, connectedReactComponent, tick} from '../shared/test-utils'
 
 const enter = {key: 'Enter', keyCode: 13}
 const arrowDown = {key: 'ArrowDown', keyCode: 40}
@@ -14,7 +14,7 @@ describe('FeedStreamComponent', () => {
 
   describe('', () => {
 
-    beforeEach(angular.mock.module('myreader', mockNgRedux(), reactComponent('EntryList')))
+    beforeEach(angular.mock.module('myreader', mockNgRedux(), connectedReactComponent('ContainerComponentBridge')))
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
       scope = $rootScope.$new(true)
@@ -99,7 +99,7 @@ describe('FeedStreamComponent', () => {
 
     beforeEach(() => {
       listPage = componentMock('myListPage')
-      angular.mock.module('myreader', mockNgRedux(), reactComponent('EntryList'), listPage)
+      angular.mock.module('myreader', mockNgRedux(), connectedReactComponent('ContainerComponentBridge'), listPage)
     })
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {

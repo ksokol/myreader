@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import {initialApplicationState} from '../store'
+import createApplicationStore from '../store/bootstrap'
 
 /*
  * https://velesin.io/2016/08/23/unit-testing-angular-1-5-components/
@@ -33,6 +34,11 @@ export function reactComponent(name) {
   }
 
   return _reactComponentMock
+}
+
+export function connectedReactComponent(name) {
+  createApplicationStore('test')
+  return reactComponent(name)
 }
 
 export function multipleReactComponents(name) {
