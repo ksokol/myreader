@@ -9,9 +9,9 @@ function containerComponent(component) {
   return {
     content: {
       template: '<react-component name="ContainerComponentBridge" props="props"></react-component>',
-      controller: function ($scope) {
+      controller: ['$scope', function ($scope) {
         $scope.props = {component: () => component}
-      }
+      }]
     }
   }
 }
