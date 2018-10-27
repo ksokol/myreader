@@ -100,6 +100,12 @@ class controller {
       disabled: true
     }
   }
+
+  get iconProps() {
+    return {
+      type: 'link'
+    }
+  }
 }
 
 export const SubscriptionComponent = {

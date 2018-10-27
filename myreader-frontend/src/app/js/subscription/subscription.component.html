@@ -4,7 +4,7 @@
     <div class="subscription-form__origin">
         <react-component name="SubscriptionUrlInput" props="$ctrl.urlProps"></react-component>
         <a ng-href="{{$ctrl.subscription.origin}}" target="_blank" rel="noopener noreferrer">
-            <my-icon my-type="open-in-new"></my-icon>
+            <react-component name="Icon" props="$ctrl.iconProps"></react-component>
         </a>
     </div>
 

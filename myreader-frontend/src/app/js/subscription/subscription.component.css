@@ -7,8 +7,12 @@
     align-items: center;
 }
 
-.subscription-form__origin react-component {
+.subscription-form__origin > react-component {
     flex-grow: 1;
+}
+
+.subscription-form__origin > a {
+    color: grey;
 }
 
 .subscription-form__pattern-title {
