@@ -10,6 +10,7 @@ import {faSearch} from '@fortawesome/free-solid-svg-icons/faSearch'
 import {faRedo} from '@fortawesome/free-solid-svg-icons/faRedo'
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes'
 import {faLink} from '@fortawesome/free-solid-svg-icons/faLink'
+import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle'
 
 library.add(
   faRedo,
@@ -22,5 +23,6 @@ library.add(
   faCheckCircle,
   faTimes,
   faBars,
-  faLink
+  faLink,
+  faExclamationTriangle
 )

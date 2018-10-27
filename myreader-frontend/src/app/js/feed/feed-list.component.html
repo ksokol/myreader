@@ -6,7 +6,10 @@
              ng-repeat="feed in $ctrl.feeds | filter: $ctrl.router.query.q">
             <h3>{{feed.title}}</h3>
             <span>
-                <my-icon my-type="error" ng-if="feed.hasErrors"></my-icon>
+                <react-component name="Icon"
+                                 props="$ctrl.iconProps"
+                                 ng-if="feed.hasErrors">
+                </react-component>
                 {{::feed.createdAt | timeago}}
             </span>
         </div>
