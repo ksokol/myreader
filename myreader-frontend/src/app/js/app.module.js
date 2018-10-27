@@ -7,7 +7,6 @@ import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
 import {TimeagoFilter} from './shared/timeago/timeago.filter'
 import {FeedFetchErrorComponent, FeedFetchErrorLoadMore} from './feed/feed-fetch-error/feed-fetch-error.component'
-import {IconComponent} from './shared/component/icon/icon.component'
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
 import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
@@ -98,7 +97,6 @@ angular
 
   .component('myButtonGroup', ButtonGroupComponent)
   .component('myButton', ButtonComponent)
-  .component('myIcon', IconComponent)
   .component('mySearchInput', SearchInputComponent)
   .component('myToast', ToastComponent)
   .component('myAutoScroll', AutoScrollComponent)
