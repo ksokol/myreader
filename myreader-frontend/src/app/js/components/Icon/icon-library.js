@@ -9,6 +9,7 @@ import {faChevronUp} from '@fortawesome/free-solid-svg-icons/faChevronUp'
 import {faSearch} from '@fortawesome/free-solid-svg-icons/faSearch'
 import {faRedo} from '@fortawesome/free-solid-svg-icons/faRedo'
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes'
+import {faLink} from '@fortawesome/free-solid-svg-icons/faLink'
 
 library.add(
   faRedo,
@@ -20,5 +21,6 @@ library.add(
   faCheck,
   faCheckCircle,
   faTimes,
-  faBars
+  faBars,
+  faLink
 )

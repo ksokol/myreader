@@ -11,6 +11,10 @@
     flex-grow: 1;
 }
 
+.admin-feed-form__origin > a {
+    color: grey;
+}
+
 .admin-feed-form__fetch-error-title {
     font-size: 20px;
     font-weight: 500;

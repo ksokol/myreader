@@ -70,6 +70,12 @@ class controller {
       onChange: value => this.feed.url = value
     }
   }
+
+  get iconProps() {
+    return {
+      type: 'link'
+    }
+  }
 }
 
 export const FeedComponent = {
