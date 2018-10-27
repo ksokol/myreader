@@ -1,12 +1,8 @@
 <my-list-page my-on-search="$ctrl.navigateTo(params)"
               my-on-refresh="$ctrl.refresh()">
     <my-action-panel ng-if="$ctrl.isDesktop">
-        <my-icon-button my-type="chevron-left"
-                        ng-click="$ctrl.previousEntry()">
-        </my-icon-button>
-        <my-icon-button my-type="chevron-right"
-                        ng-click="$ctrl.nextEntry()">
-        </my-icon-button>
+        <react-component name="IconButton" props="$ctrl.previousButton"></react-component>
+        <react-component name="IconButton" props="$ctrl.nextButton"></react-component>
     </my-action-panel>
     <my-list-panel>
         <my-hotkeys my-bind-to="$ctrl" my-hotkeys="{'down': $ctrl.nextEntry, 'up': $ctrl.previousEntry, 'enter': $ctrl.toggleEntryReadFlag}">

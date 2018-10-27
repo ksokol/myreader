@@ -1,4 +1,4 @@
-import {componentMock, mockNgRedux, onKey, connectedReactComponent, tick} from '../shared/test-utils'
+import {componentMock, mockNgRedux, onKey, connectedReactComponent, tick, multipleReactComponents} from '../shared/test-utils'
 
 const enter = {key: 'Enter', keyCode: 13}
 const arrowDown = {key: 'ArrowDown', keyCode: 40}
@@ -6,7 +6,7 @@ const arrowUp = {key: 'ArrowUp', keyCode: 38}
 
 describe('FeedStreamComponent', () => {
 
-  let scope, element, ngReduxMock
+  let scope, element, ngReduxMock, navigationButtons
 
   const givenState = (entries = [], entryInFocus = '1', nextFocusableEntry = '2', mediaBreakpoint = 'desktop') => {
     ngReduxMock.setState({entry: {entries, entryInFocus, nextFocusableEntry}, common: {mediaBreakpoint}})
@@ -14,7 +14,10 @@ describe('FeedStreamComponent', () => {
 
   describe('', () => {
 
-    beforeEach(angular.mock.module('myreader', mockNgRedux(), connectedReactComponent('ContainerComponentBridge')))
+    beforeEach(() => {
+      navigationButtons = multipleReactComponents('IconButton')
+      angular.mock.module('myreader', mockNgRedux(), connectedReactComponent('ContainerComponentBridge'), navigationButtons)
+    })
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
       scope = $rootScope.$new(true)
@@ -27,7 +30,7 @@ describe('FeedStreamComponent', () => {
     }))
 
     it('should focus previous entry when previous button clicked', () => {
-      element.querySelectorAll('button')[0].click()
+      navigationButtons.bindings[1].onClick()
 
       expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_PREVIOUS'])
     })
@@ -41,7 +44,7 @@ describe('FeedStreamComponent', () => {
     })
 
     it('should focus next entry when next button clicked', () => {
-      element.querySelectorAll('button')[1].click()
+      navigationButtons.bindings[2].onClick()
 
       expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_NEXT'])
     })
@@ -56,7 +59,7 @@ describe('FeedStreamComponent', () => {
 
     it('should flag next focusable entry as read before it is focused', () => {
       givenState([{uuid: '2', seen: false, tag: 'expected tag'}])
-      element.querySelectorAll('button')[1].click()
+      navigationButtons.bindings[2].onClick()
 
       expect(ngReduxMock.getActionTypes()).toEqual(['PATCH_ENTRY', 'ENTRY_FOCUS_NEXT'])
       expect(ngReduxMock.getActions()[0]).toContainActionData({body: {seen: true, tag: 'expected tag'}})
@@ -65,7 +68,7 @@ describe('FeedStreamComponent', () => {
 
     it('should not flag next focusable entry as read when it is already flagged as read', () => {
       givenState([{uuid: '2', seen: true}])
-      element.querySelectorAll('button')[1].click()
+      navigationButtons.bindings[2].onClick()
 
       expect(ngReduxMock.getActionTypes()).toEqual(['ENTRY_FOCUS_NEXT'])
     })

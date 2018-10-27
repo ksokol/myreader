@@ -59,6 +59,20 @@ class controller {
       component: () => EntryListContainer
     }
   }
+
+  get previousButton() {
+    return {
+      type: 'chevron-left',
+      onClick: this.previousEntry
+    }
+  }
+
+  get nextButton() {
+    return {
+      type: 'chevron-right',
+      onClick: this.nextEntry
+    }
+  }
 }
 
 export const FeedStreamComponent = {
