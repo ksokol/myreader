@@ -1,10 +1,9 @@
 <div class="app">
     <header class="app__header">
-        <my-icon-button my-type="menu"
-                        my-color="white"
-                        ng-if="!$ctrl.isDesktop"
-                        ng-click="$ctrl.toggleSidenav()">
-        </my-icon-button>
+        <react-component name="IconButton"
+                         props="$ctrl.menuProps"
+                         ng-if="!$ctrl.isDesktop">
+        </react-component>
     </header>
 
     <nav class="app__nav" ng-class="{'app__nav--open': $ctrl.sidenavSlideIn, 'app__nav--animate': !$ctrl.isDesktop}">

@@ -25,6 +25,10 @@
     cursor: default;
 }
 
+.my-chip--disabled .my-icon {
+    color: rgba(0, 0, 0, 0.24);
+}
+
 .my-chip__remove-button {
     border: 0;
     padding: 0;

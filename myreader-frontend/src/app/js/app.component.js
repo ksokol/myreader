@@ -1,36 +1,44 @@
 import template from './app.component.html'
 import './app.component.css'
-import {toggleSidenav, sidenavSlideIn, mediaBreakpointIsDesktopSelector} from './store'
+import {mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from './store'
 
 class controller {
 
-    constructor($ngRedux) {
-        'ngInject'
-        this.$ngRedux = $ngRedux
-    }
+  constructor($ngRedux) {
+    'ngInject'
+    this.$ngRedux = $ngRedux
+  }
 
-    $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
-    }
+  $onInit() {
+    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
+  }
 
-    $onDestroy() {
-        this.unsubscribe()
-    }
+  $onDestroy() {
+    this.unsubscribe()
+  }
 
-    mapStateToThis(state) {
-        return {
-            isDesktop: mediaBreakpointIsDesktopSelector(state),
-            sidenavSlideIn: sidenavSlideIn(state)
-        }
+  mapStateToThis(state) {
+    return {
+      isDesktop: mediaBreakpointIsDesktopSelector(state),
+      sidenavSlideIn: sidenavSlideIn(state)
     }
+  }
 
-    mapDispatchToThis(dispatch) {
-        return {
-            toggleSidenav: () => dispatch(toggleSidenav())
-        }
+  mapDispatchToThis(dispatch) {
+    return {
+      toggleSidenav: () => dispatch(toggleSidenav())
     }
+  }
+
+  get menuProps() {
+    return {
+      type: 'bars',
+      onClick: this.toggleSidenav,
+      inverse: true
+    }
+  }
 }
 
 export const AppComponent = {
-    template, controller
+  template, controller
 }

@@ -22,15 +22,14 @@ const Chip = props => {
   )
 
   const removeButton = props.onRemove &&
-    <IconButton className="my-chip__remove-button"
-                type="close"
+    <IconButton className='my-chip__remove-button'
+                type='times'
                 disabled={props.disabled}
-                onClick={() => props.onRemove(props.value)}/>
+                onClick={() => props.onRemove(props.value)} />
 
   return (
     <div className={classes}>
       <div onClick={onSelect}>{props.children}</div>
-
       {removeButton}
     </div>
   )

@@ -113,7 +113,7 @@ describe('Chip', () => {
 
     expect(wrapper.find(IconButton).props()).toContainObject({
       className: 'my-chip__remove-button',
-      type: 'close',
+      type: 'times',
       disabled: false
     })
   })

@@ -1,10 +1,10 @@
 <my-list-page my-on-search="$ctrl.navigateTo(params)"
               my-on-refresh="$ctrl.refresh()">
     <my-action-panel ng-if="$ctrl.isDesktop">
-        <my-icon-button my-type="navigate-before"
+        <my-icon-button my-type="chevron-left"
                         ng-click="$ctrl.previousEntry()">
         </my-icon-button>
-        <my-icon-button my-type="navigate-next"
+        <my-icon-button my-type="chevron-right"
                         ng-click="$ctrl.nextEntry()">
         </my-icon-button>
     </my-action-panel>

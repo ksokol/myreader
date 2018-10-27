@@ -2,6 +2,7 @@
     background-color: transparent;
     border-radius: 50%;
     border: 1px;
+    color: grey;
     cursor: pointer;
     height: 30px;
     margin: 10px;
@@ -9,6 +10,10 @@
     user-select: none;
     width: 30px;
     -webkit-tap-highlight-color: transparent;
+}
+
+.my-icon-button:disabled {
+    cursor: default;
 }
 
 @media (min-width: 1280px) {

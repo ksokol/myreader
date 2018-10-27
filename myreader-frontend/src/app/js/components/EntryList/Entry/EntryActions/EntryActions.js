@@ -5,7 +5,7 @@ import {IconButton} from '../../..'
 export const EntryActions = props => [
   <IconButton
     key='more-toggle'
-    type={`expand-${props.showMore ? 'less' : 'more'}`}
+    type={`chevron-${props.showMore ? 'up' : 'down'}`}
     onClick={props.onToggleShowMore}/>,
   <IconButton
     key='seen-toggle'

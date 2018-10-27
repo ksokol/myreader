@@ -6,7 +6,7 @@ import {Icon} from '../..'
 describe('IconButton', () => {
 
   it('should contain expected props', () => {
-    const wrapper = shallow(<IconButton className='expected-className' type='close' color='white' disabled={true}/>)
+    const wrapper = shallow(<IconButton className='expected-className' type='close' disabled={true} />)
 
     expect(wrapper.props()).toContainObject({
       className: 'my-icon-button expected-className',
@@ -16,9 +16,9 @@ describe('IconButton', () => {
   })
 
   it('should pass expected props to Icon component', () => {
-    const wrapper = shallow(<IconButton type='close' color='white'/>)
+    const wrapper = shallow(<IconButton type='close' inverse={true} />)
 
-    expect(wrapper.find(Icon).props()).toEqual({type: 'close', color: 'white', disabled: false})
+    expect(wrapper.find(Icon).props()).toEqual({type: 'close', inverse: true})
   })
 
   it('should trigger prop "onClick" function when clicked', () => {

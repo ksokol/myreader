@@ -6,20 +6,19 @@ import {Icon} from '../..'
 import {noop} from '../../../shared/utils'
 
 const IconButton = props =>
-  <button type="button"
+  <button type='button'
           className={classNames('my-icon-button', props.className)}
           disabled={props.disabled}
           onClick={props.onClick}>
     <Icon type={props.type}
-          color={props.color}
-          disabled={props.disabled}/>
+          inverse={props.inverse}/>
   </button>
 
 IconButton.propTypes = {
   className: PropTypes.string,
   type: PropTypes.string.isRequired,
-  color: PropTypes.string,
   disabled: PropTypes.bool,
+  inverse: PropTypes.bool,
   onClick: PropTypes.func
 }
 
