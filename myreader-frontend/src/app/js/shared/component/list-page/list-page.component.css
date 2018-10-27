@@ -1,6 +1,6 @@
 .my-list-page__action-panel {
+    align-items: center;
     display: flex;
-    flex-direction: row;
 }
 
 .my-list-page__search-action {
