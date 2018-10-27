@@ -4,43 +4,46 @@ import {routeSelector} from '../../../store'
 
 class controller {
 
-    constructor($ngRedux) {
-        'ngInject'
-        this.$ngRedux = $ngRedux
-    }
+  constructor($ngRedux) {
+    'ngInject'
+    this.$ngRedux = $ngRedux
+  }
 
-    $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
-    }
+  $onInit() {
+    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis)(this)
+  }
 
-    $onDestroy() {
-        this.unsubscribe()
-    }
+  $onDestroy() {
+    this.unsubscribe()
+  }
 
-    mapStateToThis(state) {
-        return {
-            ...routeSelector(state)
-        }
+  mapStateToThis(state) {
+    return {
+      ...routeSelector(state)
     }
+  }
 
-    onSearchChange(q) {
-        const params = {...this.router.query, q}
-        this.myOnSearch({params})
-    }
+  onSearchChange(q) {
+    const params = {...this.router.query, q}
+    this.myOnSearch({params})
+  }
 
-    onRefresh() {
-        this.myOnRefresh()
+  get refreshProps() {
+    return {
+      type: 'redo',
+      onClick: this.myOnRefresh
     }
+  }
 }
 
 export const ListPageComponent = {
-    template, controller,
-    transclude: {
-        'action-panel': '?myActionPanel',
-        'list-panel': 'myListPanel'
-    },
-    bindings: {
-        myOnSearch: '&',
-        myOnRefresh: '&'
-    }
+  template, controller,
+  transclude: {
+    'action-panel': '?myActionPanel',
+    'list-panel': 'myListPanel'
+  },
+  bindings: {
+    myOnSearch: '&',
+    myOnRefresh: '&'
+  }
 }

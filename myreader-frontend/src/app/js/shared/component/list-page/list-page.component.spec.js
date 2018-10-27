@@ -1,13 +1,13 @@
 import {componentMock, mockNgRedux, reactComponent} from '../../../shared/test-utils'
 
-describe('src/app/js/shared/component/list-page/list-page-component.spec.js', () => {
+describe('ListPageComponent', () => {
 
-  let scope, element, icon, mySearchInput
+  let scope, element, refreshButton, mySearchInput
 
   beforeEach(() => {
     mySearchInput = componentMock('mySearchInput')
-    icon = reactComponent('Icon')
-    angular.mock.module('myreader', mySearchInput, icon, mockNgRedux())
+    refreshButton = reactComponent('IconButton')
+    angular.mock.module('myreader', mySearchInput, refreshButton, mockNgRedux())
   })
 
   beforeEach(inject(($rootScope, $compile, $ngRedux) => {
@@ -34,7 +34,7 @@ describe('src/app/js/shared/component/list-page/list-page-component.spec.js', ()
 
   it('should pass properties to child components', () => {
     expect(mySearchInput.bindings.myValue).toEqual('expected q value')
-    expect(icon.bindings).toEqual({color: undefined, type: 'redo'})
+    expect(refreshButton.bindings).toContainObject({type: 'redo'})
   })
 
   it('should set q to expected value when myOnChange event received', done => {
@@ -50,7 +50,7 @@ describe('src/app/js/shared/component/list-page/list-page-component.spec.js', ()
   it('should emit myOnRefresh event when refresh button clicked', done => {
     scope.onRefresh = () => done()
 
-    element.find('my-icon-button').triggerHandler('click')
+    refreshButton.bindings.onClick()
     scope.$digest()
   })
 })
