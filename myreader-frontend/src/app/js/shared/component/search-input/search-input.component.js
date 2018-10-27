@@ -23,6 +23,12 @@ class controller {
       }
     }
   }
+
+  get iconProps() {
+    return {
+      type: 'search'
+    }
+  }
 }
 
 export const SearchInputComponent = {

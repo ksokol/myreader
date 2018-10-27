@@ -1,9 +1,10 @@
 my-search-input {
+    align-items: center;
     display: flex;
 }
 
 .my-search-input__search-icon {
-    cursor: initial;
+    color: grey;
     margin-left: 10px;
     margin-right: 5px;
 }
