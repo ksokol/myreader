@@ -37,7 +37,6 @@ module.exports = function makeWebpackConfig() {
    * Karma will set this when it's a test build
    */
   config.entry = isTest ? void 0 : {
-    vendor: './src/app/js/vendor.js',
     app: './src/app/js/main.js'
   }
 
@@ -60,18 +59,7 @@ module.exports = function makeWebpackConfig() {
       })
     ],
     splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: 'vendor',
-          priority: -10,
-          name: 'vendor',
-          chunks: 'all'
-        },
-        app: {
-          test: 'app',
-          priority: -20
-        }
-      }
+      chunks: 'all'
     }
   }
 
