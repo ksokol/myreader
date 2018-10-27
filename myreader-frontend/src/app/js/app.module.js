@@ -44,7 +44,6 @@ import {
   AutocompleteSuggestionsComponent,
   AutocompleteSuggestionsItemTextComponent
 } from './shared/component/autocomplete-input'
-import {IconButtonComponent} from './shared/component/buttons/icon-button/icon-button.component'
 import {
   Button,
   Chips,
@@ -108,7 +107,6 @@ angular
   .component('myAutocompleteInput', AutoCompleteInputComponent)
   .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
   .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)
-  .component('myIconButton', IconButtonComponent)
 
   .filter('timeago', TimeagoFilter)
 
