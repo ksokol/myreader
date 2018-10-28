@@ -1,6 +1,6 @@
-import {componentMock, filterMock, mockNgRedux} from '../shared/test-utils'
+import {componentMock, mockNgRedux, multipleReactComponents} from '../shared/test-utils'
 
-describe('src/app/js/feed/feed-list.component.spec.js', () => {
+describe('FeedListComponent', () => {
 
   const feeds = [{
     uuid: 1,
@@ -14,7 +14,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
     createdAt: 'createdAt 2'
   }]
 
-  let scope, element, page, ngReduxMock
+  let scope, element, page, ngReduxMock, timeago
 
   const Feed = el => {
     return {
@@ -45,7 +45,10 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
 
   describe('', () => {
 
-    beforeEach(angular.mock.module('myreader', filterMock('timeago'), mockNgRedux()))
+    beforeEach(() => {
+      timeago = multipleReactComponents('TimeAgo')
+      angular.mock.module('myreader', timeago, mockNgRedux())
+    })
 
     beforeEach(inject(($rootScope, $compile, $ngRedux) => {
       scope = $rootScope.$new(true)
@@ -76,7 +79,7 @@ describe('src/app/js/feed/feed-list.component.spec.js', () => {
     })
 
     it('should pass feed creation date to timeago pipe', () => {
-      expect(page.feedList()[0].createdAt().textContent).toContain('timeago("createdAt 1")')
+      expect(timeago.bindings[0]).toEqual({date: 'createdAt 1'})
     })
 
     it('should navigate to feed detail page', () => {

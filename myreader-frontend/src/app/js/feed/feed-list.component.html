@@ -10,7 +10,9 @@
                                  props="$ctrl.iconProps"
                                  ng-if="feed.hasErrors">
                 </react-component>
-                {{::feed.createdAt | timeago}}
+                <react-component name="TimeAgo"
+                                 props="$ctrl.createdAtProp(feed)">
+                </react-component>
             </span>
         </div>
     </my-list-panel>

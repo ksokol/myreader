@@ -37,6 +37,12 @@ class controller {
       type: 'exclamation-triangle'
     }
   }
+
+  createdAtProp(feed) {
+    return {
+      date: feed.createdAt
+    }
+  }
 }
 
 export const FeedListComponent = {
