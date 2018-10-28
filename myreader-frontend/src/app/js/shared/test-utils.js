@@ -77,22 +77,6 @@ export function multipleComponentMock(name) {
   return _componentMock
 }
 
-export function filterMock(name) {
-  function _filterMock($provide) {
-    const filter = jest.fn(value => {
-      if (typeof value === 'object') {
-        // remove Angular specific attributes
-        delete value.$$hashKey
-        delete value.object
-      }
-      return name + '(' + JSON.stringify(value) + ')'
-    })
-    $provide.value(name + 'Filter', filter)
-  }
-
-  return _filterMock
-}
-
 export function createMockStore(middlewares = []) {
   let state = initialApplicationState()
   const store = configureMockStore([thunk, ...middlewares])(() => state)

@@ -1,8 +1,8 @@
-import {filterMock, mockNgRedux, reactComponent} from '../../shared/test-utils'
+import {mockNgRedux, multipleReactComponents, reactComponent} from '../../shared/test-utils'
 
-describe('src/app/js/feed/feed-fetch-error/feed-fetch-error.component.spec.js', () => {
+describe('FeedFetchErrorComponent', () => {
 
-  let scope, element, ngReduxMock, loadMore
+  let scope, element, ngReduxMock, loadMore, timeago
 
   const givenState = (fetchFailures = {}) => {
     ngReduxMock.setState({admin: {fetchFailures, fetchFailuresLoading: true}})
@@ -11,7 +11,8 @@ describe('src/app/js/feed/feed-fetch-error/feed-fetch-error.component.spec.js', 
 
   beforeEach(() => {
     loadMore = reactComponent('FeedFetchErrorLoadMore')
-    angular.mock.module('myreader', loadMore, filterMock('timeago'), mockNgRedux())
+    timeago = multipleReactComponents('TimeAgo')
+    angular.mock.module('myreader', loadMore, timeago, mockNgRedux())
   })
 
   beforeEach(inject(($rootScope, $compile, $ngRedux) => {
@@ -55,7 +56,7 @@ describe('src/app/js/feed/feed-fetch-error/feed-fetch-error.component.spec.js', 
   it('should render createdAt', () => {
     givenState({failures: [{uuid: 1, createdAt: '2017-04-28T18:01:03Z'}]})
 
-    expect(element.find('span')[1].textContent).toEqual('timeago("2017-04-28T18:01:03Z")')
+    expect(timeago.bindings[0]).toEqual({date: '2017-04-28T18:01:03Z'})
   })
 
   it('should render all errors', () => {

@@ -2,7 +2,9 @@
 
 <div class="feed-fetch-error__item" ng-repeat="item in $ctrl.failures track by item.uuid">
     <span>{{::item.message}}</span>
-    <span>{{::item.createdAt | timeago}}</span>
+    <span>
+        <react-component name="TimeAgo" props="$ctrl.createdAtProp(item)"></react-component>
+    </span>
 </div>
 
 <react-component ng-if="$ctrl.links.next"

@@ -57,6 +57,12 @@ class controller {
       onIntersection: this.onMore
     }
   }
+
+  createdAtProp(item) {
+    return {
+      date: item.createdAt
+    }
+  }
 }
 
 export const FeedFetchErrorComponent = {
