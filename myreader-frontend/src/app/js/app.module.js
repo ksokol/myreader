@@ -5,7 +5,6 @@ import 'ngreact'
 
 import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
-import {TimeagoFilter} from './shared/timeago/timeago.filter'
 import {FeedFetchErrorComponent, FeedFetchErrorLoadMore} from './feed/feed-fetch-error/feed-fetch-error.component'
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
@@ -98,8 +97,6 @@ angular
   .component('myAutocompleteInput', AutoCompleteInputComponent)
   .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
   .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)
-
-  .filter('timeago', TimeagoFilter)
 
   .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], ['myStoreEnhancer'])])
 
