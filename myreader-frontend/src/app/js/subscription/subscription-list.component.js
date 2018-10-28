@@ -4,35 +4,41 @@ import {fetchSubscriptions, getSubscriptions, routeChange, routeSelector} from '
 
 class controller {
 
-    constructor($ngRedux) {
-        'ngInject'
-        this.$ngRedux = $ngRedux
-    }
+  constructor($ngRedux) {
+    'ngInject'
+    this.$ngRedux = $ngRedux
+  }
 
-    $onInit() {
-        this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
-    }
+  $onInit() {
+    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
+  }
 
-    $onDestroy() {
-        this.unsubscribe()
-    }
+  $onDestroy() {
+    this.unsubscribe()
+  }
 
-    mapStateToThis(state) {
-        return {
-            ...routeSelector(state),
-            ...getSubscriptions(state)
-        }
+  mapStateToThis(state) {
+    return {
+      ...routeSelector(state),
+      ...getSubscriptions(state)
     }
+  }
 
-    mapDispatchToThis(dispatch) {
-        return {
-            navigateTo: subscription => dispatch(routeChange(['app', 'subscription'], {uuid: subscription.uuid})),
-            refresh: () => dispatch(fetchSubscriptions()),
-            onSearch: params => dispatch(routeChange(['app', 'subscriptions'], {...params}))
-        }
+  mapDispatchToThis(dispatch) {
+    return {
+      navigateTo: subscription => dispatch(routeChange(['app', 'subscription'], {uuid: subscription.uuid})),
+      refresh: () => dispatch(fetchSubscriptions()),
+      onSearch: params => dispatch(routeChange(['app', 'subscriptions'], {...params}))
     }
+  }
+
+  createdAtProp(subscription) {
+    return {
+      date: subscription.createdAt
+    }
+  }
 }
 
 export const SubscriptionListComponent = {
-    template, controller
+  template, controller
 }

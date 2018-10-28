@@ -43,15 +43,7 @@ import {
   AutocompleteSuggestionsComponent,
   AutocompleteSuggestionsItemTextComponent
 } from './shared/component/autocomplete-input'
-import {
-  Button,
-  Chips,
-  Icon,
-  IconButton,
-  Navigation,
-  Settings,
-  SubscriptionNavigationItem
-} from './components'
+import {Button, Chips, Icon, IconButton, Navigation, Settings, SubscriptionNavigationItem, TimeAgo} from './components'
 import {ContainerComponentBridge} from './containers'
 
 import './config'
@@ -63,6 +55,7 @@ angular
   .value('IconButton', IconButton)
   .value('Chips', Chips)
   .value('Button', Button)
+  .value('TimeAgo', TimeAgo)
 
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
   .value('SubscriptionUrlInput', SubscriptionUrlInput)

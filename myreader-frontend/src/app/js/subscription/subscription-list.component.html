@@ -5,7 +5,9 @@
              ng-click="$ctrl.navigateTo(subscription)"
              ng-repeat="subscription in $ctrl.subscriptions | filter: $ctrl.router.query.q">
             <h3>{{subscription.title}}</h3>
-            <span>{{::subscription.createdAt | timeago}}</span>
+            <span>
+                <react-component name="TimeAgo" props="$ctrl.createdAtProp(subscription)"></react-component>
+            </span>
         </div>
     </my-list-panel>
 </my-list-page>
