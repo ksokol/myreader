@@ -1,6 +1,6 @@
-import {filterMock, mockNgRedux} from '../../shared/test-utils'
+import {reactComponent, mockNgRedux} from '../../shared/test-utils'
 
-describe('src/app/js/maintenance/about/about.component.spec.js', () => {
+describe('AboutComponent', () => {
 
   const Table = table => {
     return {
@@ -11,9 +11,12 @@ describe('src/app/js/maintenance/about/about.component.spec.js', () => {
     }
   }
 
-  let scope, element, table, ngReduxMock
+  let scope, element, table, ngReduxMock, timeago
 
-  beforeEach(angular.mock.module('myreader', mockNgRedux(), filterMock('timeago')))
+  beforeEach(() => {
+    timeago = reactComponent('TimeAgo')
+    angular.mock.module('myreader', mockNgRedux(), timeago)
+  })
 
   beforeEach(inject(($rootScope, $compile, $ngRedux) => {
     scope = $rootScope.$new(true)
@@ -45,6 +48,6 @@ describe('src/app/js/maintenance/about/about.component.spec.js', () => {
     expect(table.rowValue(0)).toEqual('a')
     expect(table.rowValue(1)).toEqual('b')
     expect(table.rowValue(2)).toEqual('c')
-    expect(table.rowValue(3)).toEqual('timeago("d")')
+    expect(timeago.bindings).toEqual({date: 'd'})
   })
 })
