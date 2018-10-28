@@ -1,14 +1,9 @@
 .my-icon-button {
     background-color: transparent;
-    border-radius: 50%;
-    border: 1px;
+    border: 0;
     color: grey;
     cursor: pointer;
-    height: 30px;
-    margin: 10px;
-    padding: 0;
-    user-select: none;
-    width: 30px;
+    padding: 10px;
     -webkit-tap-highlight-color: transparent;
 }
 

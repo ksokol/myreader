@@ -17,10 +17,13 @@
 .my-entry__header > .my-entry__actions {
     display: flex;
     flex-shrink: 0;
+    align-items: flex-start;
+    height: 36px;
 }
 
 @media (max-width: 599px) {
     .my-entry__header > .my-entry__actions {
         flex-direction: column-reverse;
+        height: 100%;
     }
 }
