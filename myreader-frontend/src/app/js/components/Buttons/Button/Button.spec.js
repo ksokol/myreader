@@ -14,10 +14,10 @@ describe('Button', () => {
     }
   })
 
-  const shallowRender = () => shallow(<Button {...props} />)
+  const createComponent = () => shallow(<Button {...props} />)
 
   it('should pass expected props with default values to button', () => {
-    expect(shallowRender().find('button').props()).toContainObject({
+    expect(createComponent().find('button').props()).toContainObject({
       type: 'button',
       className: 'my-button expected-class',
       disabled: false,
@@ -25,18 +25,25 @@ describe('Button', () => {
     })
   })
 
+  it('should add primary class when prop "primary" is set to true', () => {
+    props.primary = true
+    props.className = undefined
+
+    expect(createComponent().find('button').prop('className')).toEqual('my-button my-button--primary')
+  })
+
   it('should pass expected props to button', () => {
     props.type = 'submit'
     props.disabled = true
 
-    expect(shallowRender().find('button').props()).toContainObject({
+    expect(createComponent().find('button').props()).toContainObject({
       type: 'submit',
       disabled: true
     })
   })
 
-  it('should trigger prop "onClick" function when button clicked', () => {
-    shallowRender().find('button').props().onClick()
+  it('should trigger prop function "onClick" function when button clicked', () => {
+    createComponent().find('button').props().onClick()
 
     expect(props.onClick).toHaveBeenCalled()
   })

@@ -145,8 +145,9 @@ describe('subscription reducer', () => {
       expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'}))).toContainObject({
         subscriptions: [
           {uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'},
-          {uuid: '3', title: 'title3'
-        }]
+          {
+            uuid: '3', title: 'title3'
+          }]
       })
     })
 
@@ -285,6 +286,34 @@ describe('subscription reducer', () => {
       const expectedState = {editForm: {uuid: 'uuid1', a: 'b'}}
 
       expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
+    })
+  })
+
+  describe('action SUBSCRIPTION_TAG_CHANGED', () => {
+
+    it('should update every feedTag matching uuid', () => {
+      const state = {
+        subscriptions: [
+          {feedTag: {uuid: '1', name: 'name1', color: null}},
+          {feedTag: {uuid: '2', name: 'name2', color: 'color2'}},
+          {feedTag: {uuid: '1', name: 'name1', color: null}}
+        ]
+      }
+
+      const expectedState = {
+        subscriptions: [
+          {feedTag: {uuid: '1', name: 'expected name1', color: 'expected color1'}},
+          {feedTag: {uuid: '2', name: 'name2', color: 'color2'}},
+          {feedTag: {uuid: '1', name: 'expected name1', color: 'expected color1'}}
+        ]
+      }
+
+      const action = {
+        type: 'SUBSCRIPTION_TAG_CHANGED',
+        subscriptionTag: {uuid: '1', name: 'expected name1', color: 'expected color1'}
+      }
+
+      expect(subscriptionReducers(state, action)).toEqual(expectedState)
     })
   })
 })

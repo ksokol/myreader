@@ -2,12 +2,14 @@ import React from 'react'
 import {shallow} from 'enzyme'
 import {Settings} from '.'
 import Option from './Option/Option'
+import {SubscriptionTagsContainer} from '../../containers'
 
 describe('Settings', () => {
 
   let props
 
-  const createOptions = () => shallow(<Settings {...props} />).find(Option)
+  const createComponent = () => shallow(<Settings {...props} />)
+  const createOptions = () => createComponent().find(Option)
 
   beforeEach(() => {
     props = {
@@ -56,5 +58,9 @@ describe('Settings', () => {
 
     createOptions().at(2).props().onSelect(true)
     expect(props.onChange).toHaveBeenCalledWith(expectedSettings)
+  })
+
+  it('should contain subscription tags container', () => {
+    expect(createComponent().find(SubscriptionTagsContainer).exists()).toEqual(true)
   })
 })

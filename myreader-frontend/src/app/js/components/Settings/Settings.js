@@ -2,6 +2,7 @@ import './Settings.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import Option from './Option/Option'
+import {SubscriptionTagsContainer} from '../../containers'
 
 const pageSizeOptions = [10, 20, 30]
 const unseenEntriesOptions = [{label: 'show', value: false}, {label: 'hide', value: true}]
@@ -31,7 +32,12 @@ const Settings = props =>
         value={props.settings.showEntryDetails}
         options={entryDetailsOptions}
         onSelect={showEntryDetails => props.onChange({...props.settings, showEntryDetails})} />
-      </div>
+    </div>
+
+    <div className='my-settings__item'>
+      <label>Subscription Tags</label>
+      <SubscriptionTagsContainer />
+    </div>
   </div>
 
 Settings.propTypes = {

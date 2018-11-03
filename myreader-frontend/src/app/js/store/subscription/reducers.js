@@ -19,7 +19,10 @@ function subscriptionChanged({state, action}) {
     }
     return clone
   })
-  return {...state, subscriptions}
+  return {
+    ...state,
+    subscriptions
+  }
 }
 
 function subscriptionDeleted({state, action}) {
@@ -112,6 +115,12 @@ function securityUpdate({state, action}) {
   return action.authorized ? state : initialApplicationState().subscription
 }
 
+function subscriptionTagChanged({state, action}) {
+  const tag = action.subscriptionTag
+  const subscriptions = state.subscriptions.map(it => it.feedTag.uuid === tag.uuid ? {...it, feedTag: {...tag}} : it)
+  return {...state, subscriptions}
+}
+
 export function subscriptionReducers(state = initialApplicationState().subscription, action) {
   switch (action.type) {
     case types.SUBSCRIPTIONS_RECEIVED: {
@@ -141,6 +150,9 @@ export function subscriptionReducers(state = initialApplicationState().subscript
     }
     case types.SUBSCRIPTION_EDIT_FORM_LOAD: {
       return subscriptionEditFormLoad({state, action})
+    }
+    case types.SUBSCRIPTION_TAG_CHANGED: {
+      return subscriptionTagChanged({state, action})
     }
     case types.SECURITY_UPDATE: {
       return securityUpdate({state, action})

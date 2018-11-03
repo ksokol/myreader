@@ -7,6 +7,7 @@ import {
   loadSubscriptionIntoEditForm,
   removeSubscriptionExclusionPattern,
   saveSubscription,
+  saveSubscriptionTag,
   subscriptionDeleted,
   subscriptionExclusionPatternsAdded,
   subscriptionExclusionPatternsReceived,
@@ -345,6 +346,38 @@ describe('subscription actions', () => {
       store.dispatch(loadSubscriptionIntoEditForm('uuid1'))
 
       expect(store.getActions()[0]).toContainActionData({subscription: {uuid: 'uuid1'}})
+    })
+  })
+
+  describe('action creator saveSubscriptionTag', () => {
+
+    it('should contain expected action type', () => {
+      store.dispatch(saveSubscriptionTag({}))
+
+      expect(store.getActionTypes()).toEqual(['PATCH_SUBSCRIPTION_TAG'])
+    })
+
+    it('should contain expected url', () => {
+      store.dispatch(saveSubscriptionTag({uuid: 'uuid1'}))
+
+      expect(store.getActions()[0].url).toMatch(/\/subscriptionTags\/uuid1$/)
+    })
+
+    it('should contain expected body', () => {
+      store.dispatch(saveSubscriptionTag({uuid: 'uuid1', a: 'b', c: 'd'}))
+
+      expect(store.getActions()[0].body).toEqual({uuid: 'uuid1', a: 'b', c: 'd'})
+    })
+
+    it('should dispatch success actions when subscription tag saved', () => {
+      store.dispatch(saveSubscriptionTag('uuid1'))
+      const success = store.getActions()[0].success
+      store.clearActions()
+      success({uuid: 'uuid1', a: 'b', c: 'd'}).forEach(action => store.dispatch(action))
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_TAG_CHANGED', 'SHOW_NOTIFICATION'])
+      expect(store.getActions()[0]).toContainActionData({subscriptionTag: {uuid: 'uuid1', a: 'b', c: 'd'}})
+      expect(store.getActions()[1]).toContainActionData({notification: {text: 'Tag updated', type: 'success'}})
     })
   })
 })

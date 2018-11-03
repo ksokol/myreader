@@ -1,6 +1,6 @@
 import * as types from '../../store/action-types'
 import {toBody, toExclusionPattern, toExclusionPatterns, toSubscription, toSubscriptions} from './subscription'
-import {EXCLUSION_TAGS, SUBSCRIPTIONS} from '../../constants'
+import {EXCLUSION_TAGS, SUBSCRIPTION_TAGS, SUBSCRIPTIONS} from '../../constants'
 import {showSuccessNotification, subscriptionByUuidSelector} from '../../store'
 
 export const subscriptionsReceived = raw => {
@@ -124,5 +124,19 @@ export const loadSubscriptionIntoEditForm = uuid => {
         url: `${SUBSCRIPTIONS}/${uuid}`,
         success: response => dispatch(loadSubscriptionEditForm(toSubscription(response)))
       })
+  }
+}
+
+export const saveSubscriptionTag = subscriptionTag => {
+  return {
+    type: 'PATCH_SUBSCRIPTION_TAG',
+    url: `${SUBSCRIPTION_TAGS}/${subscriptionTag.uuid}`,
+    body: subscriptionTag,
+    success: response => [{
+      type: types.SUBSCRIPTION_TAG_CHANGED,
+      subscriptionTag: response
+    },
+      showSuccessNotification('Tag updated')
+    ]
   }
 }

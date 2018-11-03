@@ -1,0 +1,27 @@
+dialog {
+    border: none;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    padding: 0;
+}
+
+.my-dialog {
+    display: flex;
+    flex-direction: column;
+}
+
+.my-dialog > * {
+    display: flex;
+    padding: 5px;
+}
+
+.my-dialog__header {
+    justify-content: center;
+}
+
+.my-dialog__footer {
+    justify-content: flex-end;
+}
+
+.my-dialog__close-button {
+    margin-left: auto;
+}

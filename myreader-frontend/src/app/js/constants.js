@@ -23,6 +23,7 @@ export const ENTRY_AVAILABLE_TAGS = CONTEXT + API_2 + '/subscriptionEntries/avai
 export const SUBSCRIPTIONS = CONTEXT + API_2 + '/subscriptions'
 export const SUBSCRIPTION_ENTRIES = CONTEXT + API_2 + '/subscriptionEntries'
 export const EXCLUSION_TAGS = CONTEXT + API_2 + '/exclusions'
+export const SUBSCRIPTION_TAGS = CONTEXT + API_2 + '/subscriptionTags'
 
 export const STORAGE_SETTINGS_KEY = 'myreader-settings'
 export const STORAGE_SECURITY_KEY = 'myreader-security'

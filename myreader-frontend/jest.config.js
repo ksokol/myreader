@@ -1,9 +1,13 @@
 module.exports = {
   transform: {
     '^.+\\.js$': 'babel-jest',
-    '.+\\.css$': '<rootDir>/node_modules/jest-css-modules-transform',
+    '^.+\\.css$': '<rootDir>/node_modules/jest-css-modules-transform',
     '^.+\\.html$': 'html-loader-jest'
   },
+  transformIgnorePatterns: [
+    '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$',
+    '^.+\\.module\\.(css|sass|scss)$'
+  ],
   collectCoverageFrom: [
     'src/app/js/**/*.js'
   ],
@@ -14,5 +18,5 @@ module.exports = {
    * TODO Comes into effect as soon as patched setTimeout function in app.module.js has been removed.
    */
   timers: 'fake',
-  testURL: 'http://localhost:8080'
+  testURL: 'http://localhost:8080',
 }
