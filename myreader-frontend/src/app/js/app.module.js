@@ -39,10 +39,19 @@ import {BackdropComponent} from './shared/component/backdrop/backdrop.component'
 import {
   AutocompleteInput,
   AutoCompleteInputComponent,
-  AutocompleteSuggestionsComponent,
-  AutocompleteSuggestionsItemTextComponent
+  AutocompleteSuggestionsComponent
 } from './shared/component/autocomplete-input'
-import {Button, Chips, Icon, IconButton, Navigation, Settings, SubscriptionNavigationItem, TimeAgo} from './components'
+import {
+  AutocompleteItemText,
+  Button,
+  Chips,
+  Icon,
+  IconButton,
+  Navigation,
+  Settings,
+  SubscriptionNavigationItem,
+  TimeAgo
+} from './components'
 import {ContainerComponentBridge} from './containers'
 
 import './config'
@@ -55,6 +64,7 @@ angular
   .value('Chips', Chips)
   .value('Button', Button)
   .value('TimeAgo', TimeAgo)
+  .value('AutocompleteItemText', AutocompleteItemText)
 
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
   .value('SubscriptionUrlInput', SubscriptionUrlInput)
@@ -96,7 +106,6 @@ angular
   .component('myHotkeys', HotkeysComponent)
   .component('myAutocompleteInput', AutoCompleteInputComponent)
   .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
-  .component('myAutocompleteSuggestionsItemText', AutocompleteSuggestionsItemTextComponent)
 
   .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], ['myStoreEnhancer'])])
 

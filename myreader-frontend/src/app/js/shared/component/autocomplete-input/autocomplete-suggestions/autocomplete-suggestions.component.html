@@ -6,10 +6,7 @@
                 data-index="{{$index}}"
                 ng-class="{'my-autocomplete-suggestions__item--selected': $index === $ctrl.indexSelected}"
                 tabindex="-1">
-                <my-autocomplete-suggestions-item-text
-                        my-term="term"
-                        my-term-fragment="$ctrl.myCurrentTerm">
-                </my-autocomplete-suggestions-item-text>
+                <react-component name="AutocompleteItemText" props="$ctrl.suggestionItemProp(term)"></react-component>
             </li>
         </my-auto-scroll>
     </ul>
