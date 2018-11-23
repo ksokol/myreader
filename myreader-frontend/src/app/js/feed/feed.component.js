@@ -1,6 +1,6 @@
 import template from './feed.component.html'
 import './feed.component.css'
-import {changeFeed, deleteFeed, feedSelector} from '../store'
+import {changeFeed, deleteFeed, feedFetchFailuresSelector, feedSelector, fetchFeedFetchFailures} from '../store'
 import {Input, withValidations} from '../components'
 
 /**
@@ -30,7 +30,8 @@ class controller {
 
   mapStateToThis(state) {
     return {
-      feed: feedSelector(state)
+      feed: feedSelector(state),
+      ...feedFetchFailuresSelector(state)
     }
   }
 
@@ -40,7 +41,8 @@ class controller {
         this.validations = undefined
         return dispatch(changeFeed(this.feed))
       },
-      onDelete: () => dispatch(deleteFeed(this.feed.uuid))
+      onDelete: () => dispatch(deleteFeed(this.feed.uuid)),
+      onMore: link => dispatch(fetchFeedFetchFailures(link))
     }
   }
 
@@ -74,6 +76,15 @@ class controller {
   get iconProps() {
     return {
       type: 'link'
+    }
+  }
+
+  get feedFetchErrorsProp() {
+    return {
+      failures: this.failures,
+      links: this.links,
+      loading: this.fetchFailuresLoading,
+      onMore: this.onMore
     }
   }
 }

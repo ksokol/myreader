@@ -1,8 +1,8 @@
-import {componentMock, mockNgRedux, reactComponent} from '../shared/test-utils'
+import {mockNgRedux, reactComponent} from '../shared/test-utils'
 
 describe('src/app/js/feed/feed.component.spec.js', () => {
 
-  let scope, $timeout, page, ngReduxMock, feed, titleInput, urlInput
+  let scope, $timeout, page, ngReduxMock, feed, titleInput, urlInput, feedFetchErrors
 
   const PageObject = el => {
     return {
@@ -14,14 +14,31 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
   }
 
   const givenState = (selectedFeed = {}) => {
-    ngReduxMock.setState({admin: {selectedFeed}})
+    ngReduxMock.setState({
+      admin: {
+        selectedFeed,
+        fetchFailuresLoading: true,
+        fetchFailures: {
+          failures: [
+            {uuid: '1'},
+            {uuid: '2'}
+          ],
+          links: {
+            next: {
+              path: 'expected next'
+            }
+          }
+        }
+      }
+    })
     scope.$digest()
   }
 
   beforeEach(() => {
     titleInput = reactComponent('FeedTitleInput')
     urlInput = reactComponent('FeedUrlInput')
-    angular.mock.module('myreader', componentMock('myFeedFetchError'), mockNgRedux(), titleInput, urlInput)
+    feedFetchErrors = reactComponent('FeedFetchErrors')
+    angular.mock.module('myreader', mockNgRedux(), titleInput, urlInput, feedFetchErrors)
   })
 
   beforeEach(inject(($rootScope, $compile, $ngRedux, _$timeout_) => {
@@ -59,6 +76,32 @@ describe('src/app/js/feed/feed.component.spec.js', () => {
       label: 'Url',
       name: 'url',
       value: 'expected url',
+    })
+  })
+
+  it('should pass expected props to feed fetch errors component', () => {
+    givenState(feed)
+
+    expect(feedFetchErrors.bindings).toContainObject({
+      loading: true,
+      failures: [
+        {uuid: '1'},
+        {uuid: '2'}
+      ],
+      links: {
+        next: {
+          path: 'expected next'
+        }
+      }
+    })
+  })
+
+  it('should load more feed fetch errors', () => {
+    feedFetchErrors.bindings.onMore({path: 'expected path'})
+
+    expect(ngReduxMock.getActions()[0]).toContainObject({
+      type: 'GET_FEED_FETCH_FAILURES',
+      url: 'expected path'
     })
   })
 

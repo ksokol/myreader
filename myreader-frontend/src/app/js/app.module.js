@@ -5,7 +5,6 @@ import 'ngreact'
 
 import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
-import {FeedFetchErrorComponent, FeedFetchErrorLoadMore} from './feed/feed-fetch-error/feed-fetch-error.component'
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
 import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
@@ -38,7 +37,7 @@ import {
   AutoCompleteInputComponent,
   AutocompleteSuggestionsComponent
 } from './shared/component/autocomplete-input'
-import {AutocompleteItemText, Button, Chips, Icon, IconButton, Navigation, TimeAgo} from './components'
+import {AutocompleteItemText, Button, Chips, FeedFetchErrors, Icon, IconButton, Navigation, TimeAgo} from './components'
 import {ContainerComponentBridge} from './containers'
 
 import './config'
@@ -52,6 +51,7 @@ angular
   .value('Button', Button)
   .value('TimeAgo', TimeAgo)
   .value('AutocompleteItemText', AutocompleteItemText)
+  .value('FeedFetchErrors', FeedFetchErrors)
 
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
   .value('SubscriptionUrlInput', SubscriptionUrlInput)
@@ -62,10 +62,8 @@ angular
   .value('FeedUrlInput', FeedUrlInput)
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
-  .value('FeedFetchErrorLoadMore', FeedFetchErrorLoadMore)
   .value('Navigation', Navigation)
 
-  .component('myFeedFetchError', FeedFetchErrorComponent)
   .component('myFeed', FeedComponent)
   .component('myFeedList', FeedListComponent)
   .component('myLogin', LoginComponent)
