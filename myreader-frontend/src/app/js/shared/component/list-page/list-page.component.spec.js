@@ -1,13 +1,13 @@
-import {componentMock, mockNgRedux, reactComponent} from '../../../shared/test-utils'
+import {mockNgRedux, reactComponent} from '../../../shared/test-utils'
 
 describe('ListPageComponent', () => {
 
-  let scope, element, refreshButton, mySearchInput
+  let scope, element, refreshButton, searchInput
 
   beforeEach(() => {
-    mySearchInput = componentMock('mySearchInput')
+    searchInput = reactComponent('SearchInput')
     refreshButton = reactComponent('IconButton')
-    angular.mock.module('myreader', mySearchInput, refreshButton, mockNgRedux())
+    angular.mock.module('myreader', searchInput, refreshButton, mockNgRedux())
   })
 
   beforeEach(inject(($rootScope, $compile, $ngRedux) => {
@@ -33,7 +33,7 @@ describe('ListPageComponent', () => {
   })
 
   it('should pass properties to child components', () => {
-    expect(mySearchInput.bindings.myValue).toEqual('expected q value')
+    expect(searchInput.bindings.value).toEqual('expected q value')
     expect(refreshButton.bindings).toContainObject({type: 'redo'})
   })
 
@@ -43,7 +43,7 @@ describe('ListPageComponent', () => {
       done()
     }
 
-    mySearchInput.bindings.myOnChange({value: 'search value changed'})
+    searchInput.bindings.onChange('search value changed')
     scope.$digest()
   })
 

@@ -5,6 +5,7 @@
 
 .my-list-page__search-action {
     flex-grow: 1;
+    padding: 10px;
 }
 
 @media (min-width: 1280px) {

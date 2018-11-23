@@ -8,7 +8,6 @@ import {installMediaBreakpointActionDispatcher} from './store/common/media-break
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
 import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
-import {SearchInput, SearchInputComponent} from './shared/component/search-input/search-input.component'
 import {FeedListComponent} from './feed/feed-list.component'
 import {LoginComponent, LoginEmailInput, LoginPasswordInput} from './login/login.component'
 import {SubscribeComponent, SubscribeOriginInput} from './subscription/subscribe/subscribe.component'
@@ -37,7 +36,17 @@ import {
   AutoCompleteInputComponent,
   AutocompleteSuggestionsComponent
 } from './shared/component/autocomplete-input'
-import {AutocompleteItemText, Button, Chips, FeedFetchErrors, Icon, IconButton, Navigation, TimeAgo} from './components'
+import {
+  AutocompleteItemText,
+  Button,
+  Chips,
+  FeedFetchErrors,
+  Icon,
+  IconButton,
+  Navigation,
+  SearchInput,
+  TimeAgo
+} from './components'
 import {ContainerComponentBridge} from './containers'
 
 import './config'
@@ -79,7 +88,6 @@ angular
 
   .component('myButtonGroup', ButtonGroupComponent)
   .component('myButton', ButtonComponent)
-  .component('mySearchInput', SearchInputComponent)
   .component('myToast', ToastComponent)
   .component('myAutoScroll', AutoScrollComponent)
   .component('myListPage', ListPageComponent)

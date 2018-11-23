@@ -7,6 +7,8 @@ class controller {
   constructor($ngRedux) {
     'ngInject'
     this.$ngRedux = $ngRedux
+
+    this.onSearchChange = this.onSearchChange.bind(this)
   }
 
   $onInit() {
@@ -32,6 +34,13 @@ class controller {
     return {
       type: 'redo',
       onClick: this.myOnRefresh
+    }
+  }
+
+  get searchInputProps() {
+    return {
+      value: this.router.query.q,
+      onChange: this.onSearchChange
     }
   }
 }
