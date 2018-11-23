@@ -1,5 +1,5 @@
 import angular from 'angular'
-import {SettingsContainer} from './containers'
+import {MaintenanceContainer, SettingsContainer} from './containers'
 
 /**
  * part of AngularJS exit strategy
@@ -100,11 +100,7 @@ angular.module('common.config', ['ui.router'])
       })
       .state('admin.overview', {
         url: '/overview',
-        views: {
-          content: {
-            template: '<my-maintenance></my-maintenance>'
-          }
-        }
+        views: containerComponent(MaintenanceContainer)
       })
       .state('admin.feed', {
         url: '/feed?q',

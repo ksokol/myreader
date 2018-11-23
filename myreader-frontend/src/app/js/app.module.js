@@ -12,9 +12,6 @@ import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component
 import {SearchInput, SearchInputComponent} from './shared/component/search-input/search-input.component'
 import {FeedListComponent} from './feed/feed-list.component'
 import {LoginComponent, LoginEmailInput, LoginPasswordInput} from './login/login.component'
-import {AboutComponent} from './maintenance/about/about.component'
-import {MaintenanceActionsComponent} from './maintenance/maintenance-actions/maintenance-actions.component'
-import {MaintenanceComponent} from './maintenance/maintenance.component'
 import {SubscribeComponent, SubscribeOriginInput} from './subscription/subscribe/subscribe.component'
 import {SubscriptionExclusionComponent} from './subscription/subscription-exclusion/subscription-exclusion.component'
 import {
@@ -41,17 +38,7 @@ import {
   AutoCompleteInputComponent,
   AutocompleteSuggestionsComponent
 } from './shared/component/autocomplete-input'
-import {
-  AutocompleteItemText,
-  Button,
-  Chips,
-  Icon,
-  IconButton,
-  Navigation,
-  Settings,
-  SubscriptionNavigationItem,
-  TimeAgo
-} from './components'
+import {AutocompleteItemText, Button, Chips, Icon, IconButton, Navigation, TimeAgo} from './components'
 import {ContainerComponentBridge} from './containers'
 
 import './config'
@@ -76,17 +63,12 @@ angular
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
   .value('FeedFetchErrorLoadMore', FeedFetchErrorLoadMore)
-  .value('SubscriptionNavigationItem', SubscriptionNavigationItem)
   .value('Navigation', Navigation)
-  .value('Settings', Settings)
 
   .component('myFeedFetchError', FeedFetchErrorComponent)
   .component('myFeed', FeedComponent)
   .component('myFeedList', FeedListComponent)
   .component('myLogin', LoginComponent)
-  .component('myAbout', AboutComponent)
-  .component('myMaintenanceActions', MaintenanceActionsComponent)
-  .component('myMaintenance', MaintenanceComponent)
   .component('mySubscribe', SubscribeComponent)
   .component('mySubscriptionExclusion', SubscriptionExclusionComponent)
   .component('mySubscription', SubscriptionComponent)
