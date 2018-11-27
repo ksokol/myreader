@@ -1,6 +1,7 @@
 import template from './app.component.html'
 import './app.component.css'
 import {mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from './store'
+import {ToastContainer} from './containers'
 
 class controller {
 
@@ -35,6 +36,12 @@ class controller {
       type: 'bars',
       onClick: this.toggleSidenav,
       inverse: true
+    }
+  }
+
+  get toastProps() {
+    return {
+      component: () => ToastContainer
     }
   }
 }

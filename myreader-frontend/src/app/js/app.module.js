@@ -17,7 +17,6 @@ import {
   SubscriptionTitleInput,
   SubscriptionUrlInput
 } from './subscription/subscription.component'
-import {ToastComponent} from './shared/component/toast/toast.component'
 import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
 import createApplicationStore from './store/bootstrap'
 import {ListPageComponent} from './shared/component/list-page/list-page.component'
@@ -88,7 +87,6 @@ angular
 
   .component('myButtonGroup', ButtonGroupComponent)
   .component('myButton', ButtonComponent)
-  .component('myToast', ToastComponent)
   .component('myAutoScroll', AutoScrollComponent)
   .component('myListPage', ListPageComponent)
   .component('myHotkeys', HotkeysComponent)

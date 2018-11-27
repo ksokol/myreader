@@ -6,10 +6,6 @@ class Page {
     this.el = el
   }
 
-  get toast() {
-    return this.el.find('my-toast')[0]
-  }
-
   get backdrop() {
     return this.el.find('my-backdrop')[0]
   }
@@ -38,7 +34,14 @@ describe('src/app/js/app.component.spec.js', () => {
 
   beforeEach(() => {
     menuButton = reactComponent('IconButton')
-    angular.mock.module('myreader', mockNgRedux(), componentMock('myToast'), componentMock('myBackdrop'), componentMock('myNavigation'), menuButton)
+    angular.mock.module(
+      'myreader',
+      mockNgRedux(),
+      reactComponent('ContainerComponentBridge'),
+      componentMock('myBackdrop'),
+      componentMock('myNavigation'),
+      menuButton
+    )
   })
 
   beforeEach(inject(($rootScope, $compile, $ngRedux) => {
@@ -51,10 +54,6 @@ describe('src/app/js/app.component.spec.js', () => {
 
     page = new Page(element)
   }))
-
-  it('should include toast component', () => {
-    expect(page.toast).toBeDefined()
-  })
 
   it('should include backdrop component', () => {
     expect(page.backdrop).toBeDefined()

@@ -1,4 +1,4 @@
-.my-notification {
+.my-toast {
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -8,7 +8,7 @@
 }
 
 @media only screen and (max-width: 1280px) {
-    .my-notification {
+    .my-toast {
         margin-left: auto;
         margin-right: auto;
         left: 0;
@@ -18,7 +18,7 @@
     }
 }
 
-.my-notification__item {
+.my-toast__item {
     padding: 12px 20px;
     color: #fff;
     display: inline-block;
@@ -29,6 +29,6 @@
     cursor: pointer;
 }
 
-.my-notification__item--error {
+.my-toast__item--error {
     background-color: #ff7373;
 }

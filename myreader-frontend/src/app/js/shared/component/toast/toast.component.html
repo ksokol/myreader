@@ -1,8 +1,0 @@
-<div class="my-notification">
-    <div class="my-notification__item"
-         ng-class="{'my-notification__item--error': notification.type === 'error'}"
-         ng-click="$ctrl.removeNotification(notification)"
-         ng-repeat="notification in $ctrl._notifications">
-        {{notification.text}}
-    </div>
-</div>
