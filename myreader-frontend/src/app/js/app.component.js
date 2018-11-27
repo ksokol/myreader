@@ -1,7 +1,7 @@
 import template from './app.component.html'
 import './app.component.css'
 import {mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from './store'
-import {ToastContainer} from './containers'
+import {NavigationContainer, ToastContainer} from './containers'
 
 class controller {
 
@@ -42,6 +42,12 @@ class controller {
   get toastProps() {
     return {
       component: () => ToastContainer
+    }
+  }
+
+  get navigationProps() {
+    return {
+      component: () => NavigationContainer
     }
   }
 }

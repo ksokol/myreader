@@ -7,7 +7,10 @@
     </header>
 
     <nav class="app__nav" ng-class="{'app__nav--open': $ctrl.sidenavSlideIn, 'app__nav--animate': !$ctrl.isDesktop}">
-        <my-navigation ng-click="$ctrl.toggleSidenav()"></my-navigation>
+        <react-component name="ContainerComponentBridge"
+                         props="$ctrl.navigationProps"
+                         ng-click="$ctrl.toggleSidenav()">
+        </react-component>
     </nav>
 
     <main class="app__main" ui-view="content"></main>

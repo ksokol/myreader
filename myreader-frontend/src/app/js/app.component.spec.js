@@ -39,7 +39,7 @@ describe('src/app/js/app.component.spec.js', () => {
       mockNgRedux(),
       reactComponent('ContainerComponentBridge'),
       componentMock('myBackdrop'),
-      componentMock('myNavigation'),
+      reactComponent('Navigation'),
       menuButton
     )
   })

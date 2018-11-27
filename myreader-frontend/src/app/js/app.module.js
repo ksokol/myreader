@@ -25,7 +25,6 @@ import {SubscriptionListComponent} from './subscription/subscription-list.compon
 import {HotkeysComponent} from './shared/component/hotkeys/hotkeys.component'
 import {FeedStreamComponent} from './feed-stream/feed-stream.component'
 import {AppComponent} from './app.component'
-import {NavigationComponent} from './navigation/navigation.component'
 import createRouterMiddleware from './store/middleware/router'
 import uiRouterAdapter from './shared/router/uiRouterAdapter'
 import uiRouterStartTransitionHandler from './shared/router/uiRouterStartTransitionHandler'
@@ -42,7 +41,6 @@ import {
   FeedFetchErrors,
   Icon,
   IconButton,
-  Navigation,
   SearchInput,
   TimeAgo
 } from './components'
@@ -70,7 +68,6 @@ angular
   .value('FeedUrlInput', FeedUrlInput)
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
-  .value('Navigation', Navigation)
 
   .component('myFeed', FeedComponent)
   .component('myFeedList', FeedListComponent)
@@ -82,7 +79,6 @@ angular
   .component('mySubscriptionList', SubscriptionListComponent)
   .component('myFeedStream', FeedStreamComponent)
   .component('myApp', AppComponent)
-  .component('myNavigation', NavigationComponent)
   .component('myBackdrop', BackdropComponent)
 
   .component('myButtonGroup', ButtonGroupComponent)
