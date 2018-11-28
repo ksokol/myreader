@@ -1,6 +1,6 @@
 import {
+  filteredBySearchSubscriptionsSelector,
   filteredByUnseenSubscriptionsSelector,
-  getSubscriptions,
   subscriptionByUuidSelector,
   subscriptionEditFormSelector,
   subscriptionExclusionPatternsSelector,
@@ -16,8 +16,8 @@ describe('subscription selector', () => {
   const subscriptions = () => {
     return {
       subscriptions: [
-        {uuid: '1', unseen: 1, feedTag: {id: undefined, name: undefined, color: undefined, links: []}},
-        {uuid: '2', unseen: 0, feedTag: {id: undefined, name: undefined, color: undefined, links: []}}
+        {uuid: '1', title: 'title1', unseen: 1, feedTag: {id: undefined, name: undefined, color: undefined, links: []}},
+        {uuid: '2', title: 'title2', unseen: 0, feedTag: {id: undefined, name: undefined, color: undefined, links: []}}
       ]
     }
   }
@@ -30,12 +30,42 @@ describe('subscription selector', () => {
     }
   })
 
-  it('should return subscriptions', () => {
-    expect(getSubscriptions(state)).toEqual(subscriptions())
+  it('should return two subscriptions when query is undefined', () => {
+    expect(filteredBySearchSubscriptionsSelector(state)).toEqual(subscriptions())
   })
 
-  it('selector getSubscriptions should return copy of subscriptions', () => {
-    const actualSubscriptions = getSubscriptions(state).subscriptions
+  it('should return first subscription matching query "title1"', () => {
+    state.router.query.q = 'title1'
+
+    expect(filteredBySearchSubscriptionsSelector(state).subscriptions.map(it => it.uuid)).toEqual(['1'])
+  })
+
+  it('should return second subscription matching query "title2"', () => {
+    state.router.query.q = 'title2'
+
+    expect(filteredBySearchSubscriptionsSelector(state).subscriptions.map(it => it.uuid)).toEqual(['2'])
+  })
+
+  it('should return first subscription matching query "TITLE1"', () => {
+    state.router.query.q = 'TITLE1'
+
+    expect(filteredBySearchSubscriptionsSelector(state).subscriptions.map(it => it.uuid)).toEqual(['1'])
+  })
+
+  it('should return two subscriptions matching query "titl"', () => {
+    state.router.query.q = 'titl'
+
+    expect(filteredBySearchSubscriptionsSelector(state)).toEqual(subscriptions())
+  })
+
+  it('should return no subscriptions for query "other"', () => {
+    state.router.query.q = 'other'
+
+    expect(filteredBySearchSubscriptionsSelector(state).subscriptions).toEqual([])
+  })
+
+  it('selector filteredBySearchSubscriptionsSelector should return copy of subscriptions', () => {
+    const actualSubscriptions = filteredBySearchSubscriptionsSelector(state).subscriptions
     actualSubscriptions[0].key = 'value'
 
     expect(state.subscription).toContainObject(subscriptions())
@@ -44,7 +74,7 @@ describe('subscription selector', () => {
   it('should return subscriptions with unseen greater than zero when showUnseenEntries is set to true', () => {
     expect(filteredByUnseenSubscriptionsSelector(state)).toEqual({
       subscriptions: [
-        {uuid: '1', unseen: 1, feedTag: {uuid: undefined, name: undefined, color: undefined, links: []}}
+        {uuid: '1', title: 'title1', unseen: 1, feedTag: {uuid: undefined, name: undefined, color: undefined, links: []}}
       ]
     })
   })

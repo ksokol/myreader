@@ -6,11 +6,16 @@ const routerQuerySelector = state => state.router.query
 const subscriptionsSelector = state => state.subscription.subscriptions
 const exclusionsSelector = state => state.subscription.exclusions
 
-export const getSubscriptions = createSelector(
+export const filteredBySearchSubscriptionsSelector = createSelector(
   subscriptionsSelector,
-  subscriptions => {
+  routerQuerySelector,
+  (subscriptions, {q}) => {
     return {
-      subscriptions: subscriptions.map(it => cloneObject(it))
+      subscriptions: q
+        ? subscriptions
+          .filter(({title}) => title.toLowerCase().indexOf(q.toLowerCase()) !== -1)
+          .map(it => cloneObject(it))
+        : subscriptions
     }
   }
 )

@@ -1,13 +1,6 @@
 <my-list-page my-on-search="$ctrl.onSearch(params)"
               my-on-refresh="$ctrl.refresh()">
     <my-list-panel>
-        <div class="subscription-list__item"
-             ng-click="$ctrl.navigateTo(subscription)"
-             ng-repeat="subscription in $ctrl.subscriptions | filter: $ctrl.router.query.q">
-            <h3>{{subscription.title}}</h3>
-            <span>
-                <react-component name="TimeAgo" props="$ctrl.createdAtProp(subscription)"></react-component>
-            </span>
-        </div>
+        <react-component name="ContainerComponentBridge" props="$ctrl.bridgeProps"></react-component>
     </my-list-panel>
 </my-list-page>
