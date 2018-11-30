@@ -1,5 +1,5 @@
 import angular from 'angular'
-import {MaintenanceContainer, SettingsContainer, SubscriptionListPageContainer} from './containers'
+import {MaintenanceContainer, SettingsContainer, SubscriptionListPageContainer, FeedListPageContainer} from './containers'
 
 /**
  * part of AngularJS exit strategy
@@ -100,11 +100,7 @@ angular.module('common.config', ['ui.router'])
       })
       .state('admin.feed', {
         url: '/feed?q',
-        views: {
-          content: {
-            template: '<my-feed-list></my-feed-list>'
-          }
-        }
+        views: containerComponent(FeedListPageContainer)
       })
       .state('admin.feed-detail', {
         url: '/feed/:uuid',

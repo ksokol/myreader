@@ -8,7 +8,6 @@ import {installMediaBreakpointActionDispatcher} from './store/common/media-break
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
 import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
-import {FeedListComponent} from './feed/feed-list.component'
 import {LoginComponent, LoginEmailInput, LoginPasswordInput} from './login/login.component'
 import {SubscribeComponent, SubscribeOriginInput} from './subscription/subscribe/subscribe.component'
 import {SubscriptionExclusionComponent} from './subscription/subscription-exclusion/subscription-exclusion.component'
@@ -33,16 +32,7 @@ import {
   AutoCompleteInputComponent,
   AutocompleteSuggestionsComponent
 } from './shared/component/autocomplete-input'
-import {
-  AutocompleteItemText,
-  Button,
-  Chips,
-  FeedFetchErrors,
-  Icon,
-  IconButton,
-  SearchInput,
-  TimeAgo
-} from './components'
+import {AutocompleteItemText, Button, Chips, FeedFetchErrors, Icon, IconButton, SearchInput} from './components'
 import {ContainerComponentBridge} from './containers'
 
 import './config'
@@ -54,7 +44,6 @@ angular
   .value('IconButton', IconButton)
   .value('Chips', Chips)
   .value('Button', Button)
-  .value('TimeAgo', TimeAgo)
   .value('AutocompleteItemText', AutocompleteItemText)
   .value('FeedFetchErrors', FeedFetchErrors)
 
@@ -69,7 +58,6 @@ angular
   .value('AutocompleteInput', AutocompleteInput)
 
   .component('myFeed', FeedComponent)
-  .component('myFeedList', FeedListComponent)
   .component('myLogin', LoginComponent)
   .component('mySubscribe', SubscribeComponent)
   .component('mySubscriptionExclusion', SubscriptionExclusionComponent)

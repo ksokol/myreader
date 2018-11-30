@@ -1,4 +1,9 @@
-import {applicationInfoSelector, feedFetchFailuresSelector, feedSelector, feedsSelector} from '../../store'
+import {
+  applicationInfoSelector,
+  feedFetchFailuresSelector,
+  feedSelector,
+  filteredBySearchFeedsSelector
+} from '../../store'
 
 describe('src/app/js/store/admin/selectors.spec.js', () => {
 
@@ -8,10 +13,13 @@ describe('src/app/js/store/admin/selectors.spec.js', () => {
     state = {
       admin: {
         applicationInfo: {a: 'b'},
-        feeds: [{uuid: 'uuid1'}, {uuid: 'uuid2'}],
+        feeds: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}],
         selectedFeed: {uuid: 'expected uuid', a: 'b', c: 'd'},
         fetchFailures: {failures: [{a: 'b', c: 'd'}]},
         fetchFailuresLoading: true
+      },
+      router: {
+        query: {}
       }
     }
   })
@@ -45,10 +53,38 @@ describe('src/app/js/store/admin/selectors.spec.js', () => {
     expect(feedFetchFailuresSelector(state).fetchFailuresLoading).toEqual(true)
   })
 
-  it('feedsSelector should return deep copy of feeds', () => {
-    const actual = feedsSelector(state)
+  it(' should return two feeds when query is undefined', () => {
+    expect(filteredBySearchFeedsSelector(state).feeds.map(it => it.uuid)).toEqual(['1', '2'])
+  })
+
+  it('filteredBySearchFeedsSelector should return first feed matching query "title1"', () => {
+    state.router.query.q = 'title1'
+
+    expect(filteredBySearchFeedsSelector(state).feeds.map(it => it.uuid)).toEqual(['1'])
+  })
+
+  it('filteredBySearchFeedsSelector should return second feed matching query "title2"', () => {
+    state.router.query.q = 'title2'
+
+    expect(filteredBySearchFeedsSelector(state).feeds.map(it => it.uuid)).toEqual(['2'])
+  })
+
+  it('filteredBySearchFeedsSelector should return first feed matching query "TITLE1"', () => {
+    state.router.query.q = 'TITLE1'
+
+    expect(filteredBySearchFeedsSelector(state).feeds.map(it => it.uuid)).toEqual(['1'])
+  })
+
+  it('filteredBySearchFeedsSelector should return two feeds matching query "titl"', () => {
+    state.router.query.q = 'titl'
+
+    expect(filteredBySearchFeedsSelector(state).feeds.map(it => it.uuid)).toEqual(['1', '2'])
+  })
+
+  it('filteredBySearchFeedsSelector should return deep copy of feeds', () => {
+    const actual = filteredBySearchFeedsSelector(state).feeds
     state.admin.feeds[0].uuid = 'x'
 
-    expect(actual).toEqual({feeds: [{uuid: 'uuid1'}, {uuid: 'uuid2'}]})
+    expect(actual.map(it => it.uuid)).toEqual(['1', '2'])
   })
 })
