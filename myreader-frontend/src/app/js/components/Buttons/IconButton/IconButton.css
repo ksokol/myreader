@@ -10,10 +10,3 @@
 .my-icon-button:disabled {
     cursor: default;
 }
-
-@media (min-width: 1280px) {
-    .my-icon-button {
-        height: inherit;
-        width: inherit;
-    }
-}

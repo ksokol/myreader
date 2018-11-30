@@ -21,7 +21,6 @@ import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.co
 import createApplicationStore from './store/bootstrap'
 import {ListPageComponent} from './shared/component/list-page/list-page.component'
 import {BookmarkComponent} from './bookmark/bookmark.component'
-import {SubscriptionListComponent} from './subscription/subscription-list.component'
 import {HotkeysComponent} from './shared/component/hotkeys/hotkeys.component'
 import {FeedStreamComponent} from './feed-stream/feed-stream.component'
 import {AppComponent} from './app.component'
@@ -76,7 +75,6 @@ angular
   .component('mySubscriptionExclusion', SubscriptionExclusionComponent)
   .component('mySubscription', SubscriptionComponent)
   .component('myBookmark', BookmarkComponent)
-  .component('mySubscriptionList', SubscriptionListComponent)
   .component('myFeedStream', FeedStreamComponent)
   .component('myApp', AppComponent)
   .component('myBackdrop', BackdropComponent)

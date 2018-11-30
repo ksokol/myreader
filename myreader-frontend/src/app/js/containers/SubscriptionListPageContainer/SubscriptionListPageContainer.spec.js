@@ -1,21 +1,20 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {Provider} from 'react-redux'
-import {SubscriptionList} from '../../components'
 import {createMockStore} from '../../shared/test-utils'
-import SubscriptionListContainer from './SubscriptionListContainer'
+import SubscriptionListPageContainer from './SubscriptionListPageContainer'
 
-describe('SubscriptionListContainer', () => {
+describe('SubscriptionListPageContainer', () => {
 
   let store
 
   const createContainer = () => {
     const wrapper = mount(
       <Provider store={store}>
-        <SubscriptionListContainer />
+        <SubscriptionListPageContainer />
       </Provider>
     )
-    return wrapper.find(SubscriptionList)
+    return wrapper.find(SubscriptionListPageContainer).children().first()
   }
 
   beforeEach(() => {
@@ -36,9 +35,14 @@ describe('SubscriptionListContainer', () => {
   })
 
   it('should initialize component with given props', () => {
-    expect(createContainer().prop('subscriptions')).toEqual([
-      {uuid: '2', title: 'title2', createdAt: '2017-11-30'}
-    ])
+    expect(createContainer().props()).toContainObject({
+      subscriptions: [{uuid: '2', title: 'title2', createdAt: '2017-11-30'}],
+      router: {
+        query: {
+          q: 'title2'
+        }
+      }
+    })
   })
 
   it('should dispatch action when prop function "navigateTo" triggered', () => {
@@ -49,5 +53,21 @@ describe('SubscriptionListContainer', () => {
       route: ['app', 'subscription'],
       query: {uuid: '2'}
     })
+  })
+
+  it('should dispatch action when prop function "onSearchChange" triggered', () => {
+    createContainer().props().onSearchChange({q: 'b'})
+
+    expect(store.getActions()[0]).toContainObject({
+      type: 'ROUTE_CHANGED',
+      route: ['app', 'subscriptions'],
+      query: {q: 'b'}
+    })
+  })
+
+  it('should dispatch action when prop function "onRefresh" triggered', () => {
+    createContainer().props().onRefresh()
+
+    expect(store.getActionTypes()).toContainObject(['GET_SUBSCRIPTIONS'])
   })
 })

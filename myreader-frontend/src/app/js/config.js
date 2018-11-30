@@ -1,5 +1,5 @@
 import angular from 'angular'
-import {MaintenanceContainer, SettingsContainer} from './containers'
+import {MaintenanceContainer, SettingsContainer, SubscriptionListPageContainer} from './containers'
 
 /**
  * part of AngularJS exit strategy
@@ -76,11 +76,7 @@ angular.module('common.config', ['ui.router'])
       })
       .state('app.subscriptions', {
         url: '/subscriptions?q',
-        views: {
-          content: {
-            template: '<my-subscription-list></my-subscription-list>'
-          }
-        }
+        views: containerComponent(SubscriptionListPageContainer)
       })
       .state('app.subscription-add', {
         url: '/subscriptions/add',

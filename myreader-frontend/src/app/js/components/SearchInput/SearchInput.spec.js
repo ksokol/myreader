@@ -11,8 +11,13 @@ describe('SearchInput', () => {
 
   beforeEach(() => {
     props = {
-      onChange: jest.fn()
+      onChange: jest.fn(),
+      className: 'expected-class'
     }
+  })
+
+  it('should pass expected class to host node', () => {
+    expect(createComponent().first().props()).toContainObject({className: 'expected-class'})
   })
 
   it('should set default value', () => {

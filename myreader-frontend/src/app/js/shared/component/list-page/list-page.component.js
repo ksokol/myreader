@@ -45,6 +45,9 @@ class controller {
   }
 }
 
+/**
+ * @deprecated
+ */
 export const ListPageComponent = {
   template, controller,
   transclude: {
