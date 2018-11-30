@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {ListPage, SubscriptionList} from '../../components'
+import {ListPage} from '../../components'
+import SubscriptionList from './SubscriptionList/SubscriptionList'
 
 const SubscriptionListPage = props =>
   <ListPage router={props.router}

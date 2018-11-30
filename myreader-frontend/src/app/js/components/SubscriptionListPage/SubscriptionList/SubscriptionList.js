@@ -1,7 +1,7 @@
 import './SubscriptionList.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {TimeAgo} from '../../components'
+import {TimeAgo} from '../../../components'
 
 const SubscriptionList = props => {
   return (
