@@ -30,43 +30,43 @@ describe('subscription selector', () => {
     }
   })
 
-  it('should return two subscriptions when query is undefined', () => {
+  it('filteredBySearchSubscriptionsSelector should return two subscriptions when query is undefined', () => {
     expect(filteredBySearchSubscriptionsSelector(state)).toEqual(subscriptions())
   })
 
-  it('should return first subscription matching query "title1"', () => {
+  it('filteredBySearchSubscriptionsSelector should return first subscription matching query "title1"', () => {
     state.router.query.q = 'title1'
 
     expect(filteredBySearchSubscriptionsSelector(state).subscriptions.map(it => it.uuid)).toEqual(['1'])
   })
 
-  it('should return second subscription matching query "title2"', () => {
+  it('filteredBySearchSubscriptionsSelector should return second subscription matching query "title2"', () => {
     state.router.query.q = 'title2'
 
     expect(filteredBySearchSubscriptionsSelector(state).subscriptions.map(it => it.uuid)).toEqual(['2'])
   })
 
-  it('should return first subscription matching query "TITLE1"', () => {
+  it('filteredBySearchSubscriptionsSelector should return first subscription matching query "TITLE1"', () => {
     state.router.query.q = 'TITLE1'
 
     expect(filteredBySearchSubscriptionsSelector(state).subscriptions.map(it => it.uuid)).toEqual(['1'])
   })
 
-  it('should return two subscriptions matching query "titl"', () => {
+  it('filteredBySearchSubscriptionsSelector should return two subscriptions matching query "titl"', () => {
     state.router.query.q = 'titl'
 
     expect(filteredBySearchSubscriptionsSelector(state)).toEqual(subscriptions())
   })
 
-  it('should return no subscriptions for query "other"', () => {
+  it('filteredBySearchSubscriptionsSelector should return no subscriptions for query "other"', () => {
     state.router.query.q = 'other'
 
     expect(filteredBySearchSubscriptionsSelector(state).subscriptions).toEqual([])
   })
 
-  it('selector filteredBySearchSubscriptionsSelector should return copy of subscriptions', () => {
+  it('filteredBySearchSubscriptionsSelector should return copy of subscriptions', () => {
     const actualSubscriptions = filteredBySearchSubscriptionsSelector(state).subscriptions
-    actualSubscriptions[0].key = 'value'
+    actualSubscriptions[0].title = 'x'
 
     expect(state.subscription).toContainObject(subscriptions())
   })

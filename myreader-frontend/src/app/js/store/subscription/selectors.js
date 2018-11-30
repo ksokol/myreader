@@ -14,8 +14,8 @@ export const filteredBySearchSubscriptionsSelector = createSelector(
       subscriptions: q
         ? subscriptions
           .filter(({title}) => title.toLowerCase().indexOf(q.toLowerCase()) !== -1)
-          .map(it => cloneObject(it))
-        : subscriptions
+          .map(cloneObject)
+        : subscriptions.map(cloneObject)
     }
   }
 )
