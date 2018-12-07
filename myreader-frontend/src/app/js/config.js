@@ -1,5 +1,11 @@
 import angular from 'angular'
-import {MaintenanceContainer, SettingsContainer, SubscriptionListPageContainer, FeedListPageContainer} from './containers'
+import {
+  BookmarkListPageContainer,
+  FeedListPageContainer,
+  MaintenanceContainer,
+  SettingsContainer,
+  SubscriptionListPageContainer
+} from './containers'
 
 /**
  * part of AngularJS exit strategy
@@ -68,11 +74,7 @@ angular.module('common.config', ['ui.router'])
         params: {
           entryTagEqual: null
         },
-        views: {
-          content: {
-            template: '<my-bookmark></my-bookmark>'
-          }
-        }
+        views: containerComponent(BookmarkListPageContainer)
       })
       .state('app.subscriptions', {
         url: '/subscriptions?q',

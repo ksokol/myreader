@@ -1,10 +1,12 @@
 import './ListPage.css'
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 import {SearchInput, IconButton} from '../../components'
 
 const ListPage = props => {
   const {
+    className,
     onSearchChange,
     onRefresh,
     actionPanel,
@@ -13,7 +15,7 @@ const ListPage = props => {
   } = props
 
   return (
-    <div className='my-list-page'>
+    <div className={classNames('my-list-page', className)}>
       <div className='my-list-page__action-panel'>
         <SearchInput className='my-list-page__search-input'
                      onChange={q => onSearchChange({...query, q})}
@@ -32,6 +34,7 @@ const ListPage = props => {
 }
 
 ListPage.propTypes = {
+  className: PropTypes.string,
   router: PropTypes.shape({
     query: PropTypes.shape({
       q: PropTypes.string

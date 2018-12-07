@@ -1,10 +1,11 @@
 import './Chips.css'
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 import Chip from './Chip'
-import {Input, Hotkeys} from '..'
+import {Hotkeys, Input} from '..'
 
-class Chips extends Component {
+class Chips extends React.Component {
 
   constructor(props) {
     super(props)
@@ -33,6 +34,7 @@ class Chips extends Component {
 
   render() {
     const {
+      className,
       keyFn,
       values,
       placeholder,
@@ -45,7 +47,7 @@ class Chips extends Component {
     } = this.props
 
     return (
-      <div className="my-chips">
+      <div className={classNames('my-chips', className)}>
         <div>
           {values.map(value =>
             <Chip key={keyFn(value)}
@@ -62,7 +64,7 @@ class Chips extends Component {
 
         {onAdd &&
           <Hotkeys onKeys={this.onKeys}>
-              <Input name="chip-input"
+              <Input name='chip-input'
                      placeholder={placeholder}
                      value={this.state.inputValue}
                      disabled={disabled}
@@ -75,6 +77,7 @@ class Chips extends Component {
 }
 
 Chips.propTypes = {
+  className: PropTypes.string,
   keyFn: PropTypes.func.isRequired,
   values: PropTypes.arrayOf(PropTypes.any),
   selected: PropTypes.string,
