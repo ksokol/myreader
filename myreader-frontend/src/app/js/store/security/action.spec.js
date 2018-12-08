@@ -95,14 +95,26 @@ describe('security actions', () => {
       expect(store.getActions()[0].body.toString()).toEqual('username=a&password=b')
     })
 
-    it('should dispatch action defined in success property', () => {
+    it('should dispatch action defined in success property (ROLE_USER)', () => {
       store.dispatch(tryLogin({}))
       const success = store.getActions()[0].success
       store.clearActions()
       store.dispatch(success(null, {'x-my-authorities': 'ROLE_USER'}))
 
-      expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE'])
+      expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
       expect(store.getActions()[0]).toContainActionData({authorized: true, role: 'ROLE_USER'})
+      expect(store.getActions()[1]).toContainActionData({route: ['app', 'entries']})
+    })
+
+    it('should dispatch action defined in success property (ROLE_ADMIN)', () => {
+      store.dispatch(tryLogin({}))
+      const success = store.getActions()[0].success
+      store.clearActions()
+      store.dispatch(success(null, {'x-my-authorities': 'ROLE_ADMIN'}))
+
+      expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
+      expect(store.getActions()[0]).toContainActionData({authorized: true, role: 'ROLE_ADMIN'})
+      expect(store.getActions()[1]).toContainActionData({route: ['admin', 'overview']})
     })
   })
 })

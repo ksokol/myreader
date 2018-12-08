@@ -1,5 +1,7 @@
 import {FEEDS, SUBSCRIPTION_ENTRIES} from '../../constants'
 import {
+  adminPermissionSelector,
+  authorizedSelector,
   clearSubscriptionEditForm,
   entryClear,
   feedClear,
@@ -12,13 +14,21 @@ import {
   fetchFeeds,
   fetchSubscriptionExclusionPatterns,
   fetchSubscriptions,
-  loadSubscriptionIntoEditForm
+  loadSubscriptionIntoEditForm,
+  logout,
+  routeChange
 } from '../../store'
-import {logout} from '../security'
 
 export const routeConfiguration = {
   logout: {
     resolve: logout
+  },
+  login: {
+    redirect: ({getState}) => {
+      if (authorizedSelector(getState())) {
+        return routeChange(adminPermissionSelector(getState()) ? ['admin', 'overview'] : ['app', 'entries'])
+      }
+    }
   },
   app: {
     before: fetchSubscriptions,

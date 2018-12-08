@@ -1,5 +1,5 @@
 import './login.component.css'
-import {adminPermissionSelector, authorizedSelector, routeChange, tryLogin} from '../store'
+import {tryLogin} from '../store'
 
 class controller {
 
@@ -8,29 +8,6 @@ class controller {
     this.$ngRedux = $ngRedux
 
     this.onClick = this.onClick.bind(this)
-  }
-
-  $onInit() {
-    this.unsubscribe = this.$ngRedux.subscribe(() => this.handleStateChange(this.$ngRedux.getState()))
-    this.handleStateChange(this.$ngRedux.getState())
-  }
-
-  $onDestroy() {
-    this.unsubscribe()
-  }
-
-  handleStateChange(state) {
-    const authorized = authorizedSelector(state)
-    const isAdmin = adminPermissionSelector(state)
-
-    if (authorized) {
-      this.unsubscribe()
-      if (isAdmin) {
-        this.$ngRedux.dispatch(routeChange(['admin', 'overview']))
-      } else {
-        this.$ngRedux.dispatch(routeChange(['app', 'entries']))
-      }
-    }
   }
 
   onClick(loginForm) {
