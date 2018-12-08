@@ -1,28 +1,13 @@
-import template from './login.component.html'
 import './login.component.css'
 import {adminPermissionSelector, authorizedSelector, routeChange, tryLogin} from '../store'
-import React from 'react'
-import {Input} from '../components'
-
-/**
- * @deprecated
- */
-export const LoginEmailInput = Input
-
-/**
- * @deprecated
- */
-export const LoginPasswordInput = Input
 
 class controller {
 
   constructor($ngRedux) {
     'ngInject'
     this.$ngRedux = $ngRedux
-    this.loginForm = {
-      username: '',
-      password: ''
-    }
+
+    this.onClick = this.onClick.bind(this)
   }
 
   $onInit() {
@@ -48,42 +33,26 @@ class controller {
     }
   }
 
-  onClick() {
+  onClick(loginForm) {
     this.actionPending = true
     this.loginError = false
-    return this.$ngRedux.dispatch(tryLogin(this.loginForm))
+    this.$ngRedux.dispatch(tryLogin(loginForm))
+      .catch(() => {
+        this.actionPending = false
+        this.loginError = true
+      })
   }
 
-  onError() {
-    this.actionPending = false
-    this.loginError = true
-  }
-
-  get emailProps() {
+  get props() {
     return {
-      type: 'email',
-      name: 'username',
-      label: 'Email',
-      value: this.loginForm.username,
-      autoComplete: 'email',
-      onChange: value => this.loginForm.username = value,
-      disabled: this.actionPending
-    }
-  }
-
-  get passwordProps() {
-    return {
-      type: 'password',
-      name: 'password',
-      label: 'Password',
-      value: this.loginForm.password,
-      autoComplete: 'current-password',
-      onChange: value => this.loginForm.password = value,
-      disabled: this.actionPending
+      onLogin: this.onClick,
+      disabled: this.actionPending,
+      loginError: this.loginError
     }
   }
 }
 
 export const LoginComponent = {
-  template, controller
+  template: '<react-component name="LoginPage" props="$ctrl.props"></react-component>',
+  controller
 }

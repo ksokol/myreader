@@ -8,7 +8,7 @@ import {installMediaBreakpointActionDispatcher} from './store/common/media-break
 import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
 import {ButtonComponent} from './shared/component/button/button.component'
 import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
-import {LoginComponent, LoginEmailInput, LoginPasswordInput} from './login/login.component'
+import {LoginComponent} from './login/login.component'
 import {SubscribeComponent, SubscribeOriginInput} from './subscription/subscribe/subscribe.component'
 import {SubscriptionExclusionComponent} from './subscription/subscription-exclusion/subscription-exclusion.component'
 import {
@@ -31,7 +31,16 @@ import {
   AutoCompleteInputComponent,
   AutocompleteSuggestionsComponent
 } from './shared/component/autocomplete-input'
-import {AutocompleteItemText, Button, Chips, FeedFetchErrors, Icon, IconButton, SearchInput} from './components'
+import {
+  AutocompleteItemText,
+  Button,
+  Chips,
+  FeedFetchErrors,
+  Icon,
+  IconButton,
+  LoginPage,
+  SearchInput
+} from './components'
 import {ContainerComponentBridge} from './containers'
 
 import './config'
@@ -49,12 +58,11 @@ angular
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
   .value('SubscriptionUrlInput', SubscriptionUrlInput)
   .value('SubscribeOriginInput', SubscribeOriginInput)
-  .value('LoginEmailInput', LoginEmailInput)
-  .value('LoginPasswordInput', LoginPasswordInput)
   .value('FeedTitleInput', FeedTitleInput)
   .value('FeedUrlInput', FeedUrlInput)
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
+  .value('LoginPage', LoginPage)
 
   .component('myFeed', FeedComponent)
   .component('myLogin', LoginComponent)

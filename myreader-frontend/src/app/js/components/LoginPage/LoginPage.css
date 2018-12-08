@@ -1,0 +1,16 @@
+.my-login {
+    display: flex;
+    flex-direction: column;
+    margin-top: 100px;
+    width: 300px;
+}
+
+.my-login__message {
+    height: 30px;
+}
+
+.my-login__message > span {
+    display: block;
+    color: rgb(255, 87, 34);
+    text-align: center;
+}

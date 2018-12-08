@@ -3,30 +3,3 @@ my-login {
     justify-content: center;
     width: 100%;
 }
-
-.login {
-    display: flex;
-    flex-direction: column;
-    margin-top: 100px;
-    width: 300px;
-}
-
-.login > * {
-    width: 300px;
-}
-
-.login__message {
-    height: 30px;
-}
-
-.login__message > span {
-    display: block;
-    color: rgb(255, 87, 34);
-    text-align: center;
-}
-
-.login__button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
