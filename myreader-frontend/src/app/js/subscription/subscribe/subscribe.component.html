@@ -1,12 +1,7 @@
 <form class="subscribe-form">
     <react-component name="SubscribeOriginInput" props="$ctrl.props"></react-component>
 
-    <my-button-group class="subscribe-form__buttons">
-        <my-button
-                my-type="primary"
-                my-on-click="$ctrl.onSave()"
-                my-on-success="$ctrl.onSuccessSave(data)"
-                my-on-error="$ctrl.onErrorSave(error)">Save
-        </my-button>
-    </my-button-group>
+    <div class="subscribe-form__buttons">
+        <react-component name="Button" props="$ctrl.saveButtonProps"></react-component>
+    </div>
 </form>
