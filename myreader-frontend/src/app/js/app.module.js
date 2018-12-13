@@ -5,8 +5,6 @@ import 'ngreact'
 
 import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
-import {ButtonGroupComponent} from './shared/component/button-group/button-group.component'
-import {ButtonComponent} from './shared/component/button/button.component'
 import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
 import {LoginComponent} from './login/login.component'
 import {SubscribeComponent, SubscribeOriginInput} from './subscription/subscribe/subscribe.component'
@@ -74,8 +72,6 @@ angular
   .component('myApp', AppComponent)
   .component('myBackdrop', BackdropComponent)
 
-  .component('myButtonGroup', ButtonGroupComponent)
-  .component('myButton', ButtonComponent)
   .component('myAutoScroll', AutoScrollComponent)
   .component('myListPage', ListPageComponent)
   .component('myHotkeys', HotkeysComponent)

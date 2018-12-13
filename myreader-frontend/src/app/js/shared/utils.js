@@ -1,14 +1,10 @@
 import isEqual from 'lodash.isequal'
 
-const isFunction = value => typeof value === 'function'
-
 export const isDefined = value => typeof value !== 'undefined'
 
 export const isString = value => value !== null && typeof value === 'string'
 
 export const isObject = value => value !== null && typeof value === 'object'
-
-export const isPromiseLike = value => !!(isObject(value) && isFunction(value.then) && isFunction(value.catch))
 
 export const isBoolean = value => typeof value === 'boolean'
 

@@ -1,18 +1,8 @@
-export const getNotifications = state => {
-    return {
-        notifications: state.common.notification.notifications.map(it => {return {...it}})
-    }
-}
+export const getNotifications = state => ({
+  notifications: state.common.notification.notifications.map(it => ({...it}))
+})
 
-export const getNextNotificationId = state => {
-    return state.common.notification.nextId
-}
-
-export const getPendingRequests = state => {
-    return {
-        pendingRequests: state.common.pendingRequests
-    }
-}
+export const getNextNotificationId = state => state.common.notification.nextId
 
 export const mediaBreakpointIsDesktopSelector = state => state.common.mediaBreakpoint === 'desktop'
 
