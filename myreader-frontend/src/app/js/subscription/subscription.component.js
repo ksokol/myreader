@@ -27,6 +27,7 @@ class controller {
     'ngInject'
     this.$ngRedux = $ngRedux
 
+    this.onSave = this.onSave.bind(this)
     this.onDelete = this.onDelete.bind(this)
   }
 
@@ -59,18 +60,14 @@ class controller {
   onSave() {
     this.validations = []
     this.pendingAction = true
-    return this.$ngRedux.dispatch(saveSubscription(this.subscription))
-  }
-
-  onSuccessSave() {
-    this.pendingAction = false
-  }
-
-  onErrorSave(error) {
-    if (error.status === 400) {
-      this.validations = error.data.fieldErrors
-    }
-    this.pendingAction = false
+    this.$ngRedux.dispatch(saveSubscription(this.subscription))
+      .then(() => this.pendingAction = false)
+      .catch(error => {
+        if (error.status === 400) {
+          this.validations = error.data.fieldErrors
+        }
+        this.pendingAction = false
+      })
   }
 
   onDelete() {
@@ -103,6 +100,15 @@ class controller {
   get iconProps() {
     return {
       type: 'link'
+    }
+  }
+
+  get saveButtonProps() {
+    return {
+      children: 'Save',
+      primary: true,
+      disabled: this.pendingAction,
+      onClick: this.onSave
     }
   }
 

@@ -25,15 +25,8 @@
 
     <br>
 
-    <my-button-group class="subscription-form__buttons">
-        <my-button
-                my-type="primary"
-                my-disabled="subscriptionForm.$invalid"
-                my-on-click="$ctrl.onSave()"
-                my-on-success="$ctrl.onSuccessSave(data)"
-                my-on-error="$ctrl.onErrorSave(error)">Save
-        </my-button>
-
+    <div class="subscription-form__buttons">
+        <react-component name="Button" props="$ctrl.saveButtonProps"></react-component>
         <react-component name="ConfirmButton" props="$ctrl.deleteButtonProps"></react-component>
-    </my-button-group>
+    </div>
 </form>
