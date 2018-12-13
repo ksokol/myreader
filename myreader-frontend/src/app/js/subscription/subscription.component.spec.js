@@ -2,14 +2,15 @@ import {componentMock, mockNgRedux, reactComponent} from '../shared/test-utils'
 
 describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
-  let scope, element, ngReduxMock, subscription, timeout, myAutocompleteInput, mySubscriptionExclusion, title, url
+  let scope, element, ngReduxMock, subscription, timeout, myAutocompleteInput, mySubscriptionExclusion, title, url, confirmButton
 
   beforeEach(() => {
     title = reactComponent('SubscriptionTitleInput')
     url = reactComponent('SubscriptionUrlInput')
     myAutocompleteInput = componentMock('myAutocompleteInput')
     mySubscriptionExclusion = componentMock('mySubscriptionExclusion')
-    angular.mock.module('myreader', myAutocompleteInput, mySubscriptionExclusion, title, url, mockNgRedux())
+    confirmButton = reactComponent('ConfirmButton')
+    angular.mock.module('myreader', myAutocompleteInput, mySubscriptionExclusion, title, url, confirmButton, mockNgRedux())
   })
 
   beforeEach(inject(($rootScope, $compile, $ngRedux, $timeout) => {
@@ -155,10 +156,8 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     expect(ngReduxMock.getActions()[0]).toContainActionData({notification: {text: 'expected error', type: 'error'}})
   })
 
-  it('should navigate to subscription overview page when remove succeeded', () => {
-    element.querySelectorAll('button')[1].click() //click delete
-    timeout.flush(1000)
-    element.querySelectorAll('button')[1].click() //confirm
+  xit('should navigate to subscription overview page when remove succeeded', () => {
+    confirmButton.bindings.onClick()
 
     expect(ngReduxMock.getActionTypes()).toEqual(['DELETE_SUBSCRIPTION', 'ROUTE_CHANGED'])
     expect(ngReduxMock.getActions()[0].url).toContain('expected uuid')
@@ -166,8 +165,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
   })
 
   it('should disable page elements while ajax call is pending', () => {
-    ngReduxMock.dispatch.mockReturnValueOnce(new Promise(() => {
-    }))
+    ngReduxMock.dispatch.mockReturnValueOnce(new Promise(() => {}))
 
     element.querySelectorAll('button')[0].click()
     scope.$digest()

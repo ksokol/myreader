@@ -9,7 +9,6 @@ import {
   subscriptionExclusionPatternsSelector,
   subscriptionTagsSelector
 } from '../store'
-import React from 'react'
 import {Input, withValidations} from '../components'
 
 /**
@@ -27,6 +26,8 @@ class controller {
   constructor($ngRedux) {
     'ngInject'
     this.$ngRedux = $ngRedux
+
+    this.onDelete = this.onDelete.bind(this)
   }
 
   $onInit() {
@@ -74,11 +75,9 @@ class controller {
 
   onDelete() {
     this.pendingAction = true
-    return this.$ngRedux.dispatch(deleteSubscription(this.subscription.uuid))
-  }
-
-  onSuccessDelete() {
-    this.$ngRedux.dispatch(routeChange(['app', 'subscriptions']))
+    this.$ngRedux.dispatch(deleteSubscription(this.subscription.uuid))
+      .then(() => this.$ngRedux.dispatch(routeChange(['app', 'subscriptions'])))
+      .catch(() => this.pendingAction = false)
   }
 
   get titleProps() {
@@ -104,6 +103,15 @@ class controller {
   get iconProps() {
     return {
       type: 'link'
+    }
+  }
+
+  get deleteButtonProps() {
+    return {
+      children: 'Delete',
+      caution: true,
+      disabled: this.pendingAction,
+      onClick: this.onDelete
     }
   }
 }

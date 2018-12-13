@@ -33,12 +33,7 @@
                 my-on-success="$ctrl.onSuccessSave(data)"
                 my-on-error="$ctrl.onErrorSave(error)">Save
         </my-button>
-        <my-button
-                my-type="warn"
-                my-confirm="true"
-                my-on-click="$ctrl.onDelete()"
-                my-on-success="$ctrl.onSuccessDelete()"
-                my-on-error="$ctrl.onError(error)">Delete
-        </my-button>
+
+        <react-component name="ConfirmButton" props="$ctrl.deleteButtonProps"></react-component>
     </my-button-group>
 </form>

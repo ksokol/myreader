@@ -35,6 +35,7 @@ import {
   AutocompleteItemText,
   Button,
   Chips,
+  ConfirmButton,
   FeedFetchErrors,
   Icon,
   IconButton,
@@ -54,7 +55,6 @@ angular
   .value('Button', Button)
   .value('AutocompleteItemText', AutocompleteItemText)
   .value('FeedFetchErrors', FeedFetchErrors)
-
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
   .value('SubscriptionUrlInput', SubscriptionUrlInput)
   .value('SubscribeOriginInput', SubscribeOriginInput)
@@ -63,6 +63,7 @@ angular
   .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
   .value('LoginPage', LoginPage)
+  .value('ConfirmButton', ConfirmButton)
 
   .component('myFeed', FeedComponent)
   .component('myLogin', LoginComponent)

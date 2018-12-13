@@ -8,6 +8,7 @@ const Button = props => {
     type,
     primary,
     disabled,
+    caution,
     className,
     onClick,
     children
@@ -16,6 +17,7 @@ const Button = props => {
   const classes = classNames(
     'my-button',
     {'my-button--primary': primary},
+    {'my-button--caution': caution},
     className
   )
 
@@ -32,6 +34,7 @@ const Button = props => {
 Button.propTypes = {
   type: PropTypes.string,
   primary: PropTypes.bool,
+  caution: PropTypes.bool,
   disabled: PropTypes.bool,
   className: PropTypes.string,
   onClick: PropTypes.func.isRequired,

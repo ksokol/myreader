@@ -1,0 +1,15 @@
+.my-confirm-button__confirm {
+    margin-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    min-width: 44px;
+    max-width: 44px;
+}
+
+.my-confirm-button__reject {
+    margin-left: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    min-width: 44px;
+    max-width: 44px;
+}

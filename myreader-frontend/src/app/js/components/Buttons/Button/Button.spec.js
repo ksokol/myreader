@@ -32,6 +32,13 @@ describe('Button', () => {
     expect(createComponent().find('button').prop('className')).toEqual('my-button my-button--primary')
   })
 
+  it('should add caution class when prop "caution" is set to true', () => {
+    props.caution = true
+    props.className = undefined
+
+    expect(createComponent().find('button').prop('className')).toEqual('my-button my-button--caution')
+  })
+
   it('should pass expected props to button', () => {
     props.type = 'submit'
     props.disabled = true
