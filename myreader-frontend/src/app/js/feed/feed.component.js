@@ -18,6 +18,9 @@ class controller {
   constructor($ngRedux) {
     'ngInject'
     this.$ngRedux = $ngRedux
+
+    this.onSave = this.onSave.bind(this)
+    this.onDelete = this.onDelete.bind(this)
   }
 
   $onInit() {
@@ -37,19 +40,32 @@ class controller {
 
   mapDispatchToThis(dispatch) {
     return {
-      onSave: () => {
-        this.validations = undefined
-        return dispatch(changeFeed(this.feed))
-      },
-      onDelete: () => dispatch(deleteFeed(this.feed.uuid)),
       onMore: link => dispatch(fetchFeedFetchFailures(link))
     }
   }
 
-  onError(error) {
-    if (error.status === 400) {
-      this.validations = error.data.fieldErrors
-    }
+  onSave() {
+    this.validations = undefined
+    this.pendingAction = true
+    this.$ngRedux.dispatch(changeFeed(this.feed))
+      .then(() => this.pendingAction = false)
+      .catch(error => {
+        if (error.status === 400) {
+          this.validations = error.data.fieldErrors
+        }
+        this.pendingAction = false
+      })
+  }
+
+  onDelete() {
+    this.pendingAction = true
+    this.$ngRedux.dispatch(deleteFeed(this.feed.uuid))
+      .catch(error => {
+        if (error.status === 400) {
+          this.validations = error.data.fieldErrors
+        }
+        this.pendingAction = false
+      })
   }
 
   get titleProps() {
@@ -85,6 +101,24 @@ class controller {
       links: this.links,
       loading: this.fetchFailuresLoading,
       onMore: this.onMore
+    }
+  }
+
+  get saveButtonProps() {
+    return {
+      children: 'Save',
+      primary: true,
+      disabled: this.pendingAction,
+      onClick: this.onSave
+    }
+  }
+
+  get deleteButtonProps() {
+    return {
+      children: 'Delete',
+      caution: true,
+      disabled: this.pendingAction,
+      onClick: this.onDelete
     }
   }
 }

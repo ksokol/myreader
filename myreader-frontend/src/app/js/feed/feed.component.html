@@ -10,19 +10,10 @@
             </a>
         </div>
 
-        <my-button-group class="admin-feed-form__buttons">
-            <my-button
-                    my-type="primary"
-                    my-on-click="$ctrl.onSave()"
-                    my-on-error="$ctrl.onError(error)">Save
-            </my-button>
-            <my-button
-                    my-type="warn"
-                    my-confirm="true"
-                    my-on-click="$ctrl.onDelete()"
-                    my-on-error="$ctrl.onError(error)">Delete
-            </my-button>
-        </my-button-group>
+        <div class="admin-feed-form__buttons">
+            <react-component name="Button" props="$ctrl.saveButtonProps"></react-component>
+            <react-component name="ConfirmButton" props="$ctrl.deleteButtonProps"></react-component>
+        </div>
     </form>
 
     <h2 class="admin-feed-form__fetch-error-title">Fetch errors</h2>
