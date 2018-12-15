@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 
 const keyCodeMap = {
@@ -8,17 +8,22 @@ const keyCodeMap = {
   40: 'down'
 }
 
-class Hotkeys extends Component {
+const KEY_EVENT = 'keyup'
+
+class Hotkeys extends React.Component {
 
   constructor(props) {
     super(props)
 
-    this.myRef = React.createRef()
     this.onKeyPress = this.onKeyPress.bind(this)
   }
 
   componentDidMount() {
-    this.myRef.current.addEventListener('keypress', this.onKeyPress)
+    document.addEventListener(KEY_EVENT, this.onKeyPress)
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener(KEY_EVENT, this.onKeyPress)
   }
 
   onKeyPress(event) {
@@ -29,7 +34,7 @@ class Hotkeys extends Component {
   }
 
   render() {
-    return <div ref={this.myRef}>{this.props.children}</div>
+    return this.props.children
   }
 }
 

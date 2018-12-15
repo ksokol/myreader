@@ -36,11 +36,6 @@ export function reactComponent(name) {
   return _reactComponentMock
 }
 
-export function connectedReactComponent(name) {
-  createApplicationStore('test')
-  return reactComponent(name)
-}
-
 export function multipleReactComponents(name) {
   multipleReactComponents.bindings = []
 
@@ -136,16 +131,6 @@ export function onKey(type, event, funcs = {}) {
 
   keyEvent.initEvent(`key${type}`)
   document.dispatchEvent(keyEvent)
-}
-
-export function dispatchKeyEventOnElement(element, {type, event, funcs = {}}) {
-  let keyEvent = document.createEvent('Event')
-  keyEvent.keyCode = event.keyCode
-  keyEvent.key = event.key
-  Object.assign(keyEvent, funcs)
-
-  keyEvent.initEvent(`key${type}`)
-  element.dispatchEvent(keyEvent)
 }
 
 export function tick(millis = 0) {

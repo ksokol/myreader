@@ -1,6 +1,7 @@
 import angular from 'angular'
 import {
   BookmarkListPageContainer,
+  EntryStreamPageContainer,
   FeedListPageContainer,
   MaintenanceContainer,
   SettingsContainer,
@@ -63,11 +64,7 @@ angular.module('common.config', ['ui.router'])
           feedTagEqual: null,
           feedUuidEqual: null
         },
-        views: {
-          content: {
-            template: '<my-feed-stream></my-feed-stream>'
-          }
-        }
+        views: containerComponent(EntryStreamPageContainer)
       })
       .state('app.bookmarks', {
         url: '/bookmark/:entryTagEqual?q',

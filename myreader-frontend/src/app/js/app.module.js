@@ -16,9 +16,7 @@ import {
 } from './subscription/subscription.component'
 import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
 import createApplicationStore from './store/bootstrap'
-import {ListPageComponent} from './shared/component/list-page/list-page.component'
 import {HotkeysComponent} from './shared/component/hotkeys/hotkeys.component'
-import {FeedStreamComponent} from './feed-stream/feed-stream.component'
 import {AppComponent} from './app.component'
 import createRouterMiddleware from './store/middleware/router'
 import uiRouterAdapter from './shared/router/uiRouterAdapter'
@@ -37,8 +35,7 @@ import {
   FeedFetchErrors,
   Icon,
   IconButton,
-  LoginPage,
-  SearchInput
+  LoginPage
 } from './components'
 import {ContainerComponentBridge} from './containers'
 
@@ -58,7 +55,6 @@ angular
   .value('SubscribeOriginInput', SubscribeOriginInput)
   .value('FeedTitleInput', FeedTitleInput)
   .value('FeedUrlInput', FeedUrlInput)
-  .value('SearchInput', SearchInput)
   .value('AutocompleteInput', AutocompleteInput)
   .value('LoginPage', LoginPage)
   .value('ConfirmButton', ConfirmButton)
@@ -68,12 +64,10 @@ angular
   .component('mySubscribe', SubscribeComponent)
   .component('mySubscriptionExclusion', SubscriptionExclusionComponent)
   .component('mySubscription', SubscriptionComponent)
-  .component('myFeedStream', FeedStreamComponent)
   .component('myApp', AppComponent)
   .component('myBackdrop', BackdropComponent)
 
   .component('myAutoScroll', AutoScrollComponent)
-  .component('myListPage', ListPageComponent)
   .component('myHotkeys', HotkeysComponent)
   .component('myAutocompleteInput', AutoCompleteInputComponent)
   .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
