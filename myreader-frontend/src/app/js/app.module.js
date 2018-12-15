@@ -21,7 +21,6 @@ import {AppComponent} from './app.component'
 import createRouterMiddleware from './store/middleware/router'
 import uiRouterAdapter from './shared/router/uiRouterAdapter'
 import uiRouterStartTransitionHandler from './shared/router/uiRouterStartTransitionHandler'
-import {BackdropComponent} from './shared/component/backdrop/backdrop.component'
 import {
   AutocompleteInput,
   AutoCompleteInputComponent,
@@ -65,7 +64,6 @@ angular
   .component('mySubscriptionExclusion', SubscriptionExclusionComponent)
   .component('mySubscription', SubscriptionComponent)
   .component('myApp', AppComponent)
-  .component('myBackdrop', BackdropComponent)
 
   .component('myAutoScroll', AutoScrollComponent)
   .component('myHotkeys', HotkeysComponent)

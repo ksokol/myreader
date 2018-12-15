@@ -1,13 +1,9 @@
-import {componentMock, mockNgRedux, reactComponent} from './shared/test-utils'
+import {mockNgRedux, reactComponent} from './shared/test-utils'
 
 class Page {
 
   constructor(el) {
     this.el = el
-  }
-
-  get backdrop() {
-    return this.el.find('my-backdrop')[0]
   }
 
   get nav() {
@@ -38,7 +34,6 @@ describe('src/app/js/app.component.spec.js', () => {
       'myreader',
       mockNgRedux(),
       reactComponent('ContainerComponentBridge'),
-      componentMock('myBackdrop'),
       reactComponent('Navigation'),
       menuButton
     )
@@ -54,10 +49,6 @@ describe('src/app/js/app.component.spec.js', () => {
 
     page = new Page(element)
   }))
-
-  it('should include backdrop component', () => {
-    expect(page.backdrop).toBeDefined()
-  })
 
   it('should slide in navigation on phones and tablets', () => {
     givenState({mediaBreakpoint: 'phone'})

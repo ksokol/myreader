@@ -1,7 +1,7 @@
 import template from './app.component.html'
 import './app.component.css'
 import {mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from './store'
-import {NavigationContainer, ToastContainer} from './containers'
+import {BackdropContainer, NavigationContainer, ToastContainer} from './containers'
 
 class controller {
 
@@ -48,6 +48,12 @@ class controller {
   get navigationProps() {
     return {
       component: () => NavigationContainer
+    }
+  }
+
+  get backdropProps() {
+    return {
+      component: () => BackdropContainer
     }
   }
 }
