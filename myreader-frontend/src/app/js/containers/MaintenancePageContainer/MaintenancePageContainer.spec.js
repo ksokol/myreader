@@ -2,20 +2,20 @@ import React from 'react'
 import {Provider} from 'react-redux'
 import {mount} from 'enzyme'
 import {createMockStore} from '../../shared/test-utils'
-import MaintenanceContainer from './MaintenanceContainer'
-import {Maintenance} from '../../components'
+import MaintenancePageContainer from './MaintenancePageContainer'
+import {MaintenancePage} from '../../pages'
 
-describe('MaintenanceContainer', () => {
+describe('MaintenancePageContainer', () => {
 
   let store
 
   const createComponent = () => {
     const wrapper = mount(
       <Provider store={store}>
-        <MaintenanceContainer />
+        <MaintenancePageContainer />
       </Provider>
     )
-    return wrapper.find(Maintenance)
+    return wrapper.find(MaintenancePage)
   }
 
   beforeEach(() => {

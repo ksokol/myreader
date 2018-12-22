@@ -3,7 +3,7 @@ import {
   BookmarkListPageContainer,
   EntryStreamPageContainer,
   FeedListPageContainer,
-  MaintenanceContainer,
+  MaintenancePageContainer,
   SettingsPageContainer,
   SubscriptionListPageContainer
 } from './containers'
@@ -95,7 +95,7 @@ angular.module('common.config', ['ui.router'])
       })
       .state('admin.overview', {
         url: '/overview',
-        views: containerComponent(MaintenanceContainer)
+        views: containerComponent(MaintenancePageContainer)
       })
       .state('admin.feed', {
         url: '/feed?q',

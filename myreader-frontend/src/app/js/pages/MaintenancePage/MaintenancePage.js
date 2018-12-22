@@ -1,7 +1,7 @@
-import './Maintenance.css'
+import './MaintenancePage.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Button, TimeAgo} from '..'
+import {Button, TimeAgo} from '../../components'
 
 const ApplicationInfo = props =>
   <React.Fragment>
@@ -38,7 +38,7 @@ ApplicationInfo.propTypes = {
   buildTime: PropTypes.string.isRequired
 }
 
-const Maintenance = props =>
+const MaintenancePage = props =>
   <section className='my-maintenance'>
     <h4>Maintenance</h4>
 
@@ -47,11 +47,11 @@ const Maintenance = props =>
     {props.applicationInfo && props.applicationInfo.branch && <ApplicationInfo {...props.applicationInfo} />}
   </section>
 
-Maintenance.propTypes = {
+MaintenancePage.propTypes = {
   onRefreshIndex: PropTypes.func.isRequired,
   applicationInfo: PropTypes.shape({
     branch: PropTypes.string
   })
 }
 
-export default Maintenance
+export default MaintenancePage
