@@ -1,6 +1,5 @@
 import React from 'react'
 import Hotkeys from './Hotkeys'
-import {onKey as simulateKey} from '../../shared/test-utils'
 import {mount} from 'enzyme'
 
 const enter = {key: 'Enter', keyCode: 13}
@@ -28,7 +27,15 @@ describe('Hotkeys', () => {
     wrapper = mount(<Hotkeys onKeys={onKeys}><p>wrapped component</p></Hotkeys>)
   })
 
-  const onKey = (event, funcs = {}) => simulateKey('up', event, funcs)
+  const onKey = (event, funcs = {}) => {
+    let keyEvent = document.createEvent('Event')
+    keyEvent.keyCode = event.keyCode
+    keyEvent.key = event.key
+    Object.assign(keyEvent, funcs)
+
+    keyEvent.initEvent('keyup')
+    document.dispatchEvent(keyEvent)
+  }
 
   it('should render wrapped element', () => {
     expect(wrapper.find('p').text()).toEqual('wrapped component')
