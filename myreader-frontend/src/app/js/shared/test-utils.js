@@ -95,7 +95,3 @@ export function onKey(type, event, funcs = {}) {
   keyEvent.initEvent(`key${type}`)
   document.dispatchEvent(keyEvent)
 }
-
-export function tick(millis = 0) {
-  jest.advanceTimersByTime(millis)
-}

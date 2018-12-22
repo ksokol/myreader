@@ -1,7 +1,6 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import Backdrop from './Backdrop'
-import {tick} from '../../shared/test-utils'
 
 describe('Backdrop', () => {
 
@@ -57,10 +56,10 @@ describe('Backdrop', () => {
     wrapper.setProps({isBackdropVisible: true})
     wrapper.setProps({isBackdropVisible: false})
 
-    tick(299)
+    jest.advanceTimersByTime(299)
     expect(wrapper.state().isMounted).toEqual(true)
 
-    tick(1)
+    jest.advanceTimersByTime(1)
     expect(wrapper.state().isMounted).toEqual(false)
   })
 
@@ -68,10 +67,10 @@ describe('Backdrop', () => {
     const wrapper = createComponent()
     wrapper.setProps({isBackdropVisible: true})
     wrapper.setProps({isBackdropVisible: false})
-    tick(299)
+    jest.advanceTimersByTime(299)
 
     wrapper.setProps({isBackdropVisible: true})
-    tick(1)
+    jest.advanceTimersByTime(1)
 
     expect(wrapper.state().isMounted).toEqual(true)
   })
@@ -80,10 +79,10 @@ describe('Backdrop', () => {
     const wrapper = createComponent()
     wrapper.setProps({isBackdropVisible: true})
     wrapper.setProps({isBackdropVisible: false})
-    tick(299)
+    jest.advanceTimersByTime(299)
 
     wrapper.setProps({isBackdropVisible: true})
-    tick(1)
+    jest.advanceTimersByTime(1)
 
     expect(wrapper.state().isVisible).toEqual(true)
     expect(wrapper.state().isClosing).toEqual(false)
@@ -94,7 +93,7 @@ describe('Backdrop', () => {
     wrapper.setProps({isBackdropVisible: true})
     wrapper.setProps({isBackdropVisible: false})
 
-    tick(300)
+    jest.advanceTimersByTime(300)
 
     wrapper.setProps({isBackdropVisible: true})
 
