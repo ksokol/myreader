@@ -81,19 +81,10 @@ angular
     }
   })
   // TODO part of AngularJS exit strategy
-  .run(($rootScope, $ngRedux, $transitions) => {
+  .run(($ngRedux, $transitions) => {
     'ngInject'
 
     if (isInDevMode(ENVIRONMENT) || isInProdMode(ENVIRONMENT)) {
       $transitions.onStart({}, t => uiRouterStartTransitionHandler(t, $ngRedux, ENVIRONMENT))
-    }
-
-    // TODO Deletion hint: Don't forget to remove jest.useFakeTimers() in several tests
-    const setTimeoutFn = window.setTimeout
-    window.setTimeout = (fn, delay) => {
-      return setTimeoutFn(() => {
-        fn()
-        $rootScope.$digest()
-      }, delay)
     }
   })
