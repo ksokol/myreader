@@ -74,7 +74,7 @@ class controller {
       name: 'title',
       value: this.feed.title || '',
       validations: this.validations,
-      onChange: value => this.feed.title = value
+      onChange: event => this.feed.title = event.target.value
     }
   }
 
@@ -85,7 +85,7 @@ class controller {
       name: 'url',
       value: this.feed.url || '',
       validations: this.validations,
-      onChange: value => this.feed.url = value
+      onChange: event => this.feed.url = event.target.value
     }
   }
 

@@ -29,6 +29,7 @@ class controller {
 
     this.onSave = this.onSave.bind(this)
     this.onDelete = this.onDelete.bind(this)
+    this.onSelectTag = this.onSelectTag.bind(this)
   }
 
   $onInit() {
@@ -84,7 +85,7 @@ class controller {
       label: 'Title',
       disabled: this.pendingAction,
       validations: this.validations,
-      onChange: value => this.subscription.title = value
+      onChange: event => this.subscription.title = event.target.value
     }
   }
 
@@ -118,6 +119,17 @@ class controller {
       caution: true,
       disabled: this.pendingAction,
       onClick: this.onDelete
+    }
+  }
+
+  get tagsProps() {
+    return {
+      name: 'tag',
+      label: 'Tag',
+      disabled: this.pendingAction,
+      value: this.subscription.feedTag.name,
+      values: this.tags,
+      onSelect: this.onSelectTag
     }
   }
 }

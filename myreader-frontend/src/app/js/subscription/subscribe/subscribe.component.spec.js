@@ -2,7 +2,7 @@ import {mockNgRedux, reactComponent} from '../../shared/test-utils'
 
 describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => {
 
-  let scope, element, ngReduxMock, originInput, saveButton
+  let scope, ngReduxMock, originInput, saveButton
 
   beforeEach(() => {
     originInput = reactComponent('SubscribeOriginInput')
@@ -14,7 +14,7 @@ describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => 
     scope = $rootScope.$new(true)
     ngReduxMock = $ngRedux
 
-    element = $compile('<my-subscribe></my-subscribe>')(scope)[0]
+    $compile('<my-subscribe></my-subscribe>')(scope)[0]
     scope.$digest()
   }))
 
@@ -50,14 +50,14 @@ describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => 
       return new Promise(() => {})
     })
 
-    originInput.bindings.onChange('expected url')
+    originInput.bindings.onChange({target: {value: 'expected url'}})
     saveButton.bindings.onClick()
   })
 
   it('should navigate user to detail page when action completed successfully', done => {
     jest.useRealTimers()
     ngReduxMock.dispatch.mockResolvedValueOnce({uuid: 'expected uuid'})
-    originInput.bindings.onChange('expected url')
+    originInput.bindings.onChange({target: {value: 'expected url'}})
     saveButton.bindings.onClick()
     ngReduxMock.dispatch.mockClear()
 
@@ -84,7 +84,7 @@ describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => 
       }
     })
 
-    originInput.bindings.onChange('expected url')
+    originInput.bindings.onChange({target: {value: 'expected url'}})
     saveButton.bindings.onClick()
 
     setTimeout(() => {
@@ -105,7 +105,7 @@ describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => 
       }
     })
 
-    originInput.bindings.onChange('expected url')
+    originInput.bindings.onChange({target: {value: 'expected url'}})
     saveButton.bindings.onClick()
 
     setTimeout(() => {
@@ -121,7 +121,7 @@ describe('src/app/js/subscription/subscribe/subscribe.component.spec.js', () => 
     jest.useRealTimers()
     ngReduxMock.dispatch.mockRejectedValueOnce({status: 500})
 
-    originInput.bindings.onChange('expected url')
+    originInput.bindings.onChange({target: {value: 'expected url'}})
     saveButton.bindings.onClick()
 
     setTimeout(() => {

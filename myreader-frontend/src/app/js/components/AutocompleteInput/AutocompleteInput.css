@@ -1,4 +1,11 @@
-my-autocomplete-suggestions {
+.my-autocomplete-input {
+    position: relative;
+    transform: translate(0);
+    width: 100%;
+    z-index: 10;
+}
+
+.my-autocomplete-input__dropdown {
     background-color: white;
     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
     position: fixed;
@@ -6,15 +13,12 @@ my-autocomplete-suggestions {
     top: 50px;
     max-height: 240px;
     overflow-y: auto;
-}
-
-.my-autocomplete-suggestions {
     margin: 0;
     list-style: none;
     padding: 0;
 }
 
-.my-autocomplete-suggestions > * > li {
+.my-autocomplete-input__dropdown > li {
     cursor: pointer;
     font-size: 14px;
     overflow: hidden;
@@ -27,7 +31,11 @@ my-autocomplete-suggestions {
     text-overflow: ellipsis;
 }
 
-.my-autocomplete-suggestions__item--selected,
-.my-autocomplete-suggestions > * > li:hover {
+.my-autocomplete-input__item--selected,
+.my-autocomplete-input__dropdown > li:hover {
     background-color: rgb(238, 238, 238);
+}
+
+.my-autocomplete-input__item--highlight {
+    color: rgb(117, 117, 117);
 }

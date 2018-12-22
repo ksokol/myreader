@@ -20,10 +20,10 @@ describe('Chips', () => {
     }
   })
 
-  const createShallow = () => shallow(<Chips {...props} />)
+  const createComponent = () => shallow(<Chips {...props} />)
 
   it('should create a chip component instance for every value in prop "values"', () => {
-    const children = createShallow().find(Chip)
+    const children = createComponent().find(Chip)
 
     expect(children.at(0).props()).toContainObject({
       value: 'value1',
@@ -45,28 +45,28 @@ describe('Chips', () => {
   })
 
   it('should return key from prop "keyFn" function for every chip component instance' , () => {
-    const children = createShallow().find(Chip)
+    const children = createComponent().find(Chip)
 
     expect(children.at(0).key()).toEqual('keyFn: value1')
     expect(children.at(1).key()).toEqual('keyFn: value2')
   })
 
   it('should not render input component when prop "onAdd" function is undefined', () => {
-    const hotkeys = createShallow().find(Hotkeys)
+    const hotkeys = createComponent().find(Hotkeys)
 
     expect(hotkeys.exists()).toEqual(false)
   })
 
   it('should render input component when prop "onAdd" function is defined', () => {
     props.onAdd = jest.fn()
-    const hotkeys = createShallow().find(Hotkeys)
+    const hotkeys = createComponent().find(Hotkeys)
 
     expect(hotkeys.exists()).toEqual(true)
   })
 
   it('should pass expected props to input component', () => {
     props.onAdd = jest.fn()
-    const input = createShallow().find(Input)
+    const input = createComponent().find(Input)
 
     expect(input.props()).toContainObject({
       disabled: false,
@@ -77,11 +77,11 @@ describe('Chips', () => {
 
   it('should trigger prop "onAdd" function when input value changed and enter key pressed', () => {
     props.onAdd = jest.fn()
-    const wrapper = createShallow()
+    const wrapper = createComponent()
     const hotkeys = wrapper.find(Hotkeys)
     const input = wrapper.find(Input)
 
-    input.props().onChange('expected value')
+    input.props().onChange({target: {value: 'expected value'}})
     hotkeys.props().onKeys.enter()
 
     expect(props.onAdd).toHaveBeenCalledWith('expected value')
@@ -89,11 +89,11 @@ describe('Chips', () => {
 
   it('should not trigger prop "onAdd" function when input value is an empty string and enter key pressed', () => {
     props.onAdd = jest.fn()
-    const wrapper = createShallow()
+    const wrapper = createComponent()
     const hotkeys = wrapper.find(Hotkeys)
     const input = wrapper.find(Input)
 
-    input.props().onChange('')
+    input.props().onChange({target: {value: ''}})
     hotkeys.props().onKeys.enter()
 
     expect(props.onAdd).not.toHaveBeenCalled()
@@ -101,11 +101,11 @@ describe('Chips', () => {
 
   it('should reset prop "value" of input component when input value changed and enter key pressed', () => {
     props.onAdd = jest.fn()
-    const wrapper = createShallow()
+    const wrapper = createComponent()
     const hotkeys = wrapper.find(Hotkeys)
     const input = wrapper.find(Input)
 
-    input.props().onChange('expected value')
+    input.props().onChange({target: {value: 'expected value'}})
     hotkeys.props().onKeys.enter()
 
     expect(wrapper.find(Input).prop('value')).toEqual('')
@@ -113,10 +113,10 @@ describe('Chips', () => {
 
   it('should not reset prop "value" of input component when input value changed but enter key not pressed', () => {
     props.onAdd = jest.fn()
-    const wrapper = createShallow()
+    const wrapper = createComponent()
     const input = wrapper.find(Input)
 
-    input.props().onChange('expected value')
+    input.props().onChange({target: {value: 'expected value'}})
 
     expect(wrapper.find(Input).prop('value')).toEqual('expected value')
   })

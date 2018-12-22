@@ -1,10 +1,10 @@
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 
 const withDebounce = (WrappedInput, timeout = 0) => {
 
-  const WithDebounce = class WithDebounce extends Component {
+  const WithDebounce = class WithDebounce extends React.Component {
 
     constructor(props) {
       super(props)
@@ -16,9 +16,10 @@ const withDebounce = (WrappedInput, timeout = 0) => {
 
       const debounceOnChange = debounce(this.props.onChange, timeout)
 
-      const onChangeDebounced = value => {
-        this.setState({value})
-        debounceOnChange(value)
+      const onChangeDebounced = event => {
+        this.setState({value: event.target.value})
+        event.persist()
+        debounceOnChange(event)
       }
 
       this.onChange = timeout > 0 ? onChangeDebounced : this.props.onChange

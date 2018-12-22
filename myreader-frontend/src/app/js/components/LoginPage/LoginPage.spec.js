@@ -27,7 +27,7 @@ describe('LoginPage', () => {
 
   it('should update email input prop "value" when input changed', () => {
     const wrapper = createComponent()
-    wrapper.find('[type="email"]').props().onChange('expected username')
+    wrapper.find('[type="email"]').props().onChange({target: {value: 'expected username'}})
 
     expect(wrapper.find('[type="email"]').prop('value')).toEqual('expected username')
   })
@@ -44,7 +44,7 @@ describe('LoginPage', () => {
 
   it('should update password input prop "value" when input changed', () => {
     const wrapper = createComponent()
-    wrapper.find('[type="password"]').props().onChange('expected password')
+    wrapper.find('[type="password"]').props().onChange({target: {value: 'expected password'}})
 
     expect(wrapper.find('[type="password"]').prop('value')).toEqual('expected password')
   })
@@ -58,8 +58,8 @@ describe('LoginPage', () => {
 
   it('should trigger prop function "onLogin" when login button clicked', () => {
     const wrapper = createComponent()
-    wrapper.find('[type="email"]').props().onChange('expected username')
-    wrapper.find('[type="password"]').props().onChange('expected password')
+    wrapper.find('[type="email"]').props().onChange({target: {value: 'expected username'}})
+    wrapper.find('[type="password"]').props().onChange({target: {value: 'expected password'}})
     wrapper.find(Button).props().onClick()
 
     expect(props.onLogin).toHaveBeenCalledWith({

@@ -33,7 +33,7 @@ class LoginPage extends React.Component {
                label='Email'
                value={username}
                autoComplete='email'
-               onChange={username => this.setState({username})}
+               onChange={({target: {value}}) => this.setState({username: value})}
                disabled={disabled} />
 
         <Input type='password'
@@ -41,7 +41,7 @@ class LoginPage extends React.Component {
                label='Password'
                value={password}
                autoComplete='current-password'
-               onChange={password => this.setState({password})}
+               onChange={({target: {value}}) => this.setState({password: value})}
                disabled={disabled} />
 
         <div className='my-login__message'>

@@ -21,15 +21,15 @@ class Chips extends React.Component {
     }
   }
 
-  onChangeInput(inputValue) {
-    this.setState({inputValue})
+  onChangeInput(event) {
+    this.setState({inputValue: event.target.value})
   }
 
   onKeyEnter() {
     if (this.state.inputValue.length > 0) {
       this.props.onAdd(this.state.inputValue)
     }
-    this.onChangeInput('')
+    this.setState({inputValue: ''})
   }
 
   render() {

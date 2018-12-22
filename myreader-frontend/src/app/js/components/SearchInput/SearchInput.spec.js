@@ -32,7 +32,7 @@ describe('SearchInput', () => {
 
   it('should trigger prop function "onChange" after a predefined amount of time', done => {
     jest.useRealTimers()
-    createComponent().find(Input).props().onChange('changed value')
+    createComponent().find(Input).props().onChange({target: {value: 'changed value'}, persist: jest.fn()})
 
     // TODO Workaround for https://github.com/facebook/jest/issues/5165
     setTimeout(() => {

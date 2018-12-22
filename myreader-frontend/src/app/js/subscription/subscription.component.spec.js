@@ -2,22 +2,21 @@ import {componentMock, mockNgRedux, reactComponent} from '../shared/test-utils'
 
 describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
-  let scope, element, ngReduxMock, subscription, timeout, myAutocompleteInput, mySubscriptionExclusion, title, url, confirmButton, saveButton
+  let scope, element, ngReduxMock, subscription, autocompleteInput, mySubscriptionExclusion, title, url, confirmButton, saveButton
 
   beforeEach(() => {
     title = reactComponent('SubscriptionTitleInput')
     url = reactComponent('SubscriptionUrlInput')
-    myAutocompleteInput = componentMock('myAutocompleteInput')
+    autocompleteInput = reactComponent('AutocompleteInput')
     mySubscriptionExclusion = componentMock('mySubscriptionExclusion')
     confirmButton = reactComponent('ConfirmButton')
     saveButton = reactComponent('Button')
-    angular.mock.module('myreader', myAutocompleteInput, mySubscriptionExclusion, title, url, confirmButton, saveButton, mockNgRedux())
+    angular.mock.module('myreader', autocompleteInput, mySubscriptionExclusion, title, url, confirmButton, saveButton, mockNgRedux())
   })
 
-  beforeEach(inject(($rootScope, $compile, $ngRedux, $timeout) => {
+  beforeEach(inject(($rootScope, $compile, $ngRedux) => {
     scope = $rootScope.$new(true)
     ngReduxMock = $ngRedux
-    timeout = $timeout
 
     subscription = {
       uuid: 'expected uuid',
@@ -51,9 +50,9 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
   }))
 
   it('should render page when subscription has been loaded', () => {
-    expect(myAutocompleteInput.bindings.mySelectedItem).toEqual('expected tag')
-    expect(myAutocompleteInput.bindings.myDisabled).toBeUndefined()
-    expect(myAutocompleteInput.bindings.myValues).toEqual(['t1', 't2'])
+    expect(autocompleteInput.bindings.value).toEqual('expected tag')
+    expect(autocompleteInput.bindings.disabled).toBeUndefined()
+    expect(autocompleteInput.bindings.values).toEqual(['t1', 't2'])
     expect(mySubscriptionExclusion.bindings.myId).toEqual('expected uuid')
     expect(mySubscriptionExclusion.bindings.myDisabled).toBeUndefined()
     expect(mySubscriptionExclusion.bindings.myExclusions).toEqual(['e1', '2'])
@@ -79,7 +78,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
   })
 
   xit('should save updated subscription', () => {
-    title.bindings.onChange('expected new title')
+    title.bindings.onChange({target: {value: 'expected new title'}})
     saveButton.bindings.onClick()
 
     expect(ngReduxMock.getActionTypes()).toEqual(['PATCH_SUBSCRIPTION'])
@@ -96,7 +95,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
   })
 
   it('should update page when save completed', () => {
-    title.bindings.onChange('expected new title')
+    title.bindings.onChange({target: {value: 'expected new title'}})
     ngReduxMock.dispatch.mockResolvedValue()
     saveButton.bindings.onClick()
 
@@ -112,7 +111,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     }]
     ngReduxMock.dispatch.mockRejectedValueOnce({status: 400, data: {fieldErrors}})
 
-    title.bindings.onChange('some title')
+    title.bindings.onChange({target: {value: 'some title'}})
     saveButton.bindings.onClick()
 
     setTimeout(() => {
@@ -126,7 +125,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     jest.useRealTimers()
     ngReduxMock.dispatch.mockRejectedValueOnce({status: 500})
 
-    title.bindings.onChange('some title')
+    title.bindings.onChange({target: {value: 'some title'}})
     saveButton.bindings.onClick()
 
     setTimeout(() => {
@@ -137,17 +136,15 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
   })
 
   it('should propagate updated subscription tag', () => {
-    myAutocompleteInput.bindings.myOnSelect({value: 'expected value'})
-    scope.$digest()
+    autocompleteInput.bindings.onSelect('expected value')
 
-    expect(myAutocompleteInput.bindings.mySelectedItem).toEqual('expected value')
+    expect(autocompleteInput.bindings.value).toEqual('expected value')
   })
 
   it('should propagate removed subscription tag', () => {
-    myAutocompleteInput.bindings.myOnSelect({value: null})
-    scope.$digest()
+    autocompleteInput.bindings.onSelect(null)
 
-    expect(myAutocompleteInput.bindings.mySelectedItem).toEqual(null)
+    expect(autocompleteInput.bindings.value).toEqual(null)
   })
 
   it('should show notification message when action failed in subscription exclusion panel component', () => {
@@ -174,7 +171,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
     setTimeout(() => {
       expect(title.bindings.disabled).toEqual(true)
       expect(url.bindings.disabled).toEqual(true)
-      expect(myAutocompleteInput.bindings.myDisabled).toEqual(true)
+      expect(autocompleteInput.bindings.disabled).toEqual(true)
       expect(mySubscriptionExclusion.bindings.myDisabled).toEqual(true)
     })
   })
@@ -190,7 +187,7 @@ describe('src/app/js/subscription/subscription.component.spec.js', () => {
 
       expect(title.bindings.disabled).toEqual(false)
       expect(url.bindings.disabled).toEqual(true)
-      expect(myAutocompleteInput.bindings.myDisabled).toEqual(false)
+      expect(autocompleteInput.bindings.disabled).toEqual(false)
       expect(mySubscriptionExclusion.bindings.myDisabled).toEqual(false)
       done()
     })

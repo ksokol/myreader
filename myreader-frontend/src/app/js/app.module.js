@@ -14,20 +14,13 @@ import {
   SubscriptionTitleInput,
   SubscriptionUrlInput
 } from './subscription/subscription.component'
-import {AutoScrollComponent} from './shared/component/auto-scroll/auto-scroll.component'
 import createApplicationStore from './store/bootstrap'
-import {HotkeysComponent} from './shared/component/hotkeys/hotkeys.component'
 import {AppComponent} from './app.component'
 import createRouterMiddleware from './store/middleware/router'
 import uiRouterAdapter from './shared/router/uiRouterAdapter'
 import uiRouterStartTransitionHandler from './shared/router/uiRouterStartTransitionHandler'
 import {
   AutocompleteInput,
-  AutoCompleteInputComponent,
-  AutocompleteSuggestionsComponent
-} from './shared/component/autocomplete-input'
-import {
-  AutocompleteItemText,
   Button,
   Chips,
   ConfirmButton,
@@ -47,7 +40,8 @@ angular
   .value('IconButton', IconButton)
   .value('Chips', Chips)
   .value('Button', Button)
-  .value('AutocompleteItemText', AutocompleteItemText)
+  .value('AutocompleteInput', AutocompleteInput)
+
   .value('FeedFetchErrors', FeedFetchErrors)
   .value('SubscriptionTitleInput', SubscriptionTitleInput)
   .value('SubscriptionUrlInput', SubscriptionUrlInput)
@@ -64,11 +58,6 @@ angular
   .component('mySubscriptionExclusion', SubscriptionExclusionComponent)
   .component('mySubscription', SubscriptionComponent)
   .component('myApp', AppComponent)
-
-  .component('myAutoScroll', AutoScrollComponent)
-  .component('myHotkeys', HotkeysComponent)
-  .component('myAutocompleteInput', AutoCompleteInputComponent)
-  .component('myAutocompleteSuggestions', AutocompleteSuggestionsComponent)
 
   .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], ['myStoreEnhancer'])])
 

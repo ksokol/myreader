@@ -39,7 +39,7 @@ class controller {
       name: 'origin',
       value: this.origin,
       validations: this.validations,
-      onChange: value => this.origin = value
+      onChange: event => this.origin = event.target.value
     }
   }
 

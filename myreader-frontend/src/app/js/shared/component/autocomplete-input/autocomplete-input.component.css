@@ -1,6 +1,0 @@
-my-autocomplete-input > div {
-    position: relative;
-    transform: translate(0);
-    width: 100%;
-    z-index: 10;
-}

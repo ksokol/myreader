@@ -1,10 +1,14 @@
 import './Input.css'
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {noop} from '../../shared/utils'
 
-class Input extends Component {
+class Input extends React.Component {
+
+  get id() {
+    return this.props.id ? this.props.id : this.props.name
+  }
 
   constructor(props) {
     super(props)
@@ -24,14 +28,14 @@ class Input extends Component {
     }
   }
 
-  onFocus() {
+  onFocus(event) {
     this.setState({focused: true})
-    this.props.onFocus()
+    this.props.onFocus(event)
   }
 
-  onBlur() {
+  onBlur(event) {
     this.setState({focused: false})
-    this.props.onBlur()
+    this.props.onBlur(event)
   }
 
   render() {
@@ -45,24 +49,31 @@ class Input extends Component {
       autoComplete,
       disabled,
       onChange,
-      renderValidations
+      renderValidations,
+      ...otherProps
     } = this.props
 
     return (
       <div className={classNames('my-input', className)}>
-        {label && <label htmlFor={name}>{label}</label>}
+        {label &&
+        <label htmlFor={this.id}>
+          {label}
+        </label>
+        }
 
         <input ref={this.myRef}
-               id={name}
+               {...otherProps}
+               id={this.id}
                type={type}
                name={name}
                value={value}
                placeholder={placeholder}
                autoComplete={autoComplete}
                disabled={disabled}
-               onChange={event => onChange(event.target.value)}
+               onChange={onChange}
                onFocus={this.onFocus}
-               onBlur={this.onBlur}/>
+               onBlur={this.onBlur}
+        />
 
         {renderValidations()}
       </div>
@@ -71,6 +82,7 @@ class Input extends Component {
 }
 
 Input.propTypes = {
+  id: PropTypes.string,
   className: PropTypes.string,
   type: PropTypes.string,
   label: PropTypes.string,

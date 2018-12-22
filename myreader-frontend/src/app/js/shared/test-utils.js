@@ -1,7 +1,6 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import {initialApplicationState} from '../store'
-import createApplicationStore from '../store/bootstrap'
 
 /*
  * https://velesin.io/2016/08/23/unit-testing-angular-1-5-components/
@@ -34,42 +33,6 @@ export function reactComponent(name) {
   }
 
   return _reactComponentMock
-}
-
-export function multipleReactComponents(name) {
-  multipleReactComponents.bindings = []
-
-  function _reactComponentMock($provide) {
-    _reactComponentMock.bindings = multipleReactComponents.bindings
-
-    $provide.value(name, props => {
-      multipleReactComponents.bindings.push({...props})
-      return ''
-    })
-  }
-
-  return _reactComponentMock
-}
-
-export function multipleComponentMock(name) {
-  multipleComponentMock.bindings = []
-
-  function _componentMock($provide) {
-    _componentMock.bindings = multipleComponentMock.bindings
-
-    $provide.decorator(name + 'Directive', function ($delegate) {
-      const component = $delegate[0]
-      component.template = '<ng-transclude></ng-transclude>'
-      component.transclude = true
-      component.controller = function () {
-        multipleComponentMock.bindings.push(this)
-      }
-
-      return $delegate
-    })
-  }
-
-  return _componentMock
 }
 
 export function createMockStore(middlewares = []) {

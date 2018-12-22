@@ -8,12 +8,7 @@
         </a>
     </div>
 
-    <my-autocomplete-input my-label="'Tag'"
-                           my-disabled="$ctrl.pendingAction"
-                           my-selected-item="$ctrl.subscription.feedTag.name"
-                           my-values="$ctrl.tags"
-                           my-on-select="$ctrl.onSelectTag(value)">
-    </my-autocomplete-input>
+    <react-component name="AutocompleteInput" props="$ctrl.tagsProps"></react-component>
 
     <h2 class="subscription-form__pattern-title">Patterns to ignore</h2>
 

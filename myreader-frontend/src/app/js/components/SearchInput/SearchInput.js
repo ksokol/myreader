@@ -8,7 +8,7 @@ const DebounceInput = withDebounce(Input, 250)
 
 const SearchInput = props => {
   // TODO Remove q query parameter from UI Router
-  const onChange = value => props.onChange(value.trim() === '' ? undefined : value)
+  const onChange = ({target: {value}}) => props.onChange(value.trim() === '' ? undefined : value)
 
   return (
     <div className={classNames('my-search-input', props.className)}>
