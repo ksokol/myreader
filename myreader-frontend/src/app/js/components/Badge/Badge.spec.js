@@ -1,4 +1,4 @@
-import {Badge} from '.'
+import Badge from './Badge'
 import React from 'react'
 import {mount} from 'enzyme'
 

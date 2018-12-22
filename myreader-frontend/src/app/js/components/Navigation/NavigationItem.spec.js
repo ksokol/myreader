@@ -1,7 +1,7 @@
 import React from 'react'
 import {NavigationItem} from '.'
 import {shallow} from 'enzyme'
-import {Badge} from '../Badge'
+import {Badge} from '..'
 
 describe('NavigationItem', () => {
 
