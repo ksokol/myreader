@@ -13,7 +13,7 @@ import {
   routeSelector,
   settingsShowEntryDetailsSelector
 } from '../../store'
-import {EntryStreamPage} from '../../components'
+import {EntryStreamPage} from '../../pages'
 
 const mapStateToProps = state => ({
   ...getEntries(state),

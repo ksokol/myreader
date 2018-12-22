@@ -26,12 +26,12 @@ import {
   ConfirmButton,
   FeedFetchErrors,
   Icon,
-  IconButton,
-  LoginPage
+  IconButton
 } from './components'
 import {ContainerComponentBridge} from './containers'
 
 import './config'
+import {LoginPage} from './pages'
 
 angular
   .module('myreader', [ngRedux, 'common.config', 'ui.router', 'react'])

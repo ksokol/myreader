@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {fetchSubscriptions, filteredBySearchSubscriptionsSelector, routeChange, routeSelector} from '../../store'
-import {SubscriptionListPage} from '../../components'
+import {SubscriptionListPage} from '../../pages'
 
 const mapStateToProps = state => ({
   ...filteredBySearchSubscriptionsSelector(state),

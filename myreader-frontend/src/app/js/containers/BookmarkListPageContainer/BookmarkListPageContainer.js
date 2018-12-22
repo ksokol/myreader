@@ -10,7 +10,7 @@ import {
   routeSelector,
   settingsShowEntryDetailsSelector
 } from '../../store'
-import {BookmarkListPage} from '../../components'
+import {BookmarkListPage} from '../../pages'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
 
 const mapStateToProps = state => ({

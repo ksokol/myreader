@@ -1,5 +1,5 @@
 export {default as ContainerComponentBridge} from './ContainerComponentBridge'
-export * from './SettingsContainer'
+export {default as SettingsPageContainer} from './SettingsPageContainer/SettingsPageContainer'
 export * from './SubscriptionTagsContainer'
 export * from './MaintenanceContainer'
 export * from './ToastContainer'

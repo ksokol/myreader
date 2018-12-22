@@ -4,7 +4,7 @@ import {
   EntryStreamPageContainer,
   FeedListPageContainer,
   MaintenanceContainer,
-  SettingsContainer,
+  SettingsPageContainer,
   SubscriptionListPageContainer
 } from './containers'
 
@@ -111,7 +111,7 @@ angular.module('common.config', ['ui.router'])
       })
       .state('app.settings', {
         url: '/settings',
-        views: containerComponent(SettingsContainer)
+        views: containerComponent(SettingsPageContainer)
       })
     $urlRouterProvider.otherwise('/login')
   }])
