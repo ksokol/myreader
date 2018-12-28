@@ -1,19 +1,40 @@
-import './ColorPicker.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import GithubPicker from 'react-color/lib/Github'
-import colorPalette from './colorPalette'
+import iro from '@jaames/iro'
 import {noop} from '../../shared/utils'
 
-const ColorPicker = ({onChange}) =>
-  <GithubPicker
-    className='my-color-picker'
-    colors={colorPalette}
-    onChange={color => onChange(color.hex)}
-    triangle='hide'>
-  </GithubPicker>
+const changeEventName = 'color:change'
+
+class ColorPicker extends React.Component {
+
+  constructor(props) {
+    super(props)
+
+    this.myRef = React.createRef()
+    this.onChange = this.onChange.bind(this)
+  }
+
+  componentDidMount() {
+    const {color} = this.props
+    this.colorPicker = new iro.ColorPicker(this.myRef.current, {color})
+    this.colorPicker.on(changeEventName, this.onChange)
+  }
+
+  componentWillUnmount() {
+    this.colorPicker.off(changeEventName, this.onChange)
+  }
+
+  onChange(color) {
+    this.props.onChange(color.hexString)
+  }
+
+  render() {
+    return <div ref={this.myRef} />
+  }
+}
 
 ColorPicker.propTypes = {
+  color: PropTypes.string,
   onChange: PropTypes.func
 }
 

@@ -43,7 +43,7 @@ class SubscriptionTagColorPicker extends React.Component {
     } = this.props
 
     const header = <Badge text={tag.name} color={currentColor} />
-    const body = <ColorPicker onChange={this.onChangeColor} />
+    const body = <ColorPicker color={tag.color} onChange={this.onChangeColor} />
     const footer = <Button onClick={this.onClickSaveButton} primary>save</Button>
 
     return (

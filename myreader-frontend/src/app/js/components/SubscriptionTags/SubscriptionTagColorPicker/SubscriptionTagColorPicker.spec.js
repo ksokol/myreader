@@ -53,6 +53,9 @@ describe('SubscriptionTagColorPicker', () => {
 
   it('should render dialog body', () => {
     expect(dialog.body.type).toEqual(ColorPicker)
+    expect(dialog.body.props).toContainObject({
+      color: 'expected color'
+    })
   })
 
   it('should render dialog footer', () => {
