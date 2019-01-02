@@ -34,9 +34,9 @@ function subscriptionDeleted({state, action}) {
 }
 
 function subscriptionSaved({state, action}) {
-  let subscriptions = !state.subscriptions.some(it => it.uuid === action.subscription.uuid) ?
-    [...state.subscriptions, action.subscription] :
-    state.subscriptions.map(it => it.uuid === action.subscription.uuid ? action.subscription : it)
+  let subscriptions = !state.subscriptions.some(it => it.uuid === action.data.uuid) ?
+    [...state.subscriptions, action.data] :
+    state.subscriptions.map(it => it.uuid === action.data.uuid ? action.data : it)
 
   return {
     ...state,
@@ -87,7 +87,11 @@ function subscriptionExclusionPatternsRemoved({state, action}) {
 function subscriptionEditFormClear({state}) {
   return {
     ...state,
-    editForm: null
+    editForm: {
+      changePending: false,
+      data: null,
+      validations: []
+    }
   }
 }
 
@@ -95,19 +99,10 @@ function subscriptionEditFormLoad({state, action}) {
   return {
     ...state,
     editForm: {
-      ...action.subscription
+      changePending: false,
+      data: action.subscription,
+      validations: state.editForm.validations
     }
-  }
-}
-
-function subscriptionEditFormUpdate({state, action}) {
-  let editForm = state.editForm
-  if (editForm && editForm.uuid === action.subscription.uuid) {
-    editForm = {...action.subscription}
-  }
-  return {
-    ...state,
-    editForm
   }
 }
 
@@ -121,44 +116,95 @@ function subscriptionTagChanged({state, action}) {
   return {...state, subscriptions}
 }
 
+function subscriptionEditFormChanging({state}) {
+  return {
+    ...state,
+    editForm: {
+      ...state.editForm,
+      changePending: true
+    }
+  }
+}
+
+function subscriptionEditFormChanged({state}) {
+  return {
+    ...state,
+    editForm: {
+      ...state.editForm,
+      changePending: false
+    }
+  }
+}
+
+function subscriptionEditFormValidations({state, action}) {
+  return {
+    ...state,
+    editForm: {
+      ...state.editForm,
+      validations: action.validations
+    }
+  }
+}
+function subscriptionEditFormChangeData({state, action}) {
+  return {
+    ...state,
+    editForm: {
+      ...state.editForm,
+      data: action.data
+    }
+  }
+}
+
 export function subscriptionReducers(state = initialApplicationState().subscription, action) {
   switch (action.type) {
-    case types.SUBSCRIPTIONS_RECEIVED: {
-      return subscriptionsReceived({state, action})
-    }
-    case types.ENTRY_CHANGED: {
-      return subscriptionChanged({state, action})
-    }
-    case types.SUBSCRIPTION_DELETED: {
-      return subscriptionDeleted({state, action})
-    }
-    case types.SUBSCRIPTION_SAVED: {
-      const newState = subscriptionSaved({state, action})
-      return subscriptionEditFormUpdate({state: newState, action})
-    }
-    case types.SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED: {
-      return subscriptionExclusionPatternsReceived({state, action})
-    }
-    case types.SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED: {
-      return subscriptionExclusionPatternsAdded({state, action})
-    }
-    case types.SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED: {
-      return subscriptionExclusionPatternsRemoved({state, action})
-    }
-    case types.SUBSCRIPTION_EDIT_FORM_CLEAR: {
-      return subscriptionEditFormClear({state, action})
-    }
-    case types.SUBSCRIPTION_EDIT_FORM_LOAD: {
-      return subscriptionEditFormLoad({state, action})
-    }
-    case types.SUBSCRIPTION_TAG_CHANGED: {
-      return subscriptionTagChanged({state, action})
-    }
-    case types.SECURITY_UPDATE: {
-      return securityUpdate({state, action})
-    }
-    default: {
-      return state
-    }
+  case types.SUBSCRIPTIONS_RECEIVED: {
+    return subscriptionsReceived({state, action})
+  }
+  case types.ENTRY_CHANGED: {
+    return subscriptionChanged({state, action})
+  }
+  case types.SUBSCRIPTION_DELETED: {
+    return subscriptionDeleted({state, action})
+  }
+  case types.SUBSCRIPTION_EDIT_FORM_SAVED: {
+    const newState = subscriptionSaved({state, action})
+    return subscriptionEditFormChangeData({state: newState, action})
+  }
+  case types.SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED: {
+    return subscriptionExclusionPatternsReceived({state, action})
+  }
+  case types.SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED: {
+    return subscriptionExclusionPatternsAdded({state, action})
+  }
+  case types.SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED: {
+    return subscriptionExclusionPatternsRemoved({state, action})
+  }
+  case types.SUBSCRIPTION_EDIT_FORM_CLEAR: {
+    return subscriptionEditFormClear({state, action})
+  }
+  case types.SUBSCRIPTION_EDIT_FORM_LOAD: {
+    return subscriptionEditFormLoad({state, action})
+  }
+  case types.SUBSCRIPTION_TAG_CHANGED: {
+    return subscriptionTagChanged({state, action})
+  }
+  case types.SUBSCRIPTION_EDIT_FORM_CHANGING: {
+    return subscriptionEditFormChanging({state, action})
+  }
+  case types.SUBSCRIPTION_EDIT_FORM_CHANGED: {
+    return subscriptionEditFormChanged({state, action})
+  }
+  case types.SUBSCRIPTION_EDIT_FORM_VALIDATIONS: {
+    return subscriptionEditFormValidations({state, action})
+  }
+  case types.SUBSCRIPTION_EDIT_FORM_CHANGE_DATA: {
+    return subscriptionEditFormChangeData({state, action})
+  }
+  case types.SECURITY_UPDATE: {
+    return securityUpdate({state, action})
+  }
+  default: {
+    return state
+  }
   }
 }

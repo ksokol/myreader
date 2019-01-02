@@ -5,6 +5,7 @@ import {
   FeedListPageContainer,
   MaintenancePageContainer,
   SettingsPageContainer,
+  SubscriptionEditPageContainer,
   SubscriptionListPageContainer
 } from './containers'
 
@@ -87,11 +88,7 @@ angular.module('common.config', ['ui.router'])
       })
       .state('app.subscription', {
         url: '/subscriptions/:uuid',
-        views: {
-          content: {
-            template: '<my-subscription></my-subscription>'
-          }
-        }
+        views: containerComponent(SubscriptionEditPageContainer)
       })
       .state('admin.overview', {
         url: '/overview',

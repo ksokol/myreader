@@ -1,4 +1,5 @@
 import {cloneObject} from '../shared/objects'
+import {isString} from '../../shared/utils'
 
 export function toSubscription(raw = {}) {
   const clone = cloneObject(raw)
@@ -18,7 +19,7 @@ export function toSubscription(raw = {}) {
 export function toBody(subscription) {
   const clone = cloneObject(subscription)
 
-  if (!clone.feedTag || clone.feedTag.name === null) {
+  if (!clone.feedTag || !isString(clone.feedTag.name)) {
     clone.feedTag = null
   }
 

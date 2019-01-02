@@ -2,7 +2,7 @@ import {responseHandler} from './response-handler'
 import {createMockStore} from '../../../shared/test-utils'
 import arrayMiddleware from '../array/arrayMiddleware'
 
-describe('src/app/js/store/middleware/fetch/response-handler.spec.js', () => {
+describe('responseHandler', () => {
 
   let store, actual
 
@@ -27,8 +27,7 @@ describe('src/app/js/store/middleware/fetch/response-handler.spec.js', () => {
     givenHandledResponse({}, {ok: false, status: 400, data: 'response'})
 
     expect(actual).toContainObject({ok: false})
-    expect(store.getActions().length).toEqual(1)
-    expect(store.getActions()[0]).toEqualActionType('FETCH_END')
+    expect(store.getActions()[1]).toEqualActionType('FETCH_END')
   })
 
   it('should dispatch actions SHOW_NOTIFICATION and FETCH_END when request returns HTTP 500', () => {
@@ -37,6 +36,24 @@ describe('src/app/js/store/middleware/fetch/response-handler.spec.js', () => {
     expect(actual).toContainObject({ok: false})
     expect(store.getActions().length).toEqual(2)
     expect(store.getActions()[0]).toContainObject({type: 'SHOW_NOTIFICATION', notification: {text: 'response'}})
+    expect(store.getActions()[1]).toEqualActionType('FETCH_END')
+  })
+
+  it('should dispatch action SHOW_NOTIFICATION with serialized response object when request returns HTTP 500', () => {
+    givenHandledResponse({}, {ok: false, status: 500, data: {a: 'b'}})
+
+    expect(actual).toContainObject({ok: false})
+    expect(store.getActions().length).toEqual(2)
+    expect(store.getActions()[0]).toContainObject({
+      type: 'SHOW_NOTIFICATION',
+      notification: {
+        text: JSON.stringify({
+          ok: false,
+          status: 500,
+          data: {a: 'b'}
+        })
+      }
+    })
     expect(store.getActions()[1]).toEqualActionType('FETCH_END')
   })
 
@@ -171,13 +188,13 @@ describe('src/app/js/store/middleware/fetch/response-handler.spec.js', () => {
   it('should not dispatch action when error callback returns null', () => {
     givenHandledResponse({error: () => null}, {ok: false})
 
-    expect(store.getActionTypes()).toEqual(['FETCH_END'])
+    expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION', 'FETCH_END'])
   })
 
   it('should not dispatch action when error callback returns array with null', () => {
     givenHandledResponse({error: [() => null]}, {ok: false})
 
-    expect(store.getActionTypes()).toEqual(['FETCH_END'])
+    expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION', 'FETCH_END'])
   })
 
   it('should dispatch finalize action when response succeeded', () => {
@@ -189,7 +206,7 @@ describe('src/app/js/store/middleware/fetch/response-handler.spec.js', () => {
   it('should dispatch finalize action when response failed', () => {
     givenHandledResponse({finalize: () => ({type: 'FINALIZE_ACTION'})}, {ok: false})
 
-    expect(store.getActions()[1]).toEqual({type: 'FINALIZE_ACTION'})
+    expect(store.getActions()[2]).toEqual({type: 'FINALIZE_ACTION'})
   })
 
   it('should dispatch finalize action when response is unauthorized', () => {

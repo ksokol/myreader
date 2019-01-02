@@ -6,13 +6,14 @@ import {
   fetchSubscriptions,
   loadSubscriptionIntoEditForm,
   removeSubscriptionExclusionPattern,
-  saveSubscription,
+  saveSubscriptionEditForm,
   saveSubscriptionTag,
   subscriptionDeleted,
+  subscriptionEditFormChangeData,
+  subscriptionEditFormSaved,
   subscriptionExclusionPatternsAdded,
   subscriptionExclusionPatternsReceived,
   subscriptionExclusionPatternsRemoved,
-  subscriptionSaved,
   subscriptionsReceived
 } from '../../store'
 import {createMockStore} from '../../shared/test-utils'
@@ -23,7 +24,7 @@ describe('subscription actions', () => {
 
   beforeEach(() => store = createMockStore())
 
-  describe('SUBSCRIPTIONS_RECEIVED', () => {
+  describe('action creator subscriptionsReceived', () => {
 
     it('should contain expected action type', () => {
       store.dispatch(subscriptionsReceived())
@@ -41,7 +42,7 @@ describe('subscription actions', () => {
     })
   })
 
-  describe('action creator fetchSubscriptions()', () => {
+  describe('action creator fetchSubscriptions', () => {
 
     it('should use HTTP verb GET as type', () => {
       store.dispatch(fetchSubscriptions())
@@ -68,7 +69,7 @@ describe('subscription actions', () => {
     })
   })
 
-  describe('SUBSCRIPTION_DELETED', () => {
+  describe('action creator subscriptionDeleted', () => {
 
     it('should contain expected action type', () => {
       store.dispatch(subscriptionDeleted('1'))
@@ -81,7 +82,7 @@ describe('subscription actions', () => {
     })
   })
 
-  describe('action creator deleteSubscription()', () => {
+  describe('action creator deleteSubscription', () => {
 
     it('should contain expected action type', () => {
       store.dispatch(deleteSubscription('1'))
@@ -90,7 +91,13 @@ describe('subscription actions', () => {
 
     it('should return expected action data', () => {
       store.dispatch(deleteSubscription('uuid1'))
-      expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions/uuid1'})
+      expect(store.getActions()[0].url).toMatch(/api\/2\/subscriptions\/uuid1$/)
+    })
+
+    it('should dispatch actions defined in before property', () => {
+      store.dispatch(deleteSubscription('uuid1').before())
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGING'])
     })
 
     it('should dispatch actions defined in success property', () => {
@@ -99,64 +106,102 @@ describe('subscription actions', () => {
       store.clearActions()
       success.forEach(action => store.dispatch(action({uuid: '1'})))
 
-      expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION', 'SUBSCRIPTION_DELETED'])
+      expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION', 'SUBSCRIPTION_DELETED', 'ROUTE_CHANGED'])
       expect(store.getActions()[0]).toContainActionData({notification: {text: 'Subscription deleted', type: 'success'}})
       expect(store.getActions()[1]).toContainObject({type: 'SUBSCRIPTION_DELETED', uuid: 'uuid1'})
+      expect(store.getActions()[2]).toContainObject({route: ['app', 'subscriptions']})
+    })
+
+    it('should dispatch actions defined in finalize property', () => {
+      store.dispatch(deleteSubscription('uuid1').finalize())
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGED'])
     })
   })
 
-  describe('SUBSCRIPTION_SAVED', () => {
+  describe('action creator subscriptionEditFormSaved', () => {
 
     it('should contain expected action type', () => {
-      store.dispatch(subscriptionSaved({uuid: '1', title: 'expected title'}))
-      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_SAVED'])
+      store.dispatch(subscriptionEditFormSaved({uuid: '1', title: 'expected title'}))
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_SAVED'])
     })
 
     it('should return expected action data', () => {
-      store.dispatch(subscriptionSaved({uuid: '1', title: 'expected title', feedTag: null}))
-      expect(store.getActions()[0]).toContainActionData({subscription: {uuid: '1', title: 'expected title', feedTag: {name: undefined, color: undefined}}})
+      store.dispatch(subscriptionEditFormSaved({uuid: '1', title: 'expected title', feedTag: null}))
+      expect(store.getActions()[0]).toContainActionData({
+        data: {
+          uuid: '1',
+          title: 'expected title',
+          feedTag: {
+            name: undefined,
+            color: undefined
+          }
+        }
+      })
     })
 
     it('should return copy of subscription', () => {
       const raw = {uuid: '1', title: 'expected title'}
-      const subscription = subscriptionSaved(raw).subscription
+      const subscription = subscriptionEditFormSaved(raw).data
       raw.title = 'other title'
 
       expect(subscription).toContainObject({uuid: '1', title: 'expected title'})
     })
   })
 
-  describe('action creator saveSubscription', () => {
+  describe('action creator saveSubscriptionEditForm', () => {
+
+    it('should dispatch actions defined in before property', () => {
+      saveSubscriptionEditForm({}).before.forEach(action => store.dispatch(action()))
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGING', 'SUBSCRIPTION_EDIT_FORM_VALIDATIONS'])
+      expect(store.getActions()[1]).toContainActionData({validations: []})
+    })
 
     it('should contain expected post action type', () => {
-      store.dispatch(saveSubscription({}))
+      store.dispatch(saveSubscriptionEditForm({}))
 
       expect(store.getActionTypes()).toEqual(['POST_SUBSCRIPTION'])
-      expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions'})
+      expect(store.getActions()[0].url).toMatch(/api\/2\/subscriptions$/)
     })
 
     it('should contain expected patch action type', () => {
-      store.dispatch(saveSubscription({uuid: '1'}))
+      store.dispatch(saveSubscriptionEditForm({uuid: '1'}))
 
       expect(store.getActionTypes()).toEqual(['PATCH_SUBSCRIPTION'])
-      expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions/1'})
+      expect(store.getActions()[0].url).toMatch(/api\/2\/subscriptions\/1$/)
     })
 
     it('should return expected action data', () => {
-      store.dispatch(saveSubscription({uuid: '1', title: 'expected title'}))
+      store.dispatch(saveSubscriptionEditForm({uuid: '1', title: 'expected title'}))
 
       expect(store.getActions()[0]).toContainActionData({body: {uuid: '1', title: 'expected title'}})
     })
 
     it('should dispatch actions defined in success property', () => {
-      store.dispatch(saveSubscription({uuid: '1', title: 'expected title'}))
-      const success = store.getActions()[0].success
-      store.clearActions()
+      const success = saveSubscriptionEditForm({}).success
       success.forEach(action => store.dispatch(action({uuid: '1', title: 'expected updated title', feedTag: null})))
 
-      expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION', 'SUBSCRIPTION_SAVED'])
+      expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION', 'SUBSCRIPTION_EDIT_FORM_SAVED'])
       expect(store.getActions()[0]).toContainActionData({notification: {text: 'Subscription saved', type: 'success'}})
-      expect(store.getActions()[1]).toContainActionData({subscription: {uuid: '1', title: 'expected updated title', feedTag: {name: undefined, color: undefined}}})
+      expect(store.getActions()[1]).toContainActionData({data: {uuid: '1', title: 'expected updated title', feedTag: {name: undefined, color: undefined}}})
+    })
+
+    it('should dispatch actions defined in error property', () => {
+      store.dispatch(saveSubscriptionEditForm({}).error({status: 400, fieldErrors: [{a: 'b', c: 'd'}]}))
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_VALIDATIONS'])
+      expect(store.getActions()[0]).toContainActionData({validations: [{a: 'b', c: 'd'}]})
+    })
+
+    it('should not return any error action when status is not 403', () => {
+      expect(saveSubscriptionEditForm({}).error({status: 403})).toBeUndefined()
+    })
+
+    it('should dispatch actions defined in finalize property', () => {
+      store.dispatch(saveSubscriptionEditForm({}).finalize())
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGED'])
     })
   })
 
@@ -189,7 +234,7 @@ describe('subscription actions', () => {
     it('should contain expected patch action type', () => {
       store.dispatch(fetchSubscriptionExclusionPatterns('expected uuid'))
 
-      expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/exclusions/expected uuid/pattern'})
+      expect(store.getActions()[0].url).toMatch(/api\/2\/exclusions\/expected uuid\/pattern$/)
     })
 
     it('should dispatch actions defined in success property', () => {
@@ -231,6 +276,12 @@ describe('subscription actions', () => {
 
   describe('action creator addSubscriptionExclusionPattern', () => {
 
+    it('should dispatch actions defined in before property', () => {
+      store.dispatch(addSubscriptionExclusionPattern().before())
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGING'])
+    })
+
     it('should contain expected action type', () => {
       store.dispatch(addSubscriptionExclusionPattern())
 
@@ -240,14 +291,12 @@ describe('subscription actions', () => {
     it('should contain expected patch action type', () => {
       store.dispatch(addSubscriptionExclusionPattern('1', 'expected pattern'))
 
-      expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/exclusions/1/pattern'})
+      expect(store.getActions()[0].url).toMatch(/api\/2\/exclusions\/1\/pattern$/)
       expect(store.getActions()[0]).toContainActionData({body: {pattern: 'expected pattern'}})
     })
 
     it('should dispatch actions defined in success property', () => {
-      store.dispatch(addSubscriptionExclusionPattern('1'))
-      const success = store.getActions()[0].success
-      store.clearActions()
+      const success = addSubscriptionExclusionPattern('1').success
       store.dispatch(success({uuid: '2', hitCount: 0, pattern: 'a'}))
 
       expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED'])
@@ -255,6 +304,12 @@ describe('subscription actions', () => {
         subscriptionUuid: '1',
         pattern: {uuid: '2', hitCount: 0, pattern: 'a'}
       })
+    })
+
+    it('should dispatch actions defined in finalize property', () => {
+      store.dispatch(addSubscriptionExclusionPattern().finalize())
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGED'])
     })
   })
 
@@ -278,6 +333,12 @@ describe('subscription actions', () => {
 
   describe('action creator removeSubscriptionExclusionPattern', () => {
 
+    it('should dispatch actions defined in before property', () => {
+      store.dispatch(removeSubscriptionExclusionPattern().before())
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGING'])
+    })
+
     it('should contain expected action type', () => {
       store.dispatch(removeSubscriptionExclusionPattern())
 
@@ -298,6 +359,12 @@ describe('subscription actions', () => {
 
       expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED'])
       expect(store.getActions()[0]).toContainActionData({subscriptionUuid: '1', uuid: '2'})
+    })
+
+    it('should dispatch actions defined in finalize property', () => {
+      store.dispatch(removeSubscriptionExclusionPattern().finalize())
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGED'])
     })
   })
 
@@ -378,6 +445,21 @@ describe('subscription actions', () => {
       expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_TAG_CHANGED', 'SHOW_NOTIFICATION'])
       expect(store.getActions()[0]).toContainActionData({subscriptionTag: {uuid: 'uuid1', a: 'b', c: 'd'}})
       expect(store.getActions()[1]).toContainActionData({notification: {text: 'Tag updated', type: 'success'}})
+    })
+  })
+
+  describe('action creator subscriptionEditFormChangeData', () => {
+
+    it('should contain expected action type', () => {
+      store.dispatch(subscriptionEditFormChangeData())
+
+      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGE_DATA'])
+    })
+
+    it('should contain expected action payload', () => {
+      store.dispatch(subscriptionEditFormChangeData({a: 'b', c: 'd'}))
+
+      expect(store.getActions()[0]).toContainObject({data: {a: 'b', c: 'd'}})
     })
   })
 })

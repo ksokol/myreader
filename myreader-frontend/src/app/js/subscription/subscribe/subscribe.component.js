@@ -1,6 +1,6 @@
 import template from './subscribe.component.html'
 import './subscribe.component.css'
-import {routeChange, saveSubscription} from '../../store'
+import {routeChange, saveSubscriptionEditForm} from '../../store'
 import {Input, withValidations} from '../../components'
 
 /**
@@ -22,7 +22,7 @@ class controller {
   onSave() {
     this.validations = undefined
     this.pendingAction = true
-    this.$ngRedux.dispatch(saveSubscription({origin: this.origin}))
+    this.$ngRedux.dispatch(saveSubscriptionEditForm({origin: this.origin}))
       .then(({uuid}) => this.$ngRedux.dispatch(routeChange(['app', 'subscription'], {uuid})))
       .catch(error => {
         if (error.status === 400) {

@@ -1,7 +1,7 @@
 import * as types from '../../store/action-types'
 import {toBody, toExclusionPattern, toExclusionPatterns, toSubscription, toSubscriptions} from './subscription'
 import {EXCLUSION_TAGS, SUBSCRIPTION_TAGS, SUBSCRIPTIONS} from '../../constants'
-import {showSuccessNotification, subscriptionByUuidSelector} from '../../store'
+import {routeChange, showSuccessNotification, subscriptionByUuidSelector} from '../../store'
 
 export const subscriptionsReceived = raw => {
   return {
@@ -19,36 +19,64 @@ export const fetchSubscriptions = () => {
 }
 
 export const subscriptionDeleted = uuid => {
-  return {type: types.SUBSCRIPTION_DELETED, uuid}
+  return {
+    type: types.SUBSCRIPTION_DELETED,
+    uuid
+  }
+}
+
+const subscriptionEditFormChanging = () => {
+  return {
+    type: types.SUBSCRIPTION_EDIT_FORM_CHANGING
+  }
+}
+
+const subscriptionEditFormChanged = () => {
+  return {
+    type: types.SUBSCRIPTION_EDIT_FORM_CHANGED
+  }
 }
 
 export const deleteSubscription = uuid => {
   return {
     type: 'DELETE_SUBSCRIPTION',
     url: `${SUBSCRIPTIONS}/${uuid}`,
+    before: subscriptionEditFormChanging,
     success: [
       () => showSuccessNotification('Subscription deleted'),
-      () => subscriptionDeleted(uuid)
-    ]
+      () => subscriptionDeleted(uuid),
+      () => routeChange(['app', 'subscriptions'])
+    ],
+    finalize: subscriptionEditFormChanged
   }
 }
 
-export const subscriptionSaved = raw => {
+export const subscriptionEditFormSaved = raw => {
   return {
-    type: types.SUBSCRIPTION_SAVED,
-    subscription: toSubscription(raw)
+    type: types.SUBSCRIPTION_EDIT_FORM_SAVED,
+    data: toSubscription(raw)
   }
 }
 
-export const saveSubscription = subscription => {
+export const saveSubscriptionEditForm = subscription => {
   return {
     type: subscription.uuid ? 'PATCH_SUBSCRIPTION' : 'POST_SUBSCRIPTION',
     url: subscription.uuid ? `${SUBSCRIPTIONS}/${subscription.uuid}` : SUBSCRIPTIONS,
     body: toBody(subscription),
+    before: [
+      subscriptionEditFormChanging,
+      () => subscriptionEditFormValidations([])
+    ],
     success: [
       () => showSuccessNotification('Subscription saved'),
-      response => subscriptionSaved(response)
-    ]
+      response => subscriptionEditFormSaved(response)
+    ],
+    error: error => {
+      if (error.status === 400) {
+        return subscriptionEditFormValidations(error.fieldErrors)
+      }
+    },
+    finalize: subscriptionEditFormChanged
   }
 }
 
@@ -81,7 +109,9 @@ export const addSubscriptionExclusionPattern = (subscriptionUuid, pattern) => {
     type: 'POST_SUBSCRIPTION_EXCLUSION_PATTERN',
     url: `${EXCLUSION_TAGS}/${subscriptionUuid}/pattern`,
     body: {pattern},
-    success: response => subscriptionExclusionPatternsAdded(subscriptionUuid, response)
+    before: subscriptionEditFormChanging,
+    success: response => subscriptionExclusionPatternsAdded(subscriptionUuid, response),
+    finalize: subscriptionEditFormChanged
   }
 }
 
@@ -97,7 +127,9 @@ export const removeSubscriptionExclusionPattern = (subscriptionUuid, uuid) => {
   return {
     type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS',
     url: `${EXCLUSION_TAGS}/${subscriptionUuid}/pattern/${uuid}`,
-    success: () => subscriptionExclusionPatternsRemoved(subscriptionUuid, uuid)
+    before: subscriptionEditFormChanging,
+    success: () => subscriptionExclusionPatternsRemoved(subscriptionUuid, uuid),
+    finalize: subscriptionEditFormChanged
   }
 }
 
@@ -132,11 +164,26 @@ export const saveSubscriptionTag = subscriptionTag => {
     type: 'PATCH_SUBSCRIPTION_TAG',
     url: `${SUBSCRIPTION_TAGS}/${subscriptionTag.uuid}`,
     body: subscriptionTag,
-    success: response => [{
-      type: types.SUBSCRIPTION_TAG_CHANGED,
-      subscriptionTag: response
-    },
+    success: response => [
+      {
+        type: types.SUBSCRIPTION_TAG_CHANGED,
+        subscriptionTag: response
+      },
       showSuccessNotification('Tag updated')
     ]
+  }
+}
+
+const subscriptionEditFormValidations = validations => {
+  return {
+    type: types.SUBSCRIPTION_EDIT_FORM_VALIDATIONS,
+    validations
+  }
+}
+
+export const subscriptionEditFormChangeData = data => {
+  return {
+    type: types.SUBSCRIPTION_EDIT_FORM_CHANGE_DATA,
+    data
   }
 }

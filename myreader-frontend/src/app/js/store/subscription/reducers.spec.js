@@ -114,17 +114,18 @@ describe('subscription reducer', () => {
     })
   })
 
-  describe('SUBSCRIPTION_SAVED', () => {
+  describe('action SUBSCRIPTION_EDIT_FORM_SAVED', () => {
 
-    const action = subscription => {
+    const action = data => {
       return {
-        type: 'SUBSCRIPTION_SAVED',
-        subscription
+        type: 'SUBSCRIPTION_EDIT_FORM_SAVED',
+        data
       }
     }
 
     beforeEach(() => {
       state = {
+        editForm: {},
         subscriptions: [
           {uuid: '1', title: 'title1'},
           {uuid: '2', title: 'title2'}
@@ -132,7 +133,7 @@ describe('subscription reducer', () => {
       }
     })
 
-    it('should update subscription in store when in store', () => {
+    it('should update subscription when in store', () => {
       expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'}))).toContainObject({
         subscriptions: [
           {uuid: '1', title: 'title1'},
@@ -141,29 +142,21 @@ describe('subscription reducer', () => {
       })
     })
 
-    it('should add subscription to store when not in store', () => {
+    it('should add subscription to store', () => {
       expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'}))).toContainObject({
         subscriptions: [
-          {uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'},
-          {
-            uuid: '3', title: 'title3'
-          }]
+          {uuid: '1', title: 'title1'},
+          {uuid: '2', title: 'title2'},
+          {uuid: '3', title: 'title3'}
+        ]
       })
     })
 
-    it('should update editForm when uuid matches', () => {
-      state = {...state, editForm: {uuid: '2', title: 'a title'}}
+    it('should update editForm', () => {
+      state = {...state, editForm: {data: {uuid: '2', title: 'a title'}}}
 
       expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'}))).toContainObject({
-        editForm: {uuid: '2', title: 'new title'}
-      })
-    })
-
-    it('should not update editForm when uuid does not match', () => {
-      state = {...state, editForm: {uuid: '1', title: 'a title'}}
-
-      expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'}))).toContainObject({
-        editForm: {uuid: '1', title: 'a title'}
+        editForm: {data: {uuid: '2', title: 'new title'}}
       })
     })
   })
@@ -267,8 +260,21 @@ describe('subscription reducer', () => {
     }
 
     it('should reset editForm', () => {
-      const currentState = {editForm: {uuid: 'uuid1'}}
-      const expectedState = {editForm: null}
+      const currentState = {
+        editForm: {
+          changePending: true,
+          data: {a: 'b'},
+          validations: [{c: 'd'}]
+        }
+      }
+
+      const expectedState = {
+        editForm: {
+          changePending: false,
+          data: null,
+          validations: []
+        }
+      }
 
       expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
     })
@@ -278,12 +284,25 @@ describe('subscription reducer', () => {
 
     const action = {
       type: 'SUBSCRIPTION_EDIT_FORM_LOAD',
-      subscription: {uuid: 'uuid1', a: 'b'}
+      subscription: {a: 'b'}
     }
 
     it('should set editForm', () => {
-      const currentState = {editForm: null}
-      const expectedState = {editForm: {uuid: 'uuid1', a: 'b'}}
+      const currentState = {
+        editForm: {
+          changePending: true,
+          data: null,
+          validations: [{c: 'd'}]
+        }
+      }
+
+      const expectedState = {
+        editForm: {
+          changePending: false,
+          data: {a: 'b'},
+          validations: [{c: 'd'}]
+        }
+      }
 
       expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
     })
@@ -314,6 +333,112 @@ describe('subscription reducer', () => {
       }
 
       expect(subscriptionReducers(state, action)).toEqual(expectedState)
+    })
+  })
+
+  describe('action SUBSCRIPTION_EDIT_FORM_CHANGING', () => {
+
+    it('should set editForm.changePending to true', () => {
+      state = {
+        editForm: {
+          changePending: false,
+          data: {uuid: '2',},
+          validations: [{a: 'b'}]
+        }
+      }
+
+      expect(subscriptionReducers(state, {type: 'SUBSCRIPTION_EDIT_FORM_CHANGING'})).toContainObject({
+        editForm: {
+          changePending: true,
+          data: {uuid: '2'},
+          validations: [{a: 'b'}]
+        }
+      })
+    })
+  })
+
+  describe('action SUBSCRIPTION_EDIT_FORM_CHANGED', () => {
+
+    it('should set editForm.changePending to false', () => {
+      state = {
+        editForm: {
+          changePending: true,
+          data: {uuid: '2',},
+          validations: [{a: 'b'}]
+        }
+      }
+
+      expect(subscriptionReducers(state, {type: 'SUBSCRIPTION_EDIT_FORM_CHANGED'})).toContainObject({
+        editForm: {
+          changePending: false,
+          data: {uuid: '2'},
+          validations: [{a: 'b'}]
+        }
+      })
+    })
+  })
+
+  describe('action SUBSCRIPTION_EDIT_FORM_VALIDATIONS', () => {
+
+    const action = validations => {
+      return {
+        type: 'SUBSCRIPTION_EDIT_FORM_VALIDATIONS',
+        validations
+      }
+    }
+
+    it('should set editForm.validations', () => {
+      state = {
+        editForm: {
+          changePending: true,
+          data: {uuid: '2'},
+          validations: [{a: 'b'}]
+        }
+      }
+
+      expect(subscriptionReducers(state, action([{c: 'd'}]))).toContainObject({
+        editForm: {
+          changePending: true,
+          data: {uuid: '2'},
+          validations: [{c: 'd'}]
+        }
+      })
+    })
+  })
+
+  describe('action SUBSCRIPTION_EDIT_FORM_CHANGE_DATA', () => {
+
+    const action = data => {
+      return {
+        type: 'SUBSCRIPTION_EDIT_FORM_CHANGE_DATA',
+        data
+      }
+    }
+
+    beforeEach(() => {
+      state = {
+        editForm: {
+          changePending: true,
+          data: {
+            uuid: '2',
+            title: 'a title'
+          },
+          validations: [{a: 'b'}]
+        }
+      }
+    })
+
+    it('should update editForm when uuid matches', () => {
+      expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'}))).toContainObject({
+        editForm: {
+          changePending: true,
+          data: {
+            uuid: '2',
+            title: 'new title'
+          },
+          validations: [{a: 'b'}]
+        }
+      })
     })
   })
 })

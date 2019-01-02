@@ -1,4 +1,5 @@
 import {fetchStart} from '../../../store'
+import {toArray} from '../../../shared/utils'
 
 function toArguments(action) {
   return {
@@ -10,9 +11,7 @@ function toArguments(action) {
 }
 
 function beforeExchange(action, dispatch) {
-  if (action.before) {
-    dispatch(action.before())
-  }
+  toArray(action.before).forEach(action => dispatch(action()))
   dispatch(fetchStart())
 }
 

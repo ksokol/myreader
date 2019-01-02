@@ -159,16 +159,28 @@ describe('subscription selector', () => {
   })
 
   it('should return subscription edit form data', () => {
-    state.subscription.editForm = {a: 'b', c: 'd'}
+    state.subscription.editForm = {
+      changePending: true,
+      data: {a: 'b', c: 'd'}
+    }
 
-    expect(subscriptionEditFormSelector(state)).toEqual({subscription: {a: 'b', c: 'd'}})
+    expect(subscriptionEditFormSelector(state)).toEqual({
+      changePending: true,
+      data: {a: 'b', c: 'd'}
+    })
   })
 
   it('should return copy of subscription edit form data', () => {
-    state.subscription.editForm = {a: 'b', c: 'd'}
+    state.subscription.editForm = {
+      changePending: true,
+      data: {a: 'b', c: 'd'}
+    }
     const selection = subscriptionEditFormSelector(state)
-    state.subscription.editForm.a = 'x'
+    state.subscription.editForm.data.a = 'x'
 
-    expect(selection).toEqual({subscription: {a: 'b', c: 'd'}})
+    expect(selection).toEqual({
+      changePending: true,
+      data: {a: 'b', c: 'd'}
+    })
   })
 })

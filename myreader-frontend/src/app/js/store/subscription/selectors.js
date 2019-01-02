@@ -63,5 +63,5 @@ export const subscriptionTagsSelector = createSelector(
 
 export const subscriptionEditFormSelector = createSelector(
   state => state.subscription.editForm,
-  editForm => ({subscription: cloneObject(editForm)})
+  editForm => cloneObject(editForm)
 )

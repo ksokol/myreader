@@ -2,7 +2,7 @@ import {createMockStore} from '../../../shared/test-utils'
 import {createExchangeHandler} from './exchange-handler'
 import arrayMiddleware from '../array/arrayMiddleware'
 
-describe('src/app/js/store/middleware/fetch/exchange-handler.spec.js', () => {
+describe('exchangeHandler', () => {
 
   let exchange, store, responseHandler, exchangeHandler
 
@@ -125,13 +125,13 @@ describe('src/app/js/store/middleware/fetch/exchange-handler.spec.js', () => {
     })
   })
 
-  it('should dispatch before action before calling exchange', () => {
+  it('should dispatch before actions before calling exchange', () => {
     exchangeHandler({
       type: 'GET_ACTION',
       url: 'expected url',
-      before: () => ({type: 'EXPECTED_BEFORE'})
+      before: () => ([{type: 'EXPECTED_BEFORE1'}, {type: 'EXPECTED_BEFORE2'}])
     }, store.dispatch)
 
-    expect(store.getActionTypes()).toEqual(['EXPECTED_BEFORE', 'FETCH_START'])
+    expect(store.getActionTypes()).toEqual(['EXPECTED_BEFORE1', 'EXPECTED_BEFORE2', 'FETCH_START'])
   })
 })

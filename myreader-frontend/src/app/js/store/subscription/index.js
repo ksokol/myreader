@@ -6,6 +6,10 @@ export default function initialState() {
   return {
     subscriptions: [],
     exclusions: {},
-    editForm: null
+    editForm: {
+      changePending: false,
+      data: null,
+      validations: []
+    }
   }
 }
