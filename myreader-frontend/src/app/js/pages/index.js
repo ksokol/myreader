@@ -6,3 +6,4 @@ export {default as SubscriptionListPage} from './SubscriptionListPage/Subscripti
 export {default as SettingsPage} from './SettingsPage/SettingsPage'
 export {default as MaintenancePage} from './MaintenancePage/MaintenancePage'
 export {default as SubscriptionEditPage} from './SubscriptionEditPage/SubscriptionEditPage'
+export {default as SubscribePage} from './SubscribePage/SubscribePage'

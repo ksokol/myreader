@@ -5,6 +5,7 @@ import {
   FeedListPageContainer,
   MaintenancePageContainer,
   SettingsPageContainer,
+  SubscribePageContainer,
   SubscriptionEditPageContainer,
   SubscriptionListPageContainer
 } from './containers'
@@ -80,11 +81,7 @@ angular.module('common.config', ['ui.router'])
       })
       .state('app.subscription-add', {
         url: '/subscriptions/add',
-        views: {
-          content: {
-            template: '<my-subscribe></my-subscribe>'
-          }
-        }
+        views: containerComponent(SubscribePageContainer)
       })
       .state('app.subscription', {
         url: '/subscriptions/:uuid',

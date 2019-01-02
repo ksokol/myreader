@@ -60,8 +60,8 @@ export const subscriptionEditFormSaved = raw => {
 
 export const saveSubscriptionEditForm = subscription => {
   return {
-    type: subscription.uuid ? 'PATCH_SUBSCRIPTION' : 'POST_SUBSCRIPTION',
-    url: subscription.uuid ? `${SUBSCRIPTIONS}/${subscription.uuid}` : SUBSCRIPTIONS,
+    type: 'PATCH_SUBSCRIPTION',
+    url: `${SUBSCRIPTIONS}/${subscription.uuid}`,
     body: toBody(subscription),
     before: [
       subscriptionEditFormChanging,
@@ -70,6 +70,28 @@ export const saveSubscriptionEditForm = subscription => {
     success: [
       () => showSuccessNotification('Subscription saved'),
       response => subscriptionEditFormSaved(response)
+    ],
+    error: error => {
+      if (error.status === 400) {
+        return subscriptionEditFormValidations(error.fieldErrors)
+      }
+    },
+    finalize: subscriptionEditFormChanged
+  }
+}
+
+export const saveSubscribeEditForm = subscription => {
+  return {
+    type: 'POST_SUBSCRIPTION',
+    url: SUBSCRIPTIONS,
+    body: toBody(subscription),
+    before: [
+      subscriptionEditFormChanging,
+      () => subscriptionEditFormValidations([])
+    ],
+    success: [
+      () => showSuccessNotification('Subscribed'),
+      ({uuid}) => routeChange(['app', 'subscription'], {uuid})
     ],
     error: error => {
       if (error.status === 400) {

@@ -10,3 +10,4 @@ export {default as BookmarkListPageContainer} from './BookmarkListPageContainer/
 export {default as EntryStreamPageContainer} from './EntryStreamPageContainer/EntryStreamPageContainer'
 export {default as BackdropContainer} from './BackdropContainer/BackdropContainer'
 export {default as SubscriptionEditPageContainer} from './SubscriptionEditPageContainer/SubscriptionEditPageContainer'
+export {default as SubscribePageContainer} from './SubscribePageContainer/SubscribePageContainer'

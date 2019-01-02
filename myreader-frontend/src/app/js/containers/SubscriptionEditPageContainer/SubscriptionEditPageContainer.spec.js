@@ -64,10 +64,10 @@ describe('SubscriptionEditPageContainer', () => {
   })
 
   it('should dispatch expected action when prop function "onSaveFormData" triggered', () => {
-    createContainer().props().onSaveFormData({a: 'b', c: 'd'})
+    createContainer().props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
 
     expect(store.getActions()[0]).toContainObject({
-      type: 'POST_SUBSCRIPTION',
+      type: 'PATCH_SUBSCRIPTION',
       body: {a: 'b', c: 'd'}
     })
   })

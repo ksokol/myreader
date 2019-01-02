@@ -7,7 +7,6 @@ import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
 import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
 import {LoginComponent} from './login/login.component'
-import {SubscribeComponent, SubscribeOriginInput} from './subscription/subscribe/subscribe.component'
 import createApplicationStore from './store/bootstrap'
 import {AppComponent} from './app.component'
 import createRouterMiddleware from './store/middleware/router'
@@ -28,7 +27,6 @@ angular
   .value('Button', Button)
 
   .value('FeedFetchErrors', FeedFetchErrors)
-  .value('SubscribeOriginInput', SubscribeOriginInput)
   .value('FeedTitleInput', FeedTitleInput)
   .value('FeedUrlInput', FeedUrlInput)
   .value('LoginPage', LoginPage)
@@ -36,7 +34,6 @@ angular
 
   .component('myFeed', FeedComponent)
   .component('myLogin', LoginComponent)
-  .component('mySubscribe', SubscribeComponent)
   .component('myApp', AppComponent)
 
   .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], ['myStoreEnhancer'])])

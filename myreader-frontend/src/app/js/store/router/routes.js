@@ -50,6 +50,9 @@ export const routeConfiguration = {
         query: {seenEqual: '*', entryTagEqual: ''},
         before: fetchEntryTags,
         resolve: ({query}) => fetchEntries({path: SUBSCRIPTION_ENTRIES, query})
+      },
+      'subscription-add': {
+        before: clearSubscriptionEditForm
       }
     }
   },
