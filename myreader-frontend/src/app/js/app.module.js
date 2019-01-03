@@ -23,8 +23,7 @@ angular
   .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], ['myStoreEnhancer'])])
 
   // TODO part of AngularJS exit strategy
-  .factory('myStoreEnhancer', $state => {
-    'ngInject'
+  .factory('myStoreEnhancer', ['$state', $state => {
     return () => () => {
       const routerMiddleware = createRouterMiddleware(uiRouterAdapter($state))
 
@@ -34,12 +33,10 @@ angular
         [routerMiddleware]
       )
     }
-  })
+  }])
   // TODO part of AngularJS exit strategy
-  .run(($ngRedux, $transitions) => {
-    'ngInject'
-
+  .run(['$ngRedux', '$transitions', ($ngRedux, $transitions) => {
     if (isInDevMode(ENVIRONMENT) || isInProdMode(ENVIRONMENT)) {
       $transitions.onStart({}, t => uiRouterStartTransitionHandler(t, $ngRedux, ENVIRONMENT))
     }
-  })
+  }])

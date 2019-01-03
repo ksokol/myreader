@@ -10,7 +10,6 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
-require('babel-plugin-angularjs-annotate')
 
 const ENV = process.env.npm_lifecycle_event
 const isTest = ENV === 'test' || ENV === 'test-watch'
