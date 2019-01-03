@@ -1,5 +1,4 @@
 import angular from 'angular'
-import ngRedux from 'ng-redux'
 import '@uirouter/angularjs'
 import 'ngreact'
 
@@ -15,28 +14,20 @@ import {ContainerComponentBridge} from './containers'
 import './config'
 
 angular
-  .module('myreader', [ngRedux, 'common.config', 'ui.router', 'react'])
+  .module('myreader', ['common.config', 'ui.router', 'react'])
   .value('ContainerComponentBridge', ContainerComponentBridge)
   .value('WithSidenav', WithSidenav)
   .component('myApp', AppComponent)
 
-  .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], ['myStoreEnhancer'])])
-
   // TODO part of AngularJS exit strategy
-  .factory('myStoreEnhancer', ['$state', $state => {
-    return () => () => {
-      const routerMiddleware = createRouterMiddleware(uiRouterAdapter($state))
+  .run(['$state', '$transitions', ($state, $transitions) => {
+    const store = createApplicationStore(
+      ENVIRONMENT,
+      [installMediaBreakpointActionDispatcher],
+      [createRouterMiddleware(uiRouterAdapter($state))]
+    )
 
-      return createApplicationStore(
-        ENVIRONMENT,
-        [installMediaBreakpointActionDispatcher],
-        [routerMiddleware]
-      )
-    }
-  }])
-  // TODO part of AngularJS exit strategy
-  .run(['$ngRedux', '$transitions', ($ngRedux, $transitions) => {
     if (isInDevMode(ENVIRONMENT) || isInProdMode(ENVIRONMENT)) {
-      $transitions.onStart({}, t => uiRouterStartTransitionHandler(t, $ngRedux, ENVIRONMENT))
+      $transitions.onStart({}, t => uiRouterStartTransitionHandler(t, store, ENVIRONMENT))
     }
   }])
