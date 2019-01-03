@@ -23,21 +23,15 @@ angular
   .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], ['myStoreEnhancer'])])
 
   // TODO part of AngularJS exit strategy
-  .factory('myStoreEnhancer', ($rootScope, $state) => {
+  .factory('myStoreEnhancer', $state => {
     'ngInject'
     return () => () => {
       const routerMiddleware = createRouterMiddleware(uiRouterAdapter($state))
 
-      const digestMiddleware = () => next => action => {
-        const result = next(action)
-        $rootScope.$evalAsync(result)
-        return result
-      }
-
       return createApplicationStore(
         ENVIRONMENT,
         [installMediaBreakpointActionDispatcher],
-        [routerMiddleware, digestMiddleware]
+        [routerMiddleware]
       )
     }
   })
