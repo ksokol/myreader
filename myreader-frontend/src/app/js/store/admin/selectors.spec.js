@@ -1,11 +1,11 @@
 import {
   applicationInfoSelector,
   feedFetchFailuresSelector,
-  feedSelector,
   filteredBySearchFeedsSelector
 } from '../../store'
+import {feedEditFormSelector} from './selectors'
 
-describe('src/app/js/store/admin/selectors.spec.js', () => {
+describe('admin selectors', () => {
 
   let state
 
@@ -14,9 +14,13 @@ describe('src/app/js/store/admin/selectors.spec.js', () => {
       admin: {
         applicationInfo: {a: 'b'},
         feeds: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}],
-        selectedFeed: {uuid: 'expected uuid', a: 'b', c: 'd'},
         fetchFailures: {failures: [{a: 'b', c: 'd'}]},
-        fetchFailuresLoading: true
+        fetchFailuresLoading: true,
+        editForm: {
+          changePending: true,
+          data: {a: 'b', c: 'd'},
+          validations: [{e: 'f'}, {g: 'h'}]
+        }
       },
       router: {
         query: {}
@@ -26,17 +30,6 @@ describe('src/app/js/store/admin/selectors.spec.js', () => {
 
   it('feedSelector should return application info', () => {
     expect(applicationInfoSelector(state)).toEqual({a: 'b'})
-  })
-
-  it('feedSelector should return selected feed', () => {
-    expect(feedSelector(state)).toEqual({uuid: 'expected uuid', a: 'b', c: 'd'})
-  })
-
-  it('feedSelector should return deep copy of selected feed', () => {
-    const actual = feedSelector(state)
-    state.admin.selectedFeed.a = 'x'
-
-    expect(actual).toEqual({uuid: 'expected uuid', a: 'b', c: 'd'})
   })
 
   it('feedFetchFailuresSelector should return feed fetch failures', () =>
@@ -86,5 +79,13 @@ describe('src/app/js/store/admin/selectors.spec.js', () => {
     state.admin.feeds[0].uuid = 'x'
 
     expect(actual.map(it => it.uuid)).toEqual(['1', '2'])
+  })
+
+  it('feedEditFormSelector should return edit form', () => {
+    expect(feedEditFormSelector(state)).toEqual({
+      changePending: true,
+      data: {a: 'b', c: 'd'},
+      validations: [{e: 'f'}, {g: 'h'}]
+    })
   })
 })

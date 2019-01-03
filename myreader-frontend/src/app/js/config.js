@@ -2,6 +2,7 @@ import angular from 'angular'
 import {
   BookmarkListPageContainer,
   EntryStreamPageContainer,
+  FeedEditPageContainer,
   FeedListPageContainer,
   LoginPageContainer,
   MaintenancePageContainer,
@@ -97,11 +98,7 @@ angular.module('common.config', ['ui.router'])
       })
       .state('admin.feed-detail', {
         url: '/feed/:uuid',
-        views: {
-          content: {
-            template: '<my-feed></my-feed>'
-          }
-        }
+        views: containerComponent(FeedEditPageContainer)
       })
       .state('app.settings', {
         url: '/settings',

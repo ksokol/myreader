@@ -20,12 +20,6 @@ export const filteredBySearchFeedsSelector = createSelector(
   }
 )
 
-export const feedSelector =
-  createSelector(
-    adminSelector,
-    admin => cloneObject(admin.selectedFeed)
-  )
-
 export const feedFetchFailuresSelector =
   createSelector(
     adminSelector,
@@ -35,4 +29,10 @@ export const feedFetchFailuresSelector =
         fetchFailuresLoading: admin.fetchFailuresLoading
       }
     }
+  )
+
+export const feedEditFormSelector =
+  createSelector(
+    adminSelector,
+    admin => cloneObject(admin.editForm)
   )

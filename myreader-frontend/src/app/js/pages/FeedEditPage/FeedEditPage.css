@@ -1,27 +1,27 @@
-.admin-feed-form {
+.my-feed-edit-page {
     padding: 10px;
 }
 
-.admin-feed-form__origin {
+.my-feed-edit-page__origin {
     display: flex;
     align-items: center;
 }
 
-.admin-feed-form__origin > react-component {
+.my-feed-edit-page__origin > .my-input {
     flex-grow: 1;
 }
 
-.admin-feed-form__origin > a {
+.my-feed-edit-page__origin > a {
     color: grey;
 }
 
-.admin-feed-form__fetch-error-title {
+.my-feed-edit-page__fetch-error-title {
     font-size: 20px;
     font-weight: 500;
     letter-spacing: 0.005em;
     user-select: none;
 }
 
-.admin-feed-form__buttons {
+.my-feed-edit-page__buttons {
     float: right;
 }

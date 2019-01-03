@@ -5,13 +5,12 @@ import 'ngreact'
 
 import {ENVIRONMENT, isInDevMode, isInProdMode} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
-import {FeedComponent, FeedTitleInput, FeedUrlInput} from './feed/feed.component'
 import createApplicationStore from './store/bootstrap'
 import {AppComponent} from './app.component'
 import createRouterMiddleware from './store/middleware/router'
 import uiRouterAdapter from './shared/router/uiRouterAdapter'
 import uiRouterStartTransitionHandler from './shared/router/uiRouterStartTransitionHandler'
-import {Button, ConfirmButton, FeedFetchErrors, Icon, IconButton} from './components'
+import {IconButton} from './components'
 import {ContainerComponentBridge} from './containers'
 
 import './config'
@@ -19,16 +18,8 @@ import './config'
 angular
   .module('myreader', [ngRedux, 'common.config', 'ui.router', 'react'])
   .value('ContainerComponentBridge', ContainerComponentBridge)
-  .value('Icon', Icon)
   .value('IconButton', IconButton)
-  .value('Button', Button)
 
-  .value('FeedFetchErrors', FeedFetchErrors)
-  .value('FeedTitleInput', FeedTitleInput)
-  .value('FeedUrlInput', FeedUrlInput)
-  .value('ConfirmButton', ConfirmButton)
-
-  .component('myFeed', FeedComponent)
   .component('myApp', AppComponent)
 
   .config(['$ngReduxProvider', $ngReduxProvider => $ngReduxProvider.createStoreWith(state => state, [], ['myStoreEnhancer'])])

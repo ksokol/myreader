@@ -2,14 +2,14 @@ import {FEEDS, SUBSCRIPTION_ENTRIES} from '../../constants'
 import {
   adminPermissionSelector,
   authorizedSelector,
+  clearFeedEditForm,
   clearSubscriptionEditForm,
   entryClear,
-  feedClear,
   feedFetchFailuresClear,
   fetchApplicationInfo,
   fetchEntries,
   fetchEntryTags,
-  fetchFeed,
+  loadFeedIntoEditForm,
   fetchFeedFetchFailures,
   fetchFeeds,
   fetchSubscriptionExclusionPatterns,
@@ -63,9 +63,12 @@ export const routeConfiguration = {
         resolve: fetchFeeds
       },
       'feed-detail': {
-        before: [feedClear, feedFetchFailuresClear],
+        before: [
+          clearFeedEditForm,
+          feedFetchFailuresClear
+        ],
         resolve: [
-          ({query}) => fetchFeed(query.uuid),
+          ({query}) => loadFeedIntoEditForm(query.uuid),
           ({query}) => fetchFeedFetchFailures({path: `${FEEDS}/${query.uuid}/fetchError`})
         ]
       }

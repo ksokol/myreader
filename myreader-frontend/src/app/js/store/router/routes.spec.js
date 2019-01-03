@@ -162,7 +162,7 @@ describe('routes', () => {
       it('should contain expected before action(s)', () => {
         routeConfig.before.forEach(action => store.dispatch(action()))
 
-        expect(store.getActionTypes()).toEqual(['FEED_CLEAR', 'FEED_FETCH_FAILURES_CLEAR'])
+        expect(store.getActionTypes()).toEqual(['FEED_EDIT_FORM_CLEAR', 'FEED_FETCH_FAILURES_CLEAR'])
       })
 
       it('should contain expected resolve action(s)', () => {
