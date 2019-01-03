@@ -1,43 +1,14 @@
 import template from './app.component.html'
 import './app.component.css'
-import {mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from './store'
-import {BackdropContainer, NavigationContainer, ToastContainer} from './containers'
+import {ToastContainer} from './containers'
+import {withSidenav} from './components'
+
+/**
+ * @deprecated
+ */
+export const WithSidenav = withSidenav()
 
 class controller {
-
-  constructor($ngRedux) {
-    'ngInject'
-    this.$ngRedux = $ngRedux
-  }
-
-  $onInit() {
-    this.unsubscribe = this.$ngRedux.connect(this.mapStateToThis, this.mapDispatchToThis)(this)
-  }
-
-  $onDestroy() {
-    this.unsubscribe()
-  }
-
-  mapStateToThis(state) {
-    return {
-      isDesktop: mediaBreakpointIsDesktopSelector(state),
-      sidenavSlideIn: sidenavSlideIn(state)
-    }
-  }
-
-  mapDispatchToThis(dispatch) {
-    return {
-      toggleSidenav: () => dispatch(toggleSidenav())
-    }
-  }
-
-  get menuProps() {
-    return {
-      type: 'bars',
-      onClick: this.toggleSidenav,
-      inverse: true
-    }
-  }
 
   get toastProps() {
     return {
@@ -45,19 +16,16 @@ class controller {
     }
   }
 
-  get navigationProps() {
+  get sidenavProps() {
     return {
-      component: () => NavigationContainer
-    }
-  }
-
-  get backdropProps() {
-    return {
-      component: () => BackdropContainer
+      component: () => WithSidenav
     }
   }
 }
 
+/**
+ * @deprecated
+ */
 export const AppComponent = {
   template, controller
 }

@@ -1,0 +1,28 @@
+.my-sidenav__header {
+    grid-area: header;
+    background-color: rgb(63, 81, 181);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+}
+
+.my-sidenav__nav {
+    grid-area: nav;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+    background-color: white;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    width: 100%;
+    min-height: 0;
+}
+
+.my-sidenav__nav--animate {
+    transition: 0.3s ease-in-out;
+}
+
+.my-sidenav__nav--open {
+    width: 320px;
+}

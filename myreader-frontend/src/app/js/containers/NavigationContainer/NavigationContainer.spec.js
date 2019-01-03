@@ -37,11 +37,14 @@ describe('NavigationContainer', () => {
     })
   })
 
-  it('should dispatch action ROUTE_CHANGED with route when prop function "routeTo" triggered', () => {
+  it('should dispatch actions TOGGLE_SIDENAV and ROUTE_CHANGED with route when prop function "routeTo" triggered', () => {
     const wrapper = createContainer()
     wrapper.props().routeTo(['expected'], {a: 'b'})
 
     expect(store.getActions()[0]).toContainObject({
+      type: 'TOGGLE_SIDENAV'
+    })
+    expect(store.getActions()[1]).toContainObject({
       type: 'ROUTE_CHANGED',
       route: ['expected'],
       query: {a: 'b'}

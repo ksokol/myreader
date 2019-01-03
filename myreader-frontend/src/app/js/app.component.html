@@ -1,21 +1,6 @@
 <div class="app">
-    <header class="app__header">
-        <react-component name="IconButton"
-                         props="$ctrl.menuProps"
-                         ng-if="!$ctrl.isDesktop">
-        </react-component>
-    </header>
-
-    <nav class="app__nav" ng-class="{'app__nav--open': $ctrl.sidenavSlideIn, 'app__nav--animate': !$ctrl.isDesktop}">
-        <react-component name="ContainerComponentBridge"
-                         props="$ctrl.navigationProps"
-                         ng-click="$ctrl.toggleSidenav()">
-        </react-component>
-    </nav>
-
+    <react-component name="ContainerComponentBridge" props="$ctrl.sidenavProps"></react-component>
     <main class="app__main" ui-view="content"></main>
 </div>
 
 <react-component name="ContainerComponentBridge" props="$ctrl.toastProps"></react-component>
-<react-component name="ContainerComponentBridge" props="$ctrl.backdropProps"></react-component>
-

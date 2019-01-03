@@ -1,6 +1,12 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {adminPermissionSelector, filteredByUnseenSubscriptionsSelector, routeChange, routeSelector} from '../../store'
+import {
+  adminPermissionSelector,
+  filteredByUnseenSubscriptionsSelector,
+  routeChange,
+  routeSelector,
+  toggleSidenav
+} from '../../store'
 import {Navigation} from '../../components'
 
 const mapStateToProps = state => ({
@@ -10,7 +16,10 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  routeTo: (route, query) => dispatch(routeChange(route, query))
+  routeTo: (route, query) => {
+    dispatch(toggleSidenav())
+    dispatch(routeChange(route, query))
+  }
 })
 
 const NavigationContainer = props => <Navigation {...props} />
