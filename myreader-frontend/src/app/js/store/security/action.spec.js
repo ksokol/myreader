@@ -81,6 +81,12 @@ describe('security actions', () => {
 
   describe('action creator tryLogin', () => {
 
+    it('should dispatch action defined in before property', () => {
+      store.dispatch(tryLogin({}).before())
+
+      expect(store.getActionTypes()).toEqual(['LOGIN_START'])
+    })
+
     it('should contain expected action type', () => {
       store.dispatch(tryLogin({}))
 
@@ -115,6 +121,12 @@ describe('security actions', () => {
       expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
       expect(store.getActions()[0]).toContainActionData({authorized: true, role: 'ROLE_ADMIN'})
       expect(store.getActions()[1]).toContainActionData({route: ['admin', 'overview']})
+    })
+
+    it('should dispatch action defined in finalize property', () => {
+      store.dispatch(tryLogin({}).finalize())
+
+      expect(store.getActionTypes()).toEqual(['LOGIN_END'])
     })
   })
 })

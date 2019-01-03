@@ -68,8 +68,8 @@ describe('LoginPage', () => {
     })
   })
 
-  it('should disable inputs and login button when prop "disabled" is set to true', () => {
-    props.disabled = true
+  it('should disable inputs and login button when prop "loginPending" is set to true', () => {
+    props.loginPending = true
     const wrapper = createComponent()
 
     expect(wrapper.find('[type="email"]').prop('disabled')).toEqual(true)
@@ -77,13 +77,13 @@ describe('LoginPage', () => {
     expect(wrapper.find(Button).prop('disabled')).toEqual(true)
   })
 
-  it('should not render login error message when prop "loginError" is undefined', () => {
-    expect(createComponent().find('[className="my-login__message"]').children().exists()).toEqual(false)
+  it('should not render login error message when prop "loginFailed" is undefined', () => {
+    expect(createComponent().find('.my-login-page__message').children().exists()).toEqual(false)
   })
 
-  it('should render login error message when prop "loginError" is set to true', () => {
-    props.loginError = true
+  it('should render login error message when prop "loginFailed" is set to true', () => {
+    props.loginFailed = true
 
-    expect(createComponent().find('[className="my-login__message"]').children().exists()).toEqual(true)
+    expect(createComponent().find('.my-login-page__message').children().exists()).toEqual(true)
   })
 })

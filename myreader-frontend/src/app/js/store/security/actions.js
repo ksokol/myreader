@@ -33,6 +33,18 @@ export const logout = () => {
   }
 }
 
+const loginStart = () => {
+  return {
+    type: types.LOGIN_START
+  }
+}
+
+const loginEnd = () => {
+  return {
+    type: types.LOGIN_END
+  }
+}
+
 export const tryLogin = ({username, password}) => {
   const searchParams = new URLSearchParams()
   searchParams.set('username', username)
@@ -45,12 +57,14 @@ export const tryLogin = ({username, password}) => {
       'content-type': 'application/x-www-form-urlencoded'
     },
     body: searchParams,
+    before: loginStart,
     success: (response, headers) => {
       const role = headers['x-my-authorities']
       return [
         authorized({role}),
         role === 'ROLE_ADMIN' ? routeChange(['admin', 'overview']) : routeChange(['app', 'entries'])
       ]
-    }
+    },
+    finalize: loginEnd
   }
 }

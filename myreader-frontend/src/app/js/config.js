@@ -3,6 +3,7 @@ import {
   BookmarkListPageContainer,
   EntryStreamPageContainer,
   FeedListPageContainer,
+  LoginPageContainer,
   MaintenancePageContainer,
   SettingsPageContainer,
   SubscribePageContainer,
@@ -14,10 +15,13 @@ import {
  * part of AngularJS exit strategy
  * @deprecated
  */
-function containerComponent(component) {
+function containerComponent(component, slot = 'content') {
   return {
-    content: {
-      template: '<react-component name="ContainerComponentBridge" props="props"></react-component>',
+    [slot]: {
+      template: `<react-component class="my-container-component-bridge" 
+                                  name="ContainerComponentBridge" 
+                                  props="props">
+                 </react-component>`,
       controller: ['$scope', function ($scope) {
         $scope.props = {component: () => component}
       }]
@@ -33,11 +37,7 @@ angular.module('common.config', ['ui.router'])
     $stateProvider
       .state('login', {
         url: '/login',
-        views: {
-          body: {
-            template: '<my-login></my-login>'
-          }
-        }
+        views: containerComponent(LoginPageContainer, 'body')
       })
       .state('logout', {
         url: '/logout'

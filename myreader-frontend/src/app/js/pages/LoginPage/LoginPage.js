@@ -21,20 +21,20 @@ class LoginPage extends React.Component {
     } = this.state
 
     const {
-      disabled,
-      loginError,
+      loginPending,
+      loginFailed,
       onLogin
     } = this.props
 
     return (
-      <form className='my-login'>
+      <form className='my-login-page'>
         <Input type='email'
                name='username'
                label='Email'
                value={username}
                autoComplete='email'
                onChange={({target: {value}}) => this.setState({username: value})}
-               disabled={disabled}
+               disabled={loginPending}
         />
 
         <Input type='password'
@@ -43,16 +43,16 @@ class LoginPage extends React.Component {
                value={password}
                autoComplete='current-password'
                onChange={({target: {value}}) => this.setState({password: value})}
-               disabled={disabled}
+               disabled={loginPending}
         />
 
-        <div className='my-login__message'>
-          {loginError && <span>Username or password wrong</span>}
+        <div className='my-login-page__message'>
+          {loginFailed && <span>Username or password wrong</span>}
         </div>
 
         <Button type='submit'
                 onClick={() => onLogin({username, password})}
-                disabled={disabled}>Login
+                disabled={loginPending}>Login
         </Button>
       </form>
     )
@@ -60,14 +60,14 @@ class LoginPage extends React.Component {
 }
 
 LoginPage.propTypes = {
-  disabled: PropTypes.bool,
-  loginError: PropTypes.bool,
+  loginPending: PropTypes.bool,
+  loginFailed: PropTypes.bool,
   onLogin: PropTypes.func.isRequired,
 }
 
 LoginPage.defaultProps = {
-  disabled: false,
-  loginError: false
+  loginPending: false,
+  loginFailed: false
 }
 
 export default LoginPage

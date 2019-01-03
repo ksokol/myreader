@@ -36,3 +36,7 @@ input {
     font-size: 100%;
     vertical-align: baseline;
 }
+
+.my-container-component-bridge {
+    width: 100%;
+}

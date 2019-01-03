@@ -3,8 +3,12 @@ export * from './selectors'
 export {securityReducers} from './reducers'
 
 export default function initialState() {
-    return {
-        authorized: false,
-        role: ''
+  return {
+    authorized: false,
+    role: '',
+    loginForm: {
+      loginPending: false,
+      loginFailed: false
     }
+  }
 }
