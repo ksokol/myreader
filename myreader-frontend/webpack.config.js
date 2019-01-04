@@ -36,7 +36,7 @@ module.exports = function makeWebpackConfig() {
    * Karma will set this when it's a test build
    */
   config.entry = isTest ? void 0 : {
-    app: './src/app/js/main.js'
+    app: './src/app/js/index.js'
   }
 
   config.output = isTest ? {} : {

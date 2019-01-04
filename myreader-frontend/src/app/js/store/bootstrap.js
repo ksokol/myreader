@@ -14,12 +14,6 @@ import {settings} from './settings/settings'
 import {getLastSecurityState} from './security/security'
 import {isInDevMode, isInProdMode} from '../constants'
 
-/**
- * part of AngularJS exit strategy
- * @deprecated
- */
-export let store = undefined
-
 function devToolsExtensionCompose() {
   return window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']
 }
@@ -55,7 +49,7 @@ function initialState(enabled) {
 }
 
 export default function createApplicationStore(environment, actionDispatchers = [], middlewares = []) {
-  store = createStore(
+  const store = createStore(
     reducers,
     initialState(isInDevMode(environment) || isInProdMode(environment)),
     enhancer(isInDevMode(environment), middlewares)

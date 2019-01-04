@@ -1,4 +1,3 @@
-export {default as ContainerComponentBridge} from './ContainerComponentBridge'
 export {default as SettingsPageContainer} from './SettingsPageContainer/SettingsPageContainer'
 export {default as SubscriptionTagsContainer} from './SubscriptionTagsContainer/SubscriptionTagsContainer'
 export {default as MaintenancePageContainer} from './MaintenancePageContainer/MaintenancePageContainer'
@@ -13,3 +12,4 @@ export {default as SubscriptionEditPageContainer} from './SubscriptionEditPageCo
 export {default as SubscribePageContainer} from './SubscribePageContainer/SubscribePageContainer'
 export {default as LoginPageContainer} from './LoginPageContainer/LoginPageContainer'
 export {default as FeedEditPageContainer} from './FeedEditPageContainer/FeedEditPageContainer'
+export {default as SidenavLayoutContainer} from './SidenavLayoutContainer/SidenavLayoutContainer'

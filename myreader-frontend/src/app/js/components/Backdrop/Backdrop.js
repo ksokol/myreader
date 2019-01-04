@@ -41,6 +41,10 @@ class Backdrop extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timeout)
+  }
+
   scheduleUnmount() {
     this.timeout = setTimeout(() => {
       this.setState({

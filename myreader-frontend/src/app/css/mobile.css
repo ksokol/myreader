@@ -37,6 +37,8 @@ input {
     vertical-align: baseline;
 }
 
-.my-container-component-bridge {
+#root {
+    display: flex;
+    flex-direction: row;
     width: 100%;
 }

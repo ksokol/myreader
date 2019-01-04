@@ -14,9 +14,6 @@ module.exports = {
   setupTestFrameworkScriptFile: '<rootDir>/src/tests.js',
   coverageDirectory: '<rootDir>/build/reports/coverage',
   testResultsProcessor: 'jest-sonar-reporter',
-  /*
-   * TODO Comes into effect as soon as patched setTimeout function in app.module.js has been removed.
-   */
   timers: 'fake',
   testURL: 'http://localhost:8080',
 }
