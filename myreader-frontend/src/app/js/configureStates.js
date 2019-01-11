@@ -37,19 +37,19 @@ const states = [
   {
     name: 'app.entries',
     url: '/entries/:feedTagEqual/:feedUuidEqual?q',
-    dynamic: true,
     params: {
       feedTagEqual: null,
-      feedUuidEqual: null
+      feedUuidEqual: null,
+      q: {dynamic: true}
     },
     component: EntryStreamPageContainer
   },
   {
     name: 'app.bookmarks',
     url: '/bookmark/:entryTagEqual?q',
-    dynamic: true,
     params: {
-      entryTagEqual: null
+      entryTagEqual: null,
+      q: {dynamic: true}
     },
     component: BookmarkListPageContainer
   },
@@ -57,9 +57,6 @@ const states = [
     name: 'app.subscriptions',
     url: '/subscriptions?q',
     dynamic: true,
-    params: {
-      entryTagEqual: null
-    },
     component: SubscriptionListPageContainer
   },
   {
