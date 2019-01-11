@@ -21,14 +21,14 @@ public final class WireFeedConverter {
 
     public FetchResult convert(final String feedUrl, ResponseEntity<? extends WireFeed> responseEntity) {
         Assert.notNull(responseEntity, "responseEntity is null");
-        Assert.notNull(responseEntity.getBody(), "responseEntity.body is null");
         final WireFeed body = responseEntity.getBody();
+        Assert.notNull(body, "responseEntity.body is null");
 
-        if(body instanceof Channel) {
+        if (body instanceof Channel) {
             return channelConverter.convert(feedUrl, (ResponseEntity<Channel>) responseEntity);
         }
 
-        if(body instanceof Feed) {
+        if (body instanceof Feed) {
             return atomConverter.convert(feedUrl, (ResponseEntity<Feed>) responseEntity);
         }
 

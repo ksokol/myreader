@@ -18,12 +18,12 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import java.util.concurrent.Executor;
 
 import static org.hamcrest.Matchers.instanceOf;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * @author Kamill Sokol
@@ -50,7 +50,7 @@ public class TaskConfigTests {
     }
 
     @Test
-    public void testConfigureTasks() throws Exception {
+    public void testConfigureTasks() {
         final Environment environment = mock(Environment.class);
 
         uut.setEnvironment(environment);

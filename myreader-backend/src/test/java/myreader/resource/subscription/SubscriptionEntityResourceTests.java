@@ -25,7 +25,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,7 +65,16 @@ public class SubscriptionEntityResourceTests {
     public void shouldReturnExpectedJsonStructure() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscription/structure-1.json"));
+                .andExpect(jsonPath("$.uuid", is("1")))
+                .andExpect(jsonPath("$.title", is("user1_subscription1")))
+                .andExpect(jsonPath("$.sum", is(15)))
+                .andExpect(jsonPath("$.unseen", is(0)))
+                .andExpect(jsonPath("$.origin", is("http://feeds.feedburner.com/javaposse")))
+                .andExpect(jsonPath("$.feedTag.uuid", is("1")))
+                .andExpect(jsonPath("$.feedTag.name", is("tag1")))
+                .andExpect(jsonPath("$.feedTag.color", nullValue()))
+                .andExpect(jsonPath("$.feedTag.createdAt", is("2011-05-15T19:20:46.000+0000")))
+                .andExpect(jsonPath("$.createdAt", is("2011-04-15T19:20:46.000+0000")));
     }
 
     @Test

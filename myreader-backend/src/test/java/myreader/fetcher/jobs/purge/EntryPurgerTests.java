@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -14,9 +14,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static myreader.fetcher.jobs.purge.EntryPurgerTest.PageBuilder.withElements;
+import static myreader.fetcher.jobs.purge.EntryPurgerTests.PageBuilder.withElements;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
  * @author Kamill Sokol
  */
 @RunWith(MockitoJUnitRunner.class)
-public class EntryPurgerTest {
+public class EntryPurgerTests {
 
     private EntryPurger purger;
     private PageRequest pageRequest;
@@ -35,25 +35,25 @@ public class EntryPurgerTest {
     private FeedEntryRepository feedEntryRepository;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         purger = new EntryPurger(feedEntryRepository, 2);
-        pageRequest = new PageRequest(0, 2);
+        pageRequest = PageRequest.of(0, 2);
         retainDate = new Date();
         feedId = 1L;
     }
 
     @Test
-    public void shouldNotDeleteEntriesWhenNoErasableEntriesAvailable() throws Exception {
+    public void shouldNotDeleteEntriesWhenNoErasableEntriesAvailable() {
         given(feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(feedId, retainDate, pageRequest))
                 .willReturn(withElements().withTotal(0));
 
         purger.purge(feedId, retainDate);
 
-        verify(feedEntryRepository, never()).delete(anyLong());
+        verify(feedEntryRepository, never()).deleteById(anyLong());
     }
 
     @Test
-    public void shouldDeleteAllErasableEntries() throws Exception {
+    public void shouldDeleteAllErasableEntries() {
         given(feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(feedId, retainDate, pageRequest))
                 .willReturn(withElements(1L, 2L).withTotal(3))
                 .willReturn(withElements(3L).withTotal(3))
@@ -61,9 +61,9 @@ public class EntryPurgerTest {
 
         purger.purge(feedId, retainDate);
 
-        verify(feedEntryRepository).delete(1L);
-        verify(feedEntryRepository).delete(2L);
-        verify(feedEntryRepository).delete(3L);
+        verify(feedEntryRepository).deleteById(1L);
+        verify(feedEntryRepository).deleteById(2L);
+        verify(feedEntryRepository).deleteById(3L);
     }
 
     static class PageBuilder {
@@ -74,12 +74,12 @@ public class EntryPurgerTest {
             this.ids = ids;
         }
 
-        protected static PageBuilder withElements(Long... ids) {
+        static PageBuilder withElements(Long... ids) {
             return new PageBuilder(Arrays.asList(ids));
         }
 
-        protected Page<Long> withTotal(long totalElements) {
-            return new PageImpl<>(ids, null, totalElements);
+        Page<Long> withTotal(long totalElements) {
+            return new PageImpl<>(ids, PageRequest.of(0, 10), totalElements);
         }
     }
 }

@@ -22,13 +22,18 @@ final class AtomConverter {
 
     private final int maxSize;
 
-    public AtomConverter(final int maxSize) {
+    AtomConverter(final int maxSize) {
         Assert.isTrue(maxSize > 0, "maxSize has to be greater than 0");
         this.maxSize = maxSize;
     }
 
-    public FetchResult convert(final String feedUrl, final ResponseEntity<Feed> source) {
-        final List<Entry> items = source.getBody().getEntries();
+    FetchResult convert(final String feedUrl, final ResponseEntity<Feed> source) {
+        Feed body = source.getBody();
+        if (body == null) {
+            return new FetchResult(feedUrl);
+        }
+
+        final List<Entry> items = body.getEntries();
         List<FetcherEntry> entries = new ArrayList<>();
         int i = 0;
 
@@ -59,6 +64,6 @@ final class AtomConverter {
         Collections.reverse(entries);
 
         final String lastModified = source.getHeaders().getFirst(LAST_MODIFIED);
-        return new FetchResult(entries, lastModified, source.getBody().getTitle(), feedUrl, items.size());
+        return new FetchResult(entries, lastModified, body.getTitle(), feedUrl, items.size());
     }
 }

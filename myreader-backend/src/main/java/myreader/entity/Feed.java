@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
@@ -34,9 +35,8 @@ public class Feed {
     private long version;
 
     /**
-     * @deprecated Use {@link #Feed(String)} instead.
+     * Default constructor for Hibernate.
      */
-    @Deprecated
     public Feed() {
         //TODO
         this.createdAt = new Date();
@@ -56,7 +56,7 @@ public class Feed {
     }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "feed_id")
     public Long getId() {
         return id;
@@ -154,7 +154,7 @@ public class Feed {
         this.createdAt = new Date();
     }
 
-    @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
+    @Column(columnDefinition = "INT DEFAULT 0")
     @Version
     public long getVersion() {
         return version;

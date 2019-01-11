@@ -9,9 +9,8 @@ import myreader.service.feed.FeedService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -25,6 +24,7 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * @author Kamill Sokol
@@ -55,8 +55,8 @@ public class SubscriptionServiceTests {
 
     @Test
     public void shouldAcceptNewSubscription() {
-        User user = new User();
-        Feed feed = new Feed();
+        User user = new User("user@localhost");
+        Feed feed = new Feed("title", "url");
         feed.setTitle("expected feed title");
 
         given(feedService.findByUrl(FEED_URL)).willReturn(feed);
@@ -64,7 +64,7 @@ public class SubscriptionServiceTests {
 
         subscriptionService.subscribe(USERNAME, FEED_URL);
 
-        verify(subscriptionRepository).save(Matchers.<Subscription>argThat(allOf(
+        verify(subscriptionRepository).save(argThat(allOf(
                 hasProperty("title", is("expected feed title")),
                 hasProperty("feed", is(feed)),
                 hasProperty("user", is(user)),
@@ -74,7 +74,7 @@ public class SubscriptionServiceTests {
 
     @Test
     public void shouldReturnNewSubscription() {
-        given(feedService.findByUrl(FEED_URL)).willReturn(new Feed());
+        given(feedService.findByUrl(FEED_URL)).willReturn(new Feed("title", "url"));
 
         Subscription expectedSubscription = new Subscription();
         given(subscriptionRepository.save(Mockito.any(Subscription.class))).willReturn(expectedSubscription);

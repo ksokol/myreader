@@ -15,14 +15,14 @@ import java.io.IOException;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Kamill Sokol
  */
-public class CleanSyndicationInterceptorTest {
+public class CleanSyndicationInterceptorTests {
 
     private CleanSyndicationInterceptor interceptor = new CleanSyndicationInterceptor();
 
@@ -99,7 +99,7 @@ public class CleanSyndicationInterceptorTest {
     }
 
     private ClientHttpResponse intercept() throws IOException {
-        return interceptor.intercept(httpRequest, null, execution);
+        return interceptor.intercept(httpRequest, new byte[] {}, execution);
     }
 
 }

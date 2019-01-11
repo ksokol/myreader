@@ -50,8 +50,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SyndicationRestTemplateConfiguration.class)
-@Import(FeedParserTest.TestConfiguration.class)
-public class FeedParserTest {
+@Import(FeedParserTests.TestConfiguration.class)
+public class FeedParserTests {
 
     private static final String HTTP_EXAMPLE_COM = "http://example.com";
 
@@ -140,21 +140,21 @@ public class FeedParserTest {
 
     @Test
     public void testFeed8() {
-        mockServer.expect(requestTo("irrelevant")).andExpect(method(GET))
+        mockServer.expect(requestTo("/irrelevant")).andExpect(method(GET))
                 .andExpect(header("If-Modified-Since", is("lastModified")))
                 .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
 
-        FetchResult result = parser.parse("irrelevant", "lastModified");
+        FetchResult result = parser.parse("/irrelevant", "lastModified");
         assertThat(result.getEntries(), empty());
     }
 
     @Test
     public void testFeed9() {
-        mockServer.expect(requestTo("irrelevant")).andExpect(method(GET))
+        mockServer.expect(requestTo("/irrelevant")).andExpect(method(GET))
                 .andExpect(header("User-Agent", startsWith("Mozilla")))
                 .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
 
-        parser.parse("irrelevant", "lastModified");
+        parser.parse("/irrelevant", "lastModified");
     }
 
     @Test

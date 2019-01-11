@@ -5,6 +5,7 @@ package myreader.test;
  */
 public class TestConstants {
 
+    public static final String ADMIN = "admin@localhost";
     public static final String USER1 = "user1@localhost";
     public static final String USER2 = "user2@localhost";
     public static final String USER4 = "user4@localhost";

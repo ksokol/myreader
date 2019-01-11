@@ -59,12 +59,9 @@ public class FeedResource {
 
     @RequestMapping(value = FEED_URL, method = GET)
     public FeedGetResponse get(@PathVariable("id") Long id) {
-        Feed feed = feedRepository.findOne(id);
-        if(feed != null) {
-            return assembler.toResource(feed);
-        } else {
-            return new FeedGetResponse();
-        }
+        return feedRepository.findById(id)
+                .map(assembler::toResource)
+                .orElseGet(FeedGetResponse::new);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -76,11 +73,11 @@ public class FeedResource {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        if(!feedRepository.exists(id)) {
+        if(!feedRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
-        feedRepository.delete(id);
+        feedRepository.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }
@@ -104,10 +101,8 @@ public class FeedResource {
     }
 
     private Feed findOrThrowException(Long id) {
-        Feed feed = feedRepository.findOne(id);
-        if(feed == null) {
-            throw new ResourceNotFoundException();
-        }
-        return feed;
+        return feedRepository
+                .findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
     }
 }

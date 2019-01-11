@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Objects;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 
 /**
@@ -59,8 +60,13 @@ class ContentTypeAdjusterInterceptor implements ClientHttpRequestInterceptor {
 
     private MediaType constructContentTypeFromContentType(MediaType contentType) {
         MediaType mediaType = RSS_MEDIA_TYPE;
-        if (contentType.getCharset() != null) {
-            mediaType = new MediaType(mediaType.getType(), mediaType.getSubtype(), contentType.getCharset());
+        if (contentType != null) {
+            Charset charset = contentType.getCharset();
+            if (charset != null) {
+                mediaType = new MediaType(mediaType.getType(), mediaType.getSubtype(), charset);
+            } else {
+                mediaType = new MediaType(mediaType.getType(), mediaType.getSubtype(), UTF_8);
+            }
         }
         return mediaType;
     }
@@ -76,7 +82,7 @@ class ContentTypeAdjusterInterceptor implements ClientHttpRequestInterceptor {
 
     private boolean matchesRssContentType(MediaType contentType) {
         for (MediaType supportedMediaType : supportedTypes) {
-            if(supportedMediaType.isCompatibleWith(contentType)) {
+            if (contentType != null && supportedMediaType.isCompatibleWith(contentType)) {
                 return true;
             }
         }

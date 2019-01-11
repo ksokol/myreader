@@ -15,7 +15,6 @@ import static myreader.test.KnownUser.USER1;
 import static myreader.test.KnownUser.USER100;
 import static myreader.test.KnownUser.USER2;
 import static myreader.test.KnownUser.USER3;
-import static myreader.test.KnownUser.USER4;
 
 /**
  * @author Kamill Sokol
@@ -41,11 +40,6 @@ public class MockMvcRequestBuildersWithAuthenticatedUserSupport extends MockMvcR
     @Deprecated
     public static MockHttpServletRequestBuilder getAsUser3(String urlTemplate, Object... urlVariables) {
         return actionAsUserX(HttpMethod.GET, USER3, urlTemplate, urlVariables);
-    }
-
-    @Deprecated
-    public static MockHttpServletRequestBuilder getAsUser4(String urlTemplate, Object... urlVariables) {
-        return actionAsUserX(HttpMethod.GET, USER4, urlTemplate, urlVariables);
     }
 
     @Deprecated

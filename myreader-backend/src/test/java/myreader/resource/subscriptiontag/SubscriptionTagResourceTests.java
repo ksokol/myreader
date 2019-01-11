@@ -21,7 +21,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,9 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@TestPropertySource(properties = {"task.enabled = false"})
+@TestPropertySource(properties = { "task.enabled = false" })
 @Sql("classpath:test-data.sql")
-public class SubscriptionTagResourceTest {
+public class SubscriptionTagResourceTests {
 
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -67,7 +66,7 @@ public class SubscriptionTagResourceTest {
                 .andExpect(jsonPath("$.uuid", is("1")))
                 .andExpect(jsonPath("$.name", is("expected name")))
                 .andExpect(jsonPath("$.color", is("#111")))
-                .andExpect(jsonPath("$.createdAt", is("2011-05-15T19:20:46Z")));
+                .andExpect(jsonPath("$.createdAt", is("2011-05-15T19:20:46.000+0000")));
     }
 
     @Test
@@ -77,7 +76,7 @@ public class SubscriptionTagResourceTest {
                 .andExpect(jsonPath("$.feedTag.uuid", is("1")))
                 .andExpect(jsonPath("$.feedTag.name", is("tag1")))
                 .andExpect(jsonPath("$.feedTag.color", nullValue()))
-                .andExpect(jsonPath("$.feedTag.createdAt", is("2011-05-15T19:20:46Z")));
+                .andExpect(jsonPath("$.feedTag.createdAt", is("2011-05-15T19:20:46.000+0000")));
 
         mockMvc.perform(patch("/api/2/subscriptionTags/1")
                 .with(jsonBody("{'name': 'expected name', 'color': '#111'}")));
@@ -86,7 +85,7 @@ public class SubscriptionTagResourceTest {
                 .andExpect(jsonPath("$.feedTag.uuid", is("1")))
                 .andExpect(jsonPath("$.feedTag.name", is("expected name")))
                 .andExpect(jsonPath("$.feedTag.color", is("#111")))
-                .andExpect(jsonPath("$.feedTag.createdAt", is("2011-05-15T19:20:46Z")));
+                .andExpect(jsonPath("$.feedTag.createdAt", is("2011-05-15T19:20:46.000+0000")));
     }
 
     @Test
@@ -96,7 +95,7 @@ public class SubscriptionTagResourceTest {
                 .andExpect(jsonPath("$.feedTag.uuid", is("1")))
                 .andExpect(jsonPath("$.feedTag.name", is("tag1")))
                 .andExpect(jsonPath("$.feedTag.color", nullValue()))
-                .andExpect(jsonPath("$.feedTag.createdAt", is("2011-05-15T19:20:46Z")));
+                .andExpect(jsonPath("$.feedTag.createdAt", is("2011-05-15T19:20:46.000+0000")));
 
         mockMvc.perform(patch("/api/2/subscriptionTags/1")
                 .with(jsonBody("{'name': 'expected name', 'color': '#111'}")));
@@ -105,7 +104,7 @@ public class SubscriptionTagResourceTest {
                 .andExpect(jsonPath("$.feedTag.uuid", is("1")))
                 .andExpect(jsonPath("$.feedTag.name", is("expected name")))
                 .andExpect(jsonPath("$.feedTag.color", is("#111")))
-                .andExpect(jsonPath("$.feedTag.createdAt", is("2011-05-15T19:20:46Z")));
+                .andExpect(jsonPath("$.feedTag.createdAt", is("2011-05-15T19:20:46.000+0000")));
     }
 
     @Test

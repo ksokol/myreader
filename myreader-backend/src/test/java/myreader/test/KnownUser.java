@@ -10,7 +10,6 @@ public enum KnownUser {
     USER1,
     USER2,
     USER3,
-    USER4,
     USER100,
     USER111,
     USER113,

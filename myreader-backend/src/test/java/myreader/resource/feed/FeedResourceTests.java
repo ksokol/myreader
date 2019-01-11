@@ -1,74 +1,109 @@
 package myreader.resource.feed;
 
-import myreader.service.feed.FeedService;
-import myreader.test.IntegrationTestSupport;
-import myreader.test.KnownUser;
+import myreader.test.TestConstants;
 import org.junit.Test;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.http.HttpMethod;
-import org.springframework.test.annotation.Rollback;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.TimeZone;
+
+import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.actionAsUserX;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuildersWithAuthenticatedUserSupport.getAsUser1;
-import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
+import static org.hamcrest.Matchers.nullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Kamill Sokol
  */
-public class FeedResourceTests extends IntegrationTestSupport {
+@RunWith(SpringRunner.class)
+@AutoConfigureMockMvc
+@SpringBootTest
+@TestPropertySource(properties = { "task.enabled = false" })
+@Sql("classpath:test-data.sql")
+@WithMockUser(username = TestConstants.ADMIN, roles = { "ADMIN" })
+public class FeedResourceTests {
 
-    @SpyBean
-    private FeedService feedService;
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @Test
     public void shouldReturnFetchErrors() throws Exception {
-        mockMvc.perform(getAsUser1("/api/2/feeds/18/fetchError"))
+        mockMvc.perform(get("/api/2/feeds/18/fetchError"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/feeds/18/fetchError/response.json"));
+                .andExpect(jsonPath("$.links[0].rel", is("self")))
+                .andExpect(jsonPath("$.links[0].href", endsWith("/api/2/feeds/18/fetchError?page=0&size=20")))
+                .andExpect(jsonPath("$.content[0].uuid", is("1")))
+                .andExpect(jsonPath("$.content[0].message", is("error message for feed 18")))
+                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:00.000+0000")))
+                .andExpect(jsonPath("$.page.totalElements", is(1)));
     }
 
     @Test
     public void shouldReturnFeedWithId18() throws Exception {
-        mockMvc.perform(getAsUser1("/api/2/feeds/18"))
+        mockMvc.perform(get("/api/2/feeds/18"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/feeds/18.json"));
+                .andExpect(jsonPath("$.uuid", is("18")))
+                .andExpect(jsonPath("$.title", is("Atlassian Blogs")))
+                .andExpect(jsonPath("$.url", is("http://feeds.feedburner.com/AllAtlassianBlogs")))
+                .andExpect(jsonPath("$.lastModified", is("Thu, 27 Mar 2014 13:53:36 GMT")))
+                .andExpect(jsonPath("$.fetched", is(142)))
+                .andExpect(jsonPath("$.hasErrors", is(true)))
+                .andExpect(jsonPath("$.createdAt", is("2014-03-07T21:07:33.000+0000")));
     }
 
     @Test
     public void shouldReturnEmptyFeedResponseForId999() throws Exception {
-        mockMvc.perform(getAsUser1("/api/2/feeds/999"))
+        mockMvc.perform(get("/api/2/feeds/999"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/feeds/999.json"));
+                .andExpect(jsonPath("$.uuid", nullValue()))
+                .andExpect(jsonPath("$.title", nullValue()))
+                .andExpect(jsonPath("$.url", nullValue()))
+                .andExpect(jsonPath("$.lastModified", nullValue()))
+                .andExpect(jsonPath("$.fetched", nullValue()))
+                .andExpect(jsonPath("$.hasErrors", is(false)))
+                .andExpect(jsonPath("$.createdAt", nullValue()));
     }
 
     @Test
     public void shouldRejectDeletionWhenFeedHasSubscription() throws Exception {
-        mockMvc.perform(actionAsUserX(HttpMethod.DELETE, KnownUser.ADMIN, "/api/2/feeds/1"))
+        mockMvc.perform(delete("/api/2/feeds/1"))
                 .andExpect(status().isConflict());
     }
 
     @Test
     public void shouldRejectDeletionWhenFeedDoesNotExist() throws Exception {
-        mockMvc.perform(actionAsUserX(HttpMethod.DELETE, KnownUser.ADMIN, "/api/2/feeds/199"))
+        mockMvc.perform(delete("/api/2/feeds/199"))
                 .andExpect(status().isNotFound());
     }
 
-    @Rollback
     @Test
     public void shouldDeleteFeed() throws Exception {
-        mockMvc.perform(actionAsUserX(HttpMethod.DELETE, KnownUser.ADMIN, "/api/2/feeds/18"))
+        mockMvc.perform(delete("/api/2/feeds/18"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     public void shouldValidatePatchRequest() throws Exception {
-        mockMvc.perform(actionAsUserX(HttpMethod.PATCH, KnownUser.ADMIN, "/api/2/feeds/18")
-                .json("{}"))
+        mockMvc.perform(patch("/api/2/feeds/18")
+                .with(jsonBody("{}")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status", is(400)))
                 .andExpect(jsonPath("message", is("validation error")))
@@ -76,11 +111,10 @@ public class FeedResourceTests extends IntegrationTestSupport {
                 .andExpect(jsonPath("fieldErrors..message", hasItems("invalid syndication feed", "may not be empty")));
     }
 
-    @Rollback
     @Test
     public void shouldUpdateFeed() throws Exception {
-        mockMvc.perform(actionAsUserX(HttpMethod.PATCH, KnownUser.ADMIN, "/api/2/feeds/18")
-                .json("{ 'title': 'expected title', 'url': 'http://feeds.feedburner.com/javaposse' }"))
+        mockMvc.perform(patch( "/api/2/feeds/18")
+                .with(jsonBody("{'title': 'expected title', 'url': 'http://feeds.feedburner.com/javaposse'}")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("url", is("http://feeds.feedburner.com/javaposse")))
                 .andExpect(jsonPath("title", is("expected title")));
@@ -88,7 +122,8 @@ public class FeedResourceTests extends IntegrationTestSupport {
 
     @Test
     public void shouldReturnWithNotFoundWhenPatchingUnknownFeed() throws Exception {
-        mockMvc.perform(actionAsUserX(HttpMethod.PATCH, KnownUser.ADMIN, "/api/2/feeds/999")
-                .json("{ 'title': 'expected title', 'url': 'http://feeds.feedburner.com/javaposse' }"));
+        mockMvc.perform(patch("/api/2/feeds/999")
+                .with(jsonBody("{'title': 'expected title', 'url': 'http://feeds.feedburner.com/javaposse'}")))
+                .andExpect(status().isNotFound());
     }
 }

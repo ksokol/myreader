@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 /**
  * @author Kamill Sokol
  */
@@ -20,7 +22,7 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
 
     @Query("select se from SubscriptionEntry se join fetch se.subscription join fetch se.feedEntry where se.id = ?1")
     @Override
-    SubscriptionEntry findOne(Long id);
+    Optional<SubscriptionEntry> findById(Long id);
 
     @Query("select count(se) > 0 from SubscriptionEntry se where se.feedEntry.id = ?1 and se.subscription.id = ?2")
     boolean contains(Long feedEntryId, Long subscriptionId);

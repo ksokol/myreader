@@ -14,6 +14,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.TimeZone;
+
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
@@ -23,7 +25,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,9 +34,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@TestPropertySource(properties = {"task.enabled = false"})
+@TestPropertySource(properties = { "task.enabled = false" })
 @Sql("classpath:test-data.sql")
 public class SubscriptionEntryCollectionResourceTests {
+
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,7 +58,31 @@ public class SubscriptionEntryCollectionResourceTests {
     public void shouldReturnExpectedJsonStructure() throws Exception {
         mockMvc.perform(get("/api/2/subscriptionEntries"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscriptionentry/structure.json"));
+                .andExpect(jsonPath("$.links[0].rel", is("self")))
+                .andExpect(jsonPath("$.links[0].href", endsWith("/api/2/subscriptionEntries")))
+                .andExpect(jsonPath("$.content[0].uuid", is("1002")))
+                .andExpect(jsonPath("$.content[0].title", is("MySQL is to SQL like ??? to NoSQL")))
+                .andExpect(jsonPath("$.content[0].feedTitle", is("user1_subscription3")))
+                .andExpect(jsonPath("$.content[0].tag", is("tag1")))
+                .andExpect(jsonPath("$.content[0].content", is("content")))
+                .andExpect(jsonPath("$.content[0].seen", is(true)))
+                .andExpect(jsonPath("$.content[0].feedTag", is("tag2")))
+                .andExpect(jsonPath("$.content[0].feedTagColor", nullValue()))
+                .andExpect(jsonPath("$.content[0].feedUuid", is("3")))
+                .andExpect(jsonPath("$.content[0].origin", is("http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql")))
+                .andExpect(jsonPath("$.content[0].createdAt", is("2011-04-15T19:20:46.000+0000")))
+                .andExpect(jsonPath("$.content[1].uuid", is("1001")))
+                .andExpect(jsonPath("$.content[1].title", is("Party time")))
+                .andExpect(jsonPath("$.content[1].feedTitle", is("user1_subscription3")))
+                .andExpect(jsonPath("$.content[1].tag", is("tag1")))
+                .andExpect(jsonPath("$.content[1].content", is("content")))
+                .andExpect(jsonPath("$.content[1].seen", is(false)))
+                .andExpect(jsonPath("$.content[1].feedTag", is("tag2")))
+                .andExpect(jsonPath("$.content[1].feedTagColor", nullValue()))
+                .andExpect(jsonPath("$.content[1].feedUuid", is("3")))
+                .andExpect(jsonPath("$.content[1].origin", is("http://Use-The-Index-Luke.com/blog/2013-03/Party-Time")))
+                .andExpect(jsonPath("$.content[1].createdAt", is("2011-04-15T19:20:46.000+0000")))
+                .andExpect(jsonPath("$.page", nullValue()));
     }
 
     @Test
@@ -175,7 +204,6 @@ public class SubscriptionEntryCollectionResourceTests {
                 .andExpect(jsonPath("message", is("validation error")))
                 .andExpect(jsonPath("fieldErrors..field", contains("content[0].uuid")))
                 .andExpect(jsonPath("fieldErrors..message", hasItems("numeric value out of bounds (<2147483647 digits>.<0 digits> expected)")));
-
     }
 
     @Test

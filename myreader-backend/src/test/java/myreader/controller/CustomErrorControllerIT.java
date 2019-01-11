@@ -3,7 +3,7 @@ package myreader.controller;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -18,7 +18,7 @@ public class CustomErrorControllerIT {
     private ErrorController errorController;
 
     @Test
-    public void shouldContainsInstanceOfCustomErrorControllerAsErrorControllerInApplication() throws Exception {
+    public void shouldContainsInstanceOfCustomErrorControllerAsErrorControllerInApplication() {
         assertThat(errorController, instanceOf(CustomErrorController.class));
     }
 

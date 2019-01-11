@@ -5,22 +5,21 @@ import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.repository.FeedRepository;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
-
+import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * @author Kamill Sokol
@@ -30,7 +29,7 @@ public class FeedServiceTests {
 
     private static final String FEED_URL = "feed url";
     private static final String FEED_TITLE = "feed title";
-    private static final FetchResult FETCH_RESULT = new FetchResult(Collections.emptyList(), "last modified", FEED_TITLE);
+    private static final FetchResult FETCH_RESULT = new FetchResult(emptyList(), "last modified", FEED_TITLE, "url", 0);
 
     @InjectMocks
     private FeedService feedService;
@@ -43,7 +42,7 @@ public class FeedServiceTests {
 
     @Test
     public void shouldReturnExistingFeed() {
-        Feed expectedFeed = new Feed();
+        Feed expectedFeed = new Feed("title", "url");
 
         given(feedRepository.findByUrl(FEED_URL)).willReturn(expectedFeed);
 
@@ -67,7 +66,7 @@ public class FeedServiceTests {
 
         feedService.findByUrl(FEED_URL);
 
-        verify(feedRepository).save(argThat(Matchers.<Feed>allOf(
+        verify(feedRepository).save(argThat(allOf(
                 hasProperty("url", is(FEED_URL)),
                 hasProperty("title", is(FEED_TITLE))
         )));
@@ -75,7 +74,7 @@ public class FeedServiceTests {
 
     @Test
     public void shouldReturnSavedFeedWhenFeedIsNew() {
-        Feed expectedFeed = new Feed();
+        Feed expectedFeed = new Feed("title", "url");
 
         given(feedParser.parse(FEED_URL)).willReturn(FETCH_RESULT);
         given(feedRepository.save(Mockito.any(Feed.class))).willReturn(expectedFeed);
@@ -85,7 +84,6 @@ public class FeedServiceTests {
         assertThat(actualFeed, is(expectedFeed));
     }
 
-
     @Test
     public void shouldRejectUrlWhenUrlIsEmpty() {
         assertThat(feedService.valid(null), is(false));
@@ -93,7 +91,7 @@ public class FeedServiceTests {
 
     @Test
     public void shouldAcceptUrlWhenCorrespondingFeedFound() {
-        given(feedRepository.findByUrl(FEED_URL)).willReturn(new Feed());
+        given(feedRepository.findByUrl(FEED_URL)).willReturn(new Feed("title", "url"));
         assertThat(feedService.valid(FEED_URL), is(true));
     }
 

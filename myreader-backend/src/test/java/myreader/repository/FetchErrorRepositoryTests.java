@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.notNullValue;
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class FetchErrorRepositoryTest {
+public class FetchErrorRepositoryTests {
 
     @Autowired
     private FetchErrorRepository fetchErrorRepository;
@@ -37,28 +37,28 @@ public class FetchErrorRepositoryTest {
     private TestEntityManager em;
 
     @Test
-    public void shouldDeleteEntriesWhenDateIsOlderThanNow() throws Exception {
+    public void shouldDeleteEntriesWhenDateIsOlderThanNow() {
         createEntry(now().minusDays(1));
 
         assertThat(fetchErrorRepository.retainFetchErrorBefore(new Date()), is(1));
     }
 
     @Test
-    public void shouldNotDeleteEntriesWhenDateIsNewerThanNow() throws Exception {
+    public void shouldNotDeleteEntriesWhenDateIsNewerThanNow() {
         createEntry(now().plusDays(1));
 
         assertThat(fetchErrorRepository.retainFetchErrorBefore(new Date()), is(0));
     }
 
     @Test
-    public void shouldOnlyDeleteEntriesThatAreOlderThanNow() throws Exception {
+    public void shouldOnlyDeleteEntriesThatAreOlderThanNow() {
         createEntry(now().minusDays(1));
         FetchError entry = createEntry(now().plusDays(1));
 
         fetchErrorRepository.retainFetchErrorBefore(new Date());
 
         assertThat(fetchErrorRepository.findAll(), hasSize(1));
-        assertThat(fetchErrorRepository.findOne(entry.getId()), notNullValue());
+        assertThat(fetchErrorRepository.findById(entry.getId()).orElseThrow(AssertionError::new), notNullValue());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class FetchErrorRepositoryTest {
         FetchError entry = createEntry(feed);
         createEntry(createFeed());
 
-        Page<FetchError> result = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), new PageRequest(0, 5));
+        Page<FetchError> result = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), PageRequest.of(0, 5));
 
         assertThat(result.getContent(), contains(entry));
     }
@@ -80,7 +80,7 @@ public class FetchErrorRepositoryTest {
         createEntry(feed);
         createEntry(createFeed());
 
-        Page<FetchError> result = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), new PageRequest(0, 2));
+        Page<FetchError> result = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), PageRequest.of(0, 2));
 
         assertThat(result.getTotalPages(), is(2));
         assertThat(result.getTotalElements(), is(3L));
@@ -97,7 +97,7 @@ public class FetchErrorRepositoryTest {
         createEntry(tomorrow, feed);
         createEntry(now, feed);
 
-        Page<FetchError> result = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), new PageRequest(0, 5));
+        Page<FetchError> result = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), PageRequest.of(0, 5));
 
         assertThat(result.getContent(), contains(
                 hasProperty("createdAt", is(toDate(tomorrow))),
@@ -138,8 +138,7 @@ public class FetchErrorRepositoryTest {
     }
 
     private Feed createFeed() {
-        Feed feed = new Feed();
-        feed.setTitle("title");
+        Feed feed = new Feed("title", "url");
         em.persist(feed);
 
         return feed;

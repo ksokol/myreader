@@ -24,10 +24,10 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.willReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@TestPropertySource(properties = {"task.enabled = false"})
+@TestPropertySource(properties = { "task.enabled = false" })
 @Sql("classpath:test-data.sql")
 public class SubscriptionCollectionResourceTests {
 
@@ -56,7 +56,26 @@ public class SubscriptionCollectionResourceTests {
     public void shouldReturnExpectedJsonStructure() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscription/structure.json"));
+                .andExpect(jsonPath("$.content[0].uuid", is("1104")))
+                .andExpect(jsonPath("$.content[0].title", is("user116_subscription1")))
+                .andExpect(jsonPath("$.content[0].sum", is(0)))
+                .andExpect(jsonPath("$.content[0].unseen", is(0)))
+                .andExpect(jsonPath("$.content[0].origin", is("http://feeds.feedburner.com/javaposse")))
+                .andExpect(jsonPath("$.content[0].feedTag.uuid", is("21")))
+                .andExpect(jsonPath("$.content[0].feedTag.name", is("tag1")))
+                .andExpect(jsonPath("$.content[0].feedTag.color", nullValue()))
+                .andExpect(jsonPath("$.content[0].feedTag.createdAt", is("2011-05-15T19:20:46.000+0000")))
+                .andExpect(jsonPath("$.content[0].createdAt", is("2011-04-15T19:20:46.000+0000")))
+                .andExpect(jsonPath("$.content[1].uuid", is("1105")))
+                .andExpect(jsonPath("$.content[1].title", is("user116_subscription2")))
+                .andExpect(jsonPath("$.content[1].sum", is(0)))
+                .andExpect(jsonPath("$.content[1].unseen", is(0)))
+                .andExpect(jsonPath("$.content[1].origin", is("http://use-the-index-luke.com/blog/feed")))
+                .andExpect(jsonPath("$.content[1].feedTag.uuid", is("21")))
+                .andExpect(jsonPath("$.content[1].feedTag.name", is("tag1")))
+                .andExpect(jsonPath("$.content[1].feedTag.color", nullValue()))
+                .andExpect(jsonPath("$.content[1].feedTag.createdAt", is("2011-05-15T19:20:46.000+0000")))
+                .andExpect(jsonPath("$.content[1].createdAt", is("2011-04-15T19:20:46.000+0000")));
     }
 
     @Test

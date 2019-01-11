@@ -14,12 +14,13 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.TimeZone;
+
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.ContentResultMatchersJsonAssertSupport.jsonEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,9 +30,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@TestPropertySource(properties = {"task.enabled = false"})
+@TestPropertySource(properties = { "task.enabled = false" })
 @Sql("classpath:test-data.sql")
 public class SubscriptionEntryEntityResourceTests {
+
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,7 +49,17 @@ public class SubscriptionEntryEntityResourceTests {
     public void shouldReturnExpectedJsonStructure() throws Exception {
         mockMvc.perform(get("/api/2/subscriptionEntries/1004"))
                 .andExpect(status().isOk())
-                .andExpect(jsonEquals("json/subscriptionentry/1004.json"));
+                .andExpect(jsonPath("$.uuid", is("1004")))
+                .andExpect(jsonPath("$.title", is("Bliki: TellDontAsk")))
+                .andExpect(jsonPath("$.feedTitle", is("user112_subscription1")))
+                .andExpect(jsonPath("$.tag", is("tag3")))
+                .andExpect(jsonPath("$.content", is("content")))
+                .andExpect(jsonPath("$.seen", is(true)))
+                .andExpect(jsonPath("$.feedTag", is("tag1")))
+                .andExpect(jsonPath("$.feedTagColor", is("#777")))
+                .andExpect(jsonPath("$.feedUuid", is("1100")))
+                .andExpect(jsonPath("$.origin", is("http://martinfowler.com/bliki/TellDontAsk.html")))
+                .andExpect(jsonPath("$.createdAt", is("2011-04-15T19:20:46.000+0000")));
     }
 
     @Test
@@ -57,7 +72,7 @@ public class SubscriptionEntryEntityResourceTests {
     @Test
     @WithMockUser(TestConstants.USER112)
     public void shouldSetSeenFlagFromTrueToFalse() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findOne(1004L);
+        SubscriptionEntry before = subscriptionEntryRepository.findById(1004L).orElseThrow(AssertionError::new);
         assertThat(before.isSeen(), is(true));
 
         mockMvc.perform(get("/api/2/subscriptionEntries/1004"))
@@ -73,14 +88,14 @@ public class SubscriptionEntryEntityResourceTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("seen", is(false)));
 
-        SubscriptionEntry after = subscriptionEntryRepository.findOne(1004L);
+        SubscriptionEntry after = subscriptionEntryRepository.findById(1004L).orElseThrow(AssertionError::new);
         assertThat(after.isSeen(), is(false));
     }
 
     @Test
     @WithMockUser(TestConstants.USER110)
     public void shouldSetSeenFlagFromFalseToTrue() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findOne(1022L);
+        SubscriptionEntry before = subscriptionEntryRepository.findById(1022L).orElseThrow(AssertionError::new);
         assertThat(before.isSeen(), is(false));
 
         mockMvc.perform(get("/api/2/subscriptionEntries/1022"))
@@ -92,14 +107,14 @@ public class SubscriptionEntryEntityResourceTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("seen", is(true)));
 
-        SubscriptionEntry after = subscriptionEntryRepository.findOne(1022L);
+        SubscriptionEntry after = subscriptionEntryRepository.findById(1022L).orElseThrow(AssertionError::new);
         assertThat(after.isSeen(), is(true));
     }
 
     @Test
     @WithMockUser(TestConstants.USER105)
     public void shouldNotChangeSeen() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findOne(1014L);
+        SubscriptionEntry before = subscriptionEntryRepository.findById(1014L).orElseThrow(AssertionError::new);
         assertThat(before.isSeen(), is(true));
 
         mockMvc.perform(get("/api/2/subscriptionEntries/1014"))
@@ -114,14 +129,14 @@ public class SubscriptionEntryEntityResourceTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("seen", is(true)));
 
-        SubscriptionEntry after = subscriptionEntryRepository.findOne(1014L);
+        SubscriptionEntry after = subscriptionEntryRepository.findById(1014L).orElseThrow(AssertionError::new);
         assertThat(after.isSeen(), is(true));
     }
 
     @Test
     @WithMockUser(TestConstants.USER106)
     public void shouldChangeTag() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findOne(1015L);
+        SubscriptionEntry before = subscriptionEntryRepository.findById(1015L).orElseThrow(AssertionError::new);
         assertThat(before.getTag(), is("tag3"));
 
         mockMvc.perform(get("/api/2/subscriptionEntries/1015"))
@@ -136,7 +151,7 @@ public class SubscriptionEntryEntityResourceTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("tag", is("tag-patched")));
 
-        SubscriptionEntry after = subscriptionEntryRepository.findOne(1015L);
+        SubscriptionEntry after = subscriptionEntryRepository.findById(1015L).orElseThrow(AssertionError::new);
         assertThat(after.getTag(), is("tag-patched"));
     }
 }

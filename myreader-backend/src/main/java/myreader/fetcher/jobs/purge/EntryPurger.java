@@ -37,7 +37,7 @@ public class EntryPurger {
             log.info("{} elements left for deletion for feed {}", feedEntries.getTotalElements(), feedId);
 
             for (Long feedEntry : feedEntries) {
-                feedEntryRepository.delete(feedEntry);
+                feedEntryRepository.deleteById(feedEntry);
             }
 
             feedEntries = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(

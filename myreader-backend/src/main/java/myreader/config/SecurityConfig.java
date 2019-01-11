@@ -3,18 +3,12 @@ package myreader.config;
 import myreader.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import spring.security.UserRepositoryUserDetailsService;
 import spring.security.XAuthoritiesFilter;
@@ -31,10 +25,8 @@ import static spring.security.SecurityConstants.MY_AUTHORITIES;
 /**
  * @author Kamill Sokol
  */
-@Order
 @Configuration
-@EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     private final UserRepository userRepository;
     private final String rememberMeKey;
@@ -44,29 +36,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.rememberMeKey = rememberMeKey;
     }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .userDetailsService(userDetailsService())
-            .passwordEncoder(passwordEncoder());
-    }
+    @Order(101)
+    @Configuration
+    class DefaultSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new Md5PasswordEncoder();
-    }
-
-    @Override
-    public UserDetailsService userDetailsService() {
-        return new UserRepositoryUserDetailsService(userRepository);
+        @Autowired
+        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(new UserRepositoryUserDetailsService(userRepository));
+        }
     }
 
     @Order(100)
     @Configuration
-    class DefaultSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    class LoginSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         @Override
-        public void configure(WebSecurity webSecurity) throws Exception {
+        public void configure(WebSecurity webSecurity) {
             webSecurity
                     .ignoring()
                     .antMatchers(LANDING_PAGE.mapping(), "/app/**", "/index.html", "/favicon.ico", "/service-worker.js");
@@ -81,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                     response.addHeader(MY_AUTHORITIES, XAuthoritiesFilterUtils.buildAuthorities(authentication));
                 })
-                .failureHandler((request, response, exception) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                .failureHandler((request, response, exception) -> response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                 .rememberMe().key(rememberMeKey).alwaysRemember(true)
                 .and()
@@ -114,7 +99,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterAfter(new XAuthoritiesFilter(), FilterSecurityInterceptor.class)
                 .csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Form realm=\"MyReader\""));
+                .exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
+                    response.setHeader("WWW-Authenticate", "Form realm=\"MyReader\"");
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+                });
         }
     }
 }

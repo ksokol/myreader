@@ -23,16 +23,18 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 /**
  * @author Kamill Sokol
+ *
+ * @deprecated
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Starter.class, TestConfig.class, TestDataSourceConfig.class})
 @TestPropertySource(properties = { "task.enabled = false" })
 public abstract class IntegrationTestSupport {
 
-	static {
+    static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         System.setProperty("file.encoding", "UTF-8");
-	}
+    }
 
     protected MockMvc mockMvc;
 
@@ -44,27 +46,16 @@ public abstract class IntegrationTestSupport {
     private FeedQueue feedQueueMock;
 
     @Before
-    public final void before() throws Exception {
+    public final void before() {
         reset(feedParserMock, feedQueueMock);
 
         this.mockMvc = webAppContextSetup(this.wac)
                 .defaultRequest(get("/").contentType(MediaType.APPLICATION_JSON))
                 .build();
-
-		beforeTest();
     }
 
     @After
-    public final void after() throws Exception {
+    public final void after() {
         SecurityContextHolder.getContext().setAuthentication(null);
-        afterTest();
-    }
-
-	protected void beforeTest() throws Exception {
-        //used by child class
-    }
-
-    protected void afterTest() throws Exception {
-        //used by child class
     }
 }

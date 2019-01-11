@@ -21,11 +21,6 @@ public class FetchResult {
         this(emptyList(), null, null, url, 0);
     }
 
-    @Deprecated
-    public FetchResult(List<FetcherEntry> entries, String lastModified, String title) {
-        this(entries, lastModified, title, null, 0);
-    }
-
     public FetchResult(List<FetcherEntry> entries, String lastModified, String title, String url, int resultSizePerFetch) {
         this.entries = entries;
         this.lastModified = lastModified;

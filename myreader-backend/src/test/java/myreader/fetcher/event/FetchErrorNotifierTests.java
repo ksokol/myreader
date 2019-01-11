@@ -8,8 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Date;
 
@@ -18,16 +17,17 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * @since 2016-09
  */
 @RunWith(MockitoJUnitRunner.class)
-public class FetchErrorNotifierTest {
+public class FetchErrorNotifierTests {
 
     @InjectMocks
     private FetchErrorNotifier notifier;
@@ -39,7 +39,7 @@ public class FetchErrorNotifierTest {
     private FetchErrorRepository fetchErrorRepository;
 
     @Test
-    public void shouldNotPersistEventWhenFeedIsUnknown() throws Exception {
+    public void shouldNotPersistEventWhenFeedIsUnknown() {
         given(feedRepository.findByUrl("url")).willReturn(null);
 
         notifier.processFetchErrorEvent(new FetchErrorEvent("url", "irrelevant"));
@@ -49,15 +49,14 @@ public class FetchErrorNotifierTest {
     }
 
     @Test
-    public void shouldPersistEvent() throws Exception {
-        Feed feed = new Feed();
-        feed.setId(1L);
+    public void shouldPersistEvent() {
+        Feed feed = new Feed("title", "url");
 
         given(feedRepository.findByUrl("url")).willReturn(feed);
 
         notifier.processFetchErrorEvent(new FetchErrorEvent("url", "errorMessage"));
 
-        verify(fetchErrorRepository).save(Mockito.<FetchError>argThat(
+        verify(fetchErrorRepository).save(argThat(
                 allOf(
                         hasProperty("id", nullValue()),
                         hasProperty("feed", is(feed)),
