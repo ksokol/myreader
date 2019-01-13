@@ -4,36 +4,30 @@ import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.resttemplate.SyndicationRestTemplateConfiguration;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationEvent;
+import org.mockito.hamcrest.MockitoHamcrest;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -48,27 +42,20 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 /**
  * @author Kamill Sokol
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = SyndicationRestTemplateConfiguration.class)
-@Import(FeedParserTests.TestConfiguration.class)
 public class FeedParserTests {
 
     private static final String HTTP_EXAMPLE_COM = "http://example.com";
 
-    @Autowired
-    private RestTemplate syndicationRestTemplate;
-
-    @Autowired
     private FeedParser parser;
-
-    @Autowired
-    private TestConfiguration.TestApplicationEventPublisher eventPublisher;
-
+    private ApplicationEventPublisher eventPublisher;
     private MockRestServiceServer mockServer;
 
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        RestTemplate syndicationRestTemplate = new SyndicationRestTemplateConfiguration().syndicationRestTemplate();
+        eventPublisher = mock(ApplicationEventPublisher.class);
         mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
+        parser = new FeedParser(syndicationRestTemplate, eventPublisher);
     }
 
     @Test
@@ -211,41 +198,13 @@ public class FeedParserTests {
         try {
             parser.parse(HTTP_EXAMPLE_COM);
             fail("expected exception not thrown");
-        } catch (FeedParseException exception) { // NOPMD
-            // expected exception
-        }
-
-        assertThat(eventPublisher.receivedEvents, hasItem(
-                allOf(
-                        hasProperty("source", is(HTTP_EXAMPLE_COM)),
-                        hasProperty("errorMessage", is("500 Internal Server Error")),
-                        hasProperty("timestamp", is(greaterThan(0L)))
-                ))
-        );
-    }
-
-    static class TestConfiguration {
-
-        @Bean
-        public FeedParser feedParser(RestTemplate syndicationRestTemplate, TestApplicationEventPublisher testApplicationEventPublisher) {
-            return new FeedParser(syndicationRestTemplate, testApplicationEventPublisher);
-        }
-
-        @Primary
-        @Component
-        static class TestApplicationEventPublisher implements ApplicationEventPublisher {
-
-            private List<ApplicationEvent> receivedEvents = new ArrayList<>();
-
-            @Override
-            public void publishEvent(ApplicationEvent event) {
-                receivedEvents.add(event);
-            }
-
-            @Override
-            public void publishEvent(Object event) {
-                throw new UnsupportedOperationException();
-            }
+        } catch (FeedParseException exception) {
+            verify(eventPublisher).publishEvent(MockitoHamcrest.argThat(
+                    allOf(
+                            hasProperty("source", is(HTTP_EXAMPLE_COM)),
+                            hasProperty("errorMessage", is("500 Internal Server Error")),
+                            hasProperty("timestamp", is(greaterThan(0L)))
+                    )));
         }
     }
 }

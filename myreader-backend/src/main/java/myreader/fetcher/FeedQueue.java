@@ -5,34 +5,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 public class FeedQueue {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FeedQueue.class);
+    private static final Logger log = LoggerFactory.getLogger(FeedQueue.class);
 
     private final BlockingQueue<FetchResult> queue = new LinkedBlockingQueue<>();
 
     public void add(FetchResult fetchResult) {
-        if (!queue.contains(fetchResult))
+        if (!queue.contains(fetchResult)) {
             queue.add(fetchResult);
+        }
     }
 
     public int getSize() {
         return queue.size();
     }
 
+    @Nullable
     public FetchResult take() {
-        FetchResult fetchResult = null;
-        try {
-            fetchResult = queue.take();
-        } catch (InterruptedException exception) {
-            // Restore the interrupted status
-            Thread.currentThread().interrupt();
-        }
-        LOG.debug("left in queue: {}", queue.size());
+        FetchResult fetchResult = queue.poll();
+        log.debug("left in queue: {}", queue.size());
         return fetchResult;
     }
 }

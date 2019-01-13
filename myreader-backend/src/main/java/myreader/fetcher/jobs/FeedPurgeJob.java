@@ -2,17 +2,17 @@ package myreader.fetcher.jobs;
 
 import myreader.entity.Feed;
 import myreader.repository.FeedRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * @author Kamill Sokol
  */
+@Component
+@ConditionalOnTaskEnabled
 public class FeedPurgeJob extends BaseJob {
-
-    private static final Logger log = LoggerFactory.getLogger(FeedPurgeJob.class);
 
     private final FeedRepository feedRepository;
 
@@ -21,15 +21,16 @@ public class FeedPurgeJob extends BaseJob {
         this.feedRepository = feedRepository;
     }
 
+    @Scheduled(cron = "0 34 1 * * *")
     @Override
     public void work() {
         List<Feed> zeroSubscriptionFeeds = feedRepository.findByZeroSubscriptions();
-        log.info("feeds without subscription: {}", zeroSubscriptionFeeds.size());
+        getLog().info("feeds without subscription: {}", zeroSubscriptionFeeds.size());
 
         zeroSubscriptionFeeds.forEach(feed -> {
-            log.info("deleting feed '{} ({})'", feed.getTitle(), feed.getId());
+            getLog().info("deleting feed '{} ({})'", feed.getTitle(), feed.getId());
             feedRepository.delete(feed);
-            log.info("deleted feed '{} ({})'", feed.getTitle(), feed.getId());
+            getLog().info("deleted feed '{} ({})'", feed.getTitle(), feed.getId());
         });
     }
 }

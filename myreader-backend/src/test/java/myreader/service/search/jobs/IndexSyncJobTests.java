@@ -2,8 +2,6 @@ package myreader.service.search.jobs;
 
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
-import org.hibernate.Criteria;
-import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextSession;
 import org.junit.Rule;
@@ -16,10 +14,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.EntityManager;
@@ -40,7 +36,6 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest(includeFilters = @Filter(type = ASSIGNABLE_TYPE, classes = IndexSyncJob.class))
-@TestPropertySource(properties = { "task.enabled = false" })
 @Sql("classpath:test-data.sql")
 public class IndexSyncJobTests {
 
@@ -51,13 +46,10 @@ public class IndexSyncJobTests {
     private SubscriptionEntryRepository subscriptionEntryRepository;
 
     @Autowired
-    private PlatformTransactionManager transactionManager;
-
-    @Autowired
     private ApplicationContext applicationContext;
 
     @Autowired
-    private TestEntityManager em;
+    private TestEntityManager testEntityManager;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -81,7 +73,7 @@ public class IndexSyncJobTests {
     public void testExceptionHandling() {
         final TransactionTemplate mockTransactionalTemplate = mock(TransactionTemplate.class);
         when(mockTransactionalTemplate.execute(any())).thenThrow(new RuntimeException("junit"));
-        final IndexSyncJob indexSyncJob = new IndexSyncJob(null, mockTransactionalTemplate);
+        final IndexSyncJob indexSyncJob = new IndexSyncJob(testEntityManager.getEntityManager());
 
         try {
             indexSyncJob.run();
@@ -100,24 +92,17 @@ public class IndexSyncJobTests {
 
     @Test
     public void testAliveIsFalse() {
-        final EntityManager spyEm = mock(EntityManager.class);
+        final EntityManager mockEntityManager = mock(EntityManager.class);
         final FullTextSession mockFullTextSession = mock(FullTextSession.class);
-        when(spyEm.getDelegate()).thenReturn(mockFullTextSession);
-
-        final Criteria mockCriteria = mock(Criteria.class);
-
-        when(mockFullTextSession.createCriteria(SubscriptionEntry.class)).thenReturn(mockCriteria);
-        when(mockCriteria.setFetchSize(anyInt())).thenReturn(mockCriteria);
+        when(mockEntityManager.getDelegate()).thenReturn(mockFullTextSession);
 
         final ScrollableResults mockScrollableResults = mock(ScrollableResults.class);
-        when(mockCriteria.scroll(ScrollMode.FORWARD_ONLY)).thenReturn(mockScrollableResults);
         when(mockScrollableResults.next()).thenReturn(true, false);
 
-        final IndexSyncJob uut = new IndexSyncJob(spyEm, new TransactionTemplate(transactionManager));
-        uut.onApplicationEvent(new ContextClosedEvent(applicationContext));
+        new IndexSyncJob(mockEntityManager).onApplicationEvent(new ContextClosedEvent(applicationContext));
 
         addSubscriptionEntry();
-        uut.run();
+        job.run();
 
         verify(mockScrollableResults, never()).get(anyInt());
     }
@@ -127,7 +112,7 @@ public class IndexSyncJobTests {
         SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
         subscriptionEntry.setFeedEntry(one.getFeedEntry());
         subscriptionEntry.setSubscription(one.getSubscription());
-        em.persist(subscriptionEntry);
-        em.flush();
+        testEntityManager.persist(subscriptionEntry);
+        testEntityManager.flush();
     }
 }

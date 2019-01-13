@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -20,26 +20,26 @@ import static org.mockito.Mockito.when;
 /**
  * @author Kamill Sokol
  */
-public class SyndFetcherJobTest {
+public class SyndFetcherJobTests {
 
-    private SyndFetcherJob uut;
+    private SyndFetcherJob job;
     private FeedQueue queueMock;
     private SubscriptionBatch serviceMock;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         queueMock = mock(FeedQueue.class);
         serviceMock = mock(SubscriptionBatch.class);
-        uut = new SyndFetcherJob("junit", queueMock, serviceMock);
+        job = new SyndFetcherJob(queueMock, serviceMock);
     }
 
     @Test
-    public void shouldNotThrowAnException() throws Exception {
+    public void shouldNotThrowAnException() {
         when(queueMock.take()).thenReturn(new FetchResult("url1"), new FetchResult("url2"), null);
         doThrow(new RuntimeException()).when(serviceMock).updateUserSubscriptions(any(FetchResult.class));
 
         try {
-            uut.run();
+            job.run();
         } catch(Exception e) {
             fail("shouldn't catch an exception here");
         }
@@ -49,11 +49,11 @@ public class SyndFetcherJobTest {
     }
 
     @Test
-    public void shouldNeverCallService() throws Exception {
+    public void shouldNeverCallService() {
         when(queueMock.take()).thenReturn(new FetchResult("url1"), new FetchResult("url2"), null);
 
-        uut.onApplicationEvent(new ContextClosedEvent(mock(ApplicationContext.class)));
-        uut.run();
+        job.onApplicationEvent(new ContextClosedEvent(mock(ApplicationContext.class)));
+        job.run();
 
         verify(queueMock, times(1)).take();
         verify(serviceMock, never()).updateUserSubscriptions(any(FetchResult.class));

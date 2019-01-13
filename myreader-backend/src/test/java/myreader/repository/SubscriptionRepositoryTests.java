@@ -9,7 +9,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -22,8 +21,7 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@TestPropertySource(properties = { "task.enabled = false" })
-@Sql("/test-data.sql")
+@Sql("classpath:test-data.sql")
 public class SubscriptionRepositoryTests {
 
     private static final long SUBSCRIPTION_ID = 1L;
@@ -45,7 +43,7 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void updateLastFeedEntry() throws Exception {
+    public void updateLastFeedEntry() {
         subscriptionRepository.updateLastFeedEntryId(FEED_ENTRY_ID, SUBSCRIPTION_ID);
 
         subscription = em.refresh(subscription);
@@ -54,7 +52,7 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void updateLastFeedEntryIdAndIncrementFetchCount() throws Exception {
+    public void updateLastFeedEntryIdAndIncrementFetchCount() {
         subscriptionRepository.updateLastFeedEntryIdAndIncrementFetchCount(FEED_ENTRY_ID, SUBSCRIPTION_ID);
 
         subscription = em.refresh(subscription);
@@ -64,12 +62,12 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void shouldReturnZeroWhenCountingOverUnknownFeedId() throws Exception {
+    public void shouldReturnZeroWhenCountingOverUnknownFeedId() {
         assertThat(subscriptionRepository.countByFeedId(999L), is(0));
     }
 
     @Test
-    public void shouldReturnOneWhenCountingOverFeedWithSubscription() throws Exception {
+    public void shouldReturnOneWhenCountingOverFeedWithSubscription() {
         User user = new User("email");
         em.persist(user);
 
@@ -82,11 +80,11 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void shouldRecalculateSubscriptionUnseenCount() throws Exception {
+    public void shouldRecalculateSubscriptionUnseenCount() {
         subscription = em.find(Subscription.class, 3L);
         assertThat(subscription.getUnseen(), is(1));
 
-        subscription.getSubscriptionEntries().stream().forEach(subscriptionEntry -> subscriptionEntry.setSeen(false));
+        subscription.getSubscriptionEntries().forEach(subscriptionEntry -> subscriptionEntry.setSeen(false));
         em.flush();
 
         subscription = em.refresh(subscription);

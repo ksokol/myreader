@@ -4,17 +4,17 @@ import myreader.entity.Feed;
 import myreader.fetcher.jobs.purge.EntryPurger;
 import myreader.fetcher.jobs.purge.RetainDateDeterminer;
 import myreader.repository.FeedRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * @author Kamill Sokol
  */
+@Component
+@ConditionalOnTaskEnabled
 public class EntryPurgeJob extends BaseJob {
-
-    private static final Logger log = LoggerFactory.getLogger(EntryPurgeJob.class);
 
     private final FeedRepository feedRepository;
     private final EntryPurger entryPurger;
@@ -27,14 +27,15 @@ public class EntryPurgeJob extends BaseJob {
         this.determiner = determiner;
     }
 
+    @Scheduled(cron = "0 33 3 * * *")
     @Override
     public void work() {
         List<Feed> feeds = feedRepository.findAll();
 
         for (Feed feed : feeds) {
-            log.info("start cleaning old entries from feed '{} ({})'", feed.getTitle(), feed.getId());
+            getLog().info("start cleaning old entries from feed '{} ({})'", feed.getTitle(), feed.getId());
             determiner.determine(feed).ifPresent(retainDate -> entryPurger.purge(feed.getId(), retainDate));
-            log.info("finished cleaning old entries from feed '{} ({})'", feed.getTitle(), feed.getId());
+            getLog().info("finished cleaning old entries from feed '{} ({})'", feed.getTitle(), feed.getId());
         }
     }
 }

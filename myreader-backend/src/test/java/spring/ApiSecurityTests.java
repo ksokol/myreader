@@ -1,9 +1,7 @@
 package spring;
 
 import myreader.Starter;
-import myreader.test.KnownUser;
-import myreader.test.TestDataSourceConfig;
-import org.apache.commons.codec.binary.Base64;
+import myreader.test.TestConstants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,21 +9,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
-import java.nio.charset.Charset;
 
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
-import static myreader.test.CustomRequestPostProcessors.sessionUser;
-import static myreader.test.CustomRequestPostProcessors.xmlHttpRequest;
-import static myreader.test.KnownUser.ADMIN;
-import static myreader.test.KnownUser.USER1;
+import static myreader.test.request.RequestedWithHeaderPostProcessors.xmlHttpRequest;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,23 +35,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
-@SpringBootTest(classes = {Starter.class, ApiSecurityTest.AdditionalConfig.class, TestDataSourceConfig.class})
-@TestPropertySource(properties = { "task.enabled = false" })
-public class ApiSecurityTest {
+@Sql("classpath:test-data.sql")
+@SpringBootTest(classes = { Starter.class, ApiSecurityTests.TestConfiguration.class })
+public class ApiSecurityTests {
 
     private static final String API_2 = "/api/2";
 
     @Autowired
     private MockMvc mockMvc;
-
-    // used by MyReader Android
-    @Test
-    public void testApiAccessByBasicAuthentication() throws Exception {
-        mockMvc.perform(get(API_2 + "/sub")
-                .header("Authorization", basic(USER1)))
-                .andExpect(status().isOk())
-                .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
-    }
 
     @Test
     public void testApiUnauthorizedWithRequestWithAjax() throws Exception {
@@ -73,8 +60,8 @@ public class ApiSecurityTest {
     @Test
     public void testSuccessfulAuthorization() throws Exception {
         mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", USER1.username)
-                .param("password", USER1.password))
+                .param("username", TestConstants.USER1)
+                .param("password", TestConstants.DEFAULT_PASSWORD))
                 .andExpect(status().isNoContent())
                 .andExpect(header().string("X-MY-AUTHORITIES","ROLE_USER"));
     }
@@ -82,7 +69,7 @@ public class ApiSecurityTest {
     @Test
     public void testUnsuccessfulAuthorization() throws Exception {
         mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", USER1.username)
+                .param("username", TestConstants.USER1)
                 .param("password", "wrong"))
                 .andExpect(status().isUnauthorized());
     }
@@ -90,8 +77,8 @@ public class ApiSecurityTest {
     @Test
     public void testRememberMeWithBrowser() throws Exception {
         Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", USER1.username)
-                .param("password", USER1.password))
+                .param("username", TestConstants.USER1)
+                .param("password", TestConstants.DEFAULT_PASSWORD))
                 .andExpect(status().isNoContent())
                 .andReturn()
                 .getResponse().getCookie("remember-me");
@@ -106,8 +93,8 @@ public class ApiSecurityTest {
     public void testRememberMeWithAjax() throws Exception {
         Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .with(xmlHttpRequest())
-                .param("username", USER1.username)
-                .param("password", USER1.password))
+                .param("username", TestConstants.USER1)
+                .param("password", TestConstants.DEFAULT_PASSWORD))
                 .andExpect(status().isNoContent())
                 .andReturn()
                 .getResponse().getCookie("remember-me");
@@ -119,43 +106,35 @@ public class ApiSecurityTest {
     }
 
     @Test
+    @WithMockUser(TestConstants.USER1)
     public void testApiOk() throws Exception {
-        mockMvc.perform(get(API_2 + "/sub")
-                .with(sessionUser(USER1)))
+        mockMvc.perform(get(API_2 + "/sub"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
     }
 
     @Test
-    public void testLogoutWithBrowserRememberMe() throws Exception {
-        mockMvc.perform(get(LOGOUT.mapping())
-                .with(sessionUser(USER1))
-                .accept(TEXT_HTML))
-                .andExpect(status().isNoContent())
-                .andExpect(cookie().value("JSESSIONID", nullValue()))
-                .andExpect(cookie().value("remember-me", nullValue()));
-    }
-
-    @Test
+    @WithMockUser(TestConstants.USER1)
     public void testLogoutWithBrowser() throws Exception {
         mockMvc.perform(get(LOGOUT.mapping())
-                .with(sessionUser(USER1))
                 .accept(TEXT_HTML))
-                .andExpect(status().isNoContent())
-                .andExpect(cookie().value("JSESSIONID", nullValue()));
-    }
-
-    @Test
-    public void testLogoutWithAjax() throws Exception {
-        mockMvc.perform(get(LOGOUT.mapping())
-                .with(xmlHttpRequest())
-                .with(sessionUser(USER1)))
                 .andExpect(status().isNoContent())
                 .andExpect(cookie().value("JSESSIONID", nullValue()))
                 .andExpect(cookie().value("remember-me", nullValue()));
     }
 
     @Test
+    @WithMockUser(TestConstants.USER1)
+    public void testLogoutWithAjax() throws Exception {
+        mockMvc.perform(get(LOGOUT.mapping())
+                .with(xmlHttpRequest()))
+                .andExpect(status().isNoContent())
+                .andExpect(cookie().value("JSESSIONID", nullValue()))
+                .andExpect(cookie().value("remember-me", nullValue()));
+    }
+
+    @Test
+    @WithAnonymousUser
     public void shouldRejectAccessToActuatorEndpointsWhenUserIsAnonymous() throws Exception {
         mockMvc.perform(get("/info"))
                 .andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/"))
@@ -163,61 +142,56 @@ public class ApiSecurityTest {
     }
 
     @Test
+    @WithMockUser(TestConstants.USER1)
     public void shouldGrantAccessToActuatorEndpointsWhenUserIsAuthenticated() throws Exception {
-        mockMvc.perform(get("/info")
-                .with(sessionUser(USER1)))
+        mockMvc.perform(get("/info"))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(TestConstants.USER1)
     public void shouldRejectAccessToProcessingEndpointsWhenUserHasNoAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/processing")
-                .with(sessionUser(USER1)))
+        mockMvc.perform(get(API_2 + "/processing"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
+    @WithMockUser(username = TestConstants.ADMIN, roles = "ADMIN")
     public void shouldGrantAccessToProcessingEndpointsWhenUserHasAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/processing")
-                .with(sessionUser(ADMIN)))
+        mockMvc.perform(get(API_2 + "/processing"))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(TestConstants.USER1)
     public void shouldRejectAccessToFeedsEndpointsWhenUserHasNoAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/feeds")
-                .with(sessionUser(USER1)))
+        mockMvc.perform(get(API_2 + "/feeds"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
+    @WithMockUser(username = TestConstants.ADMIN, roles = "ADMIN")
     public void shouldGranAccessToFeedsEndpointsWhenUserHasAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/feeds")
-                .with(sessionUser(ADMIN)))
+        mockMvc.perform(get(API_2 + "/feeds"))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(value = TestConstants.USER1)
     public void shouldRejectAccessToFeedsSubEndpointsWhenUserHasNoAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/feeds/sub1/sub2")
-                .with(sessionUser(USER1)))
+        mockMvc.perform(get(API_2 + "/feeds/sub1/sub2"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
+    @WithMockUser(username = TestConstants.ADMIN, roles = "ADMIN")
     public void shouldGrantAccessToFeedsSubEndpointsWhenUserHasAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/feeds/sub1/sub2")
-                .with(sessionUser(ADMIN)))
+        mockMvc.perform(get(API_2 + "/feeds/sub1/sub2"))
                 .andExpect(status().isOk());
-    }
-
-    private static String basic(KnownUser user) {
-        final byte[] usernamePassword = String.format("%s:%s", user.username, user.password).getBytes(Charset.forName("UTF-8"));
-        return "Basic " + new String(Base64.encodeBase64(usernamePassword), Charset.forName("UTF-8"));
     }
 
     @Configuration
-    static class AdditionalConfig {
+    static class TestConfiguration {
 
         @RestController
         static class TestController {

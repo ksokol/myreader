@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,7 +31,8 @@ public class ProcessingCollectionResource {
     }
 
     //TODO
-    @Async
+    @Transactional
+    @Async("applicationTaskExecutor")
     @RequestMapping(value = "", method = RequestMethod.PUT)
     public Future<Void> runProcess(@Valid @RequestBody ProcessingPutRequest request) {
         final Runnable runnable = applicationContext.getBean(request.getProcess(), Runnable.class);

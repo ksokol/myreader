@@ -45,9 +45,8 @@ public class FeedEntry {
     private Date createdAt;
 
     /**
-     * @deprecated Use {@link #FeedEntry(Feed)} instead.
+     * Default constructor for Hibernate.
      */
-    @Deprecated
     public FeedEntry() {}
 
     public FeedEntry(Feed feed) {

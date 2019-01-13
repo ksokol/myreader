@@ -32,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@TestPropertySource(properties = { "task.enabled = false" })
 @Sql("classpath:test-data.sql")
 @WithMockUser(username = TestConstants.ADMIN, roles = { "ADMIN" })
 public class FeedResourceTests {

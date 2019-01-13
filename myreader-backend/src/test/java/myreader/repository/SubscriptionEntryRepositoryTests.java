@@ -1,20 +1,19 @@
 package myreader.repository;
 
-import myreader.config.CommonConfig;
 import myreader.entity.SubscriptionEntry;
 import myreader.service.search.jobs.IndexSyncJob;
-import myreader.test.annotation.WithMockUser1;
-import myreader.test.annotation.WithMockUser115;
-import myreader.test.annotation.WithMockUser4;
+import myreader.test.TestConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Slice;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -29,56 +28,55 @@ import static org.junit.Assert.assertThat;
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@Import(CommonConfig.class)
-@WithMockUser4
+@Import(SubscriptionEntryRepositoryTests.TestConfiguration.class)
 @Sql("classpath:test-data.sql")
-@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = IndexSyncJob.class))
+@DataJpaTest
 public class SubscriptionEntryRepositoryTests {
 
     @Autowired
     private SubscriptionEntryRepository subscriptionEntryRepository;
 
     @Autowired
-    private IndexSyncJob indexSyncJob;
+    private TestEntityManager testEntityManager;
 
     private Slice<SubscriptionEntry> slice;
 
     @Before
-    public void setUp() throws Exception {
-        indexSyncJob.work();
+    public void setUp() {
+        new IndexSyncJob(testEntityManager.getEntityManager()).work();
     }
 
     @Test
-    @WithMockUser4
+    @WithMockUser(TestConstants.USER4)
     public void distinctTags() {
         final Set<String> distinctTags = subscriptionEntryRepository.findDistinctTagsForCurrentUser();
         assertThat(distinctTags, contains("tag1", "tag2-tag3", "tag4", "tag5", "tag6", "tag7", "tag8Tag9"));
     }
 
     @Test
-    @WithMockUser4
-    public void searchWithPageSizeOne() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void searchWithPageSizeOne() {
         givenQuery(null, null, null, null, null, null, 1);
         assertThat(slice.getContent().get(0).getId(), is(1013L));
     }
 
     @Test
-    @WithMockUser1
-    public void searchSubscriptionEntryByTitle() throws Exception {
+    @WithMockUser(TestConstants.USER1)
+    public void searchSubscriptionEntryByTitle() {
         givenQuery("mysql", null, null, null, null, null, 10);
         assertThat(slice.getContent().get(0).getId(), is(1002L));
     }
 
     @Test
-    @WithMockUser1
-    public void searchSubscriptionEntryByContent() throws Exception {
+    @WithMockUser(TestConstants.USER1)
+    public void searchSubscriptionEntryByContent() {
         givenQuery("content", null, null, null, null, null, 10);
         assertThat(slice.getContent(), hasSize(2));
     }
 
     @Test
-    @WithMockUser1
-    public void searchWithNextId() throws Exception {
+    @WithMockUser(TestConstants.USER1)
+    public void searchWithNextId() {
         givenQuery(null, null, null, null, null, 1001L, 10);
         assertThat(slice.getContent().get(0).getId(), is(1001L));
 
@@ -87,71 +85,71 @@ public class SubscriptionEntryRepositoryTests {
     }
 
     @Test
-    @WithMockUser1
-    public void searchSubscriptionEntryByTag() throws Exception {
+    @WithMockUser(TestConstants.USER1)
+    public void searchSubscriptionEntryByTag() {
         givenQuery("tag1", null, null, null, null, null, 10);
         assertThat(slice.getContent(), hasSize(2));
     }
 
     @Test
-    @WithMockUser4
-    public void searchSubscriptionEntryTag() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void searchSubscriptionEntryTag() {
         givenQuery("help", null, null, null, null, null, 10);
         assertThat(slice.getContent().get(0).getId(), is(1011L));
     }
 
     @Test
-    @WithMockUser4
-    public void seenEqualFalse() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void seenEqualFalse() {
         givenQuery(null, null, null, null, "false", null, 10);
         assertThat(slice.getContent(), hasSize(5));
     }
 
     @Test
-    @WithMockUser4
-    public void seenEqualTrue() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void seenEqualTrue() {
         givenQuery(null, null, null, null, "true", null, 10);
         assertThat(slice.getContent(), hasSize(0));
     }
 
     @Test
-    @WithMockUser4
-    public void seenEqualWildcard() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void seenEqualWildcard() {
         givenQuery(null, null, null, null, "*", null, 10);
         assertThat(slice.getContent(), hasSize(5));
     }
 
     @Test
-    @WithMockUser4
-    public void feedUuidEqual14() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void feedUuidEqual14() {
         givenQuery(null, "14", null, null, null, null, 10);
         assertThat(slice.getContent(), hasSize(5));
     }
 
     @Test
-    @WithMockUser4
-    public void feedUuidEqual9114() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void feedUuidEqual9114() {
         givenQuery(null, "9114", null, null, null, null, 10);
         assertThat(slice.getContent(), hasSize(0));
     }
 
     @Test
-    @WithMockUser4
-    public void feedTagEqualUnknown() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void feedTagEqualUnknown() {
         givenQuery(null, null, "unknown", null, null, null, 10);
         assertThat(slice.getContent(), hasSize(0));
     }
 
     @Test
-    @WithMockUser115
-    public void feedTagEqualTag1() throws Exception {
+    @WithMockUser(TestConstants.USER115)
+    public void feedTagEqualTag1() {
         givenQuery(null, null, "tag1", null, null, null, 10);
         assertThat(slice.getContent(), hasSize(2));
     }
 
     @Test
-    @WithMockUser4
-    public void entryTagEqualTag2Tag3() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void entryTagEqualTag2Tag3() {
         givenQuery(null, null, null, "tag2", null, null, 10);
         assertThat(slice.getContent(), hasSize(0));
 
@@ -161,8 +159,8 @@ public class SubscriptionEntryRepositoryTests {
     }
 
     @Test
-    @WithMockUser4
-    public void entryTagEqualTag4AndTag5() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void entryTagEqualTag4AndTag5() {
         givenQuery(null, null, null, "tag4", null, null, 10);
         assertThat(slice.getContent(), hasSize(1));
         assertThat(slice.getContent().get(0).getId(), is(1011L));
@@ -175,8 +173,8 @@ public class SubscriptionEntryRepositoryTests {
     }
 
     @Test
-    @WithMockUser4
-    public void entryTagEqualTag6AndTag7() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void entryTagEqualTag6AndTag7() {
         givenQuery(null, null, null, "tag6", null, null, 10);
         assertThat(slice.getContent(), hasSize(1));
         assertThat(slice.getContent().get(0).getId(), is(1012L));
@@ -189,8 +187,8 @@ public class SubscriptionEntryRepositoryTests {
     }
 
     @Test
-    @WithMockUser4
-    public void entryTagEqualTag8Tag9() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void entryTagEqualTag8Tag9() {
         givenQuery(null, null, null, "tag8tag9", null, null, 10);
         assertThat(slice.getContent(), hasSize(0));
 
@@ -200,8 +198,8 @@ public class SubscriptionEntryRepositoryTests {
     }
 
     @Test
-    @WithMockUser4
-    public void shouldAppendAsteriskToSearchParameterWhenSearchParameterDoesNotEndWithAsterisk() throws Exception {
+    @WithMockUser(TestConstants.USER4)
+    public void shouldAppendAsteriskToSearchParameterWhenSearchParameterDoesNotEndWithAsterisk() {
         givenQuery("con", null, null, null, "*", null, 10);
         assertThat(slice.getContent(), hasSize(5));
 
@@ -209,7 +207,16 @@ public class SubscriptionEntryRepositoryTests {
         assertThat(slice.getContent(), hasSize(5));
     }
 
-    private void givenQuery(String q, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, int pageSize) {
+    @WithMockUser(TestConstants.USER4)
+    public void givenQuery(String q, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, int pageSize) {
         slice = subscriptionEntryRepository.findByForCurrentUser(q, feedId, feedTagEqual, entryTagEqual, seen, nextId, pageSize);
+    }
+
+    static class TestConfiguration {
+
+        @Bean
+        public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+            return new SecurityEvaluationContextExtension();
+        }
     }
 }

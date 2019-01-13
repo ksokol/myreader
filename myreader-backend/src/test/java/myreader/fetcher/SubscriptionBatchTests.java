@@ -12,9 +12,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -28,10 +27,9 @@ import static org.hamcrest.core.Is.is;
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionBatch.class))
-@TestPropertySource(properties = { "task.enabled = false" })
-@Sql("/test-data.sql")
-public class SubscriptionBatchTest {
+@DataJpaTest(includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionBatch.class))
+@Sql("classpath:test-data.sql")
+public class SubscriptionBatchTests {
 
     private static final String KNOWN_FEED_URL = "http://feeds.feedburner.com/javaposse";
     private static final String ENTRY_TITLE = "Party time";
@@ -105,7 +103,7 @@ public class SubscriptionBatchTest {
     }
 
     @Test
-    public void shouldUpdateResultSizePerFetchWhenCountIsGreaterThanZero() throws Exception {
+    public void shouldUpdateResultSizePerFetchWhenCountIsGreaterThanZero() {
         FetchResult fetchResult = new FetchResult(emptyList(), null, null, KNOWN_FEED_URL, 10);
 
         subscriptionBatch.updateUserSubscriptions(fetchResult);
@@ -115,7 +113,7 @@ public class SubscriptionBatchTest {
     }
 
     @Test
-    public void shouldNotUpdateResultSizePerFetchWhenCountIsZero() throws Exception {
+    public void shouldNotUpdateResultSizePerFetchWhenCountIsZero() {
         FetchResult fetchResult = new FetchResult(emptyList(), null, null, KNOWN_FEED_URL, 0);
 
         subscriptionBatch.updateUserSubscriptions(fetchResult);

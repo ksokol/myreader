@@ -95,8 +95,6 @@ public class SecurityConfig {
                 .and()
                 .rememberMe().key(rememberMeKey)
                 .and()
-                .httpBasic().realmName("API")
-                .and()
                 .addFilterAfter(new XAuthoritiesFilter(), FilterSecurityInterceptor.class)
                 .csrf().disable()
                 .exceptionHandling().authenticationEntryPoint((request, response, authException) -> {

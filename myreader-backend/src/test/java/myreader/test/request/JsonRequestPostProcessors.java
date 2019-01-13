@@ -2,7 +2,8 @@ package myreader.test.request;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.test.web.servlet.JsonUtils;
+import org.apache.commons.io.FileUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ public final class JsonRequestPostProcessors {
     }
 
     private JsonRequestPostProcessors() {
+        //disallow instantiation
     }
 
     public static RequestPostProcessor jsonBody(String content) {
@@ -36,7 +38,7 @@ public final class JsonRequestPostProcessors {
                 } else if(content.startsWith("[")) {
                     request.setContent(singleQuotedToDoubleQuotedJsonList(content).getBytes(UTF_8.name()));
                 } else {
-                    request.setContent(JsonUtils.jsonFromFile(content).getBytes(UTF_8.name()));
+                    request.setContent(jsonFromFile(content).getBytes(UTF_8.name()));
                 }
             } catch (IOException exception) {
                 throw new IllegalArgumentException(exception.getMessage(), exception);
@@ -53,5 +55,14 @@ public final class JsonRequestPostProcessors {
     private static String singleQuotedToDoubleQuotedJsonList(String json) throws IOException {
         List list = objectMapper.readValue(json, List.class);
         return objectMapper.writeValueAsString(list);
+    }
+
+    private static String jsonFromFile(String file) {
+        ClassPathResource classPathResource = new ClassPathResource(file);
+        try {
+            return FileUtils.readFileToString(classPathResource.getFile());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
     }
 }

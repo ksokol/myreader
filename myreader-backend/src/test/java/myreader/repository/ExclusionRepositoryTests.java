@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -19,9 +18,8 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@TestPropertySource(properties = { "task.enabled = false" })
-@Sql("/test-data.sql")
-public class ExclusionRepositoryTest {
+@Sql("classpath:test-data.sql")
+public class ExclusionRepositoryTests {
 
     private static final long EXCLUSION_PATTERN_ID = 0L;
 
@@ -29,7 +27,7 @@ public class ExclusionRepositoryTest {
     private ExclusionRepository exclusionRepository;
 
     @Autowired
-    private TestEntityManager em;
+    private TestEntityManager testEntityManager;
 
     @Test
     public void findBySubscriptionId() {
@@ -37,14 +35,14 @@ public class ExclusionRepositoryTest {
     }
 
     @Test
-    public void incrementHitCount() throws Exception {
-        ExclusionPattern exclusionPattern = em.find(ExclusionPattern.class, EXCLUSION_PATTERN_ID);
+    public void incrementHitCount() {
+        ExclusionPattern exclusionPattern = testEntityManager.find(ExclusionPattern.class, EXCLUSION_PATTERN_ID);
 
         assertThat(exclusionPattern.getHitCount(), is(1));
 
         exclusionRepository.incrementHitCount(EXCLUSION_PATTERN_ID);
 
-        exclusionPattern = em.refresh(exclusionPattern);
+        exclusionPattern = testEntityManager.refresh(exclusionPattern);
 
         assertThat(exclusionPattern.getHitCount(), is(2));
     }
