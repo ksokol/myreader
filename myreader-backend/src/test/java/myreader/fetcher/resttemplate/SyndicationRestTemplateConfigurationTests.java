@@ -1,63 +1,61 @@
 package myreader.fetcher.resttemplate;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import static com.github.tomakehurst.wiremock.client.RequestPatternBuilder.allRequests;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.mortbay.jetty.HttpHeaders.SET_COOKIE;
-import static org.springframework.http.HttpHeaders.COOKIE;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.test.web.client.ExpectedCount.twice;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
  * @author Kamill Sokol
  */
 public class SyndicationRestTemplateConfigurationTests {
 
-    private static final int PORT = 18444;
-    private static final String HTTP_URL = String.format("https://localhost:%d/rss", PORT);
+    private static final String HTTP_URL = "https://localhost/rss";
 
-    @ClassRule
-    public static WireMockRule wireMockRule = new WireMockRule(wireMockConfig().httpsPort(PORT));
-
+    private MockRestServiceServer mockServer;
     private RestTemplate syndicationRestTemplate;
 
     @Before
     public void setUp() throws Exception {
         syndicationRestTemplate = new SyndicationRestTemplateConfiguration().syndicationRestTemplate();
+        mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
     }
 
     @Test
-    public void shouldAddCookiesToRequest() throws Exception {
-        stubFor(get(urlEqualTo("/rss"))
-                .willReturn(aResponse()
-                        .withHeader(SET_COOKIE, "expected_cookie_value")
-                ));
+    public void shouldAddCookiesToRequest() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(SET_COOKIE, "expected_cookie_value");
+
+        mockServer.expect(twice(), requestTo(HTTP_URL))
+                .andExpect(method(GET))
+                .andRespond(withSuccess().headers(httpHeaders));
 
         syndicationRestTemplate.getForEntity(HTTP_URL, Void.class);
         syndicationRestTemplate.getForEntity(HTTP_URL, Void.class);
 
-        verify(allRequests().withHeader(COOKIE, equalTo("expected_cookie_value")));
+        mockServer.verify();
     }
 
-    // TODO Convert to nested tests with JUnit 5. Missing custom SSL configuration for insecure connections should not affect other tests.
     @Test
-    public void insecureSslConnection() throws Exception {
-        stubFor(get(urlEqualTo("/rss"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "text/xml")
-                ));
+    public void insecureSslConnection() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(CONTENT_TYPE, "text/xml");
+
+        mockServer.expect(requestTo(HTTP_URL))
+                .andExpect(method(GET))
+                .andRespond(withSuccess().headers(httpHeaders));
 
         syndicationRestTemplate.getForEntity(HTTP_URL, Void.class);
 
-        verify(allRequests());
+        mockServer.verify();
     }
 }
