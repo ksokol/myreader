@@ -1,3 +1,9 @@
+if: tag IS blank
+
+stages:
+- name: deploy
+  if: branch = master
+
 language: java
 jdk:
   - oraclejdk8
@@ -29,3 +35,16 @@ script:
   - travis_wait 20 ./gradlew dependencyCheckAnalyze
   - git fetch --unshallow # necessary for SonarCloud blame information
   - ./gradlew check sonarqube
+  - if [[ $TRAVIS_BRANCH == "master" ]]; then ./gradlew build -x check -x test; fi
+
+before_deploy:
+  - git config --local user.name "${GIT_USER_NAME}"
+  - git config --local user.email "${GIT_USER_EMAIL}"
+  - export TRAVIS_TAG="$TRAVIS_BRANCH-build-$(git log --format=%h -1)"
+  - git tag $TRAVIS_TAG
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_ACCESS_TOKEN
+  file: build/myreader.jar
+  skip_cleanup: true

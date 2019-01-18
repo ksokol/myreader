@@ -6,20 +6,15 @@ MyReader is a web-based RSS reader.
 Installation
 ------------
 
-**Prerequisite**
+**Dependencies**
 
 - Java 8
 
 **Build and package**
 
-- run `gradlew build`
-- You will find a fat jar (Spring Boot application) under `build/libs`
-- run `java -jar build/libs/myreader.jar`
-
-
-**TODO**
-
-- add initial admin user
+- run `./gradlew build` or `./gradlew.bat build` on Windows
+- You will find a fat jar (Spring Boot application) in the folder `build`
+- run `java -jar build/myreader.jar`
 
 Developer notes
 ---------------

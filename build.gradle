@@ -49,8 +49,9 @@ configure(javaProjects) {
 
 subprojects {subProject ->
     afterEvaluate {
-        if (subProject.plugins.hasPlugin('org.springframework.boot')){
+        if (subProject.plugins.hasPlugin("org.springframework.boot")){
             project(":myreader-backend") {
+                libsDirName = "../../build"
                 tasks.bootJar.dependsOn(copyFrontend)
             }
         }
