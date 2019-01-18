@@ -47,10 +47,13 @@ configure(javaProjects) {
     cleanEclipseJdt.onlyIf { false }
 }
 
-task devRun() {
-    doFirst {
-        project(':myreader-backend').tasks.startServer.execute()
-        project(':myreader-frontend').tasks.startServer.execute()
+subprojects {subProject ->
+    afterEvaluate {
+        if (subProject.plugins.hasPlugin('org.springframework.boot')){
+            project(":myreader-backend") {
+                tasks.bootJar.dependsOn(copyFrontend)
+            }
+        }
     }
 }
 
@@ -59,7 +62,12 @@ task copyFrontend(type: Sync, dependsOn: ':myreader-frontend:build') {
     into project(':myreader-backend').buildDir.absolutePath + '/classes/java/main/static'
 }
 
-project(':myreader-backend').tasks.jar.dependsOn copyFrontend
+task devRun() {
+    doFirst {
+        project(':myreader-backend').tasks.startServer.execute()
+        project(':myreader-frontend').tasks.startServer.execute()
+    }
+}
 
 sonarqube {
     properties {
