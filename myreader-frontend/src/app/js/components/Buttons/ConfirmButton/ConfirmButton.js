@@ -59,7 +59,8 @@ class ConfirmButton extends React.Component {
 
 ConfirmButton.propTypes = {
   disabled: PropTypes.bool,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
+  children: PropTypes.any
 }
 
 ConfirmButton.defaultProps = {

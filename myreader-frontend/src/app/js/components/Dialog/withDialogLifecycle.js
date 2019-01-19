@@ -31,7 +31,8 @@ const withDialogLifecycle = WrappedDialog => {
   }
 
   WithDialogLifecycle.propTypes = {
-    dialogRef: PropTypes.func
+    dialogRef: PropTypes.func,
+    children: PropTypes.any
   }
 
   WithDialogLifecycle.defaultProps = {

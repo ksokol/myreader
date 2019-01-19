@@ -29,7 +29,8 @@ const withDialogPolyfill = WrappedDialog => {
   }
 
   WithDialogPolyfill.propTypes = {
-    dialogRef: PropTypes.func
+    dialogRef: PropTypes.func,
+    children: PropTypes.any
   }
 
   WithDialogPolyfill.defaultProps = {

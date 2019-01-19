@@ -63,7 +63,8 @@ AutocompleteInput.propTypes = {
   name: PropTypes.string.isRequired,
   value: PropTypes.string,
   values: PropTypes.arrayOf(PropTypes.string),
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
+  onSelect: PropTypes.func.isRequired
 }
 
 export default AutocompleteInput
