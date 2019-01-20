@@ -25,7 +25,7 @@ task resolve(dependsOn: npm_install) {
 }
 
 task dependencyCheckAnalyze(type: NpmTask, dependsOn: npm_install) {
-    args = ['run', 'snyk']
+    args = ['audit']
 }
 
 task lint(type: NpmTask, dependsOn: npm_install) {

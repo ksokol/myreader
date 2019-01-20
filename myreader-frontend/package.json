@@ -2,7 +2,6 @@
   "name": "myreader-frontend",
   "description": "Myreader frontend package",
   "scripts": {
-    "snyk": "snyk test",
     "build": "export NODE_ENV=production && webpack --bail --progress --profile --display-optimization-bailout",
     "server": "export NODE_ENV=development && webpack-dev-server --history-api-fallback --inline --progress",
     "test": "export NODE_ENV=test && jest --coverage --ci --silent",
@@ -65,7 +64,6 @@
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "raw-loader": "1.0.0",
     "redux-mock-store": "1.5.3",
-    "snyk": "1.105.0",
     "stylelint": "9.10.1",
     "stylelint-config-standard": "18.2.0",
     "svg-url-loader": "2.3.2",
@@ -73,7 +71,7 @@
     "webpack": "4.23.1",
     "webpack-bundle-analyzer": "3.0.3",
     "webpack-cli": "3.1.2",
-    "webpack-dev-server": "3.1.10",
+    "webpack-dev-server": "3.1.14",
     "webpack-pwa-manifest": "3.7.1"
   },
   "directories": {
