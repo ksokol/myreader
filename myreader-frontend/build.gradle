@@ -7,8 +7,8 @@ apply plugin: 'com.moowork.node'
 apply plugin: 'idea'
 
 node {
-    version = '8.9.1'
-    npmVersion = '5.5.1'
+    version = '10.15.0'
+    npmVersion = '6.4.1'
     download = true
 }
 
