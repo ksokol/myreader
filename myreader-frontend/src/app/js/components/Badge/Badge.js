@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {isDefined} from '../../shared/utils'
-import {Color} from './Color'
+import determineRGB from './determineRGB'
 
 class Badge extends React.Component {
 
@@ -25,7 +25,7 @@ class Badge extends React.Component {
   }
 
   updateBadgeColor() {
-    const rgb = Color.get(this.props.color)
+    const rgb = determineRGB(this.props.color)
     const badgeRef = this.badgeRef.current
 
     badgeRef.style.setProperty("--red", rgb.red)
