@@ -4,7 +4,6 @@ import {shallow, mount} from 'enzyme'
 import {EntryActions} from './EntryActions/EntryActions'
 import EntryTags from './EntryTags/EntryTags'
 import {EntryTitle} from './EntryTitle/EntryTitle'
-import {EntryContent} from './EntryContent/EntryContent'
 
 class EntryPage {
 
@@ -29,7 +28,7 @@ class EntryPage {
   }
 
   entryContent() {
-    return this.wrapper.find(EntryContent)
+    return this.wrapper.find('my-html-content')
   }
 }
 
@@ -73,7 +72,7 @@ describe('Entry', () => {
     })
     expect(page.entryActions().props()).toContainObject({seen: props.item.seen})
     expect(page.entryTags().props()).toContainObject({tags: props.item.tag})
-    expect(page.entryContent().props()).toEqual({content: props.item.content})
+    expect(page.entryContent().props()).toContainObject({content: props.item.content})
   })
 
   it('should pass expected prop "showMore" to entry actions', () => {

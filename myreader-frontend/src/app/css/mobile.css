@@ -42,3 +42,10 @@ input {
     flex-direction: row;
     width: 100%;
 }
+
+/*
+ Reference: https://tailwindcss.com/docs/spacing/
+ */
+.mt-4 {
+    margin-top: 1rem;
+}

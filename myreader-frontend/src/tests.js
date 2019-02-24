@@ -13,6 +13,10 @@ window.matchMedia = () => ({
   matches: false, addListener: () => {}
 })
 
+window.customElements = {
+  define: () => {}
+}
+
 afterEach(() => {
   localStorage.clear()
   fetch.resetMocks()
