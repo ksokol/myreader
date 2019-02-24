@@ -70,5 +70,6 @@ sonarqube {
         property "sonar.test.inclusions", ["**/*.spec.js"]
         property "sonar.javascript.lcov.reportPaths", "${buildDir}/reports/coverage/lcov.info"
         property "sonar.testExecutionReportPaths", "${buildDir}/TESTS.xml"
+        property "sonar.eslint.reportPaths", "${buildDir}/reports/eslint.json"
     }
 }

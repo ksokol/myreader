@@ -9,7 +9,7 @@
     "start": "npm run server",
     "report": "export NODE_ENV=production && webpack --bail --progress --profile && webpack-bundle-analyzer dist/stats.json",
     "lint": "npm run lint:js && npm run lint:css",
-    "lint:js": "eslint -c .eslintrc.js src/app/js",
+    "lint:js": "eslint -f json -o build/reports/eslint.json -c .eslintrc.js src/app/js",
     "lint:css": "stylelint \"src/app/js/**/*.css\" && stylelint \"src/app/css/**/*.css\""
   },
   "dependencies": {
