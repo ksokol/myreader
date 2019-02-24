@@ -11,7 +11,7 @@ module.exports = {
   collectCoverageFrom: [
     'src/app/js/**/*.js'
   ],
-  setupTestFrameworkScriptFile: '<rootDir>/src/tests.js',
+  setupFilesAfterEnv: ['<rootDir>/src/tests.js'],
   coverageDirectory: '<rootDir>/build/reports/coverage',
   testResultsProcessor: 'jest-sonar-reporter',
   timers: 'fake',
