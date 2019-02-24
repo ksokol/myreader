@@ -83,6 +83,20 @@ sonarqube {
     }
 }
 
+project(':myreader-frontend') {
+    sonarqube {
+        properties {
+            property "sonar.sources", "${projectDir}/src/app/js"
+            property "sonar.exclusions", ["**/*.spec.js", "**/test-utils.js"]
+            property "sonar.tests", ["${projectDir}/src/app/js"]
+            property "sonar.test.inclusions", ["**/*.spec.js"]
+            property "sonar.javascript.lcov.reportPaths", "${buildDir}/reports/coverage/lcov.info"
+            property "sonar.testExecutionReportPaths", "${buildDir}/TESTS.xml"
+            property "sonar.eslint.reportPaths", "${buildDir}/reports/eslint.json"
+        }
+    }
+}
+
 ext.resolveDependencies = {project ->
     def resolve = {configuration ->
         def nonResolveableConfigurations = ['apiElements', 'implementation',
