@@ -64,8 +64,7 @@ task stopServer(type: KillProcessTask) {
 sonarqube {
     properties {
         property "sonar.sources", "${projectDir}/src/app/js"
-        // "**/index.js": https://github.com/SonarSource/SonarJS/issues/960
-        property "sonar.exclusions", ["**/*.spec.js", "**/test-utils.js", "**/index.js"]
+        property "sonar.exclusions", ["**/*.spec.js", "**/test-utils.js"]
         property "sonar.tests", ["${projectDir}/src/app/js"]
         property "sonar.test.inclusions", ["**/*.spec.js"]
         property "sonar.javascript.lcov.reportPaths", "${buildDir}/reports/coverage/lcov.info"
