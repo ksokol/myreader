@@ -37,21 +37,18 @@ final class ChannelConverter {
         List<FetcherEntry> entries = new ArrayList<>();
         int i = 0;
 
-        for (Item e : items) {
+        for (Item entry : items) {
             i++;
-            FetcherEntry dto = new FetcherEntry();
+            FetcherEntry fetcherEntry = new FetcherEntry();
 
-            dto.setGuid(e.getLink());
-            dto.setTitle(e.getTitle());
-            dto.setUrl(e.getLink());
-            dto.setFeedUrl(feedUrl);
+            fetcherEntry.setGuid(entry.getLink());
+            fetcherEntry.setTitle(entry.getTitle());
+            fetcherEntry.setUrl(entry.getLink());
+            fetcherEntry.setFeedUrl(feedUrl);
+            fetcherEntry.setContent(ContentUtil.getContent(entry));
 
-            final Description description = e.getDescription();
-            String content = description == null ? null : description.getValue();
+            entries.add(fetcherEntry);
 
-            dto.setContent(content);
-
-            entries.add(dto);
             if (i == maxSize) {
                 break;
             }

@@ -1,11 +1,9 @@
 package myreader.fetcher.converter;
 
-import com.rometools.rome.feed.atom.Content;
 import com.rometools.rome.feed.atom.Entry;
 import com.rometools.rome.feed.atom.Feed;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 
@@ -33,29 +31,22 @@ final class AtomConverter {
             return new FetchResult(feedUrl);
         }
 
-        final List<Entry> items = body.getEntries();
+        List<Entry> items = body.getEntries();
         List<FetcherEntry> entries = new ArrayList<>();
         int i = 0;
 
-        for (Entry e : items) {
+        for (Entry entry : items) {
             i++;
-            FetcherEntry dto = new FetcherEntry();
+            FetcherEntry fetcherEntry = new FetcherEntry();
 
-            dto.setGuid(e.getId());
-            dto.setTitle(e.getTitle());
-            dto.setUrl(e.getAlternateLinks().get(0).getHref());
-            dto.setFeedUrl(feedUrl);
+            fetcherEntry.setGuid(entry.getId());
+            fetcherEntry.setTitle(entry.getTitle());
+            fetcherEntry.setUrl(entry.getAlternateLinks().get(0).getHref());
+            fetcherEntry.setFeedUrl(feedUrl);
+            fetcherEntry.setContent(ContentUtil.getContent(entry));
 
-            final List<Content> contents1 = e.getContents();
+            entries.add(fetcherEntry);
 
-            if (!contents1.isEmpty()) {
-                Content contents = contents1.get(0);
-                if(StringUtils.isNotBlank(contents.getValue())) {
-                    dto.setContent(contents.getValue());
-                }
-            }
-
-            entries.add(dto);
             if (i == maxSize) {
                 break;
             }
