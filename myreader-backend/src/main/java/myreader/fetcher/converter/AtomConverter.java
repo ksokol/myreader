@@ -5,7 +5,6 @@ import com.rometools.rome.feed.atom.Feed;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +20,9 @@ final class AtomConverter {
     private final int maxSize;
 
     AtomConverter(final int maxSize) {
-        Assert.isTrue(maxSize > 0, "maxSize has to be greater than 0");
+        if (maxSize < 1) {
+            throw new IllegalArgumentException("maxSize has to be greater than 0");
+        }
         this.maxSize = maxSize;
     }
 
@@ -33,10 +34,9 @@ final class AtomConverter {
 
         List<Entry> items = body.getEntries();
         List<FetcherEntry> entries = new ArrayList<>();
-        int i = 0;
 
-        for (Entry entry : items) {
-            i++;
+        for (int i = 0; i < items.size() && i < maxSize; i++) {
+            Entry entry = items.get(i);
             FetcherEntry fetcherEntry = new FetcherEntry();
 
             fetcherEntry.setGuid(entry.getId());
@@ -46,15 +46,11 @@ final class AtomConverter {
             fetcherEntry.setContent(ContentUtil.getContent(entry));
 
             entries.add(fetcherEntry);
-
-            if (i == maxSize) {
-                break;
-            }
         }
 
         Collections.reverse(entries);
 
-        final String lastModified = source.getHeaders().getFirst(LAST_MODIFIED);
+        String lastModified = source.getHeaders().getFirst(LAST_MODIFIED);
         return new FetchResult(entries, lastModified, body.getTitle(), feedUrl, items.size());
     }
 }

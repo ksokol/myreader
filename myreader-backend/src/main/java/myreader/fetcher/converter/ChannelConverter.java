@@ -1,18 +1,16 @@
 package myreader.fetcher.converter;
 
-import static org.springframework.http.HttpHeaders.LAST_MODIFIED;
-
 import com.rometools.rome.feed.rss.Channel;
-import com.rometools.rome.feed.rss.Description;
 import com.rometools.rome.feed.rss.Item;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.springframework.http.HttpHeaders.LAST_MODIFIED;
 
 /**
  * @author Kamill Sokol
@@ -22,7 +20,9 @@ final class ChannelConverter {
     private final int maxSize;
 
     ChannelConverter(final int maxSize) {
-        Assert.isTrue(maxSize > 0, "maxSize has to be greater than 0");
+        if (maxSize < 1) {
+            throw new IllegalArgumentException("maxSize has to be greater than 0");
+        }
         this.maxSize = maxSize;
     }
 
@@ -33,30 +33,25 @@ final class ChannelConverter {
             return new FetchResult(feedUrl);
         }
 
-        final List<Item> items = body.getItems();
+        List<Item> items = body.getItems();
         List<FetcherEntry> entries = new ArrayList<>();
-        int i = 0;
 
-        for (Item entry : items) {
-            i++;
+        for (int i = 0; i < items.size() && i < maxSize; i++) {
+            Item item = items.get(i);
             FetcherEntry fetcherEntry = new FetcherEntry();
 
-            fetcherEntry.setGuid(entry.getLink());
-            fetcherEntry.setTitle(entry.getTitle());
-            fetcherEntry.setUrl(entry.getLink());
+            fetcherEntry.setGuid(item.getLink());
+            fetcherEntry.setTitle(item.getTitle());
+            fetcherEntry.setUrl(item.getLink());
             fetcherEntry.setFeedUrl(feedUrl);
-            fetcherEntry.setContent(ContentUtil.getContent(entry));
+            fetcherEntry.setContent(ContentUtil.getContent(item));
 
             entries.add(fetcherEntry);
-
-            if (i == maxSize) {
-                break;
-            }
         }
 
         Collections.reverse(entries);
 
-        final String lastModified = source.getHeaders().getFirst(LAST_MODIFIED);
+        String lastModified = source.getHeaders().getFirst(LAST_MODIFIED);
         return new FetchResult(entries, lastModified, body.getTitle(), feedUrl, items.size());
     }
 }
