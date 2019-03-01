@@ -1,6 +1,7 @@
 buildscript {
     ext.springBootVersion = '2.1.2.RELEASE'
     ext.dependencyCheckVersion = '3.1.2'
+    ext.romeToolsVersion = '1.12.0'
 
     repositories {
         mavenCentral()
@@ -42,7 +43,8 @@ dependencies {
     compile group: 'org.hibernate', name: 'hibernate-search-orm', version: '5.10.5.Final'
     compile group: 'org.hsqldb', name: 'hsqldb'
     compile group: 'org.flywaydb', name: 'flyway-core'
-    compile group: 'com.rometools', name: 'rome', version: '1.12.0'
+    compile group: 'com.rometools', name: 'rome', version: "${romeToolsVersion}"
+    compile group: 'com.rometools', name: 'rome-modules', version: "${romeToolsVersion}"
     compile(group: 'org.apache.httpcomponents', name: 'httpclient') {
         exclude(module: 'commons-logging')
     }

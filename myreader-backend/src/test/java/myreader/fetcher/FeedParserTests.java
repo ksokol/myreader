@@ -113,7 +113,7 @@ public class FeedParserTests {
         FetchResult result = parser.parse("http://neusprech.org/feed/")
                 .orElseThrow(AssertionFailedError::new);
         assertThat(result.getEntries(), hasItem(
-                hasProperty("content", startsWith("Ein Gastbeitrag von Erik W. Ende Juni 2014 sagte"))
+                hasProperty("content", startsWith("<p><em>Ein Gastbeitrag von Erik W.</em></p>"))
         ));
     }
 
