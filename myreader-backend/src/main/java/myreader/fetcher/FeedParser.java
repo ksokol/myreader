@@ -14,8 +14,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Kamill Sokol
@@ -30,17 +33,15 @@ public class FeedParser {
     private final WireFeedConverter wireFeedConverter = new WireFeedConverter();
 
     public FeedParser(final RestTemplate syndicationRestTemplate, ApplicationEventPublisher eventPublisher) {
-        Assert.notNull(syndicationRestTemplate, "syndicationRestTemplate is null");
-        Assert.notNull(eventPublisher, "eventPublisher is null");
-        this.syndicationRestTemplate = syndicationRestTemplate;
-        this.eventPublisher = eventPublisher;
+        this.syndicationRestTemplate = requireNonNull(syndicationRestTemplate, "syndicationRestTemplate is null");
+        this.eventPublisher = requireNonNull(eventPublisher, "eventPublisher is null");
     }
 
-    public FetchResult parse(String feedUrl) {
+    public Optional<FetchResult> parse(String feedUrl) {
         return parse(feedUrl, null);
     }
 
-    public FetchResult parse(String feedUrl, String lastModified) {
+    public Optional<FetchResult> parse(String feedUrl, String lastModified) {
         try {
             final HttpHeaders httpHeaders = new HttpHeaders();
 
@@ -52,10 +53,14 @@ public class FeedParser {
             final ResponseEntity<? extends WireFeed> responseEntity = syndicationRestTemplate.exchange(feedUrl, HttpMethod.GET, objectHttpEntity, WireFeed.class);
 
             if(HttpStatus.NOT_MODIFIED == responseEntity.getStatusCode()) {
-                return new FetchResult(feedUrl);
+                return Optional.empty();
             }
 
-            return wireFeedConverter.convert(feedUrl, responseEntity);
+            if(responseEntity.getBody() == null) {
+                return Optional.empty();
+            }
+
+            return Optional.of(wireFeedConverter.convert(feedUrl, responseEntity));
         } catch (Exception e) {
             LOG.error("url: {}, message: {}", feedUrl, e.getMessage());
             eventPublisher.publishEvent(new FetchErrorEvent(feedUrl, e.getMessage()));

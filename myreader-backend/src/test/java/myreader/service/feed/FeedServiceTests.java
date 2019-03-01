@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Optional;
+
 import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -53,7 +55,7 @@ public class FeedServiceTests {
 
     @Test
     public void shouldFetchFeedFromUrlWhenFeedIsNew() {
-        given(feedParser.parse(FEED_URL)).willReturn(FETCH_RESULT);
+        given(feedParser.parse(FEED_URL)).willReturn(Optional.of(FETCH_RESULT));
 
         feedService.findByUrl(FEED_URL);
 
@@ -62,7 +64,7 @@ public class FeedServiceTests {
 
     @Test
     public void shouldSaveFeedWhenFeedIsNew() {
-        given(feedParser.parse(FEED_URL)).willReturn(FETCH_RESULT);
+        given(feedParser.parse(FEED_URL)).willReturn(Optional.of(FETCH_RESULT));
 
         feedService.findByUrl(FEED_URL);
 
@@ -76,7 +78,7 @@ public class FeedServiceTests {
     public void shouldReturnSavedFeedWhenFeedIsNew() {
         Feed expectedFeed = new Feed("title", "url");
 
-        given(feedParser.parse(FEED_URL)).willReturn(FETCH_RESULT);
+        given(feedParser.parse(FEED_URL)).willReturn(Optional.of(FETCH_RESULT));
         given(feedRepository.save(Mockito.any(Feed.class))).willReturn(expectedFeed);
 
         Feed actualFeed = feedService.findByUrl(FEED_URL);

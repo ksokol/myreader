@@ -1,5 +1,6 @@
 package myreader.fetcher;
 
+import junit.framework.AssertionFailedError;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.resttemplate.SyndicationRestTemplateConfiguration;
 import org.junit.Before;
@@ -18,8 +19,8 @@ import java.security.NoSuchAlgorithmException;
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
@@ -63,7 +64,7 @@ public class FeedParserTests {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed1.xml"), TEXT_XML));
 
-        FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
+        FetchResult result = parser.parse(HTTP_EXAMPLE_COM).orElseThrow(AssertionFailedError::new);
         assertThat(result.getEntries(), hasSize(2));
         assertThat(result.getResultSizePerFetch(), is(2));
     }
@@ -73,7 +74,7 @@ public class FeedParserTests {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
 
-        FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
+        FetchResult result = parser.parse(HTTP_EXAMPLE_COM).orElseThrow(AssertionFailedError::new);
         assertThat(result.getEntries(), hasItems(
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217.html")),
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217b.html"))
@@ -85,7 +86,7 @@ public class FeedParserTests {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed3.xml"), TEXT_XML));
 
-        FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
+        FetchResult result = parser.parse(HTTP_EXAMPLE_COM).orElseThrow(AssertionFailedError::new);
         assertThat(result.getEntries(), hasItems(
                 hasProperty("url", is(HTTP_EXAMPLE_COM + "/12539.htm")),
                 hasProperty("url", is(HTTP_EXAMPLE_COM + "/12673.htm"))
@@ -97,8 +98,9 @@ public class FeedParserTests {
         mockServer.expect(requestTo("https://github.com/ksokol.private.atom")).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed4.xml"), TEXT_XML));
 
-        FetchResult result = parser.parse("https://github.com/ksokol.private.atom");
-        assertThat(result.getEntries(), hasItems(
+        FetchResult result = parser.parse("https://github.com/ksokol.private.atom")
+                .orElseThrow(AssertionFailedError::new);
+        assertThat(result.getEntries(), hasItem(
                 hasProperty("content", containsString(" Have a look through "))
         ));
     }
@@ -108,8 +110,9 @@ public class FeedParserTests {
         mockServer.expect(requestTo("http://neusprech.org/feed/")).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed5.xml"), TEXT_XML));
 
-        FetchResult result = parser.parse("http://neusprech.org/feed/");
-        assertThat(result.getEntries(), hasItems(
+        FetchResult result = parser.parse("http://neusprech.org/feed/")
+                .orElseThrow(AssertionFailedError::new);
+        assertThat(result.getEntries(), hasItem(
                 hasProperty("content", startsWith("Ein Gastbeitrag von Erik W. Ende Juni 2014 sagte"))
         ));
     }
@@ -119,20 +122,19 @@ public class FeedParserTests {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
 
-        FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
-        assertThat(result.getEntries(), hasItems(
+        FetchResult result = parser.parse(HTTP_EXAMPLE_COM).orElseThrow(AssertionFailedError::new);
+        assertThat(result.getEntries(), hasItem(
                 hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue220b.html"))
         ));
     }
 
     @Test
-    public void testFeed8() {
+    public void shouldReturnEmptyOptionalWhenResourceIsNotModified() {
         mockServer.expect(requestTo("/irrelevant")).andExpect(method(GET))
                 .andExpect(header("If-Modified-Since", is("lastModified")))
                 .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
 
-        FetchResult result = parser.parse("/irrelevant", "lastModified");
-        assertThat(result.getEntries(), empty());
+        assertThat(parser.parse("/irrelevant", "lastModified").isPresent(), is(false));
     }
 
     @Test
@@ -150,7 +152,7 @@ public class FeedParserTests {
         mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_XML));
 
-        FetchResult result = parser.parse(HTTP_EXAMPLE_COM);
+        FetchResult result = parser.parse(HTTP_EXAMPLE_COM).orElseThrow(AssertionFailedError::new);
         assertThat(result.getEntries(), hasSize(6));
     }
 
@@ -161,7 +163,7 @@ public class FeedParserTests {
         mockServer.expect(requestTo(url)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_PLAIN));
 
-        FetchResult result = parser.parse(url);
+        FetchResult result = parser.parse(url).orElseThrow(AssertionFailedError::new);
 
         assertThat(result.getEntries(), hasSize(greaterThan(0)));
     }
@@ -173,7 +175,7 @@ public class FeedParserTests {
         mockServer.expect(requestTo(url)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_XML));
 
-        FetchResult result = parser.parse(url);
+        FetchResult result = parser.parse(url).orElseThrow(AssertionFailedError::new);
 
         assertThat(result.getEntries(), hasSize(greaterThan(0)));
     }
@@ -185,7 +187,7 @@ public class FeedParserTests {
         mockServer.expect(requestTo(url)).andExpect(method(GET))
                 .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_HTML));
 
-        FetchResult result = parser.parse(url);
+        FetchResult result = parser.parse(url).orElseThrow(AssertionFailedError::new);
 
         assertThat(result.getEntries(), hasSize(greaterThan(0)));
     }
@@ -206,5 +208,13 @@ public class FeedParserTests {
                             hasProperty("timestamp", is(greaterThan(0L)))
                     )));
         }
+    }
+
+    @Test
+    public void shouldReturnEmptyOptionalWhenResponseBodyIsEmpty() {
+        mockServer.expect(requestTo("/irrelevant")).andExpect(method(GET))
+                .andRespond(withSuccess());
+
+        assertThat(parser.parse("/irrelevant").isPresent(), is(false));
     }
 }

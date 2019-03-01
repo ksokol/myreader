@@ -11,6 +11,8 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 
+import java.util.Optional;
+
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,7 +74,7 @@ public class FeedListFetcherJobTests {
 
         when(queueMock.getSize()).thenReturn(0);
         when(feedRepositoryMock.findAll()).thenReturn(singletonList(feed));
-        when(feedParser.parse(URL, LAST_MODIFIED)).thenReturn(fetchResult);
+        when(feedParser.parse(URL, LAST_MODIFIED)).thenReturn(Optional.of(fetchResult));
 
         job.run();
 
@@ -87,7 +89,7 @@ public class FeedListFetcherJobTests {
 
         when(queueMock.getSize()).thenReturn(0);
         when(feedRepositoryMock.findAll()).thenReturn(singletonList(feed));
-        when(feedParser.parse(URL, LAST_MODIFIED)).thenReturn(fetchResult);
+        when(feedParser.parse(URL, LAST_MODIFIED)).thenReturn(Optional.of(fetchResult));
 
         job.run();
 
@@ -103,7 +105,7 @@ public class FeedListFetcherJobTests {
 
         when(queueMock.getSize()).thenReturn(0);
         when(feedRepositoryMock.findAll()).thenReturn(asList(feedMock1, feedMock2));
-        when(feedParser.parse(isNull(), isNull())).thenThrow(new FeedParseException()).thenReturn(fetchResult);
+        when(feedParser.parse(isNull(), isNull())).thenThrow(new FeedParseException()).thenReturn(Optional.of(fetchResult));
 
         job.run();
 

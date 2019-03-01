@@ -3,7 +3,6 @@ package myreader.fetcher.jobs;
 import myreader.entity.Feed;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
-import myreader.fetcher.persistence.FetchResult;
 import myreader.repository.FeedRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -43,9 +42,8 @@ public class FeedListFetcherJob extends BaseJob {
             Feed feed = iterator.next();
 
             try {
-                FetchResult fetchResult = feedParser.parse(feed.getUrl(), feed.getLastModified());
+                feedParser.parse(feed.getUrl(), feed.getLastModified()).ifPresent(feedQueue::add);
                 getLog().debug("{}/{} lastModified: {}, url: {}", i + 1, size, feed.getLastModified(), feed.getUrl());
-                feedQueue.add(fetchResult);
             } catch(Exception exception) {
                 getLog().error(exception.getMessage(), exception);
             }
