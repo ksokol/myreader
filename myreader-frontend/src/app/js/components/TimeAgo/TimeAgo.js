@@ -1,10 +1,5 @@
-import PropTypes from 'prop-types'
-import timeago from 'timeago.js'
+import formatTimeAgo from './formatTimeAgo'
 
-const TimeAgo = props => timeago().format(props.date)
-
-TimeAgo.propTypes = {
-  date: PropTypes.string.isRequired
-}
+const TimeAgo = ({date}) => formatTimeAgo(date)
 
 export default TimeAgo

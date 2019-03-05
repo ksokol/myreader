@@ -19,3 +19,15 @@ export const arrayIncludes = (left, right) =>
 export const objectEquals = (left, right) => isEqual(left, right)
 
 export const noop = () => {}
+
+export const isValidDate = value => {
+  if (!isString(value) && !isDate(value)) {
+    return false
+  }
+
+  return !isNaN(
+    isDate(value)
+      ? value.getTime()
+      : new Date(value).getTime()
+  )
+}

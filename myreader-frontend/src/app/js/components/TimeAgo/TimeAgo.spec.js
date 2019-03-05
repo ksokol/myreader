@@ -1,14 +1,10 @@
 import TimeAgo from './TimeAgo'
 
+jest.mock('./formatTimeAgo', () => date => `formatTimeAgo(${date})`)
+
 describe('TimeAgo', () => {
 
-  beforeEach(() => {
-    const _Date = Date
-
-    global['Date'] = jest.fn(args => new _Date(args || '2018-04-27T18:01:03Z'))
-  })
-
   it('should format date', () => {
-    expect(TimeAgo({date: '2018-04-25T18:01:03Z'})).toEqual('2 days ago')
+    expect(TimeAgo({date: '2018-01-01T00:00:00Z'})).toEqual('formatTimeAgo(2018-01-01T00:00:00Z)')
   })
 })
