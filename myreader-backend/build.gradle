@@ -2,14 +2,11 @@ buildscript {
     ext.springBootVersion = '2.1.2.RELEASE'
     ext.dependencyCheckVersion = '3.1.2'
     ext.romeToolsVersion = '1.12.0'
+    ext.commonsLang3Version = '3.8.1'
+    ext.commonsIoVersion = '2.6'
 
     repositories {
         mavenCentral()
-    }
-
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath "org.owasp:dependency-check-gradle:${dependencyCheckVersion}"
     }
 }
 
@@ -48,8 +45,8 @@ dependencies {
     compile(group: 'org.apache.httpcomponents', name: 'httpclient') {
         exclude(module: 'commons-logging')
     }
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: "${commonsLang3Version}"
+    compile group: 'commons-io', name: 'commons-io', version: "${commonsIoVersion}"
     compile group: 'com.google.guava', name: 'guava', version: '24.1.1-jre' // CVE 19.0 owasp-java-html-sanitizer
     compile group: 'com.googlecode.owasp-java-html-sanitizer', name: 'owasp-java-html-sanitizer', version: '20181114.1'
 
