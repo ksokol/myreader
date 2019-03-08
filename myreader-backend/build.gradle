@@ -1,13 +1,3 @@
-buildscript {
-    ext.romeToolsVersion = '1.12.0'
-    ext.commonsLang3Version = '3.8.1'
-    ext.commonsIoVersion = '2.6'
-
-    repositories {
-        mavenCentral()
-    }
-}
-
 plugins {
     id "jacoco"
     id "org.springframework.boot" version "2.1.3.RELEASE"
@@ -22,11 +12,14 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'pmd'
 apply plugin: 'findbugs'
 
-group = 'myreader'
-
-bootJar {
-    archiveName = 'myreader.jar'
+repositories {
+    mavenCentral()
 }
+
+def javaLangVersion = '1.8'
+def romeToolsVersion = '1.12.0'
+def commonsLang3Version = '3.8.1'
+def commonsIoVersion = '2.6'
 
 dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -57,6 +50,15 @@ tasks.withType(FindBugs) {
         xml.enabled = false
         html.enabled = true
     }
+}
+
+compileJava {
+    targetCompatibility = javaLangVersion
+    sourceCompatibility = javaLangVersion
+}
+
+bootJar {
+    archiveName = 'myreader.jar'
 }
 
 jacocoTestReport {

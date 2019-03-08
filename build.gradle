@@ -2,9 +2,6 @@ plugins {
     id "org.sonarqube" version "2.7"
 }
 
-def vJavaLang = '1.8'
-def javaProjects = [ project('myreader-backend') ]
-
 wrapper.gradleVersion = '4.4.1'
 
 configure(allprojects) {
@@ -22,29 +19,6 @@ configure(allprojects) {
                 file('.settings')
         ]
     }
-}
-
-configure(javaProjects) {
-    apply plugin: 'java'
-
-    targetCompatibility = vJavaLang
-    sourceCompatibility = vJavaLang
-
-    repositories {
-        mavenCentral()
-    }
-
-    // Ensure that all Gradle-compiled classes are available to Eclipse's
-    // classpath.
-    eclipseClasspath.dependsOn testClasses
-
-    // Skip generation and removal of .settings/org.eclipse.jdt.core.prefs files
-    // during the normal `gradle eclipse` / `gradle cleanEclipse` lifecycle, as
-    // these files have been checked in with formatting settings imported from
-    // style/sagan-format.xml and style/sagan.importorder.
-    // See http://www.gradle.org/docs/current/userguide/eclipse_plugin.html
-    eclipseJdt.onlyIf { false }
-    cleanEclipseJdt.onlyIf { false }
 }
 
 subprojects {subProject ->
