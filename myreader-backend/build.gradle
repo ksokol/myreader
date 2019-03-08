@@ -2,8 +2,8 @@ plugins {
     id "jacoco"
     id "org.springframework.boot" version "2.1.3.RELEASE"
     id "com.gorylenko.gradle-git-properties" version "2.0.0"
-    id "com.wiredforcode.spawn" version "0.8.2"
     id "org.owasp.dependencycheck" version "4.0.2"
+    id 'com.github.psxpaul.execfork' version '0.1.8'
 }
 
 apply plugin: 'java'
@@ -75,19 +75,13 @@ dependencyCheck {
     suppressionFile = "${projectDir}/owasp/cve_suppress.xml"
 }
 
-task startServer(type: SpawnProcessTask) {
+task devRun(type: com.github.psxpaul.task.ExecFork) {
     def withAppTasks = project.hasProperty('withAppTasks') as String
 
-    environmentVariables << ['TASK_ENABLED' : withAppTasks]
-    command '../gradlew bootRun'
-    directory = "${projectDir}"
-    ready 'Tomcat started on port(s):'
-    pidLockFileName 'build/backend.lock'
-}
-
-task stopServer(type: KillProcessTask) {
-    directory = "${projectDir}"
-    pidLockFileName 'build/backend.lock'
+    environment << ['TASK_ENABLED' : withAppTasks]
+    commandLine '../gradlew'
+    args = ['bootRun']
+    waitForOutput 'Started Starter'
 }
 
 task resolve() {

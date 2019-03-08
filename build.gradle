@@ -32,13 +32,6 @@ task copyFrontend(type: Sync, dependsOn: ':myreader-frontend:build') {
     into project(':myreader-backend').buildDir.absolutePath + '/classes/java/main/static'
 }
 
-task devRun() {
-    doFirst {
-        project(':myreader-backend').tasks.startServer.execute()
-        project(':myreader-frontend').tasks.startServer.execute()
-    }
-}
-
 sonarqube {
     properties {
         property "sonar.projectName", "MyReader"

@@ -1,6 +1,5 @@
 plugins {
     id 'com.moowork.node' version '1.2.0'
-    id 'com.wiredforcode.spawn' version '0.8.2'
 }
 
 idea.module {
@@ -48,14 +47,6 @@ task clean() {
 
 task check(dependsOn: [lint, test])
 
-task startServer(type: SpawnProcessTask) {
-    command 'npm start'
-    ready 'webpack: Compiled successfully.'
-    directory = "${projectDir}"
-    pidLockFileName 'build/frontend.lock'
-}
-
-task stopServer(type: KillProcessTask) {
-    pidLockFileName 'build/frontend.lock'
-    directory = "${projectDir}"
+task devRun(type: NpmTask) {
+    args = ['start']
 }
