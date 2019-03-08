@@ -5,18 +5,13 @@ plugins {
 wrapper.gradleVersion = '4.4.1'
 
 configure(allprojects) {
-    apply plugin: 'eclipse'
     apply plugin: 'idea'
 
     idea.module {
         excludeDirs += [
-                file('bin'),
-                file('work'),
-                file('logs'),
-                file('data'),
-                file('gradle'),
-                file('.idea'),
-                file('.settings')
+            file('data'),
+            file('gradle'),
+            file('.idea')
         ]
     }
 }

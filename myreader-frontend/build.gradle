@@ -4,18 +4,19 @@ plugins {
 }
 
 apply plugin: 'com.moowork.node'
-apply plugin: 'idea'
+
+idea.module {
+    excludeDirs += [
+        file('node_modules'),
+        file('build'),
+        file('dist')
+    ]
+}
 
 node {
     version = '10.15.0'
     npmVersion = '6.4.1'
     download = true
-}
-
-idea {
-    module {
-        sourceDirs += file('src/app/js')
-    }
 }
 
 task resolve(dependsOn: npm_install) {
