@@ -1,9 +1,7 @@
 plugins {
-    id 'com.moowork.node' version '1.1.1'
+    id 'com.moowork.node' version '1.2.0'
     id 'com.wiredforcode.spawn' version '0.8.2'
 }
-
-apply plugin: 'com.moowork.node'
 
 idea.module {
     excludeDirs += [
