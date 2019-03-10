@@ -15,7 +15,7 @@ class ColorPicker extends React.Component {
   }
 
   componentDidMount() {
-    const {color} = this.props
+    const color = this.props.color || '#FFF'
     this.colorPicker = new iro.ColorPicker(this.myRef.current, {color})
     this.colorPicker.on(changeEventName, this.onChange)
   }

@@ -1,25 +1,16 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import iro from '@jaames/iro'
 import ColorPicker from './ColorPicker'
 
 describe('ColorPicker', () => {
 
-  let props, colorPicker
+  let props
 
   const createComponent = () => mount(<ColorPicker {...props} />)
 
   beforeEach(() => {
-    colorPicker = {
-      _mount: jest.fn(),
-      on: jest.fn(),
-      off: jest.fn()
-    }
-
-    iro.ColorPicker.prototype = colorPicker
-
     props = {
-      color: '#FF',
+      color: '#FFF',
       onChange: jest.fn()
     }
   })
@@ -28,19 +19,19 @@ describe('ColorPicker', () => {
     const wrapper = createComponent()
 
     expect(wrapper.props()).toContainObject({
-      color: '#FF'
+      color: '#FFF'
     })
   })
 
   it('should add color change event listener', () => {
-    createComponent()
+    const wrapper = createComponent()
 
-    expect(colorPicker.on.mock.calls[0][0]).toEqual('color:change')
+    expect(wrapper.instance().colorPicker.on.mock.calls[0][0]).toEqual('color:change')
   })
 
   it('should trigger function prop "onChange" when color picked', () => {
-    createComponent()
-    colorPicker.on.mock.calls[0][1]({
+    const wrapper = createComponent()
+    wrapper.instance().colorPicker.on.mock.calls[0][1]({
       hexString: 'expected hex'
     })
 
@@ -53,8 +44,15 @@ describe('ColorPicker', () => {
   })
 
   it('should remove color change event listener', () => {
-    createComponent().unmount()
+    const wrapper = createComponent()
+    const instance = wrapper.instance()
+    wrapper.unmount()
 
-    expect(colorPicker.off.mock.calls[0][0]).toEqual('color:change')
+    expect(instance.colorPicker.off.mock.calls[0][0]).toEqual('color:change')
+  })
+
+  it('should set default value when prop "color" is undefined', () => {
+    props = {}
+    expect(createComponent().instance().colorPicker.color).toEqual('#FFF')
   })
 })
