@@ -3,13 +3,13 @@ plugins {
     id "org.springframework.boot" version "2.1.3.RELEASE"
     id "com.gorylenko.gradle-git-properties" version "2.0.0"
     id "org.owasp.dependencycheck" version "4.0.2"
-    id 'com.github.psxpaul.execfork' version '0.1.8'
+    id "com.github.psxpaul.execfork" version "0.1.9"
+    id "com.github.spotbugs" version "1.6.10"
 }
 
 apply plugin: 'java'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'pmd'
-apply plugin: 'findbugs'
 
 repositories {
     mavenCentral()
@@ -21,12 +21,12 @@ def commonsLang3Version = '3.8.1'
 def commonsIoVersion = '2.6'
 
 dependencies {
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas'
-    compile group: 'org.springframework.security', name: 'spring-security-data'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation 'org.springframework.security:spring-security-data'
     compile group: 'org.hibernate', name: 'hibernate-search-orm', version: '5.10.5.Final'
     compile group: 'org.hsqldb', name: 'hsqldb'
     compile group: 'org.flywaydb', name: 'flyway-core'
@@ -40,11 +40,11 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '24.1.1-jre' // CVE 19.0 owasp-java-html-sanitizer
     compile group: 'com.googlecode.owasp-java-html-sanitizer', name: 'owasp-java-html-sanitizer', version: '20181114.1'
 
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    testCompile group: 'org.springframework.security', name: 'spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 }
 
-tasks.withType(FindBugs) {
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
     reports {
         xml.enabled = false
         html.enabled = true
@@ -57,7 +57,7 @@ compileJava {
 }
 
 bootJar {
-    archiveName = 'myreader.jar'
+    archiveFileName = 'myreader.jar'
 }
 
 jacocoTestReport {

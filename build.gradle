@@ -2,7 +2,7 @@ plugins {
     id "org.sonarqube" version "2.7"
 }
 
-wrapper.gradleVersion = '4.10.3'
+wrapper.gradleVersion = '5.2.1'
 
 configure(allprojects) {
     apply plugin: 'idea'
