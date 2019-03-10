@@ -8,8 +8,8 @@ const WebpackPwaManifest = require('webpack-pwa-manifest')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const CleanWebpackPlugin = require('clean-webpack-plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 const ENV = process.env.npm_lifecycle_event
 const isTest = ENV === 'test' || ENV === 'test-watch'
@@ -51,7 +51,12 @@ module.exports = function makeWebpackConfig() {
     noEmitOnErrors: true,
     concatenateModules: true,
     minimizer: [
-      new UglifyJsPlugin(),
+      new TerserPlugin({
+        parallel: true,
+        terserOptions: {
+          ecma: 6,
+        },
+      }),
       new OptimizeCssAssetsPlugin({
         assetNameRegExp: /\.css$/g,
         cssProcessor: require('cssnano')
@@ -120,7 +125,7 @@ module.exports = function makeWebpackConfig() {
    * List: http://webpack.github.io/docs/list-of-plugins.html
    */
   config.plugins = [
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(),
     new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'}),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(environment),
