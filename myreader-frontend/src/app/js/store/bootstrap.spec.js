@@ -1,4 +1,5 @@
 import createApplicationStore from './bootstrap'
+import '../../../../__mocks__/global/fetch'
 
 const DEV = 'development'
 const PROD = 'production'
@@ -83,6 +84,10 @@ describe('bootstrap', () => {
   })
 
   describe('middleware', () => {
+
+    afterEach(() => {
+      fetch.resetMocks()
+    })
 
     it('should integrate with redux thunk and custom fetch middleware', done => {
       const store = createApplicationStore(OTHER)
