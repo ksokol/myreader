@@ -20,5 +20,4 @@ Developer notes
 ---------------
 
 - Execute `./gradlew devRun` to start the Spring Boot application on port 19340 and Webpack dev server on port 8080.
-- Execute `./gradlew stop` or `./gradlew stopServer` to stop the Spring Boot application and Webpack dev server.
 - All scheduled or fixed rate tasks inside the Spring Boot application are disabled by default. You can enable application tasks by using `./gradlew devRun -PwithAppTasks`.
