@@ -1,8 +1,7 @@
 module.exports = {
   transform: {
     '^.+\\.js$': 'babel-jest',
-    '^.+\\.css$': '<rootDir>/node_modules/jest-css-modules-transform',
-    '^.+\\.html$': 'html-loader-jest'
+    '^.+\\.css$': '<rootDir>/node_modules/jest-css-modules-transform'
   },
   transformIgnorePatterns: [
     '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$',
