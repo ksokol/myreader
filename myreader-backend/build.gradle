@@ -56,6 +56,11 @@ compileJava {
     sourceCompatibility = javaLangVersion
 }
 
+pmd {
+    ruleSets = []
+    ruleSetConfig = resources.text.fromFile("$projectDir/rulesets.xml")
+}
+
 bootJar {
     archiveFileName = 'myreader.jar'
 }

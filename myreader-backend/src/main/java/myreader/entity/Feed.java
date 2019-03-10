@@ -104,7 +104,7 @@ public class Feed {
 
     @Column(name = "result_size_per_fetch")
     public Integer getResultSizePerFetch() {
-        return resultSizePerFetch == null ? new Integer(1000) : resultSizePerFetch;
+        return resultSizePerFetch == null ? Integer.valueOf(1000) : resultSizePerFetch;
     }
 
     public void setResultSizePerFetch(Integer resultSizePerFetch) {

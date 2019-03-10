@@ -24,5 +24,7 @@ public class WireFeedConverterTest {
         wireFeedConverter.convert("", new ResponseEntity<>(new MockWireFeed(), HttpStatus.OK));
     }
 
-    static class MockWireFeed extends WireFeed {}
+    static class MockWireFeed extends WireFeed {
+        private static final long serialVersionUID = 1;
+    }
 }

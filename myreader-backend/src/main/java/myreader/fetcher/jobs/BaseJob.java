@@ -9,6 +9,7 @@ import org.springframework.util.StopWatch;
 /**
  * @author Kamill Sokol
  */
+@SuppressWarnings("PMD.LoggerIsNotStaticFinal")
 public abstract class BaseJob implements Runnable, ApplicationListener<ContextClosedEvent> {
 
     private final Logger log;

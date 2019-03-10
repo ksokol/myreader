@@ -44,7 +44,7 @@ public final class EntryLinkSanitizer {
     }
 
     private static boolean isRelative(String tmp) {
-        return !tmp.startsWith("/");
+        return tmp.charAt(0) != '/';
     }
 
     private static boolean isSchemeRelative(String url) {

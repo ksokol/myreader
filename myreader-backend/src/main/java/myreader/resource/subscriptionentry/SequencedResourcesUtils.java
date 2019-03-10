@@ -64,12 +64,15 @@ final class SequencedResourcesUtils {
     private static String getRelativeUriString() {
         final UriComponents uriComponents = ServletUriComponentsBuilder.fromCurrentRequest().build();
         String query = StringUtils.defaultString(uriComponents.getQuery());
+        StringBuilder sb = new StringBuilder();
+        sb.append(uriComponents.getPath());
 
-        if(StringUtils.isNotEmpty(query)) {
-            query = "?" + query;
+        if (StringUtils.isNotEmpty(query)) {
+            sb.append('?');
         }
 
-        return uriComponents.getPath() + query;
+        sb.append(query);
+        return sb.toString();
     }
 
     private static void enhance(final UriComponentsBuilder builder, Long nextId, long pageSize) {

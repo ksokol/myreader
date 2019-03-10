@@ -16,6 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 /**
  * @author Kamill Sokol
  */
+@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
 public final class JsonRequestPostProcessors {
 
     private static final ObjectMapper objectMapper;
@@ -33,9 +34,9 @@ public final class JsonRequestPostProcessors {
         return request -> {
             request.setContentType(APPLICATION_JSON_UTF8_VALUE);
             try {
-                if(content.startsWith("{") ) {
+                if (content.charAt(0) == '{' ) {
                     request.setContent(singleQuotedToDoubleQuotedJsonMap(content).getBytes(UTF_8.name()));
-                } else if(content.startsWith("[")) {
+                } else if (content.charAt(0) == '[') {
                     request.setContent(singleQuotedToDoubleQuotedJsonList(content).getBytes(UTF_8.name()));
                 } else {
                     request.setContent(jsonFromFile(content).getBytes(UTF_8.name()));

@@ -31,7 +31,7 @@ class CleanSyndicationInterceptor implements ClientHttpRequestInterceptor {
         final Charset charset = getCharsetFromResponse(execute);
         final String cleanedBody;
 
-        if (execute.getRawStatusCode() == 200) {
+        if (execute.getRawStatusCode() == HttpStatus.OK.value()) {
             String bodyString = IOUtils.toString(new BOMInputStream(execute.getBody()), charset.name());
             cleanedBody = invalidXmlCharacters.matcher(bodyString).replaceAll("");
         } else {

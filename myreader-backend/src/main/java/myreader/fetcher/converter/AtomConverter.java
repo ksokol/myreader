@@ -17,10 +17,11 @@ import static org.springframework.http.HttpHeaders.LAST_MODIFIED;
  */
 final class AtomConverter {
 
+    private static final int MIN_SIZE = 1;
     private final int maxSize;
 
     AtomConverter(final int maxSize) {
-        if (maxSize < 1) {
+        if (maxSize < MIN_SIZE) {
             throw new IllegalArgumentException("maxSize has to be greater than 0");
         }
         this.maxSize = maxSize;

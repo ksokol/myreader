@@ -9,6 +9,8 @@ import java.util.Date;
  */
 public class FetchErrorEvent extends ApplicationEvent {
 
+    private static final long serialVersionUID = 1;
+
     private String errorMessage;
 
     public FetchErrorEvent(Object source, String errorMessage) {
