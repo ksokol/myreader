@@ -8,9 +8,8 @@
     "test-watch": "export NODE_ENV=test && jest --watch --verbose false",
     "start": "npm run server",
     "report": "export NODE_ENV=production && webpack --bail --progress --profile && webpack-bundle-analyzer dist/stats.json",
-    "lint": "npm run lint:js && npm run lint:css",
-    "lint:js": "eslint -f json -o build/reports/eslint.json -c .eslintrc.js src/app/js",
-    "lint:css": "stylelint \"src/app/js/**/*.css\" && stylelint \"src/app/css/**/*.css\""
+    "lint": "npm run lint:js",
+    "lint:js": "eslint -f json -o build/reports/eslint.json -c .eslintrc.js src/app/js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "1.2.7",
@@ -64,8 +63,6 @@
     "raw-loader": "1.0.0",
     "redux-mock-store": "1.5.3",
     "relative-time-format": "0.2.1",
-    "stylelint": "9.10.1",
-    "stylelint-config-standard": "18.2.0",
     "svg-url-loader": "2.3.2",
     "sw-precache-webpack-plugin": "0.11.5",
     "webpack": "4.23.1",
