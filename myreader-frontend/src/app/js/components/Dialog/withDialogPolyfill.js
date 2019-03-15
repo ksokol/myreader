@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import 'dialog-polyfill/dialog-polyfill.css'
-import * as dialogPolyfill from 'dialog-polyfill/dialog-polyfill'
+import dialogPolyfill from 'dialog-polyfill'
 import {noop} from '../../shared/utils'
 
 const withDialogPolyfill = WrappedDialog => {
