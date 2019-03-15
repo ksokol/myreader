@@ -15,7 +15,7 @@
     "@fortawesome/fontawesome-svg-core": "1.2.15",
     "@fortawesome/free-solid-svg-icons": "5.7.2",
     "@fortawesome/react-fontawesome": "0.1.4",
-    "@jaames/iro": "4.1.0",
+    "@jaames/iro": "4.2.0",
     "@uirouter/core": "5.0.23",
     "@uirouter/react": "0.8.9",
     "classnames": "2.2.6",
