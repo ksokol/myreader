@@ -1,5 +1,6 @@
+import React from 'react'
 import formatTimeAgo from './formatTimeAgo'
 
-const TimeAgo = ({date}) => formatTimeAgo(date)
+const TimeAgo = React.memo(({date}) => formatTimeAgo(date))
 
 export default TimeAgo
