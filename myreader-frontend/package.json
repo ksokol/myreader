@@ -8,8 +8,9 @@
     "test-watch": "export NODE_ENV=test && jest --watch --verbose false",
     "start": "npm run server",
     "report": "export NODE_ENV=production && webpack --bail --progress --profile && webpack-bundle-analyzer dist/stats.json",
-    "lint": "npm run lint:js",
-    "lint:js": "eslint -f json -o build/reports/eslint.json -c .eslintrc.js src/app/js"
+    "lint": "npm run lint:js-report",
+    "lint:js-report": "eslint -f json -o build/reports/eslint.json -c .eslintrc.js src/app/js",
+    "lint:js": "eslint -c .eslintrc.js src/app/js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "1.2.15",
