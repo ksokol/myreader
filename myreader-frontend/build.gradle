@@ -4,7 +4,6 @@ plugins {
 
 idea.module {
     excludeDirs += [
-        file('node_modules'),
         file('build'),
         file('dist')
     ]
