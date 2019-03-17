@@ -24,7 +24,15 @@ class NavigationPage {
   clickOnAllNavigationItems() {
     const items = this.wrapper.children()
     for (let i = 0; i < items.length; i++) {
-      items.at(i).props().onClick()
+      const {item, onClick} = items.at(i).props()
+
+      if (item) {
+        const feedTagEqual = item.tag
+        const feedUuidEqual = item.subscriptions && item.subscriptions[0] ? item.subscriptions[0].uuid : item.uuid
+        onClick({feedTagEqual, feedUuidEqual})
+      } else {
+        onClick()
+      }
     }
   }
 }
@@ -81,15 +89,15 @@ describe('Navigation', () => {
     createPage().clickOnAllNavigationItems()
 
     expect(props.routeTo.mock.calls).toEqual([
-      [['app', 'entries'], {q: undefined}],
-      [['app', 'entries'], {q: undefined}],
-      [['app', 'entries'], {q: undefined}],
-      [['app', 'entries'], {q: undefined}],
-      [['app', 'subscriptions']],
-      [['app', 'bookmarks']],
-      [['app', 'settings']],
-      [['app', 'subscription-add']],
-      [['logout']]
+      [{route: ['app', 'entries'], query: {feedTagEqual: null, feedUuidEqual: null, q: undefined}}],
+      [{route: ['app', 'entries'], query: {feedTagEqual: 'group 1', feedUuidEqual: '1', q: undefined}}],
+      [{route: ['app', 'entries'], query: {feedTagEqual: 'group 2', feedUuidEqual: '2', q: undefined}}],
+      [{route: ['app', 'entries'], query: {feedTagEqual: undefined, feedUuidEqual: '3', q: undefined}}],
+      [{route: ['app', 'subscriptions'], query: {q: undefined}}],
+      [{route: ['app', 'bookmarks'], query: {q: undefined}}],
+      [{route: ['app', 'settings']}],
+      [{route: ['app', 'subscription-add']}],
+      [{route: ['logout']}]
     ])
   })
 
@@ -98,18 +106,18 @@ describe('Navigation', () => {
     createPage().clickOnAllNavigationItems()
 
     expect(props.routeTo.mock.calls).toEqual([
-      [['admin', 'overview']],
-      [['admin', 'feed']],
-      [['logout']]
+      [{route: ['admin', 'overview']}],
+      [{route: ['admin', 'feed'], query: {q: undefined}}],
+      [{route: ['logout']}]
     ])
   })
 
   it('should navigate to route with feedTagEqual and feedUuidEqual set', () => {
     createPage().navigationItemAt(0).props().onClick({feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'})
 
-    expect(props.routeTo).toHaveBeenCalledWith(
-      ['app', 'entries'],
-      {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid', q: undefined}
-    )
+    expect(props.routeTo).toHaveBeenCalledWith({
+      route: ['app', 'entries'],
+      query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid', q: undefined}
+    })
   })
 })

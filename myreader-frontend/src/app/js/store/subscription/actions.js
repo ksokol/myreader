@@ -2,6 +2,7 @@ import * as types from '../../store/action-types'
 import {toBody, toExclusionPattern, toExclusionPatterns, toSubscription, toSubscriptions} from './subscription'
 import {EXCLUSION_TAGS, SUBSCRIPTION_TAGS, SUBSCRIPTIONS} from '../../constants'
 import {routeChange, showSuccessNotification, subscriptionByUuidSelector} from '../../store'
+import {subscriptionRoute, subscriptionsRoute} from '../../../../routes'
 
 export const subscriptionsReceived = raw => {
   return {
@@ -45,7 +46,7 @@ export const deleteSubscription = uuid => {
     success: [
       () => showSuccessNotification('Subscription deleted'),
       () => subscriptionDeleted(uuid),
-      () => routeChange(['app', 'subscriptions'])
+      () => routeChange(subscriptionsRoute())
     ],
     finalize: subscriptionEditFormChanged
   }
@@ -91,7 +92,7 @@ export const saveSubscribeEditForm = subscription => {
     ],
     success: [
       () => showSuccessNotification('Subscribed'),
-      ({uuid}) => routeChange(['app', 'subscription'], {uuid})
+      ({uuid}) => routeChange(subscriptionRoute({uuid}))
     ],
     error: error => {
       if (error.status === 400) {

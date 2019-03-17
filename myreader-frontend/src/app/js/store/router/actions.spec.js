@@ -15,7 +15,7 @@ describe('router actions', () => {
     })
 
     it('should contain expected action data', () => {
-      store.dispatch(routeChange(['app', 'bookmarks']))
+      store.dispatch(routeChange({route: ['app', 'bookmarks']}))
       expect(store.getActions()[0]).toContainActionData({
         route: ['app', 'bookmarks'],
         query: {seenEqual: '*', entryTagEqual: ''},
@@ -24,7 +24,7 @@ describe('router actions', () => {
     })
 
     it('should merge query parameter with action data query parameter', () => {
-      store.dispatch(routeChange(['app', 'bookmarks'], {entryTagEqual: 'a', b: 'c'}))
+      store.dispatch(routeChange({route: ['app', 'bookmarks'], query: {entryTagEqual: 'a', b: 'c'}}))
       expect(store.getActions()[0]).toContainActionData({
         route: ['app', 'bookmarks'],
         query: {seenEqual: '*', entryTagEqual: 'a', b: 'c'}
@@ -32,7 +32,7 @@ describe('router actions', () => {
     })
 
     it('should contain expected options', () => {
-      store.dispatch(routeChange(['app', 'bookmarks'], {}, {reload: true}))
+      store.dispatch(routeChange({route: ['app', 'bookmarks']}, {reload: true}))
       expect(store.getActions()[0].options).toEqual({reload: true})
     })
   })

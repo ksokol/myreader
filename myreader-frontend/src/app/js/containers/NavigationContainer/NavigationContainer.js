@@ -16,9 +16,9 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  routeTo: (route, query) => {
+  routeTo: (route) => {
     dispatch(toggleSidenav())
-    dispatch(routeChange(route, query))
+    dispatch(routeChange(route))
   }
 })
 

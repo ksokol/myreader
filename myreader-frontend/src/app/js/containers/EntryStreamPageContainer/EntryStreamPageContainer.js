@@ -14,6 +14,7 @@ import {
   settingsShowEntryDetailsSelector
 } from '../../store'
 import {EntryStreamPage} from '../../pages'
+import {entriesRoute} from '../../../../routes'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
@@ -25,13 +26,13 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onChangeEntry: entry => dispatch(changeEntry(entry)),
-  onSearchChange: params => dispatch(routeChange(['app', 'entries'], params)),
+  onSearchChange: params => dispatch(routeChange(entriesRoute(params))),
   previousEntry: () => dispatch(entryFocusPrevious()),
   entryFocusNext: () => dispatch(entryFocusNext()),
   onLoadMore: link => dispatch(fetchEntries(link)),
   onRefresh: params => {
     dispatch(fetchSubscriptions())
-    dispatch(routeChange(['app', 'entries'], params, {reload: true}))
+    dispatch(routeChange(entriesRoute(params), {reload: true}))
   }
 })
 

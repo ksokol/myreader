@@ -18,6 +18,7 @@ import {
   logout,
   routeChange
 } from '../../store'
+import {adminOverviewRoute, entriesRoute} from '../../../../routes'
 
 export const routeConfiguration = {
   logout: {
@@ -26,7 +27,7 @@ export const routeConfiguration = {
   login: {
     redirect: ({getState}) => {
       if (authorizedSelector(getState())) {
-        return routeChange(adminPermissionSelector(getState()) ? ['admin', 'overview'] : ['app', 'entries'])
+        return routeChange(adminPermissionSelector(getState()) ? adminOverviewRoute() : entriesRoute())
       }
     }
   },

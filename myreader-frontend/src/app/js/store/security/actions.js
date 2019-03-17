@@ -2,6 +2,7 @@ import * as types from '../../store/action-types'
 import {getLastSecurityState, setLastSecurityState} from './security'
 import {LOGIN, LOGOUT} from '../../constants'
 import {routeChange} from '../../store'
+import {adminOverviewRoute, entriesRoute, loginRoute} from '../../../../routes'
 
 export const updateSecurity = () => {
   const {authorized, role} = getLastSecurityState()
@@ -16,7 +17,7 @@ export const unauthorized = () => {
   setLastSecurityState({authorized: false, role: ''})
   return [
     updateSecurity(),
-    routeChange(['login'])
+    routeChange(loginRoute())
   ]
 }
 
@@ -62,7 +63,7 @@ export const tryLogin = ({username, password}) => {
       const role = headers['x-my-authorities']
       return [
         authorized({role}),
-        role === 'ROLE_ADMIN' ? routeChange(['admin', 'overview']) : routeChange(['app', 'entries'])
+        role === 'ROLE_ADMIN' ? routeChange(adminOverviewRoute()) : routeChange(entriesRoute())
       ]
     },
     finalize: loginEnd

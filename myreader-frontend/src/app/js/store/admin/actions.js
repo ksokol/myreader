@@ -4,6 +4,7 @@ import {routeChange, showErrorNotification, showSuccessNotification} from '../..
 import {toApplicationInfo} from './application-info'
 import {toFeed, toFeedFetchFailures, toFeeds} from './feed'
 import {toUrlString} from '../../store/shared/links'
+import {adminFeedRoute} from '../../../../routes'
 
 export const rebuildSearchIndex = () => {
   return {
@@ -152,7 +153,7 @@ export const deleteFeed = uuid => {
     url: `${FEEDS}/${uuid}`,
     before: feedEditFormChanging,
     success: [
-      () => routeChange(['admin', 'feed']),
+      () => routeChange(adminFeedRoute()),
       () => feedDeleted(uuid)
     ],
     error: (response, headers, status) =>

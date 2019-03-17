@@ -2,6 +2,16 @@ import './Navigation.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {createSubscriptionNavigation, NavigationItem, SubscriptionNavigationItem} from '.'
+import {
+  adminFeedRoute,
+  adminOverviewRoute,
+  bookmarksRoute,
+  entriesRoute,
+  logoutRoute,
+  settingsRoute,
+  subscriptionAddRoute,
+  subscriptionsRoute
+} from '../../../../routes'
 
 const Navigation = props => {
   const {
@@ -12,15 +22,19 @@ const Navigation = props => {
   } = props
 
   return (
-    <ul className="my-navigation">
+    <ul className='my-navigation'>
       {isAdmin ?
         [
-          <NavigationItem key='admin'
-                          title='Admin'
-                          onClick={() => routeTo(['admin', 'overview'])} />,
-          <NavigationItem key='feeds'
-                          title='Feeds'
-                          onClick={() => routeTo(['admin', 'feed'])} />
+          <NavigationItem
+            key='admin'
+            title='Admin'
+            onClick={() => routeTo(adminOverviewRoute())}
+          />,
+          <NavigationItem
+            key='feeds'
+            title='Feeds'
+            onClick={() => routeTo(adminFeedRoute())}
+          />
         ] :
         [
           ...createSubscriptionNavigation(subscriptions).map(item =>
@@ -28,27 +42,38 @@ const Navigation = props => {
               key={item.key}
               item={item}
               query={router.query}
-              onClick={query => routeTo(['app', 'entries'], {...query, q: undefined /* TODO Remove q query parameter from UI Router */})} />
+              onClick={query => routeTo(entriesRoute(query))}
+            />
           ),
-          <NavigationItem key='subscriptions'
-                          title='Subscriptions'
-                          onClick={() => routeTo(['app', 'subscriptions'])} />,
-          <NavigationItem key='bookmarks'
-                          title='Bookmarks'
-                          onClick={() => routeTo(['app', 'bookmarks'])} />,
-          <NavigationItem key='settings'
-                          title='Settings'
-                          onClick={() => routeTo(['app', 'settings'])} />,
-          <NavigationItem key='add subscription'
-                          className='my-navigation__item--blue'
-                          title='Add subscription'
-                          onClick={() => routeTo(['app', 'subscription-add'])} />
+          <NavigationItem
+            key='subscriptions'
+            title='Subscriptions'
+            onClick={() => routeTo(subscriptionsRoute())}
+          />,
+          <NavigationItem
+            key='bookmarks'
+            title='Bookmarks'
+            onClick={() => routeTo(bookmarksRoute())}
+          />,
+          <NavigationItem
+            key='settings'
+            title='Settings'
+            onClick={() => routeTo(settingsRoute())}
+          />,
+          <NavigationItem
+            key='add subscription'
+            className='my-navigation__item--blue'
+            title='Add subscription'
+            onClick={() => routeTo(subscriptionAddRoute())}
+          />
         ]
       }
-      <NavigationItem key='logout'
-                      className='my-navigation__item--red'
-                      title='Logout'
-                      onClick={() => routeTo(['logout'])} />
+      <NavigationItem
+        key='logout'
+        className='my-navigation__item--red'
+        title='Logout'
+        onClick={() => routeTo(logoutRoute())}
+      />
     </ul>
   )
 }
