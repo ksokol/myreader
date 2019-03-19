@@ -14,7 +14,7 @@ import {
   settingsShowEntryDetailsSelector
 } from '../../store'
 import {EntryStreamPage} from '../../pages'
-import {entriesRoute} from '../../../../routes'
+import {entriesRoute} from '../../routes'
 
 const mapStateToProps = state => ({
   ...getEntries(state),

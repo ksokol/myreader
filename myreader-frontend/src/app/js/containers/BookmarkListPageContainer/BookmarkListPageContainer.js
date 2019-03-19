@@ -12,7 +12,7 @@ import {
 } from '../../store'
 import {BookmarkListPage} from '../../pages'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
-import {bookmarksRoute} from '../../../../routes'
+import {bookmarksRoute} from '../../routes'
 
 const mapStateToProps = state => ({
   ...getEntries(state),

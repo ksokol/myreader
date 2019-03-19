@@ -2,7 +2,7 @@ import * as types from '../../store/action-types'
 import {toBody, toExclusionPattern, toExclusionPatterns, toSubscription, toSubscriptions} from './subscription'
 import {EXCLUSION_TAGS, SUBSCRIPTION_TAGS, SUBSCRIPTIONS} from '../../constants'
 import {routeChange, showSuccessNotification, subscriptionByUuidSelector} from '../../store'
-import {subscriptionRoute, subscriptionsRoute} from '../../../../routes'
+import {subscriptionRoute, subscriptionsRoute} from '../../routes'
 
 export const subscriptionsReceived = raw => {
   return {

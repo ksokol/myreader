@@ -11,7 +11,7 @@ import {
   settingsRoute,
   subscriptionAddRoute,
   subscriptionsRoute
-} from '../../../../routes'
+} from '../../routes'
 
 const Navigation = props => {
   const {

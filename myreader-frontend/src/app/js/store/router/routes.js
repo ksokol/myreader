@@ -18,7 +18,7 @@ import {
   logout,
   routeChange
 } from '../../store'
-import {adminOverviewRoute, entriesRoute} from '../../../../routes'
+import {adminOverviewRoute, entriesRoute} from '../../routes'
 
 export const routeConfiguration = {
   logout: {
