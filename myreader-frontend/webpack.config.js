@@ -67,10 +67,12 @@ module.exports = function makeWebpackConfig() {
     }
   }
 
-  /**
-   * Reference: http://webpack.github.io/docs/configuration.html#devtool
-   * Type of sourcemap to use per build type
-   */
+  config.resolve = {
+    alias: {
+      'react-router-dom': path.resolve(__dirname, 'src/app/js/migrations/react-router-dom')
+    }
+  }
+
   if (isServed) {
       config.devtool = 'inline-source-map'
   }

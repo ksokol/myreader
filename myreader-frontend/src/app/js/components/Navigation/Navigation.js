@@ -6,7 +6,6 @@ import {
   adminFeedRoute,
   adminOverviewRoute,
   bookmarksRoute,
-  entriesRoute,
   logoutRoute,
   settingsRoute,
   subscriptionAddRoute,
@@ -18,7 +17,7 @@ const Navigation = props => {
     subscriptions,
     router,
     isAdmin,
-    routeTo
+    onClick
   } = props
 
   return (
@@ -28,12 +27,14 @@ const Navigation = props => {
           <NavigationItem
             key='admin'
             title='Admin'
-            onClick={() => routeTo(adminOverviewRoute())}
+            to={adminOverviewRoute()}
+            onClick={onClick}
           />,
           <NavigationItem
             key='feeds'
             title='Feeds'
-            onClick={() => routeTo(adminFeedRoute())}
+            to={adminFeedRoute()}
+            onClick={onClick}
           />
         ] :
         [
@@ -42,29 +43,33 @@ const Navigation = props => {
               key={item.key}
               item={item}
               query={router.query}
-              onClick={query => routeTo(entriesRoute(query))}
+              onClick={onClick}
             />
           ),
           <NavigationItem
             key='subscriptions'
             title='Subscriptions'
-            onClick={() => routeTo(subscriptionsRoute())}
+            to={subscriptionsRoute()}
+            onClick={onClick}
           />,
           <NavigationItem
             key='bookmarks'
             title='Bookmarks'
-            onClick={() => routeTo(bookmarksRoute())}
+            to={bookmarksRoute()}
+            onClick={onClick}
           />,
           <NavigationItem
             key='settings'
             title='Settings'
-            onClick={() => routeTo(settingsRoute())}
+            to={settingsRoute()}
+            onClick={onClick}
           />,
           <NavigationItem
             key='add subscription'
             className='my-navigation__item--blue'
             title='Add subscription'
-            onClick={() => routeTo(subscriptionAddRoute())}
+            to={subscriptionAddRoute()}
+            onClick={onClick}
           />
         ]
       }
@@ -72,7 +77,8 @@ const Navigation = props => {
         key='logout'
         className='my-navigation__item--red'
         title='Logout'
-        onClick={() => routeTo(logoutRoute())}
+        to={logoutRoute()}
+        onClick={onClick}
       />
     </ul>
   )
@@ -84,7 +90,7 @@ Navigation.propTypes = {
     query: PropTypes.any
   }).isRequired,
   isAdmin: PropTypes.bool.isRequired,
-  routeTo: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired
 }
 
 Navigation.defaultProps = {

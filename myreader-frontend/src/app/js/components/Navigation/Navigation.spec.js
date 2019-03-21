@@ -17,23 +17,14 @@ class NavigationPage {
     }, [])
   }
 
-  navigationItemAt(index) {
-    return this.wrapper.children().at(index)
-  }
-
-  clickOnAllNavigationItems() {
-    const items = this.wrapper.children()
-    for (let i = 0; i < items.length; i++) {
-      const {item, onClick} = items.at(i).props()
-
-      if (item) {
-        const feedTagEqual = item.tag
-        const feedUuidEqual = item.subscriptions && item.subscriptions[0] ? item.subscriptions[0].uuid : item.uuid
-        onClick({feedTagEqual, feedUuidEqual})
-      } else {
-        onClick()
+  get navigationItemRoute() {
+    return this.wrapper.children().reduce((acc, item) => {
+      if (item.prop('to')) {
+        const {route, query} = item.prop('to')
+        return [...acc, {route, query}]
       }
-    }
+      return acc
+    }, [])
   }
 }
 
@@ -54,7 +45,7 @@ describe('Navigation', () => {
       isAdmin: false,
       subscriptions,
       router: {query: {}},
-      routeTo: jest.fn()
+      onClick: jest.fn()
     }
   })
 
@@ -85,39 +76,23 @@ describe('Navigation', () => {
     ])
   })
 
-  it('should route on click on navigation item as user', () => {
-    createPage().clickOnAllNavigationItems()
-
-    expect(props.routeTo.mock.calls).toEqual([
-      [{route: ['app', 'entries'], query: {feedTagEqual: null, feedUuidEqual: null, q: undefined}}],
-      [{route: ['app', 'entries'], query: {feedTagEqual: 'group 1', feedUuidEqual: '1', q: undefined}}],
-      [{route: ['app', 'entries'], query: {feedTagEqual: 'group 2', feedUuidEqual: '2', q: undefined}}],
-      [{route: ['app', 'entries'], query: {feedTagEqual: undefined, feedUuidEqual: '3', q: undefined}}],
-      [{route: ['app', 'subscriptions'], query: {q: undefined}}],
-      [{route: ['app', 'bookmarks'], query: {q: undefined}}],
-      [{route: ['app', 'settings']}],
-      [{route: ['app', 'subscription-add']}],
-      [{route: ['logout']}]
+  it('should render expected routes for user', () => {
+    expect(createPage().navigationItemRoute).toEqual([
+      {route: ['app', 'subscriptions'], query: {q: undefined}},
+      {route: ['app', 'bookmarks'], query: {entryTagEqual: null, q: undefined}},
+      {route: ['app', 'settings'], query: undefined},
+      {route: ['app', 'subscription-add'], query: undefined},
+      {route: ['logout'], query: undefined}
     ])
   })
 
-  it('should route on click on navigation item as admin', () => {
+  it('should render expected routes for admin', () => {
     props.isAdmin = true
-    createPage().clickOnAllNavigationItems()
 
-    expect(props.routeTo.mock.calls).toEqual([
-      [{route: ['admin', 'overview']}],
-      [{route: ['admin', 'feed'], query: {q: undefined}}],
-      [{route: ['logout']}]
+    expect(createPage().navigationItemRoute).toEqual([
+      {route: ['admin', 'overview'], query: undefined },
+      {route: ['admin', 'feed'], query: {q: undefined}},
+      {route: ['logout'], query: undefined}
     ])
-  })
-
-  it('should navigate to route with feedTagEqual and feedUuidEqual set', () => {
-    createPage().navigationItemAt(0).props().onClick({feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid'})
-
-    expect(props.routeTo).toHaveBeenCalledWith({
-      route: ['app', 'entries'],
-      query: {feedTagEqual: 'selected tag', feedUuidEqual: 'selected uuid', q: undefined}
-    })
   })
 })

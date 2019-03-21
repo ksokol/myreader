@@ -2,6 +2,7 @@ import './SubscriptionNavigationItem.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {NavigationItem} from '..'
+import {entriesRoute} from '../../../routes'
 
 class SubscriptionNavigationItem extends React.Component {
 
@@ -13,34 +14,36 @@ class SubscriptionNavigationItem extends React.Component {
     return this.isOpen && (this.props.item.subscriptions ? this.props.item.subscriptions.length > 0 : false)
   }
 
-  onSelect(feedTagEqual, feedUuidEqual) {
-    this.props.onClick({feedTagEqual, feedUuidEqual})
-  }
-
   isSelected(tag, uuid) {
     return this.props.query.feedUuidEqual === uuid && this.props.query.feedTagEqual === tag
   }
 
   render() {
-    const {
-      item,
-    } = this.props
+    const {item, onClick} = this.props
 
     return [
-      <NavigationItem selected={this.isSelected(item.tag, item.uuid)}
-                      onClick={() => this.onSelect(item.tag, item.uuid)}
-                      key={item.uuid}
-                      title={item.title}
-                      badgeCount={item.unseen} />,
+      <NavigationItem
+        selected={this.isSelected(item.tag, item.uuid)}
+        to={entriesRoute({feedTagEqual: item.tag, feedUuidEqual: item.uuid})}
+        onClick={onClick}
+        key={item.uuid}
+        title={item.title}
+        badgeCount={item.unseen}
+      />,
       this.isVisible &&
-        <ul key='subscriptions' className='my-subscription-navigation-item__subscriptions'>
+        <ul
+          key='subscriptions'
+          className='my-subscription-navigation-item__subscriptions'
+        >
           {item.subscriptions.map(subscription => (
-            <NavigationItem selected={this.isSelected(subscription.feedTag.name, subscription.uuid)}
-                            onClick={() => this.onSelect(subscription.feedTag.name, subscription.uuid)}
-                            key={subscription.uuid}
-                            title={subscription.title}
-                            badgeCount={subscription.unseen} />
-            )
+            <NavigationItem
+              selected={this.isSelected(subscription.feedTag.name, subscription.uuid)}
+              to={entriesRoute({feedTagEqual: subscription.feedTag.name, feedUuidEqual: subscription.uuid})}
+              onClick={onClick}
+              key={subscription.uuid}
+              title={subscription.title}
+              badgeCount={subscription.unseen}
+            />)
           )}
         </ul>
     ]

@@ -89,6 +89,13 @@ describe('SubscriptionNavigationItem', () => {
       title: 'item title',
       badgeCount: 2
     })
+    expect(createWrapper().itemProps.to).toContainObject({
+      query: {
+        feedTagEqual: 'tag',
+        feedUuidEqual: 'uuid',
+        q: undefined
+      }
+    })
   })
 
   it('should set key for navigation item', () => {
@@ -98,7 +105,7 @@ describe('SubscriptionNavigationItem', () => {
   it('should trigger prop function "onClick" when navigation item clicked', () => {
     createWrapper().itemClick()
 
-    expect(props.onClick).toHaveBeenCalledWith({feedTagEqual: 'tag', feedUuidEqual: 'uuid'})
+    expect(props.onClick).toHaveBeenCalled()
   })
 
   it('should flag navigation item as selected when prop "query.feedUuidEqual" and "query.feedTagEqual" is not equal to item uuid and tag', () => {
@@ -151,9 +158,24 @@ describe('SubscriptionNavigationItem', () => {
         title: 'subscription 1',
         badgeCount: 1
       })
+      expect(subscriptions.itemPropsAt(0).to).toContainObject({
+        query: {
+          feedTagEqual: 'tag',
+          feedUuidEqual: 'uuid1',
+          q: undefined
+        }
+      })
+
       expect(subscriptions.itemPropsAt(1)).toContainObject({
         title: 'subscription 2',
         badgeCount: 0
+      })
+      expect(subscriptions.itemPropsAt(1).to).toContainObject({
+        query: {
+          feedTagEqual: 'tag',
+          feedUuidEqual: 'uuid2',
+          q: undefined
+        }
       })
     })
 
@@ -192,13 +214,13 @@ describe('SubscriptionNavigationItem', () => {
     it('should trigger prop function "onClick" when first subscription navigation item clicked', () => {
       createWrapper().subscriptions.itemClickAt(0)
 
-      expect(props.onClick).toHaveBeenCalledWith({feedTagEqual: 'tag', feedUuidEqual: 'uuid1'})
+      expect(props.onClick).toHaveBeenCalled()
     })
 
     it('should trigger prop function "onClick" when second subscription navigation item clicked', () => {
       createWrapper().subscriptions.itemClickAt(1)
 
-      expect(props.onClick).toHaveBeenCalledWith({feedTagEqual: 'tag', feedUuidEqual: 'uuid2'})
+      expect(props.onClick).toHaveBeenCalled()
     })
   })
 })

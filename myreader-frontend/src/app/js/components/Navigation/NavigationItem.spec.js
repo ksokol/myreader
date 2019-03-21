@@ -13,6 +13,7 @@ describe('NavigationItem', () => {
     props = {
       className: 'expected-class',
       title: 'expected title',
+      to: 'expected to',
       badgeCount: 3,
       selected: true,
       onClick: jest.fn()
@@ -23,12 +24,16 @@ describe('NavigationItem', () => {
     expect(createShallow().find('li').prop('className')).toContain(props.className)
   })
 
-  it('should render prop "title"', () => {
-    expect(createShallow().find('li > span').text()).toEqual(props.title)
+  it('should pass props to link component', () => {
+    const link = createShallow().find('Link')
+
+    expect(link.prop('to')).toEqual('expected to')
+    expect(link.prop('children')[0]).toEqual(<span>expected title</span>)
+    expect(link.prop('children')[1]).toEqual(<Badge text={3} />)
   })
 
-  it('should trigger prop function "onClick" when component clicked', () => {
-    createShallow().props().onClick()
+  it('should trigger prop function "onClick" when link component clicked', () => {
+    createShallow().find('Link').props().onClick()
 
     expect(props.onClick).toHaveBeenCalledWith()
   })

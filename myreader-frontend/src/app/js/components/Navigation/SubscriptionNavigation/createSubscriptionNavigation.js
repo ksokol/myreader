@@ -33,6 +33,7 @@ function sortIntoBucket(buckets, subscription) {
 function addKeyToSubscription(subscription) {
   return {
     key: subscription.uuid,
+    tag: null,
     ...subscription
   }
 }

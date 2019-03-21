@@ -1,5 +1,6 @@
 .my-navigation-item {
     border-top: 1px solid rgba(0, 0, 0, 0.12);
+    color: rgba(0, 0, 0, 0.87);
     cursor: pointer;
     display: flex;
     font-weight: 500;
@@ -23,7 +24,11 @@
     background-color: #e5e5e5;
 }
 
-.my-navigation-item > span {
+.my-navigation-item > a {
+    color: inherit;
+}
+
+.my-navigation-item > a > span {
     flex-grow: 1;
     padding: 0 6px;
 }

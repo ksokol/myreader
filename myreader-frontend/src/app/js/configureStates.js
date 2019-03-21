@@ -11,16 +11,29 @@ import {
   SubscriptionEditPageContainer,
   SubscriptionListPageContainer
 } from './containers'
+import {
+  ADMIN_FEED_URL,
+  ADMIN_FEEDS_URL,
+  ADMIN_OVERVIEW_URL,
+  BOOKMARK_TAGS_URL,
+  ENTRIES_URL,
+  LOGIN_URL,
+  LOGOUT_URL,
+  SETTINGS_URL,
+  SUBSCRIPTION_ADD_URL,
+  SUBSCRIPTION_URL,
+  SUBSCRIPTIONS_URL
+} from './routes'
 
 const states = [
   {
     name: 'login',
-    url: '!/login',
+    url: LOGIN_URL,
     component: LoginPageContainer
   },
   {
     name: 'logout',
-    url: '!/logout'
+    url: LOGOUT_URL
   },
   {
     name: 'app',
@@ -36,7 +49,7 @@ const states = [
   },
   {
     name: 'app.entries',
-    url: '/entries/:feedTagEqual/:feedUuidEqual?q',
+    url: ENTRIES_URL,
     params: {
       feedTagEqual: null,
       feedUuidEqual: null,
@@ -46,7 +59,7 @@ const states = [
   },
   {
     name: 'app.bookmarks',
-    url: '/bookmark/:entryTagEqual?q',
+    url: BOOKMARK_TAGS_URL,
     params: {
       entryTagEqual: null,
       q: {dynamic: true}
@@ -55,39 +68,39 @@ const states = [
   },
   {
     name: 'app.subscriptions',
-    url: '/subscriptions?q',
+    url: SUBSCRIPTIONS_URL,
     dynamic: true,
     component: SubscriptionListPageContainer
   },
   {
     name: 'app.subscription-add',
-    url: '/subscriptions/add',
+    url: SUBSCRIPTION_ADD_URL,
     component: SubscribePageContainer
   },
   {
     name: 'app.subscription',
-    url: '/subscriptions/:uuid',
+    url: SUBSCRIPTION_URL,
     component: SubscriptionEditPageContainer
   },
   {
     name: 'app.settings',
-    url: '/settings',
+    url: SETTINGS_URL,
     component: SettingsPageContainer
   },
   {
     name: 'admin.overview',
-    url: '/overview',
+    url: ADMIN_OVERVIEW_URL,
     component: MaintenancePageContainer
   },
   {
     name: 'admin.feed',
-    url: '/feed?q',
+    url: ADMIN_FEEDS_URL,
     dynamic: true,
     component: FeedListPageContainer
   },
   {
     name: 'admin.feed-detail',
-    url: '/feed/:uuid',
+    url: ADMIN_FEED_URL,
     component: FeedEditPageContainer
   }
 ]

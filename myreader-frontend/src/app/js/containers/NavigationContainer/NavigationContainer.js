@@ -1,12 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {
-  adminPermissionSelector,
-  filteredByUnseenSubscriptionsSelector,
-  routeChange,
-  routeSelector,
-  toggleSidenav
-} from '../../store'
+import {adminPermissionSelector, filteredByUnseenSubscriptionsSelector, routeSelector, toggleSidenav} from '../../store'
 import {Navigation} from '../../components'
 
 const mapStateToProps = state => ({
@@ -16,10 +10,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  routeTo: (route) => {
-    dispatch(toggleSidenav())
-    dispatch(routeChange(route))
-  }
+  onClick: () => dispatch(toggleSidenav())
 })
 
 const NavigationContainer = props => <Navigation {...props} />

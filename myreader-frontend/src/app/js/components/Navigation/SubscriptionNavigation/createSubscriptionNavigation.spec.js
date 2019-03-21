@@ -84,6 +84,7 @@ describe('createSubscriptionNavigation', () => {
         },
         {
           key: '6',
+          tag: null,
           feedTag: {name: undefined},
           title: '6',
           unseen: 3,
@@ -91,6 +92,7 @@ describe('createSubscriptionNavigation', () => {
         },
         {
           key: '7',
+          tag: null,
           feedTag: {name: undefined},
           title: '7',
           unseen: 4,
