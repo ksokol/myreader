@@ -1,11 +1,10 @@
 module.exports = {
   transform: {
     '^.+\\.js$': 'babel-jest',
-    '^.+\\.css$': '<rootDir>/node_modules/jest-css-modules-transform'
+    '^.+\\.css$': '<rootDir>/__mocks__/styleMock.js'
   },
   transformIgnorePatterns: [
     '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$',
-    '^.+\\.module\\.(css|sass|scss)$'
   ],
   collectCoverageFrom: [
     'src/app/js/**/*.js'
