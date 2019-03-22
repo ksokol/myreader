@@ -44,29 +44,23 @@ input {
 }
 
 /*
- Reference: https://tailwindcss.com/docs/spacing/
+ Reference: https://tailwindcss.com/docs
  */
 .mt-4 {
     margin-top: 1rem;
 }
 
-/*
- Reference: https://tailwindcss.com/docs/display/
- */
 .flex {
     display: flex;
 }
 
-/*
- Reference: https://tailwindcss.com/docs/width/
- */
+.flex-col {
+    flex-direction: column;
+}
+
 .w-full {
     width: 100%;
 }
-
-/*
- Reference: https://tailwindcss.com/docs/text-style/
- */
 
 .no-underline {
     text-decoration: none;

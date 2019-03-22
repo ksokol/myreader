@@ -2,7 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {fetchSubscriptions, filteredBySearchSubscriptionsSelector, routeChange, routeSelector} from '../../store'
 import {SubscriptionListPage} from '../../pages'
-import {subscriptionRoute, subscriptionsRoute} from '../../routes'
+import {subscriptionsRoute} from '../../routes'
 
 const mapStateToProps = state => ({
   ...filteredBySearchSubscriptionsSelector(state),
@@ -10,7 +10,6 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  navigateTo: subscription => dispatch(routeChange(subscriptionRoute({uuid: subscription.uuid}))),
   onRefresh: () => dispatch(fetchSubscriptions()),
   onSearchChange: params => dispatch(routeChange(subscriptionsRoute(params)))
 })

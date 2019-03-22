@@ -19,8 +19,7 @@ describe('SubscriptionListPage', () => {
         {uuid: '1', title: '1', createdAt: '1'}
       ],
       onSearchChange: jest.fn(),
-      onRefresh: jest.fn(),
-      navigateTo: jest.fn()
+      onRefresh: jest.fn()
     }
   })
 
@@ -31,8 +30,7 @@ describe('SubscriptionListPage', () => {
       onRefresh: props.onRefresh,
       listPanel: {
         props: {
-          subscriptions: [{uuid: '1', title: '1', createdAt: '1'}],
-          navigateTo: props.navigateTo
+          subscriptions: [{uuid: '1', title: '1', createdAt: '1'}]
         }
       }
     })

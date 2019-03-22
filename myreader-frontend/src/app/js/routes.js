@@ -34,7 +34,7 @@ export const subscriptionsRoute = ({q = undefined /* TODO Remove q parameter fro
 export const subscriptionRoute = ({uuid}) => ({
   route: ['app', 'subscription'],
   query: {uuid},
-  url: `!/app${SUBSCRIPTION_URL}`
+  url: formatUrl(`!/app${SUBSCRIPTION_URL}`, {uuid})
 })
 
 export const bookmarksRoute = () => ({

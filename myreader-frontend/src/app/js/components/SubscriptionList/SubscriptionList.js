@@ -2,17 +2,29 @@ import './SubscriptionList.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {TimeAgo} from '..'
+import {Link} from 'react-router-dom'
+import {subscriptionRoute} from '../../routes'
 
 const SubscriptionList = props => {
   return (
-    <div className='my-subscription-list'>
+    <div
+      className='my-subscription-list'
+    >
       {props.subscriptions.map(subscription => (
-        <div key={subscription.uuid}
-             className='my-subscription-list__item'
-             onClick={() => props.navigateTo(subscription)}>
-          <h3>{subscription.title}</h3>
+        <div
+          key={subscription.uuid}
+          className='my-subscription-list__item flex flex-col'
+        >
+          <Link
+            className='my-subscription-list__item-heading no-underline'
+            to={subscriptionRoute(subscription)}
+          >
+            {subscription.title}
+          </Link>
           <span>
-            <TimeAgo date={subscription.createdAt}/>
+            <TimeAgo
+              date={subscription.createdAt}
+            />
           </span>
         </div>))
       }
@@ -27,8 +39,7 @@ SubscriptionList.propTypes = {
       title: PropTypes.string.isRequired,
       createdAt: PropTypes.string.isRequired
     })
-  ).isRequired,
-  navigateTo: PropTypes.func.isRequired
+  ).isRequired
 }
 
 export default SubscriptionList

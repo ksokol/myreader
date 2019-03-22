@@ -13,20 +13,14 @@ describe('SubscriptionList', () => {
       subscriptions: [
         {uuid: '1', title: '1', createdAt: '1'},
         {uuid: '2', title: '2', createdAt: '2'}
-      ],
-      navigateTo: jest.fn()
+      ]
     }
   })
 
-  it('should trigger prop function "navigateTo" with first subscription', () => {
-    createComponent().children().at(0).props().onClick()
+  it('should pass prop "to" to link component', () => {
+    const links = createComponent().find('Link')
 
-    expect(props.navigateTo).toHaveBeenCalledWith({uuid: '1', title: '1', createdAt: '1'})
-  })
-
-  it('should trigger prop function "navigateTo" with second subscription', () => {
-    createComponent().children().at(1).props().onClick()
-
-    expect(props.navigateTo).toHaveBeenCalledWith({uuid: '2', title: '2', createdAt: '2'})
+    expect(links.at(0).prop('to')).toContainObject({query: {uuid: '1'}, route: ['app', 'subscription']})
+    expect(links.at(1).prop('to')).toContainObject({query: {uuid: '2'}, route: ['app', 'subscription']})
   })
 })
