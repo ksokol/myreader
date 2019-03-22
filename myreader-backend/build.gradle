@@ -2,7 +2,7 @@ plugins {
     id "jacoco"
     id "org.springframework.boot" version "2.1.3.RELEASE"
     id "com.gorylenko.gradle-git-properties" version "2.0.0"
-    id "org.owasp.dependencycheck" version "4.0.2"
+    id "org.owasp.dependencycheck" version "5.0.0-M2"
     id "com.github.psxpaul.execfork" version "0.1.9"
     id "com.github.spotbugs" version "1.7.1"
 }
@@ -78,6 +78,10 @@ springBoot {
 dependencyCheck {
     failBuildOnCVSS = 7
     suppressionFile = "${projectDir}/owasp/cve_suppress.xml"
+    cve {
+        urlBase='https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-%d.json.gz'
+        urlModified='https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-modified.json.gz'
+    }
 }
 
 task devRun(type: com.github.psxpaul.task.ExecFork) {
