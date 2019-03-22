@@ -19,8 +19,7 @@ describe('FeedListPage', () => {
         {uuid: '1', title: '1', hasErrors: false, createdAt: '1'}
       ],
       onSearchChange: jest.fn(),
-      onRefresh: jest.fn(),
-      navigateTo: jest.fn()
+      onRefresh: jest.fn()
     }
   })
 
@@ -31,8 +30,7 @@ describe('FeedListPage', () => {
       onRefresh: props.onRefresh,
       listPanel: {
         props: {
-          feeds: [{uuid: '1', title: '1', hasErrors: false, createdAt: '1'}],
-          navigateTo: props.navigateTo
+          feeds: [{uuid: '1', title: '1', hasErrors: false, createdAt: '1'}]
         }
       }
     })

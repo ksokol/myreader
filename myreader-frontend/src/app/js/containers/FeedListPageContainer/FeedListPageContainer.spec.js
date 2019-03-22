@@ -45,16 +45,6 @@ describe('FeedListPageContainer', () => {
     })
   })
 
-  it('should dispatch action when prop function "navigateTo" triggered', () => {
-    createContainer().props().navigateTo({uuid: '2', title: '2', createdAt: '2'})
-
-    expect(store.getActions()[0]).toContainObject({
-      type: 'ROUTE_CHANGED',
-      route: ['admin', 'feed-detail'],
-      query: {uuid: '2'}
-    })
-  })
-
   it('should dispatch action when prop function "onSearchChange" triggered', () => {
     createContainer().props().onSearchChange({q: 'b'})
 

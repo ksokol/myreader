@@ -89,5 +89,5 @@ export const adminFeedRoute = ({q = undefined /* TODO Remove q parameter from UI
 export const adminFeedDetailRoute = ({uuid}) => ({
   route: ['admin', 'feed-detail'],
   query: {uuid},
-  url: `!/admin${ADMIN_FEED_URL}`
+  url: formatUrl(`!/admin${ADMIN_FEED_URL}`, {uuid})
 })
