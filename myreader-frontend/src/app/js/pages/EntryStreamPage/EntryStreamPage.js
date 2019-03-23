@@ -4,6 +4,31 @@ import {EntryList, Hotkeys, IconButton, ListLayout} from '../../components'
 
 class EntryStreamPage extends React.Component {
 
+  static propTypes = {
+    router: PropTypes.shape({
+      query: PropTypes.object
+    }).isRequired,
+    entries: PropTypes.arrayOf(
+      PropTypes.any
+    ).isRequired,
+    entryInFocus: PropTypes.shape({
+      seen: PropTypes.bool
+    }),
+    nextFocusableEntry: PropTypes.shape({
+      seen: PropTypes.bool
+    }),
+    links: PropTypes.object.isRequired,
+    loading: PropTypes.bool.isRequired,
+    showEntryDetails: PropTypes.bool.isRequired,
+    isDesktop: PropTypes.bool.isRequired,
+    onSearchChange: PropTypes.func.isRequired,
+    onChangeEntry: PropTypes.func.isRequired,
+    onLoadMore: PropTypes.func.isRequired,
+    onRefresh: PropTypes.func.isRequired,
+    entryFocusNext: PropTypes.func.isRequired,
+    previousEntry: PropTypes.func.isRequired
+  }
+
   constructor(props) {
     super(props)
 
@@ -50,56 +75,39 @@ class EntryStreamPage extends React.Component {
 
     const actionPanel = isDesktop ?
       <React.Fragment>
-        <IconButton type='chevron-left' onClick={this.previousEntry} />
-        <IconButton type='chevron-right' onClick={this.nextEntry} />
+        <IconButton
+          type='chevron-left'
+          onClick={this.previousEntry}
+        />
+        <IconButton
+          type='chevron-right'
+          onClick={this.nextEntry}
+        />
       </React.Fragment> : null
 
     const listPanel =
       <Hotkeys onKeys={this.onKeys}>
-        <EntryList isDesktop={isDesktop}
-                   showEntryDetails={showEntryDetails}
-                   entries={entries}
-                   links={links}
-                   entryInFocus={entryInFocus}
-                   loading={loading}
-                   onChangeEntry={onChangeEntry}
-                   onLoadMore={onLoadMore} />
+        <EntryList
+          isDesktop={isDesktop}
+          showEntryDetails={showEntryDetails}
+          entries={entries}
+          links={links}
+          entryInFocus={entryInFocus}
+          loading={loading}
+          onChangeEntry={onChangeEntry}
+          onLoadMore={onLoadMore}
+        />
       </Hotkeys>
 
     return (
-      <ListLayout router={router}
-                onSearchChange={onSearchChange}
-                onRefresh={() => onRefresh({...router.query})}
-                actionPanel={actionPanel}
-                listPanel={listPanel}
+      <ListLayout
+        onSearchChange={onSearchChange}
+        onRefresh={() => onRefresh({...router.query})}
+        actionPanel={actionPanel}
+        listPanel={listPanel}
       />
     )
   }
-}
-
-EntryStreamPage.propTypes = {
-  router: PropTypes.shape({
-    query: PropTypes.object
-  }).isRequired,
-  entries: PropTypes.arrayOf(
-    PropTypes.any
-  ).isRequired,
-  entryInFocus: PropTypes.shape({
-    seen: PropTypes.bool
-  }),
-  nextFocusableEntry: PropTypes.shape({
-    seen: PropTypes.bool
-  }),
-  links: PropTypes.object.isRequired,
-  loading: PropTypes.bool.isRequired,
-  showEntryDetails: PropTypes.bool.isRequired,
-  isDesktop: PropTypes.bool.isRequired,
-  onSearchChange: PropTypes.func.isRequired,
-  onChangeEntry: PropTypes.func.isRequired,
-  onLoadMore: PropTypes.func.isRequired,
-  onRefresh: PropTypes.func.isRequired,
-  entryFocusNext: PropTypes.func.isRequired,
-  previousEntry: PropTypes.func.isRequired
 }
 
 export default EntryStreamPage

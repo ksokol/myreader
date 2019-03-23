@@ -10,7 +10,6 @@ import {
   getNextFocusableEntry,
   mediaBreakpointIsDesktopSelector,
   routeChange,
-  routeSelector,
   settingsShowEntryDetailsSelector
 } from '../../store'
 import {EntryStreamPage} from '../../pages'
@@ -20,8 +19,7 @@ const mapStateToProps = state => ({
   ...getEntries(state),
   showEntryDetails: settingsShowEntryDetailsSelector(state),
   nextFocusableEntry: getNextFocusableEntry(state),
-  isDesktop: mediaBreakpointIsDesktopSelector(state),
-  ...routeSelector(state)
+  isDesktop: mediaBreakpointIsDesktopSelector(state)
 })
 
 const mapDispatchToProps = dispatch => ({

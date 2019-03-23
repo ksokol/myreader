@@ -1,7 +1,15 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import EntryStreamPage from './EntryStreamPage'
-import {EntryList, Hotkeys} from '../../components'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../components', () => ({
+  EntryList: ({children}) => <div>{children}</div>,
+  Hotkeys: ({children}) => <div>{children}</div>,
+  IconButton: ({children}) => <div>{children}</div>,
+  ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>
+}))
+/* eslint-enable */
 
 describe('EntryStreamPage', () => {
 
@@ -17,28 +25,11 @@ describe('EntryStreamPage', () => {
         }
       },
       links: {
-        next: {
-          path: 'expected-path',
-          query: {}
-        }
+        next: {}
       },
       entries: [
-        {
-          uuid: '1',
-          title: 'title 1',
-          feedTitle: 'feedTitle 1',
-          origin: 'origin 1',
-          seen: true,
-          createdAt: 'createdAt 1'
-        },
-        {
-          uuid: '2',
-          title: 'title 2',
-          feedTitle: 'feedTitle 2',
-          origin: 'origin 2',
-          seen: false,
-          createdAt: 'createdAt 2'
-        }
+        {uuid: '1', seen: true},
+        {uuid: '2', seen: false}
       ],
       entryInFocus: {
         uuid: '1',
@@ -46,11 +37,7 @@ describe('EntryStreamPage', () => {
       },
       nextFocusableEntry: {
         uuid: '2',
-        title: 'title 2',
-        feedTitle: 'feedTitle 2',
-        origin: 'origin 2',
-        seen: false,
-        createdAt: 'createdAt 2'
+        seen: false
       },
       showEntryDetails: true,
       loading: true,
@@ -103,45 +90,24 @@ describe('EntryStreamPage', () => {
     expect(props.entryFocusNext).toHaveBeenCalled()
     expect(props.onChangeEntry).toHaveBeenCalledWith({
       uuid: '2',
-      title: 'title 2',
-      feedTitle: 'feedTitle 2',
-      origin: 'origin 2',
-      seen: true,
-      createdAt: 'createdAt 2'
+      seen: true
     })
   })
 
   it('should trigger prop function "onRefresh" when refresh button clicked', () => {
-    createComponent().find('IconButton[type="redo"]').props().onClick()
+    createComponent().find('ListLayout').props().onRefresh()
 
     expect(props.onRefresh).toHaveBeenCalledWith({a: 'b'})
   })
 
   it('should pass expected props to entry list component', () => {
-    expect(createComponent().find(EntryList).props()).toContainObject({
+    expect(createComponent().find('EntryList').props()).toContainObject({
       entries: [
-        {
-          uuid: '1',
-          title: 'title 1',
-          feedTitle: 'feedTitle 1',
-          origin: 'origin 1',
-          seen: true,
-          createdAt: 'createdAt 1'
-        },
-        {
-          uuid: '2',
-          title: 'title 2',
-          feedTitle: 'feedTitle 2',
-          origin: 'origin 2',
-          seen: false,
-          createdAt: 'createdAt 2'
-        }
+        {uuid: '1'},
+        {uuid: '2'}
       ],
       links: {
-        next: {
-          path: 'expected-path',
-          query: {}
-        }
+        next: {}
       },
       entryInFocus: {
         uuid: '1'
@@ -153,47 +119,43 @@ describe('EntryStreamPage', () => {
   })
 
   it('should trigger prop function "onChangeEntry" when entry changed', () => {
-    createComponent().find(EntryList).props().onChangeEntry({uuid: '2', a: 'b'})
+    createComponent().find('EntryList').props().onChangeEntry({uuid: '2', a: 'b'})
 
     expect(props.onChangeEntry).toHaveBeenCalledWith({uuid: '2', a: 'b'})
   })
 
   it('should trigger prop function "onLoadMore" when load more button clicked', () => {
-    createComponent().find(EntryList).props().onLoadMore()
+    createComponent().find('EntryList').props().onLoadMore()
 
     expect(props.onLoadMore).toHaveBeenCalled()
   })
 
   it('should trigger prop function "previousEntry" when arrow up key pressed', () => {
-    createComponent().find(Hotkeys).prop('onKeys').up()
+    createComponent().find('Hotkeys').prop('onKeys').up()
 
     expect(props.previousEntry).toHaveBeenCalled()
   })
 
   it('should only trigger prop function "entryFocusNext" when arrow down key pressed and entry seen flag is set to true', () => {
     props.nextFocusableEntry.seen = true
-    createComponent().find(Hotkeys).prop('onKeys').down()
+    createComponent().find('Hotkeys').prop('onKeys').down()
 
     expect(props.entryFocusNext).toHaveBeenCalled()
     expect(props.onChangeEntry).not.toHaveBeenCalled()
   })
 
   it('should trigger prop function "entryFocusNext" and "onChangeEntry" when next arrow down key pressed and entry seen flag is set to false', () => {
-    createComponent().find(Hotkeys).prop('onKeys').down()
+    createComponent().find('Hotkeys').prop('onKeys').down()
 
     expect(props.entryFocusNext).toHaveBeenCalled()
     expect(props.onChangeEntry).toHaveBeenCalledWith({
       uuid: '2',
-      title: 'title 2',
-      feedTitle: 'feedTitle 2',
-      origin: 'origin 2',
-      seen: true,
-      createdAt: 'createdAt 2'
+      seen: true
     })
   })
 
   it('should trigger prop function "onChangeEntry" when esc pressed', () => {
-    createComponent().find(Hotkeys).prop('onKeys').esc()
+    createComponent().find('Hotkeys').prop('onKeys').esc()
 
     expect(props.onChangeEntry).toHaveBeenCalledWith({uuid: '1', seen: false})
   })

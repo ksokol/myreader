@@ -10,11 +10,6 @@ describe('FeedListPage', () => {
 
   beforeEach(() => {
     props = {
-      router: {
-        query: {
-          a: 'b'
-        }
-      },
       feeds: [
         {uuid: '1', title: '1', hasErrors: false, createdAt: '1'}
       ],
@@ -25,7 +20,6 @@ describe('FeedListPage', () => {
 
   it('should pass expected props', () => {
     expect(createComponent().first().props()).toContainObject({
-      router: {query: {a: 'b'}},
       onSearchChange: props.onSearchChange,
       onRefresh: props.onRefresh,
       listPanel: {

@@ -19,29 +19,31 @@ const BookmarkListPage = props => {
   } = props
 
   return (
-    <ListLayout className='my-bookmark-list'
-              router={router}
-              onSearchChange={onSearchChange}
-              onRefresh={() => onRefresh(router.query)}
-              listPanel={
-                <React.Fragment>
-                  <Chips keyFn={props => props}
-                         className='my-bookmark-list__tags'
-                         values={entryTags}
-                         selected={router.query.entryTagEqual}
-                         onSelect={entryTagEqual => onSearchChange({...router.query, entryTagEqual})}
-                         renderItem={props => props}
-                  />
-                  <EntryList isDesktop={isDesktop}
-                             showEntryDetails={showEntryDetails}
-                             entries={entries}
-                             links={links}
-                             loading={loading}
-                             onChangeEntry={onChangeEntry}
-                             onLoadMore={onLoadMore}
-                  />
-                </React.Fragment>
-              }
+    <ListLayout
+      className='my-bookmark-list'
+      onSearchChange={onSearchChange}
+      onRefresh={() => onRefresh(router.query)}
+      listPanel={
+        <React.Fragment>
+          <Chips
+            keyFn={props => props}
+            className='my-bookmark-list__tags'
+            values={entryTags}
+            selected={router.query.entryTagEqual}
+            onSelect={entryTagEqual => onSearchChange({...router.query, entryTagEqual})}
+            renderItem={props => props}
+          />
+          <EntryList
+            isDesktop={isDesktop}
+            showEntryDetails={showEntryDetails}
+            entries={entries}
+            links={links}
+            loading={loading}
+            onChangeEntry={onChangeEntry}
+            onLoadMore={onLoadMore}
+          />
+        </React.Fragment>
+      }
     />
   )
 }

@@ -23,11 +23,6 @@ describe('EntryStreamPageContainer', () => {
   beforeEach(() => {
     store = createMockStore()
     store.setState({
-      router: {
-        query: {
-          q: 'title2'
-        }
-      },
       common: {
         mediaBreakpoint: 'tablet'
       },
@@ -45,11 +40,6 @@ describe('EntryStreamPageContainer', () => {
 
   it('should initialize component with given props', () => {
     expect(createContainer().props()).toContainObject({
-      router: {
-        query: {
-          q: 'title2'
-        }
-      },
       entryInFocus: entryInFocus(),
       nextFocusableEntry: nextFocusableEntry(),
       isDesktop: false

@@ -1,12 +1,11 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {fetchFeeds, filteredBySearchFeedsSelector, routeChange, routeSelector} from '../../store'
+import {fetchFeeds, filteredBySearchFeedsSelector, routeChange} from '../../store'
 import {FeedListPage} from '../../pages'
 import {adminFeedRoute} from '../../routes'
 
 const mapStateToProps = state => ({
-  ...filteredBySearchFeedsSelector(state),
-  ...routeSelector(state)
+  ...filteredBySearchFeedsSelector(state)
 })
 
 const mapDispatchToProps = dispatch => ({

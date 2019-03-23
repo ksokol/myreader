@@ -20,11 +20,6 @@ describe('SubscriptionListPageContainer', () => {
   beforeEach(() => {
     store = createMockStore()
     store.setState({
-      router: {
-        query: {
-          q: 'title2'
-        }
-      },
       subscription: {
         subscriptions: [
           {uuid: '1', title: 'title1', createdAt: '2017-12-29'},
@@ -36,12 +31,7 @@ describe('SubscriptionListPageContainer', () => {
 
   it('should initialize component with given props', () => {
     expect(createContainer().props()).toContainObject({
-      subscriptions: [{uuid: '2', title: 'title2', createdAt: '2017-11-30'}],
-      router: {
-        query: {
-          q: 'title2'
-        }
-      }
+      subscriptions: [{uuid: '2', title: 'title2', createdAt: '2017-11-30'}]
     })
   })
 

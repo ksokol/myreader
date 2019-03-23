@@ -3,21 +3,25 @@ import {shallow} from 'enzyme'
 import ListLayout from './ListLayout'
 import {SearchInput, IconButton} from '../../components'
 
+jest.mock('react-router-dom', () => ({
+  withRouter: WrappedComponent => WrappedComponent,
+}))
+
 describe('ListLayout', () => {
 
   let props
 
-  const createComponent = () => shallow(<ListLayout {...props}
-                                                    actionPanel={<div className='action'/>}
-                                                    listPanel={<div className='list' />} />)
+  const createComponent = () => shallow(
+    <ListLayout
+      {...props}
+      actionPanel={<div className='action'/>}
+      listPanel={<div className='list' />}
+    />)
 
   beforeEach(() => {
     props = {
-      router: {
-        query: {
-          q: 'expected q',
-          a: 'b'
-        }
+      location: {
+        search: '?a=b&q=expected q'
       },
       onSearchChange: jest.fn(),
       onRefresh: jest.fn()

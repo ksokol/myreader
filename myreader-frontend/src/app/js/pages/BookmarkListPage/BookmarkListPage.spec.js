@@ -53,7 +53,6 @@ describe('BookmarkListPage', () => {
 
   it('should pass expected props', () => {
     expect(createComponent().first().props()).toContainObject({
-      router: {query: {a: 'b', entryTagEqual: 'expected tag'}},
       onSearchChange: props.onSearchChange
     })
   })
