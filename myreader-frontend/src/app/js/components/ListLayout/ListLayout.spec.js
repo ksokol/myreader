@@ -16,15 +16,19 @@ describe('ListLayout', () => {
       {...props}
       actionPanel={<div className='action'/>}
       listPanel={<div className='list' />}
-    />)
+    />
+  )
 
   beforeEach(() => {
     props = {
       location: {
+        _currentRoute: ['path'],
         search: '?a=b&q=expected q'
       },
-      onSearchChange: jest.fn(),
-      onRefresh: jest.fn()
+      onRefresh: jest.fn(),
+      history: {
+        push: jest.fn()
+      }
     }
   })
 
@@ -32,10 +36,14 @@ describe('ListLayout', () => {
     expect(createComponent().find(SearchInput).prop('value')).toEqual('expected q')
   })
 
-  it('should trigger prop function "onSearchChange" when search input value changed', () => {
+  it('should trigger prop function "history.push" when search input value changed', () => {
     createComponent().find(SearchInput).props().onChange('changed q')
 
-    expect(props.onSearchChange).toHaveBeenCalledWith({a: 'b', q: 'changed q'})
+    expect(props.history.push).toHaveBeenCalledWith({
+      _currentRoute: ['path'],
+      search: '?a=b&q=expected q',
+      query: {a: 'b', q: 'changed q'}
+    })
   })
 
   it('should pass expected props to icon button component', () => {

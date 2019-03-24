@@ -5,3 +5,10 @@ export const toQueryObject = (location = {}) => {
   }
   return query
 }
+
+export const withQuery = (location = {}, query = {}) => {
+  return {
+    ...location,
+    query
+  }
+}

@@ -4,16 +4,16 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {SearchInput, IconButton} from '../../components'
 import {withRouter} from 'react-router-dom'
-import {toQueryObject} from '../../shared/location-utils'
+import {toQueryObject, withQuery} from '../../shared/location-utils'
 
 const ListLayout = props => {
   const {
     className,
-    onSearchChange,
     onRefresh,
     actionPanel,
     listPanel,
-    location
+    location,
+    history
   } = props
   const query = toQueryObject(location)
 
@@ -26,7 +26,7 @@ const ListLayout = props => {
       >
         <SearchInput
           className='my-list-layout__search-input'
-          onChange={q => onSearchChange({...query, q})}
+          onChange={q => history.push(withQuery(location, {...query, q}))}
           value={query.q}
         />
           {actionPanel}
@@ -53,10 +53,12 @@ ListLayout.propTypes = {
   location: PropTypes.shape({
     search: PropTypes.string
   }).isRequired,
-  onSearchChange: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,
   actionPanel: PropTypes.node,
   listPanel: PropTypes.node,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  }).isRequired
 }
 
 export default withRouter(ListLayout)

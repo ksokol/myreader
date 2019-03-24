@@ -35,16 +35,6 @@ describe('FeedListPageContainer', () => {
     })
   })
 
-  it('should dispatch action when prop function "onSearchChange" triggered', () => {
-    createContainer().props().onSearchChange({q: 'b'})
-
-    expect(store.getActions()[0]).toContainObject({
-      type: 'ROUTE_CHANGED',
-      route: ['admin', 'feed'],
-      query: {q: 'b'}
-    })
-  })
-
   it('should dispatch action when prop function "onRefresh" triggered', () => {
     createContainer().props().onRefresh()
 

@@ -54,13 +54,6 @@ describe('EntryStreamPageContainer', () => {
     expect(store.getActions()[0].url).toMatch(/subscriptionEntries\/uuid1$/)
   })
 
-  it('should dispatch action when prop function "onSearchChange" triggered', () => {
-    createContainer().props().onSearchChange({a: 'b'})
-
-    expect(store.getActionTypes()).toEqual(['ROUTE_CHANGED'])
-    expect(store.getActions()[0]).toContainActionData({route: ['app', 'entries'], query: {a: 'b'}})
-  })
-
   it('should dispatch action when prop function "previousEntry" triggered', () => {
     createContainer().props().previousEntry()
 

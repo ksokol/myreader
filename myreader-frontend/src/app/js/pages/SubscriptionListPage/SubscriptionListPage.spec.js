@@ -13,14 +13,12 @@ describe('SubscriptionListPage', () => {
       subscriptions: [
         {uuid: '1', title: '1', createdAt: '1'}
       ],
-      onSearchChange: jest.fn(),
       onRefresh: jest.fn()
     }
   })
 
   it('should pass expected props', () => {
     expect(createComponent().first().props()).toContainObject({
-      onSearchChange: props.onSearchChange,
       onRefresh: props.onRefresh,
       listPanel: {
         props: {

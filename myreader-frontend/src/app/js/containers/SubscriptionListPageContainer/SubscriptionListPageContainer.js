@@ -1,16 +1,14 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {fetchSubscriptions, filteredBySearchSubscriptionsSelector, routeChange} from '../../store'
+import {fetchSubscriptions, filteredBySearchSubscriptionsSelector} from '../../store'
 import {SubscriptionListPage} from '../../pages'
-import {subscriptionsRoute} from '../../routes'
 
 const mapStateToProps = state => ({
   ...filteredBySearchSubscriptionsSelector(state)
 })
 
 const mapDispatchToProps = dispatch => ({
-  onRefresh: () => dispatch(fetchSubscriptions()),
-  onSearchChange: params => dispatch(routeChange(subscriptionsRoute(params)))
+  onRefresh: () => dispatch(fetchSubscriptions())
 })
 
 const SubscriptionListPageContainer = props => <SubscriptionListPage {...props} />

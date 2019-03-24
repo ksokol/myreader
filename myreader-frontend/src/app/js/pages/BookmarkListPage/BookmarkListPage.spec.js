@@ -51,12 +51,6 @@ describe('BookmarkListPage', () => {
     }
   })
 
-  it('should pass expected props', () => {
-    expect(createComponent().first().props()).toContainObject({
-      onSearchChange: props.onSearchChange
-    })
-  })
-
   it('should trigger prop function "onRefresh"', () => {
     createComponent().first().props().onRefresh()
 

@@ -21,7 +21,6 @@ const BookmarkListPage = props => {
   return (
     <ListLayout
       className='my-bookmark-list'
-      onSearchChange={onSearchChange}
       onRefresh={() => onRefresh(router.query)}
       listPanel={
         <React.Fragment>

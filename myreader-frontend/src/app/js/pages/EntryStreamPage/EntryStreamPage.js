@@ -21,7 +21,6 @@ class EntryStreamPage extends React.Component {
     loading: PropTypes.bool.isRequired,
     showEntryDetails: PropTypes.bool.isRequired,
     isDesktop: PropTypes.bool.isRequired,
-    onSearchChange: PropTypes.func.isRequired,
     onChangeEntry: PropTypes.func.isRequired,
     onLoadMore: PropTypes.func.isRequired,
     onRefresh: PropTypes.func.isRequired,
@@ -67,7 +66,6 @@ class EntryStreamPage extends React.Component {
       loading,
       showEntryDetails,
       isDesktop,
-      onSearchChange,
       onChangeEntry,
       onLoadMore,
       onRefresh
@@ -101,7 +99,6 @@ class EntryStreamPage extends React.Component {
 
     return (
       <ListLayout
-        onSearchChange={onSearchChange}
         onRefresh={() => onRefresh({...router.query})}
         actionPanel={actionPanel}
         listPanel={listPanel}
