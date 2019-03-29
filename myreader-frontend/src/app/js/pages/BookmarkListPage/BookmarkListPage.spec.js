@@ -1,85 +1,55 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import BookmarkListPage from './BookmarkListPage'
+
+jest.mock('react-router-dom', () => ({
+  withRouter: WrappedComponent => WrappedComponent,
+}))
+
+/* eslint-disable react/prop-types */
+jest.mock('../../components', () => ({
+  EntryList: () => null,
+  Chips: () => null,
+  ListLayout: ({listPanel}) => <div>{listPanel}</div>
+}))
+/* eslint-enable */
 
 describe('BookmarkListPage', () => {
 
   let props
 
-  const createComponent = () => shallow(<BookmarkListPage {...props} />)
+  const createComponent = () => mount(<BookmarkListPage {...props} />)
 
   beforeEach(() => {
     props = {
-      router: {
-        query: {
-          a: 'b',
-          entryTagEqual: 'expected tag'
-        }
-      },
-      links: {
-        next: {
-          path: 'expected-path',
-          query: {}
-        }
-      },
-      entries: [
-        {
-          uuid: '1',
-          title: 'title 1',
-          feedTitle: 'feedTitle 1',
-          origin: 'origin 1',
-          seen: true,
-          createdAt: 'createdAt 1'
-        },
-        {
-          uuid: '2',
-          title: 'title 2',
-          feedTitle: 'feedTitle 2',
-          origin: 'origin 2',
-          seen: false,
-          createdAt: 'createdAt 2'
-        }
-      ],
+      links: {expected: 'links'},
+      entries: ['expected entries'],
       entryTags: ['tag1', 'tag2'],
       loading: true,
       isDesktop: true,
       showEntryDetails: true,
-      onSearchChange: jest.fn(),
       onChangeEntry: jest.fn(),
       onLoadMore: jest.fn(),
+      location: {
+        search: '?entryTagEqual=expected tag'
+      },
+      history: {
+        push: jest.fn()
+      }
     }
   })
 
-  it('should pass expected props to prop render function "listPanel"', () => {
-    expect(createComponent().first().prop('listPanel').props.children[0].props).toContainObject({
+  it('should pass expected props to chips component', () => {
+    expect(createComponent().find('Chips').props()).toContainObject({
       values: ['tag1', 'tag2'],
       selected: 'expected tag'
     })
-    expect(createComponent().first().prop('listPanel').props.children[1].props).toContainObject({
-      entries: [
-        {
-          uuid: '1',
-          title: 'title 1',
-          feedTitle: 'feedTitle 1',
-          origin: 'origin 1',
-          seen: true,
-          createdAt: 'createdAt 1'
-        },
-        {
-          uuid: '2',
-          title: 'title 2',
-          feedTitle: 'feedTitle 2',
-          origin: 'origin 2',
-          seen: false,
-          createdAt: 'createdAt 2'
-        }
-      ],
-      links: {
-        next: {
-          path: 'expected-path',
-          query: {}
-        }
-      },
+  })
+
+  it('should pass expected props to entry list component', () => {
+    expect(createComponent().find('EntryList').props()).toContainObject({
+      entries: ['expected entries'],
+      links: {expected: 'links'},
       isDesktop: true,
       loading: true,
       showEntryDetails: true,
@@ -88,9 +58,13 @@ describe('BookmarkListPage', () => {
     })
   })
 
-  it('should trigger prop function "onSearchChange"', () => {
-    createComponent().first().prop('listPanel').props.children[0].props.onSelect('expected tag')
+  it('should trigger prop function "history.push"', () => {
+    createComponent().find('Chips').props().onSelect('expected tag')
 
-    expect(props.onSearchChange).toHaveBeenCalledWith({a: 'b', entryTagEqual: 'expected tag'})
+    expect(props.history.push).toHaveBeenCalledWith({
+      query: {entryTagEqual: 'expected tag'},
+      search: '?entryTagEqual=expected tag',
+      state: {}
+    })
   })
 })

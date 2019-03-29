@@ -6,23 +6,18 @@ import {
   getEntries,
   getEntryTags,
   mediaBreakpointIsDesktopSelector,
-  routeChange,
-  routeSelector,
   settingsShowEntryDetailsSelector
 } from '../../store'
 import {BookmarkListPage} from '../../pages'
-import {bookmarkTagsRoute} from '../../routes'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
   showEntryDetails: settingsShowEntryDetailsSelector(state),
   isDesktop: mediaBreakpointIsDesktopSelector(state),
-  ...getEntryTags(state),
-  ...routeSelector(state)
+  ...getEntryTags(state)
 })
 
 const mapDispatchToProps = dispatch => ({
-  onSearchChange: query => dispatch(routeChange(bookmarkTagsRoute(query))),
   onLoadMore: link => dispatch(fetchEntries(link)),
   onChangeEntry: item => dispatch(changeEntry(item))
 })

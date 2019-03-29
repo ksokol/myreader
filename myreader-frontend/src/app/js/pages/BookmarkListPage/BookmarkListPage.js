@@ -2,20 +2,23 @@ import './BookmarkListPage.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {Chips, EntryList, ListLayout} from '../../components'
+import {withRouter} from 'react-router-dom'
+import {toQueryObject, withQuery} from '../../shared/location-utils'
 
 const BookmarkListPage = props => {
   const {
-    router,
     entryTags,
-    onSearchChange,
     entries,
     links,
     loading,
     showEntryDetails,
     isDesktop,
     onChangeEntry,
-    onLoadMore
+    onLoadMore,
+    location,
+    history
   } = props
+  const query = toQueryObject(location)
 
   return (
     <ListLayout
@@ -26,8 +29,8 @@ const BookmarkListPage = props => {
             keyFn={props => props}
             className='my-bookmark-list__tags'
             values={entryTags}
-            selected={router.query.entryTagEqual}
-            onSelect={entryTagEqual => onSearchChange({...router.query, entryTagEqual})}
+            selected={query.entryTagEqual}
+            onSelect={entryTagEqual => history.push(withQuery(location, {...query, entryTagEqual}))}
             renderItem={props => props}
           />
           <EntryList
@@ -46,11 +49,6 @@ const BookmarkListPage = props => {
 }
 
 BookmarkListPage.propTypes = {
-  router: PropTypes.shape({
-    query: PropTypes.shape({
-      entryTagEqual: PropTypes.string
-    })
-  }).isRequired,
   entries: PropTypes.arrayOf(
     PropTypes.any
   ).isRequired,
@@ -59,12 +57,12 @@ BookmarkListPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   showEntryDetails: PropTypes.bool.isRequired,
   isDesktop: PropTypes.bool.isRequired,
-  onSearchChange: PropTypes.func.isRequired,
   onChangeEntry: PropTypes.func.isRequired,
-  onLoadMore: PropTypes.func.isRequired
+  onLoadMore: PropTypes.func.isRequired,
+  location: PropTypes.object.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  }).isRequired
 }
 
-export default BookmarkListPage
-
-
-
+export default withRouter(BookmarkListPage)

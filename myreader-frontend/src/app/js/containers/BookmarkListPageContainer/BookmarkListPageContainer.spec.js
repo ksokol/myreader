@@ -20,12 +20,6 @@ describe('BookmarkListPageContainer', () => {
   beforeEach(() => {
     store = createMockStore()
     store.setState({
-      router: {
-        currentRoute: [],
-        query: {
-          entryTagEqual: 'tag'
-        }
-      },
       entry: {
         entries: [],
         links: {},
@@ -37,22 +31,7 @@ describe('BookmarkListPageContainer', () => {
 
   it('should initialize component with given props', () => {
     expect(createContainer().props()).toContainObject({
-      entryTags: ['tag1', 'tag2'],
-      router: {
-        query: {
-          entryTagEqual: 'tag'
-        }
-      }
-    })
-  })
-
-  it('should dispatch action when prop function "onSearchChange" triggered', () => {
-    createContainer().props().onSearchChange({entryTagEqual: 'expected'})
-
-    expect(store.getActions()[0]).toContainObject({
-      type: 'ROUTE_CHANGED',
-      route: ['app', 'bookmarks'],
-      query: {entryTagEqual: 'expected'}
+      entryTags: ['tag1', 'tag2']
     })
   })
 
