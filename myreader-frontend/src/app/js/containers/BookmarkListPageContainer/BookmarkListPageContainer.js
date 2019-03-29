@@ -11,7 +11,6 @@ import {
   settingsShowEntryDetailsSelector
 } from '../../store'
 import {BookmarkListPage} from '../../pages'
-import {SUBSCRIPTION_ENTRIES} from '../../constants'
 import {bookmarkTagsRoute} from '../../routes'
 
 const mapStateToProps = state => ({
@@ -23,7 +22,6 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  onRefresh: query => dispatch(fetchEntries({path: SUBSCRIPTION_ENTRIES, query})),
   onSearchChange: query => dispatch(routeChange(bookmarkTagsRoute(query))),
   onLoadMore: link => dispatch(fetchEntries(link)),
   onChangeEntry: item => dispatch(changeEntry(item))

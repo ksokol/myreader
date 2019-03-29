@@ -21,6 +21,7 @@ describe('BookmarkListPageContainer', () => {
     store = createMockStore()
     store.setState({
       router: {
+        currentRoute: [],
         query: {
           entryTagEqual: 'tag'
         }
@@ -53,13 +54,6 @@ describe('BookmarkListPageContainer', () => {
       route: ['app', 'bookmarks'],
       query: {entryTagEqual: 'expected'}
     })
-  })
-
-  it('should dispatch action when prop function "onRefresh" triggered', () => {
-    createContainer().props().onRefresh({a: 'b'})
-
-    expect(store.getActionTypes()).toContainObject(['GET_ENTRIES'])
-    expect(store.getActions()[0].url).toContain('a=b')
   })
 
   it('should dispatch action for next page when prop function "onLoadMore" triggered', () => {

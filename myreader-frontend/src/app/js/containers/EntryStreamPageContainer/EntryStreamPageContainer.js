@@ -5,16 +5,13 @@ import {
   entryFocusNext,
   entryFocusPrevious,
   fetchEntries,
-  fetchSubscriptions,
   getEntries,
   getNextFocusableEntry,
   mediaBreakpointIsDesktopSelector,
-  routeChange,
   routeSelector,
   settingsShowEntryDetailsSelector
 } from '../../store'
 import {EntryStreamPage} from '../../pages'
-import {entriesRoute} from '../../routes'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
@@ -28,11 +25,7 @@ const mapDispatchToProps = dispatch => ({
   onChangeEntry: entry => dispatch(changeEntry(entry)),
   previousEntry: () => dispatch(entryFocusPrevious()),
   entryFocusNext: () => dispatch(entryFocusNext()),
-  onLoadMore: link => dispatch(fetchEntries(link)),
-  onRefresh: params => {
-    dispatch(fetchSubscriptions())
-    dispatch(routeChange(entriesRoute(params), {reload: true}))
-  }
+  onLoadMore: link => dispatch(fetchEntries(link))
 })
 
 const EntryStreamPageContainer = props => <EntryStreamPage {...props} />

@@ -34,10 +34,4 @@ describe('SubscriptionListPageContainer', () => {
       subscriptions: [{uuid: '2', title: 'title2', createdAt: '2017-11-30'}]
     })
   })
-
-  it('should dispatch action when prop function "onRefresh" triggered', () => {
-    createContainer().props().onRefresh()
-
-    expect(store.getActionTypes()).toContainObject(['GET_SUBSCRIPTIONS'])
-  })
 })

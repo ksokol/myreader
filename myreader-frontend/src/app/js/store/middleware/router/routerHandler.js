@@ -9,12 +9,13 @@ function traverseAndDispatch({action, dispatch, routerState, getState}) {
     }
   }
   if (action.parent) {
-    const proceed = traverseAndDispatch({action: action.parent, dispatch, routerState, getState})
+    const proceed = traverseAndDispatch({action: {...action.parent, options: action.options}, dispatch, routerState, getState})
     if (!proceed) {
       return false
     }
   }
-  if (!arrayIncludes(action.route, routerState.currentRoute)) {
+
+  if (!arrayIncludes(action.route, routerState.currentRoute) || action.options.reload) {
     toArray(action.before).forEach(beforeAction => dispatch(beforeAction({getState})))
   }
   toArray(action.resolve).forEach(resolveAction => dispatch(resolveAction({query: action.query, getState})))

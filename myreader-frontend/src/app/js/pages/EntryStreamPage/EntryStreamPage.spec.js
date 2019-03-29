@@ -19,11 +19,6 @@ describe('EntryStreamPage', () => {
 
   beforeEach(() => {
     props = {
-      router: {
-        query: {
-          a: 'b'
-        }
-      },
       links: {
         next: {}
       },
@@ -43,7 +38,6 @@ describe('EntryStreamPage', () => {
       loading: true,
       isDesktop: true,
       onSearchChange: jest.fn(),
-      onRefresh: jest.fn(),
       onChangeEntry: jest.fn(),
       onLoadMore: jest.fn(),
       previousEntry: jest.fn(),
@@ -53,7 +47,6 @@ describe('EntryStreamPage', () => {
 
   it('should pass expected props', () => {
     expect(createComponent().props()).toContainObject({
-      router: {query: {a: 'b'}},
       onSearchChange: props.onSearchChange
     })
   })
@@ -92,12 +85,6 @@ describe('EntryStreamPage', () => {
       uuid: '2',
       seen: true
     })
-  })
-
-  it('should trigger prop function "onRefresh" when refresh button clicked', () => {
-    createComponent().find('ListLayout').props().onRefresh()
-
-    expect(props.onRefresh).toHaveBeenCalledWith({a: 'b'})
   })
 
   it('should pass expected props to entry list component', () => {

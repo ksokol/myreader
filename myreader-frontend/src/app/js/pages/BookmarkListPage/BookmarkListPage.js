@@ -8,7 +8,6 @@ const BookmarkListPage = props => {
     router,
     entryTags,
     onSearchChange,
-    onRefresh,
     entries,
     links,
     loading,
@@ -21,7 +20,6 @@ const BookmarkListPage = props => {
   return (
     <ListLayout
       className='my-bookmark-list'
-      onRefresh={() => onRefresh(router.query)}
       listPanel={
         <React.Fragment>
           <Chips
@@ -62,7 +60,6 @@ BookmarkListPage.propTypes = {
   showEntryDetails: PropTypes.bool.isRequired,
   isDesktop: PropTypes.bool.isRequired,
   onSearchChange: PropTypes.func.isRequired,
-  onRefresh: PropTypes.func.isRequired,
   onChangeEntry: PropTypes.func.isRequired,
   onLoadMore: PropTypes.func.isRequired
 }

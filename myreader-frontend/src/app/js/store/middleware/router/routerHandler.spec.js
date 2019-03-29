@@ -83,7 +83,8 @@ describe('routerHandler', () => {
   it('should not dispatch before action when current route equals new route', () => {
     const action = {
       before: () => null,
-      route: ['r']
+      route: ['r'],
+      options: {}
     }
 
     execute(action, {currentRoute: ['r']})
@@ -93,7 +94,8 @@ describe('routerHandler', () => {
   it('should always dispatch resolve action', () => {
     const action = {
       resolve: () => 'expected',
-      route: ['r']
+      route: ['r'],
+      options: {}
     }
 
     execute(action, {currentRoute: ['r']})
@@ -132,7 +134,8 @@ describe('routerHandler', () => {
       parent: {
         route: ['r1'],
         resolve: () => 'expected'
-      }
+      },
+      options: {}
     }
 
     execute(action, {currentRoute: ['r1', 'r2']})
@@ -145,7 +148,8 @@ describe('routerHandler', () => {
       parent: {
         route: ['r1'],
         before: () => null
-      }
+      },
+      options: {}
     }
 
     execute(action, {currentRoute: ['r1', 'r2']})

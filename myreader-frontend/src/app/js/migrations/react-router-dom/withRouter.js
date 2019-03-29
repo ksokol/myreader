@@ -18,8 +18,8 @@ export const withRouter = (WrappedComponent) => {
       }).isRequired
     }
 
-    push = ({_currentRoute: route, query}) => {
-      this.context.store.dispatch(routeChange({route, query}))
+    push = ({_currentRoute: route, query, state: options}) => {
+      this.context.store.dispatch(routeChange({route, query}, options))
     }
 
     render() {
@@ -28,7 +28,6 @@ export const withRouter = (WrappedComponent) => {
       const params = new URLSearchParams()
 
       Object.keys(query)
-        .filter(key => query[key])
         .map(key => params.append(key, query[key]))
 
       const location = {
@@ -39,7 +38,7 @@ export const withRouter = (WrappedComponent) => {
       return (
         <WrappedComponent
           location={location}
-          history={{push: this.push}}
+          history={{push: this.push, replace: this.push}}
           {...this.props}
         />
       )

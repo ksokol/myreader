@@ -66,17 +66,6 @@ describe('EntryStreamPageContainer', () => {
     expect(store.getActionTypes()).toEqual(['ENTRY_FOCUS_NEXT'])
   })
 
-  it('should dispatch action when prop function "onRefresh" triggered', () => {
-    createContainer().props().onRefresh({a: 'b'})
-
-    expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTIONS', 'ROUTE_CHANGED'])
-    expect(store.getActions()[1]).toContainActionData({
-      route: ['app', 'entries'],
-      query: {a: 'b'},
-      options: {reload: true}
-    })
-  })
-
   it('should dispatch action for next page when prop function "onLoadMore" triggered', () => {
     createContainer().props().onLoadMore({path: 'expected-path', query: {}})
 

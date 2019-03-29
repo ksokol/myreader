@@ -5,9 +5,6 @@ import {EntryList, Hotkeys, IconButton, ListLayout} from '../../components'
 class EntryStreamPage extends React.Component {
 
   static propTypes = {
-    router: PropTypes.shape({
-      query: PropTypes.object
-    }).isRequired,
     entries: PropTypes.arrayOf(
       PropTypes.any
     ).isRequired,
@@ -23,7 +20,6 @@ class EntryStreamPage extends React.Component {
     isDesktop: PropTypes.bool.isRequired,
     onChangeEntry: PropTypes.func.isRequired,
     onLoadMore: PropTypes.func.isRequired,
-    onRefresh: PropTypes.func.isRequired,
     entryFocusNext: PropTypes.func.isRequired,
     previousEntry: PropTypes.func.isRequired
   }
@@ -59,7 +55,6 @@ class EntryStreamPage extends React.Component {
 
   render() {
     const {
-      router,
       entries,
       links,
       entryInFocus,
@@ -67,8 +62,7 @@ class EntryStreamPage extends React.Component {
       showEntryDetails,
       isDesktop,
       onChangeEntry,
-      onLoadMore,
-      onRefresh
+      onLoadMore
     } = this.props
 
     const actionPanel = isDesktop ?
@@ -99,7 +93,6 @@ class EntryStreamPage extends React.Component {
 
     return (
       <ListLayout
-        onRefresh={() => onRefresh({...router.query})}
         actionPanel={actionPanel}
         listPanel={listPanel}
       />

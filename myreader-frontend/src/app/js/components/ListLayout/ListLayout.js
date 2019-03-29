@@ -9,7 +9,6 @@ import {toQueryObject, withQuery} from '../../shared/location-utils'
 const ListLayout = props => {
   const {
     className,
-    onRefresh,
     actionPanel,
     listPanel,
     location,
@@ -32,7 +31,7 @@ const ListLayout = props => {
           {actionPanel}
         <IconButton
           type='redo'
-          onClick={onRefresh}
+          onClick={() => history.replace(withQuery(location, query, {reload: true}))}
         />
       </div>
       <div
@@ -53,11 +52,11 @@ ListLayout.propTypes = {
   location: PropTypes.shape({
     search: PropTypes.string
   }).isRequired,
-  onRefresh: PropTypes.func.isRequired,
   actionPanel: PropTypes.node,
   listPanel: PropTypes.node,
   history: PropTypes.shape({
-    push: PropTypes.func.isRequired
+    push: PropTypes.func.isRequired,
+    replace: PropTypes.func.isRequired,
   }).isRequired
 }
 

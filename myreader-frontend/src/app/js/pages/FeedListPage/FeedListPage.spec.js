@@ -12,14 +12,12 @@ describe('FeedListPage', () => {
     props = {
       feeds: [
         {uuid: '1', title: '1', hasErrors: false, createdAt: '1'}
-      ],
-      onRefresh: jest.fn()
+      ]
     }
   })
 
   it('should pass expected props', () => {
     expect(createComponent().first().props()).toContainObject({
-      onRefresh: props.onRefresh,
       listPanel: {
         props: {
           feeds: [{uuid: '1', title: '1', hasErrors: false, createdAt: '1'}]

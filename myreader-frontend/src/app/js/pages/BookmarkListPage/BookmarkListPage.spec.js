@@ -46,15 +46,8 @@ describe('BookmarkListPage', () => {
       showEntryDetails: true,
       onSearchChange: jest.fn(),
       onChangeEntry: jest.fn(),
-      onRefresh: jest.fn(),
       onLoadMore: jest.fn(),
     }
-  })
-
-  it('should trigger prop function "onRefresh"', () => {
-    createComponent().first().props().onRefresh()
-
-    expect(props.onRefresh).toHaveBeenCalledWith({a: 'b', entryTagEqual: 'expected tag'})
   })
 
   it('should pass expected props to prop render function "listPanel"', () => {
