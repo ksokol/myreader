@@ -15,7 +15,6 @@ import {
 const Navigation = props => {
   const {
     subscriptions,
-    router,
     isAdmin,
     onClick
   } = props
@@ -42,7 +41,6 @@ const Navigation = props => {
             <SubscriptionNavigationItem
               key={item.key}
               item={item}
-              query={router.query}
               onClick={onClick}
             />
           ),
@@ -86,9 +84,6 @@ const Navigation = props => {
 
 Navigation.propTypes = {
   subscriptions: PropTypes.arrayOf(PropTypes.any),
-  router: PropTypes.shape({
-    query: PropTypes.any
-  }).isRequired,
   isAdmin: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired
 }

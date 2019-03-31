@@ -23,7 +23,6 @@ describe('NavigationContainer', () => {
     store = createMockStore()
     store.setState({
       subscription: {subscriptions: [{uuid: '1'}, {uuid: '2'}]},
-      router: {query: {a: 'b'}},
       settings: {showUnseenEntries: false},
       security: {role: 'ROLE_ADMIN'}
     })
@@ -32,8 +31,7 @@ describe('NavigationContainer', () => {
   it('should initialize navigation component with given props', () => {
     expect(createContainer().props()).toContainObject({
       isAdmin: true,
-      subscriptions: [{uuid: '1'}, {uuid: '2'}],
-      router: {query: {a: 'b'}}
+      subscriptions: [{uuid: '1'}, {uuid: '2'}]
     })
   })
 

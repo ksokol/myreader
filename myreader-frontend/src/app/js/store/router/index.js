@@ -1,10 +1,9 @@
 export * from './actions'
-export * from './selectors'
 export {routerReducers} from './reducers'
 
 export default function initialState() {
-    return {
-        currentRoute: [],
-        query: {}
-    }
+  return {
+    currentRoute: [],
+    query: {}
+  }
 }

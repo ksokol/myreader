@@ -1,9 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {connect, ReactReduxContext} from 'react-redux'
-import {routeChange, routeSelector} from '../../store/router'
+import {routeChange} from '../../store/router'
+import {cloneObject} from '../../store/shared/objects'
 
-const mapStateToProps = state => routeSelector(state)
+const mapStateToProps = state => ({router: cloneObject(state.router)})
 
 export const withRouter = (WrappedComponent) => {
 

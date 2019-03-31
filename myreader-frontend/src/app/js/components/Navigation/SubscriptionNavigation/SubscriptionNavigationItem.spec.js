@@ -3,6 +3,10 @@ import {SubscriptionNavigationItem} from '.'
 import {NavigationItem} from '..'
 import {shallow} from 'enzyme'
 
+jest.mock('react-router-dom', () => ({
+  withRouter: WrappedComponent => WrappedComponent,
+}))
+
 class SubscriptionNavigationItemSubscriptionsWrapper {
 
   constructor(wrapper) {
@@ -79,7 +83,9 @@ describe('SubscriptionNavigationItem', () => {
           {title: 'subscription 2', uuid: 'uuid2', unseen: 0, feedTag: {name: 'tag'}}
         ]
       },
-      query: {},
+      location: {
+        search: ''
+      },
       onClick: jest.fn()
     }
   })
@@ -113,31 +119,41 @@ describe('SubscriptionNavigationItem', () => {
   })
 
   it('should not flag navigation item as selected when prop "query.feedTagEqual" is not equal to item tag', () => {
-    props.query.feedUuidEqual = props.item.uuid
+    props.location = {
+      search: `?feedUuidEqual=${props.item.uuid}`
+    }
 
     expect(createWrapper().itemProps).toContainObject({selected: false})
   })
 
   it('should not flag navigation item as selected when prop "query.feedUuidEqual" is not equal to item uuid', () => {
-    props.query.feedTagEqual = props.item.tag
+    props.location = {
+      search: `?feedTagEqual=${props.item.tag}`
+    }
 
     expect(createWrapper().itemProps).toContainObject({selected: false})
   })
 
   it('should flag navigation item as selected when prop "query.feedUuidEqual" and "query.feedTagEqual" is equal to item uuid and tag', () => {
-    props.query.feedUuidEqual = props.item.uuid
-    props.query.feedTagEqual = props.item.tag
+    props.location = {
+      search: `?feedTagEqual=${props.item.tag}&feedUuidEqual=${props.item.uuid}`
+    }
 
     expect(createWrapper().itemProps).toContainObject({selected: true})
   })
 
   describe('', () => {
 
-    beforeEach(() => props.query.feedTagEqual = props.item.tag)
+    beforeEach(() => {
+      props.location = {
+        search: `?feedTagEqual=${props.item.tag}`
+      }
+    })
 
     it('should not render navigation subscriptions when prop "query.feedTagEqual" is not equal to item tag', () => {
-      props.query.feedTagEqual = undefined
-
+      props.location = {
+        search: ''
+      }
       expect(createWrapper().subscriptions.exists).toEqual(false)
     })
 
@@ -194,7 +210,9 @@ describe('SubscriptionNavigationItem', () => {
     })
 
     it('should flag first navigation subscription item as selected when prop "query.feedUuidEqual" is equal to first subscription uuid', () => {
-      props.query.feedUuidEqual = props.item.subscriptions[0].uuid
+      props.location = {
+        search: `${props.location.search}&feedUuidEqual=${props.item.subscriptions[0].uuid}`
+      }
 
       const subscriptions = createWrapper().subscriptions
 
@@ -203,7 +221,9 @@ describe('SubscriptionNavigationItem', () => {
     })
 
     it('should flag second navigation subscription item as selected when prop "query.feedUuidEqual" is equal to second subscription uuid', () => {
-      props.query.feedUuidEqual = props.item.subscriptions[1].uuid
+      props.location = {
+        search: `${props.location.search}&feedUuidEqual=${props.item.subscriptions[1].uuid}`
+      }
 
       const subscriptions = createWrapper().subscriptions
 

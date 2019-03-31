@@ -3,51 +3,52 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {NavigationItem} from '..'
 import {entriesRoute} from '../../../routes'
+import {toQueryObject} from '../../../shared/location-utils'
+import {withRouter} from 'react-router-dom'
 
-class SubscriptionNavigationItem extends React.Component {
+function isOpen(query, item) {
+  return query.feedTagEqual === item.tag
+}
 
-  get isOpen() {
-    return this.props.query.feedTagEqual === this.props.item.tag
-  }
+function isVisible(query, item) {
+  return isOpen(query, item) && (item.subscriptions ? item.subscriptions.length > 0 : false)
+}
 
-  get isVisible() {
-    return this.isOpen && (this.props.item.subscriptions ? this.props.item.subscriptions.length > 0 : false)
-  }
+function isSelected(query, tag, uuid) {
+  return query.feedUuidEqual === uuid && query.feedTagEqual === tag
+}
 
-  isSelected(tag, uuid) {
-    return this.props.query.feedUuidEqual === uuid && this.props.query.feedTagEqual === tag
-  }
+const SubscriptionNavigationItem = props => {
+  const {item, location, onClick} = props
+  const query = toQueryObject(location)
 
-  render() {
-    const {item, onClick} = this.props
-
-    return [
-      <NavigationItem
-        selected={this.isSelected(item.tag, item.uuid)}
-        to={entriesRoute({feedTagEqual: item.tag, feedUuidEqual: item.uuid})}
-        onClick={onClick}
-        key={item.uuid}
-        title={item.title}
-        badgeCount={item.unseen}
-      />,
-      this.isVisible &&
-        <ul
-          key='subscriptions'
-          className='my-subscription-navigation-item__subscriptions'
-        >
-          {item.subscriptions.map(subscription => (
-            <NavigationItem
-              selected={this.isSelected(subscription.feedTag.name, subscription.uuid)}
-              to={entriesRoute({feedTagEqual: subscription.feedTag.name, feedUuidEqual: subscription.uuid})}
-              onClick={onClick}
-              key={subscription.uuid}
-              title={subscription.title}
-              badgeCount={subscription.unseen}
-            />)
-          )}
-        </ul>
-    ]
-  }
+  return [
+    <NavigationItem
+      selected={isSelected(query, item.tag, item.uuid)}
+      to={entriesRoute({feedTagEqual: item.tag, feedUuidEqual: item.uuid})}
+      onClick={onClick}
+      key={item.uuid}
+      title={item.title}
+      badgeCount={item.unseen}
+    />,
+    isVisible(query, item) && (
+      <ul
+        key='subscriptions'
+        className='my-subscription-navigation-item__subscriptions'
+      >
+        {item.subscriptions.map(subscription => (
+          <NavigationItem
+            selected={isSelected(query, subscription.feedTag.name, subscription.uuid)}
+            to={entriesRoute({feedTagEqual: subscription.feedTag.name, feedUuidEqual: subscription.uuid})}
+            onClick={onClick}
+            key={subscription.uuid}
+            title={subscription.title}
+            badgeCount={subscription.unseen}
+          />)
+        )}
+      </ul>
+    )
+  ]
 }
 
 SubscriptionNavigationItem.propTypes = {
@@ -67,11 +68,10 @@ SubscriptionNavigationItem.propTypes = {
       }).isRequired
     )
   }).isRequired,
-  query: PropTypes.PropTypes.shape({
-    feedTagEqual: PropTypes.string,
-    feedUuidEqual: PropTypes.string
+  location: PropTypes.shape({
+    search: PropTypes.string.isRequired
   }).isRequired,
   onClick: PropTypes.func.isRequired
 }
 
-export default SubscriptionNavigationItem
+export default withRouter(SubscriptionNavigationItem)
