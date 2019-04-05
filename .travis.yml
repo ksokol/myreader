@@ -32,7 +32,8 @@ install:
   - ./gradlew resolve
 
 script:
-  - travis_wait 20 ./gradlew dependencyCheckAnalyze
+  # Deactivated due to https://github.com/jeremylong/DependencyCheck/issues/1827
+  #- travis_wait 20 ./gradlew dependencyCheckAnalyze
   - git fetch --unshallow # necessary for SonarCloud blame information
   - ./gradlew check sonarqube
   - if [[ $TRAVIS_BRANCH == "master" ]]; then ./gradlew build -x check -x test; fi
