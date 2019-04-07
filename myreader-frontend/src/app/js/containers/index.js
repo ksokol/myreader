@@ -1,6 +1,5 @@
 export {default as SettingsPageContainer} from './SettingsPageContainer/SettingsPageContainer'
 export {default as SubscriptionTagsContainer} from './SubscriptionTagsContainer/SubscriptionTagsContainer'
-export {default as MaintenancePageContainer} from './MaintenancePageContainer/MaintenancePageContainer'
 export {default as ToastContainer} from './ToastContainer/ToastContainer'
 export {default as NavigationContainer} from './NavigationContainer/NavigationContainer'
 export {default as SubscriptionListPageContainer} from './SubscriptionListPageContainer/SubscriptionListPageContainer'

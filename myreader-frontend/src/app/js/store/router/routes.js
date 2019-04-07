@@ -4,7 +4,6 @@ import {
   clearSubscriptionEditForm,
   entryClear,
   feedFetchFailuresClear,
-  fetchApplicationInfo,
   fetchEntries,
   fetchEntryTags,
   loadFeedIntoEditForm,
@@ -43,7 +42,6 @@ export const routeConfiguration = {
     }
   },
   admin: {
-    before: fetchApplicationInfo,
     children: {
       feed: {
         resolve: fetchFeeds

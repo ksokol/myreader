@@ -1,17 +1,64 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import MaintenancePage from './MaintenancePage'
-import {Button} from '../../components'
 
 describe('MaintenancePage', () => {
 
-  it('should trigger prop function "onRefreshIndex" when button clicked', () => {
-    const props = {
-      onRefreshIndex: jest.fn()
+  let state, dispatch
+
+  const createWrapper = () => mount(<MaintenancePage dispatch={dispatch} {...state} />)
+
+  beforeEach(() => {
+    dispatch = jest.fn()
+
+    state = {
+      admin: {
+        applicationInfo: undefined
+      }
+    }
+  })
+
+  it('should trigger action GET_APPLICATION_INFO when mounted', () => {
+    createWrapper()
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'GET_APPLICATION_INFO'
+    }))
+  })
+
+  it('should trigger action PUT_INDEX_SYNC_JOB when button clicked', () => {
+    createWrapper().find('Button').props().onClick()
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'PUT_INDEX_SYNC_JOB'
+    }))
+  })
+
+  it('should not render application info component when prop "applicationInfo" is undefined', () => {
+    createWrapper()
+
+    expect(createWrapper().find('ApplicationInfo').exists()).toEqual(false)
+  })
+
+  it('should not render application info component when prop "applicationInfo" is an empty object', () => {
+    state.admin.applicationInfo = {}
+
+    expect(createWrapper().find('ApplicationInfo').exists()).toEqual(false)
+  })
+
+  it('should render application info component when prop "applicationInfo" is present', () => {
+    state.admin.applicationInfo = {
+      branch: 'expected branch',
+      commitId: 'expected commitId',
+      version: 'expected version',
+      buildTime: 'expected buildTime',
     }
 
-    shallow(<MaintenancePage {...props} />).find(Button).props().onClick()
-
-    expect(props.onRefreshIndex).toHaveBeenCalled()
+    expect(createWrapper().find('ApplicationInfo').props()).toEqual({
+      branch: 'expected branch',
+      commitId: 'expected commitId',
+      version: 'expected version',
+      buildTime: 'expected buildTime',
+    })
   })
 })

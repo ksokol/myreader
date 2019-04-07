@@ -4,7 +4,6 @@ import {
   FeedEditPageContainer,
   FeedListPageContainer,
   LoginPageContainer,
-  MaintenancePageContainer,
   SettingsPageContainer,
   SidenavLayoutContainer,
   SubscribePageContainer,
@@ -26,7 +25,7 @@ import {
 } from './routes'
 import {secured} from './components'
 import {ROLE_ADMIN, ROLE_USER} from './constants'
-import {LogoutPage} from './pages'
+import {LogoutPage, MaintenancePage} from './pages'
 
 const states = [
   {
@@ -94,7 +93,7 @@ const states = [
   {
     name: 'admin.overview',
     url: ADMIN_OVERVIEW_URL,
-    component: secured(MaintenancePageContainer, [ROLE_ADMIN])
+    component: secured(MaintenancePage, [ROLE_ADMIN])
   },
   {
     name: 'admin.feed',

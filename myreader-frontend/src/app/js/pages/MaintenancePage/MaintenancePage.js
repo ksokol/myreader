@@ -1,7 +1,17 @@
 import './MaintenancePage.css'
 import React from 'react'
 import PropTypes from 'prop-types'
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux'
 import {Button, TimeAgo} from '../../components'
+import {applicationInfoSelector, fetchApplicationInfo, rebuildSearchIndex} from '../../store/admin'
+
+const mapStateToProps = state => ({
+  applicationInfo: applicationInfoSelector(state)
+})
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({rebuildSearchIndex, fetchApplicationInfo}, dispatch)
 
 const ApplicationInfo = props =>
   <React.Fragment>
@@ -9,24 +19,24 @@ const ApplicationInfo = props =>
 
     <table>
       <tbody>
-        <tr>
-          <td>Branch</td>
-          <td>{props.branch}</td>
-        </tr>
-        <tr>
-          <td>Commit ID</td>
-          <td>{props.commitId}</td>
-        </tr>
-        <tr>
-          <td>Version</td>
-          <td>{props.version}</td>
-        </tr>
-        <tr>
-          <td>Build Time</td>
-          <td>
-            <TimeAgo date={props.buildTime}/>
-          </td>
-        </tr>
+      <tr>
+        <td>Branch</td>
+        <td>{props.branch}</td>
+      </tr>
+      <tr>
+        <td>Commit ID</td>
+        <td>{props.commitId}</td>
+      </tr>
+      <tr>
+        <td>Version</td>
+        <td>{props.version}</td>
+      </tr>
+      <tr>
+        <td>Build Time</td>
+        <td>
+          <TimeAgo date={props.buildTime}/>
+        </td>
+      </tr>
       </tbody>
     </table>
   </React.Fragment>
@@ -38,20 +48,45 @@ ApplicationInfo.propTypes = {
   buildTime: PropTypes.string.isRequired
 }
 
-const MaintenancePage = props =>
-  <section className='my-maintenance'>
-    <h4>Maintenance</h4>
+class MaintenancePage extends React.Component {
 
-    <Button onClick={props.onRefreshIndex} primary>Refresh index</Button>
+  componentDidMount() {
+    this.props.fetchApplicationInfo()
+  }
 
-    {props.applicationInfo && props.applicationInfo.branch && <ApplicationInfo {...props.applicationInfo} />}
-  </section>
+  render() {
+    const {
+      rebuildSearchIndex,
+      applicationInfo
+    } = this.props
+
+    return (
+      <section
+        className='my-maintenance'
+      >
+        <h4>Maintenance</h4>
+
+        <Button
+          onClick={rebuildSearchIndex}
+          primary>
+          Refresh index
+        </Button>
+
+        {applicationInfo && applicationInfo.branch && <ApplicationInfo {...applicationInfo} />}
+      </section>
+    )
+  }
+}
 
 MaintenancePage.propTypes = {
-  onRefreshIndex: PropTypes.func.isRequired,
+  rebuildSearchIndex: PropTypes.func.isRequired,
+  fetchApplicationInfo: PropTypes.func.isRequired,
   applicationInfo: PropTypes.shape({
     branch: PropTypes.string
   })
 }
 
-export default MaintenancePage
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MaintenancePage)

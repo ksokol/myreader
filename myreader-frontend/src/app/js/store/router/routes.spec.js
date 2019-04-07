@@ -138,13 +138,6 @@ describe('routes', () => {
       })
     })
 
-    describe('admin', () => {
-
-      beforeEach(() => routeConfig = routeConfiguration['admin'])
-
-      it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('GET_APPLICATION_INFO'))
-    })
-
     describe('admin feed', () => {
 
       beforeEach(() => routeConfig = routeConfiguration['admin'].children['feed'])
