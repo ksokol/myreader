@@ -1,16 +1,12 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import ListLayout from './ListLayout'
-
-jest.mock('react-router-dom', () => ({
-  withRouter: WrappedComponent => WrappedComponent,
-}))
 
 describe('ListLayout', () => {
 
   let props
 
-  const createComponent = () => shallow(
+  const createComponent = () => mount(
     <ListLayout
       {...props}
       actionPanel={<div className='action'/>}

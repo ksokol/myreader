@@ -21,5 +21,7 @@ export {default as FeedList} from './FeedList/FeedList'
 export {default as Backdrop} from './Backdrop/Backdrop'
 export {default as AutocompleteInput} from './AutocompleteInput/AutocompleteInput'
 export {default as SidenavLayout} from './SidenavLayout/SidenavLayout'
+export {default as Logout} from './Logout/Logout'
+export {default as secured} from './secured/secured'
 
 import './HtmlContent/HtmlContent'

@@ -4,8 +4,7 @@ export {securityReducers} from './reducers'
 
 export default function initialState() {
   return {
-    authorized: false,
-    role: '',
+    roles: [],
     loginForm: {
       loginPending: false,
       loginFailed: false

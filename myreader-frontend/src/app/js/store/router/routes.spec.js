@@ -190,22 +190,20 @@ describe('routes', () => {
 
       beforeEach(() => routeConfig = routeConfiguration['login'])
 
-      it('should not contain redirect action when authorized is set to false', () => {
+      it('should not contain redirect action when roles are absent', () => {
         store.setState({
           security: {
-            authorized: false,
-            role: 'ROLE_ADMIN'
+            roles: []
           }
         })
 
         expect(action()).toBeUndefined()
       })
 
-      it('should contain redirect action to app entries when authorized is set to true and role is set to ROLE_USER', () => {
+      it('should contain redirect action to app entries when role is set to USER', () => {
         store.setState({
           security: {
-            authorized: true,
-            role: 'ROLE_USER'
+            roles: ['USER']
           }
         })
 
@@ -214,11 +212,10 @@ describe('routes', () => {
         })
       })
 
-      it('should contain redirect action to admin overview when authorized is set to true and role is set to ROLE_ADMIN', () => {
+      it('should contain redirect action to admin overview when role is set to ADMIN', () => {
         store.setState({
           security: {
-            authorized: true,
-            role: 'ROLE_ADMIN'
+            roles: ['ADMIN']
           }
         })
 

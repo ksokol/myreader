@@ -2,10 +2,6 @@ import React from 'react'
 import {mount} from 'enzyme'
 import BookmarkListPage from './BookmarkListPage'
 
-jest.mock('react-router-dom', () => ({
-  withRouter: WrappedComponent => WrappedComponent,
-}))
-
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
   EntryList: () => null,

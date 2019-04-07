@@ -2,20 +2,28 @@ import {adminPermissionSelector, authorizedSelector, loginFormSelector} from '..
 
 describe('security selectors', () => {
 
-  it('should return false for authorized flag from state', () => {
-    expect(authorizedSelector({security: {authorized: false}})).toEqual(false)
+  it('should return authorization state for role USER', () => {
+    expect(authorizedSelector({security: {roles: ['USER']}})).toEqual({
+      authorized: true,
+      isAdmin: false,
+      roles: ['USER']
+    })
   })
 
-  it('should return true for authorized flag from state', () => {
-    expect(authorizedSelector({security: {authorized: true}})).toEqual(true)
+  it('should return authorization state for role ADMIN', () => {
+    expect(authorizedSelector({security: {roles: ['ADMIN']}})).toEqual({
+      authorized: true,
+      isAdmin: true,
+      roles: ['ADMIN']
+    })
   })
 
-  it('adminPermissionSelector should return false when role is set to value "user"', () => {
-    expect(adminPermissionSelector({security: {role: 'ROLE_USER'}})).toEqual(false)
+  it('adminPermissionSelector should return false when roles is set to value "user"', () => {
+    expect(adminPermissionSelector({security: {roles: ['USER']}})).toEqual(false)
   })
 
-  it('adminPermissionSelector should return true when role is set to value "admin"', () => {
-    expect(adminPermissionSelector({security: {role: 'ROLE_ADMIN'}})).toEqual(true)
+  it('adminPermissionSelector should return true when roles is set to value "admin"', () => {
+    expect(adminPermissionSelector({security: {roles: ['ADMIN']}})).toEqual(true)
   })
 
   it('loginFormSelector should return loginForm', () => {

@@ -1,11 +1,6 @@
 import React from 'react'
 import {SubscriptionNavigationItem} from '.'
-import {NavigationItem} from '..'
-import {shallow} from 'enzyme'
-
-jest.mock('react-router-dom', () => ({
-  withRouter: WrappedComponent => WrappedComponent,
-}))
+import {mount} from 'enzyme'
 
 class SubscriptionNavigationItemSubscriptionsWrapper {
 
@@ -18,7 +13,7 @@ class SubscriptionNavigationItemSubscriptionsWrapper {
   }
 
   get items() {
-    return this.wrapper.find(NavigationItem)
+    return this.wrapper.find('NavigationItem')
   }
 
   itemAt(index) {
@@ -41,11 +36,11 @@ class SubscriptionNavigationItemSubscriptionsWrapper {
 class SubscriptionNavigationItemWrapper {
 
   constructor(props) {
-    this.wrapper = shallow(<SubscriptionNavigationItem {...props} />)
+    this.wrapper = mount(<SubscriptionNavigationItem {...props} />)
   }
 
   get item() {
-    return this.wrapper.first().find(NavigationItem)
+    return this.wrapper.first().find('NavigationItem').first()
   }
 
   get subscriptions() {

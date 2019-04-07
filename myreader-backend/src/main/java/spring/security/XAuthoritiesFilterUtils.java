@@ -17,9 +17,9 @@ public final class XAuthoritiesFilterUtils {
             return "";
         }
 
-        final StringBuilder authorities = new StringBuilder(token.getAuthorities().size() * 10);
+        final StringBuilder authorities = new StringBuilder(token.getAuthorities().size() * 2);
         for (final GrantedAuthority grantedAuthority : token.getAuthorities()) {
-            authorities.append(grantedAuthority.getAuthority());
+            authorities.append(grantedAuthority.getAuthority().replace("ROLE_", ""));
             authorities.append(',');
         }
         return authorities.subSequence(0, authorities.length() - 1).toString();

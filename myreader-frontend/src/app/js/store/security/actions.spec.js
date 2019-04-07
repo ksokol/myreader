@@ -18,12 +18,12 @@ describe('security actions', () => {
   describe('action creator updateSecurity', () => {
 
     it('should return last security state from local storage', () => {
-      localStorage.setItem('myreader-security', '{"authorized": true, "role": "expected role"}')
+      localStorage.setItem('myreader-security', '{"roles": ["expected role"]}')
 
       expect(updateSecurity()).toEqual({
         type: 'SECURITY_UPDATE',
         authorized: true,
-        role: 'expected role'
+        roles: ['expected role']
       })
     })
   })
@@ -31,23 +31,14 @@ describe('security actions', () => {
   describe('action creator unauthorized', () => {
 
     it('should persist last security state to local storage', () => {
-      expect(unauthorized()[0]).toEqual({
+      expect(unauthorized()).toEqual({
         type: 'SECURITY_UPDATE',
         authorized: false,
-        role: ''
+        roles: []
       })
 
       expect(JSON.parse(localStorage.getItem('myreader-security'))).toEqual({
-        authorized: false,
-        role: ''
-      })
-    })
-
-    it('should route to login page', () => {
-      expect(unauthorized()[1]).toContainObject({
-        type: 'ROUTE_CHANGED',
-        route: ['login'],
-        query: {}
+        roles: []
       })
     })
   })
@@ -55,10 +46,10 @@ describe('security actions', () => {
   describe('action creator authorized', () => {
 
     it('should return SECURITY_UPDATE action with updated last security state', () => {
-      expect(authorized({role: 'expected role'})).toEqual({
+      expect(authorized({roles: ['expected role']})).toEqual({
         type: 'SECURITY_UPDATE',
         authorized: true,
-        role: 'expected role'
+        roles: ['expected role']
       })
     })
   })
@@ -73,9 +64,8 @@ describe('security actions', () => {
     it('should contain expected success actions', () => {
       store.dispatch(logout().success())
 
-      expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
-      expect(store.getActions()[0]).toContainActionData({authorized: false})
-      expect(store.getActions()[1]).toContainActionData({route: ['login']})
+      expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE'])
+      expect(store.getActions()[0]).toContainActionData({roles: []})
     })
   })
 
@@ -101,25 +91,25 @@ describe('security actions', () => {
       expect(store.getActions()[0].body.toString()).toEqual('username=a&password=b')
     })
 
-    it('should dispatch action defined in success property (ROLE_USER)', () => {
+    it('should dispatch action defined in success property (USER)', () => {
       store.dispatch(tryLogin({}))
       const success = store.getActions()[0].success
       store.clearActions()
-      store.dispatch(success(null, {'x-my-authorities': 'ROLE_USER'}))
+      store.dispatch(success(null, {'x-my-authorities': 'USER'}))
 
       expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
-      expect(store.getActions()[0]).toContainActionData({authorized: true, role: 'ROLE_USER'})
+      expect(store.getActions()[0]).toContainActionData({roles: ['USER']})
       expect(store.getActions()[1]).toContainActionData({route: ['app', 'entries']})
     })
 
-    it('should dispatch action defined in success property (ROLE_ADMIN)', () => {
+    it('should dispatch action defined in success property (ADMIN)', () => {
       store.dispatch(tryLogin({}))
       const success = store.getActions()[0].success
       store.clearActions()
-      store.dispatch(success(null, {'x-my-authorities': 'ROLE_ADMIN'}))
+      store.dispatch(success(null, {'x-my-authorities': 'ADMIN'}))
 
       expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
-      expect(store.getActions()[0]).toContainActionData({authorized: true, role: 'ROLE_ADMIN'})
+      expect(store.getActions()[0]).toContainActionData({roles: ['ADMIN']})
       expect(store.getActions()[1]).toContainActionData({route: ['admin', 'overview']})
     })
 

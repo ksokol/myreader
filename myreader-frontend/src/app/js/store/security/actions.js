@@ -1,28 +1,25 @@
 import * as types from '../../store/action-types'
 import {getLastSecurityState, setLastSecurityState} from './security'
-import {LOGIN, LOGOUT} from '../../constants'
+import {LOGIN, LOGOUT, ROLE_ADMIN} from '../../constants'
 import {routeChange} from '../../store'
-import {adminOverviewRoute, entriesRoute, loginRoute} from '../../routes'
+import {adminOverviewRoute, entriesRoute} from '../../routes'
 
 export const updateSecurity = () => {
-  const {authorized, role} = getLastSecurityState()
+  const {roles} = getLastSecurityState()
   return {
     type: types.SECURITY_UPDATE,
-    authorized,
-    role
+    authorized: roles.length > 0,
+    roles
   }
 }
 
 export const unauthorized = () => {
-  setLastSecurityState({authorized: false, role: ''})
-  return [
-    updateSecurity(),
-    routeChange(loginRoute())
-  ]
+  setLastSecurityState({roles: []})
+  return updateSecurity()
 }
 
-export const authorized = ({role}) => {
-  setLastSecurityState({authorized: true, role})
+export const authorized = ({roles}) => {
+  setLastSecurityState({roles})
   return updateSecurity()
 }
 
@@ -60,10 +57,10 @@ export const tryLogin = ({username, password}) => {
     body: searchParams,
     before: loginStart,
     success: (response, headers) => {
-      const role = headers['x-my-authorities']
+      const roles = headers['x-my-authorities'].split(',')
       return [
-        authorized({role}),
-        role === 'ROLE_ADMIN' ? routeChange(adminOverviewRoute()) : routeChange(entriesRoute())
+        authorized({roles}),
+        roles.includes(ROLE_ADMIN) ? routeChange(adminOverviewRoute()) : routeChange(entriesRoute())
       ]
     },
     finalize: loginEnd

@@ -1,19 +1,14 @@
-import {createSelector} from 'reselect'
 import {cloneObject} from '../shared/objects'
+import {ROLE_ADMIN} from '../../constants'
 
-const securitySelector = state => state.security
+export const authorizedSelector = ({security}) => ({
+  authorized: security.roles.length > 0,
+  isAdmin: security.roles.includes(ROLE_ADMIN),
+  roles: [...security.roles]
+})
 
-export const authorizedSelector = createSelector(
-  securitySelector,
-  security => security.authorized
-)
+export const adminPermissionSelector = ({security}) => security.roles.includes(ROLE_ADMIN)
 
-export const adminPermissionSelector = createSelector(
-  securitySelector,
-  security => security.role === 'ROLE_ADMIN'
-)
-
-export const loginFormSelector = createSelector(
-  securitySelector,
-  security => cloneObject(security.loginForm)
-)
+export const loginFormSelector = ({security}) => ({
+  ...cloneObject(security.loginForm)
+})

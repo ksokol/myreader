@@ -1,6 +1,5 @@
-import {FEEDS, SUBSCRIPTION_ENTRIES} from '../../constants'
+import {FEEDS, ROLE_ADMIN, SUBSCRIPTION_ENTRIES} from '../../constants'
 import {
-  adminPermissionSelector,
   authorizedSelector,
   clearFeedEditForm,
   clearSubscriptionEditForm,
@@ -26,8 +25,9 @@ export const routeConfiguration = {
   },
   login: {
     redirect: ({getState}) => {
-      if (authorizedSelector(getState())) {
-        return routeChange(adminPermissionSelector(getState()) ? adminOverviewRoute() : entriesRoute())
+      const {authorized, isAdmin} = authorizedSelector(getState())
+      if (authorized) {
+        return routeChange(isAdmin ? adminOverviewRoute() : entriesRoute())
       }
     }
   },

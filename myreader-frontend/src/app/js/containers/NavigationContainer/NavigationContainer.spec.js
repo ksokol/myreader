@@ -24,7 +24,7 @@ describe('NavigationContainer', () => {
     store.setState({
       subscription: {subscriptions: [{uuid: '1'}, {uuid: '2'}]},
       settings: {showUnseenEntries: false},
-      security: {role: 'ROLE_ADMIN'}
+      security: {roles: ['ADMIN']}
     })
   })
 

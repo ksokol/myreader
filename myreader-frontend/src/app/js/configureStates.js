@@ -24,6 +24,8 @@ import {
   SUBSCRIPTION_URL,
   SUBSCRIPTIONS_URL
 } from './routes'
+import {secured, Logout} from './components'
+import {ROLE_ADMIN} from './constants'
 
 const states = [
   {
@@ -33,19 +35,20 @@ const states = [
   },
   {
     name: 'logout',
-    url: LOGOUT_URL
+    url: LOGOUT_URL,
+    component: Logout
   },
   {
     name: 'app',
     url: '!/app',
     abstract: true,
-    component: SidenavLayoutContainer
+    component: secured(SidenavLayoutContainer)
   },
   {
     name: 'admin',
     url: '!/admin',
     abstract: true,
-    component: SidenavLayoutContainer
+    component: secured(SidenavLayoutContainer, ROLE_ADMIN)
   },
   {
     name: 'app.entries',
@@ -55,7 +58,7 @@ const states = [
       feedUuidEqual: null,
       q: {dynamic: true}
     },
-    component: EntryStreamPageContainer
+    component: secured(EntryStreamPageContainer)
   },
   {
     name: 'app.bookmarks',
@@ -64,44 +67,44 @@ const states = [
       entryTagEqual: null,
       q: {dynamic: true}
     },
-    component: BookmarkListPageContainer
+    component: secured(BookmarkListPageContainer)
   },
   {
     name: 'app.subscriptions',
     url: SUBSCRIPTIONS_URL,
     dynamic: true,
-    component: SubscriptionListPageContainer
+    component: secured(SubscriptionListPageContainer)
   },
   {
     name: 'app.subscription-add',
     url: SUBSCRIPTION_ADD_URL,
-    component: SubscribePageContainer
+    component: secured(SubscribePageContainer)
   },
   {
     name: 'app.subscription',
     url: SUBSCRIPTION_URL,
-    component: SubscriptionEditPageContainer
+    component: secured(SubscriptionEditPageContainer)
   },
   {
     name: 'app.settings',
     url: SETTINGS_URL,
-    component: SettingsPageContainer
+    component: secured(SettingsPageContainer)
   },
   {
     name: 'admin.overview',
     url: ADMIN_OVERVIEW_URL,
-    component: MaintenancePageContainer
+    component: secured(MaintenancePageContainer, ROLE_ADMIN)
   },
   {
     name: 'admin.feed',
     url: ADMIN_FEEDS_URL,
     dynamic: true,
-    component: FeedListPageContainer
+    component: secured(FeedListPageContainer, ROLE_ADMIN)
   },
   {
     name: 'admin.feed-detail',
     url: ADMIN_FEED_URL,
-    component: FeedEditPageContainer
+    component: secured(FeedEditPageContainer, ROLE_ADMIN)
   }
 ]
 

@@ -63,7 +63,7 @@ public class ApiSecurityTests {
                 .param("username", TestConstants.USER1)
                 .param("password", TestConstants.DEFAULT_PASSWORD))
                 .andExpect(status().isNoContent())
-                .andExpect(header().string("X-MY-AUTHORITIES","ROLE_USER"));
+                .andExpect(header().string("X-MY-AUTHORITIES", "USER"));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class ApiSecurityTests {
         mockMvc.perform(get(API_2 + "/sub")
                 .cookie(rememberMeCookie))
                 .andExpect(status().isOk())
-                .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
+                .andExpect(header().string("X-MY-AUTHORITIES", "USER"));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class ApiSecurityTests {
         mockMvc.perform(get(API_2)
                 .cookie(rememberMeCookie))
                 .andExpect(status().isOk())
-                .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
+                .andExpect(header().string("X-MY-AUTHORITIES", "USER"));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ApiSecurityTests {
     public void testApiOk() throws Exception {
         mockMvc.perform(get(API_2 + "/sub"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("X-MY-AUTHORITIES", "ROLE_USER"));
+                .andExpect(header().string("X-MY-AUTHORITIES", "USER"));
     }
 
     @Test

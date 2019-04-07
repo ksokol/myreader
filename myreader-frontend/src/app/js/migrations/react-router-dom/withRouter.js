@@ -19,8 +19,9 @@ export const withRouter = (WrappedComponent) => {
       }).isRequired
     }
 
-    push = ({_currentRoute: route, query, state: options}) => {
-      this.context.store.dispatch(routeChange({route, query}, options))
+    push = ({_currentRoute, route, query, state: options}) => {
+      const toRoute = _currentRoute ? _currentRoute : route
+      this.context.store.dispatch(routeChange({route: toRoute, query}, options))
     }
 
     render() {

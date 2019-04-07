@@ -4,14 +4,13 @@ import {initialApplicationState} from '../../store'
 export function securityReducers(state = initialApplicationState().security, action) {
   switch (action.type) {
   case types.SECURITY_UPDATE: {
-    const {authorized, role} = action
+    const {authorized, roles} = action
     return {
       ...state,
-      authorized,
-      role,
+      roles,
       loginForm: {
         ...state.loginForm,
-        loginFailed: !state.authorized && !authorized
+        loginFailed: !authorized
       }
     }
   }
