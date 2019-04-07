@@ -23,11 +23,11 @@ export const authorized = ({roles}) => {
   return updateSecurity()
 }
 
-export const logout = () => {
+export const logout = finalize => {
   return {
     type: 'POST_LOGOUT',
     url: LOGOUT,
-    success: unauthorized
+    finalize
   }
 }
 

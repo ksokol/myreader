@@ -5,7 +5,7 @@ const connect = (mapStateToProps, mapDispatchToProps) => {
     return ({dispatch, ...state}) => {
       const stateToProps = mapStateToProps ? mapStateToProps(state) : {}
       const dispatchToProps = mapDispatchToProps ? mapDispatchToProps(dispatch) : {}
-      const props = {...stateToProps, ...dispatchToProps}
+      const props = {...stateToProps, ...dispatchToProps, dispatch}
       return <WrappedComponent {...props} />
     }
   }

@@ -172,16 +172,5 @@ describe('routes', () => {
         expect(store.getActions()[1].url).toMatch(/\/feeds\/expectedUuid\/fetchError$/)
       })
     })
-
-    describe('logout', () => {
-
-      beforeEach(() => routeConfig = routeConfiguration['logout'])
-
-      it('should contain expected resolve action(s)', () => {
-        store.dispatch(routeConfig.resolve())
-
-        expect(store.getActionTypes()).toEqual(['POST_LOGOUT'])
-      })
-    })
   })
 })

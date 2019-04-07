@@ -24,8 +24,9 @@ import {
   SUBSCRIPTION_URL,
   SUBSCRIPTIONS_URL
 } from './routes'
-import {secured, Logout} from './components'
+import {secured} from './components'
 import {ROLE_ADMIN, ROLE_USER} from './constants'
+import {LogoutPage} from './pages'
 
 const states = [
   {
@@ -36,7 +37,7 @@ const states = [
   {
     name: 'logout',
     url: LOGOUT_URL,
-    component: Logout
+    component: LogoutPage
   },
   {
     name: 'app',

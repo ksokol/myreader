@@ -10,6 +10,7 @@ describe('LoginPage', () => {
 
   beforeEach(() => {
     props = {
+      authorized: false,
       onLogin: jest.fn()
     }
   })

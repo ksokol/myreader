@@ -12,14 +12,10 @@ import {
   fetchFeeds,
   fetchSubscriptionExclusionPatterns,
   fetchSubscriptions,
-  loadSubscriptionIntoEditForm,
-  logout
+  loadSubscriptionIntoEditForm
 } from '../../store'
 
 export const routeConfiguration = {
-  logout: {
-    resolve: logout
-  },
   app: {
     before: fetchSubscriptions,
     children: {

@@ -61,11 +61,8 @@ describe('security actions', () => {
       expect(logout()).toContainActionData({url: 'logout'})
     })
 
-    it('should contain expected success actions', () => {
-      store.dispatch(logout().success())
-
-      expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE'])
-      expect(store.getActions()[0]).toContainActionData({roles: []})
+    it('should contain expected finalize callback', () => {
+      expect(logout('expected callback').finalize).toEqual('expected callback')
     })
   })
 
