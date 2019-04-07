@@ -1,25 +1,25 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import {Provider} from 'react-redux'
-import SubscribePageContainer from '../SubscribePageContainer/SubscribePageContainer'
-import {createMockStore} from '../../shared/test-utils'
+import SubscribePageContainer from './SubscribePageContainer'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../pages', () => ({
+  SubscribePage: () => null
+}))
+/* eslint-enable */
 
 describe('SubscribePageContainer', () => {
 
-  let store
+  let state, dispatch
 
-  const createContainer = () => {
-    const wrapper = mount(
-      <Provider store={store}>
-        <SubscribePageContainer />
-      </Provider>
-    )
-    return wrapper.find(SubscribePageContainer).children().first()
+  const createWrapper = () => {
+    return mount(<SubscribePageContainer dispatch={dispatch} {...state} />).find('SubscribePage')
   }
 
   beforeEach(() => {
-    store = createMockStore()
-    store.setState({
+    dispatch = jest.fn()
+
+    state = {
       subscription: {
         editForm: {
           changePending: true,
@@ -29,11 +29,11 @@ describe('SubscribePageContainer', () => {
           validations: [{field: 'origin', message: 'may not be empty'}]
         }
       }
-    })
+    }
   })
 
   it('should initialize component with given props', () => {
-    expect(createContainer().props()).toContainObject({
+    expect(createWrapper().props()).toContainObject({
       changePending: true,
       data: {origin: 'origin'},
       validations: [{field: 'origin', message: 'may not be empty'}],
@@ -41,20 +41,21 @@ describe('SubscribePageContainer', () => {
   })
 
   it('should dispatch expected action when prop function "onChangeFormData" triggered', () => {
-    createContainer().props().onChangeFormData({a: 'b', c: 'd'})
+    createWrapper().props().onChangeFormData({a: 'b', c: 'd'})
 
-    expect(store.getActions()[0]).toEqual({
+    expect(dispatch).toHaveBeenCalledWith({
       type: 'SUBSCRIPTION_EDIT_FORM_CHANGE_DATA',
       data: {a: 'b', c: 'd'}
     })
   })
 
   it('should dispatch expected action when prop function "onSaveFormData" triggered', () => {
-    createContainer().props().onSaveFormData({a: 'b', c: 'd'})
+    createWrapper().props().onSaveFormData({feedTag: {name: 'expected tag'}})
 
-    expect(store.getActions()[0]).toContainObject({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'POST_SUBSCRIPTION',
-      body: {a: 'b', c: 'd'}
-    })
+      url: '/myreader/api/2/subscriptions',
+      body: {feedTag: {name: 'expected tag'}}
+    }))
   })
 })

@@ -1,45 +1,45 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import {Provider} from 'react-redux'
-import LoginPageContainer from '../LoginPageContainer/LoginPageContainer'
-import {createMockStore} from '../../shared/test-utils'
+import LoginPageContainer from './LoginPageContainer'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../pages', () => ({
+  LoginPage: () => null
+}))
+/* eslint-enable */
 
 describe('LoginPageContainer', () => {
 
-  let store
+  let state, dispatch
 
-  const createContainer = () => {
-    const wrapper = mount(
-      <Provider store={store}>
-        <LoginPageContainer />
-      </Provider>
-    )
-    return wrapper.find(LoginPageContainer).children().first()
+  const createWrapper = () => {
+    return mount(<LoginPageContainer dispatch={dispatch} {...state} />).find('LoginPage')
   }
 
   beforeEach(() => {
-    store = createMockStore()
-    store.setState({
+    dispatch = jest.fn()
+
+    state = {
       security: {
         loginForm: {
           loginPending: true,
           loginFailed: true
         }
       }
-    })
+    }
   })
 
   it('should initialize component with given props', () => {
-    expect(createContainer().props()).toContainObject({
+    expect(createWrapper().props()).toContainObject({
       loginPending: true,
       loginFailed: true
     })
   })
 
   it('should dispatch expected action when prop function "onLogin" triggered', () => {
-    createContainer().props().onLogin({username: 'expected-username', password: 'expected-password'})
+    createWrapper().props().onLogin({username: 'expected-username', password: 'expected-password'})
 
-    expect(store.getActionTypes()).toEqual(['POST_LOGIN'])
-    expect(store.getActions()[0].body.toString()).toEqual('username=expected-username&password=expected-password')
+    expect(dispatch.mock.calls[0][0].type).toEqual('POST_LOGIN')
+    expect(dispatch.mock.calls[0][0].body.toString()).toEqual('username=expected-username&password=expected-password')
   })
 })

@@ -1,43 +1,45 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import {Provider} from 'react-redux'
 import SidenavLayoutContainer from './SidenavLayoutContainer'
-import {createMockStore} from '../../shared/test-utils'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../components', () => ({
+  SidenavLayout: () => null
+}))
+/* eslint-enable */
 
 describe('SidenavLayoutContainer', () => {
 
-  let store
+  let state, dispatch
 
-  const createContainer = () => {
-    const wrapper = mount(
-      <Provider store={store}>
-        <SidenavLayoutContainer />
-      </Provider>
-    )
-    return wrapper.find(SidenavLayoutContainer).children().first()
+  const createWrapper = () => {
+    return mount(<SidenavLayoutContainer dispatch={dispatch} {...state} />).find('SidenavLayout')
   }
 
   beforeEach(() => {
-    store = createMockStore()
-    store.setState({
+    dispatch = jest.fn()
+
+    state = {
       common: {
         mediaBreakpoint: 'desktop',
         sidenavSlideIn: true,
         backdropVisible: true
       }
-    })
+    }
   })
 
   it('should initialize component with given props', () => {
-    expect(createContainer().props()).toContainObject({
+    expect(createWrapper().props()).toContainObject({
       isDesktop: true,
       sidenavSlideIn: true
     })
   })
 
   it('should dispatch expected action when prop function "toggleSidenav" triggered', () => {
-    createContainer().props().toggleSidenav()
+    createWrapper().props().toggleSidenav()
 
-    expect(store.getActionTypes()).toEqual(['TOGGLE_SIDENAV'])
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'TOGGLE_SIDENAV'
+    })
   })
 })

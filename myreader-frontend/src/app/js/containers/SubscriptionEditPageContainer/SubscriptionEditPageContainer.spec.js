@@ -1,25 +1,25 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import {Provider} from 'react-redux'
-import SubscriptionEditPageContainer from '../SubscriptionEditPageContainer/SubscriptionEditPageContainer'
-import {createMockStore} from '../../shared/test-utils'
+import SubscriptionEditPageContainer from './SubscriptionEditPageContainer'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../pages', () => ({
+  SubscriptionEditPage: () => null
+}))
+/* eslint-enable */
 
 describe('SubscriptionEditPageContainer', () => {
 
-  let store
+  let state, dispatch
 
-  const createContainer = () => {
-    const wrapper = mount(
-      <Provider store={store}>
-        <SubscriptionEditPageContainer />
-      </Provider>
-    )
-    return wrapper.find(SubscriptionEditPageContainer).children().first()
+  const createWrapper = () => {
+    return mount(<SubscriptionEditPageContainer dispatch={dispatch} {...state} />).find('SubscriptionEditPage')
   }
 
   beforeEach(() => {
-    store = createMockStore()
-    store.setState({
+    dispatch = jest.fn()
+
+    state = {
       router: {
         query: {
           uuid: '1'
@@ -41,11 +41,11 @@ describe('SubscriptionEditPageContainer', () => {
           '2': [{uuid: '13', pattern: 'exclusion3', hitCount: 2}],
         }
       }
-    })
+    }
   })
 
   it('should initialize component with given props', () => {
-    expect(createContainer().props()).toContainObject({
+    expect(createWrapper().props()).toContainObject({
       changePending: true,
       data: {uuid: '1', title: 'title1', origin: 'origin1', feedTag: {uuid: '2', name: 'tag'}, createdAt: '2017-12-29'},
       validations: [{field: 'title', message: 'may not be empty'}],
@@ -55,45 +55,51 @@ describe('SubscriptionEditPageContainer', () => {
   })
 
   it('should dispatch expected action when prop function "onChangeFormData" triggered', () => {
-    createContainer().props().onChangeFormData({a: 'b', c: 'd'})
+    createWrapper().props().onChangeFormData({feedTag: {name: 'expected tag'}})
 
-    expect(store.getActions()[0]).toEqual({
+    expect(dispatch).toHaveBeenCalledWith({
       type: 'SUBSCRIPTION_EDIT_FORM_CHANGE_DATA',
-      data: {a: 'b', c: 'd'}
+      data: {feedTag: {name: 'expected tag'}}
     })
   })
 
   it('should dispatch expected action when prop function "onSaveFormData" triggered', () => {
-    createContainer().props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
+    createWrapper().props().onSaveFormData({uuid: '1', feedTag: {name: 'expected tag'}})
 
-    expect(store.getActions()[0]).toContainObject({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'PATCH_SUBSCRIPTION',
-      body: {a: 'b', c: 'd'}
-    })
+      url: '/myreader/api/2/subscriptions/1',
+      body: {uuid: '1', feedTag: {name: 'expected tag'}}
+    }))
   })
 
   it('should dispatch expected action when prop function "onRemoveSubscription" triggered', () => {
-    createContainer().props().onRemoveSubscription('1')
+    createWrapper().props().onRemoveSubscription('1')
 
-    expect(store.getActions()[0].type).toEqual('DELETE_SUBSCRIPTION')
-    expect(store.getActions()[0].url).toMatch(/api\/2\/subscriptions\/1$/)
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'DELETE_SUBSCRIPTION',
+      url: '/myreader/api/2/subscriptions/1'
+    }))
   })
 
   it('should dispatch expected action when prop function "onRemoveExclusionPattern" triggered', () => {
-    createContainer().props().onRemoveExclusionPattern('1', '10')
+    createWrapper().props().onRemoveExclusionPattern('1', '10')
 
-    expect(store.getActions()[0].type).toEqual('DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS')
-    expect(store.getActions()[0].url).toMatch(/api\/2\/exclusions\/1\/pattern\/10$/)
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS',
+      url: '/myreader/api/2/exclusions/1/pattern/10'
+    }))
   })
 
   it('should dispatch expected action when prop function "onAddExclusionPattern" triggered', () => {
-    createContainer().props().onAddExclusionPattern('1', 'tag')
+    createWrapper().props().onAddExclusionPattern('1', 'tag')
 
-    expect(store.getActions()[0]).toContainObject({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'POST_SUBSCRIPTION_EXCLUSION_PATTERN',
+      url: '/myreader/api/2/exclusions/1/pattern',
       body: {
         pattern: 'tag'
       }
-    })
+    }))
   })
 })

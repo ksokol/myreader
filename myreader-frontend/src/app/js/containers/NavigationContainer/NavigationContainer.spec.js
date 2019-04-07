@@ -1,45 +1,43 @@
 import React from 'react'
-import {Provider} from 'react-redux'
 import {mount} from 'enzyme'
-import {createMockStore} from '../../shared/test-utils'
 import NavigationContainer from './NavigationContainer'
-import {Navigation} from '../../components'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../pages', () => ({
+  Navigation: () => null
+}))
+/* eslint-enable */
 
 describe('NavigationContainer', () => {
 
-  let store
+  let state, dispatch
 
-  const createContainer = () => {
-    const wrapper = mount(
-      <Provider store={store}>
-        <NavigationContainer />
-      </Provider>
-    )
-
-    return wrapper.find(Navigation)
+  const createWrapper = () => {
+    return mount(<NavigationContainer dispatch={dispatch} {...state} />).find('Navigation')
   }
 
   beforeEach(() => {
-    store = createMockStore()
-    store.setState({
+    dispatch = jest.fn()
+
+    state = {
       subscription: {subscriptions: [{uuid: '1'}, {uuid: '2'}]},
       settings: {showUnseenEntries: false},
       security: {roles: ['ADMIN']}
-    })
+    }
   })
 
   it('should initialize navigation component with given props', () => {
-    expect(createContainer().props()).toContainObject({
+    expect(createWrapper().props()).toContainObject({
       isAdmin: true,
       subscriptions: [{uuid: '1'}, {uuid: '2'}]
     })
   })
 
   it('should dispatch actions TOGGLE_SIDENAV when prop function "onClick" triggered', () => {
-    const wrapper = createContainer()
+    const wrapper = createWrapper()
     wrapper.props().onClick()
 
-    expect(store.getActions()[0]).toContainObject({
+    expect(dispatch).toHaveBeenCalledWith({
       type: 'TOGGLE_SIDENAV'
     })
   })

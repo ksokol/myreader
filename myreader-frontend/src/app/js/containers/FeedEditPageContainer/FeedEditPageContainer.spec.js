@@ -1,25 +1,25 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import {Provider} from 'react-redux'
-import FeedEditPageContainer from '../FeedEditPageContainer/FeedEditPageContainer'
-import {createMockStore} from '../../shared/test-utils'
+import FeedEditPageContainer from './FeedEditPageContainer'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../pages', () => ({
+  FeedEditPage: () => null
+}))
+/* eslint-enable */
 
 describe('FeedEditPageContainer', () => {
 
-  let store
+  let state, dispatch
 
-  const createContainer = () => {
-    const wrapper = mount(
-      <Provider store={store}>
-        <FeedEditPageContainer />
-      </Provider>
-    )
-    return wrapper.find(FeedEditPageContainer).children().first()
+  const createWrapper = () => {
+    return mount(<FeedEditPageContainer dispatch={dispatch} {...state} />).find('FeedEditPage')
   }
 
   beforeEach(() => {
-    store = createMockStore()
-    store.setState({
+    dispatch = jest.fn()
+
+    state = {
       admin: {
         editForm: {
           changePending: true,
@@ -32,11 +32,11 @@ describe('FeedEditPageContainer', () => {
           failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}]
         }
       }
-    })
+    }
   })
 
   it('should initialize component with given props', () => {
-    expect(createContainer().props()).toContainObject({
+    expect(createWrapper().props()).toContainObject({
       changePending: true,
       fetchFailuresLoading: true,
       data: {uuid: '1', title: 'title1', url: 'url1', createdAt: '2017-12-29'},
@@ -47,34 +47,39 @@ describe('FeedEditPageContainer', () => {
   })
 
   it('should dispatch expected action when prop function "onChangeFormData" triggered', () => {
-    createContainer().props().onChangeFormData({a: 'b', c: 'd'})
+    createWrapper().props().onChangeFormData({a: 'b', c: 'd'})
 
-    expect(store.getActions()[0]).toEqual({
+    expect(dispatch).toHaveBeenCalledWith({
       type: 'FEED_EDIT_FORM_CHANGE_DATA',
       data: {a: 'b', c: 'd'}
     })
   })
 
   it('should dispatch expected action when prop function "onSaveFormData" triggered', () => {
-    createContainer().props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
+    createWrapper().props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
 
-    expect(store.getActions()[0]).toContainObject({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'PATCH_FEED',
-      body: {a: 'b', c: 'd'}
-    })
+      url: '/myreader/api/2/feeds/1',
+      body: {a: 'b', c: 'd', uuid: '1'}
+    }))
   })
 
   it('should dispatch expected action when prop function "onRemove" triggered', () => {
-    createContainer().props().onRemove('1')
+    createWrapper().props().onRemove('1')
 
-    expect(store.getActions()[0].type).toEqual('DELETE_FEED')
-    expect(store.getActions()[0].url).toMatch(/api\/2\/feeds\/1$/)
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'DELETE_FEED',
+      url: '/myreader/api/2/feeds/1'
+    }))
   })
 
   it('should dispatch expected action when prop function "onMore" triggered', () => {
-    createContainer().props().onMore({path: 'next', query: {a: 'b'}})
+    createWrapper().props().onMore({path: 'next', query: {a: 'b'}})
 
-    expect(store.getActions()[0].type).toEqual('GET_FEED_FETCH_FAILURES')
-    expect(store.getActions()[0].url).toEqual('next?a=b')
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'GET_FEED_FETCH_FAILURES',
+      url: 'next?a=b'
+    }))
   })
 })

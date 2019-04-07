@@ -1,26 +1,25 @@
 import React from 'react'
-import {Provider} from 'react-redux'
 import {mount} from 'enzyme'
-import {createMockStore} from '../../shared/test-utils'
 import MaintenancePageContainer from './MaintenancePageContainer'
-import {MaintenancePage} from '../../pages'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../pages', () => ({
+  MaintenancePage: () => null
+}))
+/* eslint-enable */
 
 describe('MaintenancePageContainer', () => {
 
-  let store
+  let state, dispatch
 
-  const createComponent = () => {
-    const wrapper = mount(
-      <Provider store={store}>
-        <MaintenancePageContainer />
-      </Provider>
-    )
-    return wrapper.find(MaintenancePage)
+  const createWrapper = () => {
+    return mount(<MaintenancePageContainer dispatch={dispatch} {...state} />).find('MaintenancePage')
   }
 
   beforeEach(() => {
-    store = createMockStore()
-    store.setState({
+    dispatch = jest.fn()
+
+    state = {
       admin: {
         applicationInfo: {
           branch: 'expected branch',
@@ -29,17 +28,19 @@ describe('MaintenancePageContainer', () => {
           buildTime: 'expected builtTime'
         }
       }
-    })
+    }
   })
 
   it('should dispatch action when prop function "onRefreshIndex" triggered', () => {
-    createComponent().props().onRefreshIndex()
+    createWrapper().props().onRefreshIndex()
 
-    expect(store.getActionTypes()).toEqual(['PUT_INDEX_SYNC_JOB'])
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'PUT_INDEX_SYNC_JOB'
+    }))
   })
 
   it('should initialize maintenance component with given application info', () => {
-    expect(createComponent().prop('applicationInfo')).toEqual({
+    expect(createWrapper().prop('applicationInfo')).toEqual({
       branch: 'expected branch',
       commitId: 'expected commitId',
       version: 'expected version',
