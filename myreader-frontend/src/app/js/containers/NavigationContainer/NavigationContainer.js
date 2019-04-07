@@ -1,10 +1,10 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {adminPermissionSelector, filteredByUnseenSubscriptionsSelector, toggleSidenav} from '../../store'
+import {authorizedSelector, filteredByUnseenSubscriptionsSelector, toggleSidenav} from '../../store'
 import {Navigation} from '../../components'
 
 const mapStateToProps = state => ({
-  isAdmin: adminPermissionSelector(state),
+  ...authorizedSelector(state),
   ...filteredByUnseenSubscriptionsSelector(state)
 })
 

@@ -32,7 +32,7 @@ describe('Navigation', () => {
 
   let props, subscriptions
 
-  const createPage = () => new NavigationPage(shallow(<Navigation {...props} />))
+  const createWrapper = () => new NavigationPage(shallow(<Navigation {...props} />))
 
   beforeEach(() => {
     subscriptions = [
@@ -50,7 +50,7 @@ describe('Navigation', () => {
   })
 
   it('should render user navigation', () => {
-    const page = createPage()
+    const page = createWrapper()
 
     expect(page.navigationItemLabels).toEqual([
       'all',
@@ -67,17 +67,25 @@ describe('Navigation', () => {
 
   it('should render admin navigation', () => {
     props.isAdmin = true
-    const page = createPage()
+    const page = createWrapper()
 
     expect(page.navigationItemLabels).toEqual([
+      'all',
+      'group 1',
+      'group 2',
+      'subscription 3',
+      'Subscriptions',
+      'Bookmarks',
+      'Settings',
       'Admin',
       'Feeds',
+      'Add subscription',
       'Logout'
     ])
   })
 
   it('should render expected routes for user', () => {
-    expect(createPage().navigationItemRoute).toEqual([
+    expect(createWrapper().navigationItemRoute).toEqual([
       {route: ['app', 'subscriptions'], query: {q: undefined}},
       {route: ['app', 'bookmarks'], query: {entryTagEqual: null, q: undefined}},
       {route: ['app', 'settings'], query: undefined},
@@ -89,9 +97,13 @@ describe('Navigation', () => {
   it('should render expected routes for admin', () => {
     props.isAdmin = true
 
-    expect(createPage().navigationItemRoute).toEqual([
+    expect(createWrapper().navigationItemRoute).toEqual([
+      {route: ['app', 'subscriptions'], query: {q: undefined}},
+      {route: ['app', 'bookmarks'], query: {entryTagEqual: null, q: undefined}},
+      {route: ['app', 'settings'], query: undefined},
       {route: ['admin', 'overview'], query: undefined },
       {route: ['admin', 'feed'], query: {q: undefined}},
+      {route: ['app', 'subscription-add'], query: undefined},
       {route: ['logout'], query: undefined}
     ])
   })

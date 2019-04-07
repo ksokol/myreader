@@ -1,10 +1,11 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {loginFormSelector, tryLogin} from '../../store'
+import {authorizedSelector, loginFormSelector, tryLogin} from '../../store'
 import {LoginPage} from '../../pages'
 
 const mapStateToProps = state => ({
-  ...loginFormSelector(state)
+  ...loginFormSelector(state),
+  ...authorizedSelector(state)
 })
 
 const mapDispatchToProps = dispatch => ({

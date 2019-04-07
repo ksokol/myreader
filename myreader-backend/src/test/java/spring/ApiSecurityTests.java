@@ -107,10 +107,18 @@ public class ApiSecurityTests {
 
     @Test
     @WithMockUser(TestConstants.USER1)
-    public void testApiOk() throws Exception {
+    public void testApiOkWithUserRole() throws Exception {
         mockMvc.perform(get(API_2 + "/sub"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-MY-AUTHORITIES", "USER"));
+    }
+
+    @Test
+    @WithMockUser(username = TestConstants.ADMIN, roles = "ADMIN")
+    public void testApiOkWithAdminRole() throws Exception {
+        mockMvc.perform(get(API_2 + "/sub"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-MY-AUTHORITIES", "ADMIN"));
     }
 
     @Test

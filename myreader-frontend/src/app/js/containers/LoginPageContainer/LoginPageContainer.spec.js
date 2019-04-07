@@ -21,6 +21,7 @@ describe('LoginPageContainer', () => {
 
     state = {
       security: {
+        roles: ['expected role'],
         loginForm: {
           loginPending: true,
           loginFailed: true
@@ -31,6 +32,7 @@ describe('LoginPageContainer', () => {
 
   it('should initialize component with given props', () => {
     expect(createWrapper().props()).toContainObject({
+      roles: ['expected role'],
       loginPending: true,
       loginFailed: true
     })

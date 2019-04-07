@@ -3,7 +3,7 @@ import {mount} from 'enzyme'
 import NavigationContainer from './NavigationContainer'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../pages', () => ({
+jest.mock('../../components', () => ({
   Navigation: () => null
 }))
 /* eslint-enable */

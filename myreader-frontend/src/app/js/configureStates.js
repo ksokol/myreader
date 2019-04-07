@@ -25,7 +25,7 @@ import {
   SUBSCRIPTIONS_URL
 } from './routes'
 import {secured, Logout} from './components'
-import {ROLE_ADMIN} from './constants'
+import {ROLE_ADMIN, ROLE_USER} from './constants'
 
 const states = [
   {
@@ -42,13 +42,13 @@ const states = [
     name: 'app',
     url: '!/app',
     abstract: true,
-    component: secured(SidenavLayoutContainer)
+    component: secured(SidenavLayoutContainer, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'admin',
     url: '!/admin',
     abstract: true,
-    component: secured(SidenavLayoutContainer, ROLE_ADMIN)
+    component: secured(SidenavLayoutContainer, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.entries',
@@ -58,7 +58,7 @@ const states = [
       feedUuidEqual: null,
       q: {dynamic: true}
     },
-    component: secured(EntryStreamPageContainer)
+    component: secured(EntryStreamPageContainer, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.bookmarks',
@@ -67,44 +67,44 @@ const states = [
       entryTagEqual: null,
       q: {dynamic: true}
     },
-    component: secured(BookmarkListPageContainer)
+    component: secured(BookmarkListPageContainer, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.subscriptions',
     url: SUBSCRIPTIONS_URL,
     dynamic: true,
-    component: secured(SubscriptionListPageContainer)
+    component: secured(SubscriptionListPageContainer, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.subscription-add',
     url: SUBSCRIPTION_ADD_URL,
-    component: secured(SubscribePageContainer)
+    component: secured(SubscribePageContainer, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.subscription',
     url: SUBSCRIPTION_URL,
-    component: secured(SubscriptionEditPageContainer)
+    component: secured(SubscriptionEditPageContainer, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.settings',
     url: SETTINGS_URL,
-    component: secured(SettingsPageContainer)
+    component: secured(SettingsPageContainer, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'admin.overview',
     url: ADMIN_OVERVIEW_URL,
-    component: secured(MaintenancePageContainer, ROLE_ADMIN)
+    component: secured(MaintenancePageContainer, [ROLE_ADMIN])
   },
   {
     name: 'admin.feed',
     url: ADMIN_FEEDS_URL,
     dynamic: true,
-    component: secured(FeedListPageContainer, ROLE_ADMIN)
+    component: secured(FeedListPageContainer, [ROLE_ADMIN])
   },
   {
     name: 'admin.feed-detail',
     url: ADMIN_FEED_URL,
-    component: secured(FeedEditPageContainer, ROLE_ADMIN)
+    component: secured(FeedEditPageContainer, [ROLE_ADMIN])
   }
 ]
 

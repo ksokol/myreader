@@ -183,46 +183,5 @@ describe('routes', () => {
         expect(store.getActionTypes()).toEqual(['POST_LOGOUT'])
       })
     })
-
-    describe('login', () => {
-
-      const action = () => routeConfig.redirect({dispatch: store.dispatch, getState: store.getState})
-
-      beforeEach(() => routeConfig = routeConfiguration['login'])
-
-      it('should not contain redirect action when roles are absent', () => {
-        store.setState({
-          security: {
-            roles: []
-          }
-        })
-
-        expect(action()).toBeUndefined()
-      })
-
-      it('should contain redirect action to app entries when role is set to USER', () => {
-        store.setState({
-          security: {
-            roles: ['USER']
-          }
-        })
-
-        expect(action()).toContainObject({
-          route: ['app', 'entries']
-        })
-      })
-
-      it('should contain redirect action to admin overview when role is set to ADMIN', () => {
-        store.setState({
-          security: {
-            roles: ['ADMIN']
-          }
-        })
-
-        expect(action()).toContainObject({
-          route: ['admin', 'overview']
-        })
-      })
-    })
   })
 })

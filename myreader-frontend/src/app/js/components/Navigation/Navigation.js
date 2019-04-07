@@ -21,21 +21,7 @@ const Navigation = props => {
 
   return (
     <ul className='my-navigation'>
-      {isAdmin ?
-        [
-          <NavigationItem
-            key='admin'
-            title='Admin'
-            to={adminOverviewRoute()}
-            onClick={onClick}
-          />,
-          <NavigationItem
-            key='feeds'
-            title='Feeds'
-            to={adminFeedRoute()}
-            onClick={onClick}
-          />
-        ] :
+      {
         [
           ...createSubscriptionNavigation(subscriptions).map(item =>
             <SubscriptionNavigationItem
@@ -62,6 +48,20 @@ const Navigation = props => {
             to={settingsRoute()}
             onClick={onClick}
           />,
+          isAdmin ? [
+            <NavigationItem
+              key='admin'
+              title='Admin'
+              to={adminOverviewRoute()}
+              onClick={onClick}
+            />,
+            <NavigationItem
+              key='feeds'
+              title='Feeds'
+              to={adminFeedRoute()}
+              onClick={onClick}
+            />
+          ] : null,
           <NavigationItem
             key='add subscription'
             className='my-navigation__item--blue'

@@ -91,7 +91,7 @@ public class SecurityConfig {
                 .antMatcher(API_2.mapping() + "/**")
                 .authorizeRequests().antMatchers(API_2.path("processing"), API_2.path("feeds") + "/**").hasRole("ADMIN")
                 .and()
-                .authorizeRequests().anyRequest().hasRole("USER")
+                .authorizeRequests().anyRequest().hasAnyRole("USER", "ADMIN")
                 .and()
                 .rememberMe().key(rememberMeKey)
                 .and()

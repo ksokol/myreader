@@ -7,8 +7,6 @@ export const authorizedSelector = ({security}) => ({
   roles: [...security.roles]
 })
 
-export const adminPermissionSelector = ({security}) => security.roles.includes(ROLE_ADMIN)
-
 export const loginFormSelector = ({security}) => ({
   ...cloneObject(security.loginForm)
 })

@@ -1,4 +1,4 @@
-import {adminPermissionSelector, authorizedSelector, loginFormSelector} from '../../store'
+import {authorizedSelector, loginFormSelector} from '../../store'
 
 describe('security selectors', () => {
 
@@ -16,14 +16,6 @@ describe('security selectors', () => {
       isAdmin: true,
       roles: ['ADMIN']
     })
-  })
-
-  it('adminPermissionSelector should return false when roles is set to value "user"', () => {
-    expect(adminPermissionSelector({security: {roles: ['USER']}})).toEqual(false)
-  })
-
-  it('adminPermissionSelector should return true when roles is set to value "admin"', () => {
-    expect(adminPermissionSelector({security: {roles: ['ADMIN']}})).toEqual(true)
   })
 
   it('loginFormSelector should return loginForm', () => {
