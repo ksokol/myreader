@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import {ReactReduxContext} from 'react-redux'
 import {routeChange} from '../../store/router'
 
@@ -15,3 +16,6 @@ export class Redirect extends React.Component {
   }
 }
 
+Redirect.propTypes = {
+  to: PropTypes.object.isRequired
+}
