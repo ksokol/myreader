@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {EntryTitle} from './EntryTitle/EntryTitle'
 import {EntryActions} from './EntryActions/EntryActions'
+import {EntryContent} from './EntryContent/EntryContent'
 import EntryTags from './EntryTags/EntryTags'
 
 class Entry extends Component {
@@ -90,10 +91,7 @@ class Entry extends Component {
         }
 
         {showContent &&
-          <my-html-content
-            class="mt-4"
-            content={item.content}
-          />
+          <EntryContent content={item.content} />
         }
       </div>
     )

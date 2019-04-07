@@ -16,10 +16,6 @@ window.matchMedia = () => ({
   addListener: () => {}
 })
 
-window.customElements = {
-  define: () => {}
-}
-
 afterEach(() => {
   localStorage.clear()
 })

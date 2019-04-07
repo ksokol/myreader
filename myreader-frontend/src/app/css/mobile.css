@@ -46,10 +46,6 @@ input {
 /*
  Reference: https://tailwindcss.com/docs
  */
-.mt-4 {
-    margin-top: 1rem;
-}
-
 .flex {
     display: flex;
 }

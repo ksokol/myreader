@@ -24,4 +24,3 @@ export {default as SidenavLayout} from './SidenavLayout/SidenavLayout'
 export {default as Logout} from './Logout/Logout'
 export {default as secured} from './secured/secured'
 
-import './HtmlContent/HtmlContent'
