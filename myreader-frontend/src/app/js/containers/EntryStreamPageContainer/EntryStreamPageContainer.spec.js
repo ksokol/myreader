@@ -60,7 +60,7 @@ describe('EntryStreamPageContainer', () => {
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'PATCH_ENTRY',
-      url: '/myreader/api/2/subscriptionEntries/uuid1',
+      url: 'api/2/subscriptionEntries/uuid1',
       body: {seen: true, tag: 'expected tag'}
     }))
   })
@@ -97,7 +97,7 @@ describe('EntryStreamPageContainer', () => {
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'PATCH_ENTRY',
-      url: '/myreader/api/2/subscriptionEntries/1',
+      url: 'api/2/subscriptionEntries/1',
       body: {seen: true, tag: 'expected tag'}
     }))
   })

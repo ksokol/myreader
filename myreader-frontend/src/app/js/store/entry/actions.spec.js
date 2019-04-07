@@ -220,7 +220,7 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
       store.dispatch(changeEntry({uuid: '1', tag: 'expected tag', seen: true}))
 
       expect(store.getActions()[0])
-        .toContainActionData({url: '/myreader/api/2/subscriptionEntries/1', body: {seen: true, tag: 'expected tag'}})
+        .toContainActionData({url: 'api/2/subscriptionEntries/1', body: {seen: true, tag: 'expected tag'}})
     })
 
     it('should dispatch action defined in success property', () => {
@@ -254,7 +254,7 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
     it('should return expected action data', () => {
       store.dispatch(fetchEntryTags())
-      expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptionEntries/availableTags'})
+      expect(store.getActions()[0]).toContainActionData({url: 'api/2/subscriptionEntries/availableTags'})
     })
 
     it('should dispatch action defined in success property', () => {

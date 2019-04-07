@@ -68,7 +68,7 @@ describe('SubscriptionEditPageContainer', () => {
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'PATCH_SUBSCRIPTION',
-      url: '/myreader/api/2/subscriptions/1',
+      url: 'api/2/subscriptions/1',
       body: {uuid: '1', feedTag: {name: 'expected tag'}}
     }))
   })
@@ -78,7 +78,7 @@ describe('SubscriptionEditPageContainer', () => {
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'DELETE_SUBSCRIPTION',
-      url: '/myreader/api/2/subscriptions/1'
+      url: 'api/2/subscriptions/1'
     }))
   })
 
@@ -87,7 +87,7 @@ describe('SubscriptionEditPageContainer', () => {
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS',
-      url: '/myreader/api/2/exclusions/1/pattern/10'
+      url: 'api/2/exclusions/1/pattern/10'
     }))
   })
 
@@ -96,7 +96,7 @@ describe('SubscriptionEditPageContainer', () => {
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'POST_SUBSCRIPTION_EXCLUSION_PATTERN',
-      url: '/myreader/api/2/exclusions/1/pattern',
+      url: 'api/2/exclusions/1/pattern',
       body: {
         pattern: 'tag'
       }

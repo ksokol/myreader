@@ -54,7 +54,7 @@ describe('SubscribePageContainer', () => {
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'POST_SUBSCRIPTION',
-      url: '/myreader/api/2/subscriptions',
+      url: 'api/2/subscriptions',
       body: {feedTag: {name: 'expected tag'}}
     }))
   })

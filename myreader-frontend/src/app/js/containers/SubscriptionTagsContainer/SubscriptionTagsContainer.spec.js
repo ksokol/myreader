@@ -41,7 +41,7 @@ describe('SubscriptionTagsContainer', () => {
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'PATCH_SUBSCRIPTION_TAG',
-      url: '/myreader/api/2/subscriptionTags/uuid1',
+      url: 'api/2/subscriptionTags/uuid1',
       body: {
         uuid: 'uuid1',
         name: 'name1',

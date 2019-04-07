@@ -52,7 +52,7 @@ describe('subscription actions', () => {
 
     it('should fetch all subscriptions', () => {
       store.dispatch(fetchSubscriptions())
-      expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/subscriptions'})
+      expect(store.getActions()[0]).toContainActionData({url: 'api/2/subscriptions'})
     })
 
     it('should dispatch SUBSCRIPTIONS_RECEIVED action on success', () => {
@@ -92,7 +92,7 @@ describe('subscription actions', () => {
 
     it('should return expected action data', () => {
       store.dispatch(deleteSubscription('uuid1'))
-      expect(store.getActions()[0].url).toMatch(/api\/2\/subscriptions\/uuid1$/)
+      expect(store.getActions()[0].url).toEqual('api/2/subscriptions/uuid1')
     })
 
     it('should dispatch actions defined in before property', () => {
@@ -342,7 +342,7 @@ describe('subscription actions', () => {
     it('should contain expected patch action type', () => {
       store.dispatch(removeSubscriptionExclusionPattern('1', '2'))
 
-      expect(store.getActions()[0]).toContainActionData({url: '/myreader/api/2/exclusions/1/pattern/2'})
+      expect(store.getActions()[0]).toContainActionData({url: 'api/2/exclusions/1/pattern/2'})
     })
 
     it('should dispatch actions defined in success property', () => {

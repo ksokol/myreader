@@ -60,7 +60,7 @@ describe('FeedEditPageContainer', () => {
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'PATCH_FEED',
-      url: '/myreader/api/2/feeds/1',
+      url: 'api/2/feeds/1',
       body: {a: 'b', c: 'd', uuid: '1'}
     }))
   })
@@ -70,7 +70,7 @@ describe('FeedEditPageContainer', () => {
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'DELETE_FEED',
-      url: '/myreader/api/2/feeds/1'
+      url: 'api/2/feeds/1'
     }))
   })
 

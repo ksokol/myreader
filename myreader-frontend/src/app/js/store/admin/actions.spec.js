@@ -25,7 +25,7 @@ describe('admin actions', () => {
       store.dispatch(rebuildSearchIndex())
       expect(store.getActions()[0]).toContainObject({
         type: 'PUT_INDEX_SYNC_JOB',
-        url: '/myreader/api/2/processing',
+        url: 'api/2/processing',
         body: {process: 'indexSyncJob'}
       })
     })
@@ -85,7 +85,7 @@ describe('admin actions', () => {
       store.dispatch(fetchApplicationInfo())
 
       expect(store.getActionTypes()).toEqual(['GET_APPLICATION_INFO'])
-      expect(store.getActions()[0]).toContainActionData({url: '/myreader/info'})
+      expect(store.getActions()[0]).toContainActionData({url: 'info'})
     })
 
     it('should dispatch action defined in success property', () => {
