@@ -2,18 +2,20 @@ import React from 'react'
 import {mount} from 'enzyme'
 import secured from './secured'
 
+/* eslint-disable react/prop-types */
 jest.mock('react-redux', () => ({
   connect: (mapStateToProps, mapDispatchToProps) => {
     return WrappedComponent => {
       return ({dispatch, ...state}) => {
         const stateToProps = mapStateToProps(state)
-        const dispatchToProps = !!mapDispatchToProps ? mapDispatchToProps(dispatch) : {}
+        const dispatchToProps = mapDispatchToProps ? mapDispatchToProps(dispatch) : {}
         const props = {...stateToProps, ...dispatchToProps}
         return <WrappedComponent {...props} />
       }
     }
   }
 }))
+/* eslint-enable */
 
 describe('secured', () => {
 
