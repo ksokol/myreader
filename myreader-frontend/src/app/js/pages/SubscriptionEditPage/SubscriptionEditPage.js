@@ -24,61 +24,84 @@ const SubscriptionEditPage = props => {
   } = props
 
   return (
-    <form className='my-subscription-edit-page'>
-      <SubscriptionTitleInput name='title'
-                              value={data.title}
-                              label='Title'
-                              disabled={changePending}
-                              validations={validations}
-                              onChange={event => onChangeFormData({...data, title: event.target.value})}
+    <form
+      className='my-subscription-edit-page'
+    >
+      <SubscriptionTitleInput
+        name='title'
+        value={data.title}
+        label='Title'
+        disabled={changePending}
+        validations={validations}
+        onChange={event => onChangeFormData({...data, title: event.target.value})}
       />
 
-      <div className='my-subscription-edit-page__origin'>
-        <Input name='origin'
-               value={data.origin}
-               label='Url'
-               disabled={true}
+      <div
+        className='my-subscription-edit-page__origin'
+      >
+        <Input
+          name='origin'
+          value={data.origin}
+          label='Url'
+          disabled={true}
         />
 
-        <a href={data.origin} target='_blank' rel='noopener noreferrer'>
-          <Icon type='link' />
+        <a
+          href={data.origin}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          <Icon
+            type='link'
+          />
         </a>
       </div>
 
-      <AutocompleteInput name='tag'
-                         label='Tag'
-                         disabled={changePending}
-                         value={data.feedTag.name}
-                         values={subscriptionTags.map(it => it.name)}
-                         onSelect={name => onChangeFormData({...data, feedTag: {...data.feedTag, name}})}
+      <AutocompleteInput
+        name='tag'
+        label='Tag'
+        disabled={changePending}
+        value={data.feedTag.name}
+        values={subscriptionTags.map(it => it.name)}
+        onSelect={name => onChangeFormData({...data, feedTag: {...data.feedTag, name}})}
       />
 
-      <h2 className='my-subscription-edit-page__pattern-title'>Patterns to ignore</h2>
+      <h2
+        className='my-subscription-edit-page__pattern-title'>
+        Patterns to ignore
+      </h2>
 
-      <Chips keyFn={itemProps => itemProps.uuid}
-             values={exclusions}
-             placeholder='Enter an exclusion pattern'
-             disabled={changePending}
-             renderItem={itemProps =>
-               <React.Fragment>
-                 <strong>{itemProps.pattern}</strong>
-                 &nbsp;
-                 <em>({itemProps.hitCount})</em>
-               </React.Fragment>
-             }
-             onAdd={tag => onAddExclusionPattern(data.uuid, tag)}
-             onRemove={({uuid}) => onRemoveExclusionPattern(uuid)}
+      <Chips
+        keyFn={itemProps => itemProps.uuid}
+        values={exclusions}
+        placeholder='Enter an exclusion pattern'
+        disabled={changePending}
+        renderItem={itemProps =>
+          <React.Fragment>
+            <strong>{itemProps.pattern}</strong>
+            &nbsp;
+            <em>({itemProps.hitCount})</em>
+          </React.Fragment>
+        }
+        onAdd={tag => onAddExclusionPattern(data.uuid, tag)}
+        onRemove={({uuid}) => onRemoveExclusionPattern(data.uuid, uuid)}
       />
 
-      <div className='my-subscription-edit-page__buttons'>
-        <Button disabled={changePending}
-                onClick={() => onSaveFormData(data)}
-                primary>Save
+      <div
+        className='my-subscription-edit-page__buttons'
+      >
+        <Button
+          disabled={changePending}
+          onClick={() => onSaveFormData(data)}
+          primary>
+          Save
         </Button>
 
-        <ConfirmButton disabled={changePending}
-                       onClick={() => onRemoveSubscription(data.uuid)}
-                       caution>Delete
+        <ConfirmButton
+          disabled={changePending}
+          onClick={() => onRemoveSubscription(data.uuid)}
+          caution>
+          Delete
         </ConfirmButton>
       </div>
     </form>

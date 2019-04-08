@@ -126,7 +126,7 @@ describe('SubscriptionEditPage', () => {
   it('should trigger prop function "onRemoveExclusionPattern" when tag deleted', () => {
     createComponent().find(Chips).props().onRemove({uuid: 'uuid 2'})
 
-    expect(props.onRemoveExclusionPattern).toHaveBeenCalledWith('uuid 2')
+    expect(props.onRemoveExclusionPattern).toHaveBeenCalledWith('uuid 1', 'uuid 2')
   })
 
   it('should render chip item', () => {
