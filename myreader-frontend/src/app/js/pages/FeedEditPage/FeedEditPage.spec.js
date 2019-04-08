@@ -1,126 +1,85 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import FeedEditPage from './FeedEditPage'
-import {FeedFetchErrors} from '../../components'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../components', () => ({
+  FeedEditForm: () => null
+}))
+/* eslint-enable */
 
 describe('FeedEditPage', () => {
 
-  let props
+  let state, dispatch
 
-  const createComponent = () => shallow(<FeedEditPage {...props} />)
+  const createWrapper = () => {
+    return mount(<FeedEditPage dispatch={dispatch} {...state} />).find('FeedEditPage')
+  }
 
   beforeEach(() => {
-    props = {
-      data: {
-        uuid: 'uuid 1',
-        title: 'title 1',
-        url: 'url 1'
-      },
-      validations: [
-        {field: 'title', message: 'validation message'}
-      ],
-      links: {next: {path: 'next', query: {a: 'b'}}},
-      failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}],
-      changePending: true,
-      fetchFailuresLoading: true,
-      onChangeFormData: jest.fn(),
-      onSaveFormData: jest.fn(),
-      onRemove: jest.fn(),
-      onMore: jest.fn()
+    dispatch = jest.fn()
+
+    state = {
+      admin: {
+        editForm: {
+          changePending: true,
+          data: {uuid: '1', title: 'title1', url: 'url1', createdAt: '2017-12-29'},
+          validations: [{field: 'title', message: 'may not be empty'}]
+        },
+        fetchFailuresLoading: true,
+        fetchFailures: {
+          links: {next: {path: 'next', query: {a: 'b'}}},
+          failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}]
+        }
+      }
     }
   })
 
-  it('should not render component when prop "data" is defined', () => {
-    props.data = undefined
-
-    expect(createComponent().children().length).toEqual(0)
-  })
-
-  it('should render component when prop "data" is defined', () => {
-    expect(createComponent().children().length).toBeGreaterThan(0)
-  })
-
-  it('should pass expected props to title input component', () => {
-    expect(createComponent().find('[name="title"]').props()).toContainObject({
-      value: 'title 1',
-      label: 'Title',
-      disabled: true,
-      validations: [{field: 'title', message: 'validation message'}]
-    })
-  })
-
-  it('should trigger prop function "onChangeFormData" when title input changed', () => {
-    createComponent().find('[name="title"]').props().onChange({target: {value: 'changed title'}})
-
-    expect(props.onChangeFormData).toHaveBeenCalledWith({
-      uuid: 'uuid 1',
-      title: 'changed title',
-      url: 'url 1'
-    })
-  })
-
-  it('should pass expected props to url input component', () => {
-    props.changepending = false
-
-    expect(createComponent().find('[name="url"]').props()).toContainObject({
-      value: 'url 1',
-      label: 'Url',
-      disabled: true,
-      validations: [{field: 'title', message: 'validation message'}]
-    })
-  })
-
-  it('should trigger prop function "onChangeFormData" when url input changed', () => {
-    createComponent().find('[name="url"]').props().onChange({target: {value: 'changed url'}})
-
-    expect(props.onChangeFormData).toHaveBeenCalledWith({
-      uuid: 'uuid 1',
-      title: 'title 1',
-      url: 'changed url'
-    })
-  })
-
-  it('should pass expected props to feed fetch errors component', () => {
-    expect(createComponent().find(FeedFetchErrors).props()).toContainObject({
-      loading: true,
+  it('should initialize component with given props', () => {
+    expect(createWrapper().props()).toContainObject({
+      changePending: true,
+      fetchFailuresLoading: true,
+      data: {uuid: '1', title: 'title1', url: 'url1', createdAt: '2017-12-29'},
+      validations: [{field: 'title', message: 'may not be empty'}],
       links: {next: {path: 'next', query: {a: 'b'}}},
       failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}]
     })
   })
 
-  it('should trigger prop function "onMore"', () => {
-    createComponent().find(FeedFetchErrors).props().onMore('link')
+  it('should dispatch expected action when prop function "onChangeFormData" triggered', () => {
+    createWrapper().props().onChangeFormData({a: 'b', c: 'd'})
 
-    expect(props.onMore).toHaveBeenCalledWith('link')
-  })
-
-  it('should pass expected props to primary button component', () => {
-    expect(createComponent().find('[primary=true]').props()).toContainObject({
-      disabled: true,
-      children: 'Save'
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'FEED_EDIT_FORM_CHANGE_DATA',
+      data: {a: 'b', c: 'd'}
     })
   })
 
-  it('should trigger prop function "onSaveFormData" when primary button clicked', () => {
-    createComponent().find('[primary=true]').props().onClick()
+  it('should dispatch expected action when prop function "onSaveFormData" triggered', () => {
+    createWrapper().props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
 
-    expect(props.onSaveFormData).toHaveBeenCalledWith({
-      uuid: 'uuid 1',
-      title: 'title 1',
-      url: 'url 1'
-    })
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'PATCH_FEED',
+      url: 'api/2/feeds/1',
+      body: {a: 'b', c: 'd', uuid: '1'}
+    }))
   })
 
-  it('should pass expected props to caution button component', () => {
-    expect(createComponent().find('[caution=true]').props()).toContainObject({
-      disabled: true,
-      children: 'Delete'
-    })
+  it('should dispatch expected action when prop function "onRemove" triggered', () => {
+    createWrapper().props().onRemove('1')
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'DELETE_FEED',
+      url: 'api/2/feeds/1'
+    }))
   })
 
-  it('should trigger prop function "onRemoveSubscription" when caution button clicked', () => {
-    createComponent().find('[caution=true]').props().onClick()
+  it('should dispatch expected action when prop function "onMore" triggered', () => {
+    createWrapper().props().onMore({path: 'next', query: {a: 'b'}})
 
-    expect(props.onRemove).toHaveBeenCalledWith('uuid 1')
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'GET_FEED_FETCH_FAILURES',
+      url: 'next?a=b'
+    }))
   })
 })

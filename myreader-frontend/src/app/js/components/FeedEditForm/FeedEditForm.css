@@ -1,27 +1,27 @@
-.my-feed-edit-page {
+.my-feed-edit-form {
     padding: 10px;
 }
 
-.my-feed-edit-page__origin {
+.my-feed-edit-form__origin {
     display: flex;
     align-items: center;
 }
 
-.my-feed-edit-page__origin > .my-input {
+.my-feed-edit-form__origin > .my-input {
     flex-grow: 1;
 }
 
-.my-feed-edit-page__origin > a {
+.my-feed-edit-form__origin > a {
     color: grey;
 }
 
-.my-feed-edit-page__fetch-error-title {
+.my-feed-edit-form__fetch-error-title {
     font-size: 20px;
     font-weight: 500;
     letter-spacing: 0.005em;
     user-select: none;
 }
 
-.my-feed-edit-page__buttons {
+.my-feed-edit-form__buttons {
     float: right;
 }

@@ -9,5 +9,4 @@ export {default as BackdropContainer} from './BackdropContainer/BackdropContaine
 export {default as SubscriptionEditPageContainer} from './SubscriptionEditPageContainer/SubscriptionEditPageContainer'
 export {default as SubscribePageContainer} from './SubscribePageContainer/SubscribePageContainer'
 export {default as LoginPageContainer} from './LoginPageContainer/LoginPageContainer'
-export {default as FeedEditPageContainer} from './FeedEditPageContainer/FeedEditPageContainer'
 export {default as SidenavLayoutContainer} from './SidenavLayoutContainer/SidenavLayoutContainer'

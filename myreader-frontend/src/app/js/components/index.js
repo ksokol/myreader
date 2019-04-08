@@ -22,4 +22,5 @@ export {default as Backdrop} from './Backdrop/Backdrop'
 export {default as AutocompleteInput} from './AutocompleteInput/AutocompleteInput'
 export {default as SidenavLayout} from './SidenavLayout/SidenavLayout'
 export {default as secured} from './secured/secured'
+export {default as FeedEditForm} from './FeedEditForm/FeedEditForm'
 
