@@ -2,7 +2,6 @@ import {
   BookmarkListPageContainer,
   EntryStreamPageContainer,
   FeedEditPageContainer,
-  FeedListPageContainer,
   LoginPageContainer,
   SettingsPageContainer,
   SidenavLayoutContainer,
@@ -25,7 +24,7 @@ import {
 } from './routes'
 import {secured} from './components'
 import {ROLE_ADMIN, ROLE_USER} from './constants'
-import {LogoutPage, MaintenancePage} from './pages'
+import {FeedListPage, LogoutPage, MaintenancePage} from './pages'
 
 const states = [
   {
@@ -99,7 +98,7 @@ const states = [
     name: 'admin.feed',
     url: ADMIN_FEEDS_URL,
     dynamic: true,
-    component: secured(FeedListPageContainer, [ROLE_ADMIN])
+    component: secured(FeedListPage, [ROLE_ADMIN])
   },
   {
     name: 'admin.feed-detail',

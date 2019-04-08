@@ -1,28 +1,48 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import FeedListPage from './FeedListPage'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../components', () => ({
+  FeedList: () => null,
+  ListLayout: ({listPanel}) => <div>{listPanel}</div>
+}))
+/* eslint-enable */
 
 describe('FeedListPage', () => {
 
-  let props
+  let state
 
-  const createComponent = () => shallow(<FeedListPage {...props} />)
+  const createWrapper = () => mount(<FeedListPage {...state} />)
 
   beforeEach(() => {
-    props = {
-      feeds: [
-        {uuid: '1', title: '1', hasErrors: false, createdAt: '1'}
-      ]
+    state = {
+      router: {
+        query: {}
+      },
+      admin: {
+        feeds: [
+          {title: 'title1'},
+          {title: 'title2'}
+        ]
+      }
     }
   })
 
-  it('should pass expected props', () => {
-    expect(createComponent().first().props()).toContainObject({
-      listPanel: {
-        props: {
-          feeds: [{uuid: '1', title: '1', hasErrors: false, createdAt: '1'}]
-        }
-      }
+  it('should initialize component with given prop "feed"', () => {
+    expect(createWrapper().find('FeedList').props()).toEqual({
+      feeds: [
+        {title: 'title1'},
+        {title: 'title2'}
+      ]
+    })
+  })
+
+  it('should initialize component with given prop "feeds" filtered by prop "router.query.q"', () => {
+    state.router.query.q = 'title2'
+
+    expect(createWrapper().find('FeedList').props()).toEqual({
+      feeds: [{title: 'title2'}]
     })
   })
 })
