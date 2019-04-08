@@ -27,6 +27,7 @@ export const withRouter = (WrappedComponent) => {
     render() {
       const _currentRoute = this.props.router.currentRoute
       const query = this.props.router.query
+      const match = {params: {...this.props.router.query}}
       const params = new URLSearchParams()
 
       Object.keys(query)
@@ -40,6 +41,7 @@ export const withRouter = (WrappedComponent) => {
       return (
         <WrappedComponent
           location={location}
+          match={match}
           history={{push: this.push, replace: this.push}}
           {...this.props}
         />

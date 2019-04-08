@@ -10,10 +10,10 @@ jest.mock('../../components', () => ({
 
 describe('FeedEditPage', () => {
 
-  let state, dispatch
+  let state, dispatch, props
 
   const createWrapper = () => {
-    return mount(<FeedEditPage dispatch={dispatch} state={state} />).find('FeedEditPage')
+    return mount(<FeedEditPage props={props} dispatch={dispatch} state={state} />).find('FeedEditPage')
   }
 
   beforeEach(() => {
@@ -30,6 +30,14 @@ describe('FeedEditPage', () => {
         fetchFailures: {
           links: {next: {path: 'next', query: {a: 'b'}}},
           failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}]
+        }
+      }
+    }
+
+    props = {
+      match: {
+        params: {
+          uuid: 'uuid1'
         }
       }
     }
@@ -80,6 +88,21 @@ describe('FeedEditPage', () => {
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'GET_FEED_FETCH_FAILURES',
       url: 'next?a=b'
+    }))
+  })
+
+  it('should dispatch expected actions when mounted', () => {
+    createWrapper()
+
+    expect(dispatch).toHaveBeenNthCalledWith(1, {type: 'FEED_EDIT_FORM_CLEAR'})
+    expect(dispatch).toHaveBeenNthCalledWith(2, {type: 'FEED_FETCH_FAILURES_CLEAR'})
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+      type: 'GET_FEED',
+      url: 'api/2/feeds/uuid1'
+    }))
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
+      type: 'GET_FEED_FETCH_FAILURES',
+      url: 'api/2/feeds/uuid1/fetchError'
     }))
   })
 })

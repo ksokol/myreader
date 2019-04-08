@@ -137,23 +137,5 @@ describe('routes', () => {
         expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CLEAR'])
       })
     })
-
-    describe('admin feed-detail', () => {
-
-      beforeEach(() => routeConfig = routeConfiguration['admin'].children['feed-detail'])
-
-      it('should contain expected before action(s)', () => {
-        routeConfig.before.forEach(action => store.dispatch(action()))
-
-        expect(store.getActionTypes()).toEqual(['FEED_EDIT_FORM_CLEAR', 'FEED_FETCH_FAILURES_CLEAR'])
-      })
-
-      it('should contain expected resolve action(s)', () => {
-        routeConfig.resolve.forEach(action => store.dispatch(action({query: {uuid: 'expectedUuid'}})))
-        expect(store.getActionTypes()).toEqual(['GET_FEED', 'GET_FEED_FETCH_FAILURES'])
-        expect(store.getActions()[0].url).toMatch(/\/feeds\/expectedUuid$/)
-        expect(store.getActions()[1].url).toMatch(/\/feeds\/expectedUuid\/fetchError$/)
-      })
-    })
   })
 })

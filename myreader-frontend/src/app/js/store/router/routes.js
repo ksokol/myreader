@@ -1,13 +1,9 @@
-import {FEEDS, SUBSCRIPTION_ENTRIES} from '../../constants'
+import {SUBSCRIPTION_ENTRIES} from '../../constants'
 import {
-  clearFeedEditForm,
   clearSubscriptionEditForm,
   entryClear,
-  feedFetchFailuresClear,
   fetchEntries,
   fetchEntryTags,
-  loadFeedIntoEditForm,
-  fetchFeedFetchFailures,
   fetchSubscriptionExclusionPatterns,
   fetchSubscriptions,
   loadSubscriptionIntoEditForm
@@ -37,20 +33,6 @@ export const routeConfiguration = {
       },
       'subscription-add': {
         before: clearSubscriptionEditForm
-      }
-    }
-  },
-  admin: {
-    children: {
-      'feed-detail': {
-        before: [
-          clearFeedEditForm,
-          feedFetchFailuresClear
-        ],
-        resolve: [
-          ({query}) => loadFeedIntoEditForm(query.uuid),
-          ({query}) => fetchFeedFetchFailures({path: `${FEEDS}/${query.uuid}/fetchError`})
-        ]
       }
     }
   }
