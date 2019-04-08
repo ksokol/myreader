@@ -6,7 +6,7 @@ describe('MaintenancePage', () => {
 
   let state, dispatch
 
-  const createWrapper = () => mount(<MaintenancePage dispatch={dispatch} {...state} />)
+  const createWrapper = () => mount(<MaintenancePage dispatch={dispatch} state={state} />)
 
   beforeEach(() => {
     dispatch = jest.fn()

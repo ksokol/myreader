@@ -2,11 +2,10 @@ import React from 'react'
 
 const connect = (mapStateToProps, mapDispatchToProps) => {
   return WrappedComponent => {
-    return ({dispatch, ...state}) => {
-      const stateToProps = mapStateToProps ? mapStateToProps(state) : {}
+    return ({props, dispatch, state}) => {
+      const stateToProps = mapStateToProps ? {...mapStateToProps(state), ...props} : {...props}
       const dispatchToProps = mapDispatchToProps ? mapDispatchToProps(dispatch) : {}
-      const props = {...stateToProps, ...dispatchToProps, dispatch}
-      return <WrappedComponent {...props} />
+      return <WrappedComponent {...stateToProps} {...dispatchToProps} dispatch={dispatch} />
     }
   }
 }

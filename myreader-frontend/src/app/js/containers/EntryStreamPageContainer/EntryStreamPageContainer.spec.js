@@ -16,7 +16,7 @@ describe('EntryStreamPageContainer', () => {
   const nextFocusableEntry = () => ({uuid: 'uuid2', seen: false, origin: '2', createdAt: '2', title: '2', feedTitle: '2'})
 
   const createWrapper = () => {
-    return mount(<EntryStreamPageContainer dispatch={dispatch} {...state} />).find('EntryStreamPage')
+    return mount(<EntryStreamPageContainer dispatch={dispatch} state={state} />).find('EntryStreamPage')
   }
 
   beforeEach(() => {

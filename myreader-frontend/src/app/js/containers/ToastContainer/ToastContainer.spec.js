@@ -13,7 +13,7 @@ describe('ToastContainer', () => {
   let state, dispatch
 
   const createWrapper = () => {
-    return mount(<ToastContainer dispatch={dispatch} {...state} />).find('Toast')
+    return mount(<ToastContainer dispatch={dispatch} state={state} />).find('Toast')
   }
 
   beforeEach(() => {

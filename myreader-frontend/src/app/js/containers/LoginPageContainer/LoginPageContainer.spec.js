@@ -13,7 +13,7 @@ describe('LoginPageContainer', () => {
   let state, dispatch
 
   const createWrapper = () => {
-    return mount(<LoginPageContainer dispatch={dispatch} {...state} />).find('LoginPage')
+    return mount(<LoginPageContainer dispatch={dispatch} state={state} />).find('LoginPage')
   }
 
   beforeEach(() => {

@@ -13,7 +13,7 @@ describe('BookmarkListPageContainer', () => {
   let state, dispatch
 
   const createWrapper = () => {
-    return mount(<BookmarkListPageContainer dispatch={dispatch} {...state} />).find('BookmarkListPage')
+    return mount(<BookmarkListPageContainer dispatch={dispatch} state={state} />).find('BookmarkListPage')
   }
 
   beforeEach(() => {

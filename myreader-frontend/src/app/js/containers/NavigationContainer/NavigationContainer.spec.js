@@ -13,7 +13,7 @@ describe('NavigationContainer', () => {
   let state, dispatch
 
   const createWrapper = () => {
-    return mount(<NavigationContainer dispatch={dispatch} {...state} />).find('Navigation')
+    return mount(<NavigationContainer dispatch={dispatch} state={state} />).find('Navigation')
   }
 
   beforeEach(() => {

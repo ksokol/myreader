@@ -13,7 +13,7 @@ describe('SubscriptionEditPageContainer', () => {
   let state, dispatch
 
   const createWrapper = () => {
-    return mount(<SubscriptionEditPageContainer dispatch={dispatch} {...state} />).find('SubscriptionEditPage')
+    return mount(<SubscriptionEditPageContainer dispatch={dispatch} state={state} />).find('SubscriptionEditPage')
   }
 
   beforeEach(() => {

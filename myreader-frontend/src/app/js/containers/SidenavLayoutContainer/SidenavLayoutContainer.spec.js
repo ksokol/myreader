@@ -13,7 +13,7 @@ describe('SidenavLayoutContainer', () => {
   let state, dispatch
 
   const createWrapper = () => {
-    return mount(<SidenavLayoutContainer dispatch={dispatch} {...state} />).find('SidenavLayout')
+    return mount(<SidenavLayoutContainer dispatch={dispatch} state={state} />).find('SidenavLayout')
   }
 
   beforeEach(() => {

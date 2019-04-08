@@ -13,7 +13,7 @@ describe('FeedListPage', () => {
 
   let state, dispatch
 
-  const createWrapper = () => mount(<FeedListPage dispatch={dispatch} {...state} />)
+  const createWrapper = () => mount(<FeedListPage dispatch={dispatch} state={state} />)
 
   beforeEach(() => {
     dispatch= jest.fn()

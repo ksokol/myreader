@@ -9,7 +9,7 @@ describe('secured', () => {
   const createWrapper = (roles, allowedRole) => {
     const Wrapped = secured(Component, allowedRole)
     const state = {security: {roles}}
-    return mount(<Wrapped {...state} />)
+    return mount(<Wrapped state={state} />)
   }
 
   it('should render component when allowed role USER is equal to role', () => {

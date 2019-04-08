@@ -13,7 +13,7 @@ describe('SubscriptionTagsContainer', () => {
   let state, dispatch
 
   const createWrapper = () => {
-    return mount(<SubscriptionTagsContainer dispatch={dispatch} {...state} />).find('SubscriptionTags')
+    return mount(<SubscriptionTagsContainer dispatch={dispatch} state={state} />).find('SubscriptionTags')
   }
 
   beforeEach(() => {

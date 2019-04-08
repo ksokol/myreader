@@ -13,7 +13,7 @@ describe('BackdropContainer', () => {
   let state, dispatch
 
   const createWrapper = () => {
-    return mount(<BackdropContainer dispatch={dispatch} {...state} />).find('Backdrop')
+    return mount(<BackdropContainer dispatch={dispatch} state={state} />).find('Backdrop')
   }
 
   beforeEach(() => {
