@@ -138,16 +138,6 @@ describe('routes', () => {
       })
     })
 
-    describe('admin feed', () => {
-
-      beforeEach(() => routeConfig = routeConfiguration['admin'].children['feed'])
-
-      it('should contain expected resolve action(s)', () => {
-        store.dispatch(routeConfig.resolve())
-        expect(store.getActionTypes()).toEqual(['GET_FEEDS'])
-      })
-    })
-
     describe('admin feed-detail', () => {
 
       beforeEach(() => routeConfig = routeConfiguration['admin'].children['feed-detail'])

@@ -8,7 +8,6 @@ import {
   fetchEntryTags,
   loadFeedIntoEditForm,
   fetchFeedFetchFailures,
-  fetchFeeds,
   fetchSubscriptionExclusionPatterns,
   fetchSubscriptions,
   loadSubscriptionIntoEditForm
@@ -43,9 +42,6 @@ export const routeConfiguration = {
   },
   admin: {
     children: {
-      feed: {
-        resolve: fetchFeeds
-      },
       'feed-detail': {
         before: [
           clearFeedEditForm,

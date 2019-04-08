@@ -11,11 +11,13 @@ jest.mock('../../components', () => ({
 
 describe('FeedListPage', () => {
 
-  let state
+  let state, dispatch
 
-  const createWrapper = () => mount(<FeedListPage {...state} />)
+  const createWrapper = () => mount(<FeedListPage dispatch={dispatch} {...state} />)
 
   beforeEach(() => {
+    dispatch= jest.fn()
+
     state = {
       router: {
         query: {}
@@ -44,5 +46,14 @@ describe('FeedListPage', () => {
     expect(createWrapper().find('FeedList').props()).toEqual({
       feeds: [{title: 'title2'}]
     })
+  })
+
+  it('should dispatch action GET_FEEDS when mounted', () => {
+    createWrapper()
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'GET_FEEDS',
+      url: 'api/2/feeds'
+    }))
   })
 })
