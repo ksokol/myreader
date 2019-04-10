@@ -43,12 +43,6 @@ export const bookmarksRoute = () => ({
   url: `!/app${BOOKMARK_URL}`
 })
 
-export const bookmarkTagsRoute = ({q = undefined /* TODO Remove q parameter from UI Router */, ...rest} = {}) => ({
-  route: ['app', 'bookmarks'],
-  query: {q, ...rest},
-  url: formatUrl(`!/app${BOOKMARK_TAGS_URL}`, rest)
-})
-
 export const settingsRoute = () => ({
   route: ['app', 'settings'],
   url: `!/app${SETTINGS_URL}`
