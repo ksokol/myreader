@@ -191,9 +191,9 @@ module.exports = function makeWebpackConfig() {
     stats: 'minimal',
     host: '0.0.0.0',
     proxy: [{
-      context: ['/info', '/api', '/check', '/logout', '/info'],
+      context: [`/${BACKEND_CONTEXT}`, '/info', '/api', '/check', '/logout'],
       target: `http://localhost:${BACKEND_PORT}`,
-      pathRewrite: path => `${BACKEND_CONTEXT}/${path}`,
+      pathRewrite: path => path.startsWith(`/${BACKEND_CONTEXT}`) ? path : `/${BACKEND_CONTEXT}/${path}`,
       onProxyRes: proxyRes => {
         const setCookies = proxyRes.headers['set-cookie']
         if (setCookies) {
