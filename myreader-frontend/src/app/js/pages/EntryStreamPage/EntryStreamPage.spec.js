@@ -13,137 +13,183 @@ jest.mock('../../components', () => ({
 
 describe('EntryStreamPage', () => {
 
-  let props
+  let state, dispatch
 
-  const createComponent = () => mount(<EntryStreamPage {...props} />)
+  const createWrapper = () => mount(<EntryStreamPage dispatch={dispatch} state={state} />)
 
   beforeEach(() => {
-    props = {
-      links: {
-        next: {}
+    dispatch = jest.fn().mockImplementation(action => {
+      if (typeof action === 'function') {
+        action(dispatch, () => state)
+      }
+    })
+
+    state = {
+      common: {
+        mediaBreakpoint: 'desktop'
       },
-      entries: [
-        {uuid: '1', seen: true},
-        {uuid: '2', seen: false}
-      ],
-      entryInFocus: {
-        uuid: '1',
-        seen: true
+      settings: {
+        showEntryDetails: true
       },
-      nextFocusableEntry: {
-        uuid: '2',
-        seen: false
-      },
-      showEntryDetails: true,
-      loading: true,
-      isDesktop: true,
-      onSearchChange: jest.fn(),
-      onChangeEntry: jest.fn(),
-      onLoadMore: jest.fn(),
-      previousEntry: jest.fn(),
-      entryFocusNext: jest.fn()
+      entry: {
+        links: {
+          next: {
+            query: {a: 'b'}
+          }
+        },
+        entries: [
+          {uuid: '1', seen: true, tag: 'tag1'},
+          {uuid: '2', seen: false, tag: 'tag2'}
+        ],
+        entryInFocus: '1',
+        loading: true
+      }
     }
   })
 
-  it('should pass expected props', () => {
-    expect(createComponent().props()).toContainObject({
-      onSearchChange: props.onSearchChange
-    })
+  it('should not render next and previous buttons when media breakpoint is not desktop', () => {
+    state.common.mediaBreakpoint = 'phone'
+    const wrapper = createWrapper()
+
+    expect(wrapper.find('IconButton[type="chevron-left"]').exists()).toEqual(false)
+    expect(wrapper.find('IconButton[type="chevron-right"]').exists()).toEqual(false)
   })
 
-  it('should not render next and previous buttons when prop "isDesktop" is set to false', () => {
-    props.isDesktop = false
+  it('should render next and previous buttons when media breakpoint is desktop', () => {
+    const wrapper = createWrapper()
 
-    expect(createComponent().find('IconButton[type="chevron-left"]').exists()).toEqual(false)
-    expect(createComponent().find('IconButton[type="chevron-right"]').exists()).toEqual(false)
-  })
-
-  it('should render next and previous buttons when prop "isDesktop" is set to true', () => {
-    expect(createComponent().find('IconButton[type="chevron-left"]').exists()).toEqual(true)
-    expect(createComponent().find('IconButton[type="chevron-right"]').exists()).toEqual(true)
+    expect(wrapper.find('IconButton[type="chevron-left"]').exists()).toEqual(true)
+    expect(wrapper.find('IconButton[type="chevron-right"]').exists()).toEqual(true)
   })
 
   it('should trigger prop function "previousEntry" when previous button clicked', () => {
-    createComponent().find('IconButton[type="chevron-left"]').props().onClick()
+    createWrapper().find('IconButton[type="chevron-left"]').props().onClick()
 
-    expect(props.previousEntry).toHaveBeenCalled()
+    expect(dispatch).toHaveBeenNthCalledWith(2, {
+      type: 'ENTRY_FOCUS_PREVIOUS',
+      currentInFocus: '1'
+    })
   })
 
-  it('should only trigger prop function "entryFocusNext" when next button clicked and entry seen flag is set to true', () => {
-    props.nextFocusableEntry.seen = true
-    createComponent().find('IconButton[type="chevron-right"]').props().onClick()
+  it('should dispatch action ENTRY_FOCUS_NEXT when next button clicked and entry seen flag is set to true', () => {
+    state.entry.entries[1].seen = true
+    createWrapper().find('IconButton[type="chevron-right"]').props().onClick()
 
-    expect(props.entryFocusNext).toHaveBeenCalled()
-    expect(props.onChangeEntry).not.toHaveBeenCalled()
+    expect(dispatch).toHaveBeenNthCalledWith(2, {
+      type: 'ENTRY_FOCUS_NEXT',
+      currentInFocus: '1'
+    })
   })
 
-  it('should trigger prop function "entryFocusNext" and "onChangeEntry" when next button clicked and entry seen flag is set to false', () => {
-    createComponent().find('IconButton[type="chevron-right"]').props().onClick()
+  it('should dispatch action PATCH_ENTRY and ENTRY_FOCUS_NEXT when next button clicked and entry seen flag is set to false', () => {
+    createWrapper().find('IconButton[type="chevron-right"]').props().onClick()
 
-    expect(props.entryFocusNext).toHaveBeenCalled()
-    expect(props.onChangeEntry).toHaveBeenCalledWith({
-      uuid: '2',
-      seen: true
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'PATCH_ENTRY',
+      url: 'api/2/subscriptionEntries/2',
+      body: {
+        seen: true,
+        tag: 'tag2',
+      }
+    }))
+
+    expect(dispatch).toHaveBeenNthCalledWith(4, {
+      type: 'ENTRY_FOCUS_NEXT',
+      currentInFocus: '1'
     })
   })
 
   it('should pass expected props to entry list component', () => {
-    expect(createComponent().find('EntryList').props()).toContainObject({
+    expect(createWrapper().find('EntryList').props()).toEqual(expect.objectContaining({
       entries: [
-        {uuid: '1'},
-        {uuid: '2'}
+        {uuid: '1', seen: true, tag: 'tag1'},
+        {uuid: '2', seen: false, tag: 'tag2'}
       ],
-      links: {
-        next: {}
-      },
       entryInFocus: {
-        uuid: '1'
+        uuid: '1',
+        seen: true,
+        tag: 'tag1'
+      },
+      links: {
+        next: {
+          query: {a: 'b'}
+        }
       },
       isDesktop: true,
       loading: true,
       showEntryDetails: true
+    }))
+  })
+
+  it('should dispatch action PATCH_ENTRY when entry changed', () => {
+    createWrapper().find('EntryList').props().onChangeEntry({uuid: '2', seen: true, tag: 'expectedTag'})
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'PATCH_ENTRY',
+      url: 'api/2/subscriptionEntries/2',
+      body: {
+        seen: true,
+        tag: 'expectedTag',
+      }
+    }))
+  })
+
+  it('should dispatch action GET_ENTRIES when load more button clicked', () => {
+    createWrapper().find('EntryList').props().onLoadMore({path: '/expectedPath', query: {size: 2, seenEqual: 'expectedSeenEqual'}})
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'GET_ENTRIES',
+      url: '/expectedPath?seenEqual=expectedSeenEqual&size=2'
+    }))
+  })
+
+  it('should dispatch action ENTRY_FOCUS_PREVIOUS when arrow up key pressed', () => {
+    createWrapper().find('Hotkeys').prop('onKeys').up()
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'ENTRY_FOCUS_PREVIOUS',
+      currentInFocus: '1'
+    }))
+  })
+
+  it('should dispatch action ENTRY_FOCUS_NEXT when arrow down key pressed and entry seen flag is set to true', () => {
+    state.entry.entries[1].seen = true
+    createWrapper().find('Hotkeys').prop('onKeys').down()
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'ENTRY_FOCUS_NEXT',
+      currentInFocus: '1'
+    }))
+  })
+
+  it('should dispatch action PATCH_ENTRY and ENTRY_FOCUS_NEXT when next arrow down key pressed and entry seen flag is set to false', () => {
+    createWrapper().find('Hotkeys').prop('onKeys').down()
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'PATCH_ENTRY',
+      url: 'api/2/subscriptionEntries/2',
+      body: {
+        seen: true,
+        tag: 'tag2',
+      }
+    }))
+
+    expect(dispatch).toHaveBeenNthCalledWith(4, {
+      type: 'ENTRY_FOCUS_NEXT',
+      currentInFocus: '1'
     })
   })
 
-  it('should trigger prop function "onChangeEntry" when entry changed', () => {
-    createComponent().find('EntryList').props().onChangeEntry({uuid: '2', a: 'b'})
+  it('should dispatch action PATCH_ENTRY when esc key pressed', () => {
+    createWrapper().find('Hotkeys').prop('onKeys').esc()
 
-    expect(props.onChangeEntry).toHaveBeenCalledWith({uuid: '2', a: 'b'})
-  })
-
-  it('should trigger prop function "onLoadMore" when load more button clicked', () => {
-    createComponent().find('EntryList').props().onLoadMore()
-
-    expect(props.onLoadMore).toHaveBeenCalled()
-  })
-
-  it('should trigger prop function "previousEntry" when arrow up key pressed', () => {
-    createComponent().find('Hotkeys').prop('onKeys').up()
-
-    expect(props.previousEntry).toHaveBeenCalled()
-  })
-
-  it('should only trigger prop function "entryFocusNext" when arrow down key pressed and entry seen flag is set to true', () => {
-    props.nextFocusableEntry.seen = true
-    createComponent().find('Hotkeys').prop('onKeys').down()
-
-    expect(props.entryFocusNext).toHaveBeenCalled()
-    expect(props.onChangeEntry).not.toHaveBeenCalled()
-  })
-
-  it('should trigger prop function "entryFocusNext" and "onChangeEntry" when next arrow down key pressed and entry seen flag is set to false', () => {
-    createComponent().find('Hotkeys').prop('onKeys').down()
-
-    expect(props.entryFocusNext).toHaveBeenCalled()
-    expect(props.onChangeEntry).toHaveBeenCalledWith({
-      uuid: '2',
-      seen: true
-    })
-  })
-
-  it('should trigger prop function "onChangeEntry" when esc pressed', () => {
-    createComponent().find('Hotkeys').prop('onKeys').esc()
-
-    expect(props.onChangeEntry).toHaveBeenCalledWith({uuid: '1', seen: false})
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'PATCH_ENTRY',
+      url: 'api/2/subscriptionEntries/1',
+      body: {
+        seen: false,
+        tag: 'tag1',
+      }
+    }))
   })
 })

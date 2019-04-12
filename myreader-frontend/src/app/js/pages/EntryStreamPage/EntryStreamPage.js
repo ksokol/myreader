@@ -1,6 +1,32 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux'
 import {EntryList, Hotkeys, IconButton, ListLayout} from '../../components'
+import {
+  changeEntry,
+  entryFocusNext,
+  entryFocusPrevious,
+  fetchEntries,
+  getEntries,
+  getNextFocusableEntry,
+  mediaBreakpointIsDesktopSelector,
+  settingsShowEntryDetailsSelector
+} from '../../store'
+
+const mapStateToProps = state => ({
+  ...getEntries(state),
+  showEntryDetails: settingsShowEntryDetailsSelector(state),
+  nextFocusableEntry: getNextFocusableEntry(state),
+  isDesktop: mediaBreakpointIsDesktopSelector(state)
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  changeEntry,
+  entryFocusPrevious,
+  entryFocusNext,
+  fetchEntries
+}, dispatch)
 
 class EntryStreamPage extends React.Component {
 
@@ -18,39 +44,31 @@ class EntryStreamPage extends React.Component {
     loading: PropTypes.bool.isRequired,
     showEntryDetails: PropTypes.bool.isRequired,
     isDesktop: PropTypes.bool.isRequired,
-    onChangeEntry: PropTypes.func.isRequired,
-    onLoadMore: PropTypes.func.isRequired,
+    changeEntry: PropTypes.func.isRequired,
+    fetchEntries: PropTypes.func.isRequired,
     entryFocusNext: PropTypes.func.isRequired,
-    previousEntry: PropTypes.func.isRequired
+    entryFocusPrevious: PropTypes.func.isRequired
   }
 
   constructor(props) {
     super(props)
 
-    this.toggleEntryReadFlag = this.toggleEntryReadFlag.bind(this)
-    this.nextEntry = this.nextEntry.bind(this)
-    this.previousEntry = this.previousEntry.bind(this)
-
     this.onKeys = {
       down: this.nextEntry,
-      up: this.previousEntry,
+      up: this.props.entryFocusPrevious,
       esc: this.toggleEntryReadFlag
     }
   }
 
-  toggleEntryReadFlag() {
-    this.props.onChangeEntry({...this.props.entryInFocus, seen: !this.props.entryInFocus.seen})
+  toggleEntryReadFlag = () => {
+    this.props.changeEntry({...this.props.entryInFocus, seen: !this.props.entryInFocus.seen})
   }
 
-  nextEntry() {
+  nextEntry = () => {
     if (this.props.nextFocusableEntry.seen === false) {
-      this.props.onChangeEntry({...this.props.nextFocusableEntry, seen: true})
+      this.props.changeEntry({...this.props.nextFocusableEntry, seen: true})
     }
     this.props.entryFocusNext()
-  }
-
-  previousEntry() {
-    this.props.previousEntry()
   }
 
   render() {
@@ -61,15 +79,16 @@ class EntryStreamPage extends React.Component {
       loading,
       showEntryDetails,
       isDesktop,
-      onChangeEntry,
-      onLoadMore
+      entryFocusPrevious,
+      changeEntry,
+      fetchEntries
     } = this.props
 
     const actionPanel = isDesktop ?
       <React.Fragment>
         <IconButton
           type='chevron-left'
-          onClick={this.previousEntry}
+          onClick={entryFocusPrevious}
         />
         <IconButton
           type='chevron-right'
@@ -86,8 +105,8 @@ class EntryStreamPage extends React.Component {
           links={links}
           entryInFocus={entryInFocus}
           loading={loading}
-          onChangeEntry={onChangeEntry}
-          onLoadMore={onLoadMore}
+          onChangeEntry={changeEntry}
+          onLoadMore={fetchEntries}
         />
       </Hotkeys>
 
@@ -100,4 +119,7 @@ class EntryStreamPage extends React.Component {
   }
 }
 
-export default EntryStreamPage
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EntryStreamPage)

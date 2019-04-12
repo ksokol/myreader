@@ -1,6 +1,5 @@
 import {
   BookmarkListPageContainer,
-  EntryStreamPageContainer,
   LoginPageContainer,
   SettingsPageContainer,
   SidenavLayoutContainer,
@@ -23,7 +22,7 @@ import {
 } from './routes'
 import {secured} from './components'
 import {ROLE_ADMIN, ROLE_USER} from './constants'
-import {FeedEditPage, FeedListPage, LogoutPage, MaintenancePage} from './pages'
+import {EntryStreamPage, FeedEditPage, FeedListPage, LogoutPage, MaintenancePage} from './pages'
 
 const states = [
   {
@@ -56,7 +55,7 @@ const states = [
       feedUuidEqual: null,
       q: {dynamic: true}
     },
-    component: secured(EntryStreamPageContainer, [ROLE_USER, ROLE_ADMIN])
+    component: secured(EntryStreamPage, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.bookmarks',
