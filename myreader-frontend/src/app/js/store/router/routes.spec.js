@@ -66,22 +66,6 @@ describe('routes', () => {
       })
     })
 
-    describe('app entries', () => {
-
-      beforeEach(() => routeConfig = routeConfiguration['app'].children['entries'])
-
-      it('should remove existing entries for store on resolve', () => {
-        store.dispatch(routeConfig.resolve[0]())
-        expect(store.getActionTypes()).toEqual(['ENTRY_CLEAR'])
-      })
-
-      it('should fetch entries for given query on resolve', () => {
-        store.dispatch(routeConfig.resolve[1]({query: {a: 'b', c: 'd'}}))
-        expect(store.getActionTypes()).toEqual(['GET_ENTRIES'])
-        expect(store.getActions()[0].url).toMatch(/\/subscriptionEntries\?seenEqual=false&size=10&c=d&a=b/)
-      })
-    })
-
     describe('app subscription', () => {
 
       beforeEach(() => routeConfig = routeConfiguration['app'].children['subscription'])

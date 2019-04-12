@@ -2,9 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
+import {withRouter} from 'react-router-dom'
 import {EntryList, Hotkeys, IconButton, ListLayout} from '../../components'
 import {
   changeEntry,
+  entryClear,
   entryFocusNext,
   entryFocusPrevious,
   fetchEntries,
@@ -13,6 +15,9 @@ import {
   mediaBreakpointIsDesktopSelector,
   settingsShowEntryDetailsSelector
 } from '../../store'
+import {SUBSCRIPTION_ENTRIES} from '../../constants'
+import {toQueryObject} from '../../shared/location-utils'
+import {objectEquals} from '../../shared/utils'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
@@ -25,7 +30,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   changeEntry,
   entryFocusPrevious,
   entryFocusNext,
-  fetchEntries
+  fetchEntries,
+  entryClear
 }, dispatch)
 
 class EntryStreamPage extends React.Component {
@@ -40,10 +46,15 @@ class EntryStreamPage extends React.Component {
     nextFocusableEntry: PropTypes.shape({
       seen: PropTypes.bool
     }),
+    location: PropTypes.shape({
+      search: PropTypes.string.isRequired
+    }),
+    match: PropTypes.object.isRequired,
     links: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     showEntryDetails: PropTypes.bool.isRequired,
     isDesktop: PropTypes.bool.isRequired,
+    entryClear: PropTypes.func.isRequired,
     changeEntry: PropTypes.func.isRequired,
     fetchEntries: PropTypes.func.isRequired,
     entryFocusNext: PropTypes.func.isRequired,
@@ -57,6 +68,17 @@ class EntryStreamPage extends React.Component {
       down: this.nextEntry,
       up: this.props.entryFocusPrevious,
       esc: this.toggleEntryReadFlag
+    }
+  }
+
+  componentDidMount() {
+    this.props.entryClear()
+    this.props.fetchEntries({path: SUBSCRIPTION_ENTRIES, query: toQueryObject(this.props.location)})
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (!objectEquals(this.props.match, prevProps.match)) {
+      this.props.fetchEntries({path: SUBSCRIPTION_ENTRIES, query: toQueryObject(this.props.location)})
     }
   }
 
@@ -119,7 +141,9 @@ class EntryStreamPage extends React.Component {
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(EntryStreamPage)
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(EntryStreamPage)
+)

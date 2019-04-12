@@ -5,7 +5,14 @@ const history = {push: () => null, replace: () => null}
 const match = {params: {}}
 
 const withRouter = WrappedComponent => {
-  return ({children, ...props}) => <WrappedComponent location={location} history={history} match={match} {...props} />
+  return ({children, ...props}) => {
+    const mergedProps = Object.assign(props, {
+      location: props.location || location,
+      history: props.history || history,
+      match: props.match || match
+    })
+    return <WrappedComponent {...mergedProps} />
+  }
 }
 
 const Link = () => null

@@ -13,7 +13,7 @@ describe('FeedEditPage', () => {
   let state, dispatch, props
 
   const createWrapper = () => {
-    return mount(<FeedEditPage props={props} dispatch={dispatch} state={state} />).find('FeedEditPage')
+    return mount(<FeedEditPage {...props} dispatch={dispatch} state={state} />).find('FeedEditPage')
   }
 
   beforeEach(() => {
