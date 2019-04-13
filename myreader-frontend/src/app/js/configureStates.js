@@ -1,5 +1,4 @@
 import {
-  BookmarkListPageContainer,
   LoginPageContainer,
   SettingsPageContainer,
   SidenavLayoutContainer,
@@ -21,6 +20,7 @@ import {
 import {secured} from './components'
 import {ROLE_ADMIN, ROLE_USER} from './constants'
 import {
+  BookmarkListPage,
   EntryStreamPage,
   FeedEditPage,
   FeedListPage,
@@ -70,7 +70,7 @@ const states = [
       entryTagEqual: null,
       q: {dynamic: true}
     },
-    component: secured(BookmarkListPageContainer, [ROLE_USER, ROLE_ADMIN])
+    component: secured(BookmarkListPage, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.subscriptions',

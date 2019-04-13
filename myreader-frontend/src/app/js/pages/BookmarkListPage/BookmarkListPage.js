@@ -1,9 +1,31 @@
 import './BookmarkListPage.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Chips, EntryList, ListLayout} from '../../components'
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
+import {Chips, EntryList, ListLayout} from '../../components'
 import {toQueryObject, withQuery} from '../../shared/location-utils'
+import {
+  changeEntry,
+  fetchEntries,
+  getEntries,
+  getEntryTags,
+  mediaBreakpointIsDesktopSelector,
+  settingsShowEntryDetailsSelector
+} from '../../store'
+
+const mapStateToProps = state => ({
+  ...getEntries(state),
+  showEntryDetails: settingsShowEntryDetailsSelector(state),
+  isDesktop: mediaBreakpointIsDesktopSelector(state),
+  ...getEntryTags(state)
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  fetchEntries,
+  changeEntry
+}, dispatch)
 
 const BookmarkListPage = props => {
   const {
@@ -13,8 +35,8 @@ const BookmarkListPage = props => {
     loading,
     showEntryDetails,
     isDesktop,
-    onChangeEntry,
-    onLoadMore,
+    changeEntry,
+    fetchEntries,
     location,
     history
   } = props
@@ -39,8 +61,8 @@ const BookmarkListPage = props => {
             entries={entries}
             links={links}
             loading={loading}
-            onChangeEntry={onChangeEntry}
-            onLoadMore={onLoadMore}
+            onChangeEntry={changeEntry}
+            onLoadMore={fetchEntries}
           />
         </React.Fragment>
       }
@@ -57,12 +79,17 @@ BookmarkListPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   showEntryDetails: PropTypes.bool.isRequired,
   isDesktop: PropTypes.bool.isRequired,
-  onChangeEntry: PropTypes.func.isRequired,
-  onLoadMore: PropTypes.func.isRequired,
+  changeEntry: PropTypes.func.isRequired,
+  fetchEntries: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired
   }).isRequired
 }
 
-export default withRouter(BookmarkListPage)
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(BookmarkListPage)
+)

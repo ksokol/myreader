@@ -12,20 +12,33 @@ jest.mock('../../components', () => ({
 
 describe('BookmarkListPage', () => {
 
-  let props
+  let props, state, dispatch
 
-  const createComponent = () => mount(<BookmarkListPage {...props} />)
+  const createWrapper = () => mount(<BookmarkListPage {...props} state={state} dispatch={dispatch} />)
 
   beforeEach(() => {
+    dispatch = jest.fn().mockImplementation(action => {
+      if (typeof action === 'function') {
+        action(dispatch, () => state)
+      }
+    })
+
+    state = {
+      settings: {
+        showEntryDetails: true
+      },
+      common: {
+        mediaBreakpoint: 'desktop'
+      },
+      entry: {
+        entries: ['expected entries'],
+        links: {next: {path: 'expected-path', query: {size: '2'}}},
+        tags: ['tag1', 'tag2'],
+        loading: true
+      }
+    }
+
     props = {
-      links: {expected: 'links'},
-      entries: ['expected entries'],
-      entryTags: ['tag1', 'tag2'],
-      loading: true,
-      isDesktop: true,
-      showEntryDetails: true,
-      onChangeEntry: jest.fn(),
-      onLoadMore: jest.fn(),
       location: {
         search: '?entryTagEqual=expected tag'
       },
@@ -36,26 +49,46 @@ describe('BookmarkListPage', () => {
   })
 
   it('should pass expected props to chips component', () => {
-    expect(createComponent().find('Chips').props()).toContainObject({
+    expect(createWrapper().find('Chips').props()).toContainObject({
       values: ['tag1', 'tag2'],
       selected: 'expected tag'
     })
   })
 
   it('should pass expected props to entry list component', () => {
-    expect(createComponent().find('EntryList').props()).toContainObject({
+    expect(createWrapper().find('EntryList').props()).toEqual(expect.objectContaining({
       entries: ['expected entries'],
-      links: {expected: 'links'},
+      links: {next: {path: 'expected-path', query: {size: '2'}}},
       isDesktop: true,
       loading: true,
-      showEntryDetails: true,
-      onChangeEntry: props.onChangeEntry,
-      onLoadMore: props.onLoadMore
-    })
+      showEntryDetails: true
+    }))
+  })
+
+  it('should dispatch action PATCH_ENTRY when prop function "onChangeEntry" of entry list component triggered', () => {
+    createWrapper().find('EntryList').props().onChangeEntry({uuid: '1', seen: true, tag: 'expected tag'})
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'PATCH_ENTRY',
+      url: 'api/2/subscriptionEntries/1',
+      body: {
+        seen: true,
+        tag: 'expected tag'
+      }
+    }))
+  })
+
+  it('should dispatch action GET_ENTRIES when prop function "onLoadMore" of entry list component triggered', () => {
+    createWrapper().find('EntryList').props().onLoadMore({...state.entry.links.next})
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'GET_ENTRIES',
+      url: 'expected-path?seenEqual=*&size=2'
+    }))
   })
 
   it('should trigger prop function "history.push"', () => {
-    createComponent().find('Chips').props().onSelect('expected tag')
+    createWrapper().find('Chips').props().onSelect('expected tag')
 
     expect(props.history.push).toHaveBeenCalledWith({
       query: {entryTagEqual: 'expected tag'},
