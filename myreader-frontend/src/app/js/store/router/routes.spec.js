@@ -66,33 +66,6 @@ describe('routes', () => {
       })
     })
 
-    describe('app subscription', () => {
-
-      beforeEach(() => routeConfig = routeConfiguration['app'].children['subscription'])
-
-      it('should clear edit form on before', () => {
-        store.dispatch(routeConfig.before())
-        expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CLEAR'])
-      })
-
-      it('should load subscription into edit form', () => {
-        store.setState({subscription: {subscriptions: [{uuid: 'uuid1'}]}})
-        store.dispatch(routeConfig.resolve[0]({query: {uuid: 'uuid1'}}))
-        expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_LOAD'])
-      })
-
-      it('should fetch subscription before loading into edit form', () => {
-        store.dispatch(routeConfig.resolve[0]({query: {}}))
-        expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTION'])
-      })
-
-      it('should fetch exclusion patterns for given subscription uuid', () => {
-        store.dispatch(routeConfig.resolve[1]({query: {uuid: 'uuid1'}}))
-        expect(store.getActionTypes()).toEqual(['GET_SUBSCRIPTION_EXCLUSION_PATTERNS'])
-        expect(store.getActions()[0].url).toMatch(/exclusions\/uuid1\/pattern$/)
-      })
-    })
-
     describe('app bookmarks', () => {
 
       beforeEach(() => routeConfig = routeConfiguration['app'].children['bookmarks'])

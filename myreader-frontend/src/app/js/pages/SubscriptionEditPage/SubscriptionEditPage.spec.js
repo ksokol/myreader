@@ -4,12 +4,16 @@ import SubscriptionEditPage from './SubscriptionEditPage'
 
 describe('SubscriptionEditPage', () => {
 
-  let state, dispatch
+  let state, dispatch, props
 
-  const createWrapper = () => mount(<SubscriptionEditPage state={state} dispatch={dispatch} />)
+  const createWrapper = () => mount(<SubscriptionEditPage {...props} state={state} dispatch={dispatch} />)
 
   beforeEach(() => {
-    dispatch = jest.fn()
+    dispatch = jest.fn().mockImplementation(action => {
+      if (typeof action === 'function') {
+        action(dispatch, () => state)
+      }
+    })
 
     state = {
       router: {
@@ -30,6 +34,14 @@ describe('SubscriptionEditPage', () => {
         exclusions: {
           '1': [{uuid: '10', pattern: 'exclusion1', hitCount: 1}, {uuid: '11', pattern: 'exclusion2', hitCount: 2}],
           '2': [{uuid: '13', pattern: 'exclusion3', hitCount: 2}],
+        }
+      }
+    }
+
+    props = {
+      match: {
+        params: {
+          uuid: '1'
         }
       }
     }
@@ -188,6 +200,41 @@ describe('SubscriptionEditPage', () => {
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'DELETE_SUBSCRIPTION',
       url: 'api/2/subscriptions/1'
+    }))
+  })
+
+  it('should dispatch action SUBSCRIPTION_EDIT_FORM_CLEAR when mounted', () => {
+    createWrapper()
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SUBSCRIPTION_EDIT_FORM_CLEAR'
+    })
+  })
+
+  it('should dispatch action SUBSCRIPTION_EDIT_FORM_LOAD when mounted', () => {
+    createWrapper()
+
+    expect(dispatch).toHaveBeenNthCalledWith(3, {
+      type: 'SUBSCRIPTION_EDIT_FORM_LOAD',
+      subscription: {
+        uuid: '1',
+        title: 'title1',
+        origin: 'origin1',
+        createdAt: '2017-12-29',
+        feedTag: {
+          uuid: '2',
+          name: 'name 1'
+        }
+      }
+    })
+  })
+
+  it('should dispatch action GET_SUBSCRIPTION_EXCLUSION_PATTERNS when mounted', () => {
+    createWrapper()
+
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
+      type: 'GET_SUBSCRIPTION_EXCLUSION_PATTERNS',
+      url: 'api/2/exclusions/1/pattern'
     }))
   })
 })

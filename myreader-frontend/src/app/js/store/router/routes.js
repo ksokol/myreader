@@ -1,24 +1,10 @@
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
-import {
-  clearSubscriptionEditForm,
-  fetchEntries,
-  fetchEntryTags,
-  fetchSubscriptionExclusionPatterns,
-  fetchSubscriptions,
-  loadSubscriptionIntoEditForm
-} from '../../store'
+import {fetchEntries, fetchEntryTags, fetchSubscriptions} from '../../store'
 
 export const routeConfiguration = {
   app: {
     before: fetchSubscriptions,
     children: {
-      subscription: {
-        before: clearSubscriptionEditForm,
-        resolve: [
-          ({query}) => loadSubscriptionIntoEditForm(query.uuid),
-          ({query}) => fetchSubscriptionExclusionPatterns(query.uuid)
-        ]
-      },
       bookmarks: {
         query: {seenEqual: '*', entryTagEqual: ''},
         before: fetchEntryTags,
