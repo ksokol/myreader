@@ -1,7 +1,23 @@
 import './SubscribePage.css'
 import React from 'react'
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import {Button, Input, withValidations} from '../../components'
+import {
+  saveSubscribeEditForm,
+  subscriptionEditFormChangeData,
+  subscriptionEditFormSelector
+} from '../../store'
+
+const mapStateToProps = state => ({
+  ...subscriptionEditFormSelector(state)
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  onChangeFormData: subscriptionEditFormChangeData,
+  onSaveFormData: saveSubscribeEditForm
+}, dispatch)
 
 export const SubscribeOriginInput = withValidations(Input)
 
@@ -44,4 +60,7 @@ SubscribePage.propTypes = {
   onSaveFormData: PropTypes.func.isRequired
 }
 
-export default SubscribePage
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SubscribePage)

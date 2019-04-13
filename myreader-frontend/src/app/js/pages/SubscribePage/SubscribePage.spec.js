@@ -1,56 +1,61 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import SubscribePage from './SubscribePage'
 
 describe('SubscribePage', () => {
 
-  let props
+  let state, dispatch
 
-  const createComponent = () => shallow(<SubscribePage {...props} />)
+  const createWrapper = () => mount(<SubscribePage state={state} dispatch={dispatch} />)
 
   beforeEach(() => {
-    props = {
-      data: {
-        origin: 'origin 1'
-      },
-      changePending: true,
-      validations: [{field: 'origin', message: 'may not be empty'}],
-      onChangeFormData: jest.fn(),
-      onSaveFormData: jest.fn()
+    dispatch = jest.fn()
+
+    state = {
+      subscription: {
+        editForm: {
+          changePending: true,
+          data: {
+            origin: 'origin'
+          },
+          validations: [{field: 'origin', message: 'may not be empty'}]
+        }
+      }
     }
   })
 
   it('should pass expected props to origin input component', () => {
-    props.changepending = false
-
-    expect(createComponent().find('[name="origin"]').props()).toContainObject({
-      value: 'origin 1',
+    expect(createWrapper().find('form > [name="origin"]').props()).toContainObject({
+      value: 'origin',
       label: 'Url',
       disabled: true,
       validations: [{field: 'origin', message: 'may not be empty'}],
     })
   })
 
-  it('should trigger prop function "onChangeFormData" when origin input changed', () => {
-    createComponent().find('[name="origin"]').props().onChange({target: {value: 'changed url'}})
+  it('should dispatch action SUBSCRIPTION_EDIT_FORM_CHANGE_DATA when origin input changed', () => {
+    createWrapper().find('form > [name="origin"]').props().onChange({target: {value: 'changed url'}})
 
-    expect(props.onChangeFormData).toHaveBeenCalledWith({
-      origin: 'changed url'
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SUBSCRIPTION_EDIT_FORM_CHANGE_DATA',
+      data: {origin: 'changed url'}
     })
   })
 
   it('should pass expected props to primary button component', () => {
-    expect(createComponent().find('[primary=true]').props()).toContainObject({
+    expect(createWrapper().find('[primary=true]').props()).toContainObject({
       disabled: true,
       children: 'Subscribe'
     })
   })
 
-  it('should trigger prop function "onSaveFormData" when primary button clicked', () => {
-    createComponent().find('[primary=true]').props().onClick()
+  it('should dispatch action POST_SUBSCRIPTION when primary button clicked', () => {
+    createWrapper().find('[primary=true]').props().onClick()
 
-    expect(props.onSaveFormData).toHaveBeenCalledWith({
-      origin: 'origin 1'
-    })
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'POST_SUBSCRIPTION',
+      url: 'api/2/subscriptions',
+      body: {origin: 'origin', feedTag: null}
+    }))
   })
 })
