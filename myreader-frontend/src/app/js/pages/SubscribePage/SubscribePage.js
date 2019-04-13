@@ -5,6 +5,7 @@ import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import {Button, Input, withValidations} from '../../components'
 import {
+  clearSubscriptionEditForm,
   saveSubscribeEditForm,
   subscriptionEditFormChangeData,
   subscriptionEditFormSelector
@@ -15,39 +16,53 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  onChangeFormData: subscriptionEditFormChangeData,
-  onSaveFormData: saveSubscribeEditForm
+  subscriptionEditFormChangeData,
+  saveSubscribeEditForm,
+  clearSubscriptionEditForm
 }, dispatch)
 
 export const SubscribeOriginInput = withValidations(Input)
 
-const SubscribePage = props => {
-  const {
-    data,
-    validations,
-    changePending,
-    onChangeFormData,
-    onSaveFormData
-  } = props
+class SubscribePage extends React.Component {
 
-  return (
-    <form className='my-subscribe-page'>
-      <SubscribeOriginInput name='origin'
-                            value={data ? data.origin : ''}
-                            label='Url'
-                            disabled={changePending}
-                            validations={validations}
-                            onChange={event => onChangeFormData({origin: event.target.value})}
-      />
+  componentDidMount() {
+    this.props.clearSubscriptionEditForm()
+  }
 
-      <div className='my-subscribe-page__buttons'>
-        <Button disabled={changePending}
-                onClick={() => onSaveFormData({...data})}
-                primary>Subscribe
-        </Button>
-      </div>
-    </form>
-  )
+  render() {
+    const {
+      data,
+      validations,
+      changePending,
+      subscriptionEditFormChangeData,
+      saveSubscribeEditForm
+    } = this.props
+
+    return (
+      <form
+        className='my-subscribe-page'
+      >
+        <SubscribeOriginInput
+          name='origin'
+          value={data ? data.origin : ''}
+          label='Url'
+          disabled={changePending}
+          validations={validations}
+          onChange={event => subscriptionEditFormChangeData({origin: event.target.value})}
+        />
+
+        <div
+          className='my-subscribe-page__buttons'
+        >
+          <Button
+            disabled={changePending}
+            onClick={() => saveSubscribeEditForm({...data})}
+            primary>Subscribe
+          </Button>
+        </div>
+      </form>
+    )
+  }
 }
 
 SubscribePage.propTypes = {
@@ -56,8 +71,9 @@ SubscribePage.propTypes = {
   }),
   validations: PropTypes.any,
   changePending: PropTypes.bool.isRequired,
-  onChangeFormData: PropTypes.func.isRequired,
-  onSaveFormData: PropTypes.func.isRequired
+  subscriptionEditFormChangeData: PropTypes.func.isRequired,
+  saveSubscribeEditForm: PropTypes.func.isRequired,
+  clearSubscriptionEditForm: PropTypes.func.isRequired
 }
 
 export default connect(

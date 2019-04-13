@@ -58,4 +58,12 @@ describe('SubscribePage', () => {
       body: {origin: 'origin', feedTag: null}
     }))
   })
+
+  it('should clear edit form when mounted', () => {
+    createWrapper()
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SUBSCRIPTION_EDIT_FORM_CLEAR'
+    })
+  })
 })

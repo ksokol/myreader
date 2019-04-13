@@ -111,15 +111,5 @@ describe('routes', () => {
         expect(store.getActions()[0].url).toContain('c=d&a=b')
       })
     })
-
-    describe('app subscription-add', () => {
-
-      beforeEach(() => routeConfig = routeConfiguration['app'].children['subscription-add'])
-
-      it('should clear edit form on before', () => {
-        store.dispatch(routeConfig.before())
-        expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CLEAR'])
-      })
-    })
   })
 })
