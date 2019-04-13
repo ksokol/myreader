@@ -3,7 +3,6 @@ import {
   LoginPageContainer,
   SettingsPageContainer,
   SidenavLayoutContainer,
-  SubscriptionEditPageContainer,
   SubscriptionListPageContainer
 } from './containers'
 import {
@@ -21,7 +20,15 @@ import {
 } from './routes'
 import {secured} from './components'
 import {ROLE_ADMIN, ROLE_USER} from './constants'
-import {EntryStreamPage, FeedEditPage, FeedListPage, LogoutPage, MaintenancePage, SubscribePage} from './pages'
+import {
+  EntryStreamPage,
+  FeedEditPage,
+  FeedListPage,
+  LogoutPage,
+  MaintenancePage,
+  SubscribePage,
+  SubscriptionEditPage
+} from './pages'
 
 const states = [
   {
@@ -79,7 +86,7 @@ const states = [
   {
     name: 'app.subscription',
     url: SUBSCRIPTION_URL,
-    component: secured(SubscriptionEditPageContainer, [ROLE_USER, ROLE_ADMIN])
+    component: secured(SubscriptionEditPage, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.settings',

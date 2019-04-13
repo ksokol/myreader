@@ -1,7 +1,32 @@
 import './SubscriptionEditPage.css'
 import React from 'react'
 import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
 import {AutocompleteInput, Button, Chips, ConfirmButton, Icon, Input, withValidations} from '../../components'
+import {
+  addSubscriptionExclusionPattern,
+  deleteSubscription, removeSubscriptionExclusionPattern,
+  saveSubscriptionEditForm,
+  subscriptionEditFormChangeData,
+  subscriptionEditFormSelector,
+  subscriptionExclusionPatternsSelector,
+  subscriptionTagsSelector
+} from '../../store/subscription'
+import {bindActionCreators} from 'redux'
+
+const mapStateToProps = state => ({
+  ...subscriptionEditFormSelector(state),
+  ...subscriptionTagsSelector(state),
+  ...subscriptionExclusionPatternsSelector(state)
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  subscriptionEditFormChangeData,
+  saveSubscriptionEditForm,
+  deleteSubscription,
+  removeSubscriptionExclusionPattern,
+  addSubscriptionExclusionPattern
+}, dispatch)
 
 export const SubscriptionTitleInput = withValidations(Input)
 
@@ -16,11 +41,11 @@ const SubscriptionEditPage = props => {
     exclusions,
     validations,
     changePending,
-    onChangeFormData,
-    onAddExclusionPattern,
-    onRemoveExclusionPattern,
-    onSaveFormData,
-    onRemoveSubscription
+    subscriptionEditFormChangeData,
+    addSubscriptionExclusionPattern,
+    removeSubscriptionExclusionPattern,
+    saveSubscriptionEditForm,
+    deleteSubscription
   } = props
 
   return (
@@ -33,7 +58,7 @@ const SubscriptionEditPage = props => {
         label='Title'
         disabled={changePending}
         validations={validations}
-        onChange={event => onChangeFormData({...data, title: event.target.value})}
+        onChange={event => subscriptionEditFormChangeData({...data, title: event.target.value})}
       />
 
       <div
@@ -63,7 +88,7 @@ const SubscriptionEditPage = props => {
         disabled={changePending}
         value={data.feedTag.name}
         values={subscriptionTags.map(it => it.name)}
-        onSelect={name => onChangeFormData({...data, feedTag: {...data.feedTag, name}})}
+        onSelect={name => subscriptionEditFormChangeData({...data, feedTag: {...data.feedTag, name}})}
       />
 
       <h2
@@ -83,8 +108,8 @@ const SubscriptionEditPage = props => {
             <em>({itemProps.hitCount})</em>
           </React.Fragment>
         }
-        onAdd={tag => onAddExclusionPattern(data.uuid, tag)}
-        onRemove={({uuid}) => onRemoveExclusionPattern(data.uuid, uuid)}
+        onAdd={tag => addSubscriptionExclusionPattern(data.uuid, tag)}
+        onRemove={({uuid}) => removeSubscriptionExclusionPattern(data.uuid, uuid)}
       />
 
       <div
@@ -92,14 +117,14 @@ const SubscriptionEditPage = props => {
       >
         <Button
           disabled={changePending}
-          onClick={() => onSaveFormData(data)}
+          onClick={() => saveSubscriptionEditForm(data)}
           primary>
           Save
         </Button>
 
         <ConfirmButton
           disabled={changePending}
-          onClick={() => onRemoveSubscription(data.uuid)}
+          onClick={() => deleteSubscription(data.uuid)}
           caution>
           Delete
         </ConfirmButton>
@@ -131,11 +156,14 @@ SubscriptionEditPage.propTypes = {
   ),
   validations: PropTypes.any,
   changePending: PropTypes.bool.isRequired,
-  onChangeFormData: PropTypes.func.isRequired,
-  onAddExclusionPattern: PropTypes.func.isRequired,
-  onRemoveExclusionPattern: PropTypes.func.isRequired,
-  onSaveFormData: PropTypes.func.isRequired,
-  onRemoveSubscription: PropTypes.func.isRequired
+  subscriptionEditFormChangeData: PropTypes.func.isRequired,
+  addSubscriptionExclusionPattern: PropTypes.func.isRequired,
+  removeSubscriptionExclusionPattern: PropTypes.func.isRequired,
+  saveSubscriptionEditForm: PropTypes.func.isRequired,
+  deleteSubscription: PropTypes.func.isRequired
 }
 
-export default SubscriptionEditPage
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SubscriptionEditPage)
