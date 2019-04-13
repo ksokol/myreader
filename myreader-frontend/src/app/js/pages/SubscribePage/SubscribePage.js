@@ -25,6 +25,17 @@ export const SubscribeOriginInput = withValidations(Input)
 
 class SubscribePage extends React.Component {
 
+  static propTypes = {
+    data: PropTypes.shape({
+      origin: PropTypes.string
+    }),
+    validations: PropTypes.any,
+    changePending: PropTypes.bool.isRequired,
+    subscriptionEditFormChangeData: PropTypes.func.isRequired,
+    saveSubscribeEditForm: PropTypes.func.isRequired,
+    clearSubscriptionEditForm: PropTypes.func.isRequired
+  }
+
   componentDidMount() {
     this.props.clearSubscriptionEditForm()
   }
@@ -63,17 +74,6 @@ class SubscribePage extends React.Component {
       </form>
     )
   }
-}
-
-SubscribePage.propTypes = {
-  data: PropTypes.shape({
-    origin: PropTypes.string
-  }),
-  validations: PropTypes.any,
-  changePending: PropTypes.bool.isRequired,
-  subscriptionEditFormChangeData: PropTypes.func.isRequired,
-  saveSubscribeEditForm: PropTypes.func.isRequired,
-  clearSubscriptionEditForm: PropTypes.func.isRequired
 }
 
 export default connect(
