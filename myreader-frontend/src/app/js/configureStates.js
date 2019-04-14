@@ -12,7 +12,7 @@ import {
   SUBSCRIPTION_URL,
   SUBSCRIPTIONS_URL
 } from './routes'
-import {secured, SidenavLayout} from './components'
+import {secured, SidenavLayout, withSubscriptions} from './components'
 import {ROLE_ADMIN, ROLE_USER} from './constants'
 import {
   BookmarkListPage,
@@ -40,13 +40,13 @@ const states = [
     name: 'app',
     url: '!/app',
     abstract: true,
-    component: secured(SidenavLayout, [ROLE_USER, ROLE_ADMIN])
+    component: secured(withSubscriptions(SidenavLayout), [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'admin',
     url: '!/admin',
     abstract: true,
-    component: secured(SidenavLayout, [ROLE_USER, ROLE_ADMIN])
+    component: secured(withSubscriptions(SidenavLayout), [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.entries',

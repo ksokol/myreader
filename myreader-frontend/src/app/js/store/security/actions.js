@@ -1,8 +1,8 @@
 import * as types from '../../store/action-types'
 import {getLastSecurityState, setLastSecurityState} from './security'
-import {LOGIN, LOGOUT, ROLE_ADMIN} from '../../constants'
+import {LOGIN, LOGOUT} from '../../constants'
 import {routeChange} from '../../store'
-import {adminOverviewRoute, entriesRoute} from '../../routes'
+import {entriesRoute} from '../../routes'
 
 export const updateSecurity = () => {
   const {roles} = getLastSecurityState()
@@ -60,7 +60,7 @@ export const tryLogin = ({username, password}) => {
       const roles = headers['x-my-authorities'].split(',')
       return [
         authorized({roles}),
-        roles.includes(ROLE_ADMIN) ? routeChange(adminOverviewRoute()) : routeChange(entriesRoute())
+        routeChange(entriesRoute())
       ]
     },
     finalize: loginEnd

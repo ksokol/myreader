@@ -14,7 +14,7 @@ export default function routerMiddleware(routerHandler) {
       !objectEquals(routerState.query, action.query)
     ) {
       next(action)
-      return routerHandler({action, dispatch, routerState, getState})
+      return routerHandler({action})
     }
   }
 }

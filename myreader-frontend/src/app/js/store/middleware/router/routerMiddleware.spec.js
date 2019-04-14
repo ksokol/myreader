@@ -33,34 +33,13 @@ describe('routerMiddleware', () => {
     expect(next).toHaveBeenCalledWith(action)
   })
 
-  it('should call routerHandler with action and routerState', () => {
+  it('should call routerHandler with action', () => {
     const action = {type: 'ROUTE_CHANGED', payload: 'expected payload'}
     execute(action)
 
     expect(routerHandler).toHaveBeenCalledWith(expect.objectContaining({
-      action,
-      dispatch: 'expected dispatch',
-      routerState: {currentRoute: ['a']}
+      action
     }))
-  })
-
-  it('should pass copy of router state to routerHandler', done => {
-    routerHandler.mockImplementationOnce(({action, dispatch, routerState}) => {
-      state.router.currentRoute = ['b']
-      expect(routerState).toEqual({currentRoute: ['a']})
-      done()
-    })
-
-    execute({type: 'ROUTE_CHANGED'})
-  })
-
-  it('should pass getState to routerHandler', done => {
-    routerHandler.mockImplementationOnce(({action, dispatch, routerState, getState}) => {
-      expect(getState()).toEqual({router: {currentRoute: ['a']}})
-      done()
-    })
-
-    execute({type: 'ROUTE_CHANGED'})
   })
 
   it('should suppress action when routes are equal', () => {

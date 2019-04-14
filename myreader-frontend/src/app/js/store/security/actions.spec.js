@@ -107,7 +107,7 @@ describe('security actions', () => {
 
       expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
       expect(store.getActions()[0]).toContainActionData({roles: ['ADMIN']})
-      expect(store.getActions()[1]).toContainActionData({route: ['admin', 'overview']})
+      expect(store.getActions()[1]).toContainActionData({route: ['app', 'entries']})
     })
 
     it('should dispatch action defined in finalize property', () => {
