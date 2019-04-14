@@ -1,10 +1,22 @@
 import './SidenavLayout.css'
 import React from 'react'
 import PropTypes from 'prop-types'
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux'
 import classNames from 'classnames'
 import {UIView} from '@uirouter/react'
 import {IconButton} from '..'
 import {BackdropContainer, NavigationContainer} from '../../containers'
+import {mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from '../../store'
+
+const mapStateToProps = state => ({
+  isDesktop: mediaBreakpointIsDesktopSelector(state),
+  sidenavSlideIn: sidenavSlideIn(state)
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  toggleSidenav
+}, dispatch)
 
 const SidenavLayout = props => {
   const {
@@ -44,4 +56,7 @@ SidenavLayout.propTypes = {
   toggleSidenav: PropTypes.func.isRequired
 }
 
-export default SidenavLayout
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SidenavLayout)

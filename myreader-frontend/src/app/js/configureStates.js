@@ -1,9 +1,4 @@
-import {
-  LoginPageContainer,
-  SettingsPageContainer,
-  SidenavLayoutContainer,
-  SubscriptionListPageContainer
-} from './containers'
+import {LoginPageContainer, SettingsPageContainer, SubscriptionListPageContainer} from './containers'
 import {
   ADMIN_FEED_URL,
   ADMIN_FEEDS_URL,
@@ -17,7 +12,7 @@ import {
   SUBSCRIPTION_URL,
   SUBSCRIPTIONS_URL
 } from './routes'
-import {secured} from './components'
+import {secured, SidenavLayout} from './components'
 import {ROLE_ADMIN, ROLE_USER} from './constants'
 import {
   BookmarkListPage,
@@ -45,13 +40,13 @@ const states = [
     name: 'app',
     url: '!/app',
     abstract: true,
-    component: secured(SidenavLayoutContainer, [ROLE_USER, ROLE_ADMIN])
+    component: secured(SidenavLayout, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'admin',
     url: '!/admin',
     abstract: true,
-    component: secured(SidenavLayoutContainer, [ROLE_USER, ROLE_ADMIN])
+    component: secured(SidenavLayout, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.entries',

@@ -5,4 +5,3 @@ export {default as NavigationContainer} from './NavigationContainer/NavigationCo
 export {default as SubscriptionListPageContainer} from './SubscriptionListPageContainer/SubscriptionListPageContainer'
 export {default as BackdropContainer} from './BackdropContainer/BackdropContainer'
 export {default as LoginPageContainer} from './LoginPageContainer/LoginPageContainer'
-export {default as SidenavLayoutContainer} from './SidenavLayoutContainer/SidenavLayoutContainer'

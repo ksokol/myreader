@@ -1,48 +1,59 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import SidenavLayout from './SidenavLayout'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../containers', () => ({
+  BackdropContainer: () => null,
+  NavigationContainer: () => null,
+}))
+/* eslint-enable */
 
 describe('SidenavLayout', () => {
 
-  let props
+  let state, dispatch
 
-  const createComponent = () => shallow(<SidenavLayout {...props} />)
+  const createComponent = () => mount(<SidenavLayout state={state} dispatch={dispatch} />)
 
   beforeEach(() => {
-    props = {
-      isDesktop: false,
-      sidenavSlideIn: true,
-      toggleSidenav: jest.fn()
+    dispatch = jest.fn()
+
+    state = {
+      common: {
+        mediaBreakpoint: 'phone',
+        sidenavSlideIn: true,
+        backdropVisible: true
+      }
     }
   })
 
   it('should not slide in navigation on desktop', () => {
-    props.isDesktop = false
     expect(createComponent().find('.my-sidenav-layout__nav--animate').exists()).toEqual(true)
 
-    props.isDesktop = true
+    state.common.mediaBreakpoint = 'desktop'
     expect(createComponent().find('.my-sidenav-layout__nav--animate').exists()).toEqual(false)
   })
 
   it('should toggle navigation when state changes', () => {
-    props.sidenavSlideIn = true
+    state.common.sidenavSlideIn = true
     expect(createComponent().find('.my-sidenav-layout__nav--open').exists()).toEqual(true)
 
-    props.sidenavSlideIn = false
+    state.common.sidenavSlideIn = false
     expect(createComponent().find('.my-sidenav-layout__nav--open').exists()).toEqual(false)
   })
 
   it('should show hamburger menu on phones and tablets', () => {
-    props.isDesktop = false
-    expect(createComponent().find('[type="bars"]').exists()).toEqual(true)
+    expect(createComponent().find('IconButton[type="bars"]').exists()).toEqual(true)
 
-    props.isDesktop = true
-    expect(createComponent().find('[type="bars"]').exists()).toEqual(false)
+    state.common.mediaBreakpoint = 'desktop'
+    expect(createComponent().find('IconButton[type="bars"]').exists()).toEqual(false)
   })
 
-  it('should toggle navigation when hamburger menu icon clicked', () => {
-    createComponent().find('[type="bars"]').simulate('click')
+  it('should dispatch action TOGGLE_SIDENAV when hamburger menu icon clicked', () => {
+    createComponent().find('IconButton[type="bars"]').simulate('click')
 
-    expect(props.toggleSidenav).toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'TOGGLE_SIDENAV'
+    })
   })
 })
