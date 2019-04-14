@@ -6,7 +6,7 @@ export const routeChange = ({route, query = {}} = {}, options = {}) => {
   return {
     type: types.ROUTE_CHANGED,
     ...routeConfiguration,
-    query: {...routeConfiguration.query, ...query},
+    query,
     options
   }
 }

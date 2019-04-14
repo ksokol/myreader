@@ -65,24 +65,5 @@ describe('routes', () => {
         expect(routeConfig.before()).toEqualActionType('GET_SUBSCRIPTIONS')
       })
     })
-
-    describe('app bookmarks', () => {
-
-      beforeEach(() => routeConfig = routeConfiguration['app'].children['bookmarks'])
-
-      it('should return default query values', () => expect(routeConfig.query).toEqual({
-        seenEqual: '*',
-        entryTagEqual: ''
-      }))
-
-      it('should contain expected before action(s)', () => expect(routeConfig.before()).toEqualActionType('GET_ENTRY_TAGS'))
-
-      it('should contain expected resolve action(s)', () => {
-        store.dispatch(routeConfig.resolve({query: {a: 'b', c: 'd'}}))
-        expect(store.getActionTypes()).toEqual(['GET_ENTRIES'])
-        expect(store.getActions()[0].url).toContain('/subscriptionEntries')
-        expect(store.getActions()[0].url).toContain('c=d&a=b')
-      })
-    })
   })
 })

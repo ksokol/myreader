@@ -1,16 +1,8 @@
-import {SUBSCRIPTION_ENTRIES} from '../../constants'
-import {fetchEntries, fetchEntryTags, fetchSubscriptions} from '../../store'
+import {fetchSubscriptions} from '../../store'
 
 export const routeConfiguration = {
   app: {
-    before: fetchSubscriptions,
-    children: {
-      bookmarks: {
-        query: {seenEqual: '*', entryTagEqual: ''},
-        before: fetchEntryTags,
-        resolve: ({query}) => fetchEntries({path: SUBSCRIPTION_ENTRIES, query})
-      }
-    }
+    before: fetchSubscriptions
   }
 }
 

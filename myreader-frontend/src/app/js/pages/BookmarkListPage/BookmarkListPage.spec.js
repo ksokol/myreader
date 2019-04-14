@@ -42,6 +42,9 @@ describe('BookmarkListPage', () => {
       location: {
         search: '?entryTagEqual=expected tag'
       },
+      match: {
+        params: {}
+      },
       history: {
         push: jest.fn()
       }
@@ -68,7 +71,7 @@ describe('BookmarkListPage', () => {
   it('should dispatch action PATCH_ENTRY when prop function "onChangeEntry" of entry list component triggered', () => {
     createWrapper().find('EntryList').props().onChangeEntry({uuid: '1', seen: true, tag: 'expected tag'})
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/1',
       body: {
@@ -81,7 +84,7 @@ describe('BookmarkListPage', () => {
   it('should dispatch action GET_ENTRIES when prop function "onLoadMore" of entry list component triggered', () => {
     createWrapper().find('EntryList').props().onLoadMore({...state.entry.links.next})
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
       type: 'GET_ENTRIES',
       url: 'expected-path?seenEqual=*&size=2'
     }))
@@ -95,5 +98,47 @@ describe('BookmarkListPage', () => {
       search: '?entryTagEqual=expected tag',
       state: {}
     })
+  })
+
+  it('should dispatch action GET_ENTRY_TAGS when mounted', () => {
+    createWrapper()
+
+    expect(dispatch).toHaveBeenNthCalledWith(1, expect.objectContaining({
+      type: 'GET_ENTRY_TAGS',
+      url: 'api/2/subscriptionEntries/availableTags'
+    }))
+  })
+
+  it('should dispatch action GET_ENTRIES when mounted', () => {
+    props.match.params = {entryTagEqual: 'expected entryTagEqual'}
+    props.location.search = 'size=5&q=expectedQ'
+
+    createWrapper()
+
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+      type: 'GET_ENTRIES',
+      url: 'api/2/subscriptionEntries?q=expectedQ&size=5&entryTagEqual=expected entryTagEqual&seenEqual=*'
+    }))
+  })
+
+  it('should dispatch action GET_ENTRIES when search query parameter "q" changed', () => {
+    const wrapper = createWrapper()
+    wrapper.setProps({location: {search: 'q=changedQ'}})
+
+
+    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+      type: 'GET_ENTRIES',
+      url: 'api/2/subscriptionEntries?q=changedQ&seenEqual=*'
+    }))
+  })
+
+  it('should not dispatch action GET_ENTRIES when search query parameter "q" stays the same', () => {
+    props.match.params = {entryTagEqual: 'expected entryTagEqual'}
+    props.location.search = 'q=expectedQ'
+
+    const wrapper = createWrapper()
+    wrapper.setProps({match: {params: {entryTagEqual: 'changed entryTagEqual'}}})
+
+    expect(dispatch.mock.calls.length).toEqual(3)
   })
 })

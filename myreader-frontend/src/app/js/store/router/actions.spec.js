@@ -18,16 +18,7 @@ describe('router actions', () => {
       store.dispatch(routeChange({route: ['app', 'bookmarks']}))
       expect(store.getActions()[0]).toContainActionData({
         route: ['app', 'bookmarks'],
-        query: {seenEqual: '*', entryTagEqual: ''},
         options: {}
-      })
-    })
-
-    it('should merge query parameter with action data query parameter', () => {
-      store.dispatch(routeChange({route: ['app', 'bookmarks'], query: {entryTagEqual: 'a', b: 'c'}}))
-      expect(store.getActions()[0]).toContainActionData({
-        route: ['app', 'bookmarks'],
-        query: {seenEqual: '*', entryTagEqual: 'a', b: 'c'}
       })
     })
 

@@ -42,13 +42,11 @@ describe('uiRouterStartTransitionHandler', () => {
   })
 
   it('should merge given query values with configured route query values', () => {
-    criteria.to = jest.fn().mockReturnValue({name: 'app.bookmarks'})
+    criteria.to = jest.fn().mockReturnValue({name: 'app'})
     uiRouterStartTransitionHandler(criteria, ngRedux)
 
     expect(ngRedux.dispatch).toHaveBeenCalledWith(expect.objectContaining({
       query: {
-        seenEqual: '*',
-        entryTagEqual: '',
         a: 'b',
         c: 'd'
       }
