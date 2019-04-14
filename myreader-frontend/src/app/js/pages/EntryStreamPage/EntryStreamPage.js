@@ -17,7 +17,6 @@ import {
 } from '../../store'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
 import {toQueryObject} from '../../shared/location-utils'
-import {objectEquals} from '../../shared/utils'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
@@ -49,7 +48,6 @@ class EntryStreamPage extends React.Component {
     location: PropTypes.shape({
       search: PropTypes.string.isRequired
     }),
-    match: PropTypes.object.isRequired,
     links: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     showEntryDetails: PropTypes.bool.isRequired,
@@ -77,7 +75,10 @@ class EntryStreamPage extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (!objectEquals(this.props.match, prevProps.match)) {
+    const {q: prevQ} = toQueryObject(prevProps.location)
+    const {q: currentQ} = toQueryObject(this.props.location)
+
+    if (prevQ !== currentQ) {
       this.props.fetchEntries({path: SUBSCRIPTION_ENTRIES, query: toQueryObject(this.props.location)})
     }
   }

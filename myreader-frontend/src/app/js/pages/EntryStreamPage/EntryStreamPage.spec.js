@@ -48,12 +48,7 @@ describe('EntryStreamPage', () => {
 
     props = {
       location: {
-        search: '?a=b'
-      },
-      match: {
-        params: {
-          a: 'b'
-        }
+        search: '?q=expectedQ'
       }
     }
   })
@@ -209,23 +204,24 @@ describe('EntryStreamPage', () => {
 
     expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?seenEqual=*&a=b'
+      url: 'api/2/subscriptionEntries?seenEqual=*&q=expectedQ'
     }))
   })
 
-  it('should dispatch action GET_ENTRIES when prop "location.match" changed', () => {
+  it('should dispatch action GET_ENTRIES when prop search query parameter "q" changed', () => {
     const wrapper = createWrapper()
-    wrapper.setProps({location: {search: '?c=d'}, match: {params: {c: 'd'}}})
+    wrapper.setProps({location: {search: '?q=changedQ'}})
 
     expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?seenEqual=*&c=d'
+      url: 'api/2/subscriptionEntries?seenEqual=*&q=changedQ'
     }))
   })
 
-  it('should not dispatch action GET_ENTRIES when prop "location.match" does not changed', () => {
+  it('should not dispatch action GET_ENTRIES when search query parameter "q" stays the same', () => {
     const wrapper = createWrapper()
-    wrapper.setProps({location: {search: '?a=b'}, match: {params: {a: 'b'}}})
+
+    wrapper.setProps({location: {search: '?q=expectedQ&feedTagEqual=changed'}})
 
     expect(dispatch.mock.calls.length).toEqual(3)
   })
