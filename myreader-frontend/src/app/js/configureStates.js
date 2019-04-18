@@ -1,4 +1,4 @@
-import {LoginPageContainer, SettingsPageContainer, SubscriptionListPageContainer} from './containers'
+import {LoginPageContainer, SettingsPageContainer} from './containers'
 import {
   ADMIN_FEED_URL,
   ADMIN_FEEDS_URL,
@@ -22,7 +22,8 @@ import {
   LogoutPage,
   MaintenancePage,
   SubscribePage,
-  SubscriptionEditPage
+  SubscriptionEditPage,
+  SubscriptionListPage
 } from './pages'
 
 const states = [
@@ -71,7 +72,7 @@ const states = [
     name: 'app.subscriptions',
     url: SUBSCRIPTIONS_URL,
     dynamic: true,
-    component: secured(SubscriptionListPageContainer, [ROLE_USER, ROLE_ADMIN])
+    component: secured(SubscriptionListPage, [ROLE_USER, ROLE_ADMIN])
   },
   {
     name: 'app.subscription-add',
