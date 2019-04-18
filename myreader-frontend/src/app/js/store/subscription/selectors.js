@@ -24,13 +24,10 @@ export const filteredByUnseenSubscriptionsSelector = state => {
   }
 }
 
-export const subscriptionExclusionPatternsSelector = state => {
-  const query = state.router.query
-  const exclusions = state.subscription.exclusions
-
-  return {
-    exclusions: (exclusions[query.uuid] || []).map(cloneObject)
-  }
+export const subscriptionExclusionPatternsSelector = (uuid = '') => {
+  return state => ({
+    exclusions: (state.subscription.exclusions[uuid] || []).map(cloneObject)
+  })
 }
 
 export const subscriptionByUuidSelector = uuid => {

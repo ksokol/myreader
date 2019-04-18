@@ -19,10 +19,10 @@ import {
 } from '../../store/subscription'
 import {bindActionCreators} from 'redux'
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state, ownProps) => ({
   ...subscriptionEditFormSelector(state),
   ...subscriptionTagsSelector(state),
-  ...subscriptionExclusionPatternsSelector(state)
+  ...subscriptionExclusionPatternsSelector(ownProps.match.params.uuid)(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -190,7 +190,7 @@ class SubscriptionEditPage extends React.Component {
 }
 
 export default withRouter(
-    connect(
+  connect(
     mapStateToProps,
     mapDispatchToProps
   )(SubscriptionEditPage)

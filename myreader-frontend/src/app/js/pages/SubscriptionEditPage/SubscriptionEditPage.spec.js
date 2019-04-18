@@ -16,11 +16,6 @@ describe('SubscriptionEditPage', () => {
     })
 
     state = {
-      router: {
-        query: {
-          uuid: '1'
-        }
-      },
       subscription: {
         editForm: {
           changePending: true,

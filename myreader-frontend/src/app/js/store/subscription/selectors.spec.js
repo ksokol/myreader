@@ -82,20 +82,18 @@ describe('subscription selector', () => {
   })
 
   it('should return empty array when exclusions for uuid not present', () => {
-    expect(subscriptionExclusionPatternsSelector(state)).toEqual({exclusions: []})
+    expect(subscriptionExclusionPatternsSelector()(state)).toEqual({exclusions: []})
   })
 
   it('should return exclusions for given uuid', () => {
-    state.router.query.uuid = '2'
     state.subscription.exclusions = {'1': [{a: 'b'}, {c: 'd'}], '2': [{e: 'f', g: 'h'}]}
 
-    expect(subscriptionExclusionPatternsSelector(state)).toEqual({exclusions: [{e: 'f', g: 'h'}]})
+    expect(subscriptionExclusionPatternsSelector('2')(state)).toEqual({exclusions: [{e: 'f', g: 'h'}]})
   })
 
   it('should return copy of exclusions', () => {
-    state.router.query.uuid = '1'
     state.subscription.exclusions = {'1': [{a: 'b'}]}
-    const selection = subscriptionExclusionPatternsSelector(state)
+    const selection = subscriptionExclusionPatternsSelector('1')(state)
     state.subscription.exclusions['1'][0].a = 'x'
 
     expect(selection).toEqual({exclusions: [{a: 'b'}]})
