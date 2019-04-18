@@ -55,7 +55,7 @@
     "jest": "24.5.0",
     "jest-sonar-reporter": "2.0.0",
     "lodash.ismatch": "4.4.0",
-    "mini-css-extract-plugin": "0.5.0",
+    "mini-css-extract-plugin": "0.6.0",
     "mock-local-storage": "1.1.8",
     "null-loader": "0.1.1",
     "optimize-css-assets-webpack-plugin": "5.0.1",
@@ -65,10 +65,10 @@
     "svg-url-loader": "2.3.2",
     "sw-precache-webpack-plugin": "0.11.5",
     "terser-webpack-plugin": "1.2.3",
-    "webpack": "4.29.6",
-    "webpack-bundle-analyzer": "3.1.0",
+    "webpack": "4.30.0",
+    "webpack-bundle-analyzer": "3.3.2",
     "webpack-cli": "3.3.0",
-    "webpack-dev-server": "3.2.1",
+    "webpack-dev-server": "3.3.1",
     "webpack-pwa-manifest": "4.0.0"
   },
   "directories": {
