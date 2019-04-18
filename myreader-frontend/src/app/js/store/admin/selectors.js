@@ -1,38 +1,19 @@
-import {createSelector} from 'reselect'
 import {cloneObject} from '../../store/shared/objects'
-
-const routerQuerySelector = state => state.router.query
-const adminSelector = state => state.admin
 
 export const applicationInfoSelector = state => state.admin.applicationInfo
 
-export const filteredBySearchFeedsSelector = createSelector(
-  adminSelector,
-  routerQuerySelector,
-  (admin, {q}) => {
-    return {
-      feeds: q
-        ? admin.feeds
-          .filter(({title}) => title.toLowerCase().indexOf(q.toLowerCase()) !== -1)
-          .map(cloneObject)
-        : admin.feeds.map(cloneObject)
-    }
-  }
-)
+export const filteredBySearchFeedsSelector = (q = '') =>
+  state => ({
+    feeds: q
+      ? state.admin.feeds
+        .filter(({title}) => title.toLowerCase().indexOf(q.toLowerCase()) !== -1)
+        .map(cloneObject)
+      : state.admin.feeds.map(cloneObject)
+  })
 
-export const feedFetchFailuresSelector =
-  createSelector(
-    adminSelector,
-    admin => {
-      return {
-        ...cloneObject(admin.fetchFailures),
-        fetchFailuresLoading: admin.fetchFailuresLoading
-      }
-    }
-  )
+export const feedFetchFailuresSelector = state => ({
+  ...cloneObject(state.admin.fetchFailures),
+  fetchFailuresLoading: state.admin.fetchFailuresLoading
+})
 
-export const feedEditFormSelector =
-  createSelector(
-    adminSelector,
-    admin => cloneObject(admin.editForm)
-  )
+export const feedEditFormSelector = state => cloneObject(state.admin.editForm)

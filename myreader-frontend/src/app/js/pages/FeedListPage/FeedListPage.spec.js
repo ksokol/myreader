@@ -11,22 +11,25 @@ jest.mock('../../components', () => ({
 
 describe('FeedListPage', () => {
 
-  let state, dispatch
+  let state, dispatch, props
 
-  const createWrapper = () => mount(<FeedListPage dispatch={dispatch} state={state} />)
+  const createWrapper = () => mount(<FeedListPage {...props} dispatch={dispatch} state={state} />)
 
   beforeEach(() => {
     dispatch= jest.fn()
 
     state = {
-      router: {
-        query: {}
-      },
       admin: {
         feeds: [
           {title: 'title1'},
           {title: 'title2'}
         ]
+      }
+    }
+
+    props = {
+      location: {
+        search: ''
       }
     }
   })
@@ -40,8 +43,8 @@ describe('FeedListPage', () => {
     })
   })
 
-  it('should initialize component with given prop "feeds" filtered by prop "router.query.q"', () => {
-    state.router.query.q = 'title2'
+  it('should initialize component with given prop "feeds" filtered by prop "props.location.search"', () => {
+    props.location.search = 'q=title2'
 
     expect(createWrapper().find('FeedList').props()).toEqual({
       feeds: [{title: 'title2'}]
