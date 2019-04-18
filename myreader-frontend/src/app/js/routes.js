@@ -70,18 +70,18 @@ export const logoutRoute = () => ({
 })
 
 export const adminOverviewRoute = () => ({
-  route: ['admin', 'overview'],
-  url: `!/admin${ADMIN_OVERVIEW_URL}`
+  route: ['app', 'overview'],
+  url: `!/app${ADMIN_OVERVIEW_URL}`
 })
 
 export const adminFeedRoute = ({q = undefined /* TODO Remove q parameter from UI Router */, ...rest} = {}) => ({
-  route: ['admin', 'feed'],
+  route: ['app', 'feed'],
   query: {q, ...rest},
-  url: `!/admin${ADMIN_FEEDS_URL}`
+  url: `!/app${ADMIN_FEEDS_URL}`
 })
 
 export const adminFeedDetailRoute = ({uuid}) => ({
-  route: ['admin', 'feed-detail'],
+  route: ['app', 'feed-detail'],
   query: {uuid},
-  url: formatUrl(`!/admin${ADMIN_FEED_URL}`, {uuid})
+  url: formatUrl(`!/app${ADMIN_FEED_URL}`, {uuid})
 })

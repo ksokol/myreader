@@ -44,12 +44,6 @@ const states = [
     component: secured(withSubscriptions(SidenavLayout), [ROLE_USER, ROLE_ADMIN])
   },
   {
-    name: 'admin',
-    url: '!/admin',
-    abstract: true,
-    component: secured(withSubscriptions(SidenavLayout), [ROLE_USER, ROLE_ADMIN])
-  },
-  {
     name: 'app.entries',
     url: ENTRIES_URL,
     params: {
@@ -90,18 +84,18 @@ const states = [
     component: secured(SettingsPageContainer, [ROLE_USER, ROLE_ADMIN])
   },
   {
-    name: 'admin.overview',
+    name: 'app.overview',
     url: ADMIN_OVERVIEW_URL,
     component: secured(MaintenancePage, [ROLE_ADMIN])
   },
   {
-    name: 'admin.feed',
+    name: 'app.feed',
     url: ADMIN_FEEDS_URL,
     dynamic: true,
     component: secured(FeedListPage, [ROLE_ADMIN])
   },
   {
-    name: 'admin.feed-detail',
+    name: 'app.feed-detail',
     url: ADMIN_FEED_URL,
     component: secured(FeedEditPage, [ROLE_ADMIN])
   }

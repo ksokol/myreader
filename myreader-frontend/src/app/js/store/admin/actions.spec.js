@@ -205,7 +205,7 @@ describe('admin actions', () => {
     it('should dispatch action(s) defined in success property', () => {
       deleteFeed('expectedUuid').success.forEach(action => store.dispatch(action()))
 
-      expect(store.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['admin', 'feed']})
+      expect(store.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['app', 'feed']})
       expect(store.getActions()[1]).toEqual({type: 'FEED_DELETED', uuid: 'expectedUuid'})
     })
 

@@ -101,8 +101,8 @@ describe('Navigation', () => {
       {route: ['app', 'subscriptions'], query: {q: undefined}},
       {route: ['app', 'bookmarks'], query: {entryTagEqual: null, q: undefined}},
       {route: ['app', 'settings'], query: undefined},
-      {route: ['admin', 'overview'], query: undefined },
-      {route: ['admin', 'feed'], query: {q: undefined}},
+      {route: ['app', 'overview'], query: undefined },
+      {route: ['app', 'feed'], query: {q: undefined}},
       {route: ['app', 'subscription-add'], query: undefined},
       {route: ['logout'], query: undefined}
     ])

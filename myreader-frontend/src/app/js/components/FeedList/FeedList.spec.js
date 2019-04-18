@@ -28,7 +28,7 @@ describe('FeedList', () => {
   it('should pass prop "to" to link component', () => {
     const links = createComponent().find('Link')
 
-    expect(links.at(0).prop('to')).toContainObject({query: {uuid: '1'}, route: ['admin', 'feed-detail']})
-    expect(links.at(1).prop('to')).toContainObject({query: {uuid: '2'}, route: ['admin', 'feed-detail']})
+    expect(links.at(0).prop('to')).toContainObject({query: {uuid: '1'}, route: ['app', 'feed-detail']})
+    expect(links.at(1).prop('to')).toContainObject({query: {uuid: '2'}, route: ['app', 'feed-detail']})
   })
 })
