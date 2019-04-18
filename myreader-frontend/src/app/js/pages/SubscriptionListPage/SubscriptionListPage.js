@@ -1,11 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
+import {withRouter} from 'react-router-dom'
 import {ListLayout, SubscriptionList} from '../../components'
 import {filteredBySearchSubscriptionsSelector} from '../../store'
+import {toQueryObject} from '../../shared/location-utils'
 
-const mapStateToProps = state => ({
-  ...filteredBySearchSubscriptionsSelector(state)
+const mapStateToProps = (state, ownProps) => ({
+  ...filteredBySearchSubscriptionsSelector(toQueryObject(ownProps.location).q)(state)
 })
 
 const SubscriptionListPage = props =>
@@ -14,9 +16,12 @@ const SubscriptionListPage = props =>
   />
 
 SubscriptionListPage.propTypes = {
-  subscriptions: PropTypes.any.isRequired
+  subscriptions: PropTypes.any.isRequired,
+  location: PropTypes.object.isRequired
 }
 
-export default connect(
-  mapStateToProps
-)(SubscriptionListPage)
+export default withRouter(
+  connect(
+    mapStateToProps
+  )(SubscriptionListPage)
+)

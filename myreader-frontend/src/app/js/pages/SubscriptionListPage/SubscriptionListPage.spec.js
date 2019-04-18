@@ -11,20 +11,23 @@ jest.mock('../../components', () => ({
 
 describe('SubscriptionListPage', () => {
 
-  let state
+  let state, props
 
-  const createComponent = () => mount(<SubscriptionListPage state={state} />)
+  const createComponent = () => mount(<SubscriptionListPage {...props} state={state} />)
 
   beforeEach(() => {
     state = {
-      router: {
-        query: {}
-      },
       subscription: {
         subscriptions: [
           {uuid: '1', title: 'title1'},
           {uuid: '2', title: 'title2'}
         ]
+      }
+    }
+
+    props = {
+      location: {
+        search: ''
       }
     }
   })
@@ -43,7 +46,7 @@ describe('SubscriptionListPage', () => {
   })
 
   it('should initialize list panel  component with given props filtered by state "router.query.q"', () => {
-    state.router.query.q = 'title2'
+    props.location.search = 'q=title2'
 
     expect(createComponent().find('ListLayout').props()).toContainObject({
       listPanel: {
