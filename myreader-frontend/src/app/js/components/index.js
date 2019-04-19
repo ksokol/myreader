@@ -24,4 +24,5 @@ export {default as SidenavLayout} from './SidenavLayout/SidenavLayout'
 export {default as secured} from './secured/secured'
 export {default as FeedEditForm} from './FeedEditForm/FeedEditForm'
 export {default as withSubscriptions} from './SidenavLayout/withSubscriptions'
+export {default as LoginForm} from './LoginForm/LoginForm'
 

@@ -1,4 +1,4 @@
-.my-login-page {
+.my-login-form {
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -6,15 +6,15 @@
     width: 100%;
 }
 
-.my-login-page > .my-input {
+.my-login-form > .my-input {
     width: 300px;
 }
 
-.my-login-page__message {
+.my-login-form__message {
     height: 30px;
 }
 
-.my-login-page__message > span {
+.my-login-form__message > span {
     display: block;
     color: rgb(255, 87, 34);
     text-align: center;
