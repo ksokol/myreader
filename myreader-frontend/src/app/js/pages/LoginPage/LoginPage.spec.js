@@ -1,5 +1,5 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import LoginPage from './LoginPage'
 
 /* eslint-disable react/prop-types */
@@ -10,37 +10,39 @@ jest.mock('../../components', () => ({
 
 describe('LoginPage', () => {
 
-  let props
+  let state, dispatch
 
-  const createWrapper = () => shallow(<LoginPage {...props} />)
+  const createWrapper = () => mount(<LoginPage state={state} dispatch={dispatch} />)
 
   beforeEach(() => {
-    props = {
-      authorized: false,
-      a: 'b',
-      c: 'd',
-      onLogin: jest.fn()
+    dispatch = jest.fn()
+
+    state = {
+      security: {
+        roles: [],
+        loginForm: {
+          loginPending: true,
+          loginFailed: true
+        }
+      }
     }
   })
 
   it('should pass expected props to login form component', () => {
-    expect(createWrapper().find('LoginForm').props()).toEqual({
-      a: 'b',
-      c: 'd',
-      onLogin: props.onLogin
-    })
+    expect(createWrapper().find('LoginForm').props()).toEqual(expect.objectContaining({
+      loginPending: true,
+      loginFailed: true
+    }))
   })
 
-  it('should trigger prop function "onLogin" when login button clicked', () => {
+  it('should dispatch action POST_LOGIN when prop function onLogin called', () => {
     createWrapper().find('LoginForm').props().onLogin({
-      username: 'expected username',
-      password: 'expected password'
+      username: 'expected-username',
+      password: 'expected-password'
     })
 
-    expect(props.onLogin).toHaveBeenCalledWith({
-      username: 'expected username',
-      password: 'expected password'
-    })
+    expect(dispatch.mock.calls[0][0].type).toEqual('POST_LOGIN')
+    expect(dispatch.mock.calls[0][0].body.toString()).toEqual('username=expected-username&password=expected-password')
   })
 
   it('should not redirect to entries page when user is not authorized', () => {
@@ -48,7 +50,7 @@ describe('LoginPage', () => {
   })
 
   it('should redirect to entries page when user is authorized', () => {
-    props.authorized = true
+    state.security.roles = ['USER']
 
     expect(createWrapper().find('Redirect').prop('to')).toContainObject({
       query: {q: undefined},

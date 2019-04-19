@@ -1,4 +1,4 @@
-import {LoginPageContainer, SettingsPageContainer} from './containers'
+import {SettingsPageContainer} from './containers'
 import {
   ADMIN_FEED_URL,
   ADMIN_FEEDS_URL,
@@ -19,6 +19,7 @@ import {
   EntryStreamPage,
   FeedEditPage,
   FeedListPage,
+  LoginPage,
   LogoutPage,
   MaintenancePage,
   SubscribePage,
@@ -30,7 +31,7 @@ const states = [
   {
     name: 'login',
     url: LOGIN_URL,
-    component: LoginPageContainer
+    component: LoginPage
   },
   {
     name: 'logout',
