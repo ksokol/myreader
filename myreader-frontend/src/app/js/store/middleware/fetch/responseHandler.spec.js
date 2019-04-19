@@ -1,4 +1,4 @@
-import {responseHandler} from './response-handler'
+import {responseHandler} from './responseHandler'
 import {createMockStore} from '../../../shared/test-utils'
 import arrayMiddleware from '../array/arrayMiddleware'
 
@@ -34,7 +34,7 @@ describe('responseHandler', () => {
     givenHandledResponse({}, {ok: false, status: 500, data: 'response'})
 
     expect(actual).toContainObject({ok: false})
-    expect(store.getActions().length).toEqual(2)
+    expect(store.getActions()).toHaveLength(2)
     expect(store.getActions()[0]).toContainObject({type: 'SHOW_NOTIFICATION', notification: {text: 'response'}})
     expect(store.getActions()[1]).toEqualActionType('FETCH_END')
   })
@@ -43,7 +43,7 @@ describe('responseHandler', () => {
     givenHandledResponse({}, {ok: false, status: 500, data: {a: 'b'}})
 
     expect(actual).toContainObject({ok: false})
-    expect(store.getActions().length).toEqual(2)
+    expect(store.getActions()).toHaveLength(2)
     expect(store.getActions()[0]).toContainObject({
       type: 'SHOW_NOTIFICATION',
       notification: {
@@ -65,7 +65,7 @@ describe('responseHandler', () => {
     }, {ok: false, status: 500, data: 'response'})
 
     expect(actual).toContainObject({ok: false})
-    expect(store.getActions().length).toEqual(2)
+    expect(store.getActions()).toHaveLength(2)
     expect(store.getActions()[0]).toEqualActionType('FETCH_END')
     expect(store.getActions()[1]).toEqual({type: 'ERROR_ACTION', response: 'response'})
   })
@@ -83,7 +83,7 @@ describe('responseHandler', () => {
     )
 
     expect(actual).toContainObject({ok: false})
-    expect(store.getActions().length).toEqual(3)
+    expect(store.getActions()).toHaveLength(3)
     expect(store.getActions()[0]).toEqualActionType('FETCH_END')
     expect(store.getActions()[1]).toEqual({type: 'ERROR_ACTION1', response: 'response'})
     expect(store.getActions()[2]).toEqual({type: 'ERROR_ACTION2', response: 'response'})
@@ -93,7 +93,7 @@ describe('responseHandler', () => {
     givenHandledResponse({}, {ok: true, status: 200, data: 'response'})
 
     expect(actual).toContainObject({ok: true})
-    expect(store.getActions().length).toEqual(1)
+    expect(store.getActions()).toHaveLength(1)
     expect(store.getActions()[0]).toEqualActionType('FETCH_END')
   })
 
@@ -105,7 +105,7 @@ describe('responseHandler', () => {
     }, {ok: true, status: 200, data: 'response'})
 
     expect(actual).toContainObject({ok: true})
-    expect(store.getActions().length).toEqual(2)
+    expect(store.getActions()).toHaveLength(2)
     expect(store.getActions()[0]).toEqualActionType('FETCH_END')
     expect(store.getActions()[1]).toEqual({type: 'SUCCESS_ACTION', response: 'response'})
   })
@@ -123,7 +123,7 @@ describe('responseHandler', () => {
     )
 
     expect(actual).toContainObject({ok: true})
-    expect(store.getActions().length).toEqual(3)
+    expect(store.getActions()).toHaveLength(3)
     expect(store.getActions()[0]).toEqualActionType('FETCH_END')
     expect(store.getActions()[1]).toEqual({type: 'SUCCESS_ACTION1', response: 'response'})
     expect(store.getActions()[2]).toEqual({type: 'SUCCESS_ACTION2', response: 'response'})
@@ -136,7 +136,7 @@ describe('responseHandler', () => {
       }
     }, {ok: true, headers: {a: 'b', c: 'd'}})
 
-    expect(store.getActions().length).toEqual(2)
+    expect(store.getActions()).toHaveLength(2)
     expect(store.getActions()[1]).toEqual({type: 'SUCCESS_ACTION', headers: {a: 'b', c: 'd'}})
   })
 
@@ -147,7 +147,7 @@ describe('responseHandler', () => {
       }
     }, {ok: false, headers: {a: 'b', c: 'd'}})
 
-    expect(store.getActions().length).toEqual(2)
+    expect(store.getActions()).toHaveLength(2)
     expect(store.getActions()[1]).toEqual({type: 'ERROR_ACTION', headers: {a: 'b', c: 'd'}})
   })
 
@@ -158,7 +158,7 @@ describe('responseHandler', () => {
       }
     }, {ok: true, status: 200})
 
-    expect(store.getActions().length).toEqual(2)
+    expect(store.getActions()).toHaveLength(2)
     expect(store.getActions()[1]).toEqual({type: 'SUCCESS_ACTION', status: 200})
   })
 
@@ -169,7 +169,7 @@ describe('responseHandler', () => {
       }
     }, {ok: false, status: 404})
 
-    expect(store.getActions().length).toEqual(2)
+    expect(store.getActions()).toHaveLength(2)
     expect(store.getActions()[1]).toEqual({type: 'ERROR_ACTION', status: 404})
   })
 
@@ -198,20 +198,49 @@ describe('responseHandler', () => {
   })
 
   it('should dispatch finalize action when response succeeded', () => {
-    givenHandledResponse({finalize: () => ({type: 'FINALIZE_ACTION'})}, {ok: true})
+    givenHandledResponse({
+      finalize: (data, headers, status) => ({type: 'FINALIZE_ACTION', data, headers, status})
+    },
+    {ok: true, data: 'expected data', headers: {a: 'b'}, status: 200}
+    )
 
-    expect(store.getActions()[1]).toEqual({type: 'FINALIZE_ACTION'})
+    expect(store.getActions()[1]).toEqual({
+      type: 'FINALIZE_ACTION',
+      data: 'expected data',
+      headers: {a: 'b'},
+      status: 200
+    })
   })
 
   it('should dispatch finalize action when response failed', () => {
-    givenHandledResponse({finalize: () => ({type: 'FINALIZE_ACTION'})}, {ok: false})
+    givenHandledResponse({
+      finalize: (data, headers, status) => ({
+        type: 'FINALIZE_ACTION', data, headers, status})
+    },
+    {ok: false, data: 'expected data', headers: {a: 'b'}, status: 0}
+    )
 
-    expect(store.getActions()[2]).toEqual({type: 'FINALIZE_ACTION'})
+    expect(store.getActions()[2]).toEqual({
+      type: 'FINALIZE_ACTION',
+      data: 'expected data',
+      headers: {a: 'b'},
+      status: 0
+    })
   })
 
   it('should dispatch finalize action when response is unauthorized', () => {
-    givenHandledResponse({finalize: () => ({type: 'FINALIZE_ACTION'})}, {ok: false, status: 401})
+    givenHandledResponse({
+      finalize: (data, headers, status) => ({
+        type: 'FINALIZE_ACTION', data, headers, status})
+    },
+    {ok: false, data: 'expected data', headers: {a: 'b'}, status: 401}
+    )
 
-    expect(store.getActions()[2]).toEqual({type: 'FINALIZE_ACTION'})
+    expect(store.getActions()[2]).toEqual({
+      type: 'FINALIZE_ACTION',
+      data: 'expected data',
+      headers: {a: 'b'},
+      status: 401
+    })
   })
 })

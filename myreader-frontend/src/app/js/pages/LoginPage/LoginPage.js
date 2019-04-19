@@ -4,28 +4,71 @@ import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {LoginForm} from '../../components'
 import {entriesRoute} from '../../routes'
-import {authorizedSelector, loginFormSelector, tryLogin} from '../../store'
+import {authorized, authorizedSelector, routeChange, tryLogin} from '../../store'
 
 const mapStateToProps = state => ({
-  ...loginFormSelector(state),
   ...authorizedSelector(state)
-})
-
-const mapDispatchToProps = dispatch => ({
-  onLogin: loginData => dispatch(tryLogin(loginData))
 })
 
 class LoginPage extends React.Component {
 
   static propTypes = {
-    authorized: PropTypes.bool.isRequired
+    authorized: PropTypes.bool.isRequired,
+    dispatch: PropTypes.func.isRequired
+  }
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      loginPending: false,
+      loginFailed: false
+    }
+  }
+
+  onLogin = ({username, password}) => {
+    this.setState({
+      loginPending: true,
+      loginFailed: false
+    })
+
+    this.props.dispatch(tryLogin({
+      username,
+      password,
+      success: this.onSuccess,
+      finalize: this.onFinalize
+    }))
+  }
+
+  onSuccess = (response, headers) => {
+    this.setState({
+      loginPending: false,
+      loginFailed: false
+    })
+
+    const roles = headers['x-my-authorities'].split(',')
+    return [
+      authorized({roles}),
+      routeChange(entriesRoute())
+    ]
+  }
+
+  onFinalize = (data, headers, status) => {
+    this.setState({
+      loginPending: false,
+      loginFailed: status === 401
+    })
   }
 
   render() {
     const {
-      authorized,
-      ...formProps
+      authorized
     } = this.props
+
+    const {
+      loginPending,
+      loginFailed
+    } = this.state
 
     return authorized ? (
       <Redirect
@@ -33,13 +76,14 @@ class LoginPage extends React.Component {
       />
     ) : (
       <LoginForm
-        {...formProps}
+        loginPending={loginPending}
+        loginFailed={loginFailed}
+        onLogin={this.onLogin}
       />
     )
   }
 }
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  mapStateToProps
 )(LoginPage)

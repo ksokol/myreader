@@ -1,8 +1,6 @@
 import * as types from '../../store/action-types'
 import {getLastSecurityState, setLastSecurityState} from './security'
 import {LOGIN, LOGOUT} from '../../constants'
-import {routeChange} from '../../store'
-import {entriesRoute} from '../../routes'
 
 export const updateSecurity = () => {
   const {roles} = getLastSecurityState()
@@ -31,19 +29,7 @@ export const logout = finalize => {
   }
 }
 
-const loginStart = () => {
-  return {
-    type: types.LOGIN_START
-  }
-}
-
-const loginEnd = () => {
-  return {
-    type: types.LOGIN_END
-  }
-}
-
-export const tryLogin = ({username, password}) => {
+export const tryLogin = ({username, password, success, finalize}) => {
   const searchParams = new URLSearchParams()
   searchParams.set('username', username)
   searchParams.set('password', password)
@@ -55,14 +41,7 @@ export const tryLogin = ({username, password}) => {
       'content-type': 'application/x-www-form-urlencoded'
     },
     body: searchParams,
-    before: loginStart,
-    success: (response, headers) => {
-      const roles = headers['x-my-authorities'].split(',')
-      return [
-        authorized({roles}),
-        routeChange(entriesRoute())
-      ]
-    },
-    finalize: loginEnd
+    success,
+    finalize
   }
 }

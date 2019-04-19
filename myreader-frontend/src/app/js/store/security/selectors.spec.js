@@ -1,4 +1,4 @@
-import {authorizedSelector, loginFormSelector} from '../../store'
+import {authorizedSelector} from '../../store'
 
 describe('security selectors', () => {
 
@@ -15,22 +15,6 @@ describe('security selectors', () => {
       authorized: true,
       isAdmin: true,
       roles: ['ADMIN']
-    })
-  })
-
-  it('loginFormSelector should return loginForm', () => {
-    const state = {
-      security: {
-        loginForm: {
-          loginPending: true,
-          loginFailed: true
-        }
-      }
-    }
-
-    expect(loginFormSelector(state)).toEqual({
-      loginPending: true,
-      loginFailed: true
     })
   })
 })

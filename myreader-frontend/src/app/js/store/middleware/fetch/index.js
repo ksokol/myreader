@@ -1,6 +1,6 @@
 import {createExchangeHandler} from './exchange-handler'
 import {exchange} from './exchange'
-import {responseHandler} from './response-handler'
+import {responseHandler} from './responseHandler'
 import {createFetchMiddleware} from './fetch-middleware'
 
 const exchangeHandler = createExchangeHandler(params => exchange(params), responseHandler)

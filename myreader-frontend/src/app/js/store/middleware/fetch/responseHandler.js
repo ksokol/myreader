@@ -17,14 +17,14 @@ export function responseHandler(action, response) {
   if (response.ok) {
     actions.push(fetchEnd())
     actions.push(...invokeActionOrActions(action.success, response))
-    actions.push(...invokeActionOrActions(action.finalize))
+    actions.push(...invokeActionOrActions(action.finalize, response))
     return {ok: true, actions}
   }
 
   if (response.status === 401) {
     actions.push(fetchEnd())
     actions.push(unauthorized())
-    actions.push(...invokeActionOrActions(action.finalize))
+    actions.push(...invokeActionOrActions(action.finalize, response))
     return {ok: false, actions}
   }
 
@@ -37,6 +37,6 @@ export function responseHandler(action, response) {
     actions.push(...invokedActions)
   }
 
-  actions.push(...invokeActionOrActions(action.finalize))
+  actions.push(...invokeActionOrActions(action.finalize, response))
   return {ok: false, actions}
 }

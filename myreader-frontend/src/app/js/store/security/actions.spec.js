@@ -1,13 +1,12 @@
 import {authorized, logout, tryLogin, unauthorized, updateSecurity} from '../../store'
 import {createMockStore} from '../../shared/test-utils'
-import arrayMiddleware from '../middleware/array/arrayMiddleware'
 
 describe('security actions', () => {
 
   let store
 
   beforeEach(() => {
-    store = createMockStore([arrayMiddleware])
+    store = createMockStore()
     localStorage.clear()
   })
 
@@ -68,12 +67,6 @@ describe('security actions', () => {
 
   describe('action creator tryLogin', () => {
 
-    it('should dispatch action defined in before property', () => {
-      store.dispatch(tryLogin({}).before())
-
-      expect(store.getActionTypes()).toEqual(['LOGIN_START'])
-    })
-
     it('should contain expected action type', () => {
       store.dispatch(tryLogin({}))
 
@@ -88,32 +81,13 @@ describe('security actions', () => {
       expect(store.getActions()[0].body.toString()).toEqual('username=a&password=b')
     })
 
-    it('should dispatch action defined in success property (USER)', () => {
-      store.dispatch(tryLogin({}))
-      const success = store.getActions()[0].success
-      store.clearActions()
-      store.dispatch(success(null, {'x-my-authorities': 'USER'}))
+    it('should contain expected success and finalize callback functions', () => {
+      const success = () => ({})
+      const finalize = () => ({})
+      store.dispatch(tryLogin({success, finalize}))
 
-      expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
-      expect(store.getActions()[0]).toContainActionData({roles: ['USER']})
-      expect(store.getActions()[1]).toContainActionData({route: ['app', 'entries']})
-    })
-
-    it('should dispatch action defined in success property (ADMIN)', () => {
-      store.dispatch(tryLogin({}))
-      const success = store.getActions()[0].success
-      store.clearActions()
-      store.dispatch(success(null, {'x-my-authorities': 'ADMIN'}))
-
-      expect(store.getActionTypes()).toEqual(['SECURITY_UPDATE', 'ROUTE_CHANGED'])
-      expect(store.getActions()[0]).toContainActionData({roles: ['ADMIN']})
-      expect(store.getActions()[1]).toContainActionData({route: ['app', 'entries']})
-    })
-
-    it('should dispatch action defined in finalize property', () => {
-      store.dispatch(tryLogin({}).finalize())
-
-      expect(store.getActionTypes()).toEqual(['LOGIN_END'])
+      expect(store.getActions()[0].success).toEqual(success)
+      expect(store.getActions()[0].finalize).toEqual(finalize)
     })
   })
 })

@@ -19,23 +19,19 @@ describe('LoginPage', () => {
 
     state = {
       security: {
-        roles: [],
-        loginForm: {
-          loginPending: true,
-          loginFailed: true
-        }
+        roles: []
       }
     }
   })
 
   it('should pass expected props to login form component', () => {
     expect(createWrapper().find('LoginForm').props()).toEqual(expect.objectContaining({
-      loginPending: true,
-      loginFailed: true
+      loginPending: false,
+      loginFailed: false
     }))
   })
 
-  it('should dispatch action POST_LOGIN when prop function onLogin called', () => {
+  it('should dispatch action POST_LOGIN when prop function "onLogin" called', () => {
     createWrapper().find('LoginForm').props().onLogin({
       username: 'expected-username',
       password: 'expected-password'
@@ -56,5 +52,83 @@ describe('LoginPage', () => {
       query: {q: undefined},
       route: ['app', 'entries']
     })
+  })
+
+  it('should set prop "loginPending" to true when prop function "onLogin" called', () => {
+    const wrapper = createWrapper()
+    wrapper.find('LoginForm').props().onLogin({})
+    wrapper.update()
+
+    expect(wrapper.find('LoginForm').props()).toEqual(expect.objectContaining({
+      loginPending: true,
+      loginFailed: false
+    }))
+  })
+
+  it('should set prop "loginPending" to false when prop function "onLogin" succeeded', () => {
+    const wrapper = createWrapper()
+    wrapper.find('LoginForm').props().onLogin({})
+    wrapper.update()
+
+    dispatch.mock.calls[0][0].success(null, {'x-my-authorities': ''})
+    wrapper.update()
+
+    expect(wrapper.find('LoginForm').props()).toEqual(expect.objectContaining({
+      loginPending: false,
+      loginFailed: false
+    }))
+  })
+
+  it('should not set prop "loginFailed" to true when login succeeded', () => {
+    const wrapper = createWrapper()
+    wrapper.find('LoginForm').props().onLogin({})
+    wrapper.update()
+
+    dispatch.mock.calls[0][0].finalize(null, null, 200)
+    wrapper.update()
+
+    expect(wrapper.find('LoginForm').props()).toEqual(expect.objectContaining({
+      loginPending: false,
+      loginFailed: false
+    }))
+  })
+
+  it('should set prop "loginFailed" to true when login failed', () => {
+    const wrapper = createWrapper()
+    wrapper.find('LoginForm').props().onLogin({})
+    wrapper.update()
+
+    dispatch.mock.calls[0][0].finalize(null, null, 401)
+    wrapper.update()
+
+    expect(wrapper.find('LoginForm').props()).toEqual(expect.objectContaining({
+      loginPending: false,
+      loginFailed: true
+    }))
+  })
+
+  it('should dispatch action SECURITY_UPDATE when login succeeded', () => {
+    const wrapper = createWrapper()
+    wrapper.find('LoginForm').props().onLogin({})
+
+    const successActions = dispatch.mock.calls[0][0].success(null, {'x-my-authorities': 'USER'})
+
+    expect(successActions[0]).toEqual({
+      type: 'SECURITY_UPDATE',
+      authorized: true,
+      roles: ['USER']
+    })
+  })
+
+  it('should dispatch action ROUTE_CHANGED when login succeeded', () => {
+    const wrapper = createWrapper()
+    wrapper.find('LoginForm').props().onLogin({})
+
+    const successActions = dispatch.mock.calls[0][0].success(null, {'x-my-authorities': 'USER'})
+
+    expect(successActions[1]).toEqual(expect.objectContaining({
+      type: 'ROUTE_CHANGED',
+      route: ['app', 'entries']
+    }))
   })
 })
