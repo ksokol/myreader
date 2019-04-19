@@ -111,24 +111,12 @@ describe('LoginPage', () => {
     const wrapper = createWrapper()
     wrapper.find('LoginForm').props().onLogin({})
 
-    const successActions = dispatch.mock.calls[0][0].success(null, {'x-my-authorities': 'USER'})
+    const successAction = dispatch.mock.calls[0][0].success(null, {'x-my-authorities': 'USER'})
 
-    expect(successActions[0]).toEqual({
+    expect(successAction).toEqual({
       type: 'SECURITY_UPDATE',
       authorized: true,
       roles: ['USER']
     })
-  })
-
-  it('should dispatch action ROUTE_CHANGED when login succeeded', () => {
-    const wrapper = createWrapper()
-    wrapper.find('LoginForm').props().onLogin({})
-
-    const successActions = dispatch.mock.calls[0][0].success(null, {'x-my-authorities': 'USER'})
-
-    expect(successActions[1]).toEqual(expect.objectContaining({
-      type: 'ROUTE_CHANGED',
-      route: ['app', 'entries']
-    }))
   })
 })

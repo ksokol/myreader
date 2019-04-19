@@ -4,7 +4,7 @@ import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {LoginForm} from '../../components'
 import {entriesRoute} from '../../routes'
-import {authorized, authorizedSelector, routeChange, tryLogin} from '../../store'
+import {authorized, authorizedSelector, tryLogin} from '../../store'
 
 const mapStateToProps = state => ({
   ...authorizedSelector(state)
@@ -47,10 +47,7 @@ class LoginPage extends React.Component {
     })
 
     const roles = headers['x-my-authorities'].split(',')
-    return [
-      authorized({roles}),
-      routeChange(entriesRoute())
-    ]
+    return authorized({roles})
   }
 
   onFinalize = (data, headers, status) => {
