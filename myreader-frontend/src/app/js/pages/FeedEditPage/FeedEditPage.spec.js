@@ -53,6 +53,9 @@ describe('FeedEditPage', () => {
         params: {
           uuid: 'uuid1'
         }
+      },
+      history: {
+        replace: jest.fn()
       }
     }
   })
@@ -177,7 +180,7 @@ describe('FeedEditPage', () => {
     expect(wrapper.find('FeedEditForm').prop('changePending')).toEqual(false)
   })
 
-  it('should dispatch action ROUTE_CHANGED and FEED_DELETED when prop function "onRemove" succeeded', () => {
+  it('should dispatch action FEED_DELETED when prop function "onRemove" succeeded', () => {
     const wrapper = createWrapper()
     wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
     wrapper.update()
@@ -187,13 +190,24 @@ describe('FeedEditPage', () => {
 
     const successActions = dispatch.mock.calls[0][0].success()
 
-    expect(successActions[0]()).toEqual(expect.objectContaining({
-      type: 'ROUTE_CHANGED',
-      route: ['app', 'feed']
-    }))
-    expect(successActions[1]()).toEqual(expect.objectContaining({
+    expect(successActions()).toEqual(expect.objectContaining({
       type: 'FEED_DELETED',
       uuid: '1'
+    }))
+  })
+
+  it('should redirect to feed list page when prop function "onRemove" succeeded', () => {
+    const wrapper = createWrapper()
+    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
+    wrapper.update()
+    dispatch.mockReset()
+    wrapper.find('FeedEditForm').props().onRemove('1')
+    wrapper.update()
+
+    dispatch.mock.calls[0][0].success()
+
+    expect(props.history.replace).toHaveBeenCalledWith(expect.objectContaining({
+      route: ['app', 'feed']
     }))
   })
 

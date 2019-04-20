@@ -11,7 +11,6 @@ import {
   feedFetchFailuresSelector,
   fetchFeed,
   fetchFeedFetchFailures,
-  routeChange,
   saveFeed,
   showErrorNotification,
   showSuccessNotification
@@ -37,6 +36,9 @@ class FeedEditPage extends React.Component {
       params: PropTypes.shape({
         uuid: PropTypes.string.isRequired
       }).isRequired
+    }).isRequired,
+    history: PropTypes.shape({
+      replace: PropTypes.func.isRequired
     }).isRequired,
     dispatch: PropTypes.func.isRequired,
     feedFetchFailuresClear: PropTypes.func.isRequired,
@@ -98,10 +100,8 @@ class FeedEditPage extends React.Component {
     this.props.dispatch(deleteFeed({
       uuid,
       success: () => {
-        return [
-          () => routeChange(adminFeedRoute()),
-          () => feedDeleted(uuid)
-        ]
+        this.props.history.replace(adminFeedRoute())
+        return () => feedDeleted(uuid)
       },
       error: (response, headers, status) => {
         return (status === 409 && showErrorNotification('Can not delete. Feed has subscriptions'))
