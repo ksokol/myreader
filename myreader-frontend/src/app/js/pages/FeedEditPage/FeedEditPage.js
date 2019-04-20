@@ -5,72 +5,135 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import {FeedEditForm} from '../../components'
 import {
-  clearFeedEditForm,
   deleteFeed,
-  feedEditFormChangeData,
-  feedEditFormSelector,
+  feedDeleted,
   feedFetchFailuresClear,
   feedFetchFailuresSelector,
+  fetchFeed,
   fetchFeedFetchFailures,
-  loadFeedIntoEditForm,
-  saveFeedEditForm
+  routeChange,
+  saveFeed,
+  showErrorNotification,
+  showSuccessNotification
 } from '../../store'
 import {FEEDS} from '../../constants'
+import {adminFeedRoute} from '../../routes'
+import {toFeed} from '../../store/admin/feed'
 
 const mapStateToProps = state => ({
-  ...feedEditFormSelector(state),
   ...feedFetchFailuresSelector(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  onChangeFormData: feedEditFormChangeData,
-  onSaveFormData: saveFeedEditForm,
-  onRemove: deleteFeed,
   onMore: fetchFeedFetchFailures,
-  clearFeedEditForm,
   feedFetchFailuresClear,
-  loadFeedIntoEditForm,
   fetchFeedFetchFailures,
 }, dispatch)
 
 class FeedEditPage extends React.Component {
 
+  static propTypes = {
+    match: PropTypes.shape({
+      params: PropTypes.shape({
+        uuid: PropTypes.string.isRequired
+      }).isRequired
+    }).isRequired,
+    dispatch: PropTypes.func.isRequired,
+    feedFetchFailuresClear: PropTypes.func.isRequired,
+    fetchFeedFetchFailures: PropTypes.func.isRequired,
+  }
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      feed: null,
+      changePending: false,
+      validations: []
+    }
+  }
+
   componentDidMount() {
     const {uuid} = this.props.match.params
 
-    this.props.clearFeedEditForm()
     this.props.feedFetchFailuresClear()
-    this.props.loadFeedIntoEditForm(uuid)
     this.props.fetchFeedFetchFailures({path: `${FEEDS}/${uuid}/fetchError`})
+    this.loadFeed(uuid)
   }
 
-  render = () => <FeedEditForm {...this.props} />
-}
+  loadFeed = uuid => {
+    this.props.dispatch(fetchFeed({
+      uuid,
+      success: response => this.setState({feed: toFeed(response)})
+    }))
+  }
 
-FeedEditPage.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      uuid: PropTypes.string.isRequired
-    }).isRequired
-  }).isRequired,
-  data: PropTypes.shape({
-    uuid: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired
-  }),
-  validations: PropTypes.any,
-  failures: PropTypes.any,
-  links: PropTypes.any,
-  changePending: PropTypes.bool.isRequired,
-  fetchFailuresLoading: PropTypes.bool.isRequired,
-  onChangeFormData: PropTypes.func.isRequired,
-  onSaveFormData: PropTypes.func.isRequired,
-  onRemove: PropTypes.func.isRequired,
-  onMore: PropTypes.func.isRequired,
-  clearFeedEditForm: PropTypes.func.isRequired,
-  feedFetchFailuresClear: PropTypes.func.isRequired,
-  loadFeedIntoEditForm: PropTypes.func.isRequired,
-  fetchFeedFetchFailures: PropTypes.func.isRequired,
+  onSaveFeed = feed => {
+    this.setState({
+      changePending: true
+    })
+
+    this.props.dispatch(saveFeed({
+      feed,
+      success: () => showSuccessNotification('Feed saved'),
+      error: error => {
+        if (error.status === 400) {
+          this.setState({validations: error.fieldErrors})
+          return []
+        }
+      },
+      finalize: () => {
+        this.setState({
+          changePending: false
+        })
+      }
+    }))
+  }
+
+  onDeleteFeed = uuid => {
+    this.setState({
+      changePending: true
+    })
+
+    this.props.dispatch(deleteFeed({
+      uuid,
+      success: () => {
+        return [
+          () => routeChange(adminFeedRoute()),
+          () => feedDeleted(uuid)
+        ]
+      },
+      error: (response, headers, status) => {
+        return (status === 409 && showErrorNotification('Can not delete. Feed has subscriptions'))
+          || (status !== 400 && showErrorNotification(response))
+          || undefined
+      },
+      finalize: () => {
+        this.setState({
+          changePending: false
+        })
+      }
+    }))
+  }
+
+  render() {
+    const {
+      feed,
+      changePending,
+      validations
+    } = this.state
+
+    return feed ? (
+      <FeedEditForm
+        {...this.props}
+        data={feed}
+        changePending={changePending}
+        validations={validations}
+        onSaveFormData={this.onSaveFeed}
+        onRemove={this.onDeleteFeed}
+      />
+    ) : null
+  }
 }
 
 export default withRouter(

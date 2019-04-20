@@ -6,110 +6,119 @@ import {Button, ConfirmButton, FeedFetchErrors, Icon, Input, withValidations} fr
 export const FeedTitleInput = withValidations(Input)
 export const FeedUrlInput = withValidations(Input)
 
-const FeedEditForm = props => {
-  if (!props.data) {
-    return null
+export default class FeedEditForm extends React.Component {
+
+  static propTypes = {
+    data: PropTypes.shape({
+      uuid: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      url: PropTypes.string.isRequired
+    }),
+    validations: PropTypes.any,
+    failures: PropTypes.any,
+    links: PropTypes.any,
+    changePending: PropTypes.bool.isRequired,
+    fetchFailuresLoading: PropTypes.bool.isRequired,
+    onSaveFormData: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
+    onMore: PropTypes.func.isRequired
   }
 
-  const {
-    data,
-    failures,
-    links,
-    fetchFailuresLoading,
-    validations,
-    changePending,
-    onChangeFormData,
-    onSaveFormData,
-    onRemove,
-    onMore
-  } = props
+  constructor(props) {
+    super(props)
 
-  return (
-    <div
-      className='my-feed-edit-form'
-    >
-      <form>
-        <FeedTitleInput
-          name='title'
-          value={data.title}
-          label='Title'
-          disabled={changePending}
-          validations={validations}
-          onChange={event => onChangeFormData({...data, title: event.target.value})}
-        />
+    this.state = {
+      title: props.data.title,
+      url: props.data.url
+    }
+  }
 
-        <div
-          className='my-feed-edit-form__origin'
-        >
-          <FeedUrlInput
-            name='url'
-            value={data.url}
-            label='Url'
+  render() {
+    const {
+      data,
+      failures,
+      links,
+      fetchFailuresLoading,
+      validations,
+      changePending,
+      onSaveFormData,
+      onRemove,
+      onMore
+    } = this.props
+
+    const {
+      title,
+      url
+    } = this.state
+
+    return (
+      <div
+        className='my-feed-edit-form'
+      >
+        <form>
+          <FeedTitleInput
+            name='title'
+            value={title}
+            label='Title'
             disabled={changePending}
             validations={validations}
-            onChange={event => onChangeFormData({...data, url: event.target.value})}
+            onChange={({target: {value}}) => this.setState({title: value})}
           />
 
-          <a
-            href={data.url}
-            target='_blank'
-            rel='noopener noreferrer'
+          <div
+            className='my-feed-edit-form__origin'
           >
-            <Icon
-              type='link'
+            <FeedUrlInput
+              name='url'
+              value={url}
+              label='Url'
+              disabled={changePending}
+              validations={validations}
+              onChange={({target: {value}}) => this.setState({url: value})}
             />
-          </a>
-        </div>
 
-        <div
-          className='my-feed-edit-form__buttons'
+            <a
+              href={url}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <Icon
+                type='link'
+              />
+            </a>
+          </div>
+
+          <div
+            className='my-feed-edit-form__buttons'
+          >
+            <Button
+              disabled={changePending}
+              onClick={() => onSaveFormData({...data, ...this.state})}
+              primary>
+              Save
+            </Button>
+
+            <ConfirmButton
+              disabled={changePending}
+              onClick={() => onRemove(data.uuid)}
+              caution>
+              Delete
+            </ConfirmButton>
+          </div>
+        </form>
+
+        <h2
+          className='my-feed-edit-form__fetch-error-title'
         >
-          <Button
-            disabled={changePending}
-            onClick={() => onSaveFormData(data)}
-            primary>
-            Save
-          </Button>
-
-          <ConfirmButton
-            disabled={changePending}
-           onClick={() => onRemove(data.uuid)}
-           caution>
-            Delete
-          </ConfirmButton>
-        </div>
-      </form>
-
-      <h2
-        className='my-feed-edit-form__fetch-error-title'
-      >
-        Fetch errors
-      </h2>
-      <FeedFetchErrors
-        failures={failures}
-        links={links}
-        loading={fetchFailuresLoading}
-        onMore={onMore}
-      />
-    </div>
-  )
+          Fetch errors
+        </h2>
+        <FeedFetchErrors
+          failures={failures}
+          links={links}
+          loading={fetchFailuresLoading}
+          onMore={onMore}
+        />
+      </div>
+    )
+  }
 }
-
-FeedEditForm.propTypes = {
-  data: PropTypes.shape({
-    uuid: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired
-  }),
-  validations: PropTypes.any,
-  failures: PropTypes.any,
-  links: PropTypes.any,
-  changePending: PropTypes.bool.isRequired,
-  fetchFailuresLoading: PropTypes.bool.isRequired,
-  onChangeFormData: PropTypes.func.isRequired,
-  onSaveFormData: PropTypes.func.isRequired,
-  onRemove: PropTypes.func.isRequired,
-  onMore: PropTypes.func.isRequired
-}
-
-export default FeedEditForm

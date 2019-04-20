@@ -15,5 +15,3 @@ export const feedFetchFailuresSelector = state => ({
   ...cloneObject(state.admin.fetchFailures),
   fetchFailuresLoading: state.admin.fetchFailuresLoading
 })
-
-export const feedEditFormSelector = state => cloneObject(state.admin.editForm)

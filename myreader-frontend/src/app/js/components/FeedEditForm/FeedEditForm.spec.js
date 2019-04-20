@@ -2,7 +2,7 @@ import React from 'react'
 import {shallow} from 'enzyme'
 import FeedEditForm from './FeedEditForm'
 
-describe('FeedEditPageForm', () => {
+describe('FeedEditForm', () => {
 
   let props
 
@@ -22,17 +22,10 @@ describe('FeedEditPageForm', () => {
       failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}],
       changePending: true,
       fetchFailuresLoading: true,
-      onChangeFormData: jest.fn(),
       onSaveFormData: jest.fn(),
       onRemove: jest.fn(),
       onMore: jest.fn()
     }
-  })
-
-  it('should not render component when prop "data" is defined', () => {
-    props.data = undefined
-
-    expect(createWrapper().children().length).toEqual(0)
   })
 
   it('should render component when prop "data" is defined', () => {
@@ -48,16 +41,6 @@ describe('FeedEditPageForm', () => {
     })
   })
 
-  it('should trigger prop function "onChangeFormData" when title input changed', () => {
-    createWrapper().find('[name="title"]').props().onChange({target: {value: 'changed title'}})
-
-    expect(props.onChangeFormData).toHaveBeenCalledWith({
-      uuid: 'uuid 1',
-      title: 'changed title',
-      url: 'url 1'
-    })
-  })
-
   it('should pass expected props to url input component', () => {
     props.changepending = false
 
@@ -66,16 +49,6 @@ describe('FeedEditPageForm', () => {
       label: 'Url',
       disabled: true,
       validations: [{field: 'title', message: 'validation message'}]
-    })
-  })
-
-  it('should trigger prop function "onChangeFormData" when url input changed', () => {
-    createWrapper().find('[name="url"]').props().onChange({target: {value: 'changed url'}})
-
-    expect(props.onChangeFormData).toHaveBeenCalledWith({
-      uuid: 'uuid 1',
-      title: 'title 1',
-      url: 'changed url'
     })
   })
 

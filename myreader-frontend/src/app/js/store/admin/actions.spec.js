@@ -6,12 +6,13 @@ import {
   feedFetchFailuresReceived,
   feedsReceived,
   fetchApplicationInfo,
+  fetchFeed,
   fetchFeedFetchFailures,
   fetchFeeds,
-  rebuildSearchIndex
+  rebuildSearchIndex,
+  saveFeed
 } from '../../store'
 import {createMockStore} from '../../shared/test-utils'
-import {clearFeedEditForm, feedEditFormChangeData, loadFeedIntoEditForm, saveFeedEditForm} from './actions'
 
 describe('admin actions', () => {
 
@@ -184,67 +185,20 @@ describe('admin actions', () => {
 
   describe('action creator deleteFeed', () => {
 
-    it('should dispatch actions defined in before property', () => {
-      store.dispatch(deleteFeed({}).before())
+    it('should contain expected actions', () => {
+      const success = () => ({})
+      const error = () => ({})
+      const finalize = () => ({})
 
-      expect(store.getActionTypes()).toEqual(['FEED_EDIT_FORM_CHANGING'])
-    })
+      store.dispatch(deleteFeed({uuid: 'expectedUuid', success, error, finalize}))
 
-    it('should contain expected action type', () => {
-      store.dispatch(deleteFeed())
-
-      expect(store.getActionTypes()).toEqual(['DELETE_FEED'])
-    })
-
-    it('should contain expected action data', () => {
-      store.dispatch(deleteFeed('expectedUuid'))
-
-      expect(store.getActions()[0].url).toContain('/feeds/expectedUuid')
-    })
-
-    it('should dispatch action(s) defined in success property', () => {
-      deleteFeed('expectedUuid').success.forEach(action => store.dispatch(action()))
-
-      expect(store.getActions()[0]).toContainObject({type: 'ROUTE_CHANGED', route: ['app', 'feed']})
-      expect(store.getActions()[1]).toEqual({type: 'FEED_DELETED', uuid: 'expectedUuid'})
-    })
-
-    it('should return error action(s) when status code is 409', () => {
-      const error = deleteFeed().error
-      store.dispatch(error(null, null, 409))
-
-      expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-      expect(store.getActions()[0]).toContainActionData({
-        notification: {
-          text: 'Can not delete. Feed has subscriptions',
-          type: 'error'
-        }
+      expect(store.getActions()[0]).toEqual({
+        type: 'DELETE_FEED',
+        url: 'api/2/feeds/expectedUuid',
+        success,
+        error,
+        finalize
       })
-    })
-
-    it('should return error action(s) when status code is 500', () => {
-      const error = deleteFeed().error
-      store.dispatch(error('expected error', null, 500))
-
-      expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION'])
-      expect(store.getActions()[0]).toContainActionData({
-        notification: {
-          text: 'expected error',
-          type: 'error'
-        }
-      })
-    })
-
-    it('should not return any error action(s) when status code is 400', () => {
-      const error = deleteFeed().error
-
-      expect(error(null, null, 400)).toEqual(undefined)
-    })
-
-    it('should dispatch actions defined in finalize property', () => {
-      store.dispatch(deleteFeed({}).finalize())
-
-      expect(store.getActionTypes()).toEqual(['FEED_EDIT_FORM_CHANGED'])
     })
   })
 
@@ -304,106 +258,37 @@ describe('admin actions', () => {
     })
   })
 
-  describe('action creator clearFeedEditForm', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(clearFeedEditForm())
-
-      expect(store.getActionTypes()).toEqual(['FEED_EDIT_FORM_CLEAR'])
-    })
-  })
-
-  describe('action creator loadFeedIntoEditForm', () => {
-
-    it('should fetch feed by uuid', () => {
-      store.dispatch(loadFeedIntoEditForm('uuid1'))
-
-      expect(store.getActionTypes()).toEqual(['GET_FEED'])
-    })
-
-    it('should contain expected feed resource url', () => {
-      store.dispatch(loadFeedIntoEditForm('uuid1'))
-
-      expect(store.getActions()[0].url).toMatch(/\/feeds\/uuid1$/)
-    })
+  describe('action creator fetchFeed', () => {
 
     it('should dispatch load action when feed fetched', () => {
-      const success = loadFeedIntoEditForm('uuid1').success
-      store.dispatch(success({uuid: 'uuid1', a: 'b', c: 'd', links: [{rel: 'self', href: 'expected href'}]}))
+      const success = () => ({})
+      store.dispatch(fetchFeed({uuid: 'uuid1', success}))
 
-      expect(store.getActionTypes()).toEqual(['FEED_EDIT_FORM_LOAD'])
-      expect(store.getActions()[0]).toContainActionData({
-        feed: {
-          links: {self: {path: 'expected href', query: {}}},
-          uuid: 'uuid1',
-          a: 'b',
-          c: 'd'
-        }
+      expect(store.getActions()[0]).toEqual({
+        type: 'GET_FEED',
+        url: 'api/2/feeds/uuid1',
+        success
       })
     })
   })
 
-  describe('action creator feedEditFormChangeData', () => {
+  describe('action creator saveFeed', () => {
 
-    it('should contain expected action type', () => {
-      store.dispatch(feedEditFormChangeData())
+    it('should contain expected action', () => {
+      const success = () => ({})
+      const error = () => ({})
+      const finalize = () => ({})
 
-      expect(store.getActionTypes()).toEqual(['FEED_EDIT_FORM_CHANGE_DATA'])
-    })
+      store.dispatch(saveFeed({feed: {uuid: '1', title: 'expected title'}, success, error, finalize}))
 
-    it('should contain expected action payload', () => {
-      store.dispatch(feedEditFormChangeData({a: 'b', c: 'd'}))
-
-      expect(store.getActions()[0]).toContainObject({data: {a: 'b', c: 'd'}})
-    })
-  })
-
-  describe('action creator saveFeedEditForm', () => {
-
-    it('should dispatch actions defined in before property', () => {
-      saveFeedEditForm({}).before.forEach(action => store.dispatch(action()))
-
-      expect(store.getActionTypes()).toEqual(['FEED_EDIT_FORM_CHANGING', 'FEED_EDIT_FORM_VALIDATIONS'])
-      expect(store.getActions()[1]).toContainActionData({validations: []})
-    })
-
-    it('should contain expected patch action type', () => {
-      store.dispatch(saveFeedEditForm({uuid: '1'}))
-
-      expect(store.getActionTypes()).toEqual(['PATCH_FEED'])
-      expect(store.getActions()[0].url).toMatch(/api\/2\/feeds\/1$/)
-    })
-
-    it('should return expected action data', () => {
-      store.dispatch(saveFeedEditForm({uuid: '1', title: 'expected title'}))
-
-      expect(store.getActions()[0]).toContainActionData({body: {uuid: '1', title: 'expected title'}})
-    })
-
-    it('should dispatch actions defined in success property', () => {
-      const success = saveFeedEditForm({}).success
-      success.forEach(action => store.dispatch(action({uuid: '1', title: 'expected updated title'})))
-
-      expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION', 'FEED_EDIT_FORM_SAVED'])
-      expect(store.getActions()[0]).toContainActionData({notification: {text: 'Feed saved', type: 'success'}})
-      expect(store.getActions()[1]).toContainActionData({data: {uuid: '1', title: 'expected updated title'}})
-    })
-
-    it('should dispatch actions defined in error property', () => {
-      store.dispatch(saveFeedEditForm({}).error({status: 400, fieldErrors: [{a: 'b', c: 'd'}]}))
-
-      expect(store.getActionTypes()).toEqual(['FEED_EDIT_FORM_VALIDATIONS'])
-      expect(store.getActions()[0]).toContainActionData({validations: [{a: 'b', c: 'd'}]})
-    })
-
-    it('should not return any error action when status is not 403', () => {
-      expect(saveFeedEditForm({}).error({status: 403})).toBeUndefined()
-    })
-
-    it('should dispatch actions defined in finalize property', () => {
-      store.dispatch(saveFeedEditForm({}).finalize())
-
-      expect(store.getActionTypes()).toEqual(['FEED_EDIT_FORM_CHANGED'])
+      expect(store.getActions()[0]).toEqual(expect.objectContaining({
+        type: 'PATCH_FEED',
+        url: 'api/2/feeds/1',
+        body: {uuid: '1', title: 'expected title'},
+        success,
+        error,
+        finalize
+      }))
     })
   })
 })

@@ -7,11 +7,6 @@ export default function initialState() {
     applicationInfo: {},
     feeds: [],
     fetchFailures: {failures: []},
-    fetchFailuresLoading: false,
-    editForm: {
-      changePending: false,
-      data: null,
-      validations: []
-    }
+    fetchFailuresLoading: false
   }
 }

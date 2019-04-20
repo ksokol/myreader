@@ -1,5 +1,4 @@
 import {applicationInfoSelector, feedFetchFailuresSelector, filteredBySearchFeedsSelector} from '../../store'
-import {feedEditFormSelector} from './selectors'
 
 describe('admin selectors', () => {
 
@@ -11,12 +10,7 @@ describe('admin selectors', () => {
         applicationInfo: {a: 'b'},
         feeds: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}],
         fetchFailures: {failures: [{a: 'b', c: 'd'}]},
-        fetchFailuresLoading: true,
-        editForm: {
-          changePending: true,
-          data: {a: 'b', c: 'd'},
-          validations: [{e: 'f'}, {g: 'h'}]
-        }
+        fetchFailuresLoading: true
       }
     }
   })
@@ -64,13 +58,5 @@ describe('admin selectors', () => {
     state.admin.feeds[0].uuid = 'x'
 
     expect(actual.map(it => it.uuid)).toEqual(['1', '2'])
-  })
-
-  it('feedEditFormSelector should return edit form', () => {
-    expect(feedEditFormSelector(state)).toEqual({
-      changePending: true,
-      data: {a: 'b', c: 'd'},
-      validations: [{e: 'f'}, {g: 'h'}]
-    })
   })
 })

@@ -1,10 +1,9 @@
 import * as types from '../../store/action-types'
 import {FEEDS, INFO, PROCESSING} from '../../constants'
-import {routeChange, showErrorNotification, showSuccessNotification} from '../../store'
+import {showErrorNotification, showSuccessNotification} from '../../store'
 import {toApplicationInfo} from './application-info'
-import {toFeed, toFeedFetchFailures, toFeeds} from './feed'
+import {toFeedFetchFailures, toFeeds} from './feed'
 import {toUrlString} from '../../store/shared/links'
-import {adminFeedRoute} from '../../routes'
 
 export const rebuildSearchIndex = () => {
   return {
@@ -64,79 +63,22 @@ export const fetchFeedFetchFailures = link => {
   }
 }
 
-export const clearFeedEditForm = () => {
-  return {
-    type: types.FEED_EDIT_FORM_CLEAR
-  }
-}
-
-const loadFeedEditForm = feed => {
-  return {
-    type: types.FEED_EDIT_FORM_LOAD,
-    feed
-  }
-}
-
-export const loadFeedIntoEditForm = uuid => {
+export const fetchFeed = ({uuid, success}) => {
   return {
     type: 'GET_FEED',
     url: `${FEEDS}/${uuid}`,
-    success: response => loadFeedEditForm(toFeed(response))
+    success
   }
 }
 
-export const feedEditFormChangeData = data => {
-  return {
-    type: types.FEED_EDIT_FORM_CHANGE_DATA,
-    data
-  }
-}
-
-const feedEditFormChanging = () => {
-  return {
-    type: types.FEED_EDIT_FORM_CHANGING
-  }
-}
-
-const feedEditFormChanged = () => {
-  return {
-    type: types.FEED_EDIT_FORM_CHANGED
-  }
-}
-
-const feedEditFormValidations = validations => {
-  return {
-    type: types.FEED_EDIT_FORM_VALIDATIONS,
-    validations
-  }
-}
-
-export const feedEditFormSaved = raw => {
-  return {
-    type: types.FEED_EDIT_FORM_SAVED,
-    data: toFeed(raw)
-  }
-}
-
-export const saveFeedEditForm = feed => {
+export const saveFeed = ({feed, success, error, finalize}) => {
   return {
     type: 'PATCH_FEED',
     url: `${FEEDS}/${feed.uuid}`,
     body: feed,
-    before: [
-      feedEditFormChanging,
-      () => feedEditFormValidations([])
-    ],
-    success: [
-      () => showSuccessNotification('Feed saved'),
-      response => feedEditFormSaved(response)
-    ],
-    error: error => {
-      if (error.status === 400) {
-        return feedEditFormValidations(error.fieldErrors)
-      }
-    },
-    finalize: feedEditFormChanged
+    success,
+    error,
+    finalize
   }
 }
 
@@ -147,19 +89,12 @@ export const feedDeleted = uuid => {
   }
 }
 
-export const deleteFeed = uuid => {
+export const deleteFeed = ({uuid, success, error, finalize}) => {
   return {
     type: 'DELETE_FEED',
     url: `${FEEDS}/${uuid}`,
-    before: feedEditFormChanging,
-    success: [
-      () => routeChange(adminFeedRoute()),
-      () => feedDeleted(uuid)
-    ],
-    error: (response, headers, status) =>
-      (status === 409 && showErrorNotification('Can not delete. Feed has subscriptions')) ||
-      (status !== 400 && showErrorNotification(response)) ||
-      undefined,
-    finalize: feedEditFormChanged
+    success,
+    error,
+    finalize
   }
 }
