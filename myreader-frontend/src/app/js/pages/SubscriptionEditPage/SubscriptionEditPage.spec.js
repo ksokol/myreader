@@ -1,6 +1,12 @@
 import React from 'react'
-import {mount, shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import SubscriptionEditPage from './SubscriptionEditPage'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../components', () => ({
+  SubscriptionEditForm: () => null
+}))
+/* eslint-enable */
 
 describe('SubscriptionEditPage', () => {
 
@@ -45,62 +51,15 @@ describe('SubscriptionEditPage', () => {
   it('should not render component when prop "data" is undefined', () => {
     state.subscription.editForm.data = undefined
 
-    expect(createWrapper().find('form').exists()).toEqual(false)
+    expect(createWrapper().find('SubscriptionEditForm').exists()).toEqual(false)
   })
 
   it('should render component when prop "data" is defined', () => {
-    expect(createWrapper().find('form').exists()).toEqual(true)
+    expect(createWrapper().find('SubscriptionEditForm').exists()).toEqual(true)
   })
 
-  it('should pass expected props to title input component', () => {
-    expect(createWrapper().find('form > [name="title"]').props()).toEqual(expect.objectContaining({
-      value: 'title1',
-      name: 'title',
-      label: 'Title',
-      disabled: true,
-      validations: [{field: 'title', message: 'validation message'}]
-    }))
-  })
-
-  it('should dispatch action SUBSCRIPTION_EDIT_FORM_CHANGE_DATA when title input changed', () => {
-    createWrapper().find('form > [name="title"]').props().onChange({target: {value: 'changed title'}})
-
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SUBSCRIPTION_EDIT_FORM_CHANGE_DATA',
-      data: {
-        uuid: '1',
-        title: 'changed title',
-        origin: 'origin1',
-        createdAt: '2017-12-29',
-        feedTag: {
-          uuid: '2', name: 'name 1'
-        }
-      }
-    })
-  })
-
-  it('should pass expected props to origin input component', () => {
-    expect(createWrapper().find('Input[name="origin"]').props()).toEqual(expect.objectContaining({
-      value: 'origin1',
-      label: 'Url',
-      disabled: true
-    }))
-  })
-
-  it('should pass expected props to tag input component', () => {
-    expect(createWrapper().find('form > [name="tag"]').props()).toEqual(expect.objectContaining({
-      value: 'name 1',
-      label: 'Tag',
-      disabled: true,
-      values: ['name 1', 'name 2']
-    }))
-  })
-
-  it('should dispatch action SUBSCRIPTION_EDIT_FORM_CHANGE_DATA when tag selected', () => {
-    createWrapper().find('form > [name="tag"]').props().onSelect('changed name')
-
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SUBSCRIPTION_EDIT_FORM_CHANGE_DATA',
+  it('should pass expected props to component', () => {
+    expect(createWrapper().find('SubscriptionEditForm').props()).toEqual(expect.objectContaining({
       data: {
         uuid: '1',
         title: 'title1',
@@ -108,28 +67,55 @@ describe('SubscriptionEditPage', () => {
         createdAt: '2017-12-29',
         feedTag: {
           uuid: '2',
-          name: 'changed name'
+          name: 'name 1'
+        }
+      },
+      changePending: true,
+      subscriptionTags: [
+        {uuid: '2', name: 'name 1'},
+        {uuid: '3', name: 'name 2'},
+      ],
+      exclusions: [
+        {uuid: '10', pattern: 'exclusion1', hitCount: 1},
+        {uuid: '11', pattern: 'exclusion2', hitCount: 2}
+      ],
+      validations: [
+        {field: 'title', message: 'validation message'}
+      ]
+    }))
+  })
+
+  it('should dispatch action SUBSCRIPTION_EDIT_FORM_CHANGE_DATA when prop function "subscriptionEditFormChangeData" triggered', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().subscriptionEditFormChangeData({
+      uuid: '1',
+      title: 'changed title',
+      origin: 'origin',
+      feedTag: {
+        uuid: '2',
+        name: 'changed feedTag name'
+      }
+    })
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SUBSCRIPTION_EDIT_FORM_CHANGE_DATA',
+      data: {
+        uuid: '1',
+        title: 'changed title',
+        origin: 'origin',
+        feedTag: {
+          uuid: '2',
+          name: 'changed feedTag name'
         }
       }
     })
   })
 
-  it('should pass expected props to chips component', () => {
-    expect(createWrapper().find('Chips').props()).toContainObject({
-      disabled: true,
-      values: [
-        {uuid: '10', pattern: 'exclusion1', hitCount: 1},
-        {uuid: '11', pattern: 'exclusion2', hitCount: 2}
-      ],
-    })
-  })
-
-  it('should return expected chip item key', () => {
-    expect(createWrapper().find('Chips').props().keyFn({uuid: '10'})).toEqual('10')
-  })
-
-  it('should dispatch action POST_SUBSCRIPTION_EXCLUSION_PATTERN when tag added', () => {
-    createWrapper().find('Chips').props().onAdd('changed tag')
+  it('should dispatch action POST_SUBSCRIPTION_EXCLUSION_PATTERN when prop function "addSubscriptionExclusionPattern" triggered', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().addSubscriptionExclusionPattern('1', 'changed tag')
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'POST_SUBSCRIPTION_EXCLUSION_PATTERN',
@@ -140,8 +126,10 @@ describe('SubscriptionEditPage', () => {
     }))
   })
 
-  it('should dispatch action DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS when tag deleted', () => {
-    createWrapper().find('Chips').props().onRemove({uuid: 'uuid 2'})
+  it('should dispatch action DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS when prop function "removeSubscriptionExclusionPattern" triggered', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().removeSubscriptionExclusionPattern('1', 'uuid 2')
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS',
@@ -149,48 +137,38 @@ describe('SubscriptionEditPage', () => {
     }))
   })
 
-  it('should render chip item', () => {
-    const Item = createWrapper().find('Chips').props().renderItem
-    const exclusions = state.subscription.exclusions['1']
-
-    expect(shallow(<Item {...exclusions[1]}/>).html()).toEqual('<strong>exclusion2</strong> <em>(2)</em>')
-  })
-
-  it('should pass expected props to primary button component', () => {
-    expect(createWrapper().find('[primary=true]').props()).toContainObject({
-      disabled: true,
-      children: 'Save'
+  it('should dispatch action PATCH_SUBSCRIPTION when prop function "saveSubscriptionEditForm" triggered', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({
+      uuid: '1',
+      title: 'changed title',
+      origin: 'origin',
+      feedTag: {
+        uuid: '2',
+        name: 'changed feedTag name'
+      }
     })
-  })
-
-  it('should dispatch action PATCH_SUBSCRIPTION when primary button clicked', () => {
-    createWrapper().find('[primary=true]').props().onClick()
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'PATCH_SUBSCRIPTION',
       url: 'api/2/subscriptions/1',
       body: {
         uuid: '1',
-        title: 'title1',
-        origin: 'origin1',
-        createdAt: '2017-12-29',
+        title: 'changed title',
+        origin: 'origin',
         feedTag: {
           uuid: '2',
-          name: 'name 1'
+          name: 'changed feedTag name'
         }
       }
     }))
   })
 
-  it('should pass expected props to caution button component', () => {
-    expect(createWrapper().find('ConfirmButton').props()).toContainObject({
-      disabled: true,
-      children: 'Delete'
-    })
-  })
-
-  it('should dispatch action DELETE_SUBSCRIPTION when caution button clicked', () => {
-    createWrapper().find('ConfirmButton').props().onClick()
+  it('should dispatch action DELETE_SUBSCRIPTION when prop function "deleteSubscription" triggered', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'DELETE_SUBSCRIPTION',

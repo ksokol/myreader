@@ -1,0 +1,27 @@
+.my-subscription-edit-form {
+    padding: 10px;
+}
+
+.my-subscription-edit-form__origin {
+    display: flex;
+    align-items: center;
+}
+
+.my-subscription-edit-form__origin > .my-input {
+    flex-grow: 1;
+}
+
+.my-subscription-edit-form__origin > a {
+    color: grey;
+}
+
+.my-subscription-edit-form__pattern-title {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    user-select: none;
+}
+
+.my-subscription-edit-form__buttons {
+    float: right;
+}
