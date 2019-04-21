@@ -138,6 +138,19 @@ describe('FeedEditPage', () => {
     expect(wrapper.find('FeedEditForm').prop('validations')).toEqual(['error'])
   })
 
+  it('should clear state "validations" when prop function "onSaveFormData" triggered', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
+    wrapper.update()
+    dispatch.mock.calls[0][0].error({status: 400, fieldErrors: ['error']})
+    wrapper.update()
+    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
+    wrapper.update()
+
+    expect(wrapper.find('FeedEditForm').prop('validations')).toEqual([])
+  })
+
   it('should not pass state "validations" to feed edit page when prop function "onSaveFormData" failed', () => {
     const wrapper = createWrapper()
     dispatch.mockReset()

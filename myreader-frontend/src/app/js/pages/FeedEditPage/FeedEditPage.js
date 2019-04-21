@@ -72,7 +72,8 @@ class FeedEditPage extends React.Component {
 
   onSaveFeed = feed => {
     this.setState({
-      changePending: true
+      changePending: true,
+      validations: []
     })
 
     this.props.dispatch(saveFeed({
