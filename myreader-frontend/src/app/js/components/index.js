@@ -26,4 +26,5 @@ export {default as FeedEditForm} from './FeedEditForm/FeedEditForm'
 export {default as withSubscriptions} from './SidenavLayout/withSubscriptions'
 export {default as LoginForm} from './LoginForm/LoginForm'
 export {default as SubscriptionEditForm} from './SubscriptionEditForm/SubscriptionEditForm'
+export {default as SubscribeForm} from './SubscribeForm/SubscribeForm'
 

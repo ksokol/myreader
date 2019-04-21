@@ -1,0 +1,27 @@
+.my-subscribe-form {
+    padding: 10px;
+}
+
+.my-subscribe-form__origin {
+    display: flex;
+    align-items: center;
+}
+
+.my-subscribe-form__origin > .my-input {
+    flex-grow: 1;
+}
+
+.my-subscribe-form__origin > a {
+    color: grey;
+}
+
+.my-subscribe-form__pattern-title {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    user-select: none;
+}
+
+.my-subscribe-form__buttons {
+    float: right;
+}
