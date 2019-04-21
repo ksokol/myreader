@@ -65,6 +65,9 @@ describe('SubscriptionEditPage', () => {
         params: {
           uuid: '1'
         }
+      },
+      history: {
+        replace: jest.fn()
       }
     }
   })
@@ -294,10 +297,9 @@ describe('SubscriptionEditPage', () => {
     dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
     wrapper.update()
-    const successActions = dispatch.mock.calls[0][0].success
+    dispatch.mock.calls[0][0].success[2]()
 
-    expect(successActions[2]()).toEqual(expect.objectContaining({
-      type: 'ROUTE_CHANGED',
+    expect(props.history.replace).toHaveBeenCalledWith(expect.objectContaining({
       route: ['app', 'subscriptions']
     }))
   })

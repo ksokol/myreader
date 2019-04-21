@@ -10,7 +10,6 @@ import {
   fetchSubscription,
   fetchSubscriptionExclusionPatterns,
   removeSubscriptionExclusionPattern,
-  routeChange,
   saveSubscriptionEditForm,
   showSuccessNotification,
   subscriptionDeleted,
@@ -38,6 +37,9 @@ class SubscriptionEditPage extends React.Component {
       params: PropTypes.shape({
         uuid: PropTypes.string.isRequired
       }).isRequired
+    }).isRequired,
+    history: PropTypes.shape({
+      replace: PropTypes.func.isRequired
     }).isRequired,
     dispatch: PropTypes.func.isRequired,
     removeSubscriptionExclusionPattern: PropTypes.func.isRequired,
@@ -102,7 +104,7 @@ class SubscriptionEditPage extends React.Component {
       success: [
         () => showSuccessNotification('Subscription deleted'),
         () => subscriptionDeleted(uuid),
-        () => routeChange(subscriptionsRoute())
+        () => this.props.history.replace(subscriptionsRoute())
       ],
       finalize: () => {
         this.setState({
