@@ -114,53 +114,6 @@ describe('subscription reducer', () => {
     })
   })
 
-  describe('action SUBSCRIPTION_EDIT_FORM_SAVED', () => {
-
-    const action = data => {
-      return {
-        type: 'SUBSCRIPTION_EDIT_FORM_SAVED',
-        data
-      }
-    }
-
-    beforeEach(() => {
-      state = {
-        editForm: {},
-        subscriptions: [
-          {uuid: '1', title: 'title1'},
-          {uuid: '2', title: 'title2'}
-        ]
-      }
-    })
-
-    it('should update subscription when in store', () => {
-      expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'}))).toContainObject({
-        subscriptions: [
-          {uuid: '1', title: 'title1'},
-          {uuid: '2', title: 'new title'}
-        ]
-      })
-    })
-
-    it('should add subscription to store', () => {
-      expect(subscriptionReducers(state, action({uuid: '3', title: 'title3'}))).toContainObject({
-        subscriptions: [
-          {uuid: '1', title: 'title1'},
-          {uuid: '2', title: 'title2'},
-          {uuid: '3', title: 'title3'}
-        ]
-      })
-    })
-
-    it('should update editForm', () => {
-      state = {...state, editForm: {data: {uuid: '2', title: 'a title'}}}
-
-      expect(subscriptionReducers(state, action({uuid: '2', title: 'new title'}))).toContainObject({
-        editForm: {data: {uuid: '2', title: 'new title'}}
-      })
-    })
-  })
-
   describe('action SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED', () => {
 
     const action = {
@@ -273,34 +226,6 @@ describe('subscription reducer', () => {
           changePending: false,
           data: null,
           validations: []
-        }
-      }
-
-      expect(subscriptionReducers(currentState, action)).toContainObject(expectedState)
-    })
-  })
-
-  describe('action SUBSCRIPTION_EDIT_FORM_LOAD', () => {
-
-    const action = {
-      type: 'SUBSCRIPTION_EDIT_FORM_LOAD',
-      subscription: {a: 'b'}
-    }
-
-    it('should set editForm', () => {
-      const currentState = {
-        editForm: {
-          changePending: true,
-          data: null,
-          validations: [{c: 'd'}]
-        }
-      }
-
-      const expectedState = {
-        editForm: {
-          changePending: false,
-          data: {a: 'b'},
-          validations: [{c: 'd'}]
         }
       }
 

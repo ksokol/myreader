@@ -1,8 +1,8 @@
 import * as types from '../../store/action-types'
-import {toBody, toExclusionPattern, toExclusionPatterns, toSubscription, toSubscriptions} from './subscription'
+import {toBody, toExclusionPattern, toExclusionPatterns, toSubscriptions} from './subscription'
 import {EXCLUSION_TAGS, SUBSCRIPTION_TAGS, SUBSCRIPTIONS} from '../../constants'
-import {routeChange, showSuccessNotification, subscriptionByUuidSelector} from '../../store'
-import {subscriptionRoute, subscriptionsRoute} from '../../routes'
+import {routeChange, showSuccessNotification} from '../../store'
+import {subscriptionRoute} from '../../routes'
 
 export const subscriptionsReceived = raw => {
   return {
@@ -38,46 +38,23 @@ const subscriptionEditFormChanged = () => {
   }
 }
 
-export const deleteSubscription = uuid => {
+export const deleteSubscription = ({uuid, success, finalize}) => {
   return {
     type: 'DELETE_SUBSCRIPTION',
     url: `${SUBSCRIPTIONS}/${uuid}`,
-    before: subscriptionEditFormChanging,
-    success: [
-      () => showSuccessNotification('Subscription deleted'),
-      () => subscriptionDeleted(uuid),
-      () => routeChange(subscriptionsRoute())
-    ],
-    finalize: subscriptionEditFormChanged
+    success,
+    finalize
   }
 }
 
-export const subscriptionEditFormSaved = raw => {
-  return {
-    type: types.SUBSCRIPTION_EDIT_FORM_SAVED,
-    data: toSubscription(raw)
-  }
-}
-
-export const saveSubscriptionEditForm = subscription => {
+export const saveSubscriptionEditForm = ({subscription, success, error, finalize}) => {
   return {
     type: 'PATCH_SUBSCRIPTION',
     url: `${SUBSCRIPTIONS}/${subscription.uuid}`,
     body: toBody(subscription),
-    before: [
-      subscriptionEditFormChanging,
-      () => subscriptionEditFormValidations([])
-    ],
-    success: [
-      () => showSuccessNotification('Subscription saved'),
-      response => subscriptionEditFormSaved(response)
-    ],
-    error: error => {
-      if (error.status === 400) {
-        return subscriptionEditFormValidations(error.fieldErrors)
-      }
-    },
-    finalize: subscriptionEditFormChanged
+    success,
+    error,
+    finalize
   }
 }
 
@@ -132,9 +109,7 @@ export const addSubscriptionExclusionPattern = (subscriptionUuid, pattern) => {
     type: 'POST_SUBSCRIPTION_EXCLUSION_PATTERN',
     url: `${EXCLUSION_TAGS}/${subscriptionUuid}/pattern`,
     body: {pattern},
-    before: subscriptionEditFormChanging,
-    success: response => subscriptionExclusionPatternsAdded(subscriptionUuid, response),
-    finalize: subscriptionEditFormChanged
+    success: response => subscriptionExclusionPatternsAdded(subscriptionUuid, response)
   }
 }
 
@@ -150,9 +125,7 @@ export const removeSubscriptionExclusionPattern = (subscriptionUuid, uuid) => {
   return {
     type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS',
     url: `${EXCLUSION_TAGS}/${subscriptionUuid}/pattern/${uuid}`,
-    before: subscriptionEditFormChanging,
-    success: () => subscriptionExclusionPatternsRemoved(subscriptionUuid, uuid),
-    finalize: subscriptionEditFormChanged
+    success: () => subscriptionExclusionPatternsRemoved(subscriptionUuid, uuid)
   }
 }
 
@@ -162,23 +135,11 @@ export const clearSubscriptionEditForm = () => {
   }
 }
 
-const loadSubscriptionEditForm = subscription => {
+export const fetchSubscription = ({uuid, success}) => {
   return {
-    type: types.SUBSCRIPTION_EDIT_FORM_LOAD,
-    subscription
-  }
-}
-
-export const loadSubscriptionIntoEditForm = uuid => {
-  return (dispatch, getState) => {
-    const {subscription} = subscriptionByUuidSelector(uuid)(getState())
-    return subscription ?
-      dispatch(loadSubscriptionEditForm(subscription)) :
-      dispatch({
-        type: 'GET_SUBSCRIPTION',
-        url: `${SUBSCRIPTIONS}/${uuid}`,
-        success: response => dispatch(loadSubscriptionEditForm(toSubscription(response)))
-      })
+    type: 'GET_SUBSCRIPTION',
+    url: `${SUBSCRIPTIONS}/${uuid}`,
+    success
   }
 }
 

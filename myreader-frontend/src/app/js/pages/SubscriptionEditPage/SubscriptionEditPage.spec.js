@@ -12,7 +12,23 @@ describe('SubscriptionEditPage', () => {
 
   let state, dispatch, props
 
-  const createWrapper = () => mount(<SubscriptionEditPage {...props} state={state} dispatch={dispatch} />)
+  const createWrapper = ({init} = {init: true}) => {
+    const wrapper = mount(<SubscriptionEditPage {...props} state={state} dispatch={dispatch} />)
+    if (init) {
+      dispatch.mock.calls[1][0].success({
+        uuid: '1',
+        title: 'title1',
+        origin: 'origin1',
+        createdAt: '2017-12-29',
+        feedTag: {
+          uuid: '2',
+          name: 'name 1'
+        }
+      })
+      wrapper.update()
+    }
+    return wrapper
+  }
 
   beforeEach(() => {
     dispatch = jest.fn().mockImplementation(action => {
@@ -22,6 +38,11 @@ describe('SubscriptionEditPage', () => {
     })
 
     state = {
+      common: {
+        notification: {
+          nextId: 1
+        }
+      },
       subscription: {
         editForm: {
           changePending: true,
@@ -48,13 +69,11 @@ describe('SubscriptionEditPage', () => {
     }
   })
 
-  it('should not render component when prop "data" is undefined', () => {
-    state.subscription.editForm.data = undefined
-
-    expect(createWrapper().find('SubscriptionEditForm').exists()).toEqual(false)
+  it('should not render component when state "subscription" is undefined', () => {
+    expect(createWrapper({init: false}).find('SubscriptionEditForm').exists()).toEqual(false)
   })
 
-  it('should render component when prop "data" is defined', () => {
+  it('should render component when state "subscription" is defined', () => {
     expect(createWrapper().find('SubscriptionEditForm').exists()).toEqual(true)
   })
 
@@ -70,7 +89,7 @@ describe('SubscriptionEditPage', () => {
           name: 'name 1'
         }
       },
-      changePending: true,
+      changePending: false,
       subscriptionTags: [
         {uuid: '2', name: 'name 1'},
         {uuid: '3', name: 'name 2'},
@@ -79,37 +98,8 @@ describe('SubscriptionEditPage', () => {
         {uuid: '10', pattern: 'exclusion1', hitCount: 1},
         {uuid: '11', pattern: 'exclusion2', hitCount: 2}
       ],
-      validations: [
-        {field: 'title', message: 'validation message'}
-      ]
+      validations: []
     }))
-  })
-
-  it('should dispatch action SUBSCRIPTION_EDIT_FORM_CHANGE_DATA when prop function "subscriptionEditFormChangeData" triggered', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('SubscriptionEditForm').props().subscriptionEditFormChangeData({
-      uuid: '1',
-      title: 'changed title',
-      origin: 'origin',
-      feedTag: {
-        uuid: '2',
-        name: 'changed feedTag name'
-      }
-    })
-
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SUBSCRIPTION_EDIT_FORM_CHANGE_DATA',
-      data: {
-        uuid: '1',
-        title: 'changed title',
-        origin: 'origin',
-        feedTag: {
-          uuid: '2',
-          name: 'changed feedTag name'
-        }
-      }
-    })
   })
 
   it('should dispatch action POST_SUBSCRIPTION_EXCLUSION_PATTERN when prop function "addSubscriptionExclusionPattern" triggered', () => {
@@ -165,6 +155,79 @@ describe('SubscriptionEditPage', () => {
     }))
   })
 
+  it('should set prop "changePending" to true when prop function "saveSubscriptionEditForm" called', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    wrapper.update()
+
+    expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(true)
+  })
+
+  it('should set prop "changePending" to false when prop function "saveSubscriptionEditForm" finished', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    wrapper.update()
+
+    dispatch.mock.calls[0][0].finalize()
+    wrapper.update()
+
+    expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(false)
+  })
+
+  it('should dispatch action SHOW_NOTIFICATION when prop function "saveSubscriptionEditForm" succeeded', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    wrapper.update()
+    dispatch.mock.calls[0][0].success()(dispatch, () => state)
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, {
+      type: 'SHOW_NOTIFICATION',
+      notification: {
+        id: 1,
+        text: 'Subscription saved',
+        type: 'success'
+      }
+    })
+  })
+
+  it('should pass state "validations" to feed edit page when prop function "saveSubscriptionEditForm" failed', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    wrapper.update()
+    dispatch.mock.calls[0][0].error({status: 400, fieldErrors: ['error']})
+    wrapper.update()
+
+    expect(wrapper.find('SubscriptionEditForm').prop('validations')).toEqual(['error'])
+  })
+
+  it('should not pass state "validations" to feed edit page when prop function "saveSubscriptionEditForm" failed', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    wrapper.update()
+    dispatch.mock.calls[0][0].error({status: 401, fieldErrors: ['error']})
+    wrapper.update()
+
+    expect(wrapper.find('SubscriptionEditForm').prop('validations')).toEqual([])
+  })
+
+  it('should clear state "validations" when prop function "saveSubscriptionEditForm" triggered', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    wrapper.update()
+    dispatch.mock.calls[0][0].error({status: 400, fieldErrors: ['error']})
+    wrapper.update()
+    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    wrapper.update()
+
+    expect(wrapper.find('SubscriptionEditForm').prop('validations')).toEqual([])
+  })
+
   it('should dispatch action DELETE_SUBSCRIPTION when prop function "deleteSubscription" triggered', () => {
     const wrapper = createWrapper()
     dispatch.mockReset()
@@ -176,36 +239,82 @@ describe('SubscriptionEditPage', () => {
     }))
   })
 
-  it('should dispatch action SUBSCRIPTION_EDIT_FORM_CLEAR when mounted', () => {
-    createWrapper()
+  it('should set prop "changePending" to true when prop function "deleteSubscription" called', () => {
+    const wrapper = createWrapper()
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
+    wrapper.update()
 
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SUBSCRIPTION_EDIT_FORM_CLEAR'
+    expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(true)
+  })
+
+  it('should set prop "changePending" to false when prop function "deleteSubscription" finished', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
+    wrapper.update()
+    dispatch.mock.calls[0][0].finalize()
+    wrapper.update()
+
+    expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(false)
+  })
+
+  it('should dispatch action SHOW_NOTIFICATION when prop function "deleteSubscription" succeeded', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
+    wrapper.update()
+    const successActions = dispatch.mock.calls[0][0].success
+    successActions[0]()(dispatch, () => state)
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, {
+      type: 'SHOW_NOTIFICATION',
+      notification: {
+        id: 1,
+        text: 'Subscription deleted',
+        type: 'success'
+      }
     })
   })
 
-  it('should dispatch action SUBSCRIPTION_EDIT_FORM_LOAD when mounted', () => {
+  it('should dispatch action SUBSCRIPTION_DELETED when prop function "deleteSubscription" succeeded', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
+    wrapper.update()
+    const successActions = dispatch.mock.calls[0][0].success
+
+    expect(successActions[1]()).toEqual({
+      type: 'SUBSCRIPTION_DELETED',
+      uuid: '1'
+    })
+  })
+
+  it('should dispatch action ROUTE_CHANGED when prop function "deleteSubscription" succeeded', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
+    wrapper.update()
+    const successActions = dispatch.mock.calls[0][0].success
+
+    expect(successActions[2]()).toEqual(expect.objectContaining({
+      type: 'ROUTE_CHANGED',
+      route: ['app', 'subscriptions']
+    }))
+  })
+
+  it('should dispatch action GET_SUBSCRIPTION when mounted', () => {
     createWrapper()
 
-    expect(dispatch).toHaveBeenNthCalledWith(3, {
-      type: 'SUBSCRIPTION_EDIT_FORM_LOAD',
-      subscription: {
-        uuid: '1',
-        title: 'title1',
-        origin: 'origin1',
-        createdAt: '2017-12-29',
-        feedTag: {
-          uuid: '2',
-          name: 'name 1'
-        }
-      }
-    })
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'GET_SUBSCRIPTION',
+      url: 'api/2/subscriptions/1'
+    }))
   })
 
   it('should dispatch action GET_SUBSCRIPTION_EXCLUSION_PATTERNS when mounted', () => {
     createWrapper()
 
-    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'GET_SUBSCRIPTION_EXCLUSION_PATTERNS',
       url: 'api/2/exclusions/1/pattern'
     }))

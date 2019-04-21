@@ -30,11 +30,30 @@ class SubscriptionEditForm extends React.Component {
     ),
     validations: PropTypes.any,
     changePending: PropTypes.bool.isRequired,
-    subscriptionEditFormChangeData: PropTypes.func.isRequired,
     addSubscriptionExclusionPattern: PropTypes.func.isRequired,
     removeSubscriptionExclusionPattern: PropTypes.func.isRequired,
     saveSubscriptionEditForm: PropTypes.func.isRequired,
     deleteSubscription: PropTypes.func.isRequired
+  }
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      title: props.data.title,
+      name: props.data.feedTag.name
+    }
+  }
+
+  onSaveSubscription = () => {
+    this.props.saveSubscriptionEditForm({
+      ...this.props.data,
+      title: this.state.title,
+      feedTag: {
+        ...this.props.data.feedTag,
+        name: this.state.name
+      }
+    })
   }
 
   render() {
@@ -44,12 +63,15 @@ class SubscriptionEditForm extends React.Component {
       exclusions,
       validations,
       changePending,
-      saveSubscriptionEditForm,
-      subscriptionEditFormChangeData,
       addSubscriptionExclusionPattern,
       removeSubscriptionExclusionPattern,
       deleteSubscription
     } = this.props
+
+    const {
+      title,
+      name
+    } = this.state
 
     return (
       <form
@@ -57,11 +79,11 @@ class SubscriptionEditForm extends React.Component {
       >
         <SubscriptionTitleInput
           name='title'
-          value={data.title}
+          value={title}
           label='Title'
           disabled={changePending}
           validations={validations}
-          onChange={event => subscriptionEditFormChangeData({...data, title: event.target.value})}
+          onChange={({target: {value}}) => this.setState({title: value})}
         />
 
         <div
@@ -89,9 +111,9 @@ class SubscriptionEditForm extends React.Component {
           name='tag'
           label='Tag'
           disabled={changePending}
-          value={data.feedTag.name}
+          value={name}
           values={subscriptionTags.map(it => it.name)}
-          onSelect={name => subscriptionEditFormChangeData({...data, feedTag: {...data.feedTag, name}})}
+          onSelect={name => this.setState({name})}
         />
 
         <h2
@@ -120,7 +142,7 @@ class SubscriptionEditForm extends React.Component {
         >
           <Button
             disabled={changePending}
-            onClick={() => saveSubscriptionEditForm({...data})}
+            onClick={this.onSaveSubscription}
             primary>
             Save
           </Button>

@@ -33,17 +33,6 @@ function subscriptionDeleted({state, action}) {
   }
 }
 
-function subscriptionSaved({state, action}) {
-  let subscriptions = !state.subscriptions.some(it => it.uuid === action.data.uuid) ?
-    [...state.subscriptions, action.data] :
-    state.subscriptions.map(it => it.uuid === action.data.uuid ? action.data : it)
-
-  return {
-    ...state,
-    subscriptions
-  }
-}
-
 function subscriptionExclusionPatternsReceived({state, action}) {
   const exclusions = {...state.exclusions}
   exclusions[action.subscriptionUuid] = action.patterns
@@ -91,17 +80,6 @@ function subscriptionEditFormClear({state}) {
       changePending: false,
       data: null,
       validations: []
-    }
-  }
-}
-
-function subscriptionEditFormLoad({state, action}) {
-  return {
-    ...state,
-    editForm: {
-      changePending: false,
-      data: action.subscription,
-      validations: state.editForm.validations
     }
   }
 }
@@ -166,10 +144,6 @@ export function subscriptionReducers(state = initialApplicationState().subscript
   case types.SUBSCRIPTION_DELETED: {
     return subscriptionDeleted({state, action})
   }
-  case types.SUBSCRIPTION_EDIT_FORM_SAVED: {
-    const newState = subscriptionSaved({state, action})
-    return subscriptionEditFormChangeData({state: newState, action})
-  }
   case types.SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED: {
     return subscriptionExclusionPatternsReceived({state, action})
   }
@@ -181,9 +155,6 @@ export function subscriptionReducers(state = initialApplicationState().subscript
   }
   case types.SUBSCRIPTION_EDIT_FORM_CLEAR: {
     return subscriptionEditFormClear({state, action})
-  }
-  case types.SUBSCRIPTION_EDIT_FORM_LOAD: {
-    return subscriptionEditFormLoad({state, action})
   }
   case types.SUBSCRIPTION_TAG_CHANGED: {
     return subscriptionTagChanged({state, action})

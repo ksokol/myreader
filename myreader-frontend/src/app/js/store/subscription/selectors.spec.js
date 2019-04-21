@@ -1,7 +1,6 @@
 import {
   filteredBySearchSubscriptionsSelector,
   filteredByUnseenSubscriptionsSelector,
-  subscriptionByUuidSelector,
   subscriptionEditFormSelector,
   subscriptionExclusionPatternsSelector,
   subscriptionTagsSelector
@@ -97,20 +96,6 @@ describe('subscription selector', () => {
     state.subscription.exclusions['1'][0].a = 'x'
 
     expect(selection).toEqual({exclusions: [{a: 'b'}]})
-  })
-
-  it('should return subscription for given uuid', () => {
-    state.subscription.subscriptions = [{uuid: '1', a: 'b'}, {uuid: '2', c: 'd'}]
-
-    expect(subscriptionByUuidSelector('2')(state)).toEqual({subscription: {uuid: '2', c: 'd'}})
-  })
-
-  it('should return copy of subscription', () => {
-    state.subscription.subscriptions = [{uuid: '1', a: 'b'}, {uuid: '2', c: 'd'}]
-    const selection = subscriptionByUuidSelector('1')(state)
-    state.subscription.subscriptions[0].a = 'x'
-
-    expect(selection).toEqual({subscription: {uuid: '1', a: 'b'}})
   })
 
   it('should return subscription tags', () => {

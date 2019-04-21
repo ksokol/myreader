@@ -32,7 +32,6 @@ describe('SubscriptionEditForm', () => {
         {field: 'title', message: 'validation message'}
       ],
       changePending: true,
-      subscriptionEditFormChangeData: jest.fn(),
       saveSubscriptionEditForm: jest.fn(),
       deleteSubscription: jest.fn(),
       addSubscriptionExclusionPattern: jest.fn(),
@@ -54,20 +53,6 @@ describe('SubscriptionEditForm', () => {
     }))
   })
 
-  it('should trigger prop function "subscriptionEditFormChangeData" when title input changed', () => {
-    createWrapper().find('form > [name="title"]').props().onChange({target: {value: 'changed title'}})
-
-    expect(props.subscriptionEditFormChangeData).toHaveBeenCalledWith({
-      uuid: 'uuid1',
-      title: 'changed title',
-      origin: 'origin1',
-      createdAt: '2017-12-29',
-      feedTag: {
-        uuid: '2', name: 'name 1'
-      }
-    })
-  })
-
   it('should pass expected props to origin input component', () => {
     expect(createWrapper().find('Input[name="origin"]').props()).toEqual(expect.objectContaining({
       value: 'origin1',
@@ -83,21 +68,6 @@ describe('SubscriptionEditForm', () => {
       disabled: true,
       values: ['name 1', 'name 2']
     }))
-  })
-
-  it('should trigger prop function "subscriptionEditFormChangeData" when tag selected', () => {
-    createWrapper().find('form > [name="tag"]').props().onSelect('changed name')
-
-    expect(props.subscriptionEditFormChangeData).toHaveBeenCalledWith({
-      uuid: 'uuid1',
-      title: 'title1',
-      origin: 'origin1',
-      createdAt: '2017-12-29',
-      feedTag: {
-        uuid: '2',
-        name: 'changed name'
-      }
-    })
   })
 
   it('should pass expected props to chips component', () => {

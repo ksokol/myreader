@@ -30,12 +30,6 @@ export const subscriptionExclusionPatternsSelector = (uuid = '') => {
   })
 }
 
-export const subscriptionByUuidSelector = uuid => {
-  return state => ({
-    subscription: cloneObject(state.subscription.subscriptions.find(it => it.uuid === uuid))
-  })
-}
-
 export const subscriptionTagsSelector = state => ({
   subscriptionTags: state.subscription.subscriptions
     .filter(subscription => subscription.feedTag.uuid)
