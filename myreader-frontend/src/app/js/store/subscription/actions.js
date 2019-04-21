@@ -1,8 +1,7 @@
 import * as types from '../../store/action-types'
 import {toBody, toExclusionPattern, toExclusionPatterns, toSubscriptions} from './subscription'
 import {EXCLUSION_TAGS, SUBSCRIPTION_TAGS, SUBSCRIPTIONS} from '../../constants'
-import {routeChange, showSuccessNotification} from '../../store'
-import {subscriptionRoute} from '../../routes'
+import {showSuccessNotification} from '../../store'
 
 export const subscriptionsReceived = raw => {
   return {
@@ -26,18 +25,6 @@ export const subscriptionDeleted = uuid => {
   }
 }
 
-const subscriptionEditFormChanging = () => {
-  return {
-    type: types.SUBSCRIPTION_EDIT_FORM_CHANGING
-  }
-}
-
-const subscriptionEditFormChanged = () => {
-  return {
-    type: types.SUBSCRIPTION_EDIT_FORM_CHANGED
-  }
-}
-
 export const deleteSubscription = ({uuid, success, finalize}) => {
   return {
     type: 'DELETE_SUBSCRIPTION',
@@ -58,25 +45,14 @@ export const saveSubscriptionEditForm = ({subscription, success, error, finalize
   }
 }
 
-export const saveSubscribeEditForm = subscription => {
+export const saveSubscribeEditForm = ({subscription, success, error, finalize}) => {
   return {
     type: 'POST_SUBSCRIPTION',
     url: SUBSCRIPTIONS,
-    body: toBody(subscription),
-    before: [
-      subscriptionEditFormChanging,
-      () => subscriptionEditFormValidations([])
-    ],
-    success: [
-      () => showSuccessNotification('Subscribed'),
-      ({uuid}) => routeChange(subscriptionRoute({uuid}))
-    ],
-    error: error => {
-      if (error.status === 400) {
-        return subscriptionEditFormValidations(error.fieldErrors)
-      }
-    },
-    finalize: subscriptionEditFormChanged
+    body: subscription,
+    success,
+    error,
+    finalize
   }
 }
 
@@ -129,12 +105,6 @@ export const removeSubscriptionExclusionPattern = (subscriptionUuid, uuid) => {
   }
 }
 
-export const clearSubscriptionEditForm = () => {
-  return {
-    type: types.SUBSCRIPTION_EDIT_FORM_CLEAR
-  }
-}
-
 export const fetchSubscription = ({uuid, success}) => {
   return {
     type: 'GET_SUBSCRIPTION',
@@ -155,19 +125,5 @@ export const saveSubscriptionTag = subscriptionTag => {
       },
       showSuccessNotification('Tag updated')
     ]
-  }
-}
-
-const subscriptionEditFormValidations = validations => {
-  return {
-    type: types.SUBSCRIPTION_EDIT_FORM_VALIDATIONS,
-    validations
-  }
-}
-
-export const subscriptionEditFormChangeData = data => {
-  return {
-    type: types.SUBSCRIPTION_EDIT_FORM_CHANGE_DATA,
-    data
   }
 }

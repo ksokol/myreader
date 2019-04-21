@@ -1,6 +1,5 @@
 import {
   addSubscriptionExclusionPattern,
-  clearSubscriptionEditForm,
   deleteSubscription,
   fetchSubscriptionExclusionPatterns,
   fetchSubscriptions,
@@ -10,7 +9,6 @@ import {
   saveSubscriptionEditForm,
   saveSubscriptionTag,
   subscriptionDeleted,
-  subscriptionEditFormChangeData,
   subscriptionExclusionPatternsAdded,
   subscriptionExclusionPatternsReceived,
   subscriptionExclusionPatternsRemoved,
@@ -267,15 +265,6 @@ describe('subscription actions', () => {
     })
   })
 
-  describe('action creator clearSubscriptionEditForm', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(clearSubscriptionEditForm())
-
-      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CLEAR'])
-    })
-  })
-
   describe('action creator fetchSubscription', () => {
 
     it('should contain expected action', () => {
@@ -322,67 +311,23 @@ describe('subscription actions', () => {
     })
   })
 
-  describe('action creator subscriptionEditFormChangeData', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(subscriptionEditFormChangeData())
-
-      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGE_DATA'])
-    })
-
-    it('should contain expected action payload', () => {
-      store.dispatch(subscriptionEditFormChangeData({a: 'b', c: 'd'}))
-
-      expect(store.getActions()[0]).toContainObject({data: {a: 'b', c: 'd'}})
-    })
-  })
-
   describe('action creator saveSubscribeEditForm', () => {
 
-    it('should dispatch actions defined in before property', () => {
-      saveSubscribeEditForm({}).before.forEach(action => store.dispatch(action()))
+    it('should dispatch expected action', () => {
+      const success = () => ({})
+      const error = () => ({})
+      const finalize = () => ({})
 
-      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGING', 'SUBSCRIPTION_EDIT_FORM_VALIDATIONS'])
-      expect(store.getActions()[1]).toContainActionData({validations: []})
-    })
-
-    it('should contain expected post action type', () => {
-      store.dispatch(saveSubscribeEditForm({}))
-
-      expect(store.getActionTypes()).toEqual(['POST_SUBSCRIPTION'])
-      expect(store.getActions()[0].url).toMatch(/api\/2\/subscriptions$/)
-    })
-
-    it('should return expected action data', () => {
-      store.dispatch(saveSubscribeEditForm({uuid: '1', title: 'expected title'}))
-
-      expect(store.getActions()[0]).toContainActionData({body: {uuid: '1', title: 'expected title'}})
-    })
-
-    it('should dispatch actions defined in success property', () => {
-      const success = saveSubscribeEditForm({}).success
-      success.forEach(action => store.dispatch(action({uuid: '1'})))
-
-      expect(store.getActionTypes()).toEqual(['SHOW_NOTIFICATION', 'ROUTE_CHANGED'])
-      expect(store.getActions()[0]).toContainActionData({notification: {text: 'Subscribed', type: 'success'}})
-      expect(store.getActions()[1]).toContainActionData({route: ['app', 'subscription'], query: {uuid: '1'}})
-    })
-
-    it('should dispatch actions defined in error property', () => {
-      store.dispatch(saveSubscribeEditForm({}).error({status: 400, fieldErrors: [{a: 'b', c: 'd'}]}))
-
-      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_VALIDATIONS'])
-      expect(store.getActions()[0]).toContainActionData({validations: [{a: 'b', c: 'd'}]})
-    })
-
-    it('should not return any error action when status is not 403', () => {
-      expect(saveSubscribeEditForm({}).error({status: 403})).toBeUndefined()
-    })
-
-    it('should dispatch actions defined in finalize property', () => {
-      store.dispatch(saveSubscribeEditForm({}).finalize())
-
-      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_EDIT_FORM_CHANGED'])
+      expect(saveSubscribeEditForm({subscription: {origin: 'url'}, success, error, finalize})).toEqual({
+        type: 'POST_SUBSCRIPTION',
+        url: 'api/2/subscriptions',
+        body: {
+          origin: 'url'
+        },
+        success,
+        error,
+        finalize
+      })
     })
   })
 })

@@ -10,58 +10,127 @@ jest.mock('../../components', () => ({
 
 describe('SubscribePage', () => {
 
-  let state, dispatch
+  let state, dispatch, props
 
-  const createWrapper = () => mount(<SubscribePage state={state} dispatch={dispatch} />)
+  const createWrapper = () => mount(<SubscribePage {...props} state={state} dispatch={dispatch} />)
 
   beforeEach(() => {
-    dispatch = jest.fn()
+    dispatch = jest.fn().mockImplementation(action => {
+      if (typeof action === 'function') {
+        action(dispatch, () => state)
+      }
+    })
 
     state = {
-      subscription: {
-        editForm: {
-          changePending: true,
-          data: {
-            origin: 'origin'
-          },
-          validations: [{field: 'origin', message: 'may not be empty'}]
+      common: {
+        notification: {
+          nextId: 1
         }
+      }
+    }
+
+    props = {
+      history: {
+        replace: jest.fn()
       }
     }
   })
 
   it('should pass expected props to component', () => {
     expect(createWrapper().find('SubscribeForm').props()).toEqual(expect.objectContaining({
-      data: {origin: 'origin'},
-      changePending: true,
-      validations: [{field: 'origin', message: 'may not be empty'}],
+      changePending: false,
+      validations: []
     }))
   })
 
-  it('should dispatch action SUBSCRIPTION_EDIT_FORM_CHANGE_DATA when origin input changed', () => {
-    createWrapper().find('SubscribeForm').props().subscriptionEditFormChangeData({origin: 'changed url'})
+  it('should trigger action POST_SUBSCRIPTION when prop function "saveSubscribeEditForm" called', () => {
+    createWrapper().find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
-      type: 'SUBSCRIPTION_EDIT_FORM_CHANGE_DATA',
-      data: {origin: 'changed url'}
-    })
-  })
-
-  it('should dispatch action POST_SUBSCRIPTION when primary button clicked', () => {
-    createWrapper().find('SubscribeForm').props().saveSubscribeEditForm({origin: 'origin'})
-
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'POST_SUBSCRIPTION',
       url: 'api/2/subscriptions',
-      body: {origin: 'origin', feedTag: null}
+      body: {origin: 'url'}
     }))
   })
 
-  it('should clear edit form when mounted', () => {
-    createWrapper()
+  it('should set prop "changePending" to true when prop function "saveSubscribeEditForm" called', () => {
+    const wrapper = createWrapper()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
+    wrapper.update()
 
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SUBSCRIPTION_EDIT_FORM_CLEAR'
+    expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(true)
+  })
+
+  it('should set prop "changePending" to false when prop function "saveSubscribeEditForm" succeeded', () => {
+    const wrapper = createWrapper()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
+    wrapper.update()
+    dispatch.mock.calls[0][0].finalize()
+    wrapper.update()
+
+    expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(false)
+  })
+
+  it('should dispatch action SHOW_NOTIFICATION when prop function "saveSubscribeEditForm" succeeded', () => {
+    const wrapper = createWrapper()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
+    wrapper.update()
+    dispatch.mock.calls[0][0].success[0]()(dispatch, () => state)
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, {
+      type: 'SHOW_NOTIFICATION',
+      notification: {
+        id: 1,
+        text: 'Subscribed',
+        type: 'success'
+      }
     })
+  })
+
+  it('should redirect to feed detail page when prop function "saveSubscribeEditForm" succeeded', () => {
+    const wrapper = createWrapper()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
+    wrapper.update()
+
+    dispatch.mock.calls[0][0].success[1]({uuid: '1'})
+
+    expect(props.history.replace).toHaveBeenCalledWith(expect.objectContaining({
+      route: ['app', 'subscription']
+    }))
+  })
+
+  it('should pass state "validations" to feed edit page when prop function "saveSubscribeEditForm" failed', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
+    wrapper.update()
+    dispatch.mock.calls[0][0].error({status: 400, fieldErrors: ['error']})
+    wrapper.update()
+
+    expect(wrapper.find('SubscribeForm').prop('validations')).toEqual(['error'])
+  })
+
+  it('should clear state "validations" when prop function "saveSubscribeEditForm" triggered', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
+    wrapper.update()
+    dispatch.mock.calls[0][0].error({status: 400, fieldErrors: ['error']})
+    wrapper.update()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
+    wrapper.update()
+
+    expect(wrapper.find('SubscribeForm').prop('validations')).toEqual([])
+  })
+
+  it('should not pass state "validations" to feed edit page when prop function "saveSubscribeEditForm" failed', () => {
+    const wrapper = createWrapper()
+    dispatch.mockReset()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
+    wrapper.update()
+    dispatch.mock.calls[0][0].error({status: 401, fieldErrors: ['error']})
+    wrapper.update()
+
+    expect(wrapper.find('SubscribeForm').prop('validations')).toEqual([])
   })
 })

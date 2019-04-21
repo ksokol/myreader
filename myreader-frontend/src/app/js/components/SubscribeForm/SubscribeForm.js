@@ -8,23 +8,29 @@ export const SubscribeOriginInput = withValidations(Input)
 class SubscribeForm extends React.Component {
 
   static propTypes = {
-    data: PropTypes.shape({
-      origin: PropTypes.string
-    }),
     validations: PropTypes.any,
     changePending: PropTypes.bool.isRequired,
-    subscriptionEditFormChangeData: PropTypes.func.isRequired,
     saveSubscribeEditForm: PropTypes.func.isRequired
+  }
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      origin: ''
+    }
   }
 
   render() {
     const {
-      data,
       validations,
       changePending,
-      subscriptionEditFormChangeData,
       saveSubscribeEditForm
     } = this.props
+
+    const {
+      origin
+    } = this.state
 
     return (
       <form
@@ -32,11 +38,11 @@ class SubscribeForm extends React.Component {
       >
         <SubscribeOriginInput
           name='origin'
-          value={data ? data.origin : ''}
+          value={origin}
           label='Url'
           disabled={changePending}
           validations={validations}
-          onChange={event => subscriptionEditFormChangeData({origin: event.target.value})}
+          onChange={event => this.setState({origin: event.target.value})}
         />
 
         <div
@@ -44,7 +50,7 @@ class SubscribeForm extends React.Component {
         >
           <Button
             disabled={changePending}
-            onClick={() => saveSubscribeEditForm({...data})}
+            onClick={() => saveSubscribeEditForm({origin})}
             primary>Subscribe
           </Button>
         </div>

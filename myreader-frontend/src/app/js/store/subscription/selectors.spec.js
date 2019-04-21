@@ -1,7 +1,6 @@
 import {
   filteredBySearchSubscriptionsSelector,
   filteredByUnseenSubscriptionsSelector,
-  subscriptionEditFormSelector,
   subscriptionExclusionPatternsSelector,
   subscriptionTagsSelector
 } from '../../store'
@@ -128,32 +127,6 @@ describe('subscription selector', () => {
         {uuid: 3, name: 'a', color: undefined, links: []},
         {uuid: 1, name: 'b', color: undefined, links: []}
       ]
-    })
-  })
-
-  it('should return subscription edit form data', () => {
-    state.subscription.editForm = {
-      changePending: true,
-      data: {a: 'b', c: 'd'}
-    }
-
-    expect(subscriptionEditFormSelector(state)).toEqual({
-      changePending: true,
-      data: {a: 'b', c: 'd'}
-    })
-  })
-
-  it('should return copy of subscription edit form data', () => {
-    state.subscription.editForm = {
-      changePending: true,
-      data: {a: 'b', c: 'd'}
-    }
-    const selection = subscriptionEditFormSelector(state)
-    state.subscription.editForm.data.a = 'x'
-
-    expect(selection).toEqual({
-      changePending: true,
-      data: {a: 'b', c: 'd'}
     })
   })
 })

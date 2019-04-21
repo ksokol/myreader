@@ -73,17 +73,6 @@ function subscriptionExclusionPatternsRemoved({state, action}) {
   }
 }
 
-function subscriptionEditFormClear({state}) {
-  return {
-    ...state,
-    editForm: {
-      changePending: false,
-      data: null,
-      validations: []
-    }
-  }
-}
-
 function securityUpdate({state, action}) {
   return action.authorized ? state : initialApplicationState().subscription
 }
@@ -92,45 +81,6 @@ function subscriptionTagChanged({state, action}) {
   const tag = action.subscriptionTag
   const subscriptions = state.subscriptions.map(it => it.feedTag.uuid === tag.uuid ? {...it, feedTag: {...tag}} : it)
   return {...state, subscriptions}
-}
-
-function subscriptionEditFormChanging({state}) {
-  return {
-    ...state,
-    editForm: {
-      ...state.editForm,
-      changePending: true
-    }
-  }
-}
-
-function subscriptionEditFormChanged({state}) {
-  return {
-    ...state,
-    editForm: {
-      ...state.editForm,
-      changePending: false
-    }
-  }
-}
-
-function subscriptionEditFormValidations({state, action}) {
-  return {
-    ...state,
-    editForm: {
-      ...state.editForm,
-      validations: action.validations
-    }
-  }
-}
-function subscriptionEditFormChangeData({state, action}) {
-  return {
-    ...state,
-    editForm: {
-      ...state.editForm,
-      data: action.data
-    }
-  }
 }
 
 export function subscriptionReducers(state = initialApplicationState().subscription, action) {
@@ -153,23 +103,8 @@ export function subscriptionReducers(state = initialApplicationState().subscript
   case types.SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED: {
     return subscriptionExclusionPatternsRemoved({state, action})
   }
-  case types.SUBSCRIPTION_EDIT_FORM_CLEAR: {
-    return subscriptionEditFormClear({state, action})
-  }
   case types.SUBSCRIPTION_TAG_CHANGED: {
     return subscriptionTagChanged({state, action})
-  }
-  case types.SUBSCRIPTION_EDIT_FORM_CHANGING: {
-    return subscriptionEditFormChanging({state, action})
-  }
-  case types.SUBSCRIPTION_EDIT_FORM_CHANGED: {
-    return subscriptionEditFormChanged({state, action})
-  }
-  case types.SUBSCRIPTION_EDIT_FORM_VALIDATIONS: {
-    return subscriptionEditFormValidations({state, action})
-  }
-  case types.SUBSCRIPTION_EDIT_FORM_CHANGE_DATA: {
-    return subscriptionEditFormChangeData({state, action})
   }
   case types.SECURITY_UPDATE: {
     return securityUpdate({state, action})

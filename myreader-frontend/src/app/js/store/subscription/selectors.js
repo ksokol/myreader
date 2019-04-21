@@ -38,8 +38,3 @@ export const subscriptionTagsSelector = state => ({
     .map(feedTag => cloneObject(feedTag))
     .sort((left, right) => left.name < right.name ? -1 : left.name === right.name ? 0 : 1)
 })
-
-export const subscriptionEditFormSelector = state => ({
-  ...cloneObject(state.subscription.editForm)
-})
-
