@@ -13,8 +13,5 @@ module.exports = {
   coverageDirectory: '<rootDir>/build/reports/coverage',
   testResultsProcessor: 'jest-sonar-reporter',
   timers: 'fake',
-  testURL: 'http://localhost:8080',
-  moduleNameMapper: {
-    '^react-router-dom$': '<rootDir>/src/app/js/migrations/react-router-dom'
-  }
+  testURL: 'http://localhost:8080'
 }

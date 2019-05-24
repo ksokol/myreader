@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {withRouter, Redirect} from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
-import {loginRoute} from '../../routes'
+import {LOGIN_URL} from '../../constants'
 import {logout, unauthorized} from '../../store'
 
 class LogoutPage extends React.Component {
@@ -23,7 +23,7 @@ class LogoutPage extends React.Component {
   }
 
   render() {
-    return this.state.loggedOut ? <Redirect to={loginRoute()} /> : null
+    return this.state.loggedOut ? <Redirect to={LOGIN_URL} /> : null
   }
 }
 
@@ -31,7 +31,5 @@ LogoutPage.propTypes = {
   dispatch: PropTypes.func.isRequired
 }
 
-export default withRouter(
-  connect()(LogoutPage)
-)
+export default connect()(LogoutPage)
 

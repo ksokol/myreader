@@ -1,10 +1,15 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import FeedEditPage from './FeedEditPage'
+import {ADMIN_FEEDS_URL} from '../../constants'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
   FeedEditForm: () => <p />
+}))
+
+jest.mock('../../contexts', () => ({
+  withLocationState: Component => Component
 }))
 /* eslint-enable */
 
@@ -49,14 +54,10 @@ describe('FeedEditPage', () => {
     }
 
     props = {
-      match: {
-        params: {
-          uuid: 'uuid1'
-        }
+      params: {
+        uuid: 'uuid1'
       },
-      history: {
-        replace: jest.fn()
-      }
+      historyReplace: jest.fn()
     }
   })
 
@@ -180,14 +181,14 @@ describe('FeedEditPage', () => {
     expect(wrapper.find('FeedEditForm').prop('changePending')).toEqual(true)
   })
 
-  it('should set prop "changePending" to false when prop function "onRemove" finished', () => {
+  it('should set prop "changePending" to false when prop function "onRemove" failed', () => {
     const wrapper = createWrapper()
     wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
     wrapper.update()
     dispatch.mockReset()
     wrapper.find('FeedEditForm').props().onRemove('1')
     wrapper.update()
-    dispatch.mock.calls[0][0].finalize()
+    dispatch.mock.calls[0][0].error()
     wrapper.update()
 
     expect(wrapper.find('FeedEditForm').prop('changePending')).toEqual(false)
@@ -219,9 +220,7 @@ describe('FeedEditPage', () => {
 
     dispatch.mock.calls[0][0].success()
 
-    expect(props.history.replace).toHaveBeenCalledWith(expect.objectContaining({
-      route: ['app', 'feed']
-    }))
+    expect(props.historyReplace).toHaveBeenCalledWith({pathname: ADMIN_FEEDS_URL})
   })
 
   it('should dispatch action SHOW_NOTIFICATION when prop function "onRemove" failed with HTTP 409', () => {

@@ -1,6 +1,7 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import LogoutPage from './LogoutPage'
+import {LOGIN_URL} from '../../constants'
 
 describe('LogoutPage', () => {
 
@@ -31,10 +32,7 @@ describe('LogoutPage', () => {
     dispatch.mock.calls[0][0].finalize()
     wrapper.update()
 
-    expect(wrapper.find('Redirect').prop('to')).toEqual({
-      route: ['login'],
-      url: '!/login'
-    })
+    expect(wrapper.find('Redirect').prop('to')).toEqual(LOGIN_URL)
   })
 
   it('should reset security context when logout api call finished', () => {

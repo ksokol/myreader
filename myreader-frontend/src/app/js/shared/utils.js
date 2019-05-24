@@ -1,5 +1,3 @@
-import isEqual from 'lodash.isequal'
-
 export const isDefined = value => typeof value !== 'undefined'
 
 export const isString = value => value !== null && typeof value === 'string'
@@ -11,8 +9,6 @@ export const isBoolean = value => typeof value === 'boolean'
 export const isDate = value => value instanceof Date
 
 export const toArray = value => value ? Array.isArray(value) ? value : [value] : []
-
-export const objectEquals = (left, right) => isEqual(left, right)
 
 export const noop = () => {}
 
@@ -26,4 +22,12 @@ export const isValidDate = value => {
       ? value.getTime()
       : new Date(value).getTime()
   )
+}
+
+export function isNotNull(value) {
+  return value !== null
+}
+
+export function isValuePresent(value) {
+  return isNotNull(value) && isDefined(value)
 }

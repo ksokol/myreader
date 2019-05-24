@@ -1,12 +1,13 @@
 import React from 'react'
 import {shallow} from 'enzyme'
 import SubscriptionList from './SubscriptionList'
+import {SUBSCRIPTIONS_URL} from '../../constants'
 
 describe('SubscriptionList', () => {
 
   let props
 
-  const createComponent = () => shallow(<SubscriptionList {...props} />)
+  const createWrapper = () => shallow(<SubscriptionList {...props} />)
 
   beforeEach(() => {
     props= {
@@ -18,9 +19,9 @@ describe('SubscriptionList', () => {
   })
 
   it('should pass prop "to" to link component', () => {
-    const links = createComponent().find('Link')
+    const links = createWrapper().find('Link')
 
-    expect(links.at(0).prop('to')).toContainObject({query: {uuid: '1'}, route: ['app', 'subscription']})
-    expect(links.at(1).prop('to')).toContainObject({query: {uuid: '2'}, route: ['app', 'subscription']})
+    expect(links.at(0).prop('to')).toEqual(`${SUBSCRIPTIONS_URL}/1`)
+    expect(links.at(1).prop('to')).toEqual(`${SUBSCRIPTIONS_URL}/2`)
   })
 })

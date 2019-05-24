@@ -8,7 +8,6 @@ import {
   saveSubscribeEditForm,
   saveSubscriptionEditForm,
   saveSubscriptionTag,
-  subscriptionDeleted,
   subscriptionExclusionPatternsAdded,
   subscriptionExclusionPatternsReceived,
   subscriptionExclusionPatternsRemoved,
@@ -67,31 +66,18 @@ describe('subscription actions', () => {
     })
   })
 
-  describe('action creator subscriptionDeleted', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(subscriptionDeleted('1'))
-      expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_DELETED'])
-    })
-
-    it('should return expected action data', () => {
-      store.dispatch(subscriptionDeleted('1'))
-      expect(store.getActions()[0]).toContainActionData({uuid: '1'})
-    })
-  })
-
   describe('action creator deleteSubscription', () => {
 
     it('should contain expected action type', () => {
       const success = () => ({})
-      const finalize = () => ({})
-      const action = deleteSubscription({uuid: 'uuid1', success, finalize})
+      const error = () => ({})
+      const action = deleteSubscription({uuid: 'uuid1', success, error})
 
       expect(action).toEqual({
         type: 'DELETE_SUBSCRIPTION',
         url: 'api/2/subscriptions/uuid1',
         success,
-        finalize
+        error
       })
     })
   })
@@ -316,17 +302,15 @@ describe('subscription actions', () => {
     it('should dispatch expected action', () => {
       const success = () => ({})
       const error = () => ({})
-      const finalize = () => ({})
 
-      expect(saveSubscribeEditForm({subscription: {origin: 'url'}, success, error, finalize})).toEqual({
+      expect(saveSubscribeEditForm({subscription: {origin: 'url'}, success, error})).toEqual({
         type: 'POST_SUBSCRIPTION',
         url: 'api/2/subscriptions',
         body: {
           origin: 'url'
         },
         success,
-        error,
-        finalize
+        error
       })
     })
   })

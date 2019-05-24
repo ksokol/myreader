@@ -9,6 +9,10 @@ jest.mock('../../components', () => ({
   IconButton: ({children}) => <div>{children}</div>,
   ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>
 }))
+
+jest.mock('../../contexts', () => ({
+  withLocationState: Component => Component
+}))
 /* eslint-enable */
 
 describe('EntryStreamPage', () => {
@@ -47,9 +51,11 @@ describe('EntryStreamPage', () => {
     }
 
     props = {
-      location: {
-        search: '?q=expectedQ'
-      }
+      searchParams: {
+        q: 'expectedQ'
+      },
+      locationChanged: false,
+      locationReload: false,
     }
   })
 
@@ -199,9 +205,10 @@ describe('EntryStreamPage', () => {
     }))
   })
 
-  it('should dispatch action GET_ENTRIES when mounted', () => {
+  it('should dispatch actions ENTRY_CLEAR and GET_ENTRIES when mounted', () => {
     createWrapper()
 
+    expect(dispatch).toHaveBeenNthCalledWith(1, {type: 'ENTRY_CLEAR'})
     expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
       type: 'GET_ENTRIES',
       url: 'api/2/subscriptionEntries?seenEqual=*&q=expectedQ'
@@ -210,9 +217,12 @@ describe('EntryStreamPage', () => {
 
   it('should dispatch action GET_ENTRIES when prop search query parameter "q" changed', () => {
     const wrapper = createWrapper()
-    wrapper.setProps({location: {search: '?q=changedQ'}})
+    wrapper.setProps({
+      locationReload: true,
+      searchParams: {q: 'changedQ'}
+    })
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(6, expect.objectContaining({
       type: 'GET_ENTRIES',
       url: 'api/2/subscriptionEntries?seenEqual=*&q=changedQ'
     }))
@@ -223,6 +233,34 @@ describe('EntryStreamPage', () => {
 
     wrapper.setProps({location: {search: '?q=expectedQ&feedTagEqual=changed'}})
 
-    expect(dispatch.mock.calls.length).toEqual(3)
+    expect(dispatch.mock.calls).toHaveLength(3)
+  })
+
+  it('should dispatch actions ENTRY_CLEAR and GET_ENTRIES when prop "locationReload" is set to true', () => {
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.setProps({
+      locationReload: true
+    })
+
+    expect(dispatch).toHaveBeenNthCalledWith(1, {type: 'ENTRY_CLEAR'})
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+      type: 'GET_ENTRIES',
+      url: 'api/2/subscriptionEntries?seenEqual=*&q=expectedQ'
+    }))
+  })
+
+  it('should dispatch actions ENTRY_CLEAR and GET_ENTRIES when prop "locationChanged" is set to true', () => {
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.setProps({
+      locationChanged: true
+    })
+
+    expect(dispatch).toHaveBeenNthCalledWith(1, {type: 'ENTRY_CLEAR'})
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+      type: 'GET_ENTRIES',
+      url: 'api/2/subscriptionEntries?seenEqual=*&q=expectedQ'
+    }))
   })
 })

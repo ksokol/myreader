@@ -10,6 +10,11 @@
     user-select: none;
 }
 
+.my-chip * {
+    color: inherit;
+    text-decoration: inherit;
+}
+
 .my-chip--selectable {
     cursor: pointer;
 }

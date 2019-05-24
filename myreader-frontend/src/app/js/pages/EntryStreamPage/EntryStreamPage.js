@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
-import {withRouter} from 'react-router-dom'
 import {EntryList, Hotkeys, IconButton, ListLayout} from '../../components'
+import {withLocationState} from '../../contexts'
 import {
   changeEntry,
   entryClear,
@@ -16,7 +16,6 @@ import {
   settingsShowEntryDetailsSelector
 } from '../../store'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
-import {toQueryObject} from '../../shared/location-utils'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
@@ -45,13 +44,13 @@ class EntryStreamPage extends React.Component {
     nextFocusableEntry: PropTypes.shape({
       seen: PropTypes.bool
     }),
-    location: PropTypes.shape({
-      search: PropTypes.string.isRequired
-    }),
     links: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     showEntryDetails: PropTypes.bool.isRequired,
     isDesktop: PropTypes.bool.isRequired,
+    searchParams: PropTypes.object.isRequired,
+    locationChanged: PropTypes.bool.isRequired,
+    locationReload: PropTypes.bool.isRequired,
     entryClear: PropTypes.func.isRequired,
     changeEntry: PropTypes.func.isRequired,
     fetchEntries: PropTypes.func.isRequired,
@@ -70,26 +69,36 @@ class EntryStreamPage extends React.Component {
   }
 
   componentDidMount() {
-    this.props.entryClear()
-    this.props.fetchEntries({path: SUBSCRIPTION_ENTRIES, query: toQueryObject(this.props.location)})
+    this.fetchEntries()
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    const {q: prevQ} = toQueryObject(prevProps.location)
-    const {q: currentQ} = toQueryObject(this.props.location)
-
-    if (prevQ !== currentQ) {
-      this.props.fetchEntries({path: SUBSCRIPTION_ENTRIES, query: toQueryObject(this.props.location)})
+  componentDidUpdate() {
+    if (this.props.locationChanged || this.props.locationReload) {
+      this.fetchEntries()
     }
   }
 
+  fetchEntries = () => {
+    this.props.entryClear()
+    this.props.fetchEntries({
+      path: SUBSCRIPTION_ENTRIES,
+      query: {...this.props.searchParams}
+    })
+  }
+
   toggleEntryReadFlag = () => {
-    this.props.changeEntry({...this.props.entryInFocus, seen: !this.props.entryInFocus.seen})
+    this.props.changeEntry({
+      ...this.props.entryInFocus,
+      seen: !this.props.entryInFocus.seen
+    })
   }
 
   nextEntry = () => {
     if (this.props.nextFocusableEntry.seen === false) {
-      this.props.changeEntry({...this.props.nextFocusableEntry, seen: true})
+      this.props.changeEntry({
+        ...this.props.nextFocusableEntry,
+        seen: true
+      })
     }
     this.props.entryFocusNext()
   }
@@ -142,7 +151,7 @@ class EntryStreamPage extends React.Component {
   }
 }
 
-export default withRouter(
+export default withLocationState(
   connect(
     mapStateToProps,
     mapDispatchToProps

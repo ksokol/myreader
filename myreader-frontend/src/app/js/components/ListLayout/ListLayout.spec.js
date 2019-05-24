@@ -2,11 +2,22 @@ import React from 'react'
 import {mount} from 'enzyme'
 import ListLayout from './ListLayout'
 
+/* eslint-disable react/prop-types */
+jest.mock('..', () => ({
+  SearchInput: () => <div />,
+  IconButton: () => <div />
+}))
+
+jest.mock('../../contexts', () => ({
+  withLocationState: Component => Component
+}))
+/* eslint-enable */
+
 describe('ListLayout', () => {
 
   let props
 
-  const createComponent = () => mount(
+  const createWrapper = () => mount(
     <ListLayout
       {...props}
       actionPanel={<div className='action'/>}
@@ -16,57 +27,48 @@ describe('ListLayout', () => {
 
   beforeEach(() => {
     props = {
-      location: {
-        _currentRoute: ['path'],
-        search: '?a=b&q=expected q'
+      searchParams: {
+        a: 'b',
+        q: 'q'
       },
-      history: {
-        push: jest.fn(),
-        replace: jest.fn()
-      }
+      historyReload: jest.fn(),
+      historyPush: jest.fn()
     }
   })
 
   it('should pass expected props to search input component', () => {
-    expect(createComponent().find('SearchInput').prop('value')).toEqual('expected q')
+    expect(createWrapper().find('SearchInput').prop('value')).toEqual('q')
   })
 
-  it('should trigger prop function "history.push" when search input value changed', () => {
-    createComponent().find('SearchInput').props().onChange('changed q')
+  it('should trigger prop function "historyPush" when search input value changed', () => {
+    createWrapper().find('SearchInput').props().onChange('changed q')
 
-    expect(props.history.push).toHaveBeenCalledWith({
-      _currentRoute: ['path'],
-      search: '?a=b&q=expected q',
-      query: {a: 'b', q: 'changed q'},
-      state: {}
-    })
-  })
-
-  it('should trigger prop function "history.replace" when refresh icon button clicked', () => {
-    createComponent().find('IconButton').props().onClick()
-
-    expect(props.history.replace).toHaveBeenCalledWith({
-      _currentRoute: ['path'],
-      search: '?a=b&q=expected q',
-      query: {a: 'b', q: 'expected q'},
-      state: {
-        reload: true
+    expect(props.historyPush).toHaveBeenCalledWith({
+      searchParams: {
+        a: 'b',
+        q: 'changed q'
       }
     })
   })
 
+  it('should trigger prop function "historyReplace" when refresh icon button clicked', () => {
+    createWrapper().find('IconButton').props().onClick()
+
+    expect(props.historyReload).toHaveBeenCalled()
+  })
+
   it('should pass expected props to icon button component', () => {
-    expect(createComponent().find('IconButton').prop('type')).toEqual('redo')
+    expect(createWrapper().find('IconButton').prop('type')).toEqual('redo')
   })
 
   it('should render result of prop function "actionPanel"', () => {
-    const actionPanel = createComponent().find('[className="my-list-layout__action-panel"]').find('[className="action"]')
+    const actionPanel = createWrapper().find('[className="my-list-layout__action-panel"]').find('[className="action"]')
 
     expect(actionPanel.exists()).toEqual(true)
   })
 
   it('should render result of prop function "listPanel"', () => {
-    const listPanel = createComponent().find('[className="my-list-layout__list-content"]').find('[className="list"]')
+    const listPanel = createWrapper().find('[className="my-list-layout__list-content"]').find('[className="list"]')
 
     expect(listPanel.exists()).toEqual(true)
   })

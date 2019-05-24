@@ -1,6 +1,7 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import secured from './secured'
+import {LOGIN_URL} from '../../constants'
 
 describe('secured', () => {
 
@@ -31,18 +32,18 @@ describe('secured', () => {
   it('should redirect when when no allowed roles defined', () => {
     const redirect = createWrapper(['USER']).find('Redirect')
 
-    expect(redirect.props()).toEqual({to: {route: ['login'], url: '!/login'}})
+    expect(redirect.prop('to')).toEqual(LOGIN_URL)
   })
 
   it('should redirect when role is not equal to allowed role', () => {
     const redirect = createWrapper(['USER'], ['ADMIN']).find('Redirect')
 
-    expect(redirect.props()).toEqual({to: {route: ['login'], url: '!/login'}})
+    expect(redirect.prop('to')).toEqual(LOGIN_URL)
   })
 
   it('should redirect when roles are absent', () => {
     const redirect = createWrapper([], ['USER']).find('Redirect')
 
-    expect(redirect.props()).toEqual({to: {route: ['login'], url: '!/login'}})
+    expect(redirect.prop('to')).toEqual(LOGIN_URL)
   })
 })

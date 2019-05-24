@@ -25,14 +25,6 @@ function subscriptionChanged({state, action}) {
   }
 }
 
-function subscriptionDeleted({state, action}) {
-  const subscriptions = state.subscriptions.filter(it => it !== action.uuid)
-  return {
-    ...state,
-    subscriptions
-  }
-}
-
 function subscriptionExclusionPatternsReceived({state, action}) {
   const exclusions = {...state.exclusions}
   exclusions[action.subscriptionUuid] = action.patterns
@@ -90,9 +82,6 @@ export function subscriptionReducers(state = initialApplicationState().subscript
   }
   case types.ENTRY_CHANGED: {
     return subscriptionChanged({state, action})
-  }
-  case types.SUBSCRIPTION_DELETED: {
-    return subscriptionDeleted({state, action})
   }
   case types.SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED: {
     return subscriptionExclusionPatternsReceived({state, action})

@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
-import {withRouter} from 'react-router-dom'
 import {FeedEditForm} from '../../components'
+import {withLocationState} from '../../contexts'
 import {
   deleteFeed,
   feedDeleted,
@@ -15,8 +15,7 @@ import {
   showErrorNotification,
   showSuccessNotification
 } from '../../store'
-import {FEEDS} from '../../constants'
-import {adminFeedRoute} from '../../routes'
+import {ADMIN_FEEDS_URL, FEEDS} from '../../constants'
 import {toFeed} from '../../store/admin/feed'
 
 const mapStateToProps = state => ({
@@ -27,22 +26,23 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   onMore: fetchFeedFetchFailures,
   feedFetchFailuresClear,
   fetchFeedFetchFailures,
+  fetchFeed,
+  saveFeed,
+  deleteFeed
 }, dispatch)
 
 class FeedEditPage extends React.Component {
 
   static propTypes = {
-    match: PropTypes.shape({
-      params: PropTypes.shape({
-        uuid: PropTypes.string.isRequired
-      }).isRequired
+    params: PropTypes.shape({
+      uuid: PropTypes.string.isRequired
     }).isRequired,
-    history: PropTypes.shape({
-      replace: PropTypes.func.isRequired
-    }).isRequired,
-    dispatch: PropTypes.func.isRequired,
+    historyReplace: PropTypes.func.isRequired,
     feedFetchFailuresClear: PropTypes.func.isRequired,
     fetchFeedFetchFailures: PropTypes.func.isRequired,
+    fetchFeed: PropTypes.func.isRequired,
+    saveFeed: PropTypes.func.isRequired,
+    deleteFeed: PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -56,7 +56,7 @@ class FeedEditPage extends React.Component {
   }
 
   componentDidMount() {
-    const {uuid} = this.props.match.params
+    const {uuid} = this.props.params
 
     this.props.feedFetchFailuresClear()
     this.props.fetchFeedFetchFailures({path: `${FEEDS}/${uuid}/fetchError`})
@@ -64,10 +64,10 @@ class FeedEditPage extends React.Component {
   }
 
   loadFeed = uuid => {
-    this.props.dispatch(fetchFeed({
+    this.props.fetchFeed({
       uuid,
       success: response => this.setState({feed: toFeed(response)})
-    }))
+    })
   }
 
   onSaveFeed = feed => {
@@ -76,12 +76,14 @@ class FeedEditPage extends React.Component {
       validations: []
     })
 
-    this.props.dispatch(saveFeed({
+    this.props.saveFeed({
       feed,
       success: () => showSuccessNotification('Feed saved'),
       error: error => {
         if (error.status === 400) {
-          this.setState({validations: error.fieldErrors})
+          this.setState({
+            validations: error.fieldErrors
+          })
           return []
         }
       },
@@ -90,7 +92,7 @@ class FeedEditPage extends React.Component {
           changePending: false
         })
       }
-    }))
+    })
   }
 
   onDeleteFeed = uuid => {
@@ -98,23 +100,21 @@ class FeedEditPage extends React.Component {
       changePending: true
     })
 
-    this.props.dispatch(deleteFeed({
+    this.props.deleteFeed({
       uuid,
       success: () => {
-        this.props.history.replace(adminFeedRoute())
+        this.props.historyReplace({pathname: ADMIN_FEEDS_URL})
         return () => feedDeleted(uuid)
       },
       error: (response, headers, status) => {
-        return (status === 409 && showErrorNotification('Can not delete. Feed has subscriptions'))
-          || (status !== 400 && showErrorNotification(response))
-          || undefined
-      },
-      finalize: () => {
         this.setState({
           changePending: false
         })
+        return (status === 409 && showErrorNotification('Can not delete. Feed has subscriptions'))
+          || (status !== 400 && showErrorNotification(response))
+          || undefined
       }
-    }))
+    })
   }
 
   render() {
@@ -137,7 +137,7 @@ class FeedEditPage extends React.Component {
   }
 }
 
-export default withRouter(
+export default withLocationState(
   connect(
     mapStateToProps,
     mapDispatchToProps

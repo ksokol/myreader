@@ -1,6 +1,7 @@
 import React from 'react'
 import {SubscriptionNavigationItem} from '.'
 import {mount} from 'enzyme'
+import {ENTRIES_URL} from '../../../constants'
 
 class SubscriptionNavigationItemSubscriptionsWrapper {
 
@@ -62,21 +63,21 @@ class SubscriptionNavigationItemWrapper {
 
 describe('SubscriptionNavigationItem', () => {
 
-  let props
+  let props, subscriptions1, subscriptions2
 
   const createWrapper = () => new SubscriptionNavigationItemWrapper(props)
 
   beforeEach(() => {
+    subscriptions1 = {title: 'subscription 1', uuid: 'uuid1', unseen: 1, feedTag: {name: 'tag'}}
+    subscriptions2 = {title: 'subscription 2', uuid: 'uuid2', unseen: 0, feedTag: {name: 'tag'}}
+
     props = {
       item: {
         title: 'item title',
         unseen: 2,
         tag: 'tag',
         uuid: 'uuid',
-        subscriptions: [
-          {title: 'subscription 1', uuid: 'uuid1', unseen: 1, feedTag: {name: 'tag'}},
-          {title: 'subscription 2', uuid: 'uuid2', unseen: 0, feedTag: {name: 'tag'}}
-        ]
+        subscriptions: [subscriptions1, subscriptions2]
       },
       location: {
         search: ''
@@ -86,17 +87,14 @@ describe('SubscriptionNavigationItem', () => {
   })
 
   it('should pass expected props to navigation item', () => {
-    expect(createWrapper().itemProps).toContainObject({
+    expect(createWrapper().itemProps).toEqual(expect.objectContaining({
       title: 'item title',
-      badgeCount: 2
-    })
-    expect(createWrapper().itemProps.to).toContainObject({
-      query: {
-        feedTagEqual: 'tag',
-        feedUuidEqual: 'uuid',
-        q: undefined
+      badgeCount: 2,
+      to: {
+        pathname: ENTRIES_URL,
+        search: '?feedTagEqual=tag&feedUuidEqual=uuid'
       }
-    })
+    }))
   })
 
   it('should set key for navigation item', () => {
@@ -162,32 +160,61 @@ describe('SubscriptionNavigationItem', () => {
       expect(createWrapper().subscriptions.exists).toEqual(true)
     })
 
+    it('should pass expected prop "to" with feedUuidEqual set', () => {
+      props.item.tag = undefined
+
+      expect(createWrapper().itemProps).toEqual(expect.objectContaining({
+        title: 'item title',
+        to : {
+          pathname: ENTRIES_URL,
+          search: '?feedUuidEqual=uuid'
+        }
+      }))
+    })
+
+    it('should pass expected prop "to" with feedTagEqual set', () => {
+      props.item.uuid = ''
+
+      expect(createWrapper().itemProps).toEqual(expect.objectContaining({
+        title: 'item title',
+        to : {
+          pathname: ENTRIES_URL,
+          search: '?feedTagEqual=tag'
+        }
+      }))
+    })
+
+    it('should pass expected prop "to" without search value set', () => {
+      props.item.uuid = ''
+      props.item.tag = undefined
+
+      expect(createWrapper().itemProps).toEqual(expect.objectContaining({
+        title: 'item title',
+        to : {
+          pathname: ENTRIES_URL
+        }
+      }))
+    })
+
     it('should pass expected props to navigation subscription items', () => {
       const subscriptions = createWrapper().subscriptions
 
-      expect(subscriptions.itemPropsAt(0)).toContainObject({
+      expect(subscriptions.itemPropsAt(0)).toEqual(expect.objectContaining({
         title: 'subscription 1',
-        badgeCount: 1
-      })
-      expect(subscriptions.itemPropsAt(0).to).toContainObject({
-        query: {
-          feedTagEqual: 'tag',
-          feedUuidEqual: 'uuid1',
-          q: undefined
+        badgeCount: 1,
+        to : {
+          pathname: ENTRIES_URL,
+          search: '?feedTagEqual=tag&feedUuidEqual=uuid1'
         }
-      })
-
-      expect(subscriptions.itemPropsAt(1)).toContainObject({
+      }))
+      expect(subscriptions.itemPropsAt(1)).toEqual(expect.objectContaining({
         title: 'subscription 2',
-        badgeCount: 0
-      })
-      expect(subscriptions.itemPropsAt(1).to).toContainObject({
-        query: {
-          feedTagEqual: 'tag',
-          feedUuidEqual: 'uuid2',
-          q: undefined
+        badgeCount: 0,
+        to: {
+          pathname: ENTRIES_URL,
+          search: '?feedTagEqual=tag&feedUuidEqual=uuid2'
         }
-      })
+      }))
     })
 
     it('should set keys for navigation subscription items', () => {

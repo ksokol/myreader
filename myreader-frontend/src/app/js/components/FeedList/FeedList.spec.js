@@ -1,12 +1,13 @@
 import React from 'react'
 import {shallow} from 'enzyme'
 import FeedList from './FeedList'
+import {ADMIN_FEEDS_URL} from '../../constants'
 
 describe('FeedList', () => {
 
   let props
 
-  const createComponent = () => shallow(<FeedList {...props} />)
+  const createWrapper = () => shallow(<FeedList {...props} />)
 
   beforeEach(() => {
     props= {
@@ -18,17 +19,17 @@ describe('FeedList', () => {
   })
 
   it('should not render exclamation icon when first feed has no errors', () => {
-    expect(createComponent().children().at(0).find('[type="exclamation-triangle"]').exists()).toEqual(false)
+    expect(createWrapper().children().at(0).find('[type="exclamation-triangle"]').exists()).toEqual(false)
   })
 
   it('should render exclamation icon when second feed has errors', () => {
-    expect(createComponent().children().at(1).find('[type="exclamation-triangle"]').exists()).toEqual(true)
+    expect(createWrapper().children().at(1).find('[type="exclamation-triangle"]').exists()).toEqual(true)
   })
 
   it('should pass prop "to" to link component', () => {
-    const links = createComponent().find('Link')
+    const links = createWrapper().find('Link')
 
-    expect(links.at(0).prop('to')).toContainObject({query: {uuid: '1'}, route: ['app', 'feed-detail']})
-    expect(links.at(1).prop('to')).toContainObject({query: {uuid: '2'}, route: ['app', 'feed-detail']})
+    expect(links.at(0).prop('to')).toEqual(`${ADMIN_FEEDS_URL}/1`)
+    expect(links.at(1).prop('to')).toEqual(`${ADMIN_FEEDS_URL}/2`)
   })
 })

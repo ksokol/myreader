@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import {withRouter} from 'react-router-dom'
 import {bindActionCreators} from 'redux'
 import {SubscriptionEditForm} from '../../components'
+import {withLocationState} from '../../contexts'
 import {
   addSubscriptionExclusionPattern,
   deleteSubscription,
@@ -12,39 +12,40 @@ import {
   removeSubscriptionExclusionPattern,
   saveSubscriptionEditForm,
   showSuccessNotification,
-  subscriptionDeleted,
   subscriptionExclusionPatternsSelector,
   subscriptionTagsSelector
 } from '../../store'
 import {toSubscription} from '../../store/subscription/subscription'
-import {subscriptionsRoute} from '../../routes'
+import {SUBSCRIPTIONS_URL} from '../../constants'
 
 const mapStateToProps = (state, ownProps) => ({
   ...subscriptionTagsSelector(state),
-  ...subscriptionExclusionPatternsSelector(ownProps.match.params.uuid)(state)
+  ...subscriptionExclusionPatternsSelector(ownProps.params.uuid)(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   removeSubscriptionExclusionPattern,
   addSubscriptionExclusionPattern,
-  fetchSubscriptionExclusionPatterns
+  fetchSubscriptionExclusionPatterns,
+  fetchSubscription,
+  deleteSubscription,
+  saveSubscriptionEditForm
 }, dispatch)
 
 class SubscriptionEditPage extends React.Component {
 
   static propTypes = {
-    match: PropTypes.shape({
-      params: PropTypes.shape({
-        uuid: PropTypes.string.isRequired
-      }).isRequired
+    params: PropTypes.shape({
+      uuid: PropTypes.string.isRequired
     }).isRequired,
-    history: PropTypes.shape({
-      replace: PropTypes.func.isRequired
-    }).isRequired,
-    dispatch: PropTypes.func.isRequired,
+    historyReplace: PropTypes.func.isRequired,
+    historyReload: PropTypes.func.isRequired,
     removeSubscriptionExclusionPattern: PropTypes.func.isRequired,
     addSubscriptionExclusionPattern: PropTypes.func.isRequired,
-    fetchSubscriptionExclusionPatterns: PropTypes.func.isRequired
+    fetchSubscriptionExclusionPatterns: PropTypes.func.isRequired,
+    fetchSubscription: PropTypes.func.isRequired,
+    deleteSubscription: PropTypes.func.isRequired,
+    saveSubscriptionEditForm: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -58,17 +59,16 @@ class SubscriptionEditPage extends React.Component {
   }
 
   componentDidMount() {
-    const {uuid} = this.props.match.params
-
+    const {uuid} = this.props.params
     this.props.fetchSubscriptionExclusionPatterns(uuid)
     this.loadSubscription(uuid)
   }
 
   loadSubscription = uuid => {
-    this.props.dispatch(fetchSubscription({
+    this.props.fetchSubscription({
       uuid,
       success: response => this.setState({subscription: toSubscription(response)})
-    }))
+    })
   }
 
   onSaveSubscription = subscription => {
@@ -77,7 +77,7 @@ class SubscriptionEditPage extends React.Component {
       validations: []
     })
 
-    this.props.dispatch(saveSubscriptionEditForm({
+    this.props.saveSubscriptionEditForm({
       subscription,
       success: () => showSuccessNotification('Subscription saved'),
       error: error => {
@@ -91,7 +91,7 @@ class SubscriptionEditPage extends React.Component {
           changePending: false
         })
       }
-    }))
+    })
   }
 
   onDeleteSubscription = uuid => {
@@ -99,19 +99,19 @@ class SubscriptionEditPage extends React.Component {
       changePending: true
     })
 
-    this.props.dispatch(deleteSubscription({
+    this.props.deleteSubscription({
       uuid,
       success: [
         () => showSuccessNotification('Subscription deleted'),
-        () => subscriptionDeleted(uuid),
-        () => this.props.history.replace(subscriptionsRoute())
+        () => this.props.historyReplace({pathname: SUBSCRIPTIONS_URL}),
+        () => this.props.historyReload()
       ],
-      finalize: () => {
+      error: () => {
         this.setState({
           changePending: false
         })
       }
-    }))
+    })
   }
 
   render() {
@@ -134,7 +134,7 @@ class SubscriptionEditPage extends React.Component {
   }
 }
 
-export default withRouter(
+export default withLocationState(
   connect(
     mapStateToProps,
     mapDispatchToProps

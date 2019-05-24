@@ -4,10 +4,10 @@ import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import classNames from 'classnames'
-import {UIView} from '@uirouter/react'
 import {IconButton} from '..'
 import {BackdropContainer, NavigationContainer} from '../../containers'
-import {mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from '../../store'
+import {fetchSubscriptions, mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from '../../store'
+import {withLocationState} from '../../contexts'
 
 const mapStateToProps = state => ({
   isDesktop: mediaBreakpointIsDesktopSelector(state),
@@ -15,48 +15,72 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  toggleSidenav
+  toggleSidenav,
+  fetchSubscriptions
 }, dispatch)
 
-const SidenavLayout = props => {
-  const {
-    isDesktop,
-    sidenavSlideIn,
-    toggleSidenav
-  } = props
+class SidenavLayout extends React.Component {
 
-  const classes = classNames(
-    'my-sidenav-layout__nav',
-    {'my-sidenav-layout__nav--open': sidenavSlideIn},
-    {'my-sidenav-layout__nav--animate': !isDesktop}
-  )
+  static propTypes = {
+    isDesktop: PropTypes.bool.isRequired,
+    sidenavSlideIn: PropTypes.bool.isRequired,
+    toggleSidenav: PropTypes.func.isRequired,
+    locationReload: PropTypes.bool.isRequired,
+    fetchSubscriptions: PropTypes.func.isRequired,
+    children: PropTypes.any
+  }
 
-  return (
-    <div className='my-sidenav-layout'>
-      <header className='my-sidenav-layout__header'>
-        {!isDesktop && <IconButton type='bars' onClick={toggleSidenav} inverse/>}
-      </header>
+  componentDidMount() {
+    this.fetchSubscriptions()
+  }
 
-      <nav className={classes}>
-        <NavigationContainer/>
-      </nav>
+  componentDidUpdate() {
+    if (this.props.locationReload) {
+      this.fetchSubscriptions()
+    }
+  }
 
-      <main className='my-sidenav-layout__main'>
-        <UIView/>
-      </main>
+  fetchSubscriptions = () => {
+    this.props.fetchSubscriptions()
+  }
 
-      <BackdropContainer/>
-    </div>
-  )
+  render() {
+    const {
+      isDesktop,
+      sidenavSlideIn,
+      toggleSidenav,
+      children
+    } = this.props
+
+    const classes = classNames(
+      'my-sidenav-layout__nav',
+      {'my-sidenav-layout__nav--open': sidenavSlideIn},
+      {'my-sidenav-layout__nav--animate': !isDesktop}
+    )
+
+    return (
+      <div className='my-sidenav-layout'>
+        <header className='my-sidenav-layout__header'>
+          {!isDesktop && <IconButton type='bars' onClick={toggleSidenav} inverse/>}
+        </header>
+
+        <nav className={classes}>
+          <NavigationContainer/>
+        </nav>
+
+        <main className='my-sidenav-layout__main'>
+          {children}
+        </main>
+
+        <BackdropContainer/>
+      </div>
+    )
+  }
 }
 
-SidenavLayout.propTypes = {
-  isDesktop: PropTypes.bool.isRequired,
-  sidenavSlideIn: PropTypes.bool.isRequired,
-  toggleSidenav: PropTypes.func.isRequired
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SidenavLayout)
+export default withLocationState(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(SidenavLayout)
+)

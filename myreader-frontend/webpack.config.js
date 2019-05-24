@@ -67,12 +67,6 @@ module.exports = function makeWebpackConfig() {
     }
   }
 
-  config.resolve = {
-    alias: {
-      'react-router-dom': path.resolve(__dirname, 'src/app/js/migrations/react-router-dom')
-    }
-  }
-
   if (isServed) {
       config.devtool = 'inline-source-map'
   }

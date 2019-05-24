@@ -89,12 +89,11 @@ export const feedDeleted = uuid => {
   }
 }
 
-export const deleteFeed = ({uuid, success, error, finalize}) => {
+export const deleteFeed = ({uuid, success, error}) => {
   return {
     type: 'DELETE_FEED',
     url: `${FEEDS}/${uuid}`,
     success,
-    error,
-    finalize
+    error
   }
 }

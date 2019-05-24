@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
-import {loginRoute} from '../../routes'
+import {LOGIN_URL} from '../../constants'
 import {authorizedSelector} from '../../store'
 
 const mapStateToProps = state => ({
@@ -12,7 +12,7 @@ const mapStateToProps = state => ({
 const secured = (WrappedComponent, allowedRoles = []) => {
   const Secured = ({roles}) => roles.some(role => allowedRoles.includes(role))
     ? <WrappedComponent />
-    : <Redirect to={loginRoute()}/>
+    : <Redirect to={LOGIN_URL}/>
 
   Secured.propTypes = {
     authorized: PropTypes.bool.isRequired,

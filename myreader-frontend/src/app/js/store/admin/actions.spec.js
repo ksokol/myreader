@@ -188,16 +188,14 @@ describe('admin actions', () => {
     it('should contain expected actions', () => {
       const success = () => ({})
       const error = () => ({})
-      const finalize = () => ({})
 
-      store.dispatch(deleteFeed({uuid: 'expectedUuid', success, error, finalize}))
+      store.dispatch(deleteFeed({uuid: 'expectedUuid', success, error}))
 
       expect(store.getActions()[0]).toEqual({
         type: 'DELETE_FEED',
         url: 'api/2/feeds/expectedUuid',
         success,
-        error,
-        finalize
+        error
       })
     })
   })

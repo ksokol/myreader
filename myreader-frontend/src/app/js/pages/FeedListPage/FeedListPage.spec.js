@@ -7,6 +7,10 @@ jest.mock('../../components', () => ({
   FeedList: () => null,
   ListLayout: ({listPanel}) => <div>{listPanel}</div>
 }))
+
+jest.mock('../../contexts', () => ({
+  withLocationState: Component => Component
+}))
 /* eslint-enable */
 
 describe('FeedListPage', () => {
@@ -28,8 +32,8 @@ describe('FeedListPage', () => {
     }
 
     props = {
-      location: {
-        search: ''
+      searchParams: {
+        q: ''
       }
     }
   })
@@ -44,7 +48,7 @@ describe('FeedListPage', () => {
   })
 
   it('should initialize component with given prop "feeds" filtered by prop "props.location.search"', () => {
-    props.location.search = 'q=title2'
+    props.searchParams.q = 'title2'
 
     expect(createWrapper().find('FeedList').props()).toEqual({
       feeds: [{title: 'title2'}]

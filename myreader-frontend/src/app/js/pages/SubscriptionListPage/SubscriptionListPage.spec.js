@@ -7,13 +7,17 @@ jest.mock('../../components', () => ({
   SubscriptionList: () => null,
   ListLayout: ({listPanel}) => <div>{listPanel}</div>
 }))
+
+jest.mock('../../contexts', () => ({
+  withLocationState: Component => Component
+}))
 /* eslint-enable */
 
 describe('SubscriptionListPage', () => {
 
   let state, props
 
-  const createComponent = () => mount(<SubscriptionListPage {...props} state={state} />)
+  const createWrapper = () => mount(<SubscriptionListPage {...props} state={state} />)
 
   beforeEach(() => {
     state = {
@@ -26,14 +30,14 @@ describe('SubscriptionListPage', () => {
     }
 
     props = {
-      location: {
-        search: ''
+      searchParams: {
+        q: ''
       }
     }
   })
 
   it('should initialize list panel component with given props', () => {
-    expect(createComponent().find('ListLayout').props()).toContainObject({
+    expect(createWrapper().find('ListLayout').props()).toContainObject({
       listPanel: {
         props: {
           subscriptions: [
@@ -45,17 +49,9 @@ describe('SubscriptionListPage', () => {
     })
   })
 
-  it('should initialize list panel  component with given props filtered by state "router.query.q"', () => {
-    props.location.search = 'q=title2'
+  it('should initialize list panel component with given props filtered by state "searchParams.q"', () => {
+    props.searchParams.q = 'title2'
 
-    expect(createComponent().find('ListLayout').props()).toContainObject({
-      listPanel: {
-        props: {
-          subscriptions: [
-            {uuid: '2', title: 'title2'}
-          ]
-        }
-      }
-    })
+    expect(createWrapper().find('SubscriptionList').prop('subscriptions')).toEqual([{uuid: '2', title: 'title2'}])
   })
 })

@@ -1,4 +1,4 @@
-import {isBoolean, isDate, isDefined, isObject, isString, isValidDate, toArray} from './utils'
+import {isBoolean, isDate, isDefined, isObject, isString, isValidDate, isValuePresent, toArray} from './utils'
 
 describe('shared utils', () => {
 
@@ -176,6 +176,41 @@ describe('shared utils', () => {
 
     it('should return true when given string argument is a valid date string', () => {
       expect(isValidDate('2017-12-31T23:59:59.9999Z')).toEqual(true)
+    })
+  })
+
+  describe('isValuePresent', () => {
+
+    it('should return false when given value is undefined', () => {
+      expect(isValuePresent()).toEqual(false)
+    })
+
+    it('should return false when given value is null', () => {
+      expect(isValuePresent(null)).toEqual(false)
+    })
+
+    it('should return true when given value is an empty string', () => {
+      expect(isValuePresent('')).toEqual(true)
+    })
+
+    it('should return true when given value is number zero', () => {
+      expect(isValuePresent(0)).toEqual(true)
+    })
+
+    it('should return true when given value is boolean value false', () => {
+      expect(isValuePresent(false)).toEqual(true)
+    })
+
+    it('should return true when given value is an array', () => {
+      expect(isValuePresent([])).toEqual(true)
+    })
+
+    it('should return true when given value is an object', () => {
+      expect(isValuePresent({})).toEqual(true)
+    })
+
+    it('should return true when given value is a function', () => {
+      expect(isValuePresent(() => ({}))).toEqual(true)
     })
   })
 })

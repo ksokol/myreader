@@ -1,10 +1,15 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import SubscribePage from './SubscribePage'
+import {SUBSCRIPTION_URL} from '../../constants'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
   SubscribeForm: () => null
+}))
+
+jest.mock('../../contexts', () => ({
+  withLocationState: Component => Component
 }))
 /* eslint-enable */
 
@@ -30,9 +35,7 @@ describe('SubscribePage', () => {
     }
 
     props = {
-      history: {
-        replace: jest.fn()
-      }
+      historyReplace: jest.fn()
     }
   })
 
@@ -61,16 +64,6 @@ describe('SubscribePage', () => {
     expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(true)
   })
 
-  it('should set prop "changePending" to false when prop function "saveSubscribeEditForm" succeeded', () => {
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
-    wrapper.update()
-    dispatch.mock.calls[0][0].finalize()
-    wrapper.update()
-
-    expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(false)
-  })
-
   it('should dispatch action SHOW_NOTIFICATION when prop function "saveSubscribeEditForm" succeeded', () => {
     const wrapper = createWrapper()
     wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
@@ -94,9 +87,12 @@ describe('SubscribePage', () => {
 
     dispatch.mock.calls[0][0].success[1]({uuid: '1'})
 
-    expect(props.history.replace).toHaveBeenCalledWith(expect.objectContaining({
-      route: ['app', 'subscription']
-    }))
+    expect(props.historyReplace).toHaveBeenCalledWith({
+      pathname: SUBSCRIPTION_URL,
+      params: {
+        uuid: '1'
+      }
+    })
   })
 
   it('should pass state "validations" to feed edit page when prop function "saveSubscribeEditForm" failed', () => {
@@ -132,5 +128,15 @@ describe('SubscribePage', () => {
     wrapper.update()
 
     expect(wrapper.find('SubscribeForm').prop('validations')).toEqual([])
+  })
+
+  it('should set prop "changePending" to false when prop function "saveSubscribeEditForm" failed', () => {
+    const wrapper = createWrapper()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
+    wrapper.update()
+    dispatch.mock.calls[0][0].error({})
+    wrapper.update()
+
+    expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(false)
   })
 })

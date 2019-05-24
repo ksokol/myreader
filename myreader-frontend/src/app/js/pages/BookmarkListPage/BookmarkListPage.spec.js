@@ -8,6 +8,10 @@ jest.mock('../../components', () => ({
   Chips: () => null,
   ListLayout: ({listPanel}) => <div>{listPanel}</div>
 }))
+
+jest.mock('../../contexts', () => ({
+  withLocationState: Component => Component
+}))
 /* eslint-enable */
 
 describe('BookmarkListPage', () => {
@@ -39,15 +43,12 @@ describe('BookmarkListPage', () => {
     }
 
     props = {
-      location: {
-        search: '?entryTagEqual=expected tag'
+      searchParams: {
+        entryTagEqual: 'expected tag'
       },
-      match: {
-        params: {}
-      },
-      history: {
-        push: jest.fn()
-      }
+      historyReplace: jest.fn(),
+      locationChanged: false,
+      locationReload: false
     }
   })
 
@@ -90,14 +91,15 @@ describe('BookmarkListPage', () => {
     }))
   })
 
-  it('should trigger prop function "history.push"', () => {
-    createWrapper().find('Chips').props().onSelect('expected tag')
+  it('should return expected prop from Chips prop function "renderItem"', () => {
+    const wrapper = createWrapper()
 
-    expect(props.history.push).toHaveBeenCalledWith({
-      query: {entryTagEqual: 'expected tag'},
-      search: '?entryTagEqual=expected tag',
-      state: {}
-    })
+    expect(wrapper.find('Chips').props().renderItem('tag').props).toEqual(expect.objectContaining({
+      to: {
+        pathname: '/app/bookmark',
+        search: '?entryTagEqual=tag'
+      }
+    }))
   })
 
   it('should dispatch action GET_ENTRY_TAGS when mounted', () => {
@@ -110,8 +112,11 @@ describe('BookmarkListPage', () => {
   })
 
   it('should dispatch action GET_ENTRIES when mounted', () => {
-    props.match.params = {entryTagEqual: 'expected entryTagEqual'}
-    props.location.search = 'size=5&q=expectedQ'
+    props.searchParams = {
+      entryTagEqual: 'expected entryTagEqual',
+      size: '5',
+      q: 'expectedQ'
+    }
 
     createWrapper()
 
@@ -121,24 +126,26 @@ describe('BookmarkListPage', () => {
     }))
   })
 
-  it('should dispatch action GET_ENTRIES when search query parameter "q" changed', () => {
+  it('should dispatch action GET_ENTRIES when prop "locationReload" is set to true', () => {
     const wrapper = createWrapper()
-    wrapper.setProps({location: {search: 'q=changedQ'}})
+    dispatch.mockClear()
+    wrapper.setProps({locationReload: true})
 
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?q=changedQ&seenEqual=*'
+      url: 'api/2/subscriptionEntries?entryTagEqual=expected tag&seenEqual=*'
     }))
   })
 
-  it('should not dispatch action GET_ENTRIES when search query parameter "q" stays the same', () => {
-    props.match.params = {entryTagEqual: 'expected entryTagEqual'}
-    props.location.search = 'q=expectedQ'
-
+  it('should dispatch action GET_ENTRIES when prop "locationChanged" is set to true', () => {
     const wrapper = createWrapper()
-    wrapper.setProps({match: {params: {entryTagEqual: 'changed entryTagEqual'}}})
+    dispatch.mockClear()
+    wrapper.setProps({locationChanged: true})
 
-    expect(dispatch.mock.calls.length).toEqual(3)
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'GET_ENTRIES',
+      url: 'api/2/subscriptionEntries?entryTagEqual=expected tag&seenEqual=*'
+    }))
   })
 })

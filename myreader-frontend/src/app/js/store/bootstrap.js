@@ -9,7 +9,6 @@ import {commonReducers} from './common'
 import {securityReducers} from './security'
 import {entryReducers} from './entry'
 import {subscriptionReducers} from './subscription'
-import {routerReducers} from './router'
 import {settings} from './settings/settings'
 import {getLastSecurityState} from './security/security'
 import {isInDevMode, isInProdMode} from '../constants'
@@ -27,12 +26,11 @@ function determineComposeFn(enabled) {
   return devToolsCompose ? devToolsCompose : reduxCompose
 }
 
-function enhancer(enabled, middlewares = []) {
-  return determineComposeFn(enabled)(applyMiddleware(thunk, arrayMiddleware, guardMiddleware, fetchMiddleware, ...middlewares))
+function enhancer(enabled) {
+  return determineComposeFn(enabled)(applyMiddleware(thunk, arrayMiddleware, guardMiddleware, fetchMiddleware))
 }
 
 const reducers = combineReducers({
-  router: routerReducers,
   admin: adminReducers,
   security: securityReducers,
   common: commonReducers,
@@ -48,11 +46,11 @@ function initialState(enabled) {
   } : {}
 }
 
-export default function createApplicationStore(environment, actionDispatchers = [], middlewares = []) {
+export default function createApplicationStore(environment, actionDispatchers = []) {
   const store = createStore(
     reducers,
     initialState(isInDevMode(environment) || isInProdMode(environment)),
-    enhancer(isInDevMode(environment), middlewares)
+    enhancer(isInDevMode(environment))
   )
 
   actionDispatchers.forEach(actionDispatcher => actionDispatcher(store))

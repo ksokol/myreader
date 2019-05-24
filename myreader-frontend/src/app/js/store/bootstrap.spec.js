@@ -30,8 +30,8 @@ describe('bootstrap', () => {
   describe('store creation', () => {
 
     beforeEach(() => {
-      localStorage.setItem('myreader-settings', `{"pageSize":2,"showEntryDetails":false,"showUnseenEntries":false}`)
-      localStorage.setItem('myreader-security', `{"roles":[]}`)
+      localStorage.setItem('myreader-settings', '{"pageSize":2,"showEntryDetails":false,"showUnseenEntries":false}')
+      localStorage.setItem('myreader-security', '{"roles":[]}')
       window.location.hash = ''
     })
 
@@ -66,7 +66,7 @@ describe('bootstrap', () => {
     })
 
     it('should not initialize last security state when environment is other', () => {
-      localStorage.setItem('myreader-security', `{roles: ['unexpected role']}`)
+      localStorage.setItem('myreader-security', '{roles: ["unexpected role"]}')
       const store = createApplicationStore(OTHER)
 
       expect(store.getState().security).toContainObject({roles: []})
@@ -99,38 +99,10 @@ describe('bootstrap', () => {
       })
     })
 
-    it('should integrate with custom array middleware', done => {
-      let remainingActions = ['ACTION1', 'ACTION2']
-
-      const assertMiddleware = () => () => action => {
-        remainingActions = remainingActions.filter(it => it !== action.type)
-        if (remainingActions.length === 0) {
-          done()
-        }
-      }
-
-      const store = createApplicationStore(OTHER, undefined, [assertMiddleware])
-      store.dispatch([{type: 'ACTION1'}, {type: 'ACTION2'}])
-    })
-
     it('should integrate with custom guard middleware', () => {
       const store = createApplicationStore(OTHER)
 
       expect(() => store.dispatch(undefined)).not.toThrowError()
-    })
-
-    it('should add given middlewares', done => {
-      const middleware1 = () => next => action => {
-        return next({...action, middleware1: true})
-      }
-
-      const middleware2 = () => next => action => {
-        expect(action).toContainObject({middleware1: true})
-        done()
-        return next(action)
-      }
-
-      createApplicationStore(OTHER, undefined, [middleware1, middleware2]).dispatch({type: 'NOOP'})
     })
   })
 })

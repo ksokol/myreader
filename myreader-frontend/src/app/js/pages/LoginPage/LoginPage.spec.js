@@ -48,10 +48,7 @@ describe('LoginPage', () => {
   it('should redirect to entries page when user is authorized', () => {
     state.security.roles = ['USER']
 
-    expect(createWrapper().find('Redirect').prop('to')).toContainObject({
-      query: {q: undefined},
-      route: ['app', 'entries']
-    })
+    expect(createWrapper().find('Redirect').prop('to')).toEqual('/app/entries')
   })
 
   it('should set prop "loginPending" to true when prop function "onLogin" called', () => {

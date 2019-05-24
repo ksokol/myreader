@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {LoginForm} from '../../components'
-import {entriesRoute} from '../../routes'
+import {ENTRIES_URL} from '../../constants'
 import {authorized, authorizedSelector, tryLogin} from '../../store'
 
 const mapStateToProps = state => ({
@@ -69,7 +69,7 @@ class LoginPage extends React.Component {
 
     return authorized ? (
       <Redirect
-        to={entriesRoute()}
+        to={ENTRIES_URL}
       />
     ) : (
       <LoginForm

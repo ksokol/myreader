@@ -2,44 +2,63 @@ import './SubscriptionNavigationItem.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {NavigationItem} from '..'
-import {entriesRoute} from '../../../routes'
-import {toQueryObject} from '../../../shared/location-utils'
-import {withRouter} from 'react-router-dom'
+import {ENTRIES_URL} from '../../../constants'
+import {withLocationState} from '../../../contexts'
 
-function isOpen(query, item) {
-  return query.feedTagEqual === item.tag
+function isOpen(searchParams, item) {
+  return searchParams.feedTagEqual === item.tag
 }
 
-function isVisible(query, item) {
-  return isOpen(query, item) && (item.subscriptions ? item.subscriptions.length > 0 : false)
+function isVisible(searchParams, item) {
+  return isOpen(searchParams, item) && (item.subscriptions ? item.subscriptions.length > 0 : false)
 }
 
-function isSelected(query, tag, uuid) {
-  return query.feedUuidEqual === uuid && query.feedTagEqual === tag
+function isSelected(searchParams, tag, uuid) {
+  return searchParams.feedUuidEqual === uuid && searchParams.feedTagEqual === tag
+}
+
+function generateEntriesPath(feedTagEqual, feedUuidEqual) {
+  if (feedTagEqual && feedUuidEqual) {
+    return {
+      pathname: ENTRIES_URL,
+      search: `?feedTagEqual=${feedTagEqual}&feedUuidEqual=${feedUuidEqual}`,
+    }
+  } else if (feedTagEqual) {
+    return {
+      pathname: ENTRIES_URL,
+      search: `?feedTagEqual=${feedTagEqual}`,
+    }
+  }
+  else if (feedUuidEqual) {
+    return {
+      pathname: ENTRIES_URL,
+      search: `?feedUuidEqual=${feedUuidEqual}`,
+    }
+  }
+  return {pathname: ENTRIES_URL}
 }
 
 const SubscriptionNavigationItem = props => {
-  const {item, location, onClick} = props
-  const query = toQueryObject(location)
+  const {item, searchParams, onClick} = props
 
   return [
     <NavigationItem
-      selected={isSelected(query, item.tag, item.uuid)}
-      to={entriesRoute({feedTagEqual: item.tag, feedUuidEqual: item.uuid})}
+      selected={isSelected(searchParams, item.tag, item.uuid)}
+      to={generateEntriesPath(item.tag, item.uuid)}
       onClick={onClick}
       key={item.uuid}
       title={item.title}
       badgeCount={item.unseen}
     />,
-    isVisible(query, item) && (
+    isVisible(searchParams, item) && (
       <ul
         key='subscriptions'
         className='my-subscription-navigation-item__subscriptions'
       >
         {item.subscriptions.map(subscription => (
           <NavigationItem
-            selected={isSelected(query, subscription.feedTag.name, subscription.uuid)}
-            to={entriesRoute({feedTagEqual: subscription.feedTag.name, feedUuidEqual: subscription.uuid})}
+            selected={isSelected(searchParams, subscription.feedTag.name, subscription.uuid)}
+            to={generateEntriesPath(subscription.feedTag.name, subscription.uuid)}
             onClick={onClick}
             key={subscription.uuid}
             title={subscription.title}
@@ -68,10 +87,11 @@ SubscriptionNavigationItem.propTypes = {
       }).isRequired
     )
   }).isRequired,
-  location: PropTypes.shape({
-    search: PropTypes.string.isRequired
+  searchParams: PropTypes.shape({
+    feedTagEqual: PropTypes.string,
+    feedUuidEqual: PropTypes.string
   }).isRequired,
   onClick: PropTypes.func.isRequired
 }
 
-export default withRouter(SubscriptionNavigationItem)
+export default withLocationState(SubscriptionNavigationItem)

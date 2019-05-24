@@ -1,10 +1,15 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import SubscriptionEditPage from './SubscriptionEditPage'
+import {SUBSCRIPTIONS_URL} from '../../constants'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
   SubscriptionEditForm: () => null
+}))
+
+jest.mock('../../contexts', () => ({
+  withLocationState: Component => Component
 }))
 /* eslint-enable */
 
@@ -61,14 +66,11 @@ describe('SubscriptionEditPage', () => {
     }
 
     props = {
-      match: {
-        params: {
-          uuid: '1'
-        }
+      params: {
+        uuid: '1'
       },
-      history: {
-        replace: jest.fn()
-      }
+      historyReplace: jest.fn(),
+      historyReload: jest.fn(),
     }
   })
 
@@ -250,12 +252,12 @@ describe('SubscriptionEditPage', () => {
     expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(true)
   })
 
-  it('should set prop "changePending" to false when prop function "deleteSubscription" finished', () => {
+  it('should not change state prop "changePending" when prop function "deleteSubscription" failed', () => {
     const wrapper = createWrapper()
     dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
     wrapper.update()
-    dispatch.mock.calls[0][0].finalize()
+    dispatch.mock.calls[0][0].error()
     wrapper.update()
 
     expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(false)
@@ -279,29 +281,16 @@ describe('SubscriptionEditPage', () => {
     })
   })
 
-  it('should dispatch action SUBSCRIPTION_DELETED when prop function "deleteSubscription" succeeded', () => {
+  it('should change and reload location when prop function "deleteSubscription" succeeded', () => {
     const wrapper = createWrapper()
     dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
     wrapper.update()
-    const successActions = dispatch.mock.calls[0][0].success
-
-    expect(successActions[1]()).toEqual({
-      type: 'SUBSCRIPTION_DELETED',
-      uuid: '1'
-    })
-  })
-
-  it('should dispatch action ROUTE_CHANGED when prop function "deleteSubscription" succeeded', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
-    wrapper.update()
+    dispatch.mock.calls[0][0].success[1]()
     dispatch.mock.calls[0][0].success[2]()
 
-    expect(props.history.replace).toHaveBeenCalledWith(expect.objectContaining({
-      route: ['app', 'subscriptions']
-    }))
+    expect(props.historyReplace).toHaveBeenCalledWith({pathname: SUBSCRIPTIONS_URL})
+    expect(props.historyReload).toHaveBeenCalled()
   })
 
   it('should dispatch action GET_SUBSCRIPTION when mounted', () => {

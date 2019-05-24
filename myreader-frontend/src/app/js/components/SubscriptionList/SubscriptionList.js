@@ -1,9 +1,10 @@
 import './SubscriptionList.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {TimeAgo} from '..'
+import {generatePath} from 'react-router'
 import {Link} from 'react-router-dom'
-import {subscriptionRoute} from '../../routes'
+import {TimeAgo} from '..'
+import {SUBSCRIPTION_URL} from '../../constants'
 
 const SubscriptionList = props => {
   return (
@@ -17,7 +18,7 @@ const SubscriptionList = props => {
         >
           <Link
             className='my-subscription-list__item-heading no-underline'
-            to={subscriptionRoute(subscription)}
+            to={generatePath(SUBSCRIPTION_URL, {uuid: subscription.uuid})}
           >
             {subscription.title}
           </Link>

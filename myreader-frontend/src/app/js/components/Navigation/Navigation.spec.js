@@ -1,6 +1,14 @@
 import React from 'react'
 import {Navigation, NavigationItem} from '.'
 import {shallow} from 'enzyme'
+import {
+  ADMIN_FEEDS_URL,
+  ADMIN_OVERVIEW_URL,
+  BOOKMARK_URL, LOGOUT_URL,
+  SETTINGS_URL,
+  SUBSCRIPTION_ADD_URL,
+  SUBSCRIPTIONS_URL
+} from '../../constants'
 
 class NavigationPage {
 
@@ -19,11 +27,7 @@ class NavigationPage {
 
   get navigationItemRoute() {
     return this.wrapper.children().reduce((acc, item) => {
-      if (item.prop('to')) {
-        const {route, query} = item.prop('to')
-        return [...acc, {route, query}]
-      }
-      return acc
+      return item.prop('to') ? [...acc, item.prop('to')] : acc
     }, [])
   }
 }
@@ -86,11 +90,11 @@ describe('Navigation', () => {
 
   it('should render expected routes for user', () => {
     expect(createWrapper().navigationItemRoute).toEqual([
-      {route: ['app', 'subscriptions'], query: {q: undefined}},
-      {route: ['app', 'bookmarks'], query: {entryTagEqual: null, q: undefined}},
-      {route: ['app', 'settings'], query: undefined},
-      {route: ['app', 'subscription-add'], query: undefined},
-      {route: ['logout'], query: undefined}
+      SUBSCRIPTIONS_URL,
+      BOOKMARK_URL,
+      SETTINGS_URL,
+      SUBSCRIPTION_ADD_URL,
+      LOGOUT_URL
     ])
   })
 
@@ -98,13 +102,13 @@ describe('Navigation', () => {
     props.isAdmin = true
 
     expect(createWrapper().navigationItemRoute).toEqual([
-      {route: ['app', 'subscriptions'], query: {q: undefined}},
-      {route: ['app', 'bookmarks'], query: {entryTagEqual: null, q: undefined}},
-      {route: ['app', 'settings'], query: undefined},
-      {route: ['app', 'overview'], query: undefined },
-      {route: ['app', 'feed'], query: {q: undefined}},
-      {route: ['app', 'subscription-add'], query: undefined},
-      {route: ['logout'], query: undefined}
+      SUBSCRIPTIONS_URL,
+      BOOKMARK_URL,
+      SETTINGS_URL,
+      ADMIN_OVERVIEW_URL,
+      ADMIN_FEEDS_URL,
+      SUBSCRIPTION_ADD_URL,
+      LOGOUT_URL
     ])
   })
 })

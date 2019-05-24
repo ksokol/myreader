@@ -1,9 +1,10 @@
 import './FeedList.css'
 import React from 'react'
-import {Icon, TimeAgo} from '..'
 import PropTypes from 'prop-types'
-import {adminFeedDetailRoute} from '../../routes'
+import {generatePath} from 'react-router'
 import {Link} from 'react-router-dom'
+import {Icon, TimeAgo} from '..'
+import {ADMIN_FEED_URL} from '../../constants'
 
 const FeedList = props => {
   return (
@@ -17,7 +18,7 @@ const FeedList = props => {
         >
           <Link
             className='my-feed-list__item-heading no-underline'
-            to={adminFeedDetailRoute(feed)}
+            to={generatePath(ADMIN_FEED_URL, {uuid: feed.uuid})}
           >
             {feed.title}
           </Link>

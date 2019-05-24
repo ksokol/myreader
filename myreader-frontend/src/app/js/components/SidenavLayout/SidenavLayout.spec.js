@@ -7,16 +7,24 @@ jest.mock('../../containers', () => ({
   BackdropContainer: () => null,
   NavigationContainer: () => null,
 }))
+
+jest.mock('../../contexts', () => ({
+  withLocationState: Component => Component
+}))
 /* eslint-enable */
 
 describe('SidenavLayout', () => {
 
-  let state, dispatch
+  let props, state, dispatch
 
-  const createComponent = () => mount(<SidenavLayout state={state} dispatch={dispatch} />)
+  const createWrapper = () => mount(<SidenavLayout props={props} state={state} dispatch={dispatch} />)
 
   beforeEach(() => {
     dispatch = jest.fn()
+
+    props = {
+      locationReload: false
+    }
 
     state = {
       common: {
@@ -28,32 +36,62 @@ describe('SidenavLayout', () => {
   })
 
   it('should not slide in navigation on desktop', () => {
-    expect(createComponent().find('.my-sidenav-layout__nav--animate').exists()).toEqual(true)
+    expect(createWrapper().find('.my-sidenav-layout__nav--animate').exists()).toEqual(true)
 
     state.common.mediaBreakpoint = 'desktop'
-    expect(createComponent().find('.my-sidenav-layout__nav--animate').exists()).toEqual(false)
+    expect(createWrapper().find('.my-sidenav-layout__nav--animate').exists()).toEqual(false)
   })
 
   it('should toggle navigation when state changes', () => {
     state.common.sidenavSlideIn = true
-    expect(createComponent().find('.my-sidenav-layout__nav--open').exists()).toEqual(true)
+    expect(createWrapper().find('.my-sidenav-layout__nav--open').exists()).toEqual(true)
 
     state.common.sidenavSlideIn = false
-    expect(createComponent().find('.my-sidenav-layout__nav--open').exists()).toEqual(false)
+    expect(createWrapper().find('.my-sidenav-layout__nav--open').exists()).toEqual(false)
   })
 
   it('should show hamburger menu on phones and tablets', () => {
-    expect(createComponent().find('IconButton[type="bars"]').exists()).toEqual(true)
+    expect(createWrapper().find('IconButton[type="bars"]').exists()).toEqual(true)
 
     state.common.mediaBreakpoint = 'desktop'
-    expect(createComponent().find('IconButton[type="bars"]').exists()).toEqual(false)
+    expect(createWrapper().find('IconButton[type="bars"]').exists()).toEqual(false)
   })
 
   it('should dispatch action TOGGLE_SIDENAV when hamburger menu icon clicked', () => {
-    createComponent().find('IconButton[type="bars"]').simulate('click')
+    createWrapper().find('IconButton[type="bars"]').simulate('click')
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'TOGGLE_SIDENAV'
     })
+  })
+
+  it('should dispatch action GET_SUBSCRIPTIONS when mounted', () => {
+    createWrapper()
+
+    expect(dispatch).toHaveBeenNthCalledWith(1, expect.objectContaining({
+      type: 'GET_SUBSCRIPTIONS',
+      url: 'api/2/subscriptions'
+    }))
+  })
+
+  it('should dispatch action GET_SUBSCRIPTIONS when prop "locationReload" is set to true', () => {
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+
+    wrapper.setProps({locationReload: true})
+
+    expect(dispatch).toHaveBeenNthCalledWith(1, expect.objectContaining({
+      type: 'GET_SUBSCRIPTIONS',
+      url: 'api/2/subscriptions'
+    }))
+  })
+
+  it('should not dispatch action GET_SUBSCRIPTIONS when prop "locationReload" is set to false', () => {
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+
+    wrapper.setProps({locationReload: false})
+
+    expect(dispatch).not.toHaveBeenCalled()
   })
 })

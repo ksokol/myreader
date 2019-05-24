@@ -5,7 +5,6 @@ import {
   subscriptionTagsSelector
 } from '../../store'
 import settingsInitialState from '../settings'
-import routerInitialState from '../router'
 
 describe('subscription selector', () => {
 
@@ -23,8 +22,7 @@ describe('subscription selector', () => {
   beforeEach(() => {
     state = {
       subscription: {...subscriptions(), exclusions: {}},
-      settings: settingsInitialState(),
-      router: routerInitialState()
+      settings: settingsInitialState()
     }
   })
 
