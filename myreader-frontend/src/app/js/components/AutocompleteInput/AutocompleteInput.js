@@ -1,61 +1,31 @@
-import './AutocompleteInput.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import Downshift from 'downshift'
 import {Input} from '..'
 
-const AutocompleteInput = props => {
+export const AutocompleteInput = props => {
   const {
-    name,
     value,
     values,
     onSelect,
     ...inputProps
   } = props
 
-  return(
-    <Downshift
-      id={name}
-      selectedItem={value ? value : ''}
-      onInputValueChange={inputValue => onSelect(inputValue.length > 0 ? inputValue : null)}
-    >
-      {({
-          getInputProps,
-          getItemProps,
-          getMenuProps,
-          isOpen,
-          inputValue,
-          highlightedIndex
-        }) => (
-        <div className='my-autocomplete-input'>
-          <Input {...getInputProps({...inputProps, name})} />
-          <ul {...getMenuProps({className: 'my-autocomplete-input__dropdown'})}>
-            {isOpen ?
-              values
-                .filter(item => item.startsWith(inputValue))
-                .map((item, index) => (
-                  <li
-                    key={item}
-                    {...getItemProps({
-                      index,
-                      item,
-                      className: highlightedIndex === index ? 'my-autocomplete-input__item--selected' : null
-                    })}
-                  >
-                    {item.startsWith(inputValue) ?
-                      <React.Fragment>
-                        <span className='my-autocomplete-input__item--highlight'>{inputValue}</span>
-                        {item.replace(inputValue, '')}
-                      </React.Fragment> :
-                      item
-                    }
-                  </li>
-                ))
-              : null}
-          </ul>
-        </div>
-      )}
-    </Downshift>
+  const dataListId = `my-autocomplete-input__datalist-${Date.now()}`
+
+  return (
+    <React.Fragment>
+      <Input
+        {...inputProps}
+        value={value ? value : ''}
+        onChange={({target: {value}}) => onSelect(value.length > 0 ? value : null)}
+        autoComplete='on'
+        list={dataListId}
+      />
+
+      <datalist id={dataListId}>
+        {values.map(value => <option key={value} value={value} />)}
+      </datalist>
+    </React.Fragment>
   )
 }
 
@@ -66,5 +36,3 @@ AutocompleteInput.propTypes = {
   disabled: PropTypes.bool,
   onSelect: PropTypes.func.isRequired
 }
-
-export default AutocompleteInput
