@@ -1,13 +1,22 @@
-import React from 'react'
+import './Icon.css'
+import React, {useRef, useEffect} from 'react'
 import PropTypes from 'prop-types'
-import './icon-library'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
-const Icon = ({type, inverse}) => <FontAwesomeIcon icon={type} inverse={inverse} fixedWidth />
+const inverseColor = '#FFFFFF'
+const defaultColor = '#808080'
+
+export const Icon = ({type, inverse}) => {
+  const iconRef = useRef(null)
+  useEffect(() => {
+    iconRef.current.style.setProperty('--color', inverse ? inverseColor : defaultColor)
+  })
+
+  return (
+    <span ref={iconRef} className={`my-icon my-icon__${type}`} />
+  )
+}
 
 Icon.propTypes = {
   type: PropTypes.string.isRequired,
   inverse: PropTypes.bool
 }
-
-export default Icon

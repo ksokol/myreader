@@ -13,9 +13,7 @@
     "lint:js": "eslint -c .eslintrc.js src/app/js"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "1.2.17",
-    "@fortawesome/free-solid-svg-icons": "5.8.1",
-    "@fortawesome/react-fontawesome": "0.1.4",
+    "@fortawesome/fontawesome-free": "5.8.2",
     "@jaames/iro": "4.3.3",
     "classnames": "2.2.6",
     "dialog-polyfill": "0.5.0",
