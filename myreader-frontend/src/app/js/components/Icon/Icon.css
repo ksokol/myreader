@@ -58,13 +58,13 @@
     content: ' ';
 }
 
-.my-icon.my-icon__icon__search {
+.my-icon.my-icon__search {
     -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/search.svg') no-repeat center;
     -webkit-mask-size: contain;
     background-color: var(--color);
 }
 
-.my-icon.my-icon__icon__times {
+.my-icon.my-icon__times {
     -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/times.svg') no-repeat center;
     -webkit-mask-size: contain;
     background-color: var(--color);
