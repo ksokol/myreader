@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {FeedEditForm} from '../../components'
-import {withLocationState} from '../../contexts'
+import {withLocationState, withNotification} from '../../contexts'
 import {
   deleteFeed,
   feedDeleted,
@@ -12,8 +12,7 @@ import {
   fetchFeed,
   fetchFeedFetchFailures,
   saveFeed,
-  showErrorNotification,
-  showSuccessNotification
+  showErrorNotification
 } from '../../store'
 import {ADMIN_FEEDS_URL, FEEDS} from '../../constants'
 import {toFeed} from '../../store/admin/feed'
@@ -42,7 +41,8 @@ class FeedEditPage extends React.Component {
     fetchFeedFetchFailures: PropTypes.func.isRequired,
     fetchFeed: PropTypes.func.isRequired,
     saveFeed: PropTypes.func.isRequired,
-    deleteFeed: PropTypes.func.isRequired
+    deleteFeed: PropTypes.func.isRequired,
+    showSuccessNotification: PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -78,7 +78,7 @@ class FeedEditPage extends React.Component {
 
     this.props.saveFeed({
       feed,
-      success: () => showSuccessNotification('Feed saved'),
+      success: () => this.props.showSuccessNotification('Feed saved'),
       error: error => {
         if (error.status === 400) {
           this.setState({
@@ -86,6 +86,7 @@ class FeedEditPage extends React.Component {
           })
           return []
         }
+        return undefined
       },
       finalize: () => {
         this.setState({
@@ -138,8 +139,10 @@ class FeedEditPage extends React.Component {
 }
 
 export default withLocationState(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(FeedEditPage)
+  withNotification(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(FeedEditPage)
+  )
 )

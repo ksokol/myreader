@@ -9,7 +9,8 @@ jest.mock('../../components', () => ({
 }))
 
 jest.mock('../../contexts', () => ({
-  withLocationState: Component => Component
+  withLocationState: Component => Component,
+  withNotification: Component => Component
 }))
 /* eslint-enable */
 
@@ -57,7 +58,8 @@ describe('FeedEditPage', () => {
       params: {
         uuid: 'uuid1'
       },
-      historyReplace: jest.fn()
+      historyReplace: jest.fn(),
+      showSuccessNotification: jest.fn()
     }
   })
 
@@ -111,21 +113,14 @@ describe('FeedEditPage', () => {
     expect(wrapper.find('FeedEditForm').prop('changePending')).toEqual(false)
   })
 
-  it('should dispatch action SHOW_NOTIFICATION when prop function "onSaveFormData" succeeded', () => {
+  it('should trigger prop function "showSuccessNotification" when prop function "onSaveFormData" succeeded', () => {
     const wrapper = createWrapper()
     dispatch.mockReset()
     wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
     wrapper.update()
-    dispatch.mock.calls[0][0].success()(dispatch, () => state)
+    dispatch.mock.calls[0][0].success()
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
-      type: 'SHOW_NOTIFICATION',
-      notification: {
-        id: 1,
-        text: 'Feed saved',
-        type: 'success'
-      }
-    })
+    expect(props.showSuccessNotification).toHaveBeenCalledWith('Feed saved')
   })
 
   it('should pass state "validations" to feed edit page when prop function "onSaveFormData" failed', () => {
