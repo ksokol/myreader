@@ -2,15 +2,16 @@ import React from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import {SubscribeForm} from '../../components'
-import {withLocationState} from '../../contexts'
-import {saveSubscribeEditForm, showSuccessNotification} from '../../store'
+import {withLocationState, withNotification} from '../../contexts'
+import {saveSubscribeEditForm} from '../../store'
 import {SUBSCRIPTION_URL} from '../../constants'
 
 class SubscribePage extends React.Component {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    historyReplace: PropTypes.func.isRequired
+    historyReplace: PropTypes.func.isRequired,
+    showSuccessNotification: PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -31,7 +32,7 @@ class SubscribePage extends React.Component {
     this.props.dispatch(saveSubscribeEditForm({
       subscription,
       success: [
-        () => showSuccessNotification('Subscribed'),
+        () => this.props.showSuccessNotification('Subscribed'),
         ({uuid}) => this.props.historyReplace({pathname: SUBSCRIPTION_URL, params: {uuid}})
       ],
       error: error => {
@@ -61,5 +62,7 @@ class SubscribePage extends React.Component {
 }
 
 export default withLocationState(
-  connect()(SubscribePage)
+  withNotification(
+    connect()(SubscribePage)
+  )
 )

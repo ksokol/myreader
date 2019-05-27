@@ -9,33 +9,23 @@ jest.mock('../../components', () => ({
 }))
 
 jest.mock('../../contexts', () => ({
-  withLocationState: Component => Component
+  withLocationState: Component => Component,
+  withNotification: Component => Component
 }))
 /* eslint-enable */
 
 describe('SubscribePage', () => {
 
-  let state, dispatch, props
+  let dispatch, props
 
-  const createWrapper = () => mount(<SubscribePage {...props} state={state} dispatch={dispatch} />)
+  const createWrapper = () => mount(<SubscribePage {...props} dispatch={dispatch} />)
 
   beforeEach(() => {
-    dispatch = jest.fn().mockImplementation(action => {
-      if (typeof action === 'function') {
-        action(dispatch, () => state)
-      }
-    })
-
-    state = {
-      common: {
-        notification: {
-          nextId: 1
-        }
-      }
-    }
+    dispatch = jest.fn()
 
     props = {
-      historyReplace: jest.fn()
+      historyReplace: jest.fn(),
+      showSuccessNotification: jest.fn()
     }
   })
 
@@ -64,20 +54,13 @@ describe('SubscribePage', () => {
     expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(true)
   })
 
-  it('should dispatch action SHOW_NOTIFICATION when prop function "saveSubscribeEditForm" succeeded', () => {
+  it('should trigger prop function "showSuccessNotification" when prop function "saveSubscribeEditForm" succeeded', () => {
     const wrapper = createWrapper()
     wrapper.find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
     wrapper.update()
-    dispatch.mock.calls[0][0].success[0]()(dispatch, () => state)
+    dispatch.mock.calls[0][0].success[0]()
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
-      type: 'SHOW_NOTIFICATION',
-      notification: {
-        id: 1,
-        text: 'Subscribed',
-        type: 'success'
-      }
-    })
+    expect(props.showSuccessNotification).toHaveBeenCalledWith('Subscribed')
   })
 
   it('should redirect to feed detail page when prop function "saveSubscribeEditForm" succeeded', () => {
