@@ -12,6 +12,7 @@ export const withNotification = Component => {
         <Component
           {...this.props}
           showSuccessNotification={this.context.showSuccessNotification}
+          showErrorNotification={this.context.showErrorNotification}
         />
       )
     }

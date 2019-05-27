@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import {showSuccessNotification} from '../../store'
+import {showSuccessNotification, showErrorNotification} from '../../store'
 import NotificationContext from './NotificationContext'
 
 class NotificationProvider extends React.Component {
@@ -11,13 +11,14 @@ class NotificationProvider extends React.Component {
     children: PropTypes.any
   }
 
-  showSuccessNotification = message => this.props.dispatch(showSuccessNotification(message))
+  api = {
+    showSuccessNotification: message => this.props.dispatch(showSuccessNotification(message)),
+    showErrorNotification: message => this.props.dispatch(showErrorNotification(message))
+  }
 
   render() {
     return (
-      <NotificationContext.Provider value={{
-        showSuccessNotification: this.showSuccessNotification
-      }}>
+      <NotificationContext.Provider value={this.api}>
         {this.props.children}
       </NotificationContext.Provider>
     )

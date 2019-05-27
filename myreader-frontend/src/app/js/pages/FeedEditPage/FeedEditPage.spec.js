@@ -28,18 +28,9 @@ describe('FeedEditPage', () => {
   }
 
   beforeEach(() => {
-    dispatch = jest.fn().mockImplementation(action => {
-      if (typeof action === 'function') {
-        action(dispatch, () => state)
-      }
-    })
+    dispatch = jest.fn()
 
     state = {
-      common: {
-        notification: {
-          nextId: 1
-        }
-      },
       admin: {
         editForm: {
           changePending: true,
@@ -59,7 +50,8 @@ describe('FeedEditPage', () => {
         uuid: 'uuid1'
       },
       historyReplace: jest.fn(),
-      showSuccessNotification: jest.fn()
+      showSuccessNotification: jest.fn(),
+      showErrorNotification: jest.fn()
     }
   })
 
@@ -218,22 +210,14 @@ describe('FeedEditPage', () => {
     expect(props.historyReplace).toHaveBeenCalledWith({pathname: ADMIN_FEEDS_URL})
   })
 
-  it('should dispatch action SHOW_NOTIFICATION when prop function "onRemove" failed with HTTP 409', () => {
+  it('should trigger prop function "showErrorNotification" when prop function "onRemove" failed with HTTP 409', () => {
     const wrapper = createWrapper()
     dispatch.mockReset()
     wrapper.find('FeedEditForm').props().onRemove('1')
     wrapper.update()
+    dispatch.mock.calls[0][0].error('response', null, 409)
 
-    dispatch.mock.calls[0][0].error('response', null, 409)(dispatch, () => state)
-
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
-      type: 'SHOW_NOTIFICATION',
-      notification: {
-        id: 1,
-        text: 'Can not delete. Feed has subscriptions',
-        type: 'error'
-      }
-    })
+    expect(props.showErrorNotification).toHaveBeenCalledWith('Can not delete. Feed has subscriptions')
   })
 
   it('should dispatch action SHOW_NOTIFICATION when prop function "onRemove" failed with HTTP 400', () => {
@@ -245,22 +229,15 @@ describe('FeedEditPage', () => {
     expect(dispatch.mock.calls[0][0].error('response', null, 400)).toEqual(undefined)
   })
 
-  it('should dispatch action SHOW_NOTIFICATION when prop function "onRemove" failed with HTTP 500', () => {
+  it('should trigger prop function "showErrorNotification" when prop function "onRemove" failed with HTTP 500', () => {
     const wrapper = createWrapper()
     dispatch.mockReset()
     wrapper.find('FeedEditForm').props().onRemove('1')
     wrapper.update()
 
-    dispatch.mock.calls[0][0].error('response', null, 500)(dispatch, () => state)
+    dispatch.mock.calls[0][0].error('response', null, 500)
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
-      type: 'SHOW_NOTIFICATION',
-      notification: {
-        id: 1,
-        text: 'response',
-        type: 'error'
-      }
-    })
+    expect(props.showErrorNotification).toHaveBeenCalledWith('response')
   })
 
   it('should dispatch expected action when prop function "onMore" triggered', () => {

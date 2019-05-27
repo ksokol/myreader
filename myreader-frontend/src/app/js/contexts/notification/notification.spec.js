@@ -34,13 +34,26 @@ describe('notification context', () => {
   })
 
   it('should dispatch action "SHOW_NOTIFICATION" when prop function "showSuccessNotification" called', () => {
-    createWrapper().find('WrappedComponent').props().showSuccessNotification()
+    createWrapper().find('WrappedComponent').props().showSuccessNotification('success message')
 
     expect(dispatch).toHaveBeenCalledWith( {
       notification: {
         id: 1,
-        text: undefined,
+        text: 'success message',
         type: 'success'
+      },
+      type: 'SHOW_NOTIFICATION'
+    })
+  })
+
+  it('should dispatch action "SHOW_NOTIFICATION" when prop function "showErrorNotification" called', () => {
+    createWrapper().find('WrappedComponent').props().showErrorNotification('error message')
+
+    expect(dispatch).toHaveBeenCalledWith( {
+      notification: {
+        id: 1,
+        text: 'error message',
+        type: 'error'
       },
       type: 'SHOW_NOTIFICATION'
     })

@@ -11,8 +11,7 @@ import {
   feedFetchFailuresSelector,
   fetchFeed,
   fetchFeedFetchFailures,
-  saveFeed,
-  showErrorNotification
+  saveFeed
 } from '../../store'
 import {ADMIN_FEEDS_URL, FEEDS} from '../../constants'
 import {toFeed} from '../../store/admin/feed'
@@ -42,7 +41,8 @@ class FeedEditPage extends React.Component {
     fetchFeed: PropTypes.func.isRequired,
     saveFeed: PropTypes.func.isRequired,
     deleteFeed: PropTypes.func.isRequired,
-    showSuccessNotification: PropTypes.func.isRequired
+    showSuccessNotification: PropTypes.func.isRequired,
+    showErrorNotification: PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -111,9 +111,12 @@ class FeedEditPage extends React.Component {
         this.setState({
           changePending: false
         })
-        return (status === 409 && showErrorNotification('Can not delete. Feed has subscriptions'))
-          || (status !== 400 && showErrorNotification(response))
-          || undefined
+
+        if (status === 409) {
+          this.props.showErrorNotification('Can not delete. Feed has subscriptions')
+        } else if (status !== 400) {
+          this.props.showErrorNotification(response)
+        }
       }
     })
   }
