@@ -9,7 +9,8 @@ jest.mock('../../components', () => ({
 }))
 
 jest.mock('../../contexts', () => ({
-  withLocationState: Component => Component
+  withLocationState: Component => Component,
+  withNotification: Component => Component
 }))
 /* eslint-enable */
 
@@ -36,18 +37,9 @@ describe('SubscriptionEditPage', () => {
   }
 
   beforeEach(() => {
-    dispatch = jest.fn().mockImplementation(action => {
-      if (typeof action === 'function') {
-        action(dispatch, () => state)
-      }
-    })
+    dispatch = jest.fn()
 
     state = {
-      common: {
-        notification: {
-          nextId: 1
-        }
-      },
       subscription: {
         editForm: {
           changePending: true,
@@ -71,6 +63,7 @@ describe('SubscriptionEditPage', () => {
       },
       historyReplace: jest.fn(),
       historyReload: jest.fn(),
+      showSuccessNotification: jest.fn()
     }
   })
 
@@ -181,21 +174,14 @@ describe('SubscriptionEditPage', () => {
     expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(false)
   })
 
-  it('should dispatch action SHOW_NOTIFICATION when prop function "saveSubscriptionEditForm" succeeded', () => {
+  it('should trigger prop function "showSuccessNotification" when prop function "saveSubscriptionEditForm" succeeded', () => {
     const wrapper = createWrapper()
     dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     wrapper.update()
-    dispatch.mock.calls[0][0].success()(dispatch, () => state)
+    dispatch.mock.calls[0][0].success()
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
-      type: 'SHOW_NOTIFICATION',
-      notification: {
-        id: 1,
-        text: 'Subscription saved',
-        type: 'success'
-      }
-    })
+    expect(props.showSuccessNotification).toHaveBeenCalledWith('Subscription saved')
   })
 
   it('should pass state "validations" to feed edit page when prop function "saveSubscriptionEditForm" failed', () => {
@@ -263,22 +249,15 @@ describe('SubscriptionEditPage', () => {
     expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(false)
   })
 
-  it('should dispatch action SHOW_NOTIFICATION when prop function "deleteSubscription" succeeded', () => {
+  it('should trigger prop function "showSuccessNotification" when prop function "deleteSubscription" succeeded', () => {
     const wrapper = createWrapper()
     dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
     wrapper.update()
     const successActions = dispatch.mock.calls[0][0].success
-    successActions[0]()(dispatch, () => state)
+    successActions[0]()
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
-      type: 'SHOW_NOTIFICATION',
-      notification: {
-        id: 1,
-        text: 'Subscription deleted',
-        type: 'success'
-      }
-    })
+    expect(props.showSuccessNotification).toHaveBeenCalledWith('Subscription deleted')
   })
 
   it('should change and reload location when prop function "deleteSubscription" succeeded', () => {

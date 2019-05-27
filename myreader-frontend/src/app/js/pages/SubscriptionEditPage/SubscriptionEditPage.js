@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {SubscriptionEditForm} from '../../components'
-import {withLocationState} from '../../contexts'
+import {withLocationState, withNotification} from '../../contexts'
 import {
   addSubscriptionExclusionPattern,
   deleteSubscription,
@@ -11,7 +11,6 @@ import {
   fetchSubscriptionExclusionPatterns,
   removeSubscriptionExclusionPattern,
   saveSubscriptionEditForm,
-  showSuccessNotification,
   subscriptionExclusionPatternsSelector,
   subscriptionTagsSelector
 } from '../../store'
@@ -46,6 +45,7 @@ class SubscriptionEditPage extends React.Component {
     fetchSubscription: PropTypes.func.isRequired,
     deleteSubscription: PropTypes.func.isRequired,
     saveSubscriptionEditForm: PropTypes.func.isRequired,
+    showSuccessNotification: PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -71,6 +71,12 @@ class SubscriptionEditPage extends React.Component {
     })
   }
 
+  pendingEnd = () => {
+    this.setState({
+      changePending: false
+    })
+  }
+
   onSaveSubscription = subscription => {
     this.setState({
       changePending: true,
@@ -79,18 +85,15 @@ class SubscriptionEditPage extends React.Component {
 
     this.props.saveSubscriptionEditForm({
       subscription,
-      success: () => showSuccessNotification('Subscription saved'),
+      success: () => this.props.showSuccessNotification('Subscription saved'),
       error: error => {
         if (error.status === 400) {
           this.setState({validations: error.fieldErrors})
           return []
         }
+        return undefined
       },
-      finalize: () => {
-        this.setState({
-          changePending: false
-        })
-      }
+      finalize: this.pendingEnd
     })
   }
 
@@ -102,15 +105,11 @@ class SubscriptionEditPage extends React.Component {
     this.props.deleteSubscription({
       uuid,
       success: [
-        () => showSuccessNotification('Subscription deleted'),
+        () => this.props.showSuccessNotification('Subscription deleted'),
         () => this.props.historyReplace({pathname: SUBSCRIPTIONS_URL}),
         () => this.props.historyReload()
       ],
-      error: () => {
-        this.setState({
-          changePending: false
-        })
-      }
+      error: this.pendingEnd
     })
   }
 
@@ -135,8 +134,10 @@ class SubscriptionEditPage extends React.Component {
 }
 
 export default withLocationState(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(SubscriptionEditPage)
+  withNotification(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(SubscriptionEditPage)
+  )
 )

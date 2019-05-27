@@ -7,7 +7,7 @@ import createApplicationStore from './store/bootstrap'
 import {ENVIRONMENT} from './constants'
 import {installMediaBreakpointActionDispatcher} from './store/common/media-breakpoints'
 import registerServiceWorker from '../../registerServiceWorker'
-import {LocationStateProvider} from './contexts'
+import {LocationStateProvider, NotificationProvider} from './contexts'
 import App from './App'
 
 const store = createApplicationStore(
@@ -19,7 +19,9 @@ ReactDOM.render(
   <Provider store={store}>
     <Router hashType="hashbang">
       <LocationStateProvider>
-        <App />
+        <NotificationProvider>
+          <App />
+        </NotificationProvider>
       </LocationStateProvider>
     </Router>
   </Provider>,
