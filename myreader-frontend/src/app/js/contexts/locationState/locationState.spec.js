@@ -4,7 +4,7 @@ import {LocationStateProvider, withLocationState} from '.'
 
 const WrappedComponent = () => <span>wrapped component</span>
 
-describe('locationState', () => {
+describe('locationState context', () => {
 
   let routerProps, props
 
