@@ -1,5 +1,5 @@
 import {exchange} from './exchange'
-import '../../../../../../__mocks__/global/fetch'
+import '../../../../__mocks__/global/fetch'
 
 describe('exchange', () => {
 

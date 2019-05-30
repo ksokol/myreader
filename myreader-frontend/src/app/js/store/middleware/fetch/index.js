@@ -1,5 +1,5 @@
 import {createExchangeHandler} from './exchange-handler'
-import {exchange} from './exchange'
+import {exchange} from '../../../api/exchange'
 import {responseHandler} from './responseHandler'
 import {createFetchMiddleware} from './fetch-middleware'
 
