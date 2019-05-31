@@ -1,4 +1,4 @@
-import {fetchEnd, showErrorNotification} from '../../../store'
+import {showErrorNotification} from '../../../store'
 import {isString, toArray} from '../../../shared/utils'
 
 function invokeAction(action, response) {
@@ -15,7 +15,6 @@ export function responseHandler(action, response) {
   const actions = []
 
   if (response.ok) {
-    actions.push(fetchEnd())
     actions.push(...invokeActionOrActions(action.success, response))
     actions.push(...invokeActionOrActions(action.finalize, response))
     return {ok: true, actions}
@@ -25,9 +24,7 @@ export function responseHandler(action, response) {
 
   if (invokedActions.length === 0) {
     actions.push(showErrorNotification(isString(response.data) ? response.data : JSON.stringify(response)))
-    actions.push(fetchEnd())
   } else {
-    actions.push(fetchEnd())
     actions.push(...invokedActions)
   }
 

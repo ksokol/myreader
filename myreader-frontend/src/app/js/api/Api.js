@@ -4,13 +4,17 @@ export class Api {
 
   constructor() {
     this.interceptors = {
-      then: []
+      then: [],
+      finally: []
     }
   }
 
   addInterceptor = interceptor => {
     if (typeof interceptor.onThen === 'function') {
       this.interceptors.then.push(interceptor)
+    }
+    if (typeof interceptor.onFinally === 'function') {
+      this.interceptors.finally.push(interceptor)
     }
   }
 
@@ -31,6 +35,8 @@ export class Api {
 
         next(response)
       })
+    }).finally(() => {
+      this.interceptors.finally.forEach(interceptor => interceptor.onFinally())
     })
   }
 }

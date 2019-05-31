@@ -1,6 +1,6 @@
 import {AuthInterceptor} from './AuthInterceptor'
 
-describe('authInterceptor', () => {
+describe('AuthInterceptor', () => {
 
   let dispatch, interceptor, next
 
