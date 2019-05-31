@@ -5,8 +5,9 @@ import {
   mediaBreakpointIsDesktopSelector,
   sidenavSlideIn
 } from '../../store'
+import {pendingRequestCountSelector} from './selectors'
 
-describe('src/app/js/store/common/selectors.spec.js', () => {
+describe('common selectors', () => {
 
   const state = common => {
     return {common}
@@ -49,5 +50,9 @@ describe('src/app/js/store/common/selectors.spec.js', () => {
 
   it('backdropIsVisible should return true', () => {
     expect(backdropIsVisible(state({backdropVisible: true}))).toEqual(true)
+  })
+
+  it('pendingRequestCountSelector should return 2 for pendingRequests', () => {
+    expect(pendingRequestCountSelector(state({pendingRequests: 2}))).toEqual(2)
   })
 })

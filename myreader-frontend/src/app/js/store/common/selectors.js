@@ -9,3 +9,5 @@ export const mediaBreakpointIsDesktopSelector = state => state.common.mediaBreak
 export const sidenavSlideIn = state => state.common.sidenavSlideIn
 
 export const backdropIsVisible = state => state.common.backdropVisible
+
+export const pendingRequestCountSelector = state => state.common.pendingRequests

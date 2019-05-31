@@ -13,7 +13,7 @@ import {
   SubscriptionEditPage,
   SubscriptionListPage
 } from './pages'
-import {secured, SidenavLayout} from './components'
+import {secured, SidenavLayout, LoadingBar} from './components'
 import {
   ADMIN_FEED_URL,
   ADMIN_FEEDS_URL,
@@ -56,6 +56,7 @@ const App = () => {
         <Route path={APP_URL} component={secured(withSidenav, [ROLE_USER, ROLE_ADMIN])}/>
         <Redirect to={LOGIN_URL} />
       </Switch>
+      <LoadingBar />
       <ToastContainer/>
     </React.Fragment>
   )
