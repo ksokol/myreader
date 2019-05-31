@@ -9,6 +9,14 @@ describe('PendingFetchInterceptor', () => {
     interceptor = new PendingFetchInterceptor(dispatch)
   })
 
+  it('should dispatch action FETCH_START when function "onBefore" called', () => {
+    interceptor.onBefore()
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'FETCH_START'
+    })
+  })
+
   it('should dispatch action FETCH_END when function "onFinally" called', () => {
     interceptor.onFinally()
 

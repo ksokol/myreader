@@ -1,4 +1,3 @@
-import {fetchStart} from '../../../store'
 import {toArray} from '../../../shared/utils'
 
 function toArguments(action) {
@@ -12,7 +11,6 @@ function toArguments(action) {
 
 function beforeExchange(action, dispatch) {
   toArray(action.before).forEach(action => dispatch(action()))
-  dispatch(fetchStart())
 }
 
 export function createExchangeHandler(exchange, responseHandler) {

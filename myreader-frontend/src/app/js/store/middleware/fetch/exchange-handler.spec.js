@@ -95,22 +95,12 @@ describe('exchangeHandler', () => {
     })
   })
 
-  it('should dispatch action FETCH_START before calling exchange', done => {
-    resolve({ok: true, data: 'expected response'})
-    handleResponse({ok: true, actions: []})
-
-    exchangeHandler({type: 'GET_ACTION'}, store.dispatch).then(() => {
-      expect(store.getActionTypes()).toEqual(['FETCH_START'])
-      done()
-    })
-  })
-
   it('should dispatch actions returned by responseHandler when response succeeded', done => {
     resolve({ok: true, data: 'expected response'})
     handleResponse({ok: true, actions: [{type: 'SOME_ACTION1'}, {type: 'SOME_ACTION2'}]})
 
     exchangeHandler({type: 'GET_ACTION'}, store.dispatch).then(() => {
-      expect(store.getActionTypes()).toEqual(['FETCH_START', 'SOME_ACTION1', 'SOME_ACTION2'])
+      expect(store.getActionTypes()).toEqual(['SOME_ACTION1', 'SOME_ACTION2'])
       done()
     })
   })
@@ -120,7 +110,7 @@ describe('exchangeHandler', () => {
     handleResponse({ok: false, actions: [{type: 'SOME_ACTION1'}, {type: 'SOME_ACTION2'}]})
 
     exchangeHandler({type: 'GET_ACTION'}, store.dispatch).catch(() => {
-      expect(store.getActionTypes()).toEqual(['FETCH_START', 'SOME_ACTION1', 'SOME_ACTION2'])
+      expect(store.getActionTypes()).toEqual(['SOME_ACTION1', 'SOME_ACTION2'])
       done()
     })
   })
@@ -132,6 +122,6 @@ describe('exchangeHandler', () => {
       before: () => ([{type: 'EXPECTED_BEFORE1'}, {type: 'EXPECTED_BEFORE2'}])
     }, store.dispatch)
 
-    expect(store.getActionTypes()).toEqual(['EXPECTED_BEFORE1', 'EXPECTED_BEFORE2', 'FETCH_START'])
+    expect(store.getActionTypes()).toEqual(['EXPECTED_BEFORE1', 'EXPECTED_BEFORE2'])
   })
 })

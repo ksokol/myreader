@@ -4,12 +4,16 @@ export class Api {
 
   constructor() {
     this.interceptors = {
+      before: [],
       then: [],
       finally: []
     }
   }
 
   addInterceptor = interceptor => {
+    if (typeof interceptor.onBefore === 'function') {
+      this.interceptors.before.push(interceptor)
+    }
     if (typeof interceptor.onThen === 'function') {
       this.interceptors.then.push(interceptor)
     }
@@ -20,6 +24,8 @@ export class Api {
 
   request = request => {
     return new Promise(resolve => {
+      this.interceptors.before.forEach(interceptor => interceptor.onBefore())
+
       exchange(request).then(response => {
         const interceptors = [...this.interceptors.then]
 

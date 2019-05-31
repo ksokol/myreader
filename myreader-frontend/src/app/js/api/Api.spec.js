@@ -86,4 +86,22 @@ describe('Api', () => {
       done()
     })
   })
+
+  it('should trigger interceptors with function "onBefore"', done => {
+    const fn1 = jest.fn()
+    const fn2 = jest.fn()
+
+    const interceptor = fn => ({
+      onBefore: fn
+    })
+
+    api.addInterceptor(interceptor(fn1))
+    api.addInterceptor(interceptor(fn2))
+
+    api.request({}).then(() => {
+      expect(fn1).toHaveBeenCalled()
+      expect(fn2).toHaveBeenCalled()
+      done()
+    })
+  })
 })
