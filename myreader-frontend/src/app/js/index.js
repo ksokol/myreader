@@ -9,14 +9,14 @@ import {installMediaBreakpointActionDispatcher} from './store/common/media-break
 import registerServiceWorker from '../../registerServiceWorker'
 import {LocationStateProvider, NotificationProvider} from './contexts'
 import App from './App'
-import {api, authInterceptor} from './api'
+import {api, AuthInterceptor} from './api'
 
 const store = createApplicationStore(
   ENVIRONMENT,
   [installMediaBreakpointActionDispatcher]
 )
 
-api.addResponseInterceptor(authInterceptor(store.dispatch))
+api.addInterceptor(new AuthInterceptor(store.dispatch))
 
 ReactDOM.render(
   <Provider store={store}>

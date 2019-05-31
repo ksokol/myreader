@@ -4,22 +4,26 @@ export class Api {
 
   constructor() {
     this.interceptors = {
-      response: []
+      then: []
     }
   }
 
-  addResponseInterceptor = interceptor => this.interceptors.response.push(interceptor)
+  addInterceptor = interceptor => {
+    if (typeof interceptor.onThen === 'function') {
+      this.interceptors.then.push(interceptor)
+    }
+  }
 
   request = request => {
     return new Promise(resolve => {
       exchange(request).then(response => {
-        const interceptors = [...this.interceptors.response]
+        const interceptors = [...this.interceptors.then]
 
         const next = chainedResponse => {
           const interceptor = interceptors.shift()
 
           if (interceptor) {
-            interceptor(chainedResponse, next)
+            interceptor.onThen(chainedResponse, next)
           } else {
             resolve(chainedResponse)
           }
