@@ -8,7 +8,7 @@ import {
   FeedListPage,
   LoginPage,
   LogoutPage,
-  MaintenancePage,
+  AdminOverviewPage,
   SubscribePage,
   SubscriptionEditPage,
   SubscriptionListPage
@@ -40,7 +40,7 @@ const withSidenav = () => (
       <Route exact={true} path={SUBSCRIPTION_URL} component={SubscriptionEditPage}/>
       <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>
       <Route exact={true} path={SETTINGS_URL} component={SettingsPageContainer}/>
-      <Route exact={true} path={ADMIN_OVERVIEW_URL} component={MaintenancePage}/>
+      <Route exact={true} path={ADMIN_OVERVIEW_URL} component={AdminOverviewPage}/>
       <Route exact={true} path={ADMIN_FEEDS_URL} component={FeedListPage}/>
       <Route exact={true} path={ADMIN_FEED_URL} component={FeedEditPage}/>
     </Switch>

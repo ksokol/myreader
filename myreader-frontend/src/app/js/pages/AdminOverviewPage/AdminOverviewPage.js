@@ -12,7 +12,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators({rebuildSearchIndex, fetchApplicationInfo}, dispatch)
 
-class MaintenancePage extends React.Component {
+class AdminOverviewPage extends React.Component {
 
   componentDidMount() {
     this.props.fetchApplicationInfo()
@@ -33,7 +33,7 @@ class MaintenancePage extends React.Component {
   }
 }
 
-MaintenancePage.propTypes = {
+AdminOverviewPage.propTypes = {
   rebuildSearchIndex: PropTypes.func.isRequired,
   fetchApplicationInfo: PropTypes.func.isRequired,
   applicationInfo: PropTypes.shape({
@@ -44,4 +44,4 @@ MaintenancePage.propTypes = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(MaintenancePage)
+)(AdminOverviewPage)

@@ -1,6 +1,6 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import MaintenancePage from './MaintenancePage'
+import MaintenancePage from './AdminOverviewPage'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -8,7 +8,7 @@ jest.mock('../../components', () => ({
 }))
 /* eslint-enable */
 
-describe('MaintenancePage', () => {
+describe('AdminOverviewPage', () => {
 
   let state, dispatch
 
