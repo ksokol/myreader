@@ -2,6 +2,12 @@ import React from 'react'
 import {mount} from 'enzyme'
 import MaintenancePage from './MaintenancePage'
 
+/* eslint-disable react/prop-types */
+jest.mock('../../components', () => ({
+  AdminOverview: () => null
+}))
+/* eslint-enable */
+
 describe('MaintenancePage', () => {
 
   let state, dispatch
@@ -13,7 +19,12 @@ describe('MaintenancePage', () => {
 
     state = {
       admin: {
-        applicationInfo: undefined
+        applicationInfo: {
+          branch: 'expected branch',
+          commitId: 'expected commitId',
+          version: 'expected version',
+          buildTime: 'expected buildTime',
+        }
       }
     }
   })
@@ -26,35 +37,16 @@ describe('MaintenancePage', () => {
     }))
   })
 
-  it('should trigger action PUT_INDEX_SYNC_JOB when button clicked', () => {
-    createWrapper().find('Button').props().onClick()
+  it('should trigger action PUT_INDEX_SYNC_JOB when prop function "rebuildSearchIndex" triggered', () => {
+    createWrapper().find('AdminOverview').props().rebuildSearchIndex()
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'PUT_INDEX_SYNC_JOB'
     }))
   })
 
-  it('should not render application info component when prop "applicationInfo" is undefined', () => {
-    createWrapper()
-
-    expect(createWrapper().find('ApplicationInfo').exists()).toEqual(false)
-  })
-
-  it('should not render application info component when prop "applicationInfo" is an empty object', () => {
-    state.admin.applicationInfo = {}
-
-    expect(createWrapper().find('ApplicationInfo').exists()).toEqual(false)
-  })
-
   it('should render application info component when prop "applicationInfo" is present', () => {
-    state.admin.applicationInfo = {
-      branch: 'expected branch',
-      commitId: 'expected commitId',
-      version: 'expected version',
-      buildTime: 'expected buildTime',
-    }
-
-    expect(createWrapper().find('ApplicationInfo').props()).toEqual({
+    expect(createWrapper().find('AdminOverview').prop('applicationInfo')).toEqual({
       branch: 'expected branch',
       commitId: 'expected commitId',
       version: 'expected version',
