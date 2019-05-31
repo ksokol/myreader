@@ -1,9 +1,9 @@
 import {createExchangeHandler} from './exchange-handler'
-import {exchange} from '../../../api/exchange'
+import {api} from '../../../api'
 import {responseHandler} from './responseHandler'
 import {createFetchMiddleware} from './fetch-middleware'
 
-const exchangeHandler = createExchangeHandler(params => exchange(params), responseHandler)
+const exchangeHandler = createExchangeHandler(params => api.request(params), responseHandler)
 const fetchMiddleware = createFetchMiddleware(exchangeHandler)
 
 export default fetchMiddleware

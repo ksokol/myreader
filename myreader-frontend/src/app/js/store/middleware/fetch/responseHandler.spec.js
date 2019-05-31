@@ -14,15 +14,6 @@ describe('responseHandler', () => {
     return actual
   }
 
-  it('should dispatch actions FETCH_END and SECURITY_UPDATE when request is unauthorized', () => {
-    givenHandledResponse({}, {status: 401, data: 'response'})
-
-    expect(actual).toContainObject({ok: false})
-    expect(store.getActions().length).toBeGreaterThanOrEqual(2)
-    expect(store.getActions()[0]).toEqualActionType('FETCH_END')
-    expect(store.getActions()[1]).toEqual({type: 'SECURITY_UPDATE', authorized: false, roles: []})
-  })
-
   it('should dispatch action FETCH_END when request returns HTTP 400', () => {
     givenHandledResponse({}, {ok: false, status: 400, data: 'response'})
 
@@ -225,22 +216,6 @@ describe('responseHandler', () => {
       data: 'expected data',
       headers: {a: 'b'},
       status: 0
-    })
-  })
-
-  it('should dispatch finalize action when response is unauthorized', () => {
-    givenHandledResponse({
-      finalize: (data, headers, status) => ({
-        type: 'FINALIZE_ACTION', data, headers, status})
-    },
-    {ok: false, data: 'expected data', headers: {a: 'b'}, status: 401}
-    )
-
-    expect(store.getActions()[2]).toEqual({
-      type: 'FINALIZE_ACTION',
-      data: 'expected data',
-      headers: {a: 'b'},
-      status: 401
     })
   })
 })

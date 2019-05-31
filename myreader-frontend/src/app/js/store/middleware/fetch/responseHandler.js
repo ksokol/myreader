@@ -1,4 +1,4 @@
-import {fetchEnd, unauthorized} from '../../../store'
+import {fetchEnd} from '../../../store'
 import {isString, toArray} from '../../../shared/utils'
 
 function invokeAction(action, response) {
@@ -19,13 +19,6 @@ export function responseHandler(action, response) {
     actions.push(...invokeActionOrActions(action.success, response))
     actions.push(...invokeActionOrActions(action.finalize, response))
     return {ok: true, actions}
-  }
-
-  if (response.status === 401) {
-    actions.push(fetchEnd())
-    actions.push(unauthorized())
-    actions.push(...invokeActionOrActions(action.finalize, response))
-    return {ok: false, actions}
   }
 
   const invokedActions = invokeActionOrActions(action.error, response)
