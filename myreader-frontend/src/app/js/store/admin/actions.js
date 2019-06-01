@@ -1,25 +1,7 @@
 import * as types from '../../store/action-types'
-import {FEEDS, INFO} from '../../constants'
-import {showErrorNotification} from '../../store'
-import {toApplicationInfo} from './application-info'
+import {FEEDS} from '../../constants'
 import {toFeedFetchFailures, toFeeds} from './feed'
 import {toUrlString} from '../../store/shared/links'
-
-export const applicationInfoReceived = raw => {
-  return {
-    type: types.APPLICATION_INFO_RECEIVED,
-    applicationInfo: toApplicationInfo(raw)
-  }
-}
-
-export const fetchApplicationInfo = () => {
-  return {
-    type: 'GET_APPLICATION_INFO',
-    url: INFO,
-    success: response => applicationInfoReceived(response),
-    error: () => showErrorNotification('Application info is missing')
-  }
-}
 
 export const feedsReceived = raw => {
   return {

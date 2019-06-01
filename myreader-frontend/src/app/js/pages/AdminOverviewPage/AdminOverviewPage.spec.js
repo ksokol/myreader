@@ -14,51 +14,54 @@ jest.mock('../../contexts', () => ({
 
 jest.mock('../../api', () => ({
   adminApi: {
-    rebuildSearchIndex: jest.fn().mockResolvedValue({})
+    rebuildSearchIndex: jest.fn().mockResolvedValue({}),
+    fetchApplicationInfo: jest.fn().mockResolvedValue({})
   }
 }))
 /* eslint-enable */
 
+jest.useRealTimers()
+
+const expectedError = 'expected value'
+
 describe('AdminOverviewPage', () => {
 
-  let state, dispatch, props
+  let props
 
-  const createWrapper = () => mount(<AdminOverviewPage {...props} dispatch={dispatch} state={state} />)
+  const createWrapper = () => mount(<AdminOverviewPage {...props} />)
 
   beforeEach(() => {
-    dispatch = jest.fn()
-
-    state = {
-      admin: {
-        applicationInfo: {
-          branch: 'expected branch',
-          commitId: 'expected commitId',
-          version: 'expected version',
-          buildTime: 'expected buildTime',
-        }
-      }
-    }
-
     props = {
       showSuccessNotification: jest.fn(),
       showErrorNotification: jest.fn()
     }
   })
 
-  it('should trigger action GET_APPLICATION_INFO when mounted', () => {
+  it('should trigger adminApi.fetchApplicationInfo when mounted', () => {
     createWrapper()
 
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'GET_APPLICATION_INFO'
-    }))
+    expect(adminApi.fetchApplicationInfo).toHaveBeenCalled()
   })
 
-  it('should render application info component when prop "applicationInfo" is present', () => {
-    expect(createWrapper().find('AdminOverview').prop('applicationInfo')).toEqual({
-      branch: 'expected branch',
-      commitId: 'expected commitId',
-      version: 'expected version',
-      buildTime: 'expected buildTime',
+  it('should pass applicationInfo to admin overview component when adminApi.fetchApplicationInfo succeeded', done => {
+    adminApi.fetchApplicationInfo = jest.fn().mockResolvedValueOnce(expectedError)
+    const wrapper = createWrapper()
+
+    setTimeout(() => {
+      wrapper.update()
+      expect(wrapper.find('AdminOverview').prop('applicationInfo')).toEqual('expected value')
+      done()
+    })
+  })
+
+  it('should trigger prop function  "showErrorNotification" when adminApi.fetchApplicationInfo failed', done => {
+    adminApi.fetchApplicationInfo = jest.fn().mockRejectedValueOnce('some error')
+    const wrapper = createWrapper()
+
+    setTimeout(() => {
+      wrapper.update()
+      expect(props.showErrorNotification).toHaveBeenCalledWith('Application info is missing')
+      done()
     })
   })
 
@@ -75,9 +78,9 @@ describe('AdminOverviewPage', () => {
   })
 
   it('should call prop function "showErrorNotification" when adminApi.rebuildSearchIndex failed', async () => {
-    adminApi.rebuildSearchIndex = jest.fn().mockRejectedValue('expected error')
+    adminApi.rebuildSearchIndex = jest.fn().mockRejectedValue(expectedError)
     await createWrapper().find('AdminOverview').props().rebuildSearchIndex()
 
-    expect(props.showErrorNotification).toHaveBeenCalledWith('expected error')
+    expect(props.showErrorNotification).toHaveBeenCalledWith(expectedError)
   })
 })

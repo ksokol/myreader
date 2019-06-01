@@ -11,21 +11,6 @@ describe('admin reducers', () => {
     expect(adminReducers(state, {type: 'UNKNOWN_ACTION'})).toEqual(state)
   })
 
-  describe('action APPLICATION_INFO_RECEIVED', () => {
-
-    it('should do nothing when no entry focused', () => {
-      const action = {
-        type: 'APPLICATION_INFO_RECEIVED',
-        applicationInfo: {a: 'b', c: 'd'}
-      }
-
-      const currentState = {applicationInfo: {}}
-      const expectedState = {applicationInfo: {a: 'b', c: 'd'}}
-
-      expect(adminReducers(currentState, action)).toContainObject(expectedState)
-    })
-  })
-
   describe('action SECURITY_UPDATE', () => {
 
     beforeEach(() => {

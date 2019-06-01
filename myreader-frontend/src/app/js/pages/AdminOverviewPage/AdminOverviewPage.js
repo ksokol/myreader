@@ -1,19 +1,26 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
-import {applicationInfoSelector, fetchApplicationInfo} from '../../store'
 import {AdminOverview} from '../../components'
 import {adminApi} from '../../api'
 import {withNotification} from '../../contexts'
 
-const mapStateToProps = state => ({
-  applicationInfo: applicationInfoSelector(state)
-})
-
 class AdminOverviewPage extends React.Component {
 
-  componentDidMount() {
-    this.props.dispatch(fetchApplicationInfo())
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      applicationInfo: null
+    }
+  }
+
+  componentDidMount = async () => {
+    try {
+      const applicationInfo = await adminApi.fetchApplicationInfo()
+      this.setState({applicationInfo})
+    } catch {
+      this.props.showErrorNotification('Application info is missing')
+    }
   }
 
   rebuildSearchIndex = async () => {
@@ -29,23 +36,15 @@ class AdminOverviewPage extends React.Component {
     return (
       <AdminOverview
         rebuildSearchIndex={this.rebuildSearchIndex}
-        applicationInfo={this.props.applicationInfo}
+        applicationInfo={this.state.applicationInfo}
       />
     )
   }
 }
 
 AdminOverviewPage.propTypes = {
-  applicationInfo: PropTypes.shape({
-    branch: PropTypes.string
-  }),
   showSuccessNotification: PropTypes.func.isRequired,
-  showErrorNotification: PropTypes.func.isRequired,
-  dispatch: PropTypes.func.isRequired
+  showErrorNotification: PropTypes.func.isRequired
 }
 
-export default withNotification(
-  connect(
-    mapStateToProps
-  )(AdminOverviewPage)
-)
+export default withNotification(AdminOverviewPage)

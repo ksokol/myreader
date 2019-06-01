@@ -1,7 +1,5 @@
 import {cloneObject} from '../../store/shared/objects'
 
-export const applicationInfoSelector = state => state.admin.applicationInfo
-
 export const filteredBySearchFeedsSelector = (q = '') =>
   state => ({
     feeds: q

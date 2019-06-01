@@ -1,4 +1,4 @@
-import {applicationInfoSelector, feedFetchFailuresSelector, filteredBySearchFeedsSelector} from '../../store'
+import {feedFetchFailuresSelector, filteredBySearchFeedsSelector} from '../../store'
 
 describe('admin selectors', () => {
 
@@ -13,10 +13,6 @@ describe('admin selectors', () => {
         fetchFailuresLoading: true
       }
     }
-  })
-
-  it('feedSelector should return application info', () => {
-    expect(applicationInfoSelector(state)).toEqual({a: 'b'})
   })
 
   it('feedFetchFailuresSelector should return feed fetch failures', () =>
