@@ -16,8 +16,8 @@ const store = createApplicationStore(
   [installMediaBreakpointActionDispatcher]
 )
 
-api.addInterceptor(new AuthInterceptor(store.dispatch))
 api.addInterceptor(new PendingFetchInterceptor(store.dispatch))
+api.addInterceptor(new AuthInterceptor(store.dispatch))
 
 ReactDOM.render(
   <Provider store={store}>
