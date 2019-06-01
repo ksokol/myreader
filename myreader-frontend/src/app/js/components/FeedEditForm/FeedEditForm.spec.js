@@ -1,6 +1,6 @@
 import React from 'react'
 import {shallow} from 'enzyme'
-import FeedEditForm from './FeedEditForm'
+import {FeedEditForm} from './FeedEditForm'
 
 describe('FeedEditForm', () => {
 
@@ -18,13 +18,10 @@ describe('FeedEditForm', () => {
       validations: [
         {field: 'title', message: 'validation message'}
       ],
-      links: {next: {path: 'next', query: {a: 'b'}}},
       failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}],
       changePending: true,
-      fetchFailuresLoading: true,
       onSaveFormData: jest.fn(),
-      onRemove: jest.fn(),
-      onMore: jest.fn()
+      onRemove: jest.fn()
     }
   })
 
@@ -53,17 +50,9 @@ describe('FeedEditForm', () => {
   })
 
   it('should pass expected props to feed fetch errors component', () => {
-    expect(createWrapper().find('FeedFetchErrors').props()).toContainObject({
-      loading: true,
-      links: {next: {path: 'next', query: {a: 'b'}}},
-      failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}]
+    expect(createWrapper().find('FeedFetchErrors').props()).toEqual({
+      uuid: 'uuid 1',
     })
-  })
-
-  it('should trigger prop function "onMore"', () => {
-    createWrapper().find('FeedFetchErrors').props().onMore('link')
-
-    expect(props.onMore).toHaveBeenCalledWith('link')
   })
 
   it('should pass expected props to primary button component', () => {

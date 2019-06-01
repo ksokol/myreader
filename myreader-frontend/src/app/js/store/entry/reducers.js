@@ -1,5 +1,5 @@
 import * as types from '../../store/action-types'
-import {equalLinks} from '../shared/links'
+import {equalLinks} from '../../api/links'
 import {initialApplicationState} from '../../store'
 
 function entryPageLoading({state}) {

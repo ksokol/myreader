@@ -1,11 +1,8 @@
 import {
   deleteFeed,
   feedDeleted,
-  feedFetchFailuresClear,
-  feedFetchFailuresReceived,
   feedsReceived,
   fetchFeed,
-  fetchFeedFetchFailures,
   fetchFeeds,
   saveFeed
 } from '../../store'
@@ -54,15 +51,6 @@ describe('admin actions', () => {
     })
   })
 
-  describe('action creator feedFetchFailuresClear', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(feedFetchFailuresClear())
-
-      expect(store.getActionTypes()).toEqual(['FEED_FETCH_FAILURES_CLEAR'])
-    })
-  })
-
   describe('action creator feedDeleted', () => {
 
     it('should contain expected action type', () => {
@@ -92,62 +80,6 @@ describe('admin actions', () => {
         success,
         error
       })
-    })
-  })
-
-  describe('action creator feedFetchFailuresReceived', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(feedFetchFailuresReceived())
-
-      expect(store.getActionTypes()).toEqual(['FEED_FETCH_FAILURES_RECEIVED'])
-    })
-
-    it('should contain expected action data', () => {
-      store.dispatch(feedFetchFailuresReceived({
-        links: [{rel: 'expected rel', href: 'expected href'}],
-        content: [{message: 'message 1'}]
-      }))
-
-      expect(store.getActions()[0]).toContainActionData({
-        failures: [{message: 'message 1'}],
-        links: {'expected rel': {path: 'expected href', query: {}}}
-      })
-    })
-  })
-
-  describe('action creator fetchFeedFetchFailures', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(fetchFeedFetchFailures({}))
-
-      expect(store.getActionTypes()).toEqual(['GET_FEED_FETCH_FAILURES'])
-    })
-
-    it('should contain expected action data', () => {
-      store.dispatch(fetchFeedFetchFailures({path: 'expected-path', query: {a: 'b'}}))
-
-      expect(store.getActions()[0]).toContainActionData({url: 'expected-path?a=b'})
-    })
-
-    it('should dispatch action defined in success property', () => {
-      store.dispatch(fetchFeedFetchFailures({}))
-      const success = store.getActions()[0].success
-      store.clearActions()
-      store.dispatch(success({content: [{message: 'message 1'}], links: [{rel: 'self', href: '/expected'}]}))
-
-      expect(store.getActionTypes()).toEqual(['FEED_FETCH_FAILURES_RECEIVED'])
-      expect(store.getActions()[0]).toContainActionData({
-        links: {self: {path: '/expected', query: {}}},
-        failures: [{message: 'message 1'}]
-      })
-    })
-
-    it('should contain expected action type in finalize function', () => {
-      store.dispatch(fetchFeedFetchFailures({}))
-      store.dispatch(store.getActions()[0].finalize())
-
-      expect(store.getActionTypes()[1]).toEqual('FEED_FETCH_FAILURES_LOADED')
     })
   })
 

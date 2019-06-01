@@ -1,4 +1,4 @@
-import {feedFetchFailuresSelector, filteredBySearchFeedsSelector} from '../../store'
+import {filteredBySearchFeedsSelector} from '../../store'
 
 describe('admin selectors', () => {
 
@@ -7,26 +7,9 @@ describe('admin selectors', () => {
   beforeEach(() => {
     state = {
       admin: {
-        applicationInfo: {a: 'b'},
-        feeds: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}],
-        fetchFailures: {failures: [{a: 'b', c: 'd'}]},
-        fetchFailuresLoading: true
+        feeds: [{uuid: '1', title: 'title1'}, {uuid: '2', title: 'title2'}]
       }
     }
-  })
-
-  it('feedFetchFailuresSelector should return feed fetch failures', () =>
-    expect(feedFetchFailuresSelector(state)).toContainObject({failures: [{a: 'b', c: 'd'}]}))
-
-  it('feedFetchFailuresSelector should return deep copy of feed fetch failures', () => {
-    const actual = feedFetchFailuresSelector(state)
-    state.admin.fetchFailures.failures[0].a = 'x'
-
-    expect(actual.failures).toEqual([{a: 'b', c: 'd'}])
-  })
-
-  it('should return fetchFailuresLoading flag', () => {
-    expect(feedFetchFailuresSelector(state).fetchFailuresLoading).toEqual(true)
   })
 
   it(' should return two feeds when query is undefined', () => {

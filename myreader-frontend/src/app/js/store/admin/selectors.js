@@ -8,8 +8,3 @@ export const filteredBySearchFeedsSelector = (q = '') =>
         .map(cloneObject)
       : state.admin.feeds.map(cloneObject)
   })
-
-export const feedFetchFailuresSelector = state => ({
-  ...cloneObject(state.admin.fetchFailures),
-  fetchFailuresLoading: state.admin.fetchFailuresLoading
-})

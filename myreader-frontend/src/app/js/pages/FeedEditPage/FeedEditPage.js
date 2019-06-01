@@ -7,23 +7,13 @@ import {withLocationState, withNotification} from '../../contexts'
 import {
   deleteFeed,
   feedDeleted,
-  feedFetchFailuresClear,
-  feedFetchFailuresSelector,
   fetchFeed,
-  fetchFeedFetchFailures,
   saveFeed
 } from '../../store'
-import {ADMIN_FEEDS_URL, FEEDS} from '../../constants'
+import {ADMIN_FEEDS_URL} from '../../constants'
 import {toFeed} from '../../store/admin/feed'
 
-const mapStateToProps = state => ({
-  ...feedFetchFailuresSelector(state)
-})
-
 const mapDispatchToProps = dispatch => bindActionCreators({
-  onMore: fetchFeedFetchFailures,
-  feedFetchFailuresClear,
-  fetchFeedFetchFailures,
   fetchFeed,
   saveFeed,
   deleteFeed
@@ -36,8 +26,6 @@ class FeedEditPage extends React.Component {
       uuid: PropTypes.string.isRequired
     }).isRequired,
     historyReplace: PropTypes.func.isRequired,
-    feedFetchFailuresClear: PropTypes.func.isRequired,
-    fetchFeedFetchFailures: PropTypes.func.isRequired,
     fetchFeed: PropTypes.func.isRequired,
     saveFeed: PropTypes.func.isRequired,
     deleteFeed: PropTypes.func.isRequired,
@@ -58,8 +46,6 @@ class FeedEditPage extends React.Component {
   componentDidMount() {
     const {uuid} = this.props.params
 
-    this.props.feedFetchFailuresClear()
-    this.props.fetchFeedFetchFailures({path: `${FEEDS}/${uuid}/fetchError`})
     this.loadFeed(uuid)
   }
 
@@ -144,7 +130,7 @@ class FeedEditPage extends React.Component {
 export default withLocationState(
   withNotification(
     connect(
-      mapStateToProps,
+      () => ({}),
       mapDispatchToProps
     )(FeedEditPage)
   )

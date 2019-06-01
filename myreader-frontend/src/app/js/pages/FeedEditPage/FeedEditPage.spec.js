@@ -21,7 +21,7 @@ describe('FeedEditPage', () => {
   const createWrapper = ({init} = {init: true}) => {
     const wrapper = mount(<FeedEditPage {...props} dispatch={dispatch} state={state} />)
     if (init) {
-      dispatch.mock.calls[2][0].success({uuid: 'uuid1', title: 'title1', links: [{rel: 'self', href: '/self?a=b'}]})
+      dispatch.mock.calls[0][0].success({uuid: 'uuid1', title: 'title1', links: [{rel: 'self', href: '/self?a=b'}]})
       wrapper.update()
     }
     return wrapper
@@ -36,11 +36,6 @@ describe('FeedEditPage', () => {
           changePending: true,
           data: {uuid: '1', title: 'title1', url: 'url1', createdAt: '2017-12-29'},
           validations: [{field: 'title', message: 'may not be empty'}]
-        },
-        fetchFailuresLoading: true,
-        fetchFailures: {
-          links: {next: {path: 'next', query: {a: 'b'}}},
-          failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}]
         }
       }
     }
@@ -66,11 +61,8 @@ describe('FeedEditPage', () => {
   it('should initialize component with given props when mounted', () => {
     expect(createWrapper().find('FeedEditForm').props()).toEqual(expect.objectContaining({
       changePending: false,
-      fetchFailuresLoading: true,
       data: {uuid: 'uuid1', title: 'title1', links: {self: {path: '/self', query: {a: 'b'}}}},
-      validations: [], //{field: 'title', message: 'may not be empty'}
-      links: {next: {path: 'next', query: {a: 'b'}}},
-      failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}],
+      validations: []
     }))
   })
 
@@ -240,25 +232,10 @@ describe('FeedEditPage', () => {
     expect(props.showErrorNotification).toHaveBeenCalledWith('response')
   })
 
-  it('should dispatch expected action when prop function "onMore" triggered', () => {
-    const wrapper = createWrapper()
-    wrapper.find('FeedEditForm').props().onMore({path: 'next', query: {a: 'b'}})
-
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'GET_FEED_FETCH_FAILURES',
-      url: 'next?a=b'
-    }))
-  })
-
   it('should dispatch expected actions when mounted', () => {
     createWrapper()
 
-    expect(dispatch).toHaveBeenNthCalledWith(1, {type: 'FEED_FETCH_FAILURES_CLEAR'})
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
-      type: 'GET_FEED_FETCH_FAILURES',
-      url: 'api/2/feeds/uuid1/fetchError'
-    }))
-    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'GET_FEED',
       url: 'api/2/feeds/uuid1'
     }))

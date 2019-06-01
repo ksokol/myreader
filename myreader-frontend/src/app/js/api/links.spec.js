@@ -1,0 +1,131 @@
+import {equalLinks, extractLinks, toUrlString} from './links'
+
+describe('links', () => {
+
+  describe('extractLinks', () => {
+
+    it('should extract self link with path and query parameters', () =>
+      expect(extractLinks([{rel: 'self', href: '/context/path?a=b&c=d'}])).toEqual({
+        self: {
+          path: '/context/path',
+          query: {a: 'b', c: 'd'}
+        }
+      }))
+
+    it('should extract self link with path and without query parameters', () =>
+      expect(extractLinks([{rel: 'self', href: '/context/path'}])).toEqual({self: {path: '/context/path', query: {}}}))
+
+    it('should extract empty self link', () =>
+      expect(extractLinks([{rel: 'self', href: ''}])).toEqual({self: {path: '', query: {}}}))
+
+    it('should extract self link with query parameters', () =>
+      expect(extractLinks([{rel: 'self', href: '?a=b'}])).toEqual({self: {path: '', query: {a: 'b'}}}))
+
+    it('should skip invalid link', () =>
+      expect(extractLinks([{rel: 'self'}])).toEqual({}))
+
+    it('should return empty object when no links defined', () =>
+      expect(extractLinks(undefined)).toEqual({}))
+
+    it('should extract self and other link', () =>
+      expect(extractLinks([{rel: 'self', href: 'expected'}, {rel: 'other', href: '/other/path?a=b'}]))
+        .toEqual({
+          self: {
+            path: 'expected',
+            query: {}
+          },
+          other: {
+            path: '/other/path',
+            query: {
+              a: 'b'
+            }
+          }
+
+        })
+    )
+  })
+
+  describe('equalLinks', () => {
+
+    it('should return true when links are empty', () =>
+      expect(equalLinks({}, {})).toEqual(true))
+
+    it('should return true when path equals', () =>
+      expect(equalLinks({path: 'path'}, {path: 'path'})).toEqual(true))
+
+    it('should return false when path differs', () =>
+      expect(equalLinks({path: 'path'}, {path: 'other'})).toEqual(false))
+
+    it('should return false when left link undefined', () =>
+      expect(equalLinks(undefined, {path: 'path'})).toEqual(false))
+
+    it('should return false when right link undefined', () =>
+      expect(equalLinks({path: 'path'}, undefined)).toEqual(false))
+
+    it('should return false when left query differs from right query', () =>
+      expect(equalLinks({query: {a: 'b'}}, {query: {}})).toEqual(false))
+
+    it('should return false when right query differs from left query', () =>
+      expect(equalLinks({query: {}}, {query: {a: 'b'}})).toEqual(false))
+
+    it('should return true when empty query equals', () =>
+      expect(equalLinks({query: {}}, {query: {}})).toEqual(true))
+
+    it('should return false when left query keys differ from right query keys', () =>
+      expect(equalLinks({query: {a: 'b'}}, {query: {c: 'd'}})).toEqual(false))
+
+    it('should return false when right query keys differ from left query keys', () =>
+      expect(equalLinks({query: {c: 'd'}}, {query: {a: 'b'}})).toEqual(false))
+
+    it('should return false when left query values differ from right query values', () =>
+      expect(equalLinks({query: {a: 'b'}}, {query: {a: 'c'}})).toEqual(false))
+
+    it('should return false when right query values differ from left query values', () =>
+      expect(equalLinks({query: {a: 'c'}}, {query: {a: 'b'}})).toEqual(false))
+
+    it('should return true when query equals', () =>
+      expect(equalLinks({query: {a: 'b'}}, {query: {a: 'b'}})).toEqual(true))
+
+    it('should return true when query equals ignoring key', () =>
+      expect(equalLinks({query: {a: 'b', c: 'd'}}, {query: {a: 'b', c: 'e'}}, ['c'])).toEqual(true))
+
+    it('should return true when query equals ignoring undefined key', () =>
+      expect(equalLinks({query: {a: 'b', c: 'd'}}, {query: {a: 'b', c: 'd'}}, ['e'])).toEqual(true))
+
+    it('should return false when query differs ignoring key', () =>
+      expect(equalLinks({query: {a: 'b', c: 'd'}}, {query: {a: 'f', c: 'e'}}, ['c'])).toEqual(false))
+
+    it('should return true when multiple query parameters equal', () =>
+      expect(equalLinks({query: {a: 'b', c: 'd'}}, {query: {a: 'b', c: 'd'}})).toEqual(true))
+
+    it('should return true when unordered multiple query parameters equal', () =>
+      expect(equalLinks({query: {c: 'd', a: 'b'}}, {query: {a: 'b', c: 'd'}})).toEqual(true))
+  })
+
+  describe('toUrlString', () => {
+
+    it('should return path as url when query is undefined', () =>
+      expect(toUrlString({path: '/path'})).toEqual('/path'))
+
+    it('should return path as url when query is empty', () =>
+      expect(toUrlString({path: '/path', query: {}})).toEqual('/path'))
+
+    it('should return path with query params as url when query has one parameters', () =>
+      expect(toUrlString({path: '/path', query: {a: 'b'}})).toEqual('/path?a=b'))
+
+    it('should return path with query params as url when query has multiple parameters', () =>
+      expect(toUrlString({path: '/path', query: {a: 'b', c: 'd'}})).toEqual('/path?c=d&a=b'))
+
+    it('should return query params as url when path is empty', () =>
+      expect(toUrlString({path: '', query: {a: 'b', c: 'd'}})).toEqual('?c=d&a=b'))
+
+    it('should return query params as url when path is undefined', () =>
+      expect(toUrlString({query: {a: 'b'}})).toEqual('?a=b'))
+
+    it('should return empty string as url when path and query params are undefined', () =>
+      expect(toUrlString({})).toEqual(''))
+
+    it('should skip query params with undefined or null value', () =>
+      expect(toUrlString({path: '', query: {a: 'b', c: undefined, d: null}})).toEqual('?a=b'))
+  })
+})

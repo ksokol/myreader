@@ -6,7 +6,7 @@ import {Button, ConfirmButton, FeedFetchErrors, Icon, Input, withValidations} fr
 export const FeedTitleInput = withValidations(Input)
 export const FeedUrlInput = withValidations(Input)
 
-export default class FeedEditForm extends React.Component {
+export class FeedEditForm extends React.Component {
 
   static propTypes = {
     data: PropTypes.shape({
@@ -15,13 +15,9 @@ export default class FeedEditForm extends React.Component {
       url: PropTypes.string.isRequired
     }),
     validations: PropTypes.any,
-    failures: PropTypes.any,
-    links: PropTypes.any,
     changePending: PropTypes.bool.isRequired,
-    fetchFailuresLoading: PropTypes.bool.isRequired,
     onSaveFormData: PropTypes.func.isRequired,
-    onRemove: PropTypes.func.isRequired,
-    onMore: PropTypes.func.isRequired
+    onRemove: PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -36,14 +32,10 @@ export default class FeedEditForm extends React.Component {
   render() {
     const {
       data,
-      failures,
-      links,
-      fetchFailuresLoading,
       validations,
       changePending,
       onSaveFormData,
-      onRemove,
-      onMore
+      onRemove
     } = this.props
 
     const {
@@ -113,10 +105,7 @@ export default class FeedEditForm extends React.Component {
           Fetch errors
         </h2>
         <FeedFetchErrors
-          failures={failures}
-          links={links}
-          loading={fetchFailuresLoading}
-          onMore={onMore}
+          uuid={data.uuid}
         />
       </div>
     )

@@ -2,7 +2,7 @@ import * as types from '../../store/action-types'
 import {toEntries, toEntry} from './entry'
 import {getEntry, getEntryInFocus, getSettings} from '../../store'
 import {ENTRY_AVAILABLE_TAGS, SUBSCRIPTION_ENTRIES} from '../../constants'
-import {toUrlString} from '../shared/links'
+import {toUrlString} from '../../api/links'
 
 export const entryPageReceived = raw => {
   return {type: types.ENTRY_PAGE_RECEIVED, ...toEntries(raw)}
