@@ -1,18 +1,9 @@
 import * as types from '../../store/action-types'
-import {FEEDS, INFO, PROCESSING} from '../../constants'
-import {showErrorNotification, showSuccessNotification} from '../../store'
+import {FEEDS, INFO} from '../../constants'
+import {showErrorNotification} from '../../store'
 import {toApplicationInfo} from './application-info'
 import {toFeedFetchFailures, toFeeds} from './feed'
 import {toUrlString} from '../../store/shared/links'
-
-export const rebuildSearchIndex = () => {
-  return {
-    type: 'PUT_INDEX_SYNC_JOB',
-    url: PROCESSING,
-    body: {process: 'indexSyncJob'},
-    success: () => showSuccessNotification('Indexing started')
-  }
-}
 
 export const applicationInfoReceived = raw => {
   return {

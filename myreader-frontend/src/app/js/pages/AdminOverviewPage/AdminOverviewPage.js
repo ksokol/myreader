@@ -1,47 +1,51 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
-import {applicationInfoSelector, fetchApplicationInfo, rebuildSearchIndex} from '../../store'
+import {applicationInfoSelector, fetchApplicationInfo} from '../../store'
 import {AdminOverview} from '../../components'
+import {adminApi} from '../../api'
+import {withNotification} from '../../contexts'
 
 const mapStateToProps = state => ({
   applicationInfo: applicationInfoSelector(state)
 })
 
-const mapDispatchToProps = dispatch =>
-  bindActionCreators({rebuildSearchIndex, fetchApplicationInfo}, dispatch)
-
 class AdminOverviewPage extends React.Component {
 
   componentDidMount() {
-    this.props.fetchApplicationInfo()
+    this.props.dispatch(fetchApplicationInfo())
+  }
+
+  rebuildSearchIndex = async () => {
+    try {
+      await adminApi.rebuildSearchIndex()
+      this.props.showSuccessNotification('Indexing started')
+    } catch (error) {
+      this.props.showErrorNotification(error)
+    }
   }
 
   render() {
-    const {
-      rebuildSearchIndex,
-      applicationInfo
-    } = this.props
-
     return (
       <AdminOverview
-        rebuildSearchIndex={rebuildSearchIndex}
-        applicationInfo={applicationInfo}
+        rebuildSearchIndex={this.rebuildSearchIndex}
+        applicationInfo={this.props.applicationInfo}
       />
     )
   }
 }
 
 AdminOverviewPage.propTypes = {
-  rebuildSearchIndex: PropTypes.func.isRequired,
-  fetchApplicationInfo: PropTypes.func.isRequired,
   applicationInfo: PropTypes.shape({
     branch: PropTypes.string
-  })
+  }),
+  showSuccessNotification: PropTypes.func.isRequired,
+  showErrorNotification: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(AdminOverviewPage)
+export default withNotification(
+  connect(
+    mapStateToProps
+  )(AdminOverviewPage)
+)
