@@ -8,16 +8,16 @@ jest.mock('../../components', () => ({
   ListLayout: ({listPanel}) => <div>{listPanel}</div>
 }))
 
-jest.mock('../../contexts', () => ({
+jest.mock('../../contexts/locationState', () => ({
   withLocationState: Component => Component
 }))
 /* eslint-enable */
 
 describe('FeedListPage', () => {
 
-  let state, dispatch, props
+  let state, dispatch
 
-  const createWrapper = () => mount(<FeedListPage {...props} dispatch={dispatch} state={state} />)
+  const createWrapper = () => mount(<FeedListPage dispatch={dispatch} state={state} />)
 
   beforeEach(() => {
     dispatch= jest.fn()
@@ -30,12 +30,6 @@ describe('FeedListPage', () => {
         ]
       }
     }
-
-    props = {
-      searchParams: {
-        q: ''
-      }
-    }
   })
 
   it('should initialize component with given prop "feed"', () => {
@@ -44,14 +38,6 @@ describe('FeedListPage', () => {
         {title: 'title1'},
         {title: 'title2'}
       ]
-    })
-  })
-
-  it('should initialize component with given prop "feeds" filtered by prop "props.location.search"', () => {
-    props.searchParams.q = 'title2'
-
-    expect(createWrapper().find('FeedList').props()).toEqual({
-      feeds: [{title: 'title2'}]
     })
   })
 

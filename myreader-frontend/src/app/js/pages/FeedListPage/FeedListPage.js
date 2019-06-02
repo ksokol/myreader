@@ -4,10 +4,10 @@ import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {FeedList, ListLayout} from '../../components'
 import {withLocationState} from '../../contexts'
-import {fetchFeeds, filteredBySearchFeedsSelector} from '../../store'
+import {fetchFeeds, feedsSelector} from '../../store'
 
-const mapStateToProps = (state, ownProps) => ({
-  ...filteredBySearchFeedsSelector(ownProps.searchParams.q)(state)
+const mapStateToProps = state => ({
+  ...feedsSelector(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({fetchFeeds}, dispatch)
@@ -16,7 +16,6 @@ class FeedListPage extends React.Component {
 
   static propTypes = {
     feeds: PropTypes.any.isRequired,
-    searchParams: PropTypes.object.isRequired,
     fetchFeeds: PropTypes.func.isRequired
   }
 
