@@ -1,40 +1,39 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {bindActionCreators} from 'redux'
-import {connect} from 'react-redux'
 import {FeedList, ListLayout} from '../../components'
-import {withLocationState} from '../../contexts'
-import {fetchFeeds, feedsSelector} from '../../store'
-
-const mapStateToProps = state => ({
-  ...feedsSelector(state)
-})
-
-const mapDispatchToProps = dispatch => bindActionCreators({fetchFeeds}, dispatch)
+import {feedApi} from '../../api'
+import {withNotification} from '../../contexts'
 
 class FeedListPage extends React.Component {
 
   static propTypes = {
-    feeds: PropTypes.any.isRequired,
-    fetchFeeds: PropTypes.func.isRequired
+    showErrorNotification: PropTypes.func.isRequired
   }
 
-  componentDidMount() {
-    this.props.fetchFeeds()
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      feeds: []
+    }
+  }
+
+  componentDidMount = async () => {
+    try {
+      const feeds = await feedApi.fetchFeeds()
+      this.setState({feeds})
+    } catch (error) {
+      this.props.showErrorNotification(error)
+    }
   }
 
   render() {
     return (
       <ListLayout
-        listPanel={<FeedList feeds={this.props.feeds} />}
+        listPanel={<FeedList feeds={this.state.feeds} />}
       />
     )
   }
 }
 
-export default withLocationState(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(FeedListPage)
-)
+export default withNotification(FeedListPage)

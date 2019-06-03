@@ -173,22 +173,6 @@ describe('FeedEditPage', () => {
     expect(wrapper.find('FeedEditForm').prop('changePending')).toEqual(false)
   })
 
-  it('should dispatch action FEED_DELETED when prop function "onRemove" succeeded', () => {
-    const wrapper = createWrapper()
-    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
-    wrapper.update()
-    dispatch.mockReset()
-    wrapper.find('FeedEditForm').props().onRemove('1')
-    wrapper.update()
-
-    const successActions = dispatch.mock.calls[0][0].success()
-
-    expect(successActions()).toEqual(expect.objectContaining({
-      type: 'FEED_DELETED',
-      uuid: '1'
-    }))
-  })
-
   it('should redirect to feed list page when prop function "onRemove" succeeded', () => {
     const wrapper = createWrapper()
     wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})

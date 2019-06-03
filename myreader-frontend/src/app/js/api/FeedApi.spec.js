@@ -1,6 +1,8 @@
 import {FeedApi} from './FeedApi'
 import {FEEDS} from '../constants'
 
+const expectedError = 'expected error'
+
 describe('FeedApi', () => {
 
   let api, feedApi
@@ -56,9 +58,61 @@ describe('FeedApi', () => {
     })
 
     it('should return expected error response when request failed', async () => {
-      api.request = jest.fn().mockResolvedValue({ok: false, data: 'expected error'})
+      api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
 
-      await expect(feedApi.fetchFeedFetchErrors('uuid1')).rejects.toEqual('expected error')
+      await expect(feedApi.fetchFeedFetchErrors('uuid1')).rejects.toEqual(expectedError)
+    })
+  })
+
+  describe(`${FEEDS}`, () => {
+
+    it('should call endpoint', () => {
+      feedApi.fetchFeeds()
+
+      expect(api.request).toHaveBeenCalledWith({
+        method: 'GET',
+        url: FEEDS
+      })
+    })
+
+    it('should return expected response when request succeeded', async () => {
+      const data = {
+        content: [
+          {
+            uuid: 'uuid1',
+            a: 'b',
+            c: 'd',
+            links: [{rel: 'self', href: '/uuid1?a=b'}, {rel: 'other', href: '/other'}]
+          },
+          {
+            uuid: 'uuid2',
+            e: 'f',
+            links: [{rel: 'self', href: '/uuid2?a=b'}]
+          }
+        ]
+      }
+
+      api.request = jest.fn().mockResolvedValue({ok: true, data})
+
+      await expect(feedApi.fetchFeeds()).resolves.toEqual([
+        {
+          uuid: 'uuid1',
+          a: 'b',
+          c: 'd',
+          links: {self: {path: '/uuid1', query: {a: 'b'}}, other: {path: '/other', query: {}}}
+        },
+        {
+          uuid: 'uuid2',
+          e: 'f',
+          links: {self: {path: '/uuid2', query: {a: 'b'}}}
+        }
+      ])
+    })
+
+    it('should return expected error response when request failed', async () => {
+      api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
+
+      await expect(feedApi.fetchFeeds()).rejects.toEqual(expectedError)
     })
   })
 })

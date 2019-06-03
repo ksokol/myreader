@@ -1,6 +1,7 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import FeedListPage from './FeedListPage'
+import {feedApi} from '../../api'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -8,45 +9,64 @@ jest.mock('../../components', () => ({
   ListLayout: ({listPanel}) => <div>{listPanel}</div>
 }))
 
-jest.mock('../../contexts/locationState', () => ({
-  withLocationState: Component => Component
+jest.mock('../../contexts', () => ({
+  withNotification: Component => Component
+}))
+
+jest.mock('../../api', () => ({
+  feedApi: {
+    fetchFeeds: jest.fn().mockResolvedValue([])
+  }
 }))
 /* eslint-enable */
 
+jest.useRealTimers()
+
 describe('FeedListPage', () => {
 
-  let state, dispatch
+  let props
 
-  const createWrapper = () => mount(<FeedListPage dispatch={dispatch} state={state} />)
+  const createWrapper = () => mount(<FeedListPage {...props} />)
 
   beforeEach(() => {
-    dispatch= jest.fn()
+    props = {
+      showErrorNotification: jest.fn()
+    }
+  })
 
-    state = {
-      admin: {
+  it('should pass feeds to feed list component when feedApi.fetchFeeds succeeded', done => {
+    feedApi.fetchFeeds.mockResolvedValue([
+      {title: 'title1'},
+      {title: 'title2'}
+    ])
+    const wrapper = createWrapper()
+
+    setTimeout(() => {
+      wrapper.update()
+      expect(wrapper.find('FeedList').props()).toEqual({
         feeds: [
           {title: 'title1'},
           {title: 'title2'}
         ]
-      }
-    }
-  })
-
-  it('should initialize component with given prop "feed"', () => {
-    expect(createWrapper().find('FeedList').props()).toEqual({
-      feeds: [
-        {title: 'title1'},
-        {title: 'title2'}
-      ]
+      })
+      done()
     })
   })
 
-  it('should dispatch action GET_FEEDS when mounted', () => {
+  it('should trigger prop function "showErrorNotification" when feedApi.fetchFeeds failed', done => {
+    feedApi.fetchFeeds.mockRejectedValueOnce('some error')
+    const wrapper = createWrapper()
+
+    setTimeout(() => {
+      wrapper.update()
+      expect(props.showErrorNotification).toHaveBeenCalledWith('some error')
+      done()
+    })
+  })
+
+  it('should call feedApi.fetchFeeds when mounted', () => {
     createWrapper()
 
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'GET_FEEDS',
-      url: 'api/2/feeds'
-    }))
+    expect(feedApi.fetchFeeds).toHaveBeenCalled()
   })
 })

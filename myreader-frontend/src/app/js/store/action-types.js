@@ -1,4 +1,3 @@
-export * from './admin/action-types'
 export * from './common/action-types'
 export * from './entry/action-types'
 export * from './security/action-types'

@@ -1,2 +1,0 @@
-export const FEEDS_RECEIVED = 'FEEDS_RECEIVED'
-export const FEED_DELETED = 'FEED_DELETED'

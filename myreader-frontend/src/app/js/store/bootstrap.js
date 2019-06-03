@@ -3,7 +3,6 @@ import thunk from 'redux-thunk'
 import arrayMiddleware from './middleware/array/arrayMiddleware'
 import guardMiddleware from './middleware/guard/guardMiddleware'
 import fetchMiddleware from './middleware/fetch'
-import {adminReducers} from './admin/reducers'
 import {settingsReducers} from './settings'
 import {commonReducers} from './common'
 import {securityReducers} from './security'
@@ -31,7 +30,6 @@ function enhancer(enabled) {
 }
 
 const reducers = combineReducers({
-  admin: adminReducers,
   security: securityReducers,
   common: commonReducers,
   settings: settingsReducers,

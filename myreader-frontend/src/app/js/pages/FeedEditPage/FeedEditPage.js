@@ -6,7 +6,6 @@ import {FeedEditForm} from '../../components'
 import {withLocationState, withNotification} from '../../contexts'
 import {
   deleteFeed,
-  feedDeleted,
   fetchFeed,
   saveFeed
 } from '../../store'
@@ -91,7 +90,6 @@ class FeedEditPage extends React.Component {
       uuid,
       success: () => {
         this.props.historyReplace({pathname: ADMIN_FEEDS_URL})
-        return () => feedDeleted(uuid)
       },
       error: (response, headers, status) => {
         this.setState({

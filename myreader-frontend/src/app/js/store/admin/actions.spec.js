@@ -1,9 +1,6 @@
 import {
   deleteFeed,
-  feedDeleted,
-  feedsReceived,
   fetchFeed,
-  fetchFeeds,
   saveFeed
 } from '../../store'
 import {createMockStore} from '../../shared/test-utils'
@@ -13,58 +10,6 @@ describe('admin actions', () => {
   let store
 
   beforeEach(() => store = createMockStore())
-
-  describe('action creator feedsReceived', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(feedsReceived({}))
-
-      expect(store.getActionTypes()).toEqual(['FEEDS_RECEIVED'])
-    })
-
-    it('should contain expected action data', () => {
-      store.dispatch(feedsReceived({content: [{a: 'b', links: [{rel: 'self', href: '/path'}]}]}))
-
-      expect(store.getActions()[0]).toContainActionData({feeds: [{a: 'b', links: {self: {path: '/path', query: {}}}}]})
-    })
-  })
-
-  describe('action creator fetchFeeds', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(fetchFeeds())
-
-      expect(store.getActionTypes()).toEqual(['GET_FEEDS'])
-    })
-
-    it('should contain expected action data', () => {
-      store.dispatch(fetchFeeds())
-
-      expect(store.getActions()[0].url).toContain('/feeds')
-    })
-
-    it('should dispatch action defined in success property', () => {
-      store.dispatch(fetchFeeds().success({content: [{a: 'b', links: []}]}))
-
-      expect(store.getActionTypes()).toEqual(['FEEDS_RECEIVED'])
-      expect(store.getActions()[0]).toContainActionData({feeds: [{a: 'b', links: {}}]})
-    })
-  })
-
-  describe('action creator feedDeleted', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(feedDeleted())
-
-      expect(store.getActionTypes()).toEqual(['FEED_DELETED'])
-    })
-
-    it('should contain expected action data', () => {
-      store.dispatch(feedDeleted('expectedUuid'))
-
-      expect(store.getActions()[0]).toContainActionData({uuid: 'expectedUuid'})
-    })
-  })
 
   describe('action creator deleteFeed', () => {
 
