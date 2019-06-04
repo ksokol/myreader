@@ -4,7 +4,6 @@ import entryInitialState from './entry'
 import settingsInitialState from './settings'
 import subscriptionInitialState from './subscription'
 
-export * from './admin'
 export * from './common'
 export * from './security'
 export * from './settings'

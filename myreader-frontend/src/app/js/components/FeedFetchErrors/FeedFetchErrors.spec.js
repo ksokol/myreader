@@ -2,6 +2,7 @@ import React from 'react'
 import {mount} from 'enzyme'
 import {FeedFetchErrors} from './FeedFetchErrors'
 import {feedApi} from '../../api'
+import {flushPromises} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../api', () => ({
@@ -10,10 +11,6 @@ jest.mock('../../api', () => ({
   }
 }))
 /* eslint-enable */
-
-function flushPromises() {
-  return new Promise(resolve => setImmediate(resolve))
-}
 
 describe('FeedFetchErrors', () => {
 

@@ -11,3 +11,7 @@ export function createMockStore(middlewares = []) {
 
   return store
 }
+
+export function flushPromises() {
+  return new Promise(resolve => setImmediate(resolve))
+}

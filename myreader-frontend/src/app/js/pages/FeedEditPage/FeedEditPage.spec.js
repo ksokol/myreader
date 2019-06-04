@@ -2,44 +2,44 @@ import React from 'react'
 import {mount} from 'enzyme'
 import FeedEditPage from './FeedEditPage'
 import {ADMIN_FEEDS_URL} from '../../constants'
+import {feedApi} from '../../api'
+import {flushPromises} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../components', () => ({
-  FeedEditForm: () => <p />
+jest.mock('../../components/FeedEditForm/FeedEditForm', () => ({
+  FeedEditForm: () => null
 }))
 
 jest.mock('../../contexts', () => ({
   withLocationState: Component => Component,
   withNotification: Component => Component
 }))
+
+jest.mock('../../api', () => ({
+  feedApi: {}
+}))
 /* eslint-enable */
+
+const pending = () => jest.fn().mockReturnValue(new Promise(() => {}))
+
+const resolved = (value = {}) => jest.fn().mockResolvedValueOnce(value)
+
+const rejected = (value = {}) => jest.fn().mockRejectedValueOnce(value)
 
 describe('FeedEditPage', () => {
 
-  let state, dispatch, props
+  let props
 
-  const createWrapper = ({init} = {init: true}) => {
-    const wrapper = mount(<FeedEditPage {...props} dispatch={dispatch} state={state} />)
-    if (init) {
-      dispatch.mock.calls[0][0].success({uuid: 'uuid1', title: 'title1', links: [{rel: 'self', href: '/self?a=b'}]})
-      wrapper.update()
-    }
+  const createWrapper = async (onMount = resolved()) => {
+    feedApi.fetchFeed = onMount
+
+    const wrapper = mount(<FeedEditPage {...props} />)
+    await flushPromises()
+    wrapper.update()
     return wrapper
   }
 
   beforeEach(() => {
-    dispatch = jest.fn()
-
-    state = {
-      admin: {
-        editForm: {
-          changePending: true,
-          data: {uuid: '1', title: 'title1', url: 'url1', createdAt: '2017-12-29'},
-          validations: [{field: 'title', message: 'may not be empty'}]
-        }
-      }
-    }
-
     props = {
       params: {
         uuid: 'uuid1'
@@ -50,178 +50,147 @@ describe('FeedEditPage', () => {
     }
   })
 
-  it('should not render feed edit form when prop "feed" is null', () => {
-    expect(createWrapper({init: false}).find('FeedEditForm').exists()).toEqual(false)
+  it('should not render feed edit form when state "feed" is null', async () => {
+    const wrapper = await createWrapper(pending())
+
+    expect(wrapper.find('FeedEditForm').exists()).toEqual(false)
   })
 
-  it('should render feed edit form when prop "feed" is defined', () => {
-    expect(createWrapper().find('FeedEditForm').exists()).toEqual(true)
+  it('should call feedApi.fetchFeed with prop "params.uuid" when mounted', async () => {
+    await createWrapper()
+
+    expect(feedApi.fetchFeed).toHaveBeenCalledWith('uuid1')
   })
 
-  it('should initialize component with given props when mounted', () => {
-    expect(createWrapper().find('FeedEditForm').props()).toEqual(expect.objectContaining({
+  it('should initialize component with given state when mounted', async () => {
+    const wrapper = await createWrapper(resolved({a: 'b', c: 'd'}))
+
+    expect(wrapper.find('FeedEditForm').props()).toEqual(expect.objectContaining({
       changePending: false,
-      data: {uuid: 'uuid1', title: 'title1', links: {self: {path: '/self', query: {a: 'b'}}}},
+      data: {a: 'b', c: 'd'},
       validations: []
     }))
   })
 
-  it('should dispatch expected action when prop function "onSaveFormData" triggered', () => {
-    const wrapper = createWrapper()
+  it('should call feedApi.saveFeed when prop function "onSaveFormData" called', async () => {
+    feedApi.saveFeed = resolved()
+    const wrapper = await createWrapper()
     wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
 
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'PATCH_FEED',
-      url: 'api/2/feeds/1',
-      body: {a: 'b', c: 'd', uuid: '1'}
-    }))
+    expect(feedApi.saveFeed).toHaveBeenCalledWith({
+      a: 'b',
+      c: 'd',
+      uuid: '1'
+    })
   })
 
-  it('should set prop "changePending" to true when prop function "onSaveFormData" called', () => {
-    const wrapper = createWrapper()
-    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
+  it('should set prop "changePending" to true when prop function "onSaveFormData" called', async () => {
+    const wrapper = await createWrapper()
+    wrapper.find('FeedEditForm').props().onSaveFormData({})
     wrapper.update()
 
     expect(wrapper.find('FeedEditForm').prop('changePending')).toEqual(true)
   })
 
-  it('should set prop "changePending" to false when prop function "onSaveFormData" finished', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
-    wrapper.update()
-
-    dispatch.mock.calls[0][0].finalize()
+  it('should set prop "changePending" to false when call to feedApi.saveFeed succeeded', async () => {
+    feedApi.saveFeed = resolved()
+    const wrapper = await createWrapper()
+    wrapper.find('FeedEditForm').props().onSaveFormData({})
+    await flushPromises()
     wrapper.update()
 
     expect(wrapper.find('FeedEditForm').prop('changePending')).toEqual(false)
   })
 
-  it('should trigger prop function "showSuccessNotification" when prop function "onSaveFormData" succeeded', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
-    wrapper.update()
-    dispatch.mock.calls[0][0].success()
+  it('should trigger prop function "showSuccessNotification" when call to feedApi.saveFeed succeeded', async () => {
+    feedApi.saveFeed = resolved()
+    const wrapper = await createWrapper()
+    wrapper.find('FeedEditForm').props().onSaveFormData({})
+    await flushPromises()
 
     expect(props.showSuccessNotification).toHaveBeenCalledWith('Feed saved')
   })
 
-  it('should pass state "validations" to feed edit page when prop function "onSaveFormData" failed', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
-    wrapper.update()
-    dispatch.mock.calls[0][0].error({status: 400, fieldErrors: ['error']})
+  it('should pass state "validations" to feed edit page when call to feedApi.saveFeed failed', async () => {
+    feedApi.saveFeed = rejected({status: 400, fieldErrors: ['error']})
+    const wrapper = await createWrapper()
+    wrapper.find('FeedEditForm').props().onSaveFormData({})
+    await flushPromises()
     wrapper.update()
 
     expect(wrapper.find('FeedEditForm').prop('validations')).toEqual(['error'])
   })
 
-  it('should clear state "validations" when prop function "onSaveFormData" triggered', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
-    wrapper.update()
-    dispatch.mock.calls[0][0].error({status: 400, fieldErrors: ['error']})
-    wrapper.update()
-    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
+  it('should clear state "validations" when prop function "onSaveFormData" called again', async () => {
+    feedApi.saveFeed = rejected({status: 400, fieldErrors: ['error']})
+    const wrapper = await createWrapper()
+    wrapper.find('FeedEditForm').props().onSaveFormData({})
+    await flushPromises()
+    wrapper.find('FeedEditForm').props().onSaveFormData({})
     wrapper.update()
 
     expect(wrapper.find('FeedEditForm').prop('validations')).toEqual([])
   })
 
-  it('should not pass state "validations" to feed edit page when prop function "onSaveFormData" failed', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
-    wrapper.update()
-    dispatch.mock.calls[0][0].error({status: 401, fieldErrors: ['error']})
+  it('should not pass state "validations" to feed edit page when call to feedApi.saveFeed failed with HTTP != 400', async () => {
+    feedApi.saveFeed = rejected({status: 401, fieldErrors: ['error']})
+    const wrapper = await createWrapper()
+    await flushPromises()
     wrapper.update()
 
     expect(wrapper.find('FeedEditForm').prop('validations')).toEqual([])
   })
 
-  it('should dispatch expected action when prop function "onRemove" triggered', () => {
-    const wrapper = createWrapper()
-    wrapper.find('FeedEditForm').props().onRemove('1')
+  it('should call feedApi.deleteFeed when prop function "onRemove" called', async () => {
+    feedApi.deleteFeed = pending()
+    const wrapper = await createWrapper()
+    wrapper.find('FeedEditForm').props().onRemove('uuid1')
 
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'DELETE_FEED',
-      url: 'api/2/feeds/1'
-    }))
+    expect(feedApi.deleteFeed).toHaveBeenCalledWith('uuid1')
   })
 
-  it('should set prop "changePending" to true when prop function "onRemove" called', () => {
-    const wrapper = createWrapper()
-    wrapper.find('FeedEditForm').props().onRemove('1')
+  it('should set prop "changePending" to true when prop function "onRemove" called', async () => {
+    feedApi.deleteFeed = pending()
+    const wrapper = await createWrapper()
+    wrapper.find('FeedEditForm').props().onRemove()
     wrapper.update()
 
     expect(wrapper.find('FeedEditForm').prop('changePending')).toEqual(true)
   })
 
-  it('should set prop "changePending" to false when prop function "onRemove" failed', () => {
-    const wrapper = createWrapper()
-    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
-    wrapper.update()
-    dispatch.mockReset()
-    wrapper.find('FeedEditForm').props().onRemove('1')
-    wrapper.update()
-    dispatch.mock.calls[0][0].error()
-    wrapper.update()
+  it('should set prop "changePending" to false when call to feedApi.deleteFeed failed', async () => {
+    feedApi.deleteFeed = rejected()
+    const wrapper = await createWrapper()
+    wrapper.find('FeedEditForm').props().onRemove()
+    await flushPromises()
 
     expect(wrapper.find('FeedEditForm').prop('changePending')).toEqual(false)
   })
 
-  it('should redirect to feed list page when prop function "onRemove" succeeded', () => {
-    const wrapper = createWrapper()
-    wrapper.find('FeedEditForm').props().onSaveFormData({uuid: '1', a: 'b', c: 'd'})
-    wrapper.update()
-    dispatch.mockReset()
-    wrapper.find('FeedEditForm').props().onRemove('1')
-    wrapper.update()
-
-    dispatch.mock.calls[0][0].success()
+  it('should redirect to feed list page when call to feedApi.deleteFeed succeeded', async () => {
+    feedApi.deleteFeed = resolved()
+    const wrapper = await createWrapper()
+    wrapper.find('FeedEditForm').props().onRemove()
+    await flushPromises()
 
     expect(props.historyReplace).toHaveBeenCalledWith({pathname: ADMIN_FEEDS_URL})
   })
 
-  it('should trigger prop function "showErrorNotification" when prop function "onRemove" failed with HTTP 409', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('FeedEditForm').props().onRemove('1')
-    wrapper.update()
-    dispatch.mock.calls[0][0].error('response', null, 409)
+  it('should trigger prop function "showErrorNotification" when call to feedApi.deleteFeed failed with HTTP 409', async () => {
+    feedApi.deleteFeed = rejected({status: 409})
+    const wrapper = await createWrapper()
+    wrapper.find('FeedEditForm').props().onRemove()
+    await flushPromises()
 
     expect(props.showErrorNotification).toHaveBeenCalledWith('Can not delete. Feed has subscriptions')
   })
 
-  it('should dispatch action SHOW_NOTIFICATION when prop function "onRemove" failed with HTTP 400', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
+  it('should trigger prop function "showErrorNotification" when call to feedApi.deleteFeed failed with HTTP !== 409', async () => {
+    feedApi.deleteFeed = rejected({status: 400, data: 'expected error'})
+    const wrapper = await createWrapper()
     wrapper.find('FeedEditForm').props().onRemove('1')
-    wrapper.update()
+    await flushPromises()
 
-    expect(dispatch.mock.calls[0][0].error('response', null, 400)).toEqual(undefined)
-  })
-
-  it('should trigger prop function "showErrorNotification" when prop function "onRemove" failed with HTTP 500', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('FeedEditForm').props().onRemove('1')
-    wrapper.update()
-
-    dispatch.mock.calls[0][0].error('response', null, 500)
-
-    expect(props.showErrorNotification).toHaveBeenCalledWith('response')
-  })
-
-  it('should dispatch expected actions when mounted', () => {
-    createWrapper()
-
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'GET_FEED',
-      url: 'api/2/feeds/uuid1'
-    }))
+    expect(props.showErrorNotification).toHaveBeenCalledWith('expected error')
   })
 })

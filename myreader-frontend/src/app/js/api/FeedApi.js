@@ -53,4 +53,26 @@ export class FeedApi {
       method: 'GET'
     }).then(({ok, data}) => ok ? toFeeds(data) : Promise.reject(data))
   }
+
+  fetchFeed = uuid => {
+    return this.api.request({
+      url: `${FEEDS}/${uuid}`,
+      method: 'GET'
+    }).then(({ok, data}) => ok ? toFeed(data) : Promise.reject(data))
+  }
+
+  saveFeed = body => {
+    return this.api.request({
+      url: `${FEEDS}/${body.uuid}`,
+      method: 'PATCH',
+      body
+    }).then(({ok, data}) => ok ? null : Promise.reject(data))
+  }
+
+  deleteFeed = uuid => {
+    return this.api.request({
+      url: `${FEEDS}/${uuid}`,
+      method: 'DELETE'
+    }).then(({ok, status, data}) => ok ? null : Promise.reject({status, data}))
+  }
 }
