@@ -38,16 +38,6 @@ export const saveSubscriptionEditForm = ({subscription, success, error, finalize
   }
 }
 
-export const saveSubscribeEditForm = ({subscription, success, error}) => {
-  return {
-    type: 'POST_SUBSCRIPTION',
-    url: SUBSCRIPTIONS,
-    body: subscription,
-    success,
-    error
-  }
-}
-
 export const subscriptionExclusionPatternsReceived = (subscriptionUuid, raw) => {
   return {
     type: types.SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED,

@@ -5,7 +5,6 @@ import {
   fetchSubscriptions,
   fetchSubscription,
   removeSubscriptionExclusionPattern,
-  saveSubscribeEditForm,
   saveSubscriptionEditForm,
   saveSubscriptionTag,
   subscriptionExclusionPatternsAdded,
@@ -294,24 +293,6 @@ describe('subscription actions', () => {
       expect(store.getActionTypes()).toEqual(['SUBSCRIPTION_TAG_CHANGED', 'SHOW_NOTIFICATION'])
       expect(store.getActions()[0]).toContainActionData({subscriptionTag: {uuid: 'uuid1', a: 'b', c: 'd'}})
       expect(store.getActions()[1]).toContainActionData({notification: {text: 'Tag updated', type: 'success'}})
-    })
-  })
-
-  describe('action creator saveSubscribeEditForm', () => {
-
-    it('should dispatch expected action', () => {
-      const success = () => ({})
-      const error = () => ({})
-
-      expect(saveSubscribeEditForm({subscription: {origin: 'url'}, success, error})).toEqual({
-        type: 'POST_SUBSCRIPTION',
-        url: 'api/2/subscriptions',
-        body: {
-          origin: 'url'
-        },
-        success,
-        error
-      })
     })
   })
 })

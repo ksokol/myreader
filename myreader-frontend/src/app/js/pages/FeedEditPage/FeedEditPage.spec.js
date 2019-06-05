@@ -3,7 +3,7 @@ import {mount} from 'enzyme'
 import FeedEditPage from './FeedEditPage'
 import {ADMIN_FEEDS_URL} from '../../constants'
 import {feedApi} from '../../api'
-import {flushPromises} from '../../shared/test-utils'
+import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components/FeedEditForm/FeedEditForm', () => ({
@@ -19,12 +19,6 @@ jest.mock('../../api', () => ({
   feedApi: {}
 }))
 /* eslint-enable */
-
-const pending = () => jest.fn().mockReturnValue(new Promise(() => {}))
-
-const resolved = (value = {}) => jest.fn().mockResolvedValueOnce(value)
-
-const rejected = (value = {}) => jest.fn().mockRejectedValueOnce(value)
 
 describe('FeedEditPage', () => {
 

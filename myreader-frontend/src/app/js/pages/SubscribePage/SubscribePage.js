@@ -1,48 +1,43 @@
 import React from 'react'
-import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import {SubscribeForm} from '../../components'
 import {withLocationState, withNotification} from '../../contexts'
-import {saveSubscribeEditForm} from '../../store'
 import {SUBSCRIPTION_URL} from '../../constants'
+import {subscriptionApi} from '../../api'
 
 class SubscribePage extends React.Component {
 
   static propTypes = {
-    dispatch: PropTypes.func.isRequired,
     historyReplace: PropTypes.func.isRequired,
-    showSuccessNotification: PropTypes.func.isRequired
+    showSuccessNotification: PropTypes.func.isRequired,
+    showErrorNotification: PropTypes.func.isRequired
   }
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      changePending: false,
-      validations: []
-    }
+  state = {
+    changePending: false,
+    validations: []
   }
 
-  onSaveNewSubscription = subscription => {
+  onSaveNewSubscription = async subscription => {
     this.setState({
       changePending: true,
       validations: []
     })
 
-    this.props.dispatch(saveSubscribeEditForm({
-      subscription,
-      success: [
-        () => this.props.showSuccessNotification('Subscribed'),
-        ({uuid}) => this.props.historyReplace({pathname: SUBSCRIPTION_URL, params: {uuid}})
-      ],
-      error: error => {
-        this.setState({
-          validations: error.status === 400 ? error.fieldErrors : [],
-          changePending: false
-        })
-        return []
+    try {
+      const {uuid} = await subscriptionApi.subscribe(subscription)
+      this.props.showSuccessNotification('Subscribed')
+      this.props.historyReplace({pathname: SUBSCRIPTION_URL, params: {uuid}})
+    } catch (error) {
+      this.setState({
+        validations: error.status === 400 ? error.data.fieldErrors : [],
+        changePending: false
+      })
+
+      if (error.status !== 400) {
+        this.props.showErrorNotification(error.data)
       }
-    }))
+    }
   }
 
   render() {
@@ -62,7 +57,5 @@ class SubscribePage extends React.Component {
 }
 
 export default withLocationState(
-  withNotification(
-    connect()(SubscribePage)
-  )
+  withNotification(SubscribePage)
 )
