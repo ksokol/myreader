@@ -13,4 +13,11 @@ export class SubscriptionApi {
       body
     }).then(({ok, status, data}) => ok ? data : Promise.reject({status, data}))
   }
+
+  deleteSubscription = uuid => {
+    return this.api.request({
+      url: `${SUBSCRIPTIONS}/${uuid}`,
+      method: 'DELETE',
+    }).then(({ok, data}) => ok ? null : Promise.reject(data))
+  }
 }

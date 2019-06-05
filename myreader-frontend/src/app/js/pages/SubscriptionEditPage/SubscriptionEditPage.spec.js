@@ -2,6 +2,8 @@ import React from 'react'
 import {mount} from 'enzyme'
 import SubscriptionEditPage from './SubscriptionEditPage'
 import {SUBSCRIPTIONS_URL} from '../../constants'
+import {subscriptionApi} from '../../api'
+import {flushPromises, rejected, resolved} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -11,6 +13,10 @@ jest.mock('../../components', () => ({
 jest.mock('../../contexts', () => ({
   withLocationState: Component => Component,
   withNotification: Component => Component
+}))
+
+jest.mock('../../api', () => ({
+  subscriptionApi: {}
 }))
 /* eslint-enable */
 
@@ -63,7 +69,8 @@ describe('SubscriptionEditPage', () => {
       },
       historyReplace: jest.fn(),
       historyReload: jest.fn(),
-      showSuccessNotification: jest.fn()
+      showSuccessNotification: jest.fn(),
+      showErrorNotification: jest.fn()
     }
   })
 
@@ -219,15 +226,12 @@ describe('SubscriptionEditPage', () => {
     expect(wrapper.find('SubscriptionEditForm').prop('validations')).toEqual([])
   })
 
-  it('should dispatch action DELETE_SUBSCRIPTION when prop function "deleteSubscription" triggered', () => {
+  it('should call subscriptionApi.deleteSubscription when prop function "deleteSubscription" triggered', () => {
+    subscriptionApi.deleteSubscription = resolved()
     const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription('uuid1')
 
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'DELETE_SUBSCRIPTION',
-      url: 'api/2/subscriptions/1'
-    }))
+    expect(subscriptionApi.deleteSubscription).toHaveBeenCalledWith('uuid1')
   })
 
   it('should set prop "changePending" to true when prop function "deleteSubscription" called', () => {
@@ -238,35 +242,42 @@ describe('SubscriptionEditPage', () => {
     expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(true)
   })
 
-  it('should not change state prop "changePending" when prop function "deleteSubscription" failed', () => {
+  it('should not change state prop "changePending" when call to subscriptionApi.deleteSubscription failed', async () => {
+    subscriptionApi.deleteSubscription = rejected()
     const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
-    wrapper.update()
-    dispatch.mock.calls[0][0].error()
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription()
+    await flushPromises()
     wrapper.update()
 
     expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(false)
   })
 
-  it('should trigger prop function "showSuccessNotification" when prop function "deleteSubscription" succeeded', () => {
+  it('should trigger prop function "props.showErrorNotification" when call to subscriptionApi.deleteSubscription failed', async () => {
+    subscriptionApi.deleteSubscription = rejected('expected error')
     const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription()
+    await flushPromises()
     wrapper.update()
-    const successActions = dispatch.mock.calls[0][0].success
-    successActions[0]()
+
+    expect(props.showErrorNotification).toHaveBeenCalledWith('expected error')
+  })
+
+  it('should trigger prop function "showSuccessNotification" when call to subscriptionApi.deleteSubscription succeeded', async () => {
+    subscriptionApi.deleteSubscription = resolved()
+    const wrapper = createWrapper()
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription()
+    await flushPromises()
+    wrapper.update()
 
     expect(props.showSuccessNotification).toHaveBeenCalledWith('Subscription deleted')
   })
 
-  it('should change and reload location when prop function "deleteSubscription" succeeded', () => {
+  it('should change and reload location when call to subscriptionApi.deleteSubscription succeeded', async () => {
+    subscriptionApi.deleteSubscription = resolved()
     const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
+    wrapper.find('SubscriptionEditForm').props().deleteSubscription()
+    await flushPromises()
     wrapper.update()
-    dispatch.mock.calls[0][0].success[1]()
-    dispatch.mock.calls[0][0].success[2]()
 
     expect(props.historyReplace).toHaveBeenCalledWith({pathname: SUBSCRIPTIONS_URL})
     expect(props.historyReload).toHaveBeenCalled()

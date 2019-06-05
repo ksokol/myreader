@@ -6,7 +6,6 @@ import {SubscriptionEditForm} from '../../components'
 import {withLocationState, withNotification} from '../../contexts'
 import {
   addSubscriptionExclusionPattern,
-  deleteSubscription,
   fetchSubscription,
   fetchSubscriptionExclusionPatterns,
   removeSubscriptionExclusionPattern,
@@ -16,6 +15,7 @@ import {
 } from '../../store'
 import {toSubscription} from '../../store/subscription/subscription'
 import {SUBSCRIPTIONS_URL} from '../../constants'
+import {subscriptionApi} from '../../api'
 
 const mapStateToProps = (state, ownProps) => ({
   ...subscriptionTagsSelector(state),
@@ -27,7 +27,6 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   addSubscriptionExclusionPattern,
   fetchSubscriptionExclusionPatterns,
   fetchSubscription,
-  deleteSubscription,
   saveSubscriptionEditForm
 }, dispatch)
 
@@ -43,19 +42,15 @@ class SubscriptionEditPage extends React.Component {
     addSubscriptionExclusionPattern: PropTypes.func.isRequired,
     fetchSubscriptionExclusionPatterns: PropTypes.func.isRequired,
     fetchSubscription: PropTypes.func.isRequired,
-    deleteSubscription: PropTypes.func.isRequired,
     saveSubscriptionEditForm: PropTypes.func.isRequired,
-    showSuccessNotification: PropTypes.func.isRequired
+    showSuccessNotification: PropTypes.func.isRequired,
+    showErrorNotification: PropTypes.func.isRequired,
   }
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      subscription: null,
-      changePending: false,
-      validations: []
-    }
+  state = {
+    subscription: null,
+    changePending: false,
+    validations: []
   }
 
   componentDidMount() {
@@ -97,20 +92,20 @@ class SubscriptionEditPage extends React.Component {
     })
   }
 
-  onDeleteSubscription = uuid => {
+  onDeleteSubscription = async uuid => {
     this.setState({
       changePending: true
     })
 
-    this.props.deleteSubscription({
-      uuid,
-      success: [
-        () => this.props.showSuccessNotification('Subscription deleted'),
-        () => this.props.historyReplace({pathname: SUBSCRIPTIONS_URL}),
-        () => this.props.historyReload()
-      ],
-      error: this.pendingEnd
-    })
+    try {
+      await subscriptionApi.deleteSubscription(uuid)
+      this.props.showSuccessNotification('Subscription deleted')
+      this.props.historyReplace({pathname: SUBSCRIPTIONS_URL})
+      this.props.historyReload()
+    } catch (error) {
+      this.pendingEnd()
+      this.props.showErrorNotification(error)
+    }
   }
 
   render() {

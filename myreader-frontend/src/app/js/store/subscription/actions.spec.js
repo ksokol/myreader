@@ -1,6 +1,5 @@
 import {
   addSubscriptionExclusionPattern,
-  deleteSubscription,
   fetchSubscriptionExclusionPatterns,
   fetchSubscriptions,
   fetchSubscription,
@@ -62,22 +61,6 @@ describe('subscription actions', () => {
       store.dispatch(store.getActions()[0].success({content: [{uuid: 1}]}))
 
       expect(store.getActions()[1]).toContainObject({subscriptions: [{uuid: 1}]})
-    })
-  })
-
-  describe('action creator deleteSubscription', () => {
-
-    it('should contain expected action type', () => {
-      const success = () => ({})
-      const error = () => ({})
-      const action = deleteSubscription({uuid: 'uuid1', success, error})
-
-      expect(action).toEqual({
-        type: 'DELETE_SUBSCRIPTION',
-        url: 'api/2/subscriptions/uuid1',
-        success,
-        error
-      })
     })
   })
 

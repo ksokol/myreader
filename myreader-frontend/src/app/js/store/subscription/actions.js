@@ -18,15 +18,6 @@ export const fetchSubscriptions = () => {
   }
 }
 
-export const deleteSubscription = ({uuid, success, error}) => {
-  return {
-    type: 'DELETE_SUBSCRIPTION',
-    url: `${SUBSCRIPTIONS}/${uuid}`,
-    success,
-    error
-  }
-}
-
 export const saveSubscriptionEditForm = ({subscription, success, error, finalize}) => {
   return {
     type: 'PATCH_SUBSCRIPTION',

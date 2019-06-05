@@ -1,6 +1,8 @@
 import {SubscriptionApi} from './SubscriptionApi'
 import {SUBSCRIPTIONS} from '../constants'
 
+const expectedError = 'expected error'
+
 describe('SubscriptionApi', () => {
 
   let api, subscriptionApi
@@ -12,7 +14,7 @@ describe('SubscriptionApi', () => {
     subscriptionApi = new SubscriptionApi(api)
   })
 
-  it(`should POST ${SUBSCRIPTIONS}`, () => {
+  it(`should call POST ${SUBSCRIPTIONS} endpoint`, () => {
     subscriptionApi.subscribe({a: 'b', c: 'd'})
 
     expect(api.request).toHaveBeenCalledWith({
@@ -36,12 +38,33 @@ describe('SubscriptionApi', () => {
     })
   })
 
-  it(`should return expected error response when ${SUBSCRIPTIONS} failed`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: false, status: 400, data: 'expected error'})
+  it(`should return expected error response when POST ${SUBSCRIPTIONS} failed`, async () => {
+    api.request = jest.fn().mockResolvedValue({ok: false, status: 400, data: expectedError})
 
     await expect(subscriptionApi.subscribe({})).rejects.toEqual({
       status: 400,
-      data: 'expected error'
+      data: expectedError
     })
+  })
+
+  it(`should call DELETE ${SUBSCRIPTIONS}/uuid1 endpoint`, () => {
+    subscriptionApi.deleteSubscription('uuid1')
+
+    expect(api.request).toHaveBeenCalledWith({
+      method: 'DELETE',
+      url: `${SUBSCRIPTIONS}/uuid1`,
+    })
+  })
+
+  it(`should return expected response when DELETE ${SUBSCRIPTIONS}/uuid1 succeeded`, async () => {
+    api.request = jest.fn().mockResolvedValue({ok: true})
+
+    await expect(subscriptionApi.deleteSubscription()).resolves.toBeNull()
+  })
+
+  it(`should return expected error response when DELETE ${SUBSCRIPTIONS}/uuid1 failed`, async () => {
+    api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
+
+    await expect(subscriptionApi.deleteSubscription()).rejects.toEqual(expectedError)
   })
 })
