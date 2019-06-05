@@ -112,7 +112,7 @@ describe('FeedEditPage', () => {
   })
 
   it('should pass state "validations" to feed edit page when call to feedApi.saveFeed failed', async () => {
-    feedApi.saveFeed = rejected({status: 400, fieldErrors: ['error']})
+    feedApi.saveFeed = rejected({status: 400, data: {fieldErrors: ['error']}})
     const wrapper = await createWrapper()
     wrapper.find('FeedEditForm').props().onSaveFormData({})
     await flushPromises()
@@ -122,7 +122,7 @@ describe('FeedEditPage', () => {
   })
 
   it('should clear state "validations" when prop function "onSaveFormData" called again', async () => {
-    feedApi.saveFeed = rejected({status: 400, fieldErrors: ['error']})
+    feedApi.saveFeed = rejected({status: 400, data: {fieldErrors: ['error']}})
     const wrapper = await createWrapper()
     wrapper.find('FeedEditForm').props().onSaveFormData({})
     await flushPromises()

@@ -49,7 +49,7 @@ class FeedEditPage extends React.Component {
     } catch(error) {
       if (error.status === 400) {
         this.setState({
-          validations: error.fieldErrors
+          validations: error.data.fieldErrors
         })
       } else {
         this.props.showErrorNotification(error)

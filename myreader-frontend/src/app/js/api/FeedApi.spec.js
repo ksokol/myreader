@@ -164,9 +164,12 @@ describe('FeedApi', () => {
   })
 
   it(`should return expected error response when PATCH ${FEEDS} failed`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
+    api.request = jest.fn().mockResolvedValue({ok: false, status: 400, data: expectedError})
 
-    await expect(feedApi.saveFeed({uuid: 'uuid1'})).rejects.toEqual(expectedError)
+    await expect(feedApi.saveFeed({uuid: 'uuid1'})).rejects.toEqual({
+      status: 400,
+      data: expectedError
+    })
   })
 
   it(`should DELETE ${FEEDS}`, () => {

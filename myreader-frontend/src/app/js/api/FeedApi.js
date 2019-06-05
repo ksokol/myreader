@@ -66,7 +66,7 @@ export class FeedApi {
       url: `${FEEDS}/${body.uuid}`,
       method: 'PATCH',
       body
-    }).then(({ok, data}) => ok ? null : Promise.reject(data))
+    }).then(({ok, status, data}) => ok ? null : Promise.reject({status, data}))
   }
 
   deleteFeed = uuid => {
