@@ -3,6 +3,7 @@ import {mount} from 'enzyme'
 import SubscriptionEditPage from './SubscriptionEditPage'
 import {SUBSCRIPTIONS_URL} from '../../constants'
 import {subscriptionApi} from '../../api'
+import {toast} from '../../components/Toast'
 import {flushPromises, rejected, resolved} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
@@ -11,12 +12,15 @@ jest.mock('../../components', () => ({
 }))
 
 jest.mock('../../contexts', () => ({
-  withLocationState: Component => Component,
-  withNotification: Component => Component
+  withLocationState: Component => Component
 }))
 
 jest.mock('../../api', () => ({
   subscriptionApi: {}
+}))
+
+jest.mock('../../components/Toast', () => ({
+  toast: jest.fn()
 }))
 /* eslint-enable */
 
@@ -43,6 +47,7 @@ describe('SubscriptionEditPage', () => {
   }
 
   beforeEach(() => {
+    toast.mockClear()
     dispatch = jest.fn()
 
     state = {
@@ -159,7 +164,7 @@ describe('SubscriptionEditPage', () => {
     wrapper.update()
     dispatch.mock.calls[0][0].success()
 
-    expect(props.showSuccessNotification).toHaveBeenCalledWith('Subscription saved')
+    expect(toast).toHaveBeenCalledWith('Subscription saved')
   })
 
   it('should pass state "validations" to feed edit page when prop function "saveSubscriptionEditForm" failed', () => {
@@ -230,7 +235,7 @@ describe('SubscriptionEditPage', () => {
     await flushPromises()
     wrapper.update()
 
-    expect(props.showErrorNotification).toHaveBeenCalledWith('expected error')
+    expect(toast).toHaveBeenCalledWith('expected error', {error: true})
   })
 
   it('should trigger prop function "showSuccessNotification" when call to subscriptionApi.deleteSubscription succeeded', async () => {
@@ -240,7 +245,7 @@ describe('SubscriptionEditPage', () => {
     await flushPromises()
     wrapper.update()
 
-    expect(props.showSuccessNotification).toHaveBeenCalledWith('Subscription deleted')
+    expect(toast).toHaveBeenCalledWith('Subscription deleted')
   })
 
   it('should change and reload location when call to subscriptionApi.deleteSubscription succeeded', async () => {

@@ -3,11 +3,12 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {SubscriptionEditForm} from '../../components'
-import {withLocationState, withNotification} from '../../contexts'
+import {withLocationState} from '../../contexts'
 import {fetchSubscription, saveSubscriptionEditForm, subscriptionTagsSelector} from '../../store'
 import {toSubscription} from '../../store/subscription/subscription'
 import {SUBSCRIPTIONS_URL} from '../../constants'
 import {subscriptionApi} from '../../api'
+import {toast} from '../../components/Toast'
 
 const mapStateToProps = state => ({
   ...subscriptionTagsSelector(state)
@@ -27,9 +28,7 @@ class SubscriptionEditPage extends React.Component {
     historyReplace: PropTypes.func.isRequired,
     historyReload: PropTypes.func.isRequired,
     fetchSubscription: PropTypes.func.isRequired,
-    saveSubscriptionEditForm: PropTypes.func.isRequired,
-    showSuccessNotification: PropTypes.func.isRequired,
-    showErrorNotification: PropTypes.func.isRequired,
+    saveSubscriptionEditForm: PropTypes.func.isRequired
   }
 
   state = {
@@ -64,7 +63,7 @@ class SubscriptionEditPage extends React.Component {
 
     this.props.saveSubscriptionEditForm({
       subscription,
-      success: () => this.props.showSuccessNotification('Subscription saved'),
+      success: () => toast('Subscription saved'),
       error: error => {
         if (error.status === 400) {
           this.setState({validations: error.fieldErrors})
@@ -83,12 +82,12 @@ class SubscriptionEditPage extends React.Component {
 
     try {
       await subscriptionApi.deleteSubscription(uuid)
-      this.props.showSuccessNotification('Subscription deleted')
+      toast('Subscription deleted')
       this.props.historyReplace({pathname: SUBSCRIPTIONS_URL})
       this.props.historyReload()
     } catch (error) {
       this.pendingEnd()
-      this.props.showErrorNotification(error)
+      toast(error, {error: true})
     }
   }
 
@@ -113,10 +112,8 @@ class SubscriptionEditPage extends React.Component {
 }
 
 export default withLocationState(
-  withNotification(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(SubscriptionEditPage)
-  )
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(SubscriptionEditPage)
 )
