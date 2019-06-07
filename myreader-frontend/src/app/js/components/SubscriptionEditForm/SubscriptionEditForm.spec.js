@@ -2,6 +2,13 @@ import React from 'react'
 import {shallow} from 'enzyme'
 import SubscriptionEditForm from './SubscriptionEditForm'
 
+/* eslint-disable react/prop-types */
+jest.mock('./SubscriptionExclusions/SubscriptionExclusions', () => ({
+  SubscriptionExclusions: () => null
+}))
+/* eslint-enable */
+
+
 describe('SubscriptionEditForm', () => {
 
   let props
@@ -70,36 +77,17 @@ describe('SubscriptionEditForm', () => {
     }))
   })
 
-  it('should pass expected props to chips component', () => {
-    expect(createWrapper().find('Chips').props()).toEqual(expect.objectContaining({
-      disabled: true,
-      values: [
+  it('should pass expected props to subscription exclusions component', () => {
+    expect(createWrapper().find('SubscriptionExclusions').props()).toEqual(expect.objectContaining({
+      subscription: {...props.data},
+      changePending: true,
+      exclusions: [
         {uuid: '10', pattern: 'exclusion1', hitCount: 1},
         {uuid: '11', pattern: 'exclusion2', hitCount: 2}
       ],
+      onAdd: props.addSubscriptionExclusionPattern,
+      onRemove: props.removeSubscriptionExclusionPattern,
     }))
-  })
-
-  it('should return expected chip item key', () => {
-    expect(createWrapper().find('Chips').props().keyFn({uuid: '10'})).toEqual('10')
-  })
-
-  it('should trigger prop function "addSubscriptionExclusionPattern" when tag added', () => {
-    createWrapper().find('Chips').props().onAdd('changed tag')
-
-    expect(props.addSubscriptionExclusionPattern).toHaveBeenCalledWith('uuid1', 'changed tag')
-  })
-
-  it('should trigger prop function "removeSubscriptionExclusionPattern" when tag deleted', () => {
-    createWrapper().find('Chips').props().onRemove({uuid: 'uuid 2'})
-
-    expect(props.removeSubscriptionExclusionPattern).toHaveBeenCalledWith('uuid1', 'uuid 2')
-  })
-
-  it('should render chip item', () => {
-    const Item = createWrapper().find('Chips').props().renderItem
-
-    expect(shallow(<Item {...props.exclusions[1]}/>).html()).toEqual('<strong>exclusion2</strong> <em>(2)</em>')
   })
 
   it('should pass expected props to primary button component', () => {

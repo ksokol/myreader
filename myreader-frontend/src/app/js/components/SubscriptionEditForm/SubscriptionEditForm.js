@@ -1,7 +1,11 @@
 import './SubscriptionEditForm.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {AutocompleteInput, Button, Chips, ConfirmButton, Icon, Input, withValidations} from '../../components'
+import {AutocompleteInput} from '../AutocompleteInput/AutocompleteInput'
+import {Button, ConfirmButton} from '../Buttons'
+import {Icon} from '../Icon/Icon'
+import {Input, withValidations} from '../Input'
+import {SubscriptionExclusions} from './SubscriptionExclusions/SubscriptionExclusions'
 
 export const SubscriptionTitleInput = withValidations(Input)
 
@@ -21,13 +25,7 @@ class SubscriptionEditForm extends React.Component {
         name: PropTypes.string.isRequired
       })
     ),
-    exclusions: PropTypes.arrayOf(
-      PropTypes.shape({
-        uuid: PropTypes.string.isRequired,
-        pattern: PropTypes.string.isRequired,
-        hitCount: PropTypes.number.isRequired,
-      })
-    ),
+    exclusions: PropTypes.array,
     validations: PropTypes.any,
     changePending: PropTypes.bool.isRequired,
     addSubscriptionExclusionPattern: PropTypes.func.isRequired,
@@ -36,13 +34,9 @@ class SubscriptionEditForm extends React.Component {
     deleteSubscription: PropTypes.func.isRequired
   }
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      title: props.data.title,
-      name: props.data.feedTag.name
-    }
+  state = {
+    title: this.props.data.title,
+    name: this.props.data.feedTag.name
   }
 
   onSaveSubscription = () => {
@@ -121,20 +115,12 @@ class SubscriptionEditForm extends React.Component {
           Patterns to ignore
         </h2>
 
-        <Chips
-          keyFn={itemProps => itemProps.uuid}
-          values={exclusions}
-          placeholder='Enter an exclusion pattern'
-          disabled={changePending}
-          renderItem={itemProps =>
-            <React.Fragment>
-              <strong>{itemProps.pattern}</strong>
-              &nbsp;
-              <em>({itemProps.hitCount})</em>
-            </React.Fragment>
-          }
-          onAdd={tag => addSubscriptionExclusionPattern(data.uuid, tag)}
-          onRemove={({uuid}) => removeSubscriptionExclusionPattern(data.uuid, uuid)}
+        <SubscriptionExclusions
+          subscription={data}
+          changePending={changePending}
+          exclusions={exclusions}
+          onAdd={addSubscriptionExclusionPattern}
+          onRemove={removeSubscriptionExclusionPattern}
         />
 
         <div
