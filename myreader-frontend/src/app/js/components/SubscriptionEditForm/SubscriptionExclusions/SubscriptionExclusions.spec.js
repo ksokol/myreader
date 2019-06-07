@@ -3,7 +3,7 @@ import {shallow} from 'enzyme'
 import {SubscriptionExclusions} from './SubscriptionExclusions'
 import {subscriptionExclusionsApi} from '../../../api'
 import {toast} from '../../Toast'
-import {flushPromises, rejected, resolved} from '../../../shared/test-utils'
+import {flushPromises, pending, rejected, resolved} from '../../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../../api', () => ({
@@ -76,8 +76,8 @@ describe('SubscriptionExclusions', () => {
   })
 
   it('should disable chip component when saving new exclusion', async () => {
-    subscriptionExclusionsApi.saveExclusions = pending()
-    const wrapper = createWrapper()
+    subscriptionExclusionsApi.saveExclusion = pending()
+    const wrapper = await createWrapper()
     wrapper.find('Chips').props().onAdd()
     wrapper.update()
 
@@ -121,7 +121,7 @@ describe('SubscriptionExclusions', () => {
 
   it('should disable chip component when deleting exclusion', async () => {
     subscriptionExclusionsApi.removeExclusion = pending()
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('Chips').props().onRemove({})
     wrapper.update()
 
