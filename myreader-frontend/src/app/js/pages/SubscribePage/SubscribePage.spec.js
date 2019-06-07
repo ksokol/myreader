@@ -4,6 +4,7 @@ import SubscribePage from './SubscribePage'
 import {SUBSCRIPTION_URL} from '../../constants'
 import {subscriptionApi} from '../../api'
 import {flushPromises, rejected, resolved} from '../../shared/test-utils'
+import {toast} from '../../components/Toast'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -11,12 +12,15 @@ jest.mock('../../components', () => ({
 }))
 
 jest.mock('../../contexts', () => ({
-  withLocationState: Component => Component,
-  withNotification: Component => Component
+  withLocationState: Component => Component
 }))
 
 jest.mock('../../api', () => ({
   subscriptionApi: {}
+}))
+
+jest.mock('../../components/Toast', () => ({
+  toast: jest.fn()
 }))
 /* eslint-enable */
 
@@ -27,6 +31,8 @@ describe('SubscribePage', () => {
   const createWrapper = () => mount(<SubscribePage {...props} />)
 
   beforeEach(() => {
+    toast.mockClear()
+
     props = {
       historyReplace: jest.fn(),
       showSuccessNotification: jest.fn(),
@@ -67,7 +73,7 @@ describe('SubscribePage', () => {
     await flushPromises()
     wrapper.update()
 
-    expect(props.showSuccessNotification).toHaveBeenCalledWith('Subscribed')
+    expect(toast).toHaveBeenCalledWith('Subscribed')
   })
 
   it('should redirect to feed detail page when call to subscriptionApi.subscribe succeeded', async () => {
@@ -133,7 +139,7 @@ describe('SubscribePage', () => {
     await flushPromises()
     wrapper.update()
 
-    expect(props.showErrorNotification).toHaveBeenCalledWith('expected error')
+    expect(toast).toHaveBeenCalledWith('expected error', {error: true})
   })
 
   it('should not trigger prop function "props.showErrorNotification" when call to subscriptionApi.subscribe failed with HTTP == 400', async () => {
@@ -143,6 +149,6 @@ describe('SubscribePage', () => {
     await flushPromises()
     wrapper.update()
 
-    expect(props.showErrorNotification).not.toHaveBeenCalled()
+    expect(toast).not.toHaveBeenCalled()
   })
 })

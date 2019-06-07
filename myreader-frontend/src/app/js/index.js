@@ -10,11 +10,14 @@ import registerServiceWorker from '../../registerServiceWorker'
 import {LocationStateProvider, NotificationProvider} from './contexts'
 import App from './App'
 import {api, AuthInterceptor, PendingFetchInterceptor} from './api'
+import {init as initToast} from './components/Toast'
 
 const store = createApplicationStore(
   ENVIRONMENT,
   [installMediaBreakpointActionDispatcher]
 )
+
+initToast(store.dispatch)
 
 api.addInterceptor(new PendingFetchInterceptor(store.dispatch))
 api.addInterceptor(new AuthInterceptor(store.dispatch))

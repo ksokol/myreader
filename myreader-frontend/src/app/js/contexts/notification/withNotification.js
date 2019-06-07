@@ -1,6 +1,9 @@
 import React from 'react'
 import {NotificationContext} from '../../contexts'
 
+/**
+ * @deprecated
+ */
 export const withNotification = Component => {
 
   return class WithNotification extends React.Component {

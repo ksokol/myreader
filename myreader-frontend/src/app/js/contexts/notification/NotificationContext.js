@@ -5,4 +5,7 @@ const NotificationContext = React.createContext({
   showErrorNotification: () => undefined,
 })
 
+/**
+ * @deprecated
+ */
 export default NotificationContext

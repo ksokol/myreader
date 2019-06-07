@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import * as ReactDom from 'react-dom'
 import classNames from 'classnames'
 
-const Toast = props => {
+export const Toast = props => {
   const notifications = [...props.notifications].reverse().splice(0, 3)
 
   return notifications.length > 0 ? ReactDom.createPortal(
@@ -40,5 +40,3 @@ Toast.propTypes = {
 Toast.defaultProps = {
   notifications: []
 }
-
-export default Toast

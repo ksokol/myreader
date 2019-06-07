@@ -4,6 +4,9 @@ import {connect} from 'react-redux'
 import {showSuccessNotification, showErrorNotification} from '../../store'
 import NotificationContext from './NotificationContext'
 
+/**
+ * @deprecated
+ */
 class NotificationProvider extends React.Component {
 
   static propTypes = {
