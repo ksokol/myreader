@@ -25,11 +25,8 @@ class SubscriptionEditForm extends React.Component {
         name: PropTypes.string.isRequired
       })
     ),
-    exclusions: PropTypes.array,
     validations: PropTypes.any,
     changePending: PropTypes.bool.isRequired,
-    addSubscriptionExclusionPattern: PropTypes.func.isRequired,
-    removeSubscriptionExclusionPattern: PropTypes.func.isRequired,
     saveSubscriptionEditForm: PropTypes.func.isRequired,
     deleteSubscription: PropTypes.func.isRequired
   }
@@ -54,11 +51,8 @@ class SubscriptionEditForm extends React.Component {
     const {
       data,
       subscriptionTags,
-      exclusions,
       validations,
       changePending,
-      addSubscriptionExclusionPattern,
-      removeSubscriptionExclusionPattern,
       deleteSubscription
     } = this.props
 
@@ -117,10 +111,6 @@ class SubscriptionEditForm extends React.Component {
 
         <SubscriptionExclusions
           subscription={data}
-          changePending={changePending}
-          exclusions={exclusions}
-          onAdd={addSubscriptionExclusionPattern}
-          onRemove={removeSubscriptionExclusionPattern}
         />
 
         <div

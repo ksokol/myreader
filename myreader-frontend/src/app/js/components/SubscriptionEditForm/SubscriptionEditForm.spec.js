@@ -8,7 +8,6 @@ jest.mock('./SubscriptionExclusions/SubscriptionExclusions', () => ({
 }))
 /* eslint-enable */
 
-
 describe('SubscriptionEditForm', () => {
 
   let props
@@ -27,10 +26,6 @@ describe('SubscriptionEditForm', () => {
         },
         createdAt: '2017-12-29'
       },
-      exclusions: [
-        {uuid: '10', pattern: 'exclusion1', hitCount: 1},
-        {uuid: '11', pattern: 'exclusion2', hitCount: 2}
-      ],
       subscriptionTags: [
         {name: 'name 1'},
         {name: 'name 2'}
@@ -40,9 +35,7 @@ describe('SubscriptionEditForm', () => {
       ],
       changePending: true,
       saveSubscriptionEditForm: jest.fn(),
-      deleteSubscription: jest.fn(),
-      addSubscriptionExclusionPattern: jest.fn(),
-      removeSubscriptionExclusionPattern: jest.fn()
+      deleteSubscription: jest.fn()
     }
   })
 
@@ -74,19 +67,6 @@ describe('SubscriptionEditForm', () => {
       label: 'Tag',
       disabled: true,
       values: ['name 1', 'name 2']
-    }))
-  })
-
-  it('should pass expected props to subscription exclusions component', () => {
-    expect(createWrapper().find('SubscriptionExclusions').props()).toEqual(expect.objectContaining({
-      subscription: {...props.data},
-      changePending: true,
-      exclusions: [
-        {uuid: '10', pattern: 'exclusion1', hitCount: 1},
-        {uuid: '11', pattern: 'exclusion2', hitCount: 2}
-      ],
-      onAdd: props.addSubscriptionExclusionPattern,
-      onRemove: props.removeSubscriptionExclusionPattern,
     }))
   })
 

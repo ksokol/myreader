@@ -10,15 +10,17 @@ function init(dispatchFn) {
   dispatch = dispatchFn
 }
 
-function toast(message, options = {error: false}) {
+function toast(message = 'something went wrong', options = {error: false}) {
   if (!dispatch) {
     return
   }
 
+  const messageString = typeof message === 'string' ? message : message.toString()
+
   if (options.error) {
-    dispatch(showErrorNotification(message))
+    dispatch(showErrorNotification(messageString))
   } else {
-    dispatch(showSuccessNotification(message))
+    dispatch(showSuccessNotification(messageString))
   }
 }
 

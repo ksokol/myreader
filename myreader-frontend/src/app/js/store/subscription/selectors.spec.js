@@ -1,7 +1,6 @@
 import {
   filteredBySearchSubscriptionsSelector,
   filteredByUnseenSubscriptionsSelector,
-  subscriptionExclusionPatternsSelector,
   subscriptionTagsSelector
 } from '../../store'
 import settingsInitialState from '../settings'
@@ -75,24 +74,6 @@ describe('subscription selector', () => {
     actualSubscriptions[0].key = 'value'
 
     expect(state.subscription).toContainObject(subscriptions())
-  })
-
-  it('should return empty array when exclusions for uuid not present', () => {
-    expect(subscriptionExclusionPatternsSelector()(state)).toEqual({exclusions: []})
-  })
-
-  it('should return exclusions for given uuid', () => {
-    state.subscription.exclusions = {'1': [{a: 'b'}, {c: 'd'}], '2': [{e: 'f', g: 'h'}]}
-
-    expect(subscriptionExclusionPatternsSelector('2')(state)).toEqual({exclusions: [{e: 'f', g: 'h'}]})
-  })
-
-  it('should return copy of exclusions', () => {
-    state.subscription.exclusions = {'1': [{a: 'b'}]}
-    const selection = subscriptionExclusionPatternsSelector('1')(state)
-    state.subscription.exclusions['1'][0].a = 'x'
-
-    expect(selection).toEqual({exclusions: [{a: 'b'}]})
   })
 
   it('should return subscription tags', () => {

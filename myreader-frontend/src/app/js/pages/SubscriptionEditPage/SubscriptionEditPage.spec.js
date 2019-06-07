@@ -27,7 +27,7 @@ describe('SubscriptionEditPage', () => {
   const createWrapper = ({init} = {init: true}) => {
     const wrapper = mount(<SubscriptionEditPage {...props} state={state} dispatch={dispatch} />)
     if (init) {
-      dispatch.mock.calls[1][0].success({
+      dispatch.mock.calls[0][0].success({
         uuid: '1',
         title: 'title1',
         origin: 'origin1',
@@ -99,36 +99,7 @@ describe('SubscriptionEditPage', () => {
         {uuid: '2', name: 'name 1'},
         {uuid: '3', name: 'name 2'},
       ],
-      exclusions: [
-        {uuid: '10', pattern: 'exclusion1', hitCount: 1},
-        {uuid: '11', pattern: 'exclusion2', hitCount: 2}
-      ],
       validations: []
-    }))
-  })
-
-  it('should dispatch action POST_SUBSCRIPTION_EXCLUSION_PATTERN when prop function "addSubscriptionExclusionPattern" triggered', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('SubscriptionEditForm').props().addSubscriptionExclusionPattern('1', 'changed tag')
-
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'POST_SUBSCRIPTION_EXCLUSION_PATTERN',
-      url: 'api/2/exclusions/1/pattern',
-      body: {
-        pattern: 'changed tag'
-      }
-    }))
-  })
-
-  it('should dispatch action DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS when prop function "removeSubscriptionExclusionPattern" triggered', () => {
-    const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('SubscriptionEditForm').props().removeSubscriptionExclusionPattern('1', 'uuid 2')
-
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'DELETE_SUBSCRIPTION_EXCLUSION_PATTERNS',
-      url: 'api/2/exclusions/1/pattern/uuid 2'
     }))
   })
 
@@ -286,18 +257,9 @@ describe('SubscriptionEditPage', () => {
   it('should dispatch action GET_SUBSCRIPTION when mounted', () => {
     createWrapper()
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(1, expect.objectContaining({
       type: 'GET_SUBSCRIPTION',
       url: 'api/2/subscriptions/1'
-    }))
-  })
-
-  it('should dispatch action GET_SUBSCRIPTION_EXCLUSION_PATTERNS when mounted', () => {
-    createWrapper()
-
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'GET_SUBSCRIPTION_EXCLUSION_PATTERNS',
-      url: 'api/2/exclusions/1/pattern'
     }))
   })
 })

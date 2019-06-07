@@ -1,40 +1,86 @@
 import React from 'react'
 import {Chips} from '../..'
 import PropTypes from 'prop-types'
+import {subscriptionExclusionsApi as api} from '../../../api'
+import {toast} from '../../Toast'
+
+function byPattern(left, right) {
+  if (left.pattern < right.pattern) {
+    return -1
+  }
+  return left.pattern === right.pattern ? 0 : 1
+}
 
 export class SubscriptionExclusions extends React.Component {
 
   static propTypes = {
     subscription: PropTypes.shape({
       uuid: PropTypes.string.isRequired
-    }).isRequired,
-    exclusions: PropTypes.arrayOf(
-      PropTypes.shape({
-        uuid: PropTypes.string.isRequired,
-        pattern: PropTypes.string.isRequired,
-        hitCount: PropTypes.number.isRequired,
-      })
-    ),
-    changePending: PropTypes.bool.isRequired,
-    onAdd: PropTypes.func.isRequired,
-    onRemove: PropTypes.func.isRequired,
+    }).isRequired
+  }
+
+  state = {
+    exclusions: [],
+    pending: false
+  }
+
+  componentDidMount = async () => {
+    try {
+      this.pendingStart()
+      this.setExclusions(await api.fetchExclusions(this.props.subscription.uuid))
+    } catch (error) {
+      toast(error, {error: true})
+    } finally {
+      this.pendingEnd()
+    }
+  }
+
+  pendingStart = () => this.setState({pending: true})
+
+  pendingEnd = () => this.setState({pending: false})
+
+  setExclusions = exclusions => {
+    this.setState({
+      exclusions: exclusions.sort(byPattern)
+    })
+  }
+
+  onAdd = async pattern => {
+    try {
+      this.pendingStart()
+      const exclusion = await api.saveExclusion(this.props.subscription.uuid, pattern)
+      this.setExclusions([...this.state.exclusions, exclusion])
+    } catch (error) {
+      toast(error, {error: true})
+    } finally {
+      this.pendingEnd()
+    }
+  }
+
+  onRemove = async ({uuid}) => {
+    try {
+      this.pendingStart()
+      await api.removeExclusion(this.props.subscription.uuid, uuid)
+      this.setExclusions(this.state.exclusions.filter(exclusion => exclusion.uuid !== uuid))
+    } catch (error) {
+      toast(error, {error: true})
+    } finally {
+      this.pendingEnd()
+    }
   }
 
   render(props) {
     const {
-      subscription,
       exclusions,
-      changePending,
-      onAdd,
-      onRemove,
-    } = this.props
+      pending
+    } = this.state
 
     return (
       <Chips
         keyFn={itemProps => itemProps.uuid}
         values={exclusions}
         placeholder='Enter an exclusion pattern'
-        disabled={changePending}
+        disabled={pending}
         renderItem={itemProps =>
           <React.Fragment>
             <strong>{itemProps.pattern}</strong>
@@ -42,8 +88,8 @@ export class SubscriptionExclusions extends React.Component {
             <em>({itemProps.hitCount})</em>
           </React.Fragment>
         }
-        onAdd={tag => onAdd(subscription.uuid, tag)}
-        onRemove={({uuid}) => onRemove(subscription.uuid, uuid)}
+        onAdd={this.onAdd}
+        onRemove={this.onRemove}
       />
     )
   }

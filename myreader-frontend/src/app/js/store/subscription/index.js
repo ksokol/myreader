@@ -4,7 +4,6 @@ export * from './selectors'
 
 export default function initialState() {
   return {
-    subscriptions: [],
-    exclusions: {}
+    subscriptions: []
   }
 }

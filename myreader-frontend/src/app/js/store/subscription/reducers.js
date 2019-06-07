@@ -1,7 +1,6 @@
 import * as types from '../../store/action-types'
 import {cloneObject} from '../shared/objects'
 import {initialApplicationState} from '../../store'
-import {byPattern} from './subscription'
 
 function subscriptionsReceived({state, action}) {
   return {
@@ -25,46 +24,6 @@ function subscriptionChanged({state, action}) {
   }
 }
 
-function subscriptionExclusionPatternsReceived({state, action}) {
-  const exclusions = {...state.exclusions}
-  exclusions[action.subscriptionUuid] = action.patterns
-  return{
-    ...state,
-    exclusions
-  }
-}
-
-function subscriptionExclusionPatternsAdded({state, action}) {
-  const exclusions = {...state.exclusions}
-  let exclusion = exclusions[action.subscriptionUuid] || []
-
-  exclusion = exclusion.findIndex(it => it.uuid === action.pattern.uuid) !== -1 ?
-    exclusion.map(it => (it.uuid === action.pattern.uuid ? action.pattern : it)) :
-    [...exclusion, action.pattern]
-
-  exclusions[action.subscriptionUuid] = exclusion.sort(byPattern)
-
-  return {
-    ...state,
-    exclusions
-  }
-}
-
-function subscriptionExclusionPatternsRemoved({state, action}) {
-  let exclusion = state.exclusions[action.subscriptionUuid]
-
-  if (!exclusion) {
-    return state
-  }
-
-  let exclusions = {...state.exclusions}
-  exclusions[action.subscriptionUuid] = exclusion.filter(it => it.uuid !== action.uuid)
-  return {
-    ...state,
-    exclusions
-  }
-}
-
 function securityUpdate({state, action}) {
   return action.authorized ? state : initialApplicationState().subscription
 }
@@ -82,15 +41,6 @@ export function subscriptionReducers(state = initialApplicationState().subscript
   }
   case types.ENTRY_CHANGED: {
     return subscriptionChanged({state, action})
-  }
-  case types.SUBSCRIPTION_EXCLUSION_PATTERNS_RECEIVED: {
-    return subscriptionExclusionPatternsReceived({state, action})
-  }
-  case types.SUBSCRIPTION_EXCLUSION_PATTERNS_ADDED: {
-    return subscriptionExclusionPatternsAdded({state, action})
-  }
-  case types.SUBSCRIPTION_EXCLUSION_PATTERNS_REMOVED: {
-    return subscriptionExclusionPatternsRemoved({state, action})
   }
   case types.SUBSCRIPTION_TAG_CHANGED: {
     return subscriptionTagChanged({state, action})

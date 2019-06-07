@@ -4,28 +4,16 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {SubscriptionEditForm} from '../../components'
 import {withLocationState, withNotification} from '../../contexts'
-import {
-  addSubscriptionExclusionPattern,
-  fetchSubscription,
-  fetchSubscriptionExclusionPatterns,
-  removeSubscriptionExclusionPattern,
-  saveSubscriptionEditForm,
-  subscriptionExclusionPatternsSelector,
-  subscriptionTagsSelector
-} from '../../store'
+import {fetchSubscription, saveSubscriptionEditForm, subscriptionTagsSelector} from '../../store'
 import {toSubscription} from '../../store/subscription/subscription'
 import {SUBSCRIPTIONS_URL} from '../../constants'
 import {subscriptionApi} from '../../api'
 
-const mapStateToProps = (state, ownProps) => ({
-  ...subscriptionTagsSelector(state),
-  ...subscriptionExclusionPatternsSelector(ownProps.params.uuid)(state)
+const mapStateToProps = state => ({
+  ...subscriptionTagsSelector(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  removeSubscriptionExclusionPattern,
-  addSubscriptionExclusionPattern,
-  fetchSubscriptionExclusionPatterns,
   fetchSubscription,
   saveSubscriptionEditForm
 }, dispatch)
@@ -38,9 +26,6 @@ class SubscriptionEditPage extends React.Component {
     }).isRequired,
     historyReplace: PropTypes.func.isRequired,
     historyReload: PropTypes.func.isRequired,
-    removeSubscriptionExclusionPattern: PropTypes.func.isRequired,
-    addSubscriptionExclusionPattern: PropTypes.func.isRequired,
-    fetchSubscriptionExclusionPatterns: PropTypes.func.isRequired,
     fetchSubscription: PropTypes.func.isRequired,
     saveSubscriptionEditForm: PropTypes.func.isRequired,
     showSuccessNotification: PropTypes.func.isRequired,
@@ -55,7 +40,6 @@ class SubscriptionEditPage extends React.Component {
 
   componentDidMount() {
     const {uuid} = this.props.params
-    this.props.fetchSubscriptionExclusionPatterns(uuid)
     this.loadSubscription(uuid)
   }
 
