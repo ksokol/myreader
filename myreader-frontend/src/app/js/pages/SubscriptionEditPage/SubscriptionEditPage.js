@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {SubscriptionEditForm} from '../../components'
 import {withLocationState} from '../../contexts'
-import {fetchSubscription, saveSubscriptionEditForm, subscriptionTagsSelector} from '../../store'
+import {fetchSubscription, subscriptionTagsSelector} from '../../store'
 import {toSubscription} from '../../store/subscription/subscription'
 import {SUBSCRIPTIONS_URL} from '../../constants'
 import {subscriptionApi} from '../../api'
@@ -15,8 +15,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchSubscription,
-  saveSubscriptionEditForm
+  fetchSubscription
 }, dispatch)
 
 class SubscriptionEditPage extends React.Component {
@@ -27,8 +26,7 @@ class SubscriptionEditPage extends React.Component {
     }).isRequired,
     historyReplace: PropTypes.func.isRequired,
     historyReload: PropTypes.func.isRequired,
-    fetchSubscription: PropTypes.func.isRequired,
-    saveSubscriptionEditForm: PropTypes.func.isRequired
+    fetchSubscription: PropTypes.func.isRequired
   }
 
   state = {
@@ -55,24 +53,24 @@ class SubscriptionEditPage extends React.Component {
     })
   }
 
-  onSaveSubscription = subscription => {
-    this.setState({
-      changePending: true,
-      validations: []
-    })
-
-    this.props.saveSubscriptionEditForm({
-      subscription,
-      success: () => toast('Subscription saved'),
-      error: error => {
-        if (error.status === 400) {
-          this.setState({validations: error.fieldErrors})
-          return []
-        }
-        return undefined
-      },
-      finalize: this.pendingEnd
-    })
+  onSaveSubscription = async subscription => {
+    try {
+      this.setState({
+        changePending: true,
+        validations: []
+      })
+      await subscriptionApi.saveSubscription(subscription)
+      toast('Subscription saved')
+      this.props.historyReload()
+    } catch (error) {
+      if (error.status === 400) {
+        this.setState({validations: error.fieldErrors})
+      } else {
+        toast(error, {error: true})
+      }
+    } finally {
+      this.pendingEnd()
+    }
   }
 
   onDeleteSubscription = async uuid => {

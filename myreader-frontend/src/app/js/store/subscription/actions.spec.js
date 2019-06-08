@@ -1,10 +1,4 @@
-import {
-  fetchSubscriptions,
-  fetchSubscription,
-  saveSubscriptionEditForm,
-  saveSubscriptionTag,
-  subscriptionsReceived
-} from '../../store'
+import {fetchSubscription, fetchSubscriptions, saveSubscriptionTag, subscriptionsReceived} from '../../store'
 import {createMockStore} from '../../shared/test-utils'
 
 describe('subscription actions', () => {
@@ -55,36 +49,6 @@ describe('subscription actions', () => {
       store.dispatch(store.getActions()[0].success({content: [{uuid: 1}]}))
 
       expect(store.getActions()[1]).toContainObject({subscriptions: [{uuid: 1}]})
-    })
-  })
-
-  describe('action creator saveSubscriptionEditForm', () => {
-
-    it('should contain expected action', () => {
-      const success = () => ({})
-      const error = () => ({})
-      const finalize = () => ({})
-
-      const action = saveSubscriptionEditForm({
-        subscription: {uuid: 'uuid1', feedTag: {name: 'feedTag'}},
-        success,
-        error,
-        finalize
-      })
-
-      expect(action).toEqual({
-        type: 'PATCH_SUBSCRIPTION',
-        url: 'api/2/subscriptions/uuid1',
-        body: {
-          uuid: 'uuid1',
-          feedTag: {
-            name: 'feedTag'
-          }
-        },
-        success,
-        error,
-        finalize
-      })
     })
   })
 

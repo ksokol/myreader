@@ -4,7 +4,7 @@ import SubscriptionEditPage from './SubscriptionEditPage'
 import {SUBSCRIPTIONS_URL} from '../../constants'
 import {subscriptionApi} from '../../api'
 import {toast} from '../../components/Toast'
-import {flushPromises, rejected, resolved} from '../../shared/test-utils'
+import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -108,94 +108,84 @@ describe('SubscriptionEditPage', () => {
     }))
   })
 
-  it('should dispatch action PATCH_SUBSCRIPTION when prop function "saveSubscriptionEditForm" triggered', () => {
+  it('should call subscriptionApi.saveSubscription when prop function "saveSubscriptionEditForm" triggered', () => {
+    subscriptionApi.saveSubscription = pending()
     const wrapper = createWrapper()
-    dispatch.mockReset()
-    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({
-      uuid: '1',
-      title: 'changed title',
-      origin: 'origin',
-      feedTag: {
-        uuid: '2',
-        name: 'changed feedTag name'
-      }
-    })
+    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({a: 'b', c: 'd'})
 
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'PATCH_SUBSCRIPTION',
-      url: 'api/2/subscriptions/1',
-      body: {
-        uuid: '1',
-        title: 'changed title',
-        origin: 'origin',
-        feedTag: {
-          uuid: '2',
-          name: 'changed feedTag name'
-        }
-      }
-    }))
+    expect(subscriptionApi.saveSubscription).toHaveBeenCalledWith({
+      a: 'b',
+      c: 'd'
+    })
   })
 
-  it('should set prop "changePending" to true when prop function "saveSubscriptionEditForm" called', () => {
+  it('should set prop "changePending" to true when subscriptionApi.saveSubscription is pending', async () => {
+    subscriptionApi.saveSubscription = pending()
     const wrapper = createWrapper()
-    dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    await flushPromises()
     wrapper.update()
 
     expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(true)
   })
 
-  it('should set prop "changePending" to false when prop function "saveSubscriptionEditForm" finished', () => {
+  it('should set prop "changePending" to false when subscriptionApi.saveSubscription finished', async () => {
+    subscriptionApi.saveSubscription = resolved({})
     const wrapper = createWrapper()
-    dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
-    wrapper.update()
-
-    dispatch.mock.calls[0][0].finalize()
+    await flushPromises()
     wrapper.update()
 
     expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(false)
   })
 
-  it('should trigger prop function "showSuccessNotification" when prop function "saveSubscriptionEditForm" succeeded', () => {
+  it('should trigger toast when subscriptionApi.saveSubscription succeeded', async() => {
+    subscriptionApi.saveSubscription = resolved({})
     const wrapper = createWrapper()
-    dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    await flushPromises()
     wrapper.update()
-    dispatch.mock.calls[0][0].success()
 
     expect(toast).toHaveBeenCalledWith('Subscription saved')
   })
 
-  it('should pass state "validations" to feed edit page when prop function "saveSubscriptionEditForm" failed', () => {
+  it('should trigger prop function "historyReload" when subscriptionApi.saveSubscription succeeded', async() => {
+    subscriptionApi.saveSubscription = resolved({})
     const wrapper = createWrapper()
-    dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    await flushPromises()
     wrapper.update()
-    dispatch.mock.calls[0][0].error({status: 400, fieldErrors: ['error']})
+
+    expect(props.historyReload).toHaveBeenCalled()
+  })
+
+  it('should pass state "validations" to feed edit page when subscriptionApi.saveSubscription failed with HTTP 400', async() => {
+    subscriptionApi.saveSubscription = rejected({status: 400, fieldErrors: ['error']})
+    const wrapper = createWrapper()
+    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    await flushPromises()
     wrapper.update()
 
     expect(wrapper.find('SubscriptionEditForm').prop('validations')).toEqual(['error'])
   })
 
-  it('should not pass state "validations" to feed edit page when prop function "saveSubscriptionEditForm" failed', () => {
+  it('should not pass state "validations" to feed edit page when subscriptionApi.saveSubscription failed with HTTP !== 400', async() => {
+    subscriptionApi.saveSubscription = rejected({status: 401, fieldErrors: ['error']})
     const wrapper = createWrapper()
-    dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
-    wrapper.update()
-    dispatch.mock.calls[0][0].error({status: 401, fieldErrors: ['error']})
+    await flushPromises()
     wrapper.update()
 
     expect(wrapper.find('SubscriptionEditForm').prop('validations')).toEqual([])
   })
 
-  it('should clear state "validations" when prop function "saveSubscriptionEditForm" triggered', () => {
+  it('should clear state "validations" when subscriptionApi.saveSubscription called again', async () => {
+    subscriptionApi.saveSubscription = rejected({status: 400, fieldErrors: ['error']})
     const wrapper = createWrapper()
-    dispatch.mockReset()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
+    await flushPromises()
     wrapper.update()
-    dispatch.mock.calls[0][0].error({status: 400, fieldErrors: ['error']})
-    wrapper.update()
+    subscriptionApi.saveSubscription = pending()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     wrapper.update()
 

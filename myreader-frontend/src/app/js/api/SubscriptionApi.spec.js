@@ -67,4 +67,46 @@ describe('SubscriptionApi', () => {
 
     await expect(subscriptionApi.deleteSubscription()).rejects.toEqual(expectedError)
   })
+
+  it(`should call PATCH ${SUBSCRIPTIONS}/uuid1 endpoint`, () => {
+    subscriptionApi.saveSubscription({uuid: 'uuid1', a: 'b', c: 'd', feedTag: {}})
+
+    expect(api.request).toHaveBeenCalledWith({
+      method: 'PATCH',
+      url: `${SUBSCRIPTIONS}/uuid1`,
+      body: {
+        uuid: 'uuid1',
+        a: 'b',
+        c: 'd',
+        feedTag: null
+      }
+    })
+  })
+
+  it(`should call PATCH ${SUBSCRIPTIONS}/uuid1 endpoint with feedTag set`, () => {
+    subscriptionApi.saveSubscription({uuid: 'uuid1', feedTag: {name: 'expected name'}})
+
+    expect(api.request).toHaveBeenCalledWith({
+      method: 'PATCH',
+      url: `${SUBSCRIPTIONS}/uuid1`,
+      body: {
+        uuid: 'uuid1',
+        feedTag: {
+          name: 'expected name'
+        }
+      }
+    })
+  })
+
+  it(`should return expected response when PATCH ${SUBSCRIPTIONS}/uuid1 succeeded`, async () => {
+    api.request = jest.fn().mockResolvedValue({ok: true})
+
+    await expect(subscriptionApi.saveSubscription({})).resolves.toBeNull()
+  })
+
+  it(`should return expected error response when PATCH ${SUBSCRIPTIONS}/uuid1 failed`, async () => {
+    api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
+
+    await expect(subscriptionApi.saveSubscription({})).rejects.toEqual(expectedError)
+  })
 })

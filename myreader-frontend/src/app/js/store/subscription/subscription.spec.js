@@ -1,4 +1,4 @@
-import {toBody, toSubscription, toSubscriptions} from './subscription'
+import {toSubscription, toSubscriptions} from './subscription'
 
 describe('subscription object factory', () => {
 
@@ -16,23 +16,6 @@ describe('subscription object factory', () => {
 
     it('should add default values for prop "feedTag" when prop "feedTag" is null', () => {
       expect(toSubscription({feedTag: null})).toEqual({feedTag: {uuid: undefined, name: undefined, color: undefined, links: []}})
-    })
-  })
-
-  describe('toBody', () => {
-
-    it('should object to raw', () => {
-      const raw = {uuid: 1, key: 'value', feedTag: {name: 'tag', color: '#777'}}
-
-      expect(toBody(raw)).toEqual({uuid: 1, key: 'value', feedTag: {name: 'tag', color: '#777'}})
-    })
-
-    it('should set prop "feedTag" to null when prop is undefined', () => {
-      expect(toBody({})).toEqual({feedTag: null})
-    })
-
-    it('should set prop "feedTag" to null when prop "feedTag.name" is null', () => {
-      expect(toBody({feedTag: null})).toEqual({feedTag: null})
     })
   })
 

@@ -1,5 +1,5 @@
 import * as types from '../../store/action-types'
-import {toBody, toSubscriptions} from './subscription'
+import {toSubscriptions} from './subscription'
 import {SUBSCRIPTION_TAGS, SUBSCRIPTIONS} from '../../constants'
 import {showSuccessNotification} from '../../store'
 
@@ -15,17 +15,6 @@ export const fetchSubscriptions = () => {
     type: 'GET_SUBSCRIPTIONS',
     url: SUBSCRIPTIONS,
     success: response => subscriptionsReceived(response)
-  }
-}
-
-export const saveSubscriptionEditForm = ({subscription, success, error, finalize}) => {
-  return {
-    type: 'PATCH_SUBSCRIPTION',
-    url: `${SUBSCRIPTIONS}/${subscription.uuid}`,
-    body: toBody(subscription),
-    success,
-    error,
-    finalize
   }
 }
 
