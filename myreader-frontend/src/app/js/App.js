@@ -5,7 +5,6 @@ import {
   BookmarkListPage,
   EntryStreamPage,
   FeedEditPage,
-  FeedListPage,
   LoginPage,
   LogoutPage,
   SubscribePage,
@@ -30,6 +29,7 @@ import {
   SUBSCRIPTIONS_URL
 } from './constants'
 import {AdminOverviewPage} from './pages/AdminOverviewPage/AdminOverviewPage'
+import {FeedListPage} from './pages/FeedListPage/FeedListPage'
 
 const withSidenav = () => (
   <SidenavLayout>

@@ -1,21 +1,12 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {FeedList, ListLayout} from '../../components'
 import {feedApi} from '../../api'
-import {withNotification} from '../../contexts'
+import {toast} from '../../components/Toast'
 
-class FeedListPage extends React.Component {
+export class FeedListPage extends React.Component {
 
-  static propTypes = {
-    showErrorNotification: PropTypes.func.isRequired
-  }
-
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      feeds: []
-    }
+  state = {
+    feeds: []
   }
 
   componentDidMount = async () => {
@@ -23,7 +14,7 @@ class FeedListPage extends React.Component {
       const feeds = await feedApi.fetchFeeds()
       this.setState({feeds})
     } catch (error) {
-      this.props.showErrorNotification(error)
+      toast(error, {error: true})
     }
   }
 
@@ -35,5 +26,3 @@ class FeedListPage extends React.Component {
     )
   }
 }
-
-export default withNotification(FeedListPage)
