@@ -4,6 +4,7 @@ import FeedEditPage from './FeedEditPage'
 import {ADMIN_FEEDS_URL} from '../../constants'
 import {feedApi} from '../../api'
 import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
+import {toast} from '../../components/Toast'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components/FeedEditForm/FeedEditForm', () => ({
@@ -17,6 +18,10 @@ jest.mock('../../contexts', () => ({
 
 jest.mock('../../api', () => ({
   feedApi: {}
+}))
+
+jest.mock('../../components/Toast', () => ({
+  toast: jest.fn()
 }))
 /* eslint-enable */
 
@@ -38,9 +43,7 @@ describe('FeedEditPage', () => {
       params: {
         uuid: 'uuid1'
       },
-      historyReplace: jest.fn(),
-      showSuccessNotification: jest.fn(),
-      showErrorNotification: jest.fn()
+      historyReplace: jest.fn()
     }
   })
 
@@ -96,13 +99,13 @@ describe('FeedEditPage', () => {
     expect(wrapper.find('FeedEditForm').prop('changePending')).toEqual(false)
   })
 
-  it('should trigger prop function "showSuccessNotification" when call to feedApi.saveFeed succeeded', async () => {
+  it('should trigger toast when call to feedApi.saveFeed succeeded', async () => {
     feedApi.saveFeed = resolved()
     const wrapper = await createWrapper()
     wrapper.find('FeedEditForm').props().onSaveFormData({})
     await flushPromises()
 
-    expect(props.showSuccessNotification).toHaveBeenCalledWith('Feed saved')
+    expect(toast).toHaveBeenCalledWith('Feed saved')
   })
 
   it('should pass state "validations" to feed edit page when call to feedApi.saveFeed failed', async () => {
@@ -170,21 +173,21 @@ describe('FeedEditPage', () => {
     expect(props.historyReplace).toHaveBeenCalledWith({pathname: ADMIN_FEEDS_URL})
   })
 
-  it('should trigger prop function "showErrorNotification" when call to feedApi.deleteFeed failed with HTTP 409', async () => {
+  it('should trigger toast when call to feedApi.deleteFeed failed with HTTP 409', async () => {
     feedApi.deleteFeed = rejected({status: 409})
     const wrapper = await createWrapper()
     wrapper.find('FeedEditForm').props().onRemove()
     await flushPromises()
 
-    expect(props.showErrorNotification).toHaveBeenCalledWith('Can not delete. Feed has subscriptions')
+    expect(toast).toHaveBeenCalledWith('Can not delete. Feed has subscriptions', {error: true})
   })
 
-  it('should trigger prop function "showErrorNotification" when call to feedApi.deleteFeed failed with HTTP !== 409', async () => {
+  it('should trigger toast when call to feedApi.deleteFeed failed with HTTP !== 409', async () => {
     feedApi.deleteFeed = rejected({status: 400, data: 'expected error'})
     const wrapper = await createWrapper()
     wrapper.find('FeedEditForm').props().onRemove('1')
     await flushPromises()
 
-    expect(props.showErrorNotification).toHaveBeenCalledWith('expected error')
+    expect(toast).toHaveBeenCalledWith('expected error', {error: true})
   })
 })

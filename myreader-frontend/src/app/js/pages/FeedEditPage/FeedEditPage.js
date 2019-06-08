@@ -1,9 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {FeedEditForm} from '../../components/FeedEditForm/FeedEditForm'
-import {withLocationState, withNotification} from '../../contexts'
+import {withLocationState} from '../../contexts'
 import {ADMIN_FEEDS_URL} from '../../constants'
 import {feedApi} from '../../api'
+import {toast} from '../../components/Toast'
 
 class FeedEditPage extends React.Component {
 
@@ -11,9 +12,7 @@ class FeedEditPage extends React.Component {
     params: PropTypes.shape({
       uuid: PropTypes.string.isRequired
     }).isRequired,
-    historyReplace: PropTypes.func.isRequired,
-    showSuccessNotification: PropTypes.func.isRequired,
-    showErrorNotification: PropTypes.func.isRequired
+    historyReplace: PropTypes.func.isRequired
   }
 
   state = {
@@ -33,7 +32,7 @@ class FeedEditPage extends React.Component {
         feed
       })
     } catch(error) {
-      this.props.showErrorNotification(error)
+      toast(error, {error: true})
     }
   }
 
@@ -45,14 +44,14 @@ class FeedEditPage extends React.Component {
 
     try {
       await feedApi.saveFeed(feed)
-      this.props.showSuccessNotification('Feed saved')
+      toast('Feed saved')
     } catch(error) {
       if (error.status === 400) {
         this.setState({
           validations: error.data.fieldErrors
         })
       } else {
-        this.props.showErrorNotification(error)
+        toast(error, {error: true})
       }
     } finally {
       this.setState({
@@ -74,9 +73,9 @@ class FeedEditPage extends React.Component {
         changePending: false
       })
       if (error.status === 409) {
-        this.props.showErrorNotification('Can not delete. Feed has subscriptions')
+        toast('Can not delete. Feed has subscriptions', {error: true})
       } else {
-        this.props.showErrorNotification(error.data)
+        toast(error.data, {error: true})
       }
     }
   }
@@ -100,6 +99,4 @@ class FeedEditPage extends React.Component {
   }
 }
 
-export default withLocationState(
-  withNotification(FeedEditPage)
-)
+export default withLocationState(FeedEditPage)
