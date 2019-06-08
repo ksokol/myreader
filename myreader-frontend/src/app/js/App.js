@@ -8,12 +8,11 @@ import {
   FeedListPage,
   LoginPage,
   LogoutPage,
-  AdminOverviewPage,
   SubscribePage,
   SubscriptionEditPage,
   SubscriptionListPage
 } from './pages'
-import {secured, SidenavLayout, LoadingBar} from './components'
+import {LoadingBar, secured, SidenavLayout} from './components'
 import {
   ADMIN_FEED_URL,
   ADMIN_FEEDS_URL,
@@ -30,6 +29,7 @@ import {
   SUBSCRIPTION_URL,
   SUBSCRIPTIONS_URL
 } from './constants'
+import {AdminOverviewPage} from './pages/AdminOverviewPage/AdminOverviewPage'
 
 const withSidenav = () => (
   <SidenavLayout>

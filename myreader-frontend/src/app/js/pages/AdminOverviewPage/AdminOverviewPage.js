@@ -1,17 +1,12 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import {AdminOverview} from '../../components'
+import {AdminOverview} from '../../components/AdminOverview/AdminOverview'
 import {adminApi} from '../../api'
-import {withNotification} from '../../contexts'
+import {toast} from '../../components/Toast'
 
-class AdminOverviewPage extends React.Component {
+export class AdminOverviewPage extends React.Component {
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      applicationInfo: null
-    }
+  state = {
+    applicationInfo: null
   }
 
   componentDidMount = async () => {
@@ -19,16 +14,16 @@ class AdminOverviewPage extends React.Component {
       const applicationInfo = await adminApi.fetchApplicationInfo()
       this.setState({applicationInfo})
     } catch {
-      this.props.showErrorNotification('Application info is missing')
+      toast('Application info is missing')
     }
   }
 
   rebuildSearchIndex = async () => {
     try {
       await adminApi.rebuildSearchIndex()
-      this.props.showSuccessNotification('Indexing started')
+      toast('Indexing started')
     } catch (error) {
-      this.props.showErrorNotification(error)
+      toast(error, {error: true})
     }
   }
 
@@ -41,10 +36,3 @@ class AdminOverviewPage extends React.Component {
     )
   }
 }
-
-AdminOverviewPage.propTypes = {
-  showSuccessNotification: PropTypes.func.isRequired,
-  showErrorNotification: PropTypes.func.isRequired
-}
-
-export default withNotification(AdminOverviewPage)

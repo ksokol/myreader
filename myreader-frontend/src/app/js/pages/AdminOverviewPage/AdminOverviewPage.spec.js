@@ -1,10 +1,12 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import AdminOverviewPage from './AdminOverviewPage'
+import {AdminOverviewPage} from './AdminOverviewPage'
 import {adminApi} from '../../api'
+import {toast} from '../../components/Toast'
+import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../components', () => ({
+jest.mock('../../components/AdminOverview/AdminOverview', () => ({
   AdminOverview: () => null
 }))
 
@@ -13,10 +15,11 @@ jest.mock('../../contexts', () => ({
 }))
 
 jest.mock('../../api', () => ({
-  adminApi: {
-    rebuildSearchIndex: jest.fn().mockResolvedValue({}),
-    fetchApplicationInfo: jest.fn().mockResolvedValue({})
-  }
+  adminApi: {}
+}))
+
+jest.mock('../../components/Toast', () => ({
+  toast: jest.fn()
 }))
 /* eslint-enable */
 
@@ -26,61 +29,64 @@ const expectedError = 'expected value'
 
 describe('AdminOverviewPage', () => {
 
-  let props
-
-  const createWrapper = () => mount(<AdminOverviewPage {...props} />)
+  const createWrapper = async (onMount = resolved({a: 'b', c: 'd'})) => {
+    adminApi.fetchApplicationInfo = onMount
+    const wrapper = mount(<AdminOverviewPage />)
+    await flushPromises()
+    wrapper.update()
+    return wrapper
+  }
 
   beforeEach(() => {
-    props = {
-      showSuccessNotification: jest.fn(),
-      showErrorNotification: jest.fn()
-    }
+    toast.mockClear()
   })
 
-  it('should trigger adminApi.fetchApplicationInfo when mounted', () => {
-    createWrapper()
+  it('should trigger adminApi.fetchApplicationInfo when mounted', async () => {
+    await createWrapper()
 
     expect(adminApi.fetchApplicationInfo).toHaveBeenCalled()
   })
 
-  it('should pass applicationInfo to admin overview component when adminApi.fetchApplicationInfo succeeded', done => {
-    adminApi.fetchApplicationInfo = jest.fn().mockResolvedValueOnce(expectedError)
-    const wrapper = createWrapper()
+  it('should pass applicationInfo to admin overview component when adminApi.fetchApplicationInfo succeeded', async () => {
+    const wrapper = await createWrapper()
 
-    setTimeout(() => {
-      wrapper.update()
-      expect(wrapper.find('AdminOverview').prop('applicationInfo')).toEqual('expected value')
-      done()
+    expect(wrapper.find('AdminOverview').prop('applicationInfo')).toEqual({
+      a: 'b',
+      c: 'd'
     })
   })
 
-  it('should trigger prop function  "showErrorNotification" when adminApi.fetchApplicationInfo failed', done => {
-    adminApi.fetchApplicationInfo = jest.fn().mockRejectedValueOnce('some error')
-    const wrapper = createWrapper()
+  it('should trigger toast when adminApi.fetchApplicationInfo failed', async () => {
+    await createWrapper(rejected('some error'))
 
-    setTimeout(() => {
-      wrapper.update()
-      expect(props.showErrorNotification).toHaveBeenCalledWith('Application info is missing')
-      done()
-    })
+    expect(toast).toHaveBeenCalledWith('Application info is missing')
   })
 
-  it('should call adminApi.rebuildSearchIndex when prop function "rebuildSearchIndex" triggered', () => {
-    createWrapper().find('AdminOverview').props().rebuildSearchIndex()
+  it('should call adminApi.rebuildSearchIndex when prop function "rebuildSearchIndex" triggered', async () => {
+    adminApi.rebuildSearchIndex = pending()
+    const wrapper = await createWrapper()
+    wrapper.find('AdminOverview').props().rebuildSearchIndex()
 
     expect(adminApi.rebuildSearchIndex).toHaveBeenCalledWith()
   })
 
-  it('should call prop function "showSuccessNotification" when adminApi.rebuildSearchIndex succeeded', async () => {
-    await createWrapper().find('AdminOverview').props().rebuildSearchIndex()
+  it('should trigger toast when adminApi.rebuildSearchIndex succeeded', async () => {
+    adminApi.rebuildSearchIndex = resolved()
+    const wrapper = await createWrapper()
+    wrapper.find('AdminOverview').props().rebuildSearchIndex()
+    await flushPromises()
+    wrapper.update()
 
-    expect(props.showSuccessNotification).toHaveBeenCalledWith('Indexing started')
+    expect(toast).toHaveBeenCalledWith('Indexing started')
   })
 
-  it('should call prop function "showErrorNotification" when adminApi.rebuildSearchIndex failed', async () => {
-    adminApi.rebuildSearchIndex = jest.fn().mockRejectedValue(expectedError)
-    await createWrapper().find('AdminOverview').props().rebuildSearchIndex()
+  it('should trigger toast when adminApi.rebuildSearchIndex failed', async () => {
+    adminApi.rebuildSearchIndex = rejected(expectedError)
+    const wrapper = await createWrapper()
+    wrapper.find('AdminOverview').props().rebuildSearchIndex()
+    await flushPromises()
+    wrapper.update()
 
-    expect(props.showErrorNotification).toHaveBeenCalledWith(expectedError)
+    expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
   })
 })
