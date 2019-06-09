@@ -7,7 +7,8 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    'plugin:react/recommended'
+    'plugin:react/recommended',
+    'plugin:unicorn/recommended'
   ],
   parserOptions: {
     ecmaVersion: 2018,
@@ -48,6 +49,12 @@ module.exports = {
     'jest/no-identical-title': 'warn',
     'jest/prefer-to-have-length': 'warn',
     'jest/valid-expect': 'error',
-    'react/display-name': 'never'
+    'react/display-name': 'never',
+    'unicorn/prevent-abbreviations': 'warn',
+    'unicorn/catch-error-name': 'warn',
+    'unicorn/filename-case': 'warn',
+    'unicorn/prefer-query-selector': 'warn',
+    'unicorn/import-index': 'warn',
+    'unicorn/prefer-includes': 'warn'
   }
 }
