@@ -4,6 +4,7 @@ import myreader.entity.SubscriptionTag;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,4 +18,7 @@ public interface SubscriptionTagRepository extends CrudRepository<SubscriptionTa
 
     @Query("select st from SubscriptionTag st where st.id = ?1 and st.user.email = ?#{principal.username}")
     Optional<SubscriptionTag> findByCurrentUserAndId(Long id);
+
+    @Query("select st from SubscriptionTag st where st.user.email = ?#{principal.username} order by st.name")
+    List<SubscriptionTag> findAllByCurrentUser();
 }
