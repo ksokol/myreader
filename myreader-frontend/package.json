@@ -13,17 +13,17 @@
     "lint:js": "eslint -c .eslintrc.js src/app/js"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "5.8.2",
-    "@jaames/iro": "4.3.3",
+    "@fortawesome/fontawesome-free": "5.9.0",
+    "@jaames/iro": "4.5.1",
     "classnames": "2.2.6",
     "dialog-polyfill": "0.5.0",
     "lodash.debounce": "4.0.8",
     "prop-types": "15.7.2",
     "react": "16.8.6",
     "react-dom": "16.8.6",
-    "react-redux": "7.0.2",
-    "react-router": "5.0.0",
-    "react-router-dom": "5.0.0",
+    "react-redux": "7.0.3",
+    "react-router": "5.0.1",
+    "react-router-dom": "5.0.1",
     "redux": "4.0.1",
     "redux-thunk": "2.3.0"
   },
