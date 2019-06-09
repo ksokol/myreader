@@ -7,6 +7,7 @@ import myreader.resource.subscriptiontag.beans.SubscriptionTagGetResponse;
 import myreader.resource.subscriptiontag.beans.SubscriptionTagPatchRequest;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,22 +22,25 @@ import javax.validation.Valid;
 @Transactional
 @RestController
 @RequestMapping(value = "api/2/subscriptionTags/{id}")
-public class SubscriptionTagResource {
+public class SubscriptionTagEntityResource {
 
     private final SubscriptionTagRepository subscriptionTagRepository;
     private final ResourceAssembler<SubscriptionTag, SubscriptionTagGetResponse> assembler;
 
-    public SubscriptionTagResource(SubscriptionTagRepository subscriptionTagRepository,
-                                   ResourceAssembler<SubscriptionTag,
-                                   SubscriptionTagGetResponse> assembler) {
+    public SubscriptionTagEntityResource(
+            SubscriptionTagRepository subscriptionTagRepository,
+            ResourceAssembler<SubscriptionTag,
+            SubscriptionTagGetResponse> assembler
+    ) {
         this.subscriptionTagRepository = subscriptionTagRepository;
         this.assembler = assembler;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.PATCH)
+    @PatchMapping
     public SubscriptionTagGetResponse patch(
             @PathVariable("id") Long id,
-            @Valid @RequestBody SubscriptionTagPatchRequest request) {
+            @Valid @RequestBody SubscriptionTagPatchRequest request
+    ) {
         SubscriptionTag subscriptionTag =
                 subscriptionTagRepository.findByCurrentUserAndId(id).orElseThrow(ResourceNotFoundException::new);
 

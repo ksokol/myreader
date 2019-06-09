@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 @Sql("classpath:test-data.sql")
-public class SubscriptionTagResourceTests {
+public class SubscriptionTagEntityResourceTests {
 
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
