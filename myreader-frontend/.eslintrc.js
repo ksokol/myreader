@@ -50,7 +50,7 @@ module.exports = {
     'jest/prefer-to-have-length': 'warn',
     'jest/valid-expect': 'error',
     'react/display-name': 'never',
-    'unicorn/prevent-abbreviations': 'warn',
+    'unicorn/prevent-abbreviations': 'never',
     'unicorn/catch-error-name': 'warn',
     'unicorn/filename-case': 'warn',
     'unicorn/prefer-query-selector': 'warn',
