@@ -1,7 +1,4 @@
-import {
-  filteredBySearchSubscriptionsSelector,
-  filteredByUnseenSubscriptionsSelector
-} from '../../store'
+import {filteredByUnseenSubscriptionsSelector} from '../../store'
 import settingsInitialState from '../settings'
 
 describe('subscription selector', () => {
@@ -22,37 +19,6 @@ describe('subscription selector', () => {
       subscription: {...subscriptions(), exclusions: {}},
       settings: settingsInitialState()
     }
-  })
-
-  it('filteredBySearchSubscriptionsSelector should return two subscriptions when query is undefined', () => {
-    expect(filteredBySearchSubscriptionsSelector()(state)).toEqual(subscriptions())
-  })
-
-  it('filteredBySearchSubscriptionsSelector should return first subscription matching query "title1"', () => {
-    expect(filteredBySearchSubscriptionsSelector('title1')(state).subscriptions.map(it => it.uuid)).toEqual(['1'])
-  })
-
-  it('filteredBySearchSubscriptionsSelector should return second subscription matching query "title2"', () => {
-    expect(filteredBySearchSubscriptionsSelector('title2')(state).subscriptions.map(it => it.uuid)).toEqual(['2'])
-  })
-
-  it('filteredBySearchSubscriptionsSelector should return first subscription matching query "TITLE1"', () => {
-    expect(filteredBySearchSubscriptionsSelector('TITLE1')(state).subscriptions.map(it => it.uuid)).toEqual(['1'])
-  })
-
-  it('filteredBySearchSubscriptionsSelector should return two subscriptions matching query "titl"', () => {
-    expect(filteredBySearchSubscriptionsSelector('titl')(state)).toEqual(subscriptions())
-  })
-
-  it('filteredBySearchSubscriptionsSelector should return no subscriptions for query "other"', () => {
-    expect(filteredBySearchSubscriptionsSelector('other')(state).subscriptions).toEqual([])
-  })
-
-  it('filteredBySearchSubscriptionsSelector should return copy of subscriptions', () => {
-    const actualSubscriptions = filteredBySearchSubscriptionsSelector()(state).subscriptions
-    actualSubscriptions[0].title = 'x'
-
-    expect(state.subscription).toContainObject(subscriptions())
   })
 
   it('should return subscriptions with unseen greater than zero when showUnseenEntries is set to true', () => {

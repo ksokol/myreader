@@ -1,16 +1,9 @@
 import {settingsShowUnseenEntriesSelector} from '../../store'
 import {cloneObject} from '../shared/objects'
 
-export const filteredBySearchSubscriptionsSelector = (q = '') => {
-  return state => {
-    const subscriptions = state.subscription.subscriptions
-    return {
-      subscriptions: q
-        ? subscriptions
-          .filter(({title}) => title.toLowerCase().indexOf(q.toLowerCase()) !== -1)
-          .map(cloneObject)
-        : subscriptions.map(cloneObject)
-    }
+export const subscriptionsSelector = state => {
+  return {
+    subscriptions: state.subscription.subscriptions.map(cloneObject)
   }
 }
 

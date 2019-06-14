@@ -7,10 +7,6 @@ jest.mock('../../components', () => ({
   SubscriptionList: () => null,
   ListLayout: ({listPanel}) => <div>{listPanel}</div>
 }))
-
-jest.mock('../../contexts', () => ({
-  withLocationState: Component => Component
-}))
 /* eslint-enable */
 
 describe('SubscriptionListPage', () => {
@@ -47,11 +43,5 @@ describe('SubscriptionListPage', () => {
         }
       }
     })
-  })
-
-  it('should initialize list panel component with given props filtered by state "searchParams.q"', () => {
-    props.searchParams.q = 'title2'
-
-    expect(createWrapper().find('SubscriptionList').prop('subscriptions')).toEqual([{uuid: '2', title: 'title2'}])
   })
 })
