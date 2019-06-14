@@ -1,15 +1,14 @@
 import React from 'react'
 import {shallow} from 'enzyme'
 import SettingsPage from './SettingsPage'
-import {Option} from '../../components'
-import {SubscriptionTagsContainer} from '../../containers'
 
 describe('SettingsPage', () => {
 
   let props
 
-  const createComponent = () => shallow(<SettingsPage {...props} />)
-  const createOptions = () => createComponent().find(Option)
+  const createWrapper = () => shallow(<SettingsPage {...props} />)
+
+  const createOptions = () => createWrapper().find('Option')
 
   beforeEach(() => {
     props = {
@@ -60,7 +59,7 @@ describe('SettingsPage', () => {
     expect(props.onChange).toHaveBeenCalledWith(expectedSettings)
   })
 
-  it('should contain subscription tags container', () => {
-    expect(createComponent().find(SubscriptionTagsContainer).exists()).toEqual(true)
+  it('should contain subscription tags component', () => {
+    expect(createWrapper().find('SubscriptionTags').exists()).toEqual(true)
   })
 })

@@ -28,12 +28,6 @@ function securityUpdate({state, action}) {
   return action.authorized ? state : initialApplicationState().subscription
 }
 
-function subscriptionTagChanged({state, action}) {
-  const tag = action.subscriptionTag
-  const subscriptions = state.subscriptions.map(it => it.feedTag.uuid === tag.uuid ? {...it, feedTag: {...tag}} : it)
-  return {...state, subscriptions}
-}
-
 export function subscriptionReducers(state = initialApplicationState().subscription, action) {
   switch (action.type) {
   case types.SUBSCRIPTIONS_RECEIVED: {
@@ -41,9 +35,6 @@ export function subscriptionReducers(state = initialApplicationState().subscript
   }
   case types.ENTRY_CHANGED: {
     return subscriptionChanged({state, action})
-  }
-  case types.SUBSCRIPTION_TAG_CHANGED: {
-    return subscriptionTagChanged({state, action})
   }
   case types.SECURITY_UPDATE: {
     return securityUpdate({state, action})

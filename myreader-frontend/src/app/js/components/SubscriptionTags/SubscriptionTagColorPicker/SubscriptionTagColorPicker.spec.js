@@ -1,6 +1,6 @@
 import React from 'react'
 import {shallow} from 'enzyme'
-import SubscriptionTagColorPicker from './SubscriptionTagColorPicker'
+import {SubscriptionTagColorPicker} from './SubscriptionTagColorPicker'
 import {Badge, Button, ColorPicker, Dialog} from '../../../components'
 
 class DialogPage {

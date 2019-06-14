@@ -1,16 +1,20 @@
 import './SettingsPage.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Option} from '../../components'
-import {SubscriptionTagsContainer} from '../../containers'
+import Option from '../../components/Option/Option'
+import {SubscriptionTags} from '../../components/SubscriptionTags/SubscriptionTags'
 
 const pageSizeOptions = [10, 20, 30]
 const unseenEntriesOptions = [{label: 'show', value: false}, {label: 'hide', value: true}]
 const entryDetailsOptions = [{label: 'show', value: true}, {label: 'hide', value: false}]
 
 const SettingsPage = props =>
-  <div className='my-settings'>
-    <div className='my-settings__item'>
+  <div
+    className='my-settings'
+  >
+    <div
+      className='my-settings__item'
+    >
       <label>Page size</label>
       <Option
         value={props.settings.pageSize}
@@ -19,7 +23,9 @@ const SettingsPage = props =>
       />
     </div>
 
-    <div className='my-settings__item'>
+    <div
+      className='my-settings__item'
+    >
       <label>Old entries</label>
       <Option
         value={props.settings.showUnseenEntries}
@@ -28,7 +34,9 @@ const SettingsPage = props =>
       />
     </div>
 
-    <div className='my-settings__item'>
+    <div
+      className='my-settings__item'
+    >
       <label>Entry content</label>
       <Option
         value={props.settings.showEntryDetails}
@@ -37,9 +45,11 @@ const SettingsPage = props =>
       />
     </div>
 
-    <div className='my-settings__item'>
+    <div
+      className='my-settings__item'
+    >
       <label>Subscription Tags</label>
-      <SubscriptionTagsContainer />
+      <SubscriptionTags />
     </div>
   </div>
 

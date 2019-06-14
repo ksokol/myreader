@@ -113,32 +113,4 @@ describe('subscription reducer', () => {
       expect(subscriptionReducers(state, action)).toContainObject({subscriptions: [{uuid: '1'}, {uuid: '3'}]})
     })
   })
-
-  describe('action SUBSCRIPTION_TAG_CHANGED', () => {
-
-    it('should update every feedTag matching uuid', () => {
-      const state = {
-        subscriptions: [
-          {feedTag: {uuid: '1', name: 'name1', color: null}},
-          {feedTag: {uuid: '2', name: 'name2', color: 'color2'}},
-          {feedTag: {uuid: '1', name: 'name1', color: null}}
-        ]
-      }
-
-      const expectedState = {
-        subscriptions: [
-          {feedTag: {uuid: '1', name: 'expected name1', color: 'expected color1'}},
-          {feedTag: {uuid: '2', name: 'name2', color: 'color2'}},
-          {feedTag: {uuid: '1', name: 'expected name1', color: 'expected color1'}}
-        ]
-      }
-
-      const action = {
-        type: 'SUBSCRIPTION_TAG_CHANGED',
-        subscriptionTag: {uuid: '1', name: 'expected name1', color: 'expected color1'}
-      }
-
-      expect(subscriptionReducers(state, action)).toEqual(expectedState)
-    })
-  })
 })
