@@ -1,6 +1,6 @@
 import {cloneObject} from '../shared/objects'
 
-export function toSubscription(raw = {}) {
+function toSubscription(raw = {}) {
   const clone = cloneObject(raw)
 
   if (clone.feedTag === null || typeof clone.feedTag === 'undefined') {

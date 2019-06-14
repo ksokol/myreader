@@ -1,4 +1,4 @@
-import {SubscriptionApi} from './SubscriptionApi'
+import {SubscriptionApi} from './subscription-api'
 import {SUBSCRIPTIONS} from '../constants'
 
 const expectedError = 'expected error'
@@ -109,4 +109,58 @@ describe('SubscriptionApi', () => {
 
     await expect(subscriptionApi.saveSubscription({})).rejects.toEqual(expectedError)
   })
+
+  it(`should call GET ${SUBSCRIPTIONS}/uuid1 endpoint`, () => {
+    subscriptionApi.fetchSubscription('uuid1')
+
+    expect(api.request).toHaveBeenCalledWith({
+      method: 'GET',
+      url: `${SUBSCRIPTIONS}/uuid1`
+    })
+  })
+
+  it(`should return expected response when GET ${SUBSCRIPTIONS}/uuid1 succeeded`, async () => {
+    api.request = jest.fn().mockResolvedValue({ok: true, data: {a: 'b', c: 'd'}})
+
+    await expect(subscriptionApi.fetchSubscription()).resolves.toEqual({
+      a: 'b',
+      c: 'd',
+      feedTag: {
+        uuid: undefined,
+        name: undefined,
+        color: undefined
+      }
+    })
+  })
+
+  it(`should return expected response with feedTag null when GET ${SUBSCRIPTIONS}/uuid1 succeeded`, async () => {
+    api.request = jest.fn().mockResolvedValue({ok: true, data: {feedTag: null}})
+
+    await expect(subscriptionApi.fetchSubscription()).resolves.toEqual({
+      feedTag: {
+        uuid: undefined,
+        name: undefined,
+        color: undefined
+      }
+    })
+  })
+
+  it(`should return expected response with feedTag when GET ${SUBSCRIPTIONS}/uuid1 succeeded`, async () => {
+    api.request = jest.fn().mockResolvedValue({ok: true, data: {feedTag: {uuid: 'uuid1', name: 'name1', color: 'color1'}}})
+
+    await expect(subscriptionApi.fetchSubscription()).resolves.toEqual({
+      feedTag: {
+        uuid: 'uuid1',
+        name: 'name1',
+        color: 'color1'
+      }
+    })
+  })
+
+  it(`should return expected error response when GET ${SUBSCRIPTIONS}/uuid1 failed`, async () => {
+    api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
+
+    await expect(subscriptionApi.fetchSubscription()).rejects.toEqual(expectedError)
+  })
+
 })

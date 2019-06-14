@@ -23,12 +23,3 @@ export const filteredByUnseenSubscriptionsSelector = state => {
       .map(it => cloneObject(it))
   }
 }
-
-export const subscriptionTagsSelector = state => ({
-  subscriptionTags: state.subscription.subscriptions
-    .filter(subscription => subscription.feedTag.uuid)
-    .map(subscription => subscription.feedTag)
-    .reduce((acc, feedTag) => acc.some(it => it.uuid === feedTag.uuid) ? acc : [...acc, feedTag], [])
-    .map(feedTag => cloneObject(feedTag))
-    .sort((left, right) => left.name < right.name ? -1 : left.name === right.name ? 0 : 1)
-})

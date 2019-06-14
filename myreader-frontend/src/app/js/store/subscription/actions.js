@@ -16,11 +16,3 @@ export const fetchSubscriptions = () => {
     success: response => subscriptionsReceived(response)
   }
 }
-
-export const fetchSubscription = ({uuid, success}) => {
-  return {
-    type: 'GET_SUBSCRIPTION',
-    url: `${SUBSCRIPTIONS}/${uuid}`,
-    success
-  }
-}

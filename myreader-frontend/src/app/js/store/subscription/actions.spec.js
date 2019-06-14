@@ -1,4 +1,4 @@
-import {fetchSubscription, fetchSubscriptions, subscriptionsReceived} from '../../store'
+import {fetchSubscriptions, subscriptionsReceived} from '../../store'
 import {createMockStore} from '../../shared/test-utils'
 
 describe('subscription actions', () => {
@@ -49,20 +49,6 @@ describe('subscription actions', () => {
       store.dispatch(store.getActions()[0].success({content: [{uuid: 1}]}))
 
       expect(store.getActions()[1]).toContainObject({subscriptions: [{uuid: 1}]})
-    })
-  })
-
-  describe('action creator fetchSubscription', () => {
-
-    it('should contain expected action', () => {
-      const success = () => ({})
-      const action = fetchSubscription({uuid: 'uuid1', success})
-
-      expect(action).toEqual({
-        type: 'GET_SUBSCRIPTION',
-        url: 'api/2/subscriptions/uuid1',
-        success
-      })
     })
   })
 })

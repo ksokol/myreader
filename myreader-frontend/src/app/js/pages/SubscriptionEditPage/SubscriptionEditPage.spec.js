@@ -2,7 +2,7 @@ import React from 'react'
 import {mount} from 'enzyme'
 import SubscriptionEditPage from './SubscriptionEditPage'
 import {SUBSCRIPTIONS_URL} from '../../constants'
-import {subscriptionApi} from '../../api'
+import {subscriptionApi, subscriptionTagsApi} from '../../api'
 import {toast} from '../../components/Toast'
 import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
 
@@ -16,7 +16,8 @@ jest.mock('../../contexts', () => ({
 }))
 
 jest.mock('../../api', () => ({
-  subscriptionApi: {}
+  subscriptionApi: {},
+  subscriptionTagsApi: {}
 }))
 
 jest.mock('../../components/Toast', () => ({
@@ -24,93 +25,48 @@ jest.mock('../../components/Toast', () => ({
 }))
 /* eslint-enable */
 
+const expectedError = 'expectedError'
+
 describe('SubscriptionEditPage', () => {
 
-  let state, dispatch, props
+  let props
 
-  const createWrapper = ({init} = {init: true}) => {
-    const wrapper = mount(<SubscriptionEditPage {...props} state={state} dispatch={dispatch} />)
-    if (init) {
-      dispatch.mock.calls[0][0].success({
-        uuid: '1',
-        title: 'title1',
-        origin: 'origin1',
-        createdAt: '2017-12-29',
-        feedTag: {
-          uuid: '2',
-          name: 'name 1'
-        }
-      })
-      wrapper.update()
-    }
+  const createWrapper = async ({subscription, tags} = {subscription: resolved(), tags: resolved()}) => {
+    subscriptionApi.fetchSubscription = subscription
+    subscriptionTagsApi.fetchSubscriptionTags = tags
+    const wrapper = mount(<SubscriptionEditPage {...props} />)
+    await flushPromises()
+    wrapper.update()
     return wrapper
   }
 
   beforeEach(() => {
     toast.mockClear()
-    dispatch = jest.fn()
-
-    state = {
-      subscription: {
-        editForm: {
-          changePending: true,
-          data: {uuid: '1', title: 'title1', origin: 'origin1', feedTag: {uuid: '2', name: 'name 1'}, createdAt: '2017-12-29'},
-          validations: [{field: 'title', message: 'validation message'}]
-        },
-        subscriptions: [
-          {uuid: '1', title: 'title1', origin: 'origin1', feedTag: {uuid: '2', name: 'name 1'}, createdAt: '2017-12-29'},
-          {uuid: '2', title: 'title2', origin: 'origin2', feedTag: {uuid: '3', name: 'name 2'}, createdAt: '2017-11-30'}
-        ],
-        exclusions: {
-          '1': [{uuid: '10', pattern: 'exclusion1', hitCount: 1}, {uuid: '11', pattern: 'exclusion2', hitCount: 2}],
-          '2': [{uuid: '13', pattern: 'exclusion3', hitCount: 2}],
-        }
-      }
-    }
 
     props = {
       params: {
-        uuid: '1'
+        uuid: 'uuid1'
       },
       historyReplace: jest.fn(),
-      historyReload: jest.fn(),
-      showSuccessNotification: jest.fn(),
-      showErrorNotification: jest.fn()
+      historyReload: jest.fn()
     }
   })
 
-  it('should not render component when state "subscription" is undefined', () => {
-    expect(createWrapper({init: false}).find('SubscriptionEditForm').exists()).toEqual(false)
+  it('should not render component when call to subscriptionApi.fetchSubscription is pending', async () => {
+    const wrapper = await createWrapper({subscription: pending()})
+
+    expect(wrapper.find('SubscriptionEditForm').exists()).toEqual(false)
   })
 
-  it('should render component when state "subscription" is defined', () => {
-    expect(createWrapper().find('SubscriptionEditForm').exists()).toEqual(true)
+  it('should render component when call to subscriptionApi.fetchSubscription succeeded', async () => {
+    const wrapper = await createWrapper()
+
+    expect(wrapper.find('SubscriptionEditForm').exists()).toEqual(true)
   })
 
-  it('should pass expected props to component', () => {
-    expect(createWrapper().find('SubscriptionEditForm').props()).toEqual(expect.objectContaining({
-      data: {
-        uuid: '1',
-        title: 'title1',
-        origin: 'origin1',
-        createdAt: '2017-12-29',
-        feedTag: {
-          uuid: '2',
-          name: 'name 1'
-        }
-      },
-      changePending: false,
-      subscriptionTags: [
-        {uuid: '2', name: 'name 1'},
-        {uuid: '3', name: 'name 2'},
-      ],
-      validations: []
-    }))
-  })
-
-  it('should call subscriptionApi.saveSubscription when prop function "saveSubscriptionEditForm" triggered', () => {
+  it('should call subscriptionApi.saveSubscription when prop function "saveSubscriptionEditForm" triggered', async () => {
     subscriptionApi.saveSubscription = pending()
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({a: 'b', c: 'd'})
 
     expect(subscriptionApi.saveSubscription).toHaveBeenCalledWith({
@@ -121,7 +77,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should set prop "changePending" to true when subscriptionApi.saveSubscription is pending', async () => {
     subscriptionApi.saveSubscription = pending()
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     await flushPromises()
     wrapper.update()
@@ -131,7 +87,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should set prop "changePending" to false when subscriptionApi.saveSubscription finished', async () => {
     subscriptionApi.saveSubscription = resolved({})
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     await flushPromises()
     wrapper.update()
@@ -141,7 +97,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should trigger toast when subscriptionApi.saveSubscription succeeded', async() => {
     subscriptionApi.saveSubscription = resolved({})
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     await flushPromises()
     wrapper.update()
@@ -151,7 +107,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should trigger prop function "historyReload" when subscriptionApi.saveSubscription succeeded', async() => {
     subscriptionApi.saveSubscription = resolved({})
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     await flushPromises()
     wrapper.update()
@@ -161,7 +117,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should pass state "validations" to feed edit page when subscriptionApi.saveSubscription failed with HTTP 400', async() => {
     subscriptionApi.saveSubscription = rejected({status: 400, fieldErrors: ['error']})
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     await flushPromises()
     wrapper.update()
@@ -171,7 +127,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should not pass state "validations" to feed edit page when subscriptionApi.saveSubscription failed with HTTP !== 400', async() => {
     subscriptionApi.saveSubscription = rejected({status: 401, fieldErrors: ['error']})
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     await flushPromises()
     wrapper.update()
@@ -181,7 +137,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should clear state "validations" when subscriptionApi.saveSubscription called again', async () => {
     subscriptionApi.saveSubscription = rejected({status: 400, fieldErrors: ['error']})
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     await flushPromises()
     wrapper.update()
@@ -192,16 +148,16 @@ describe('SubscriptionEditPage', () => {
     expect(wrapper.find('SubscriptionEditForm').prop('validations')).toEqual([])
   })
 
-  it('should call subscriptionApi.deleteSubscription when prop function "deleteSubscription" triggered', () => {
+  it('should call subscriptionApi.deleteSubscription when prop function "deleteSubscription" triggered', async () => {
     subscriptionApi.deleteSubscription = resolved()
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription('uuid1')
 
     expect(subscriptionApi.deleteSubscription).toHaveBeenCalledWith('uuid1')
   })
 
-  it('should set prop "changePending" to true when prop function "deleteSubscription" called', () => {
-    const wrapper = createWrapper()
+  it('should set prop "changePending" to true when prop function "deleteSubscription" called', async () => {
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
     wrapper.update()
 
@@ -210,7 +166,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should not change state prop "changePending" when call to subscriptionApi.deleteSubscription failed', async () => {
     subscriptionApi.deleteSubscription = rejected()
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription()
     await flushPromises()
     wrapper.update()
@@ -220,7 +176,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should trigger prop function "props.showErrorNotification" when call to subscriptionApi.deleteSubscription failed', async () => {
     subscriptionApi.deleteSubscription = rejected('expected error')
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription()
     await flushPromises()
     wrapper.update()
@@ -230,7 +186,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should trigger prop function "showSuccessNotification" when call to subscriptionApi.deleteSubscription succeeded', async () => {
     subscriptionApi.deleteSubscription = resolved()
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription()
     await flushPromises()
     wrapper.update()
@@ -240,7 +196,7 @@ describe('SubscriptionEditPage', () => {
 
   it('should change and reload location when call to subscriptionApi.deleteSubscription succeeded', async () => {
     subscriptionApi.deleteSubscription = resolved()
-    const wrapper = createWrapper()
+    const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription()
     await flushPromises()
     wrapper.update()
@@ -249,12 +205,28 @@ describe('SubscriptionEditPage', () => {
     expect(props.historyReload).toHaveBeenCalled()
   })
 
-  it('should dispatch action GET_SUBSCRIPTION when mounted', () => {
-    createWrapper()
+  it('should call subscriptionApi.fetchSubscription and subscriptionTagsApi.fetchSubscriptionTags when mounted', async () => {
+    await createWrapper()
 
-    expect(dispatch).toHaveBeenNthCalledWith(1, expect.objectContaining({
-      type: 'GET_SUBSCRIPTION',
-      url: 'api/2/subscriptions/1'
-    }))
+    expect(subscriptionApi.fetchSubscription).toHaveBeenCalledWith('uuid1')
+    expect(subscriptionTagsApi.fetchSubscriptionTags).toHaveBeenCalled()
+  })
+
+  it('should show toast when call to subscriptionApi.fetchSubscription failed on mount', async () => {
+    await createWrapper({subscription: rejected(expectedError)})
+
+    expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
+  })
+
+  it('should show toast when call to subscriptionApi.fetchSubscriptionTags failed on mount', async () => {
+    await createWrapper({subscription: resolved(), tags: rejected(expectedError)})
+
+    expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
+  })
+
+  it('should pass tags to component when call too ubscriptionApi.fetchSubscriptionTags succeeded', async () => {
+    const wrapper = await createWrapper({subscription: resolved(), tags: resolved('expected tags')})
+
+    expect(wrapper.find('SubscriptionEditForm').prop('subscriptionTags')).toEqual('expected tags')
   })
 })

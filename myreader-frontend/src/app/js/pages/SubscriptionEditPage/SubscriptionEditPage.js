@@ -1,22 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
-import {bindActionCreators} from 'redux'
 import {SubscriptionEditForm} from '../../components'
 import {withLocationState} from '../../contexts'
-import {fetchSubscription, subscriptionTagsSelector} from '../../store'
-import {toSubscription} from '../../store/subscription/subscription'
 import {SUBSCRIPTIONS_URL} from '../../constants'
-import {subscriptionApi} from '../../api'
+import {subscriptionApi, subscriptionTagsApi} from '../../api'
 import {toast} from '../../components/Toast'
-
-const mapStateToProps = state => ({
-  ...subscriptionTagsSelector(state)
-})
-
-const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchSubscription
-}, dispatch)
 
 class SubscriptionEditPage extends React.Component {
 
@@ -25,8 +13,7 @@ class SubscriptionEditPage extends React.Component {
       uuid: PropTypes.string.isRequired
     }).isRequired,
     historyReplace: PropTypes.func.isRequired,
-    historyReload: PropTypes.func.isRequired,
-    fetchSubscription: PropTypes.func.isRequired
+    historyReload: PropTypes.func.isRequired
   }
 
   state = {
@@ -35,16 +22,20 @@ class SubscriptionEditPage extends React.Component {
     validations: []
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     const {uuid} = this.props.params
-    this.loadSubscription(uuid)
-  }
 
-  loadSubscription = uuid => {
-    this.props.fetchSubscription({
-      uuid,
-      success: response => this.setState({subscription: toSubscription(response)})
-    })
+    try {
+      const subscription = await subscriptionApi.fetchSubscription(uuid)
+      const subscriptionTags = await subscriptionTagsApi.fetchSubscriptionTags()
+
+      this.setState({
+        subscription,
+        subscriptionTags
+      })
+    } catch (error) {
+      toast(error, {error: true})
+    }
   }
 
   pendingEnd = () => {
@@ -92,6 +83,7 @@ class SubscriptionEditPage extends React.Component {
   render() {
     const {
       subscription,
+      subscriptionTags,
       changePending,
       validations
     } = this.state
@@ -100,6 +92,7 @@ class SubscriptionEditPage extends React.Component {
       <SubscriptionEditForm
         {...this.props}
         data={subscription}
+        subscriptionTags={subscriptionTags}
         changePending={changePending}
         validations={validations}
         saveSubscriptionEditForm={this.onSaveSubscription}
@@ -109,9 +102,4 @@ class SubscriptionEditPage extends React.Component {
   }
 }
 
-export default withLocationState(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(SubscriptionEditPage)
-)
+export default withLocationState(SubscriptionEditPage)

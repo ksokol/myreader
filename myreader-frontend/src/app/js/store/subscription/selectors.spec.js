@@ -1,7 +1,6 @@
 import {
   filteredBySearchSubscriptionsSelector,
-  filteredByUnseenSubscriptionsSelector,
-  subscriptionTagsSelector
+  filteredByUnseenSubscriptionsSelector
 } from '../../store'
 import settingsInitialState from '../settings'
 
@@ -74,38 +73,5 @@ describe('subscription selector', () => {
     actualSubscriptions[0].key = 'value'
 
     expect(state.subscription).toContainObject(subscriptions())
-  })
-
-  it('should return subscription tags', () => {
-    state.subscription.subscriptions = [
-      {feedTag: {uuid: 1, name: 'b', color: undefined, links: []}},
-      {feedTag: {uuid: 2, name: 'c', color: undefined, links: []}},
-      {feedTag: {uuid: 1, name: 'b', color: undefined, links: []}},
-      {feedTag: {uuid: 3, name: 'a', color: undefined, links: []}}
-    ]
-
-    expect(subscriptionTagsSelector(state)).toEqual({
-      subscriptionTags: [
-        {uuid: 3, name: 'a', color: undefined, links: []},
-        {uuid: 1, name: 'b', color: undefined, links: []},
-        {uuid: 2, name: 'c', color: undefined, links: []}]
-    })
-  })
-
-  it('should return copy of subscription tags', () => {
-    state.subscription.subscriptions = [
-      {feedTag: {uuid: 1, name: 'b', color: undefined, links: []}},
-      {feedTag: {uuid: 1, name: 'b', color: undefined, links: []}},
-      {feedTag: {uuid: 3, name: 'a', color: undefined, links: []}}
-    ]
-    const selection = subscriptionTagsSelector(state)
-    state.subscription.subscriptions[0].name = 'x'
-
-    expect(selection).toEqual({
-      subscriptionTags: [
-        {uuid: 3, name: 'a', color: undefined, links: []},
-        {uuid: 1, name: 'b', color: undefined, links: []}
-      ]
-    })
   })
 })
