@@ -9,9 +9,7 @@ import {withLocationState} from '../../contexts'
 
 function filterSubscriptions(subscriptions, q = '') {
   return q
-    ? subscriptions.filter(({title}) => {
-      return title.toLowerCase().indexOf(q.toLowerCase()) !== -1
-    })
+    ? subscriptions.filter(({title}) => title.toLowerCase().includes(q.toLowerCase()))
     : subscriptions
 }
 

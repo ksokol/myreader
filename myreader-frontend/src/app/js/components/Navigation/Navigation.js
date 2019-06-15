@@ -1,7 +1,10 @@
 import './Navigation.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {createSubscriptionNavigation, NavigationItem, SubscriptionNavigationItem} from '.'
+import {connect} from 'react-redux'
+import createSubscriptionNavigation from './SubscriptionNavigation/createSubscriptionNavigation'
+import NavigationItem from './NavigationItem'
+import SubscriptionNavigationItem from './SubscriptionNavigation/SubscriptionNavigationItem'
 import {
   ADMIN_FEEDS_URL,
   ADMIN_OVERVIEW_URL,
@@ -11,6 +14,16 @@ import {
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
 } from '../../constants'
+import {authorizedSelector, filteredByUnseenSubscriptionsSelector, toggleSidenav} from '../../store'
+
+const mapStateToProps = state => ({
+  ...authorizedSelector(state),
+  ...filteredByUnseenSubscriptionsSelector(state)
+})
+
+const mapDispatchToProps = dispatch => ({
+  onClick: () => dispatch(toggleSidenav())
+})
 
 const Navigation = props => {
   const {
@@ -92,4 +105,7 @@ Navigation.defaultProps = {
   subscriptions: []
 }
 
-export default Navigation
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Navigation)

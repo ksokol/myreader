@@ -36,7 +36,7 @@ describe('SubscriptionList', () => {
     props.searchParams.q = 'title1'
     const links = createWrapper().find('Link')
 
-    expect(links.length).toEqual(1)
+    expect(links).toHaveLength(1)
     expect(links.at(0).prop('to')).toEqual(`${SUBSCRIPTIONS_URL}/1`)
   })
 
@@ -44,7 +44,7 @@ describe('SubscriptionList', () => {
     props.searchParams.q = 'title2'
     const links = createWrapper().find('Link')
 
-    expect(links.length).toEqual(1)
+    expect(links).toHaveLength(1)
     expect(links.at(0).prop('to')).toEqual(`${SUBSCRIPTIONS_URL}/2`)
   })
 
@@ -52,7 +52,7 @@ describe('SubscriptionList', () => {
     props.searchParams.q = 'TITLE1'
     const links = createWrapper().find('Link')
 
-    expect(links.length).toEqual(1)
+    expect(links).toHaveLength(1)
     expect(links.at(0).prop('to')).toEqual(`${SUBSCRIPTIONS_URL}/1`)
   })
 
@@ -60,7 +60,7 @@ describe('SubscriptionList', () => {
     props.searchParams.q = 'titl'
     const links = createWrapper().find('Link')
 
-    expect(links.length).toEqual(2)
+    expect(links).toHaveLength(2)
     expect(links.at(0).prop('to')).toEqual(`${SUBSCRIPTIONS_URL}/1`)
     expect(links.at(1).prop('to')).toEqual(`${SUBSCRIPTIONS_URL}/2`)
   })
@@ -69,6 +69,6 @@ describe('SubscriptionList', () => {
     props.searchParams.q = 'other'
     const links = createWrapper().find('Link')
 
-    expect(links.length).toEqual(0)
+    expect(links).toHaveLength(0)
   })
 })

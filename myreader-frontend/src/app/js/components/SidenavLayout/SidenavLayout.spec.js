@@ -4,9 +4,10 @@ import SidenavLayout from './SidenavLayout'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../containers', () => ({
-  BackdropContainer: () => null,
-  NavigationContainer: () => null,
+  BackdropContainer: () => null
 }))
+
+jest.mock('../Navigation/Navigation', () => () => null)
 
 jest.mock('../../contexts', () => ({
   withLocationState: Component => Component
@@ -17,7 +18,7 @@ describe('SidenavLayout', () => {
 
   let props, state, dispatch
 
-  const createWrapper = () => mount(<SidenavLayout props={props} state={state} dispatch={dispatch} />)
+  const createWrapper = () => mount(<SidenavLayout {...props} state={state} dispatch={dispatch} />)
 
   beforeEach(() => {
     dispatch = jest.fn()

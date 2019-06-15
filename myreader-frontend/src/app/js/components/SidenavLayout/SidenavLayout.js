@@ -5,9 +5,10 @@ import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import classNames from 'classnames'
 import {IconButton} from '..'
-import {BackdropContainer, NavigationContainer} from '../../containers'
+import {BackdropContainer} from '../../containers'
 import {fetchSubscriptions, mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from '../../store'
 import {withLocationState} from '../../contexts'
+import Navigation from '../Navigation/Navigation'
 
 const mapStateToProps = state => ({
   isDesktop: mediaBreakpointIsDesktopSelector(state),
@@ -59,20 +60,28 @@ class SidenavLayout extends React.Component {
     )
 
     return (
-      <div className='my-sidenav-layout'>
-        <header className='my-sidenav-layout__header'>
+      <div
+        className='my-sidenav-layout'
+      >
+        <header
+          className='my-sidenav-layout__header'
+        >
           {!isDesktop && <IconButton type='bars' onClick={toggleSidenav} inverse/>}
         </header>
 
-        <nav className={classes}>
-          <NavigationContainer/>
+        <nav
+          className={classes}
+        >
+          <Navigation />
         </nav>
 
-        <main className='my-sidenav-layout__main'>
+        <main
+          className='my-sidenav-layout__main'
+        >
           {children}
         </main>
 
-        <BackdropContainer/>
+        <BackdropContainer />
       </div>
     )
   }

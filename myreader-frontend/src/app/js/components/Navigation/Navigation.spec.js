@@ -1,6 +1,7 @@
 import React from 'react'
-import {Navigation, NavigationItem} from '.'
-import {shallow} from 'enzyme'
+import Navigation from './Navigation'
+import NavigationItem from './NavigationItem'
+import {mount} from 'enzyme'
 import {
   ADMIN_FEEDS_URL,
   ADMIN_OVERVIEW_URL,
@@ -10,23 +11,31 @@ import {
   SUBSCRIPTIONS_URL
 } from '../../constants'
 
+/* eslint-disable react/prop-types */
+jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => () => null)
+/* eslint-enable */
+
 class NavigationPage {
 
   constructor(wrapper) {
     this.wrapper = wrapper
   }
 
+  get navigationItems() {
+    return this.wrapper.find('ul').children()
+  }
+
   get navigationItemLabels() {
-    return this.wrapper.children().reduce((acc, item) => {
+    return this.navigationItems.reduce((acc, item) => {
       if (item.type() === NavigationItem) {
-        return [...acc, item.props().title]
+        return [...acc, item.prop('title')]
       }
-      return [...acc, item.props().item.title]
+      return [...acc, item.prop('item').title]
     }, [])
   }
 
   get navigationItemRoute() {
-    return this.wrapper.children().reduce((acc, item) => {
+    return this.navigationItems.reduce((acc, item) => {
       return item.prop('to') ? [...acc, item.prop('to')] : acc
     }, [])
   }
@@ -34,22 +43,21 @@ class NavigationPage {
 
 describe('Navigation', () => {
 
-  let props, subscriptions
+  let state, dispatch
 
-  const createWrapper = () => new NavigationPage(shallow(<Navigation {...props} />))
+  const createWrapper = () => new NavigationPage(mount(<Navigation state={state} dispatch={dispatch} />))
 
   beforeEach(() => {
-    subscriptions = [
-      {title: 'subscription 1', uuid: '1', feedTag: {name: 'group 1'}, unseen: 2},
-      {title: 'subscription 2', uuid: '2', feedTag: {name: 'group 2'}, unseen: 1},
-      {title: 'subscription 3', uuid: '3', feedTag: {name: undefined}, unseen: 0}
-    ]
+    dispatch = jest.fn()
 
-    props = {
-      isAdmin: false,
-      subscriptions,
-      router: {query: {}},
-      onClick: jest.fn()
+    state = {
+      subscription: {subscriptions: [
+          {title: 'subscription 1', uuid: '1', feedTag: {name: 'group 1'}, unseen: 2},
+          {title: 'subscription 2', uuid: '2', feedTag: {name: 'group 2'}, unseen: 1},
+          {title: 'subscription 3', uuid: '3', feedTag: {name: undefined}, unseen: 0}
+      ]},
+      settings: {showUnseenEntries: false},
+      security: {roles: ['USER']}
     }
   })
 
@@ -70,10 +78,9 @@ describe('Navigation', () => {
   })
 
   it('should render admin navigation', () => {
-    props.isAdmin = true
-    const page = createWrapper()
+    state.security.roles = ['ADMIN']
 
-    expect(page.navigationItemLabels).toEqual([
+    expect(createWrapper().navigationItemLabels).toEqual([
       'all',
       'group 1',
       'group 2',
@@ -99,7 +106,7 @@ describe('Navigation', () => {
   })
 
   it('should render expected routes for admin', () => {
-    props.isAdmin = true
+    state.security.roles = ['ADMIN']
 
     expect(createWrapper().navigationItemRoute).toEqual([
       SUBSCRIPTIONS_URL,
@@ -110,5 +117,15 @@ describe('Navigation', () => {
       SUBSCRIPTION_ADD_URL,
       LOGOUT_URL
     ])
+  })
+
+  it('should dispatch actions TOGGLE_SIDENAV when prop function "onClick" triggered', () => {
+    const wrapper = createWrapper()
+    wrapper.navigationItems.forEach(item => item.invoke('onClick')())
+
+    expect(dispatch).toHaveBeenCalledTimes(9)
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'TOGGLE_SIDENAV'
+    })
   })
 })
