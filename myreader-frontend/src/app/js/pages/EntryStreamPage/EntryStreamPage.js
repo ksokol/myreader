@@ -11,15 +11,14 @@ import {
   entryFocusPrevious,
   fetchEntries,
   getEntries,
-  getNextFocusableEntry,
-  mediaBreakpointIsDesktopSelector
+  getNextFocusableEntry
 } from '../../store'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
+import MediaBreakpointContext from '../../contexts/mediaBreakpoint/MediaBreakpointContext'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
-  nextFocusableEntry: getNextFocusableEntry(state),
-  isDesktop: mediaBreakpointIsDesktopSelector(state)
+  nextFocusableEntry: getNextFocusableEntry(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -30,7 +29,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   entryClear
 }, dispatch)
 
-class EntryStreamPage extends React.Component {
+class Component extends React.Component {
 
   static propTypes = {
     entries: PropTypes.arrayOf(
@@ -44,7 +43,7 @@ class EntryStreamPage extends React.Component {
     }),
     links: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
-    isDesktop: PropTypes.bool.isRequired,
+    mediaBreakpoint: PropTypes.string.isRequired,
     searchParams: PropTypes.object.isRequired,
     locationChanged: PropTypes.bool.isRequired,
     locationReload: PropTypes.bool.isRequired,
@@ -106,13 +105,13 @@ class EntryStreamPage extends React.Component {
       links,
       entryInFocus,
       loading,
-      isDesktop,
+      mediaBreakpoint,
       entryFocusPrevious,
       changeEntry,
       fetchEntries
     } = this.props
 
-    const actionPanel = isDesktop ?
+    const actionPanel = mediaBreakpoint === 'desktop' ?
       <React.Fragment>
         <IconButton
           type='chevron-left'
@@ -127,7 +126,6 @@ class EntryStreamPage extends React.Component {
     const listPanel =
       <Hotkeys onKeys={this.onKeys}>
         <EntryList
-          isDesktop={isDesktop}
           entries={entries}
           links={links}
           entryInFocus={entryInFocus}
@@ -146,9 +144,13 @@ class EntryStreamPage extends React.Component {
   }
 }
 
-export default withLocationState(
+export const EntryStreamPage = withLocationState(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(EntryStreamPage)
+  )(props => (
+    <MediaBreakpointContext.Consumer>
+      {value => <Component {...props} {...value} />}
+    </MediaBreakpointContext.Consumer>
+  ))
 )

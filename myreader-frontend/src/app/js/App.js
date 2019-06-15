@@ -3,7 +3,6 @@ import {Redirect, Route, Switch} from 'react-router'
 import {ToastContainer} from './containers'
 import {
   BookmarkListPage,
-  EntryStreamPage,
   FeedEditPage,
   LoginPage,
   LogoutPage,
@@ -31,6 +30,7 @@ import {
 import {AdminOverviewPage} from './pages/AdminOverviewPage/AdminOverviewPage'
 import {FeedListPage} from './pages/FeedListPage/FeedListPage'
 import SettingsPage from './pages/SettingsPage/SettingsPage'
+import {EntryStreamPage} from './pages/EntryStreamPage/EntryStreamPage'
 
 const withSidenav = () => (
   <SidenavLayout>

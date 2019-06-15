@@ -1,6 +1,6 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import EntryStreamPage from './EntryStreamPage'
+import {EntryStreamPage} from './EntryStreamPage'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -13,13 +13,20 @@ jest.mock('../../components', () => ({
 jest.mock('../../contexts', () => ({
   withLocationState: Component => Component
 }))
-/* eslint-enable */
+
+const buttonPrevious = 'IconButton[type="chevron-left"]'
+const buttonNext = 'IconButton[type="chevron-right"]'
 
 describe('EntryStreamPage', () => {
 
-  let state, dispatch, props
+  let state, dispatch, props, value
 
-  const createWrapper = () => mount(<EntryStreamPage {...props} dispatch={dispatch} state={state} />)
+  const createWrapper = () => {
+    const mergedProps = {...value, ...props}
+    return mount(
+      <EntryStreamPage {...mergedProps} dispatch={dispatch} state={state} />
+    )
+  }
 
   beforeEach(() => {
     dispatch = jest.fn().mockImplementation(action => {
@@ -29,9 +36,6 @@ describe('EntryStreamPage', () => {
     })
 
     state = {
-      common: {
-        mediaBreakpoint: 'desktop'
-      },
       entry: {
         links: {
           next: {
@@ -54,25 +58,29 @@ describe('EntryStreamPage', () => {
       locationChanged: false,
       locationReload: false,
     }
+
+    value = {
+      mediaBreakpoint: 'desktop'
+    }
   })
 
   it('should not render next and previous buttons when media breakpoint is not desktop', () => {
-    state.common.mediaBreakpoint = 'phone'
+    value.mediaBreakpoint = 'phone'
     const wrapper = createWrapper()
 
-    expect(wrapper.find('IconButton[type="chevron-left"]').exists()).toEqual(false)
-    expect(wrapper.find('IconButton[type="chevron-right"]').exists()).toEqual(false)
+    expect(wrapper.find(buttonPrevious).exists()).toEqual(false)
+    expect(wrapper.find(buttonNext).exists()).toEqual(false)
   })
 
   it('should render next and previous buttons when media breakpoint is desktop', () => {
     const wrapper = createWrapper()
 
-    expect(wrapper.find('IconButton[type="chevron-left"]').exists()).toEqual(true)
-    expect(wrapper.find('IconButton[type="chevron-right"]').exists()).toEqual(true)
+    expect(wrapper.find(buttonPrevious).exists()).toEqual(true)
+    expect(wrapper.find(buttonNext).exists()).toEqual(true)
   })
 
   it('should trigger prop function "previousEntry" when previous button clicked', () => {
-    createWrapper().find('IconButton[type="chevron-left"]').props().onClick()
+    createWrapper().find(buttonPrevious).props().onClick()
 
     expect(dispatch).toHaveBeenNthCalledWith(5, {
       type: 'ENTRY_FOCUS_PREVIOUS',
@@ -82,7 +90,7 @@ describe('EntryStreamPage', () => {
 
   it('should dispatch action ENTRY_FOCUS_NEXT when next button clicked and entry seen flag is set to true', () => {
     state.entry.entries[1].seen = true
-    createWrapper().find('IconButton[type="chevron-right"]').props().onClick()
+    createWrapper().find(buttonNext).props().onClick()
 
     expect(dispatch).toHaveBeenNthCalledWith(5, {
       type: 'ENTRY_FOCUS_NEXT',
@@ -91,7 +99,7 @@ describe('EntryStreamPage', () => {
   })
 
   it('should dispatch action PATCH_ENTRY and ENTRY_FOCUS_NEXT when next button clicked and entry seen flag is set to false', () => {
-    createWrapper().find('IconButton[type="chevron-right"]').props().onClick()
+    createWrapper().find(buttonNext).props().onClick()
 
     expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
       type: 'PATCH_ENTRY',
