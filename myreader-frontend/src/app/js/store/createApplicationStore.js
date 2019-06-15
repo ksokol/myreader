@@ -44,14 +44,10 @@ function initialState(enabled) {
   } : {}
 }
 
-export default function createApplicationStore(environment, actionDispatchers = []) {
-  const store = createStore(
+export default function createApplicationStore(environment) {
+  return createStore(
     reducers,
     initialState(isInDevMode(environment) || isInProdMode(environment)),
     enhancer(isInDevMode(environment))
   )
-
-  actionDispatchers.forEach(actionDispatcher => actionDispatcher(store))
-
-  return store
 }

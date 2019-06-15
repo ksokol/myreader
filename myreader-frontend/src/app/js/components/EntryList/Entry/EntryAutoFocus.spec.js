@@ -40,9 +40,9 @@ describe('EntryAutoFocus', () => {
 
   it('should pass expected props to child component', () => {
     const wrapper = createWrapper()
-    const {entryRef, ...expectedProps} = props
+    delete props.entryRef
 
-    expect(wrapper.props()).toEqual(expectedProps)
+    expect(wrapper.props()).toEqual(props)
   })
 
   it('should scroll to child component when prop "item.uuid" is equal to prop "focusUuid"', () => {

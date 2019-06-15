@@ -1,11 +1,11 @@
-import createApplicationStore from './bootstrap'
+import createApplicationStore from './createApplicationStore'
 import '../../../../__mocks__/global/fetch'
 
 const DEV = 'development'
 const PROD = 'production'
 const OTHER = 'other'
 
-describe('bootstrap', () => {
+describe('createApplicationStore', () => {
 
   describe('redux dev tools', () => {
 
@@ -70,16 +70,6 @@ describe('bootstrap', () => {
       const store = createApplicationStore(OTHER)
 
       expect(store.getState().security).toContainObject({roles: []})
-    })
-
-    it('should invoke given actionDispatchers', () => {
-      const actionDispatcher1 = jest.fn()
-      const actionDispatcher2 = jest.fn()
-      createApplicationStore(OTHER, [actionDispatcher1, actionDispatcher2])
-
-      expect(actionDispatcher1).toHaveBeenCalled()
-      expect(actionDispatcher2).toHaveBeenCalled()
-
     })
   })
 

@@ -11,11 +11,6 @@ configure({adapter: new Adapter()})
 RelativeTimeFormat.addLocale(en)
 global['Intl'].RelativeTimeFormat = RelativeTimeFormat
 
-window.matchMedia = () => ({
-  matches: false,
-  addListener: () => {}
-})
-
 afterEach(() => {
   localStorage.clear()
 })

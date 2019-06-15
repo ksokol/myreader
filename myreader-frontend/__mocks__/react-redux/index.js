@@ -1,4 +1,5 @@
 import React from 'react'
+import {ReactReduxContext, Provider} from 'react-redux'
 
 const connect = (mapStateToProps, mapDispatchToProps) => {
   return WrappedComponent => {
@@ -11,5 +12,7 @@ const connect = (mapStateToProps, mapDispatchToProps) => {
 }
 
 export {
-  connect
+  connect,
+  Provider,
+  ReactReduxContext
 }

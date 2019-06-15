@@ -26,11 +26,11 @@ describe('EntryContent', () => {
     }
   })
 
-  it('should set content as innerHTML', () => {
+  it('should render content', () => {
     expect(createWrapper().text()).toEqual(expectedContent)
   })
 
-  it('should set content as innerHTML', () => {
+  it('should not render content when prop "showEntryDetails" is set to false', () => {
     state.settings.showEntryDetails = false
 
     expect(createWrapper().text()).toEqual('')

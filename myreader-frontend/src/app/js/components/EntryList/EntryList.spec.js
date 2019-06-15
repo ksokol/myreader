@@ -49,7 +49,7 @@ describe('EntryList', () => {
   const createWrapper = () => shallow(<EntryList {...props} />)
 
   it('should render each item of prop "entries" in a wrapper node', () =>  {
-    expect(createWrapper().find('.my-entry-list__item').length).toEqual(2)
+    expect(createWrapper().find('.my-entry-list__item')).toHaveLength(2)
   })
 
   it('should set key on wrapper nodes', () =>  {
@@ -140,7 +140,7 @@ describe('EntryList', () => {
     props.entries = []
 
     expect(createWrapper().find('IntersectionObserver').exists()).toEqual(false)
-    expect(createWrapper().find('.my-entry').children().length).toEqual(0)
+    expect(createWrapper().find('.my-entry').children()).toHaveLength(0)
   })
 
   it('should render load more button when next link exists', () =>  {
