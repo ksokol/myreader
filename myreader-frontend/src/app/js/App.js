@@ -1,6 +1,6 @@
 import React from 'react'
 import {Redirect, Route, Switch} from 'react-router'
-import {SettingsPageContainer, ToastContainer} from './containers'
+import {ToastContainer} from './containers'
 import {
   BookmarkListPage,
   EntryStreamPage,
@@ -30,6 +30,7 @@ import {
 } from './constants'
 import {AdminOverviewPage} from './pages/AdminOverviewPage/AdminOverviewPage'
 import {FeedListPage} from './pages/FeedListPage/FeedListPage'
+import SettingsPage from './pages/SettingsPage/SettingsPage'
 
 const withSidenav = () => (
   <SidenavLayout>
@@ -39,7 +40,7 @@ const withSidenav = () => (
       <Route exact={true} path={SUBSCRIPTION_ADD_URL} component={SubscribePage}/>
       <Route exact={true} path={SUBSCRIPTION_URL} component={SubscriptionEditPage}/>
       <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>
-      <Route exact={true} path={SETTINGS_URL} component={SettingsPageContainer}/>
+      <Route exact={true} path={SETTINGS_URL} component={SettingsPage}/>
       <Route exact={true} path={ADMIN_OVERVIEW_URL} component={AdminOverviewPage}/>
       <Route exact={true} path={ADMIN_FEEDS_URL} component={FeedListPage}/>
       <Route exact={true} path={ADMIN_FEED_URL} component={FeedEditPage}/>

@@ -1,12 +1,22 @@
 import './SettingsPage.css'
 import React from 'react'
 import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
 import Option from '../../components/Option/Option'
 import {SubscriptionTags} from '../../components/SubscriptionTags/SubscriptionTags'
+import {getSettings, updateSettings} from '../../store'
 
 const pageSizeOptions = [10, 20, 30]
 const unseenEntriesOptions = [{label: 'show', value: false}, {label: 'hide', value: true}]
 const entryDetailsOptions = [{label: 'show', value: true}, {label: 'hide', value: false}]
+
+const mapStateToProps = state => ({
+  settings: getSettings(state)
+})
+
+const mapDispatchToProps = dispatch => ({
+  onChange: settings => dispatch(updateSettings(settings))
+})
 
 const SettingsPage = props =>
   <div
@@ -62,4 +72,7 @@ SettingsPage.propTypes = {
   onChange: PropTypes.func.isRequired
 }
 
-export default SettingsPage
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SettingsPage)
