@@ -63,9 +63,7 @@ describe('BookmarkListPage', () => {
     expect(createWrapper().find('EntryList').props()).toEqual(expect.objectContaining({
       entries: ['expected entries'],
       links: {next: {path: 'expected-path', query: {size: '2'}}},
-      isDesktop: true,
-      loading: true,
-      showEntryDetails: true
+      loading: true
     }))
   })
 

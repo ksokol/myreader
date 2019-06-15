@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Entry from './Entry'
+import {Entry} from './Entry'
 
-class EntryAutoFocus extends Component {
+export class EntryAutoFocus extends Component {
 
-  constructor(props) {
-    super(props)
-
-    this.state = {}
+  static propTypes = {
+    focusUuid: PropTypes.string
   }
+
+  state = {}
 
   static getDerivedStateFromProps(props, state) {
     return {
@@ -32,12 +32,11 @@ class EntryAutoFocus extends Component {
 
     props.className = this.state.focused ? 'my-entry--focus' : undefined
 
-    return <Entry entryRef={el => this.entryRef = el} {...props} />
+    return (
+      <Entry
+        entryRef={el => this.entryRef = el}
+        {...props}
+      />
+    )
   }
 }
-
-EntryAutoFocus.propTypes = {
-  focusUuid: PropTypes.string
-}
-
-export default EntryAutoFocus

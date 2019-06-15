@@ -32,9 +32,6 @@ describe('EntryStreamPage', () => {
       common: {
         mediaBreakpoint: 'desktop'
       },
-      settings: {
-        showEntryDetails: true
-      },
       entry: {
         links: {
           next: {
@@ -127,9 +124,7 @@ describe('EntryStreamPage', () => {
           query: {a: 'b'}
         }
       },
-      isDesktop: true,
-      loading: true,
-      showEntryDetails: true
+      loading: true
     }))
   })
 

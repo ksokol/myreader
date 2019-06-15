@@ -6,21 +6,11 @@ import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {Chips, EntryList, ListLayout} from '../../components'
 import {withLocationState} from '../../contexts'
-import {
-  changeEntry,
-  fetchEntries,
-  fetchEntryTags,
-  getEntries,
-  getEntryTags,
-  mediaBreakpointIsDesktopSelector,
-  settingsShowEntryDetailsSelector
-} from '../../store'
+import {changeEntry, fetchEntries, fetchEntryTags, getEntries, getEntryTags} from '../../store'
 import {BOOKMARK_URL, SUBSCRIPTION_ENTRIES} from '../../constants'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
-  showEntryDetails: settingsShowEntryDetailsSelector(state),
-  isDesktop: mediaBreakpointIsDesktopSelector(state),
   ...getEntryTags(state)
 })
 
@@ -39,8 +29,6 @@ class BookmarkListPage extends React.Component {
     entryTags: PropTypes.any.isRequired,
     links: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
-    showEntryDetails: PropTypes.bool.isRequired,
-    isDesktop: PropTypes.bool.isRequired,
     changeEntry: PropTypes.func.isRequired,
     fetchEntries: PropTypes.func.isRequired,
     fetchEntryTags: PropTypes.func.isRequired,
@@ -73,8 +61,6 @@ class BookmarkListPage extends React.Component {
       entries,
       links,
       loading,
-      showEntryDetails,
-      isDesktop,
       changeEntry,
       fetchEntries,
       searchParams
@@ -98,8 +84,6 @@ class BookmarkListPage extends React.Component {
               )}
             />
             <EntryList
-              isDesktop={isDesktop}
-              showEntryDetails={showEntryDetails}
               entries={entries}
               links={links}
               loading={loading}

@@ -1,8 +1,9 @@
 import './EntryList.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Button, IntersectionObserver} from '../'
-import {EntryAutoFocus} from './Entry'
+import {Button} from '../Buttons'
+import IntersectionObserver from '../IntersectionObserver/IntersectionObserver'
+import {EntryAutoFocus} from './Entry/EntryAutoFocus'
 
 const entry = (entryProps, props) => (
   <div className="my-entry-list__item" key={entryProps.uuid}>
@@ -10,35 +11,45 @@ const entry = (entryProps, props) => (
   </div>
 )
 
-class EntryList extends React.Component {
+export class EntryList extends React.Component {
 
-  constructor(props) {
-    super(props)
+  static propTypes = {
+    links: PropTypes.shape({
+      next: PropTypes.any
+    }).isRequired,
+    entries: PropTypes.arrayOf(
+      PropTypes.shape({
+        uuid: PropTypes.string.isRequired
+      })
+    ),
+    entryInFocus: PropTypes.shape({
+      uuid: PropTypes.string
+    }),
+    loading: PropTypes.bool.isRequired,
+    onChangeEntry: PropTypes.func.isRequired,
+    onLoadMore: PropTypes.func.isRequired
+  }
 
-    this.loadMore = this.loadMore.bind(this)
+  static defaultProps = {
+    links: {},
+    entries: []
   }
 
   get hasNextPage() {
     return !!this.props.links.next
   }
 
-  loadMore() {
-    this.props.onLoadMore(this.props.links.next)
-  }
+  loadMore = () => this.props.onLoadMore(this.props.links.next)
 
   render() {
     const {
       entries,
-      showEntryDetails,
-      isDesktop,
       entryInFocus,
       loading,
       onChangeEntry
     } = this.props
 
     const props = {
-      isDesktop,
-      showEntryDetails,
       onChangeEntry,
       focusUuid: entryInFocus && entryInFocus.uuid
     }
@@ -47,48 +58,28 @@ class EntryList extends React.Component {
     const lastEntry = entriesCopy.pop()
 
     return (
-      <div className='my-entry-list'>
+      <div
+        className='my-entry-list'
+      >
         {entriesCopy.map(entryProps => entry(entryProps, props))}
 
         {lastEntry && this.hasNextPage
-          ? <IntersectionObserver onIntersection={this.loadMore}>
-              {entry(lastEntry, props)}
+          ? <IntersectionObserver
+            onIntersection={this.loadMore}
+          >{entry(lastEntry, props)}
             </IntersectionObserver>
           : lastEntry && entry(lastEntry, props)
         }
 
         {this.hasNextPage &&
-          <Button className='my-button__load-more' disabled={loading} onClick={this.loadMore}>
-            Load More
+          <Button
+            className='my-button__load-more'
+            disabled={loading}
+            onClick={this.loadMore}
+          >Load More
           </Button>
         }
       </div>
     )
   }
 }
-
-EntryList.propTypes = {
-  links: PropTypes.shape({
-    next: PropTypes.any
-  }).isRequired,
-  entries: PropTypes.arrayOf(
-    PropTypes.shape({
-      uuid: PropTypes.string.isRequired
-    })
-  ),
-  entryInFocus: PropTypes.shape({
-    uuid: PropTypes.string
-  }),
-  showEntryDetails: PropTypes.bool.isRequired,
-  isDesktop: PropTypes.bool.isRequired,
-  loading: PropTypes.bool.isRequired,
-  onChangeEntry: PropTypes.func.isRequired,
-  onLoadMore: PropTypes.func.isRequired
-}
-
-EntryList.defaultTypes = {
-  links: {},
-  entries: []
-}
-
-export default EntryList

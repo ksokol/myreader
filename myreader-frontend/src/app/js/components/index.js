@@ -1,4 +1,4 @@
-export {default as EntryList} from './EntryList/EntryList'
+export {EntryList} from './EntryList/EntryList'
 export * from './Buttons'
 export {default as IntersectionObserver} from './IntersectionObserver/IntersectionObserver'
 export {default as Chips} from './Chips/Chips'

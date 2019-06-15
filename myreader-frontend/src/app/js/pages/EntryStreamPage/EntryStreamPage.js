@@ -12,14 +12,12 @@ import {
   fetchEntries,
   getEntries,
   getNextFocusableEntry,
-  mediaBreakpointIsDesktopSelector,
-  settingsShowEntryDetailsSelector
+  mediaBreakpointIsDesktopSelector
 } from '../../store'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
-  showEntryDetails: settingsShowEntryDetailsSelector(state),
   nextFocusableEntry: getNextFocusableEntry(state),
   isDesktop: mediaBreakpointIsDesktopSelector(state)
 })
@@ -46,7 +44,6 @@ class EntryStreamPage extends React.Component {
     }),
     links: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
-    showEntryDetails: PropTypes.bool.isRequired,
     isDesktop: PropTypes.bool.isRequired,
     searchParams: PropTypes.object.isRequired,
     locationChanged: PropTypes.bool.isRequired,
@@ -109,7 +106,6 @@ class EntryStreamPage extends React.Component {
       links,
       entryInFocus,
       loading,
-      showEntryDetails,
       isDesktop,
       entryFocusPrevious,
       changeEntry,
@@ -132,7 +128,6 @@ class EntryStreamPage extends React.Component {
       <Hotkeys onKeys={this.onKeys}>
         <EntryList
           isDesktop={isDesktop}
-          showEntryDetails={showEntryDetails}
           entries={entries}
           links={links}
           entryInFocus={entryInFocus}

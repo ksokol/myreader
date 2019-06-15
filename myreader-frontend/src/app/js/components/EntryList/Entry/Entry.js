@@ -1,47 +1,51 @@
 import './Entry.css'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
 import {EntryTitle} from './EntryTitle/EntryTitle'
 import {EntryActions} from './EntryActions/EntryActions'
 import {EntryContent} from './EntryContent/EntryContent'
 import EntryTags from './EntryTags/EntryTags'
 
-class Entry extends Component {
+export class Entry extends Component {
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      showMore: false,
-      showContent: false
-    }
-
-    this.onTagUpdate = this.onTagUpdate.bind(this)
-    this.toggleMore = this.toggleMore.bind(this)
-    this.toggleSeen = this.toggleSeen.bind(this)
+  static propTypes = {
+    item: PropTypes.shape({
+      uuid: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      feedTitle: PropTypes.string.isRequired,
+      tag: PropTypes.string,
+      origin: PropTypes.string.isRequired,
+      seen: PropTypes.bool.isRequired,
+      createdAt: PropTypes.string.isRequired,
+      content: PropTypes.string
+    }).isRequired,
+    className: PropTypes.string,
+    onChangeEntry: PropTypes.func.isRequired,
+    entryRef: PropTypes.func
   }
 
-  static getDerivedStateFromProps(props, state) {
-    return {
-      showContent: props.isDesktop ? props.showEntryDetails || state.showMore : state.showMore
-    }
+  static defaultProps = {
+    className: ''
   }
 
-  toggleMore() {
+  state = {
+    showMore: false
+  }
+
+  toggleMore = () => {
     this.setState({
       showMore: !this.state.showMore
     })
   }
 
-  toggleSeen() {
+  toggleSeen = () => {
     this.props.onChangeEntry({
       ...this.props.item,
       seen: !this.props.item.seen
     })
   }
 
-  onTagUpdate(tag) {
+  onTagUpdate = tag => {
     this.props.onChangeEntry({
       uuid: this.props.item.uuid,
       seen: this.props.item.seen,
@@ -57,23 +61,27 @@ class Entry extends Component {
     } = this.props
 
     const {
-      showMore,
-      showContent
+      showMore
     } = this.state
-
-    const classes = classNames('my-entry', className)
 
     return (
       <div
-        className={classes}
-        ref={entryRef}>
-        <div className='my-entry__header'>
-          <div className='my-entry__title'>
+        className={`my-entry ${className}`}
+        ref={entryRef}
+      >
+        <div
+          className='my-entry__header'
+        >
+          <div
+            className='my-entry__title'
+          >
             <EntryTitle
               entry={item}
             />
           </div>
-          <div className='my-entry__actions'>
+          <div
+            className='my-entry__actions'
+          >
             <EntryActions
               seen={item.seen}
               showMore={showMore}
@@ -90,30 +98,11 @@ class Entry extends Component {
           />
         }
 
-        {showContent &&
-          <EntryContent content={item.content} />
-        }
+        <EntryContent
+          maybeVisible={showMore}
+          content={item.content}
+        />
       </div>
     )
   }
 }
-
-Entry.propTypes = {
-  item: PropTypes.shape({
-    uuid: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    feedTitle: PropTypes.string.isRequired,
-    tag: PropTypes.string,
-    origin: PropTypes.string.isRequired,
-    seen: PropTypes.bool.isRequired,
-    createdAt: PropTypes.string.isRequired,
-    content: PropTypes.string
-  }).isRequired,
-  showEntryDetails: PropTypes.bool.isRequired,
-  isDesktop: PropTypes.bool.isRequired,
-  className: PropTypes.string,
-  onChangeEntry: PropTypes.func.isRequired,
-  entryRef: PropTypes.func
-}
-
-export default Entry
