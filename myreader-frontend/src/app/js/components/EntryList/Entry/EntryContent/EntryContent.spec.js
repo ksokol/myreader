@@ -1,14 +1,21 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {EntryContent} from './EntryContent'
+import MediaBreakpointContext from '../../../../contexts/mediaBreakpoint/MediaBreakpointContext'
 
 const expectedContent = 'expected content'
 
 describe('EntryContent', () => {
 
-  let props, state
+  let props, state, value
 
-  const createWrapper = () => mount(<EntryContent {...props} state={state} />)
+  const createWrapper = () => (
+    mount(
+      <MediaBreakpointContext.Provider value={value}>
+        <EntryContent {...props} state={state} />
+      </MediaBreakpointContext.Provider>
+    )
+  )
 
   beforeEach(() => {
     props = {
@@ -17,12 +24,13 @@ describe('EntryContent', () => {
     }
 
     state = {
-      common: {
-        mediaBreakpoint: 'desktop'
-      },
       settings: {
         showEntryDetails: true
       }
+    }
+
+    value = {
+      mediaBreakpoint: 'desktop'
     }
   })
 
@@ -37,31 +45,31 @@ describe('EntryContent', () => {
   })
 
   it('should not render content on tablet or phone', () => {
-    state.common.mediaBreakpoint = 'tablet'
+    value.mediaBreakpoint = 'tablet'
     expect(createWrapper().text()).toEqual('')
 
-    state.common.mediaBreakpoint = 'phone'
+    value.mediaBreakpoint = 'phone'
     expect(createWrapper().text()).toEqual('')
   })
 
   it('should render content on tablet or phone when prop "maybeVisible" is set tot true', () => {
     props.maybeVisible = true
 
-    state.common.mediaBreakpoint = 'tablet'
+    value.mediaBreakpoint = 'tablet'
     expect(createWrapper().text()).toEqual(expectedContent)
 
-    state.common.mediaBreakpoint = 'phone'
+    value.mediaBreakpoint = 'phone'
     expect(createWrapper().text()).toEqual(expectedContent)
   })
 
-  it('should render content on tablet or phone when prop "maybeVisible" is set tot true and prop "showEntryDetails" is set to false', () => {
+  it('should render content on tablet or phone when prop "maybeVisible" is set to true and prop "showEntryDetails" is set to false', () => {
     props.maybeVisible = true
     state.settings.showEntryDetails = false
 
-    state.common.mediaBreakpoint = 'tablet'
+    value.mediaBreakpoint = 'tablet'
     expect(createWrapper().text()).toEqual(expectedContent)
 
-    state.common.mediaBreakpoint = 'phone'
+    value.mediaBreakpoint = 'phone'
     expect(createWrapper().text()).toEqual(expectedContent)
   })
 })
