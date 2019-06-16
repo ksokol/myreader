@@ -3,13 +3,13 @@ import {mount} from 'enzyme'
 import SidenavLayout from './SidenavLayout'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../containers', () => ({
-  BackdropContainer: () => null
+jest.mock('../Backdrop/Backdrop', () => ({
+  Backdrop: () => null
 }))
 
 jest.mock('../Navigation/Navigation', () => () => null)
 
-jest.mock('../../contexts', () => ({
+jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
 /* eslint-enable */

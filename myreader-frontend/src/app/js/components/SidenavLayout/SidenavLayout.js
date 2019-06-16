@@ -3,12 +3,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
-import classNames from 'classnames'
-import {IconButton} from '..'
-import {BackdropContainer} from '../../containers'
+import {IconButton} from '../Buttons'
 import {fetchSubscriptions, mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from '../../store'
-import {withLocationState} from '../../contexts'
+import {withLocationState} from '../../contexts/locationState/withLocationState'
 import Navigation from '../Navigation/Navigation'
+import {Backdrop} from '../Backdrop/Backdrop'
 
 const mapStateToProps = state => ({
   isDesktop: mediaBreakpointIsDesktopSelector(state),
@@ -53,11 +52,11 @@ class SidenavLayout extends React.Component {
       children
     } = this.props
 
-    const classes = classNames(
+    const classes = [
       'my-sidenav-layout__nav',
-      {'my-sidenav-layout__nav--open': sidenavSlideIn},
-      {'my-sidenav-layout__nav--animate': !isDesktop}
-    )
+      sidenavSlideIn ? 'my-sidenav-layout__nav--open': '',
+      isDesktop ? '': 'my-sidenav-layout__nav--animate'
+    ]
 
     return (
       <div
@@ -70,7 +69,7 @@ class SidenavLayout extends React.Component {
         </header>
 
         <nav
-          className={classes}
+          className={classes.join(' ')}
         >
           <Navigation />
         </nav>
@@ -81,7 +80,7 @@ class SidenavLayout extends React.Component {
           {children}
         </main>
 
-        <BackdropContainer />
+        <Backdrop />
       </div>
     )
   }

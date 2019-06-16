@@ -1,112 +1,145 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import Backdrop from './Backdrop'
+import {Backdrop} from './Backdrop'
+
+const backdropClass = '.my-backdrop'
 
 describe('Backdrop', () => {
 
-  let props
+  let state, dispatch
 
-  const createComponent = () => mount(<Backdrop {...props} />)
+  const createWrapper = () => mount(<Backdrop state={state} dispatch={dispatch} />)
 
   beforeEach(() => {
-    props = {
-      isBackdropVisible: false,
-      onClick: jest.fn()
+    dispatch = jest.fn()
+
+    state = {
+      common: {
+        backdropVisible: false
+      }
     }
   })
 
-  it('should not mount backdrop after initialization', () => {
-    expect(createComponent().state().isMounted).toEqual(false)
+  it('should not show backdrop when mounted', () => {
+    expect(createWrapper().find(backdropClass).exists()).toEqual(false)
   })
 
-  it('should mount backdrop when state changes to true', () => {
-    const wrapper = createComponent()
-    wrapper.setProps({isBackdropVisible: true})
+  it('should show backdrop when state backdropVisible changes to true', () => {
+    const wrapper = createWrapper()
+    state.common.backdropVisible = true
+    wrapper.setProps()
+    wrapper.update()
 
-    expect(wrapper.state().isMounted).toEqual(true)
+    expect(wrapper.find(backdropClass).exists()).toEqual(true)
   })
 
-  it('should not unmount backdrop instantly when state changes from true to false', () => {
-    const wrapper = createComponent()
-    wrapper.setProps({isBackdropVisible: true})
-    wrapper.setProps({isBackdropVisible: false})
+  it('should not show backdrop instantly when state backdropVisible changes from true to false', () => {
+    const wrapper = createWrapper()
+    state.common.backdropVisible = true
+    wrapper.setProps()
+    wrapper.update()
 
-    expect(wrapper.state().isMounted).toEqual(true)
+    state.common.backdropVisible = false
+    wrapper.setProps()
+    wrapper.update()
+
+    expect(wrapper.find(backdropClass).exists()).toEqual(true)
   })
 
-  it('should show backdrop when state is true', () => {
-    const wrapper = createComponent()
-    wrapper.setProps({isBackdropVisible: true})
+  it('should hide backdrop when 300ms passed', () => {
+    const wrapper = createWrapper()
+    state.common.backdropVisible = true
+    wrapper.setProps()
+    wrapper.update()
 
-    expect(wrapper.state().isVisible).toBe(true)
-    expect(wrapper.state().isClosing).toEqual(false)
-  })
-
-  it('should mark backdrop as closing when state changes to false', () => {
-    const wrapper = createComponent()
-    wrapper.setProps({isBackdropVisible: true})
-    wrapper.setProps({isBackdropVisible: false})
-
-    expect(wrapper.state().isVisible).toEqual(false)
-    expect(wrapper.state().isClosing).toEqual(true)
-  })
-
-  it('should unmount backdrop when 300ms passed', () => {
-    const wrapper = createComponent()
-    wrapper.setProps({isBackdropVisible: true})
-    wrapper.setProps({isBackdropVisible: false})
+    state.common.backdropVisible = false
+    wrapper.setProps()
+    wrapper.update()
 
     jest.advanceTimersByTime(299)
-    expect(wrapper.state().isMounted).toEqual(true)
+    wrapper.update()
+    expect(wrapper.find(backdropClass).exists()).toEqual(true)
 
     jest.advanceTimersByTime(1)
-    expect(wrapper.state().isMounted).toEqual(false)
+    wrapper.update()
+    expect(wrapper.find(backdropClass).exists()).toEqual(false)
   })
 
-  it('should not unmount backdrop when state changed to true within 300ms', () => {
-    const wrapper = createComponent()
-    wrapper.setProps({isBackdropVisible: true})
-    wrapper.setProps({isBackdropVisible: false})
+  it('should not show backdrop when state backdropVisible changes to true within 300ms', () => {
+    const wrapper = createWrapper()
+    state.common.backdropVisible = true
+    wrapper.setProps()
+    wrapper.update()
+
+    state.common.backdropVisible = false
+    wrapper.setProps()
+    wrapper.update()
+
     jest.advanceTimersByTime(299)
+    wrapper.update()
 
-    wrapper.setProps({isBackdropVisible: true})
+    state.common.backdropVisible = true
+    wrapper.setProps()
+    wrapper.update()
+
     jest.advanceTimersByTime(1)
+    wrapper.update()
 
-    expect(wrapper.state().isMounted).toEqual(true)
+    expect(wrapper.find(backdropClass).exists()).toEqual(true)
   })
 
-  it('should not hide backdrop when state changed to true within 300ms', () => {
-    const wrapper = createComponent()
-    wrapper.setProps({isBackdropVisible: true})
-    wrapper.setProps({isBackdropVisible: false})
-    jest.advanceTimersByTime(299)
+  it('should show backdrop when state backdropVisible changes to true again', () => {
+    const wrapper = createWrapper()
+    state.common.backdropVisible = true
+    wrapper.setProps()
+    wrapper.update()
 
-    wrapper.setProps({isBackdropVisible: true})
-    jest.advanceTimersByTime(1)
-
-    expect(wrapper.state().isVisible).toEqual(true)
-    expect(wrapper.state().isClosing).toEqual(false)
-  })
-
-  it('should show backdrop when state changed to true again', () => {
-    const wrapper = createComponent()
-    wrapper.setProps({isBackdropVisible: true})
-    wrapper.setProps({isBackdropVisible: false})
+    state.common.backdropVisible = false
+    wrapper.setProps()
+    wrapper.update()
 
     jest.advanceTimersByTime(300)
+    wrapper.update()
 
-    wrapper.setProps({isBackdropVisible: true})
+    state.common.backdropVisible = true
+    wrapper.setProps()
+    wrapper.update()
 
-    expect(wrapper.state().isMounted).toEqual(true)
-    expect(wrapper.state().isVisible).toEqual(true)
-    expect(wrapper.state().isClosing).toEqual(false)
+    expect(wrapper.find(backdropClass).exists()).toEqual(true)
   })
 
-  it('should hide backdrop when click occurred on backdrop', () => {
-    const wrapper = createComponent()
-    wrapper.setProps({isBackdropVisible: true})
-    wrapper.props().onClick()
+  it('should append visible class when backdrop is visible', () => {
+    const wrapper = createWrapper()
+    state.common.backdropVisible = true
+    wrapper.setProps()
+    wrapper.update()
 
-    expect(props.onClick).toHaveBeenCalled()
+    expect(wrapper.find(backdropClass).prop('className')).toContain('my-backdrop--visible')
+  })
+
+  it('should append visible closing when backdrop is about to be hidden', () => {
+    const wrapper = createWrapper()
+    state.common.backdropVisible = true
+    wrapper.setProps()
+    wrapper.update()
+
+    state.common.backdropVisible = false
+    wrapper.setProps()
+    wrapper.update()
+
+    expect(wrapper.find(backdropClass).prop('className')).toContain('my-backdrop--closing')
+  })
+
+  it('should dispatch action HIDE_BACKDROP when prop function "onClick" triggered', () => {
+    const wrapper = createWrapper()
+    state.common.backdropVisible = true
+    wrapper.setProps()
+    wrapper.update()
+
+    wrapper.find(backdropClass).props().onClick()
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'HIDE_BACKDROP'
+    })
   })
 })

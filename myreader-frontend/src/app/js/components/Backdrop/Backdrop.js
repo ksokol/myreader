@@ -2,27 +2,34 @@ import './Backdrop.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDom from 'react-dom'
-import classNames from 'classnames'
+import {connect} from 'react-redux'
+import {backdropIsVisible, hideBackdrop} from '../../store'
 
-class Backdrop extends React.Component {
+const mapStateToProps = state => ({
+  isBackdropVisible: backdropIsVisible(state)
+})
 
-  constructor(props) {
-    super(props)
+const mapDispatchToProps = dispatch => ({
+  onClick: () => dispatch(hideBackdrop())
+})
 
-    this.state = {
-      isVisible: false,
-      isClosing: false,
-      isMounted: false
-    }
+class Component extends React.Component {
 
-    this.scheduleUnmount = this.scheduleUnmount.bind(this)
+  static propTypes = {
+    isBackdropVisible: PropTypes.bool.isRequired,
+    onClick: PropTypes.func.isRequired
+  }
+
+  state = {
+    isVisible: false,
+    isClosing: false,
+    isMounted: false
   }
 
   componentDidUpdate() {
     if (this.state.isVisible === this.props.isBackdropVisible) {
       return
     }
-
     clearTimeout(this.timeout)
 
     if (this.state.isVisible) {
@@ -41,11 +48,9 @@ class Backdrop extends React.Component {
     }
   }
 
-  componentWillUnmount() {
-    clearTimeout(this.timeout)
-  }
+  componentWillUnmount = () => clearTimeout(this.timeout)
 
-  scheduleUnmount() {
+  scheduleUnmount = () => {
     this.timeout = setTimeout(() => {
       this.setState({
         isVisible: false,
@@ -56,24 +61,25 @@ class Backdrop extends React.Component {
   }
 
   render() {
-    const classes = classNames('my-backdrop', {
-      'my-backdrop--visible': this.state.isVisible,
-      'my-backdrop--closing': this.state.isClosing
-    })
+    const classes = [
+      'my-backdrop',
+      this.state.isVisible ? 'my-backdrop--visible': '',
+      this.state.isClosing ? 'my-backdrop--closing': ''
+    ]
 
-    return this.state.isMounted ?
+    return this.state.isMounted ? (
       ReactDom.createPortal(
-        <div className={classes}
-             onClick={this.props.onClick}>
-        </div>,
+        <div
+          className={classes.join(' ')}
+          onClick={this.props.onClick}
+        />,
         document.body
-      ) : null
+      )
+    ) : null
   }
 }
 
-Backdrop.propTypes = {
-  isBackdropVisible: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired
-}
-
-export default Backdrop
+export const Backdrop = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Component)
