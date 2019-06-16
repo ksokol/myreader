@@ -4,66 +4,79 @@ import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {IconButton} from '../Buttons'
-import {
-  backdropIsVisible,
-  fetchSubscriptions,
-  hideBackdrop,
-  mediaBreakpointIsDesktopSelector,
-  sidenavSlideIn,
-  toggleSidenav
-} from '../../store'
+import {fetchSubscriptions, mediaBreakpointIsDesktopSelector} from '../../store'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import Navigation from '../Navigation/Navigation'
 import {Backdrop} from '../Backdrop/Backdrop'
 
 const mapStateToProps = state => ({
-  isDesktop: mediaBreakpointIsDesktopSelector(state),
-  sidenavSlideIn: sidenavSlideIn(state),
-  isBackdropVisible: backdropIsVisible(state)
+  isDesktop: mediaBreakpointIsDesktopSelector(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  toggleSidenav,
-  fetchSubscriptions,
-  hideBackdrop
+  fetchSubscriptions
 }, dispatch)
 
 class SidenavLayout extends React.Component {
 
   static propTypes = {
     isDesktop: PropTypes.bool.isRequired,
-    sidenavSlideIn: PropTypes.bool.isRequired,
-    isBackdropVisible: PropTypes.bool.isRequired,
-    toggleSidenav: PropTypes.func.isRequired,
     locationReload: PropTypes.bool.isRequired,
     fetchSubscriptions: PropTypes.func.isRequired,
-    hideBackdrop: PropTypes.func.isRequired,
     children: PropTypes.any
   }
 
-  componentDidMount() {
-    this.fetchSubscriptions()
+  state = {
+    sidenavSlideIn: false,
+    backdropVisible: false
   }
 
-  componentDidUpdate() {
+  componentDidMount = () => this.fetchSubscriptions()
+
+  componentDidUpdate(prevProps) {
     if (this.props.locationReload) {
       this.fetchSubscriptions()
     }
+
+    if (this.props.isDesktop !== prevProps.isDesktop && this.props.isDesktop) {
+      this.setState({
+        backdropVisible: false,
+        sidenavSlideIn: false
+      })
+    }
   }
 
-  fetchSubscriptions = () => {
-    this.props.fetchSubscriptions()
+  fetchSubscriptions = () => this.props.fetchSubscriptions()
+
+  toggleSidenav = () => {
+    if (!this.props.isDesktop) {
+      this.setState(state => ({
+        backdropVisible: !state.backdropVisible,
+        sidenavSlideIn: !state.sidenavSlideIn
+      }))
+    }
+  }
+
+  hideBackdrop = () => {
+    this.setState(state => {
+      let backdropVisible = !state.backdropVisible
+      return {
+        backdropVisible,
+        sidenavSlideIn: backdropVisible
+      }
+    })
   }
 
   render() {
     const {
       isDesktop,
-      sidenavSlideIn,
-      isBackdropVisible,
-      toggleSidenav,
-      hideBackdrop,
       children
     } = this.props
+
+    const {
+      sidenavSlideIn,
+      backdropVisible
+    } = this.state
 
     const classes = [
       'my-sidenav-layout__nav',
@@ -81,7 +94,7 @@ class SidenavLayout extends React.Component {
           {!isDesktop && (
             <IconButton
               type='bars'
-              onClick={toggleSidenav}
+              onClick={this.toggleSidenav}
               inverse
             />
           )}
@@ -91,7 +104,7 @@ class SidenavLayout extends React.Component {
           className={classes.join(' ')}
         >
           <Navigation
-            onClick={toggleSidenav}
+            onClick={this.toggleSidenav}
           />
         </nav>
 
@@ -101,8 +114,8 @@ class SidenavLayout extends React.Component {
         </main>
 
         <Backdrop
-          maybeVisible={isBackdropVisible}
-          onClick={hideBackdrop}
+          maybeVisible={backdropVisible}
+          onClick={this.hideBackdrop}
         />
       </div>
     )

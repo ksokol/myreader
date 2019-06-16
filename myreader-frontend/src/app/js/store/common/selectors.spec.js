@@ -1,10 +1,4 @@
-import {
-  backdropIsVisible,
-  getNextNotificationId,
-  getNotifications,
-  mediaBreakpointIsDesktopSelector,
-  sidenavSlideIn
-} from '../../store'
+import {getNextNotificationId, getNotifications, mediaBreakpointIsDesktopSelector} from '../../store'
 import {pendingRequestCountSelector} from './selectors'
 
 describe('common selectors', () => {
@@ -42,14 +36,6 @@ describe('common selectors', () => {
 
   it('mediaBreakpointIsDesktopSelector should return false when mediaBreakpoint is set to "other"', () => {
     expect(mediaBreakpointIsDesktopSelector(state({mediaBreakpoint: 'other'}))).toEqual(false)
-  })
-
-  it('sidenavSlideIn should return true', () => {
-    expect(sidenavSlideIn(state({sidenavSlideIn: true}))).toEqual(true)
-  })
-
-  it('backdropIsVisible should return true', () => {
-    expect(backdropIsVisible(state({backdropVisible: true}))).toEqual(true)
   })
 
   it('pendingRequestCountSelector should return 2 for pendingRequests', () => {

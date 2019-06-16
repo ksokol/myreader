@@ -1,12 +1,10 @@
 import {
   fetchEnd,
   fetchStart,
-  hideBackdrop,
   mediaBreakpointChanged,
   removeNotification,
   showErrorNotification,
-  showSuccessNotification,
-  toggleSidenav
+  showSuccessNotification
 } from '../../store'
 import {createMockStore} from '../../shared/test-utils'
 
@@ -69,17 +67,5 @@ describe('common actions', () => {
       type: 'MEDIA_BREAKPOINT_CHANGED',
       mediaBreakpoint: 'expected breakpoint name'
     })
-  })
-
-  it('action creator toggleSidenav', () => {
-    store.dispatch(toggleSidenav())
-
-    expect(store.getActionTypes()).toEqual(['TOGGLE_SIDENAV'])
-  })
-
-  it('action creator hideBackdrop', () => {
-    store.dispatch(hideBackdrop())
-
-    expect(store.getActionTypes()).toEqual(['HIDE_BACKDROP'])
   })
 })

@@ -37,15 +37,3 @@ export const mediaBreakpointChanged = mediaBreakpoint => {
     mediaBreakpoint
   }
 }
-
-export const toggleSidenav = () => {
-  return {
-    type: types.TOGGLE_SIDENAV
-  }
-}
-
-export const hideBackdrop = () => {
-  return {
-    type: types.HIDE_BACKDROP
-  }
-}
