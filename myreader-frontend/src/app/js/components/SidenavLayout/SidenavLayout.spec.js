@@ -7,7 +7,7 @@ jest.mock('../Backdrop/Backdrop', () => ({
   Backdrop: () => null
 }))
 
-jest.mock('../Navigation/Navigation', () => () => null)
+jest.mock('../Navigation/Navigation', () => props => <div className='navigation' {...props} />)
 
 jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
@@ -97,8 +97,7 @@ describe('SidenavLayout', () => {
   })
 
   it('should dispatch action HIDE_BACKDROP when prop function "onClick" triggered on backdrop component', () => {
-    const wrapper = createWrapper()
-    wrapper.find('Backdrop').props().onClick()
+    createWrapper().find('Backdrop').props().onClick()
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'HIDE_BACKDROP'
@@ -107,5 +106,13 @@ describe('SidenavLayout', () => {
 
   it('should pass expected props to backdrop component', () => {
     expect(createWrapper().find('Backdrop').prop('maybeVisible')).toEqual(true)
+  })
+
+  it('should dispatch action TOGGLE_SIDENAV when prop function "onClick" triggered on navigation component', () => {
+    createWrapper().find('.navigation').props().onClick()
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'TOGGLE_SIDENAV'
+    })
   })
 })

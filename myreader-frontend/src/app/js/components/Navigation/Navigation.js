@@ -14,15 +14,11 @@ import {
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
 } from '../../constants'
-import {authorizedSelector, filteredByUnseenSubscriptionsSelector, toggleSidenav} from '../../store'
+import {authorizedSelector, filteredByUnseenSubscriptionsSelector} from '../../store'
 
 const mapStateToProps = state => ({
   ...authorizedSelector(state),
   ...filteredByUnseenSubscriptionsSelector(state)
-})
-
-const mapDispatchToProps = dispatch => ({
-  onClick: () => dispatch(toggleSidenav())
 })
 
 const Navigation = props => {
@@ -106,6 +102,5 @@ Navigation.defaultProps = {
 }
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  mapStateToProps
 )(Navigation)

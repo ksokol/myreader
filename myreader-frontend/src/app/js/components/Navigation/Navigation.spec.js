@@ -43,13 +43,11 @@ class NavigationPage {
 
 describe('Navigation', () => {
 
-  let state, dispatch
+  let props, state
 
-  const createWrapper = () => new NavigationPage(mount(<Navigation state={state} dispatch={dispatch} />))
+  const createWrapper = () => new NavigationPage(mount(<Navigation {...props} state={state} />))
 
   beforeEach(() => {
-    dispatch = jest.fn()
-
     state = {
       subscription: {subscriptions: [
           {title: 'subscription 1', uuid: '1', feedTag: {name: 'group 1'}, unseen: 2},
@@ -58,6 +56,10 @@ describe('Navigation', () => {
       ]},
       settings: {showUnseenEntries: false},
       security: {roles: ['USER']}
+    }
+
+    props = {
+      onClick: jest.fn()
     }
   })
 
@@ -119,13 +121,10 @@ describe('Navigation', () => {
     ])
   })
 
-  it('should dispatch actions TOGGLE_SIDENAV when prop function "onClick" triggered', () => {
+  it('should trigger prop function "onClick" on each navigation item click', () => {
     const wrapper = createWrapper()
     wrapper.navigationItems.forEach(item => item.invoke('onClick')())
 
-    expect(dispatch).toHaveBeenCalledTimes(9)
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'TOGGLE_SIDENAV'
-    })
+    expect(props.onClick).toHaveBeenCalledTimes(9)
   })
 })

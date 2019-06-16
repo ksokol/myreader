@@ -78,19 +78,26 @@ class SidenavLayout extends React.Component {
         <header
           className='my-sidenav-layout__header'
         >
-          {!isDesktop && <IconButton type='bars' onClick={toggleSidenav} inverse/>}
+          {!isDesktop && (
+            <IconButton
+              type='bars'
+              onClick={toggleSidenav}
+              inverse
+            />
+          )}
         </header>
 
         <nav
           className={classes.join(' ')}
         >
-          <Navigation />
+          <Navigation
+            onClick={toggleSidenav}
+          />
         </nav>
 
         <main
           className='my-sidenav-layout__main'
-        >
-          {children}
+        >{children}
         </main>
 
         <Backdrop
