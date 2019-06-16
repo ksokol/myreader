@@ -8,7 +8,6 @@ export default function initialState() {
     notification: {
       nextId: 0,
       notifications: []
-    },
-    mediaBreakpoint: ''
+    }
   }
 }

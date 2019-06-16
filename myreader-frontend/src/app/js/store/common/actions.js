@@ -30,10 +30,3 @@ export const fetchEnd = () => {
     type: types.FETCH_END
   }
 }
-
-export const mediaBreakpointChanged = mediaBreakpoint => {
-  return {
-    type: types.MEDIA_BREAKPOINT_CHANGED,
-    mediaBreakpoint
-  }
-}

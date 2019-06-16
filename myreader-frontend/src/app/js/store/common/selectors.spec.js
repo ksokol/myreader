@@ -1,4 +1,4 @@
-import {getNextNotificationId, getNotifications, mediaBreakpointIsDesktopSelector} from '../../store'
+import {getNextNotificationId, getNotifications} from '../../store'
 import {pendingRequestCountSelector} from './selectors'
 
 describe('common selectors', () => {
@@ -28,14 +28,6 @@ describe('common selectors', () => {
 
   it('should select nextId', () => {
     expect(getNextNotificationId(state({notification: {nextId: 3}}))).toEqual(3)
-  })
-
-  it('mediaBreakpointIsDesktopSelector should return true when mediaBreakpoint is set to "desktop"', () => {
-    expect(mediaBreakpointIsDesktopSelector(state({mediaBreakpoint: 'desktop'}))).toEqual(true)
-  })
-
-  it('mediaBreakpointIsDesktopSelector should return false when mediaBreakpoint is set to "other"', () => {
-    expect(mediaBreakpointIsDesktopSelector(state({mediaBreakpoint: 'other'}))).toEqual(false)
   })
 
   it('pendingRequestCountSelector should return 2 for pendingRequests', () => {

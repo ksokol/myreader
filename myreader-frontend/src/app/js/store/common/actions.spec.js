@@ -1,11 +1,4 @@
-import {
-  fetchEnd,
-  fetchStart,
-  mediaBreakpointChanged,
-  removeNotification,
-  showErrorNotification,
-  showSuccessNotification
-} from '../../store'
+import {fetchEnd, fetchStart, removeNotification, showErrorNotification, showSuccessNotification} from '../../store'
 import {createMockStore} from '../../shared/test-utils'
 
 describe('common actions', () => {
@@ -58,14 +51,5 @@ describe('common actions', () => {
     store.dispatch(fetchEnd())
 
     expect(store.getActionTypes()).toEqual(['FETCH_END'])
-  })
-
-  it('action creator mediaBreakpointChanged', () => {
-    store.dispatch(mediaBreakpointChanged('expected breakpoint name'))
-
-    expect(store.getActions()[0]).toEqual({
-      type: 'MEDIA_BREAKPOINT_CHANGED',
-      mediaBreakpoint: 'expected breakpoint name'
-    })
   })
 })

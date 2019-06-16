@@ -4,6 +4,4 @@ export const getNotifications = state => ({
 
 export const getNextNotificationId = state => state.common.notification.nextId
 
-export const mediaBreakpointIsDesktopSelector = state => state.common.mediaBreakpoint === 'desktop'
-
 export const pendingRequestCountSelector = state => state.common.pendingRequests

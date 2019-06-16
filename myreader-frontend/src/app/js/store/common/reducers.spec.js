@@ -1,7 +1,7 @@
 import initialState from './index'
 import {commonReducers} from '../../store'
 
-describe('src/app/js/store/common/reducers.spec.js', () => {
+describe('common reducers', () => {
 
   let state
 
@@ -70,20 +70,5 @@ describe('src/app/js/store/common/reducers.spec.js', () => {
   it('action FETCH_END', () => {
     state.pendingRequests = 1
     expect(commonReducers(state, {type: 'FETCH_END'})).toContainObject({pendingRequests: 0})
-  })
-
-  describe('action MEDIA_BREAKPOINT_CHANGED', () => {
-
-    let action
-
-    beforeEach(() => {
-      action = {
-        type: 'MEDIA_BREAKPOINT_CHANGED',
-        mediaBreakpoint: 'phone'
-      }
-    })
-
-    it('should set mediaBreakpoint', () =>
-      expect(commonReducers(state, action)).toContainObject({mediaBreakpoint: 'phone'}))
   })
 })

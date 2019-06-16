@@ -1,9 +1,7 @@
 import React from 'react'
-import {Provider} from 'react-redux'
 import {mount} from 'enzyme'
 import {MediaBreakpointProvider} from './MediaBreakpointProvider'
 import MediaBreakpointContext from './MediaBreakpointContext'
-import {createMockStore} from '../../shared/test-utils'
 
 class TestComponent extends React.Component {
   static contextType = MediaBreakpointContext
@@ -12,15 +10,13 @@ class TestComponent extends React.Component {
 
 describe('mediaBreakpoint', () => {
 
-  let store, originalMatchMediaFn, mediaMatchListeners
+  let originalMatchMediaFn, mediaMatchListeners
 
   const createTestComponent = () => {
     return mount(
-      <Provider store={store}>
-        <MediaBreakpointProvider>
-          <TestComponent />
-        </MediaBreakpointProvider>
-      </Provider>
+      <MediaBreakpointProvider>
+        <TestComponent />
+      </MediaBreakpointProvider>
     ).find(TestComponent).instance()
   }
 
@@ -34,7 +30,6 @@ describe('mediaBreakpoint', () => {
     })
 
     expect(mediaMatchListeners).toHaveLength(0)
-    store = createMockStore()
   })
 
   afterEach(() => window.matchMedia = originalMatchMediaFn)
@@ -58,30 +53,5 @@ describe('mediaBreakpoint', () => {
     mediaMatchListeners[2]()
 
     expect(component.context).toEqual({mediaBreakpoint: 'desktop'})
-  })
-
-  describe('Redux store', () => {
-
-    it('should dispatch action with media breakpoint set to "phone"', () => {
-      createTestComponent()
-      mediaMatchListeners[0]()
-
-      expect(store.getActions()[0]).toEqual({type: 'MEDIA_BREAKPOINT_CHANGED', mediaBreakpoint: 'phone'})
-    })
-
-    it('should dispatch action with media breakpoint set to "tablet"', () => {
-      createTestComponent()
-      mediaMatchListeners[1]()
-
-      expect(store.getActions()[0]).toEqual({type: 'MEDIA_BREAKPOINT_CHANGED', mediaBreakpoint: 'tablet'})
-    })
-
-
-    it('should dispatch action with media breakpoint set to "desktop"', () => {
-      createTestComponent()
-      mediaMatchListeners[2]()
-
-      expect(store.getActions()[0]).toEqual({type: 'MEDIA_BREAKPOINT_CHANGED', mediaBreakpoint: 'desktop'})
-    })
   })
 })
