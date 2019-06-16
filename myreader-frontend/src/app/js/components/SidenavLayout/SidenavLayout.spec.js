@@ -95,4 +95,17 @@ describe('SidenavLayout', () => {
 
     expect(dispatch).not.toHaveBeenCalled()
   })
+
+  it('should dispatch action HIDE_BACKDROP when prop function "onClick" triggered on backdrop component', () => {
+    const wrapper = createWrapper()
+    wrapper.find('Backdrop').props().onClick()
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'HIDE_BACKDROP'
+    })
+  })
+
+  it('should pass expected props to backdrop component', () => {
+    expect(createWrapper().find('Backdrop').prop('maybeVisible')).toEqual(true)
+  })
 })

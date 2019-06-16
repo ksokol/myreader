@@ -6,17 +6,14 @@ const backdropClass = '.my-backdrop'
 
 describe('Backdrop', () => {
 
-  let state, dispatch
+  let props
 
-  const createWrapper = () => mount(<Backdrop state={state} dispatch={dispatch} />)
+  const createWrapper = () => mount(<Backdrop {...props} />)
 
   beforeEach(() => {
-    dispatch = jest.fn()
-
-    state = {
-      common: {
-        backdropVisible: false
-      }
+    props = {
+      maybeVisible: false,
+      onClick: jest.fn()
     }
   })
 
@@ -24,23 +21,20 @@ describe('Backdrop', () => {
     expect(createWrapper().find(backdropClass).exists()).toEqual(false)
   })
 
-  it('should show backdrop when state backdropVisible changes to true', () => {
+  it('should show backdrop when prop "maybeVisible" changes to true', () => {
     const wrapper = createWrapper()
-    state.common.backdropVisible = true
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: true})
     wrapper.update()
 
     expect(wrapper.find(backdropClass).exists()).toEqual(true)
   })
 
-  it('should not show backdrop instantly when state backdropVisible changes from true to false', () => {
+  it('should not show backdrop instantly when prop "maybeVisible" changes from true to false', () => {
     const wrapper = createWrapper()
-    state.common.backdropVisible = true
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: true})
     wrapper.update()
 
-    state.common.backdropVisible = false
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: false})
     wrapper.update()
 
     expect(wrapper.find(backdropClass).exists()).toEqual(true)
@@ -48,12 +42,10 @@ describe('Backdrop', () => {
 
   it('should hide backdrop when 300ms passed', () => {
     const wrapper = createWrapper()
-    state.common.backdropVisible = true
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: true})
     wrapper.update()
 
-    state.common.backdropVisible = false
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: false})
     wrapper.update()
 
     jest.advanceTimersByTime(299)
@@ -65,21 +57,18 @@ describe('Backdrop', () => {
     expect(wrapper.find(backdropClass).exists()).toEqual(false)
   })
 
-  it('should not show backdrop when state backdropVisible changes to true within 300ms', () => {
+  it('should not show backdrop when prop "maybeVisible" changes to true within 300ms', () => {
     const wrapper = createWrapper()
-    state.common.backdropVisible = true
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: true})
     wrapper.update()
 
-    state.common.backdropVisible = false
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: false})
     wrapper.update()
 
     jest.advanceTimersByTime(299)
     wrapper.update()
 
-    state.common.backdropVisible = true
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: true})
     wrapper.update()
 
     jest.advanceTimersByTime(1)
@@ -88,21 +77,18 @@ describe('Backdrop', () => {
     expect(wrapper.find(backdropClass).exists()).toEqual(true)
   })
 
-  it('should show backdrop when state backdropVisible changes to true again', () => {
+  it('should show backdrop when prop "maybeVisible" changes to true again', () => {
     const wrapper = createWrapper()
-    state.common.backdropVisible = true
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: true})
     wrapper.update()
 
-    state.common.backdropVisible = false
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: false})
     wrapper.update()
 
     jest.advanceTimersByTime(300)
     wrapper.update()
 
-    state.common.backdropVisible = true
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: true})
     wrapper.update()
 
     expect(wrapper.find(backdropClass).exists()).toEqual(true)
@@ -110,8 +96,7 @@ describe('Backdrop', () => {
 
   it('should append visible class when backdrop is visible', () => {
     const wrapper = createWrapper()
-    state.common.backdropVisible = true
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: true})
     wrapper.update()
 
     expect(wrapper.find(backdropClass).prop('className')).toContain('my-backdrop--visible')
@@ -119,27 +104,21 @@ describe('Backdrop', () => {
 
   it('should append visible closing when backdrop is about to be hidden', () => {
     const wrapper = createWrapper()
-    state.common.backdropVisible = true
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: true})
     wrapper.update()
 
-    state.common.backdropVisible = false
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: false})
     wrapper.update()
 
     expect(wrapper.find(backdropClass).prop('className')).toContain('my-backdrop--closing')
   })
 
-  it('should dispatch action HIDE_BACKDROP when prop function "onClick" triggered', () => {
+  it('should trigger prop function "onClick" when click on backdrop occurred', () => {
     const wrapper = createWrapper()
-    state.common.backdropVisible = true
-    wrapper.setProps()
+    wrapper.setProps({maybeVisible: true})
     wrapper.update()
-
     wrapper.find(backdropClass).props().onClick()
 
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'HIDE_BACKDROP'
-    })
+    expect(props.onClick).toHaveBeenCalled()
   })
 })

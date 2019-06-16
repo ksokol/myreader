@@ -2,21 +2,11 @@ import './Backdrop.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDom from 'react-dom'
-import {connect} from 'react-redux'
-import {backdropIsVisible, hideBackdrop} from '../../store'
 
-const mapStateToProps = state => ({
-  isBackdropVisible: backdropIsVisible(state)
-})
-
-const mapDispatchToProps = dispatch => ({
-  onClick: () => dispatch(hideBackdrop())
-})
-
-class Component extends React.Component {
+export class Backdrop extends React.Component {
 
   static propTypes = {
-    isBackdropVisible: PropTypes.bool.isRequired,
+    maybeVisible: PropTypes.bool.isRequired,
     onClick: PropTypes.func.isRequired
   }
 
@@ -27,7 +17,7 @@ class Component extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.state.isVisible === this.props.isBackdropVisible) {
+    if (this.state.isVisible === this.props.maybeVisible) {
       return
     }
     clearTimeout(this.timeout)
@@ -35,7 +25,7 @@ class Component extends React.Component {
     if (this.state.isVisible) {
       this.scheduleUnmount()
       this.setState({
-        isVisible: this.props.isBackdropVisible,
+        isVisible: this.props.maybeVisible,
         isClosing: true,
         isMounted: true
       })
@@ -78,8 +68,3 @@ class Component extends React.Component {
     ) : null
   }
 }
-
-export const Backdrop = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Component)

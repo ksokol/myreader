@@ -4,19 +4,28 @@ import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {IconButton} from '../Buttons'
-import {fetchSubscriptions, mediaBreakpointIsDesktopSelector, sidenavSlideIn, toggleSidenav} from '../../store'
+import {
+  backdropIsVisible,
+  fetchSubscriptions,
+  hideBackdrop,
+  mediaBreakpointIsDesktopSelector,
+  sidenavSlideIn,
+  toggleSidenav
+} from '../../store'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import Navigation from '../Navigation/Navigation'
 import {Backdrop} from '../Backdrop/Backdrop'
 
 const mapStateToProps = state => ({
   isDesktop: mediaBreakpointIsDesktopSelector(state),
-  sidenavSlideIn: sidenavSlideIn(state)
+  sidenavSlideIn: sidenavSlideIn(state),
+  isBackdropVisible: backdropIsVisible(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   toggleSidenav,
-  fetchSubscriptions
+  fetchSubscriptions,
+  hideBackdrop
 }, dispatch)
 
 class SidenavLayout extends React.Component {
@@ -24,9 +33,11 @@ class SidenavLayout extends React.Component {
   static propTypes = {
     isDesktop: PropTypes.bool.isRequired,
     sidenavSlideIn: PropTypes.bool.isRequired,
+    isBackdropVisible: PropTypes.bool.isRequired,
     toggleSidenav: PropTypes.func.isRequired,
     locationReload: PropTypes.bool.isRequired,
     fetchSubscriptions: PropTypes.func.isRequired,
+    hideBackdrop: PropTypes.func.isRequired,
     children: PropTypes.any
   }
 
@@ -48,7 +59,9 @@ class SidenavLayout extends React.Component {
     const {
       isDesktop,
       sidenavSlideIn,
+      isBackdropVisible,
       toggleSidenav,
+      hideBackdrop,
       children
     } = this.props
 
@@ -80,7 +93,10 @@ class SidenavLayout extends React.Component {
           {children}
         </main>
 
-        <Backdrop />
+        <Backdrop
+          maybeVisible={isBackdropVisible}
+          onClick={hideBackdrop}
+        />
       </div>
     )
   }
