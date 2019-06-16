@@ -4,14 +4,11 @@ import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {IconButton} from '../Buttons'
-import {fetchSubscriptions, mediaBreakpointIsDesktopSelector} from '../../store'
+import {fetchSubscriptions} from '../../store'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import Navigation from '../Navigation/Navigation'
 import {Backdrop} from '../Backdrop/Backdrop'
-
-const mapStateToProps = state => ({
-  isDesktop: mediaBreakpointIsDesktopSelector(state)
-})
+import MediaBreakpointContext from '../../contexts/mediaBreakpoint/MediaBreakpointContext'
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   fetchSubscriptions
@@ -20,25 +17,32 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 class SidenavLayout extends React.Component {
 
   static propTypes = {
-    isDesktop: PropTypes.bool.isRequired,
+    mediaBreakpoint: PropTypes.string.isRequired,
     locationReload: PropTypes.bool.isRequired,
     fetchSubscriptions: PropTypes.func.isRequired,
     children: PropTypes.any
   }
 
   state = {
+    isDesktop: false,
     sidenavSlideIn: false,
     backdropVisible: false
   }
 
+  static getDerivedStateFromProps(props) {
+    return {
+      isDesktop: props.mediaBreakpoint === 'desktop'
+    }
+  }
+
   componentDidMount = () => this.fetchSubscriptions()
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.locationReload) {
       this.fetchSubscriptions()
     }
 
-    if (this.props.isDesktop !== prevProps.isDesktop && this.props.isDesktop) {
+    if (this.state.isDesktop !== prevState.isDesktop && this.state.isDesktop) {
       this.setState({
         backdropVisible: false,
         sidenavSlideIn: false
@@ -49,7 +53,7 @@ class SidenavLayout extends React.Component {
   fetchSubscriptions = () => this.props.fetchSubscriptions()
 
   toggleSidenav = () => {
-    if (!this.props.isDesktop) {
+    if (!this.state.isDesktop) {
       this.setState(state => ({
         backdropVisible: !state.backdropVisible,
         sidenavSlideIn: !state.sidenavSlideIn
@@ -70,10 +74,6 @@ class SidenavLayout extends React.Component {
   render() {
     const {
       isDesktop,
-      children
-    } = this.props
-
-    const {
       sidenavSlideIn,
       backdropVisible
     } = this.state
@@ -110,7 +110,7 @@ class SidenavLayout extends React.Component {
 
         <main
           className='my-sidenav-layout__main'
-        >{children}
+        >{this.props.children}
         </main>
 
         <Backdrop
@@ -124,7 +124,11 @@ class SidenavLayout extends React.Component {
 
 export default withLocationState(
   connect(
-    mapStateToProps,
+    () => ({}),
     mapDispatchToProps
-  )(SidenavLayout)
+  )(props => (
+    <MediaBreakpointContext.Consumer>
+      {value => <SidenavLayout {...props} {...value} />}
+    </MediaBreakpointContext.Consumer>
+  ))
 )

@@ -20,28 +20,23 @@ const openNavigation = '.my-sidenav-layout__nav--open'
 
 describe('SidenavLayout', () => {
 
-  let props, state, dispatch
+  let props, dispatch
 
-  const createWrapper = () => mount(<SidenavLayout {...props} state={state} dispatch={dispatch} />)
+  const createWrapper = () => mount(<SidenavLayout {...props} dispatch={dispatch} />)
 
   beforeEach(() => {
     dispatch = jest.fn()
 
     props = {
+      mediaBreakpoint: 'phone',
       locationReload: false
-    }
-
-    state = {
-      common: {
-        mediaBreakpoint: 'phone'
-      }
     }
   })
 
-  it('should not slide in navigation on desktop', () => {
+  it('should animate navigation when not on desktop', () => {
     expect(createWrapper().find('.my-sidenav-layout__nav--animate').exists()).toEqual(true)
 
-    state.common.mediaBreakpoint = 'desktop'
+    props.mediaBreakpoint = 'desktop'
     expect(createWrapper().find('.my-sidenav-layout__nav--animate').exists()).toEqual(false)
   })
 
@@ -57,7 +52,7 @@ describe('SidenavLayout', () => {
   it('should show hamburger menu on phones and tablets', () => {
     expect(createWrapper().find(hamburgerMenu).exists()).toEqual(true)
 
-    state.common.mediaBreakpoint = 'desktop'
+    props.mediaBreakpoint = 'desktop'
     expect(createWrapper().find(hamburgerMenu).exists()).toEqual(false)
   })
 
@@ -129,10 +124,7 @@ describe('SidenavLayout', () => {
     expect(wrapper.find('Backdrop').prop('maybeVisible')).toEqual(false)
     expect(wrapper.find(openNavigation).exists()).toEqual(false)
 
-    state.common.mediaBreakpoint = 'desktop'
-    wrapper.find(hamburgerMenu).invoke('onClick')()
-    wrapper.setProps()
-    wrapper.update()
+    wrapper.setProps({mediaBreakpoint: 'desktop'})
 
     expect(wrapper.find('Backdrop').prop('maybeVisible')).toEqual(false)
     expect(wrapper.find(openNavigation).exists()).toEqual(false)
@@ -145,8 +137,7 @@ describe('SidenavLayout', () => {
     expect(wrapper.find('Backdrop').prop('maybeVisible')).toEqual(true)
     expect(wrapper.find(openNavigation).exists()).toEqual(true)
 
-    state.common.mediaBreakpoint = 'desktop'
-    wrapper.setProps()
+    wrapper.setProps({mediaBreakpoint: 'desktop'})
     wrapper.update()
 
     expect(wrapper.find('Backdrop').prop('maybeVisible')).toEqual(false)
@@ -154,14 +145,13 @@ describe('SidenavLayout', () => {
   })
 
   it('should slide in navigation when not on desktop', () => {
-    state.common.mediaBreakpoint = 'desktop'
     const wrapper = createWrapper()
+    wrapper.setProps({mediaBreakpoint: 'desktop'})
 
     expect(wrapper.find('Backdrop').prop('maybeVisible')).toEqual(false)
     expect(wrapper.find(openNavigation).exists()).toEqual(false)
 
-    state.common.mediaBreakpoint = 'phone'
-    wrapper.setProps()
+    wrapper.setProps({mediaBreakpoint: 'phone'})
     wrapper.update()
     wrapper.find(hamburgerMenu).invoke('onClick')()
     wrapper.update()
