@@ -2,13 +2,13 @@ import React from 'react'
 import Hotkeys from './Hotkeys'
 import {mount} from 'enzyme'
 
-const enter = {key: 'Enter', keyCode: 13}
-const down = {key: 'ArrowDown', keyCode: 40}
-const up = {key: 'ArrowUp', keyCode: 38}
-const a = {key: 'a', keyCode: 65}
-const y = {key: 'y', keyCode: 89}
-const z = {key: 'z', keyCode: 90}
-const esc = {key: 'esc', keyCode: 27}
+const enter = {key: 'enter', code: 13}
+const down = {key: 'down', code: 40}
+const up = {key: 'up', code: 38}
+const a = {key: 'a', code: 65}
+const y = {key: 'y', code: 89}
+const z = {key: 'z', code: 90}
+const esc = {key: 'esc', code: 27}
 
 describe('Hotkeys', () => {
 
@@ -27,14 +27,8 @@ describe('Hotkeys', () => {
     wrapper = mount(<Hotkeys onKeys={onKeys}><p>wrapped component</p></Hotkeys>)
   })
 
-  const onKey = (event, funcs = {}) => {
-    let keyEvent = document.createEvent('Event')
-    keyEvent.keyCode = event.keyCode
-    keyEvent.key = event.key
-    Object.assign(keyEvent, funcs)
-
-    keyEvent.initEvent('keyup')
-    document.dispatchEvent(keyEvent)
+  const onKey = ({key, code}) => {
+    document.dispatchEvent(new KeyboardEvent('keyup', {key, code}))
   }
 
   it('should render wrapped element', () => {
