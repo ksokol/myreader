@@ -11,7 +11,7 @@ jest.mock('../../components', () => ({
   SubscribeForm: () => null
 }))
 
-jest.mock('../../contexts', () => ({
+jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
 

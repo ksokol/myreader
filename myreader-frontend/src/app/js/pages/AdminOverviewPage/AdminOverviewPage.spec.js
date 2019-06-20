@@ -10,10 +10,6 @@ jest.mock('../../components/AdminOverview/AdminOverview', () => ({
   AdminOverview: () => null
 }))
 
-jest.mock('../../contexts', () => ({
-  withNotification: Component => Component
-}))
-
 jest.mock('../../api', () => ({
   adminApi: {}
 }))

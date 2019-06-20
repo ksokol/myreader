@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {Chips, EntryList, ListLayout} from '../../components'
-import {withLocationState} from '../../contexts'
+import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {changeEntry, fetchEntries, fetchEntryTags, getEntries, getEntryTags} from '../../store'
 import {BOOKMARK_URL, SUBSCRIPTION_ENTRIES} from '../../constants'
 

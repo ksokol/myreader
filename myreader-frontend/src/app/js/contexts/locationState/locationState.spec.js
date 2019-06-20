@@ -1,6 +1,7 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import {LocationStateProvider, withLocationState} from '.'
+import LocationStateProvider from './LocationStateProvider'
+import {withLocationState} from './withLocationState'
 
 const WrappedComponent = () => <span>wrapped component</span>
 

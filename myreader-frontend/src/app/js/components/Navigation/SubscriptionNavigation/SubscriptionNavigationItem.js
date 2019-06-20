@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {NavigationItem} from '..'
 import {ENTRIES_URL} from '../../../constants'
-import {withLocationState} from '../../../contexts'
+import {withLocationState} from '../../../contexts/locationState/withLocationState'
 
 function isOpen(searchParams, item) {
   return searchParams.feedTagEqual === item.tag

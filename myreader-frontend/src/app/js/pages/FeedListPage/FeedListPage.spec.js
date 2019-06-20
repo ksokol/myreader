@@ -11,10 +11,6 @@ jest.mock('../../components', () => ({
   ListLayout: ({listPanel}) => <div>{listPanel}</div>
 }))
 
-jest.mock('../../contexts', () => ({
-  withNotification: Component => Component
-}))
-
 jest.mock('../../api', () => ({
   feedApi: {}
 }))

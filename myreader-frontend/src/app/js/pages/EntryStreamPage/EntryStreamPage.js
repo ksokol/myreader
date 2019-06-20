@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {EntryList, Hotkeys, IconButton, ListLayout} from '../../components'
-import {withLocationState} from '../../contexts'
+import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {
   changeEntry,
   entryClear,

@@ -4,7 +4,7 @@ import SubscriptionList from './SubscriptionList'
 import {SUBSCRIPTIONS_URL} from '../../constants'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../contexts', () => ({
+jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
 /* eslint-enable */

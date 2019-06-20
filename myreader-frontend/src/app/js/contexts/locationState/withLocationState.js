@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {generatePath, withRouter} from 'react-router'
-import {LocationStateContext} from '../../contexts'
+import LocationStateContext from './LocationStateContext'
 
 function toSearchParams(location = {}) {
   const query = {}

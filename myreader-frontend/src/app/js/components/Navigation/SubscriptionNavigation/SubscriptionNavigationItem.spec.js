@@ -3,6 +3,12 @@ import {SubscriptionNavigationItem} from '.'
 import {mount} from 'enzyme'
 import {ENTRIES_URL} from '../../../constants'
 
+/* eslint-disable react/prop-types */
+jest.mock('../../../contexts/locationState/withLocationState', () => ({
+  withLocationState: Component => Component
+}))
+/* eslint-enable */
+
 class SubscriptionNavigationItemSubscriptionsWrapper {
 
   constructor(wrapper) {
@@ -79,9 +85,7 @@ describe('SubscriptionNavigationItem', () => {
         uuid: 'uuid',
         subscriptions: [subscriptions1, subscriptions2]
       },
-      location: {
-        search: ''
-      },
+      searchParams: {},
       onClick: jest.fn()
     }
   })
@@ -108,7 +112,7 @@ describe('SubscriptionNavigationItem', () => {
   })
 
   it('should flag navigation item as selected when prop "query.feedUuidEqual" and "query.feedTagEqual" is not equal to item uuid and tag', () => {
-    expect(createWrapper().itemProps).toContainObject({selected: false})
+    expect(createWrapper().itemProps).toEqual(expect.objectContaining({selected: false}))
   })
 
   it('should not flag navigation item as selected when prop "query.feedTagEqual" is not equal to item tag', () => {
@@ -116,7 +120,7 @@ describe('SubscriptionNavigationItem', () => {
       search: `?feedUuidEqual=${props.item.uuid}`
     }
 
-    expect(createWrapper().itemProps).toContainObject({selected: false})
+    expect(createWrapper().itemProps).toEqual(expect.objectContaining({selected: false}))
   })
 
   it('should not flag navigation item as selected when prop "query.feedUuidEqual" is not equal to item uuid', () => {
@@ -124,34 +128,34 @@ describe('SubscriptionNavigationItem', () => {
       search: `?feedTagEqual=${props.item.tag}`
     }
 
-    expect(createWrapper().itemProps).toContainObject({selected: false})
+    expect(createWrapper().itemProps).toEqual(expect.objectContaining({selected: false}))
   })
 
   it('should flag navigation item as selected when prop "query.feedUuidEqual" and "query.feedTagEqual" is equal to item uuid and tag', () => {
-    props.location = {
-      search: `?feedTagEqual=${props.item.tag}&feedUuidEqual=${props.item.uuid}`
+    props.searchParams = {
+      feedTagEqual: props.item.tag,
+      feedUuidEqual: props.item.uuid
     }
 
-    expect(createWrapper().itemProps).toContainObject({selected: true})
+    expect(createWrapper().itemProps).toEqual(expect.objectContaining({selected: true}))
   })
 
   describe('', () => {
 
     beforeEach(() => {
-      props.location = {
-        search: `?feedTagEqual=${props.item.tag}`
+      props.searchParams = {
+        feedTagEqual: props.item.tag
       }
     })
 
     it('should not render navigation subscriptions when prop "query.feedTagEqual" is not equal to item tag', () => {
-      props.location = {
-        search: ''
-      }
+      props.searchParams = {}
+
       expect(createWrapper().subscriptions.exists).toEqual(false)
     })
 
     it('should not render navigation subscriptions when prop "item.subscriptions" is undefined', () => {
-      props.item.subscriptions = undefined
+      props.item.subscriptions = null
 
       expect(createWrapper().subscriptions.exists).toEqual(false)
     })
@@ -161,7 +165,7 @@ describe('SubscriptionNavigationItem', () => {
     })
 
     it('should pass expected prop "to" with feedUuidEqual set', () => {
-      props.item.tag = undefined
+      props.item.tag = null
 
       expect(createWrapper().itemProps).toEqual(expect.objectContaining({
         title: 'item title',
@@ -186,7 +190,7 @@ describe('SubscriptionNavigationItem', () => {
 
     it('should pass expected prop "to" without search value set', () => {
       props.item.uuid = ''
-      props.item.tag = undefined
+      props.item.tag = null
 
       expect(createWrapper().itemProps).toEqual(expect.objectContaining({
         title: 'item title',
@@ -227,30 +231,24 @@ describe('SubscriptionNavigationItem', () => {
     it('should not flag any navigation subscription item as selected when prop "query.feedUuidEqual" is not equal to a subscription uuid', () => {
       const subscriptions = createWrapper().subscriptions
 
-      expect(subscriptions.itemPropsAt(0)).toContainObject({selected: false})
-      expect(subscriptions.itemPropsAt(1)).toContainObject({selected: false})
+      expect(subscriptions.itemPropsAt(0)).toEqual(expect.objectContaining({selected: false}))
+      expect(subscriptions.itemPropsAt(1)).toEqual(expect.objectContaining({selected: false}))
     })
 
     it('should flag first navigation subscription item as selected when prop "query.feedUuidEqual" is equal to first subscription uuid', () => {
-      props.location = {
-        search: `${props.location.search}&feedUuidEqual=${props.item.subscriptions[0].uuid}`
-      }
-
+      props.searchParams.feedUuidEqual = props.item.subscriptions[0].uuid
       const subscriptions = createWrapper().subscriptions
 
-      expect(subscriptions.itemPropsAt(0)).toContainObject({selected: true})
-      expect(subscriptions.itemPropsAt(1)).toContainObject({selected: false})
+      expect(subscriptions.itemPropsAt(0)).toEqual(expect.objectContaining({selected: true}))
+      expect(subscriptions.itemPropsAt(1)).toEqual(expect.objectContaining({selected: false}))
     })
 
     it('should flag second navigation subscription item as selected when prop "query.feedUuidEqual" is equal to second subscription uuid', () => {
-      props.location = {
-        search: `${props.location.search}&feedUuidEqual=${props.item.subscriptions[1].uuid}`
-      }
-
+      props.searchParams.feedUuidEqual = props.item.subscriptions[1].uuid
       const subscriptions = createWrapper().subscriptions
 
-      expect(subscriptions.itemPropsAt(0)).toContainObject({selected: false})
-      expect(subscriptions.itemPropsAt(1)).toContainObject({selected: true})
+      expect(subscriptions.itemPropsAt(0)).toEqual(expect.objectContaining({selected: false}))
+      expect(subscriptions.itemPropsAt(1)).toEqual(expect.objectContaining({selected: true}))
     })
 
     it('should trigger prop function "onClick" when first subscription navigation item clicked', () => {

@@ -8,7 +8,7 @@ jest.mock('..', () => ({
   IconButton: () => <div />
 }))
 
-jest.mock('../../contexts', () => ({
+jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
 /* eslint-enable */

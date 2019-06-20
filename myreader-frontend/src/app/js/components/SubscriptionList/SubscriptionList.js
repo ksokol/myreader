@@ -5,7 +5,7 @@ import {generatePath} from 'react-router'
 import {Link} from 'react-router-dom'
 import TimeAgo from '../TimeAgo/TimeAgo'
 import {SUBSCRIPTION_URL} from '../../constants'
-import {withLocationState} from '../../contexts'
+import {withLocationState} from '../../contexts/locationState/withLocationState'
 
 function filterSubscriptions(subscriptions, q = '') {
   return q

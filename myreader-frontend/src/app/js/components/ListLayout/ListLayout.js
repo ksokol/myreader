@@ -2,7 +2,7 @@ import './ListLayout.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {SearchInput, IconButton} from '..'
-import {withLocationState} from '../../contexts'
+import {withLocationState} from '../../contexts/locationState/withLocationState'
 
 class ListLayout extends React.Component {
 

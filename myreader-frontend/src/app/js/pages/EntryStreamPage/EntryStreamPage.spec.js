@@ -10,7 +10,7 @@ jest.mock('../../components', () => ({
   ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>
 }))
 
-jest.mock('../../contexts', () => ({
+jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
 

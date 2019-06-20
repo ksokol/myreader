@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {SubscriptionEditForm} from '../../components'
-import {withLocationState} from '../../contexts'
+import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {SUBSCRIPTIONS_URL} from '../../constants'
 import {subscriptionApi, subscriptionTagsApi} from '../../api'
 import {toast} from '../../components/Toast'

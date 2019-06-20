@@ -11,9 +11,8 @@ jest.mock('../../components/FeedEditForm/FeedEditForm', () => ({
   FeedEditForm: () => null
 }))
 
-jest.mock('../../contexts', () => ({
-  withLocationState: Component => Component,
-  withNotification: Component => Component
+jest.mock('../../contexts/locationState/withLocationState', () => ({
+  withLocationState: Component => Component
 }))
 
 jest.mock('../../api', () => ({

@@ -4,7 +4,7 @@ import FeedList from './FeedList'
 import {ADMIN_FEEDS_URL} from '../../constants'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../contexts/locationState', () => ({
+jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
 /* eslint-enable */

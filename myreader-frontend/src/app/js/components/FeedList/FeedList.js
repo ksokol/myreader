@@ -6,7 +6,7 @@ import {Link} from 'react-router-dom'
 import {Icon} from '../Icon/Icon'
 import TimeAgo from '../TimeAgo/TimeAgo'
 import {ADMIN_FEED_URL} from '../../constants'
-import {withLocationState} from '../../contexts/locationState'
+import {withLocationState} from '../../contexts/locationState/withLocationState'
 
 function filterFeeds(feeds, q = '') {
   return q
