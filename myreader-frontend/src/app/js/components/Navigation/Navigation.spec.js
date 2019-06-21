@@ -10,9 +10,14 @@ import {
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
 } from '../../constants'
+import {useAppContext} from '../../contexts'
 
 /* eslint-disable react/prop-types */
 jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => () => null)
+
+jest.mock('../../contexts', () => ({
+  useAppContext: jest.fn()
+}))
 /* eslint-enable */
 
 class NavigationPage {
@@ -48,6 +53,9 @@ describe('Navigation', () => {
   const createWrapper = () => new NavigationPage(mount(<Navigation {...props} state={state} />))
 
   beforeEach(() => {
+    useAppContext.mockClear()
+    useAppContext.mockReturnValue({showUnseenEntries: false})
+
     state = {
       subscription: {subscriptions: [
           {title: 'subscription 1', uuid: '1', feedTag: {name: 'group 1'}, unseen: 2},
@@ -126,5 +134,39 @@ describe('Navigation', () => {
     wrapper.navigationItems.forEach(item => item.invoke('onClick')())
 
     expect(props.onClick).toHaveBeenCalledTimes(9)
+  })
+
+  it('should render user navigation with subscriptions.unseen > 0', () => {
+    useAppContext.mockReturnValue({showUnseenEntries: true})
+    const page = createWrapper()
+
+    expect(page.navigationItemLabels).toEqual([
+      'all',
+      'group 1',
+      'group 2',
+      'Subscriptions',
+      'Bookmarks',
+      'Settings',
+      'Add subscription',
+      'Logout'
+    ])
+  })
+
+  it('should render admin navigation with subscriptions.unseen > 0', () => {
+    useAppContext.mockReturnValue({showUnseenEntries: true})
+    state.security.roles = ['ADMIN']
+
+    expect(createWrapper().navigationItemLabels).toEqual([
+      'all',
+      'group 1',
+      'group 2',
+      'Subscriptions',
+      'Bookmarks',
+      'Settings',
+      'Admin',
+      'Feeds',
+      'Add subscription',
+      'Logout'
+    ])
   })
 })

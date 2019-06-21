@@ -12,6 +12,16 @@ function createAllBucket(subscriptions) {
   }
 }
 
+function sortByTitle(left, right) {
+  const leftProperty = (left['title'] || '').toLocaleLowerCase()
+  const rightProperty = (right['title'] || '').toLocaleLowerCase()
+
+  if (leftProperty < rightProperty) {
+    return -1
+  }
+  return leftProperty === rightProperty ? 0 : 1
+}
+
 function sortIntoBucket(buckets, subscription) {
   const tag = subscription.feedTag.name
   const bucket = buckets[tag] || {
@@ -47,23 +57,32 @@ function tagIsPresent(subscription) {
 }
 
 function createBucketsByTag(subscriptions) {
-  return subscriptions.filter(tagIsPresent).reduce(sortIntoBucket, {})
+  return subscriptions
+    .filter(tagIsPresent)
+    .reduce(sortIntoBucket, {})
 }
 
 function groupByTag(subscriptions) {
-  return Object.values(createBucketsByTag(subscriptions))
+  return Object
+    .values(createBucketsByTag(subscriptions))
+    .sort(sortByTitle)
+    .map(group => ({
+      ...group,
+      subscriptions: group.subscriptions.sort(sortByTitle)
+    }))
 }
 
 function filterByTagIsAbsent(subscriptions) {
-  return subscriptions.filter(tagIsAbsent).map(addKeyToSubscription)
+  return subscriptions
+    .filter(tagIsAbsent)
+    .map(addKeyToSubscription)
+    .sort(sortByTitle)
 }
 
-function createSubscriptionNavigation(subscriptions) {
+export default function createSubscriptionNavigation(subscriptions) {
   return [
     createAllBucket(subscriptions),
     ...groupByTag(subscriptions),
     ...filterByTagIsAbsent(subscriptions)
   ]
 }
-
-export default createSubscriptionNavigation

@@ -3,5 +3,3 @@ export const getSettings = state => {
     ...state.settings
   }
 }
-
-export const settingsShowUnseenEntriesSelector = state => state.settings.showUnseenEntries

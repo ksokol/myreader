@@ -101,4 +101,64 @@ describe('createSubscriptionNavigation', () => {
       ]
     )
   })
+
+  it('should sort subscriptions in tag group by title', () => {
+    const subscriptions = [
+      {title: 'b', uuid: '1', feedTag: {name: 't1'}, unseen: 2},
+      {title: 'a', uuid: '2', feedTag: {name: 't1'}, unseen: 3}
+    ]
+
+    expect(createSubscriptionNavigation(subscriptions)[1].subscriptions[0].title).toEqual('a')
+    expect(createSubscriptionNavigation(subscriptions)[1].subscriptions[1].title).toEqual('b')
+  })
+
+  it('should sort subscriptions in tag group by title case insensitive', () => {
+    const subscriptions = [
+      {title: 'B', uuid: '1', feedTag: {name: 't1'}, unseen: 2},
+      {title: 'a', uuid: '2', feedTag: {name: 't1'}, unseen: 3}
+    ]
+
+    expect(createSubscriptionNavigation(subscriptions)[1].subscriptions[0].title).toEqual('a')
+    expect(createSubscriptionNavigation(subscriptions)[1].subscriptions[1].title).toEqual('B')
+  })
+
+  it('should sort tag group', () => {
+    const subscriptions = [
+      {title: '1', uuid: '1', feedTag: {name: 'b'}, unseen: 2},
+      {title: '4', uuid: '4', feedTag: {name: 'a'}, unseen: 5}
+    ]
+
+    expect(createSubscriptionNavigation(subscriptions)[1].title).toEqual('a')
+    expect(createSubscriptionNavigation(subscriptions)[2].title).toEqual('b')
+  })
+
+  it('should sort tag group case insensitive', () => {
+    const subscriptions = [
+      {title: '1', uuid: '1', feedTag: {name: 'B'}, unseen: 2},
+      {title: '4', uuid: '4', feedTag: {name: 'a'}, unseen: 5}
+    ]
+
+    expect(createSubscriptionNavigation(subscriptions)[1].title).toEqual('a')
+    expect(createSubscriptionNavigation(subscriptions)[2].title).toEqual('B')
+  })
+
+  it('should sort subscriptions', () => {
+    const subscriptions = [
+      {title: 'b', uuid: '6', feedTag: {name: undefined}, unseen: 3},
+      {title: 'a', uuid: '7', feedTag: {name: undefined}, unseen: 4}
+    ]
+
+    expect(createSubscriptionNavigation(subscriptions)[1].title).toEqual('a')
+    expect(createSubscriptionNavigation(subscriptions)[2].title).toEqual('b')
+  })
+
+  it('should sort subscriptions case insensitive', () => {
+    const subscriptions = [
+      {title: 'B', uuid: '6', feedTag: {name: undefined}, unseen: 3},
+      {title: 'a', uuid: '7', feedTag: {name: undefined}, unseen: 4}
+    ]
+
+    expect(createSubscriptionNavigation(subscriptions)[1].title).toEqual('a')
+    expect(createSubscriptionNavigation(subscriptions)[2].title).toEqual('B')
+  })
 })

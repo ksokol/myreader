@@ -14,11 +14,12 @@ import {
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
 } from '../../constants'
-import {authorizedSelector, filteredByUnseenSubscriptionsSelector} from '../../store'
+import {authorizedSelector, subscriptionsSelector} from '../../store'
+import {useAppContext} from '../../contexts'
 
 const mapStateToProps = state => ({
   ...authorizedSelector(state),
-  ...filteredByUnseenSubscriptionsSelector(state)
+  ...subscriptionsSelector(state)
 })
 
 const Navigation = props => {
@@ -28,11 +29,17 @@ const Navigation = props => {
     onClick
   } = props
 
+  const {
+    showUnseenEntries
+  } = useAppContext()
+
+  const filteredSubscriptions = subscriptions.filter(it => showUnseenEntries ? it.unseen > 0 : true)
+
   return (
     <ul className='my-navigation'>
       {
         [
-          ...createSubscriptionNavigation(subscriptions).map(item =>
+          ...createSubscriptionNavigation(filteredSubscriptions).map(item =>
             <SubscriptionNavigationItem
               key={item.key}
               item={item}
