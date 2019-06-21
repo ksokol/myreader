@@ -1,75 +1,90 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {EntryContent} from './EntryContent'
-import MediaBreakpointContext from '../../../../contexts/mediaBreakpoint/MediaBreakpointContext'
+import {useAppContext} from '../../../../contexts'
+
+/* eslint-disable react/prop-types */
+jest.mock('../../../../contexts', () => ({
+  useAppContext: jest.fn()
+}))
+/* eslint-enable */
 
 const expectedContent = 'expected content'
 
 describe('EntryContent', () => {
 
-  let props, state, value
+  let props
 
-  const createWrapper = () => (
-    mount(
-      <MediaBreakpointContext.Provider value={value}>
-        <EntryContent {...props} state={state} />
-      </MediaBreakpointContext.Provider>
-    )
-  )
+  const createWrapper = () => mount(<EntryContent {...props} />)
 
   beforeEach(() => {
+    useAppContext.mockClear()
+
     props = {
       content: expectedContent,
       maybeVisible: false
     }
-
-    state = {
-      settings: {
-        showEntryDetails: true
-      }
-    }
-
-    value = {
-      mediaBreakpoint: 'desktop'
-    }
   })
 
   it('should render content', () => {
+    useAppContext.mockReturnValueOnce({
+      showEntryDetails: true,
+      mediaBreakpoint: 'desktop'
+    })
+
     expect(createWrapper().text()).toEqual(expectedContent)
   })
 
-  it('should not render content when prop "showEntryDetails" is set to false', () => {
-    state.settings.showEntryDetails = false
+  it('should not render content when "showEntryDetails" is set to false', () => {
+    useAppContext.mockReturnValueOnce({
+      showEntryDetails: false,
+      mediaBreakpoint: 'desktop'
+    })
 
     expect(createWrapper().text()).toEqual('')
   })
 
   it('should not render content on tablet or phone', () => {
-    value.mediaBreakpoint = 'tablet'
+    useAppContext.mockReturnValueOnce({
+      showEntryDetails: true,
+      mediaBreakpoint: 'tablet'
+    })
     expect(createWrapper().text()).toEqual('')
 
-    value.mediaBreakpoint = 'phone'
+    useAppContext.mockReturnValueOnce({
+      showEntryDetails: true,
+      mediaBreakpoint: 'phone'
+    })
     expect(createWrapper().text()).toEqual('')
   })
 
-  it('should render content on tablet or phone when prop "maybeVisible" is set tot true', () => {
+  it('should render content on tablet or phone when "maybeVisible" is set tot true', () => {
     props.maybeVisible = true
-
-    value.mediaBreakpoint = 'tablet'
+    useAppContext.mockReturnValueOnce({
+      showEntryDetails: true,
+      mediaBreakpoint: 'tablet'
+    })
     expect(createWrapper().text()).toEqual(expectedContent)
 
-    value.mediaBreakpoint = 'phone'
+    useAppContext.mockReturnValueOnce({
+      showEntryDetails: true,
+      mediaBreakpoint: 'phone'
+    })
     expect(createWrapper().text()).toEqual(expectedContent)
   })
 
-  it('should render content on tablet or phone when prop "maybeVisible" is set to true and prop "showEntryDetails" is set to false', () => {
+  it('should render content on tablet or phone when "maybeVisible" is set to true and "showEntryDetails" is set to false', () => {
     props.maybeVisible = true
-    state.settings.showEntryDetails = false
-
-    value.mediaBreakpoint = 'tablet'
+    useAppContext.mockReturnValueOnce({
+      showEntryDetails: false,
+      mediaBreakpoint: 'tablet'
+    })
     expect(createWrapper().text()).toEqual(expectedContent)
 
-    value.mediaBreakpoint = 'phone'
+    useAppContext.mockReturnValueOnce({
+      showEntryDetails: true,
+      mediaBreakpoint: 'phone'
+    })
     expect(createWrapper().text()).toEqual(expectedContent)
   })
 })

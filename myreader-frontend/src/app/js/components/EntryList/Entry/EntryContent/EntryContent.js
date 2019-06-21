@@ -1,16 +1,16 @@
 import './EntryContent.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
-import {settingsShowEntryDetailsSelector} from '../../../../store'
-import MediaBreakpointContext from '../../../../contexts/mediaBreakpoint/MediaBreakpointContext'
+import {useAppContext} from '../../../../contexts'
 
-const mapStateToProps = state => ({
-  showEntryDetails: settingsShowEntryDetailsSelector(state)
-})
+export const EntryContent = ({content: __html, maybeVisible}) => {
+  const {
+    mediaBreakpoint,
+    showEntryDetails
+  } = useAppContext()
 
-const Component = ({content: __html, mediaBreakpoint, maybeVisible, showEntryDetails}) => {
   const isVisible = mediaBreakpoint === 'desktop' ? showEntryDetails || maybeVisible : maybeVisible
+
   return isVisible ? (
     <div
       className='my-entry-content'
@@ -19,15 +19,7 @@ const Component = ({content: __html, mediaBreakpoint, maybeVisible, showEntryDet
   ) : null
 }
 
-Component.propTypes = {
+EntryContent.propTypes = {
   content: PropTypes.string,
-  mediaBreakpoint: PropTypes.string.isRequired,
-  showEntryDetails: PropTypes.bool.isRequired,
   maybeVisible: PropTypes.bool
 }
-
-export const EntryContent = connect(mapStateToProps)(props => (
-  <MediaBreakpointContext.Consumer>
-    {value => <Component {...props} {...value} />}
-  </MediaBreakpointContext.Consumer>
-))

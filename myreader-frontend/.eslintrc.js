@@ -23,7 +23,8 @@ module.exports = {
     }
   },
   plugins: [
-    'jest'
+    'jest',
+    'react-hooks'
   ],
   rules: {
     indent: [
@@ -55,6 +56,8 @@ module.exports = {
     'unicorn/filename-case': 'warn',
     'unicorn/prefer-query-selector': 'warn',
     'unicorn/import-index': 'warn',
-    'unicorn/prefer-includes': 'warn'
+    'unicorn/prefer-includes': 'warn',
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'error'
   }
 }

@@ -8,9 +8,9 @@ import {commonReducers} from './common'
 import {securityReducers} from './security'
 import {entryReducers} from './entry'
 import {subscriptionReducers} from './subscription'
-import {settings} from './settings/settings'
 import {getLastSecurityState} from './security/security'
 import {isInDevMode, isInProdMode} from '../constants'
+import {settings} from '../contexts/settings/settings'
 
 function devToolsExtensionCompose() {
   return window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']

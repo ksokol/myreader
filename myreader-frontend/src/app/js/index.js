@@ -10,7 +10,7 @@ import LocationStateProvider from './contexts/locationState/LocationStateProvide
 import App from './App'
 import {api, AuthInterceptor, PendingFetchInterceptor} from './api'
 import {init as initToast} from './components/Toast'
-import {MediaBreakpointProvider} from './contexts/mediaBreakpoint/MediaBreakpointProvider'
+import {AppContextProvider} from './contexts'
 
 const store = createApplicationStore(ENVIRONMENT)
 
@@ -21,13 +21,13 @@ api.addInterceptor(new AuthInterceptor(store.dispatch))
 
 ReactDOM.render(
   <Provider store={store}>
-    <MediaBreakpointProvider>
+    <AppContextProvider>
       <Router hashType="hashbang">
         <LocationStateProvider>
           <App />
         </LocationStateProvider>
       </Router>
-    </MediaBreakpointProvider>
+    </AppContextProvider>
   </Provider>,
   document.getElementById('root')
 )
