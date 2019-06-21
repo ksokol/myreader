@@ -1,6 +1,6 @@
 import * as types from '../../store/action-types'
 import {toEntries, toEntry} from './entry'
-import {getEntry, getEntryInFocus, getSettings} from '../../store'
+import {getEntry, getEntryInFocus} from '../../store'
 import {ENTRY_AVAILABLE_TAGS, SUBSCRIPTION_ENTRIES} from '../../constants'
 import {toUrlString} from '../../api/links'
 
@@ -35,20 +35,13 @@ export const entryFocusPrevious = () => {
   }
 }
 
-export const fetchEntries = link => {
-  return (dispatch, getState) => {
-    const settings = getSettings(getState())
-
-    link.query['size'] = link.query['size'] || settings.pageSize
-    link.query['seenEqual'] = link.query['seenEqual'] === undefined ? settings.showUnseenEntries === true ? false : '*' : link.query['seenEqual']
-
-    dispatch({
-      type: 'GET_ENTRIES',
-      url: toUrlString(link),
-      before: () => ({type: types.ENTRY_PAGE_LOADING}),
-      success: response => entryPageReceived(response),
-      finalize: () => ({type: types.ENTRY_PAGE_LOADED})
-    })
+export const fetchEntries = ({pageSize: size, ...rest}) => {
+  return {
+    type: 'GET_ENTRIES',
+    url: toUrlString({...rest, size}),
+    before: () => ({type: types.ENTRY_PAGE_LOADING}),
+    success: response => entryPageReceived(response),
+    finalize: () => ({type: types.ENTRY_PAGE_LOADED})
   }
 }
 

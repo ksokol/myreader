@@ -8,6 +8,7 @@ import {Chips, EntryList, ListLayout} from '../../components'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {changeEntry, fetchEntries, fetchEntryTags, getEntries, getEntryTags} from '../../store'
 import {BOOKMARK_URL, SUBSCRIPTION_ENTRIES} from '../../constants'
+import {withAppContext} from '../../contexts'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
@@ -36,7 +37,8 @@ class BookmarkListPage extends React.Component {
       entryTagEqual: PropTypes.string
     }).isRequired,
     locationChanged: PropTypes.bool.isRequired,
-    locationReload: PropTypes.bool.isRequired
+    locationReload: PropTypes.bool.isRequired,
+    pageSize: PropTypes.number.isRequired
   }
 
   componentDidMount() {
@@ -51,7 +53,13 @@ class BookmarkListPage extends React.Component {
   }
 
   fetchEntries = () => {
-    const query = {seenEqual: '*', ...this.props.searchParams}
+    const {
+      searchParams: {entryTagEqual, q},
+      pageSize: size
+    } = this.props
+    const seenEqual = entryTagEqual ? '*' : ''
+    const query = {seenEqual, entryTagEqual, q, size}
+
     this.props.fetchEntries({path: SUBSCRIPTION_ENTRIES, query})
   }
 
@@ -101,5 +109,5 @@ export default withLocationState(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(BookmarkListPage)
+  )(withAppContext(BookmarkListPage))
 )

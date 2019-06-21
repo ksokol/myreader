@@ -14,6 +14,11 @@ jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
 
+jest.mock('../../contexts', () => ({
+  withAppContext: Component => Component
+}))
+/* eslint-enable */
+
 const buttonPrevious = 'IconButton[type="chevron-left"]'
 const buttonNext = 'IconButton[type="chevron-right"]'
 
@@ -57,6 +62,8 @@ describe('EntryStreamPage', () => {
       },
       locationChanged: false,
       locationReload: false,
+      showUnseenEntries: false,
+      pageSize: 2
     }
 
     value = {
@@ -82,7 +89,7 @@ describe('EntryStreamPage', () => {
   it('should trigger prop function "previousEntry" when previous button clicked', () => {
     createWrapper().find(buttonPrevious).props().onClick()
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, {
+    expect(dispatch).toHaveBeenNthCalledWith(4, {
       type: 'ENTRY_FOCUS_PREVIOUS',
       currentInFocus: '1'
     })
@@ -92,7 +99,7 @@ describe('EntryStreamPage', () => {
     state.entry.entries[1].seen = true
     createWrapper().find(buttonNext).props().onClick()
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, {
+    expect(dispatch).toHaveBeenNthCalledWith(4, {
       type: 'ENTRY_FOCUS_NEXT',
       currentInFocus: '1'
     })
@@ -101,7 +108,7 @@ describe('EntryStreamPage', () => {
   it('should dispatch action PATCH_ENTRY and ENTRY_FOCUS_NEXT when next button clicked and entry seen flag is set to false', () => {
     createWrapper().find(buttonNext).props().onClick()
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/2',
       body: {
@@ -110,7 +117,7 @@ describe('EntryStreamPage', () => {
       }
     }))
 
-    expect(dispatch).toHaveBeenNthCalledWith(7, {
+    expect(dispatch).toHaveBeenNthCalledWith(6, {
       type: 'ENTRY_FOCUS_NEXT',
       currentInFocus: '1'
     })
@@ -139,7 +146,7 @@ describe('EntryStreamPage', () => {
   it('should dispatch action PATCH_ENTRY when entry changed', () => {
     createWrapper().find('EntryList').props().onChangeEntry({uuid: '2', seen: true, tag: 'expectedTag'})
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/2',
       body: {
@@ -152,7 +159,7 @@ describe('EntryStreamPage', () => {
   it('should dispatch action GET_ENTRIES when load more button clicked', () => {
     createWrapper().find('EntryList').props().onLoadMore({path: '/expectedPath', query: {size: 2, seenEqual: 'expectedSeenEqual'}})
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
       type: 'GET_ENTRIES',
       url: '/expectedPath?seenEqual=expectedSeenEqual&size=2'
     }))
@@ -161,7 +168,7 @@ describe('EntryStreamPage', () => {
   it('should dispatch action ENTRY_FOCUS_PREVIOUS when arrow up key pressed', () => {
     createWrapper().find('Hotkeys').prop('onKeys').up()
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
       type: 'ENTRY_FOCUS_PREVIOUS',
       currentInFocus: '1'
     }))
@@ -171,7 +178,7 @@ describe('EntryStreamPage', () => {
     state.entry.entries[1].seen = true
     createWrapper().find('Hotkeys').prop('onKeys').down()
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
       type: 'ENTRY_FOCUS_NEXT',
       currentInFocus: '1'
     }))
@@ -180,7 +187,7 @@ describe('EntryStreamPage', () => {
   it('should dispatch action PATCH_ENTRY and ENTRY_FOCUS_NEXT when next arrow down key pressed and entry seen flag is set to false', () => {
     createWrapper().find('Hotkeys').prop('onKeys').down()
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/2',
       body: {
@@ -189,7 +196,7 @@ describe('EntryStreamPage', () => {
       }
     }))
 
-    expect(dispatch).toHaveBeenNthCalledWith(7, {
+    expect(dispatch).toHaveBeenNthCalledWith(6, {
       type: 'ENTRY_FOCUS_NEXT',
       currentInFocus: '1'
     })
@@ -198,7 +205,7 @@ describe('EntryStreamPage', () => {
   it('should dispatch action PATCH_ENTRY when esc key pressed', () => {
     createWrapper().find('Hotkeys').prop('onKeys').esc()
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/1',
       body: {
@@ -212,9 +219,31 @@ describe('EntryStreamPage', () => {
     createWrapper()
 
     expect(dispatch).toHaveBeenNthCalledWith(1, {type: 'ENTRY_CLEAR'})
-    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?seenEqual=*&q=expectedQ'
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ'
+    }))
+  })
+
+  it('should dispatch action GET_ENTRIES with seenEqual set to "*" when prop "showUnseenEntries" is set to false', () => {
+    props.showUnseenEntries = false
+    createWrapper()
+
+    expect(dispatch).toHaveBeenNthCalledWith(1, {type: 'ENTRY_CLEAR'})
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'GET_ENTRIES',
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ'
+    }))
+  })
+
+  it('should dispatch action GET_ENTRIES with seenEqual set to true when prop "searchParams.seenEqual" is set to true', () => {
+    props.searchParams.seenEqual = true
+    createWrapper()
+
+    expect(dispatch).toHaveBeenNthCalledWith(1, {type: 'ENTRY_CLEAR'})
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'GET_ENTRIES',
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=true&q=expectedQ'
     }))
   })
 
@@ -225,9 +254,9 @@ describe('EntryStreamPage', () => {
       searchParams: {q: 'changedQ'}
     })
 
-    expect(dispatch).toHaveBeenNthCalledWith(6, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?seenEqual=*&q=changedQ'
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=changedQ'
     }))
   })
 
@@ -236,7 +265,7 @@ describe('EntryStreamPage', () => {
 
     wrapper.setProps({location: {search: '?q=expectedQ&feedTagEqual=changed'}})
 
-    expect(dispatch.mock.calls).toHaveLength(3)
+    expect(dispatch.mock.calls).toHaveLength(2)
   })
 
   it('should dispatch actions ENTRY_CLEAR and GET_ENTRIES when prop "locationReload" is set to true', () => {
@@ -247,9 +276,9 @@ describe('EntryStreamPage', () => {
     })
 
     expect(dispatch).toHaveBeenNthCalledWith(1, {type: 'ENTRY_CLEAR'})
-    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?seenEqual=*&q=expectedQ'
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ'
     }))
   })
 
@@ -261,9 +290,9 @@ describe('EntryStreamPage', () => {
     })
 
     expect(dispatch).toHaveBeenNthCalledWith(1, {type: 'ENTRY_CLEAR'})
-    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?seenEqual=*&q=expectedQ'
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ'
     }))
   })
 })

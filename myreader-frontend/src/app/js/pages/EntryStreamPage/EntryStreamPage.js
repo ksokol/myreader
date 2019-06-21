@@ -14,7 +14,7 @@ import {
   getNextFocusableEntry
 } from '../../store'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
-import MediaBreakpointContext from '../../contexts/mediaBreakpoint/MediaBreakpointContext'
+import {withAppContext} from '../../contexts'
 
 const mapStateToProps = state => ({
   ...getEntries(state),
@@ -44,14 +44,18 @@ class Component extends React.Component {
     links: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     mediaBreakpoint: PropTypes.string.isRequired,
-    searchParams: PropTypes.object.isRequired,
+    searchParams: PropTypes.shape({
+      seenEqual: PropTypes.bool
+    }).isRequired,
     locationChanged: PropTypes.bool.isRequired,
     locationReload: PropTypes.bool.isRequired,
     entryClear: PropTypes.func.isRequired,
     changeEntry: PropTypes.func.isRequired,
     fetchEntries: PropTypes.func.isRequired,
     entryFocusNext: PropTypes.func.isRequired,
-    entryFocusPrevious: PropTypes.func.isRequired
+    entryFocusPrevious: PropTypes.func.isRequired,
+    showUnseenEntries: PropTypes.bool.isRequired,
+    pageSize: PropTypes.number.isRequired,
   }
 
   constructor(props) {
@@ -76,9 +80,18 @@ class Component extends React.Component {
 
   fetchEntries = () => {
     this.props.entryClear()
+
+    const {
+      searchParams,
+      showUnseenEntries,
+      pageSize: size
+    } = this.props
+    const seenEqual = searchParams.seenEqual === undefined ? showUnseenEntries === true ? false : '*' : searchParams.seenEqual
+    const query = {...searchParams, seenEqual, size}
+
     this.props.fetchEntries({
       path: SUBSCRIPTION_ENTRIES,
-      query: {...this.props.searchParams}
+      query
     })
   }
 
@@ -148,9 +161,5 @@ export const EntryStreamPage = withLocationState(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(props => (
-    <MediaBreakpointContext.Consumer>
-      {value => <Component {...props} {...value} />}
-    </MediaBreakpointContext.Consumer>
-  ))
+  )(withAppContext(Component))
 )

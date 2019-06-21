@@ -12,6 +12,10 @@ jest.mock('../../components', () => ({
 jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
+
+jest.mock('../../contexts', () => ({
+  withAppContext: Component => Component
+}))
 /* eslint-enable */
 
 describe('BookmarkListPage', () => {
@@ -36,7 +40,7 @@ describe('BookmarkListPage', () => {
       },
       entry: {
         entries: ['expected entries'],
-        links: {next: {path: 'expected-path', query: {size: '2'}}},
+        links: {next: {path: 'expected-next-path', query: {size: '2'}}},
         tags: ['tag1', 'tag2'],
         loading: true
       }
@@ -48,7 +52,8 @@ describe('BookmarkListPage', () => {
       },
       historyReplace: jest.fn(),
       locationChanged: false,
-      locationReload: false
+      locationReload: false,
+      pageSize: 2
     }
   })
 
@@ -62,7 +67,7 @@ describe('BookmarkListPage', () => {
   it('should pass expected props to entry list component', () => {
     expect(createWrapper().find('EntryList').props()).toEqual(expect.objectContaining({
       entries: ['expected entries'],
-      links: {next: {path: 'expected-path', query: {size: '2'}}},
+      links: {next: {path: 'expected-next-path', query: {size: '2'}}},
       loading: true
     }))
   })
@@ -70,7 +75,7 @@ describe('BookmarkListPage', () => {
   it('should dispatch action PATCH_ENTRY when prop function "onChangeEntry" of entry list component triggered', () => {
     createWrapper().find('EntryList').props().onChangeEntry({uuid: '1', seen: true, tag: 'expected tag'})
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/1',
       body: {
@@ -83,9 +88,9 @@ describe('BookmarkListPage', () => {
   it('should dispatch action GET_ENTRIES when prop function "onLoadMore" of entry list component triggered', () => {
     createWrapper().find('EntryList').props().onLoadMore({...state.entry.links.next})
 
-    expect(dispatch).toHaveBeenNthCalledWith(5, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'expected-path?seenEqual=*&size=2'
+      url: 'expected-next-path?size=2'
     }))
   })
 
@@ -118,9 +123,9 @@ describe('BookmarkListPage', () => {
 
     createWrapper()
 
-    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?q=expectedQ&size=5&entryTagEqual=expected entryTagEqual&seenEqual=*'
+      url: 'api/2/subscriptionEntries?size=2&q=expectedQ&entryTagEqual=expected entryTagEqual&seenEqual=*'
     }))
   })
 
@@ -129,10 +134,21 @@ describe('BookmarkListPage', () => {
     dispatch.mockClear()
     wrapper.setProps({locationReload: true})
 
-
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?entryTagEqual=expected tag&seenEqual=*'
+      url: 'api/2/subscriptionEntries?size=2&entryTagEqual=expected tag&seenEqual=*'
+    }))
+  })
+
+  it('should dispatch action GET_ENTRIES with seenEqual set to an empty string when prop "entryTagEqual" is undefined', () => {
+    props.searchParams.entryTagEqual = undefined
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.setProps({locationReload: true})
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'GET_ENTRIES',
+      url: 'api/2/subscriptionEntries?size=2&seenEqual='
     }))
   })
 
@@ -141,9 +157,9 @@ describe('BookmarkListPage', () => {
     dispatch.mockClear()
     wrapper.setProps({locationChanged: true})
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?entryTagEqual=expected tag&seenEqual=*'
+      url: 'api/2/subscriptionEntries?size=2&entryTagEqual=expected tag&seenEqual=*'
     }))
   })
 })
