@@ -53,7 +53,7 @@ module.exports = {
     'react/display-name': 'never',
     'unicorn/prevent-abbreviations': 'never',
     'unicorn/catch-error-name': 'warn',
-    'unicorn/filename-case': 'warn',
+    'unicorn/filename-case': 'never',
     'unicorn/prefer-query-selector': 'warn',
     'unicorn/import-index': 'warn',
     'unicorn/prefer-includes': 'warn',
