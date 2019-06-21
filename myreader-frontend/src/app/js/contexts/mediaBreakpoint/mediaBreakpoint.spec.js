@@ -10,7 +10,7 @@ class TestComponent extends React.Component {
 
 describe('mediaBreakpoint', () => {
 
-  let originalMatchMediaFn, mediaMatchListeners
+  let mediaMatchListeners
 
   const createTestComponent = () => {
     return mount(
@@ -22,17 +22,12 @@ describe('mediaBreakpoint', () => {
 
   beforeEach(() => {
     mediaMatchListeners = []
-    originalMatchMediaFn = window.matchMedia
 
     window.matchMedia = media => ({
       media,
       addListener: fn => mediaMatchListeners.push(() => fn({matches: true, media}))
     })
-
-    expect(mediaMatchListeners).toHaveLength(0)
   })
-
-  afterEach(() => window.matchMedia = originalMatchMediaFn)
 
   it('should set state "mediaBreakpoint" to "phone" when media breakpoint is set to "phone"', () => {
     const component = createTestComponent()
