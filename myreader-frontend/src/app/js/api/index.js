@@ -4,7 +4,7 @@ export {PendingFetchInterceptor} from './interceptors/PendingFetchInterceptor'
 import {Api} from './Api'
 import {AdminApi} from './AdminApi'
 import {FeedApi} from './FeedApi'
-import {SubscriptionApi} from './subscription-api'
+import {SubscriptionApi} from './SubscriptionApi'
 import {SubscriptionExclusionsApi} from './SubscriptionExclusionsApi'
 import {SubscriptionTagsApi} from './subscription-tags-api'
 

@@ -1,4 +1,4 @@
-import {SubscriptionApi} from './subscription-api'
+import {SubscriptionApi} from './SubscriptionApi'
 import {SUBSCRIPTIONS} from '../constants'
 
 const expectedError = 'expected error'
