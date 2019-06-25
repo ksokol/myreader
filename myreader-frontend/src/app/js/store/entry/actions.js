@@ -1,7 +1,7 @@
 import * as types from '../../store/action-types'
 import {toEntries, toEntry} from './entry'
 import {getEntry, getEntryInFocus} from '../../store'
-import {ENTRY_AVAILABLE_TAGS, SUBSCRIPTION_ENTRIES} from '../../constants'
+import {SUBSCRIPTION_ENTRIES} from '../../constants'
 import {toUrlString} from '../../api/links'
 
 export const entryPageReceived = raw => {
@@ -57,17 +57,5 @@ export const changeEntry = ({uuid, seen, tag}) => {
       body: {seen, tag},
       success: response => entryChanged(response)
     })
-  }
-}
-
-export const entryTagsReceived = raw => {
-  return {type: types.ENTRY_TAGS_RECEIVED, tags: [...raw]}
-}
-
-export const fetchEntryTags = () => {
-  return {
-    type: 'GET_ENTRY_TAGS',
-    url: ENTRY_AVAILABLE_TAGS,
-    success: response => entryTagsReceived(response)
   }
 }

@@ -1,13 +1,16 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import BookmarkListPage from './BookmarkListPage'
+import {flushPromises, rejected, resolved} from '../../shared/test-utils'
+import {entryApi} from '../../api'
+import {toast} from '../../components/Toast'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../components', () => ({
-  EntryList: () => null,
-  Chips: () => null,
-  ListLayout: ({listPanel}) => <div>{listPanel}</div>
+jest.mock('../../components/EntryList/EntryList', () => ({
+  EntryList: () => null
 }))
+
+jest.mock('../../components/ListLayout/ListLayout', () => ({listPanel}) => <div>{listPanel}</div>)
 
 jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
@@ -16,15 +19,32 @@ jest.mock('../../contexts/locationState/withLocationState', () => ({
 jest.mock('../../contexts', () => ({
   withAppContext: Component => Component
 }))
+
+jest.mock('../../api', () => ({
+  entryApi: {}
+}))
+
+jest.mock('../../components/Toast', () => ({
+  toast: jest.fn()
+}))
 /* eslint-enable */
 
 describe('BookmarkListPage', () => {
 
   let props, state, dispatch
 
-  const createWrapper = () => mount(<BookmarkListPage {...props} state={state} dispatch={dispatch} />)
+  const createWrapper = async (onMount = resolved(['tag3', 'tag4'])) => {
+    entryApi.fetchEntryTags = onMount
+
+    const wrapper = mount(<BookmarkListPage {...props} state={state} dispatch={dispatch} />)
+    await flushPromises()
+    wrapper.update()
+    return wrapper
+  }
 
   beforeEach(() => {
+    toast.mockClear()
+
     dispatch = jest.fn().mockImplementation(action => {
       if (typeof action === 'function') {
         action(dispatch, () => state)
@@ -57,25 +77,36 @@ describe('BookmarkListPage', () => {
     }
   })
 
-  it('should pass expected props to chips component', () => {
-    expect(createWrapper().find('Chips').props()).toContainObject({
-      values: ['tag1', 'tag2'],
+  it('should pass expected props to chips component on mount when call to entryApi.fetchEntryTags succeeded', async () => {
+    const wrapper = await createWrapper()
+
+    expect(wrapper.find('Chips').props()).toEqual(expect.objectContaining({
+      values: ['tag3', 'tag4'],
       selected: 'expected tag'
-    })
+    }))
   })
 
-  it('should pass expected props to entry list component', () => {
-    expect(createWrapper().find('EntryList').props()).toEqual(expect.objectContaining({
+  it('should trigger toast when call to entryApi.fetchEntryTags failed', async () => {
+    await createWrapper(rejected('expected error'))
+
+    expect(toast).toHaveBeenCalledWith('expected error', {error: true})
+  })
+
+  it('should pass expected props to entry list component', async () => {
+    const wrapper = await createWrapper()
+
+    expect(wrapper.find('EntryList').props()).toEqual(expect.objectContaining({
       entries: ['expected entries'],
       links: {next: {path: 'expected-next-path', query: {size: '2'}}},
       loading: true
     }))
   })
 
-  it('should dispatch action PATCH_ENTRY when prop function "onChangeEntry" of entry list component triggered', () => {
-    createWrapper().find('EntryList').props().onChangeEntry({uuid: '1', seen: true, tag: 'expected tag'})
+  it('should dispatch action PATCH_ENTRY when prop function "onChangeEntry" of entry list component triggered', async () => {
+    const wrapper = await createWrapper()
+    wrapper.find('EntryList').props().onChangeEntry({uuid: '1', seen: true, tag: 'expected tag'})
 
-    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/1',
       body: {
@@ -85,17 +116,18 @@ describe('BookmarkListPage', () => {
     }))
   })
 
-  it('should dispatch action GET_ENTRIES when prop function "onLoadMore" of entry list component triggered', () => {
-    createWrapper().find('EntryList').props().onLoadMore({...state.entry.links.next})
+  it('should dispatch action GET_ENTRIES when prop function "onLoadMore" of entry list component triggered', async () => {
+    const wrapper = await createWrapper()
+    wrapper.find('EntryList').props().onLoadMore({...state.entry.links.next})
 
-    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
       type: 'GET_ENTRIES',
       url: 'expected-next-path?size=2'
     }))
   })
 
-  it('should return expected prop from Chips prop function "renderItem"', () => {
-    const wrapper = createWrapper()
+  it('should return expected prop from Chips prop function "renderItem"', async () => {
+    const wrapper = await createWrapper()
 
     expect(wrapper.find('Chips').props().renderItem('tag').props).toEqual(expect.objectContaining({
       to: {
@@ -105,33 +137,24 @@ describe('BookmarkListPage', () => {
     }))
   })
 
-  it('should dispatch action GET_ENTRY_TAGS when mounted', () => {
-    createWrapper()
-
-    expect(dispatch).toHaveBeenNthCalledWith(1, expect.objectContaining({
-      type: 'GET_ENTRY_TAGS',
-      url: 'api/2/subscriptionEntries/availableTags'
-    }))
-  })
-
-  it('should dispatch action GET_ENTRIES when mounted', () => {
+  it('should dispatch action GET_ENTRIES when mounted', async () => {
     props.searchParams = {
       entryTagEqual: 'expected entryTagEqual',
       size: '5',
       q: 'expectedQ'
     }
 
-    createWrapper()
+    await createWrapper()
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(1, expect.objectContaining({
       type: 'GET_ENTRIES',
       url: 'api/2/subscriptionEntries?size=2&q=expectedQ&entryTagEqual=expected entryTagEqual&seenEqual=*'
     }))
   })
 
-  it('should dispatch action GET_ENTRIES when prop "locationReload" is set to true', () => {
-    const wrapper = createWrapper()
-    dispatch.mockClear()
+  it('should dispatch action GET_ENTRIES when prop "locationReload" is set to true', async () => {
+    const wrapper = await createWrapper()
+    entryApi.fetchEntryTags = rejected()
     wrapper.setProps({locationReload: true})
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
@@ -140,10 +163,10 @@ describe('BookmarkListPage', () => {
     }))
   })
 
-  it('should dispatch action GET_ENTRIES with seenEqual set to an empty string when prop "entryTagEqual" is undefined', () => {
-    props.searchParams.entryTagEqual = undefined
-    const wrapper = createWrapper()
-    dispatch.mockClear()
+  it('should dispatch action GET_ENTRIES with seenEqual set to an empty string when prop "entryTagEqual" is undefined', async () => {
+    props.searchParams.entryTagEqual = null
+    const wrapper = await createWrapper()
+    entryApi.fetchEntryTags = rejected()
     wrapper.setProps({locationReload: true})
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
@@ -152,14 +175,30 @@ describe('BookmarkListPage', () => {
     }))
   })
 
-  it('should dispatch action GET_ENTRIES when prop "locationChanged" is set to true', () => {
-    const wrapper = createWrapper()
-    dispatch.mockClear()
+  it('should dispatch action GET_ENTRIES when prop "locationChanged" is set to true', async () => {
+    const wrapper = await createWrapper()
+    entryApi.fetchEntryTags = rejected()
     wrapper.setProps({locationChanged: true})
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'GET_ENTRIES',
       url: 'api/2/subscriptionEntries?size=2&entryTagEqual=expected tag&seenEqual=*'
     }))
+  })
+
+  it('should trigger entryApi.fetchEntryTags when prop "locationReload" is set to true', async () => {
+    const wrapper = await createWrapper()
+    entryApi.fetchEntryTags = rejected()
+    wrapper.setProps({locationReload: true})
+
+    expect(entryApi.fetchEntryTags).toHaveBeenCalled()
+  })
+
+  it('should not trigger entryApi.fetchEntryTags when prop "locationChanged" is set to true', async () => {
+    const wrapper = await createWrapper()
+    entryApi.fetchEntryTags.mockClear()
+    wrapper.setProps({locationChanged: true})
+
+    expect(entryApi.fetchEntryTags).not.toHaveBeenCalled()
   })
 })

@@ -7,7 +7,6 @@ export default function initialState() {
     links: {},
     entries: [],
     loading: false,
-    entryInFocus: null,
-    tags: []
+    entryInFocus: null
   }
 }

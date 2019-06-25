@@ -4,21 +4,23 @@ import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
-import {Chips, EntryList, ListLayout} from '../../components'
+import Chips from '../../components/Chips/Chips'
+import {EntryList} from '../../components/EntryList/EntryList'
+import ListLayout from '../../components/ListLayout/ListLayout'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
-import {changeEntry, fetchEntries, fetchEntryTags, getEntries, getEntryTags} from '../../store'
+import {changeEntry, fetchEntries, getEntries} from '../../store'
 import {BOOKMARK_URL, SUBSCRIPTION_ENTRIES} from '../../constants'
 import {withAppContext} from '../../contexts'
+import {entryApi} from '../../api'
+import {toast} from '../../components/Toast'
 
 const mapStateToProps = state => ({
-  ...getEntries(state),
-  ...getEntryTags(state)
+  ...getEntries(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   fetchEntries,
-  changeEntry,
-  fetchEntryTags
+  changeEntry
 }, dispatch)
 
 class BookmarkListPage extends React.Component {
@@ -27,12 +29,10 @@ class BookmarkListPage extends React.Component {
     entries: PropTypes.arrayOf(
       PropTypes.any
     ).isRequired,
-    entryTags: PropTypes.any.isRequired,
     links: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     changeEntry: PropTypes.func.isRequired,
     fetchEntries: PropTypes.func.isRequired,
-    fetchEntryTags: PropTypes.func.isRequired,
     searchParams: PropTypes.shape({
       entryTagEqual: PropTypes.string
     }).isRequired,
@@ -41,14 +41,31 @@ class BookmarkListPage extends React.Component {
     pageSize: PropTypes.number.isRequired
   }
 
-  componentDidMount() {
-    this.props.fetchEntryTags()
+  state = {
+    entryTags: []
+  }
+
+  async componentDidMount() {
+    await this.fetchEntryTags()
     this.fetchEntries()
   }
 
-  componentDidUpdate() {
+  async componentDidUpdate() {
     if (this.props.locationChanged || this.props.locationReload) {
       this.fetchEntries()
+    }
+    if (this.props.locationReload) {
+      await this.fetchEntryTags()
+    }
+  }
+
+  fetchEntryTags = async () => {
+    try {
+      this.setState({
+        entryTags: await entryApi.fetchEntryTags()
+      })
+    } catch (error) {
+      toast(error, {error: true})
     }
   }
 
@@ -65,7 +82,6 @@ class BookmarkListPage extends React.Component {
 
   render() {
     const {
-      entryTags,
       entries,
       links,
       loading,
@@ -73,6 +89,10 @@ class BookmarkListPage extends React.Component {
       fetchEntries,
       searchParams
     } = this.props
+
+    const {
+      entryTags
+    } = this.state
 
     return (
       <ListLayout

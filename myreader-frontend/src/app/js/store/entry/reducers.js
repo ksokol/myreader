@@ -32,15 +32,7 @@ function entryPageReceived({state, action}) {
 
 function entryChanged({state, action}) {
   const entries = state.entries.map(it => it.uuid === action.newValue.uuid ? action.newValue : it)
-  let tags = state.tags
-  const entryTags = (action.newValue.tag || '')
-    .split(',')
-    .map(it => it.trim())
-    .filter(it => it.length > 0)
-    .filter(it => !tags.includes(it))
-
-  tags = [...tags, ...entryTags].sort()
-  return {...state, entries, tags}
+  return {...state, entries}
 }
 
 function entryClear({state}) {
@@ -70,10 +62,6 @@ function entryFocusPrevious({state, action}) {
   return {...state, entryInFocus: previous ? previous.uuid : null}
 }
 
-function entryTagsReceived({state, action}) {
-  return {...state, tags: action.tags}
-}
-
 function securityUpdate({state, action}) {
   return action.authorized ? state : initialApplicationState().entry
 }
@@ -100,9 +88,6 @@ export function entryReducers(state = initialApplicationState().entry, action) {
     }
     case types.ENTRY_FOCUS_PREVIOUS: {
       return entryFocusPrevious({state, action})
-    }
-    case types.ENTRY_TAGS_RECEIVED: {
-      return entryTagsReceived({state, action})
     }
     case types.SECURITY_UPDATE: {
       return securityUpdate({state, action})

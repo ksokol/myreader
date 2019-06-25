@@ -5,9 +5,7 @@ import {
   entryFocusNext,
   entryFocusPrevious,
   entryPageReceived,
-  entryTagsReceived,
-  fetchEntries,
-  fetchEntryTags
+  fetchEntries
 } from '../../store'
 import {createMockStore} from '../../shared/test-utils'
 
@@ -183,40 +181,6 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
 
       expect(store.getActions()[1]).toEqualActionType('ENTRY_CHANGED')
       expect(store.getActions()[1]).toContainActionData({newValue: {uuid: 'expected uuid'}})
-    })
-  })
-
-  describe('ENTRY_TAGS_RECEIVED', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(entryTagsReceived(['tag1', 'tag2']))
-      expect(store.getActionTypes()).toEqual(['ENTRY_TAGS_RECEIVED'])
-    })
-
-    it('should return expected action data', () => {
-      store.dispatch(entryTagsReceived(['tag1', 'tag2']))
-      expect(store.getActions()[0]).toContainActionData({tags: ['tag1', 'tag2']})
-    })
-  })
-
-  describe('action creator fetchEntryTags', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(fetchEntryTags())
-      expect(store.getActionTypes()).toEqual(['GET_ENTRY_TAGS'])
-    })
-
-    it('should return expected action data', () => {
-      store.dispatch(fetchEntryTags())
-      expect(store.getActions()[0]).toContainActionData({url: 'api/2/subscriptionEntries/availableTags'})
-    })
-
-    it('should dispatch action defined in success property', () => {
-      store.dispatch(fetchEntryTags())
-      store.dispatch(store.getActions()[0].success(['tag1']))
-
-      expect(store.getActions()[1]).toEqualActionType('ENTRY_TAGS_RECEIVED')
-      expect(store.getActions()[1]).toContainActionData({tags: ['tag1']})
     })
   })
 })

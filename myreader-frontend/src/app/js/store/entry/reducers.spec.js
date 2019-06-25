@@ -1,7 +1,7 @@
 import initialState from '.'
 import {entryReducers} from '../../store'
 
-describe('src/app/js/store/entry/reducers.spec.js', () => {
+describe('entry reducer', () => {
 
   let state
 
@@ -190,24 +190,6 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
 
       expect(entryReducers(currentState, action)).toContainObject(expectedState)
     })
-
-    it('should extract and store tags from entry', () => {
-      action.newValue = {uuid: '2', tag: 'tag1, tag2'}
-
-      const currentState = {entries: [], tags: []}
-      const expectedState = {tags: ['tag1', 'tag2']}
-
-      expect(entryReducers(currentState, action)).toContainObject(expectedState)
-    })
-
-    it('should update existing tags', () => {
-      action.newValue = {uuid: '2', tag: 'tag1, tag2'}
-
-      const currentState = {entries: [], tags: ['tag2']}
-      const expectedState = {tags: ['tag1', 'tag2']}
-
-      expect(entryReducers(currentState, action)).toContainObject(expectedState)
-    })
   })
 
   describe('action ENTRY_CLEAR', () => {
@@ -291,21 +273,6 @@ describe('src/app/js/store/entry/reducers.spec.js', () => {
 
       const currentState = {entries: [{uuid: 1}], entryInFocus: 1}
       const expectedState = {entryInFocus: null}
-
-      expect(entryReducers(currentState, action)).toContainObject(expectedState)
-    })
-  })
-
-  describe('action ENTRY_TAGS_RECEIVED', () => {
-
-    it('should set tags', () => {
-      const action = {
-        type: 'ENTRY_TAGS_RECEIVED',
-        tags: ['tag1', 'tag2']
-      }
-
-      const currentState = {tags: []}
-      const expectedState = {tags: ['tag1', 'tag2']}
 
       expect(entryReducers(currentState, action)).toContainObject(expectedState)
     })
