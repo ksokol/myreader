@@ -1,6 +1,5 @@
 import React from 'react'
-import {settings} from './settings'
 
-const SettingsContext = React.createContext(settings())
+const SettingsContext = React.createContext({})
 
 export default SettingsContext

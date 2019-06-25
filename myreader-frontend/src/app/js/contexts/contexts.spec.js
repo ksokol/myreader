@@ -1,12 +1,21 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import {useAppContext, withAppContext} from '.'
-import {MediaBreakpointProvider} from './mediaBreakpoint/MediaBreakpointProvider'
-import {SettingsProvider} from './settings/SettingsProvider'
+import {AppContextProvider, useAppContext, withAppContext} from '.'
+
+/* eslint-disable react/prop-types */
+jest.mock('./settings/settings', () => ({
+  settings: () => ({
+    pageSize: 5,
+    showUnseenEntries: true,
+    showEntryDetails: false
+  })
+
+}))
+/* eslint-enable */
 
 describe('app context', () => {
 
-  let state, mediaMatchListeners
+  let mediaMatchListeners
 
   beforeEach(() => {
     mediaMatchListeners = []
@@ -15,23 +24,13 @@ describe('app context', () => {
       media,
       addListener: fn => mediaMatchListeners.push(() => fn({matches: true, media}))
     })
-
-    state = {
-      settings: {
-        pageSize: 5,
-        showUnseenEntries: true,
-        showEntryDetails: false
-      }
-    }
   })
 
   const createWrapperFor = Component => {
     const wrapper = mount(
-      <SettingsProvider state={state}>
-        <MediaBreakpointProvider>
-          <Component />
-        </MediaBreakpointProvider>
-      </SettingsProvider>
+      <AppContextProvider>
+        <Component />
+      </AppContextProvider>
     )
 
     mediaMatchListeners[1]()

@@ -1,34 +1,50 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import SettingsContext from './SettingsContext'
-import {connect} from 'react-redux'
-import {getSettings} from '../../store'
+import {setPageSize, setShowEntryDetails, setShowUnseenEntries, settings} from './settings'
 
-class Provider extends React.Component {
+export class SettingsProvider extends React.Component {
 
   static propTypes = {
-    pageSize: PropTypes.number.isRequired,
-    showUnseenEntries: PropTypes.bool.isRequired,
-    showEntryDetails: PropTypes.bool.isRequired,
     children: PropTypes.any
   }
 
-  render() {
-    const {
-      pageSize,
-      showUnseenEntries,
+  state = settings()
+
+  setPageSize = pageSize => {
+    setPageSize(pageSize)
+    this.setState({
+      pageSize
+    })
+  }
+
+  setShowEntryDetails = showUnseenEntries => {
+    setShowEntryDetails(showUnseenEntries)
+    this.setState({
+      showUnseenEntries
+    })
+  }
+
+  setShowUnseenEntries = showEntryDetails => {
+    setShowUnseenEntries(showEntryDetails)
+    this.setState({
       showEntryDetails
-    } = this.props
+    })
+  }
+
+  render() {
+    const value = {
+      ...this.state,
+      setPageSize: this.setPageSize,
+      setShowEntryDetails: this.setShowEntryDetails,
+      setShowUnseenEntries: this.setShowUnseenEntries
+    }
 
     return (
       <SettingsContext.Provider
-        value={{pageSize, showUnseenEntries, showEntryDetails}}
+        value={value}
       >{this.props.children}
       </SettingsContext.Provider>
     )
   }
 }
-
-export const SettingsProvider = connect(
-  getSettings
-)(Provider)

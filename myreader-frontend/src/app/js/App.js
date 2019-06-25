@@ -29,7 +29,7 @@ import {
 } from './constants'
 import {AdminOverviewPage} from './pages/AdminOverviewPage/AdminOverviewPage'
 import {FeedListPage} from './pages/FeedListPage/FeedListPage'
-import SettingsPage from './pages/SettingsPage/SettingsPage'
+import {SettingsPage} from './pages/SettingsPage/SettingsPage'
 import {EntryStreamPage} from './pages/EntryStreamPage/EntryStreamPage'
 
 const withSidenav = () => (

@@ -35,24 +35,6 @@ describe('createApplicationStore', () => {
       window.location.hash = ''
     })
 
-    it('should initialize settings when in production environment', () => {
-      const store = createApplicationStore(PROD)
-
-      expect(store.getState().settings).toEqual({pageSize: 2, showEntryDetails: false, showUnseenEntries: false})
-    })
-
-    it('should initialize settings when in development environment', () => {
-      const store = createApplicationStore(DEV)
-
-      expect(store.getState().settings).toEqual({pageSize: 2, showEntryDetails: false, showUnseenEntries: false})
-    })
-
-    it('should not initialize settings when environment is other', () => {
-      const store = createApplicationStore(OTHER)
-
-      expect(store.getState().settings).toEqual({pageSize: 10, showEntryDetails: true, showUnseenEntries: true})
-    })
-
     it('should initialize last security state when in production environment', () => {
       const store = createApplicationStore(PROD)
 

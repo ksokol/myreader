@@ -3,14 +3,12 @@ import thunk from 'redux-thunk'
 import arrayMiddleware from './middleware/array/arrayMiddleware'
 import guardMiddleware from './middleware/guard/guardMiddleware'
 import fetchMiddleware from './middleware/fetch'
-import {settingsReducers} from './settings'
 import {commonReducers} from './common'
 import {securityReducers} from './security'
 import {entryReducers} from './entry'
 import {subscriptionReducers} from './subscription'
 import {getLastSecurityState} from './security/security'
 import {isInDevMode, isInProdMode} from '../constants'
-import {settings} from '../contexts/settings/settings'
 
 function devToolsExtensionCompose() {
   return window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']
@@ -32,15 +30,13 @@ function enhancer(enabled) {
 const reducers = combineReducers({
   security: securityReducers,
   common: commonReducers,
-  settings: settingsReducers,
   entry: entryReducers,
   subscription: subscriptionReducers
 })
 
 function initialState(enabled) {
   return enabled ? {
-    security: getLastSecurityState(),
-    settings: settings()
+    security: getLastSecurityState()
   } : {}
 }
 
