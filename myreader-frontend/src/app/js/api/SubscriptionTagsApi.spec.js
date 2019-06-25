@@ -1,4 +1,4 @@
-import {SubscriptionTagsApi} from './subscription-tags-api'
+import {SubscriptionTagsApi} from './SubscriptionTagsApi'
 import {SUBSCRIPTION_TAGS} from '../constants'
 
 const expectedError = 'expected error'

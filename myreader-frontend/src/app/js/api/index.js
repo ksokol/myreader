@@ -6,7 +6,7 @@ import {AdminApi} from './AdminApi'
 import {FeedApi} from './FeedApi'
 import {SubscriptionApi} from './SubscriptionApi'
 import {SubscriptionExclusionsApi} from './SubscriptionExclusionsApi'
-import {SubscriptionTagsApi} from './subscription-tags-api'
+import {SubscriptionTagsApi} from './SubscriptionTagsApi'
 
 export const api = new Api()
 export const adminApi = new AdminApi(api)
