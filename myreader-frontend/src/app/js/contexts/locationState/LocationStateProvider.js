@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {withRouter} from 'react-router'
 import LocationStateContext from './LocationStateContext'
 
-class LocationStateProvider extends React.Component {
+export class LocationStateProvider extends React.Component {
 
   static propTypes = {
     children: PropTypes.any
@@ -30,5 +29,3 @@ class LocationStateProvider extends React.Component {
     )
   }
 }
-
-export default withRouter(LocationStateProvider)

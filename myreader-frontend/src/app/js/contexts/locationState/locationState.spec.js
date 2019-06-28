@@ -1,9 +1,11 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import LocationStateProvider from './LocationStateProvider'
+import {LocationStateProvider} from './LocationStateProvider'
 import {withLocationState} from './withLocationState'
 
 const WrappedComponent = () => <span>wrapped component</span>
+
+const pathname = '/expected-path'
 
 describe('locationState context', () => {
 
@@ -22,7 +24,7 @@ describe('locationState context', () => {
   beforeEach(() => {
     routerProps = {
       location: {
-        pathname: '/expected-path',
+        pathname,
         search: '?a=b&c=d'
       },
       match: {
@@ -68,46 +70,31 @@ describe('locationState context', () => {
     it('with new search', () => {
       createWrapper().find('WrappedComponent').props().historyPush({searchParams: {i: 'j'}})
 
-      expect(routerProps.history.push).toHaveBeenCalledWith({
-        pathname: '/expected-path',
-        search: 'i=j'
-      })
+      expect(routerProps.history.push).toHaveBeenCalledWith({pathname, search: 'i=j'})
     })
 
     it('with empty search when "historyPush" called with undefined for key i', () => {
       createWrapper().find('WrappedComponent').props().historyPush({searchParams: {i: undefined, j: 'k'}})
 
-      expect(routerProps.history.push).toHaveBeenCalledWith({
-        pathname: '/expected-path',
-        search: 'j=k'
-      })
+      expect(routerProps.history.push).toHaveBeenCalledWith({pathname, search: 'j=k'})
     })
 
     it('with empty search when "historyPush" called with null for key i', () => {
       createWrapper().find('WrappedComponent').props().historyPush({searchParams: {i: null, j: 'k'}})
 
-      expect(routerProps.history.push).toHaveBeenCalledWith({
-        pathname: '/expected-path',
-        search: 'j=k'
-      })
+      expect(routerProps.history.push).toHaveBeenCalledWith({pathname, search: 'j=k'})
     })
 
     it('with empty search when "historyPush" called without searchParams', () => {
       createWrapper().find('WrappedComponent').props().historyPush()
 
-      expect(routerProps.history.push).toHaveBeenCalledWith({
-        pathname: '/expected-path',
-        search: ''
-      })
+      expect(routerProps.history.push).toHaveBeenCalledWith({pathname, search: ''})
     })
 
     it('with empty search when "historyPush" called with undefined searchParams', () => {
       createWrapper().find('WrappedComponent').props().historyPush({searchParams: undefined})
 
-      expect(routerProps.history.push).toHaveBeenCalledWith({
-        pathname: '/expected-path',
-        search: ''
-      })
+      expect(routerProps.history.push).toHaveBeenCalledWith({pathname, search: ''})
     })
   })
 
