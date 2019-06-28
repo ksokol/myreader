@@ -12,3 +12,9 @@
     word-wrap: break-word;
     background-color: #ebece4;
 }
+
+.my-entry-content table {
+    width: 100%;
+    table-layout: fixed;
+    word-break: break-word;
+}
