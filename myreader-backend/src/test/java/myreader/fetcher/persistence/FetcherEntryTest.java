@@ -167,6 +167,14 @@ public class FetcherEntryTest {
     }
 
     @Test
+    public void shouldAllowStylingIgnoringWidthAndHeight() {
+        assertThat(
+                fetchEntryWithContent("<h2 style=\"color:red; width:1px;height:2px\">1</h2>").getContent(),
+                is("<h2 style=\"color:red\">1</h2>")
+        );
+    }
+
+    @Test
     public void shouldAllowPreCodeAndFigureHtmlElements() {
         assertThat(
                 fetchEntryWithContent("<pre><code>text</code></pre><figure></figure>").getContent(),

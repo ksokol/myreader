@@ -19,6 +19,7 @@ def javaLangVersion = '1.8'
 def romeToolsVersion = '1.12.0'
 def commonsLang3Version = '3.8.1'
 def commonsIoVersion = '2.6'
+def commonsTextVersion = '1.6'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -37,8 +38,8 @@ dependencies {
     }
     compile group: 'org.apache.commons', name: 'commons-lang3', version: "${commonsLang3Version}"
     compile group: 'commons-io', name: 'commons-io', version: "${commonsIoVersion}"
-    compile group: 'com.google.guava', name: 'guava', version: '24.1.1-jre' // CVE 19.0 owasp-java-html-sanitizer
     compile group: 'com.googlecode.owasp-java-html-sanitizer', name: 'owasp-java-html-sanitizer', version: '20181114.1'
+    implementation "org.apache.commons:commons-text:${commonsTextVersion}"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

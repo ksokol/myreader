@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -26,7 +25,6 @@ public class FeedQueue {
         return queue.size();
     }
 
-    @Nullable
     public FetchResult take() {
         FetchResult fetchResult = queue.poll();
         log.debug("left in queue: {}", queue.size());

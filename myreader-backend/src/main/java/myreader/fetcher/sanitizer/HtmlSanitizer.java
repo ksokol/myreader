@@ -1,10 +1,15 @@
 package myreader.fetcher.sanitizer;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.owasp.html.CssSchema;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -12,6 +17,7 @@ import java.util.regex.Pattern;
  */
 public final class HtmlSanitizer {
 
+    private static final List<String> DISALLOWED_STYLE_ATTRIBUTES = Arrays.asList("width", "height");
     private static final Pattern HTTP_PROTOCOLS = Pattern.compile("^http(s)?://.*", Pattern.DOTALL);
     private static final Pattern SECURE_HTTP_PROTOCOL = Pattern.compile("^https://.*", Pattern.DOTALL);
     private static final PolicyFactory TITLE_POLICY = initializeTitlePolicyFactory();
@@ -38,7 +44,7 @@ public final class HtmlSanitizer {
     private static PolicyFactory initializeContentPolicyFactory() {
         return Sanitizers.FORMATTING
                 .and(Sanitizers.BLOCKS)
-                .and(Sanitizers.STYLES)
+                .and(allowedStyles())
                 .and(Sanitizers.TABLES)
                 .and(new HtmlPolicyBuilder()
                         .allowAttributes("src")
@@ -64,5 +70,11 @@ public final class HtmlSanitizer {
                         .allowElements("img", "pre", "code", "figure")
                         .toFactory()
                 );
+    }
+
+    private static PolicyFactory allowedStyles() {
+        Set<String> allowedCssProperties = new HashSet<>(CssSchema.DEFAULT.allowedProperties());
+        allowedCssProperties.removeAll(DISALLOWED_STYLE_ATTRIBUTES);
+        return new HtmlPolicyBuilder().allowStyling(CssSchema.withProperties(allowedCssProperties)).toFactory();
     }
 }
