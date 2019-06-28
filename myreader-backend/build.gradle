@@ -34,13 +34,11 @@ dependencies {
     compile group: 'org.flywaydb', name: 'flyway-core'
     compile group: 'com.rometools', name: 'rome', version: "${romeToolsVersion}"
     compile group: 'com.rometools', name: 'rome-modules', version: "${romeToolsVersion}"
-    compile(group: 'org.apache.httpcomponents', name: 'httpclient') {
-        exclude(module: 'commons-logging')
-    }
     compile group: 'org.apache.commons', name: 'commons-lang3', version: "${commonsLang3Version}"
     compile group: 'commons-io', name: 'commons-io', version: "${commonsIoVersion}"
     implementation "org.apache.commons:commons-text:${commonsTextVersion}"
     implementation "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:${htmlSanitizerVersion}"
+    implementation "org.apache.httpcomponents:httpclient"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
