@@ -17,11 +17,19 @@ describe('PendingFetchInterceptor', () => {
     })
   })
 
-  it('should dispatch action FETCH_END when function "onFinally" called', () => {
-    interceptor.onFinally()
+  it('should dispatch action FETCH_END when function "onThen" called', () => {
+    interceptor.onThen(null, jest.fn())
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'FETCH_END'
     })
+  })
+
+  it('should called next', () => {
+    const next = jest.fn()
+    const response = 'expectedResponse'
+    interceptor.onThen(response, next)
+
+    expect(next).toHaveBeenCalledWith(response)
   })
 })

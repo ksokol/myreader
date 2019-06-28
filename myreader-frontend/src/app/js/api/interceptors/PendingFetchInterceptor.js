@@ -10,7 +10,8 @@ export class PendingFetchInterceptor {
     this.dispatch(fetchStart())
   }
 
-  onFinally = () => {
+  onThen = (response, next) => {
     this.dispatch(fetchEnd())
+    next(response)
   }
 }
