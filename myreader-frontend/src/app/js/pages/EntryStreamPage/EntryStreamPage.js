@@ -4,21 +4,12 @@ import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {EntryList, Hotkeys, IconButton, ListLayout} from '../../components'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
-import {
-  changeEntry,
-  entryClear,
-  entryFocusNext,
-  entryFocusPrevious,
-  fetchEntries,
-  getEntries,
-  getNextFocusableEntry
-} from '../../store'
+import {changeEntry, entryClear, entryFocusNext, entryFocusPrevious, fetchEntries, getEntries} from '../../store'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
 import {withAppContext} from '../../contexts'
 
 const mapStateToProps = state => ({
-  ...getEntries(state),
-  nextFocusableEntry: getNextFocusableEntry(state)
+  ...getEntries(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -36,9 +27,6 @@ class Component extends React.Component {
       PropTypes.any
     ).isRequired,
     entryInFocus: PropTypes.shape({
-      seen: PropTypes.bool
-    }),
-    nextFocusableEntry: PropTypes.shape({
       seen: PropTypes.bool
     }),
     links: PropTypes.object.isRequired,
@@ -103,13 +91,29 @@ class Component extends React.Component {
   }
 
   nextEntry = () => {
-    if (this.props.nextFocusableEntry.seen === false) {
-      this.props.changeEntry({
-        ...this.props.nextFocusableEntry,
-        seen: true
-      })
+    const {
+      entries,
+      entryInFocus = {}
+    } = this.props
+    let nextFocusableEntry
+
+    if (!entryInFocus.uuid) {
+      nextFocusableEntry = entries[0]
+    } else {
+      const index = entries.findIndex(it => it.uuid === entryInFocus.uuid)
+      nextFocusableEntry = entries[index + 1]
     }
-    this.props.entryFocusNext()
+
+    if (nextFocusableEntry) {
+      if (nextFocusableEntry.seen === false) {
+        this.props.changeEntry({
+          ...nextFocusableEntry,
+          seen: true
+        })
+      }
+
+      this.props.entryFocusNext()
+    }
   }
 
   render() {

@@ -295,4 +295,92 @@ describe('EntryStreamPage', () => {
       url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ'
     }))
   })
+
+  it('should dispatch action PATCH_ENTRY with next focusable entry when next focusable entry requested', () => {
+    createWrapper().find(buttonNext).props().onClick()
+
+    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
+      type: 'PATCH_ENTRY',
+      url: 'api/2/subscriptionEntries/2',
+      body: {
+        seen: true,
+        tag: 'tag2',
+      }
+    }))
+  })
+
+  it('should dispatch action ENTRY_FOCUS_NEXT when next focusable requested', () => {
+    createWrapper().find(buttonNext).props().onClick()
+
+    expect(dispatch).toHaveBeenNthCalledWith(6, {
+      type: 'ENTRY_FOCUS_NEXT',
+      currentInFocus: '1'
+    })
+  })
+
+  it('should only dispatch action ENTRY_FOCUS_NEXT when seen flag is set to true for next focusable entry', () => {
+    state.entry.entries[1].seen = true
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+
+    expect(dispatch.mock.calls).toHaveLength(2)
+    expect(dispatch).toHaveBeenCalledWith(expect.any(Function))
+    expect(dispatch).toHaveBeenNthCalledWith(2, {
+      type: 'ENTRY_FOCUS_NEXT',
+      currentInFocus: '1'
+    })
+  })
+
+  it('should not dispatch any actions when next focusable entry is not available', () => {
+    state.entry.entryInFocus = '2'
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+
+    expect(dispatch.mock.calls).toHaveLength(0)
+  })
+
+  it('should dispatch actions PATCH_ENTRY and ENTRY_FOCUS_NEXT when seen flag ist set to false for first focusable entry', () => {
+    state.entry.entries[0].seen = false
+    state.entry.entryInFocus = null
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'PATCH_ENTRY',
+      url: 'api/2/subscriptionEntries/1',
+      body: {
+        seen: true,
+        tag: 'tag1',
+      }
+    }))
+    expect(dispatch).toHaveBeenNthCalledWith(4, {
+      type: 'ENTRY_FOCUS_NEXT',
+      currentInFocus: undefined
+    })
+  })
+
+  it('should only dispatch action ENTRY_FOCUS_NEXT when seen flag ist set to true for first focusable entry', () => {
+    state.entry.entryInFocus = null
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+
+    expect(dispatch.mock.calls).toHaveLength(2)
+    expect(dispatch).toHaveBeenNthCalledWith(2, {
+      type: 'ENTRY_FOCUS_NEXT',
+      currentInFocus: undefined
+    })
+  })
+
+  it('should not dispatch action ENTRY_FOCUS_NEXT when entries are not available', () => {
+    state.entry.entries = []
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+
+    expect(dispatch.mock.calls).toHaveLength(0)
+  })
 })

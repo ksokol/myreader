@@ -5,19 +5,6 @@ export const getEntryInFocus = state => {
   return entry ? {...entry} : {}
 }
 
-export const getNextFocusableEntry = state => {
-  const currentInFocus = getEntryInFocus(state)
-  const entries = state.entry.entries
-
-  if (!currentInFocus.uuid) {
-    return entries[0] ? {...entries[0]} : {}
-  } else {
-    const index = entries.findIndex(it => it.uuid === currentInFocus.uuid)
-    const next = entries[index + 1]
-    return next ? {...next} : {}
-  }
-}
-
 export const getEntries = state => {
   const {entries, links, loading} = state.entry
   return {
