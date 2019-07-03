@@ -14,7 +14,6 @@ function entryPageReceived({state, action}) {
   const links = action.links
   let actionEntries = [...action.entries]
   let entries = actionEntries
-  let entryInFocus = null
 
   if (equalLinks(state.links.self, links.self, ['next'])) {
     entries = []
@@ -24,10 +23,9 @@ function entryPageReceived({state, action}) {
     })
 
     entries = entries.concat(actionEntries)
-    entryInFocus = state.entryInFocus
   }
 
-  return {...state, entries, links, entryInFocus}
+  return {...state, entries, links}
 }
 
 function entryChanged({state, action}) {
@@ -37,29 +35,6 @@ function entryChanged({state, action}) {
 
 function entryClear({state}) {
   return {...state, entries: [], links: {}, entryInFocus: null}
-}
-
-function entryFocusNext({state, action}) {
-  if (!action.currentInFocus) {
-    return {...state, entryInFocus: state.entries[0].uuid}
-  } else {
-    const index = state.entries.findIndex(it => it.uuid === action.currentInFocus)
-    const next = state.entries[index + 1]
-
-    if (next) {
-      return {...state, entryInFocus: next.uuid}
-    }
-  }
-  return state
-}
-
-function entryFocusPrevious({state, action}) {
-  if (!action.currentInFocus) {
-    return {...state, entryInFocus: null}
-  }
-  const index = state.entries.findIndex(it => it.uuid === action.currentInFocus)
-  const previous = state.entries[index - 1]
-  return {...state, entryInFocus: previous ? previous.uuid : null}
 }
 
 function securityUpdate({state, action}) {
@@ -82,12 +57,6 @@ export function entryReducers(state = initialApplicationState().entry, action) {
     }
     case types.ENTRY_CLEAR: {
       return entryClear({state})
-    }
-    case types.ENTRY_FOCUS_NEXT: {
-      return entryFocusNext({state, action})
-    }
-    case types.ENTRY_FOCUS_PREVIOUS: {
-      return entryFocusPrevious({state, action})
     }
     case types.SECURITY_UPDATE: {
       return securityUpdate({state, action})

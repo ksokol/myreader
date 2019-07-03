@@ -6,7 +6,6 @@ export default function initialState() {
   return {
     links: {},
     entries: [],
-    loading: false,
-    entryInFocus: null
+    loading: false
   }
 }

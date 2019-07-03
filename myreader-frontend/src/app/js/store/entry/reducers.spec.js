@@ -79,15 +79,6 @@ describe('entry reducer', () => {
       expect(entryReducers(nextState, action).entries).toEqual([{uuid: '1'}, {uuid: '2'}])
     })
 
-    it('should reset entryInFocus property when links differ', () => {
-      action.links = {self: {path: 'expected path', query: {next: 2, a: 'b'}}}
-      action.entries = []
-
-      const currentState = {links: {self: {path: 'expected path', query: {next: 2}}}, entries: [], entryInFocus: '1'}
-
-      expect(entryReducers(currentState, action).entryInFocus).toEqual(null)
-    })
-
     it('should not reset entryInFocus property when links are equal', () => {
       action.links = {self: {query: {next: '3'}}}
       action.entries = []
@@ -199,80 +190,6 @@ describe('entry reducer', () => {
 
       const currentState = {links: {path: 'expected path'}, entries: [1]}
       const expectedState = {links: {}, entries: []}
-
-      expect(entryReducers(currentState, action)).toContainObject(expectedState)
-    })
-  })
-
-  describe('action ENTRY_FOCUS_NEXT', () => {
-
-    let action
-
-    beforeEach(() => {
-      action = {
-        type: 'ENTRY_FOCUS_NEXT',
-        currentInFocus: null
-      }
-    })
-
-    it('should mark first entry as focused', () => {
-      const currentState = {entries: [{uuid: 1}], entryInFocus: null}
-      const expectedState = {entryInFocus: 1}
-
-      expect(entryReducers(currentState, action)).toContainObject(expectedState)
-    })
-
-    it('should mark second entry as focused', () => {
-      action.currentInFocus = 1
-
-      const currentState = {entries: [{uuid: 2}], entryInFocus: 1}
-      const expectedState = {entryInFocus: 2}
-
-      expect(entryReducers(currentState, action)).toContainObject(expectedState)
-    })
-
-    it('should do nothing when last entry focused', () => {
-      action.currentInFocus = 1
-
-      const currentState = {entries: [{uuid: 1}], entryInFocus: 1}
-      const expectedState = {entryInFocus: 1}
-
-      expect(entryReducers(currentState, action)).toContainObject(expectedState)
-    })
-  })
-
-  describe('action ENTRY_FOCUS_PREVIOUS', () => {
-
-    let action
-
-    beforeEach(() => {
-      action = {
-        type: 'ENTRY_FOCUS_PREVIOUS',
-        currentInFocus: null
-      }
-    })
-
-    it('should do nothing when no entry focused', () => {
-      const currentState = {entries: [{uuid: 1}], entryInFocus: null}
-      const expectedState = {entryInFocus: null}
-
-      expect(entryReducers(currentState, action)).toContainObject(expectedState)
-    })
-
-    it('should mark first entry as focused', () => {
-      action.currentInFocus = 2
-
-      const currentState = {entries: [{uuid: 1}, {uuid: 2}], entryInFocus: 2}
-      const expectedState = {entryInFocus: 1}
-
-      expect(entryReducers(currentState, action)).toContainObject(expectedState)
-    })
-
-    it('should mark no entry as focused', () => {
-      action.currentInFocus = 1
-
-      const currentState = {entries: [{uuid: 1}], entryInFocus: 1}
-      const expectedState = {entryInFocus: null}
 
       expect(entryReducers(currentState, action)).toContainObject(expectedState)
     })

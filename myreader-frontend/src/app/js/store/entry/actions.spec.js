@@ -2,14 +2,12 @@ import {
   changeEntry,
   entryChanged,
   entryClear,
-  entryFocusNext,
-  entryFocusPrevious,
   entryPageReceived,
   fetchEntries
 } from '../../store'
 import {createMockStore} from '../../shared/test-utils'
 
-describe('src/app/js/store/entry/actions.spec.js', () => {
+describe('entry actions', () => {
 
   let store
 
@@ -71,43 +69,6 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
     })
   })
 
-  describe('ENTRY_FOCUS_NEXT', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(entryFocusNext())
-      expect(store.getActionTypes()).toEqual(['ENTRY_FOCUS_NEXT'])
-    })
-
-    it('should return expected action data', () => {
-      store.setState({entry: {entries: [{uuid: '1'}], entryInFocus: '1'}})
-
-      store.dispatch(entryFocusNext())
-      expect(store.getActions()[0]).toContainActionData({currentInFocus: '1'})
-    })
-  })
-
-  describe('ENTRY_FOCUS_PREVIOUS', () => {
-
-    it('should not dispatch action when no entry focused', () => {
-      store.dispatch(entryFocusPrevious())
-      expect(store.getActionTypes()).toEqual([])
-    })
-
-    it('should contain expected action type', () => {
-      store.setState({entry: {entries: [{uuid: '1'}], entryInFocus: '1'}})
-
-      store.dispatch(entryFocusPrevious())
-      expect(store.getActionTypes()).toEqual(['ENTRY_FOCUS_PREVIOUS'])
-    })
-
-    it('should return expected action data', () => {
-      store.setState({entry: {entries: [{uuid: '1'}], entryInFocus: '1'}})
-
-      store.dispatch(entryFocusPrevious())
-      expect(store.getActions()[0]).toContainActionData({currentInFocus: '1'})
-    })
-  })
-
   describe('action creator fetchEntries', () => {
 
     beforeEach(() => store.setState({settings: {pageSize: 5}}))
@@ -155,12 +116,6 @@ describe('src/app/js/store/entry/actions.spec.js', () => {
   })
 
   describe('action creator changeEntry', () => {
-
-    it('should not dispatch action when given entry has no uuid property', () => {
-      store.dispatch(changeEntry({}))
-
-      expect(store.getActions()).toEqual([])
-    })
 
     it('should dispatch expected action when given entry has uuid property', () => {
       store.dispatch(changeEntry({uuid: '1'}))

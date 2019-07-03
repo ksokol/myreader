@@ -106,7 +106,7 @@ describe('BookmarkListPage', () => {
     const wrapper = await createWrapper()
     wrapper.find('EntryList').props().onChangeEntry({uuid: '1', seen: true, tag: 'expected tag'})
 
-    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/1',
       body: {

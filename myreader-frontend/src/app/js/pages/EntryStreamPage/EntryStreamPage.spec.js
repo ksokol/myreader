@@ -34,11 +34,7 @@ describe('EntryStreamPage', () => {
   }
 
   beforeEach(() => {
-    dispatch = jest.fn().mockImplementation(action => {
-      if (typeof action === 'function') {
-        action(dispatch, () => state)
-      }
-    })
+    dispatch = jest.fn()
 
     state = {
       entry: {
@@ -51,7 +47,6 @@ describe('EntryStreamPage', () => {
           {uuid: '1', seen: true, tag: 'tag1'},
           {uuid: '2', seen: false, tag: 'tag2'}
         ],
-        entryInFocus: '1',
         loading: true
       }
     }
@@ -86,41 +81,38 @@ describe('EntryStreamPage', () => {
     expect(wrapper.find(buttonNext).exists()).toEqual(true)
   })
 
-  it('should trigger prop function "previousEntry" when previous button clicked', () => {
-    createWrapper().find(buttonPrevious).props().onClick()
-
-    expect(dispatch).toHaveBeenNthCalledWith(4, {
-      type: 'ENTRY_FOCUS_PREVIOUS',
-      currentInFocus: '1'
-    })
-  })
-
-  it('should dispatch action ENTRY_FOCUS_NEXT when next button clicked and entry seen flag is set to true', () => {
+  it('should focus entry when next button clicked and entry seen flag is set to true', () => {
     state.entry.entries[1].seen = true
-    createWrapper().find(buttonNext).props().onClick()
+    const wrapper = createWrapper()
+    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
 
-    expect(dispatch).toHaveBeenNthCalledWith(4, {
-      type: 'ENTRY_FOCUS_NEXT',
-      currentInFocus: '1'
-    })
+    expect(wrapper.find('EntryList').prop('entryInFocus')).toEqual(expect.objectContaining({uuid: '1'}))
   })
 
-  it('should dispatch action PATCH_ENTRY and ENTRY_FOCUS_NEXT when next button clicked and entry seen flag is set to false', () => {
-    createWrapper().find(buttonNext).props().onClick()
+  it('should dispatch action PATCH_ENTRY when next button clicked and entry seen flag is set to false', () => {
+    state.entry.entries[0].seen = false
+    const wrapper = createWrapper()
+    wrapper.find(buttonNext).props().onClick()
 
-    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
       type: 'PATCH_ENTRY',
-      url: 'api/2/subscriptionEntries/2',
+      url: 'api/2/subscriptionEntries/1',
       body: {
         seen: true,
-        tag: 'tag2',
+        tag: 'tag1',
       }
     }))
+  })
 
-    expect(dispatch).toHaveBeenNthCalledWith(6, {
-      type: 'ENTRY_FOCUS_NEXT',
-      currentInFocus: '1'
-    })
+  it('should not dispatch action PATCH_ENTRY when next button clicked and entry seen flag is set to true', () => {
+    const wrapper = createWrapper()
+    wrapper.find(buttonNext).props().onClick()
+
+    expect(dispatch.mock.calls).toHaveLength(2)
+    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      type: 'GET_ENTRIES',
+    }))
   })
 
   it('should pass expected props to entry list component', () => {
@@ -129,11 +121,7 @@ describe('EntryStreamPage', () => {
         {uuid: '1', seen: true, tag: 'tag1'},
         {uuid: '2', seen: false, tag: 'tag2'}
       ],
-      entryInFocus: {
-        uuid: '1',
-        seen: true,
-        tag: 'tag1'
-      },
+      entryInFocus: {},
       links: {
         next: {
           query: {a: 'b'}
@@ -146,7 +134,7 @@ describe('EntryStreamPage', () => {
   it('should dispatch action PATCH_ENTRY when entry changed', () => {
     createWrapper().find('EntryList').props().onChangeEntry({uuid: '2', seen: true, tag: 'expectedTag'})
 
-    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/2',
       body: {
@@ -165,47 +153,47 @@ describe('EntryStreamPage', () => {
     }))
   })
 
-  it('should dispatch action ENTRY_FOCUS_PREVIOUS when arrow up key pressed', () => {
-    createWrapper().find('Hotkeys').prop('onKeys').up()
+  it('should focus previous entry when arrow up key pressed', () => {
+    const wrapper = createWrapper()
+    wrapper.find('Hotkeys').prop('onKeys').down()
+    wrapper.update()
+    wrapper.find('Hotkeys').prop('onKeys').down()
+    wrapper.update()
+    wrapper.find('Hotkeys').prop('onKeys').up()
+    wrapper.update()
 
-    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
-      type: 'ENTRY_FOCUS_PREVIOUS',
-      currentInFocus: '1'
-    }))
+    expect(wrapper.find('EntryList').prop('entryInFocus')).toEqual(expect.objectContaining({uuid: '1'}))
   })
 
-  it('should dispatch action ENTRY_FOCUS_NEXT when arrow down key pressed and entry seen flag is set to true', () => {
+  it('should focus entry when arrow down key pressed and entry seen flag is set to true', () => {
     state.entry.entries[1].seen = true
-    createWrapper().find('Hotkeys').prop('onKeys').down()
+    const wrapper = createWrapper()
+    wrapper.find('Hotkeys').prop('onKeys').down()
+    wrapper.update()
 
-    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
-      type: 'ENTRY_FOCUS_NEXT',
-      currentInFocus: '1'
-    }))
+    expect(wrapper.find('EntryList').prop('entryInFocus')).toEqual(expect.objectContaining({uuid: '1'}))
   })
 
-  it('should dispatch action PATCH_ENTRY and ENTRY_FOCUS_NEXT when next arrow down key pressed and entry seen flag is set to false', () => {
+  it('should dispatch action PATCH_ENTRY when next arrow down key pressed and entry seen flag is set to false', () => {
+    state.entry.entries[0].seen = false
     createWrapper().find('Hotkeys').prop('onKeys').down()
 
-    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
       type: 'PATCH_ENTRY',
-      url: 'api/2/subscriptionEntries/2',
+      url: 'api/2/subscriptionEntries/1',
       body: {
         seen: true,
-        tag: 'tag2',
+        tag: 'tag1',
       }
     }))
-
-    expect(dispatch).toHaveBeenNthCalledWith(6, {
-      type: 'ENTRY_FOCUS_NEXT',
-      currentInFocus: '1'
-    })
   })
 
   it('should dispatch action PATCH_ENTRY when esc key pressed', () => {
-    createWrapper().find('Hotkeys').prop('onKeys').esc()
+    const wrapper = createWrapper()
+    wrapper.find('Hotkeys').prop('onKeys').down()
+    wrapper.find('Hotkeys').prop('onKeys').esc()
 
-    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/1',
       body: {
@@ -297,9 +285,14 @@ describe('EntryStreamPage', () => {
   })
 
   it('should dispatch action PATCH_ENTRY with next focusable entry when next focusable entry requested', () => {
-    createWrapper().find(buttonNext).props().onClick()
+    const wrapper = createWrapper()
 
-    expect(dispatch).toHaveBeenNthCalledWith(4, expect.objectContaining({
+    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
+    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
+
+    expect(dispatch).toHaveBeenNthCalledWith(3, expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/2',
       body: {
@@ -309,46 +302,66 @@ describe('EntryStreamPage', () => {
     }))
   })
 
-  it('should dispatch action ENTRY_FOCUS_NEXT when next focusable requested', () => {
-    createWrapper().find(buttonNext).props().onClick()
-
-    expect(dispatch).toHaveBeenNthCalledWith(6, {
-      type: 'ENTRY_FOCUS_NEXT',
-      currentInFocus: '1'
-    })
-  })
-
-  it('should only dispatch action ENTRY_FOCUS_NEXT when seen flag is set to true for next focusable entry', () => {
-    state.entry.entries[1].seen = true
+  it('should focus first entry', () => {
     const wrapper = createWrapper()
     dispatch.mockClear()
     wrapper.find(buttonNext).props().onClick()
-
-    expect(dispatch.mock.calls).toHaveLength(2)
-    expect(dispatch).toHaveBeenCalledWith(expect.any(Function))
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
-      type: 'ENTRY_FOCUS_NEXT',
-      currentInFocus: '1'
-    })
-  })
-
-  it('should not dispatch any actions when next focusable entry is not available', () => {
-    state.entry.entryInFocus = '2'
-    const wrapper = createWrapper()
-    dispatch.mockClear()
-    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
 
     expect(dispatch.mock.calls).toHaveLength(0)
+    expect(wrapper.find('EntryList').prop('entryInFocus')).toEqual(expect.objectContaining({uuid: '1'}))
   })
 
-  it('should dispatch actions PATCH_ENTRY and ENTRY_FOCUS_NEXT when seen flag ist set to false for first focusable entry', () => {
+  it('should focus second entry', () => {
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
+
+    expect(dispatch.mock.calls).toHaveLength(1)
+    expect(wrapper.find('EntryList').prop('entryInFocus')).toEqual(expect.objectContaining({uuid: '2'}))
+  })
+
+  it('should focus previous entry', () => {
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
+    wrapper.find(buttonPrevious).props().onClick()
+    wrapper.update()
+
+    expect(dispatch.mock.calls).toHaveLength(1)
+    expect(wrapper.find('EntryList').prop('entryInFocus')).toEqual(expect.objectContaining({uuid: '1'}))
+  })
+
+  it('should still focus second entry when last entry reached', () => {
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
+    wrapper.find(buttonNext).props().onClick()
+    wrapper.update()
+
+    expect(dispatch.mock.calls).toHaveLength(1)
+    expect(wrapper.find('EntryList').prop('entryInFocus')).toEqual(expect.objectContaining({uuid: '2'}))
+  })
+
+  it('should dispatch action PATCH_ENTRY when seen flag ist set to false for first focusable entry', () => {
     state.entry.entries[0].seen = false
-    state.entry.entryInFocus = null
     const wrapper = createWrapper()
     dispatch.mockClear()
     wrapper.find(buttonNext).props().onClick()
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: 'PATCH_ENTRY',
       url: 'api/2/subscriptionEntries/1',
       body: {
@@ -356,31 +369,22 @@ describe('EntryStreamPage', () => {
         tag: 'tag1',
       }
     }))
-    expect(dispatch).toHaveBeenNthCalledWith(4, {
-      type: 'ENTRY_FOCUS_NEXT',
-      currentInFocus: undefined
-    })
   })
 
-  it('should only dispatch action ENTRY_FOCUS_NEXT when seen flag ist set to true for first focusable entry', () => {
-    state.entry.entryInFocus = null
-    const wrapper = createWrapper()
-    dispatch.mockClear()
-    wrapper.find(buttonNext).props().onClick()
-
-    expect(dispatch.mock.calls).toHaveLength(2)
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
-      type: 'ENTRY_FOCUS_NEXT',
-      currentInFocus: undefined
-    })
-  })
-
-  it('should not dispatch action ENTRY_FOCUS_NEXT when entries are not available', () => {
-    state.entry.entries = []
+  it('should not dispatch action PATCH_ENTRY when seen flag ist set to true for first focusable entry', () => {
     const wrapper = createWrapper()
     dispatch.mockClear()
     wrapper.find(buttonNext).props().onClick()
 
     expect(dispatch.mock.calls).toHaveLength(0)
+  })
+
+  it('should not focus any entry when entries are not available', () => {
+    state.entry.entries = []
+    const wrapper = createWrapper()
+    dispatch.mockClear()
+    wrapper.find(buttonNext).props().onClick()
+
+    expect(wrapper.find('EntryList').prop('entryInFocus')).toEqual(expect.objectContaining({}))
   })
 })

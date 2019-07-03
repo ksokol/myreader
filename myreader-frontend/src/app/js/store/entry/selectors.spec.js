@@ -45,10 +45,6 @@ describe('entry selectors', () => {
     expect(getEntries(state).links.self).toEqual({path: 'path1', query: {a: 'b'}})
   })
 
-  it('should return entry in focus', () => {
-    expect(getEntries(state).entryInFocus).toEqual({uuid: '1'})
-  })
-
   it('should return loading flag', () => {
     expect(getEntries(state).loading).toEqual(true)
   })
