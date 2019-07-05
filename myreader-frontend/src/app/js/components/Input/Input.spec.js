@@ -1,6 +1,6 @@
 import React from 'react'
-import Input from './Input'
 import {mount} from 'enzyme'
+import {Input} from './Input'
 
 describe('Input', () => {
 
@@ -15,6 +15,7 @@ describe('Input', () => {
       onChange: jest.fn(),
       onFocus: jest.fn(),
       onBlur: jest.fn(),
+      onEnter: jest.fn(),
       a: 'b',
       c: 'd'
     }
@@ -30,7 +31,7 @@ describe('Input', () => {
   })
 
   it('should not render label when prop "label" is undefined', () => {
-    props.label = undefined
+    delete props.label
     const wrapper = createComponent()
 
     expect(wrapper.find('label').exists()).toEqual(false)
@@ -80,7 +81,7 @@ describe('Input', () => {
   })
 
   it('should not throw error when prop "onChange" function is undefined', () => {
-    props.onChange = undefined
+    delete props.onChange
 
     createComponent().find('input').props().onChange({target: {value: 'new value'}})
   })
@@ -144,7 +145,7 @@ describe('Input', () => {
   })
 
   it('should not throw an error when prop "onFocus" function is undefined', () => {
-    props.onFocus = undefined
+    delete props.onFocus
 
     createComponent().find('input').simulate('focus')
   })
@@ -158,7 +159,7 @@ describe('Input', () => {
   })
 
   it('should not throw an error when prop "onBlur" function is undefined', () => {
-    props.onBlur = undefined
+    delete props.onBlur
     const input = createComponent().find('input')
 
     input.simulate('focus')
@@ -173,10 +174,29 @@ describe('Input', () => {
   })
 
   it('should link label with input based on prop "id"', () => {
-    props.id = 'expected id'
+    const expectedId = 'expected id'
+    props.id = expectedId
     const wrapper = createComponent()
 
-    expect(wrapper.find('label').prop('htmlFor')).toEqual('expected id')
-    expect(wrapper.find('input').prop('id')).toEqual('expected id')
+    expect(wrapper.find('label').prop('htmlFor')).toEqual(expectedId)
+    expect(wrapper.find('input').prop('id')).toEqual(expectedId)
+  })
+
+  it('should not throw an exception when enter key pressed and prop function "onEnter" is undefined', () => {
+    delete props.onEnter
+
+    expect(() => createComponent().find('input').simulate('keyUp', {key: 'Enter'})).not.toThrow()
+  })
+
+  it('should trigger prop function "onEnter" when enter key pressed', () => {
+    createComponent().find('input').simulate('keyUp', {key: 'Enter', a: 'b'})
+
+    expect(props.onEnter).toHaveBeenCalledWith(expect.objectContaining({key: 'Enter', a: 'b'}))
+  })
+
+  it('should not trigger prop function "onEnter" when esc key pressed', () => {
+    createComponent().find('input').simulate('keyUp', {key: 'Esc'})
+
+    expect(props.onEnter).not.toHaveBeenCalled()
   })
 })

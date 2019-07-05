@@ -1,8 +1,9 @@
 import React from 'react'
-import Chips from './Chips'
 import {shallow} from 'enzyme'
+import {Chips} from './Chips'
 import Chip from './Chip'
-import {Hotkeys, Input} from '..'
+
+const expectedValue = 'expected value'
 
 describe('Chips', () => {
 
@@ -25,23 +26,23 @@ describe('Chips', () => {
   it('should create a chip component instance for every value in prop "values"', () => {
     const children = createComponent().find(Chip)
 
-    expect(children.at(0).props()).toContainObject({
+    expect(children.at(0).props()).toEqual(expect.objectContaining({
       value: 'value1',
       selected: 'value2',
       disabled: false,
       children: 'rendered: value1',
       onSelect: props.onSelect,
       onRemove: props.onRemove
-    })
+    }))
 
-    expect(children.at(1).props()).toContainObject({
+    expect(children.at(1).props()).toEqual(expect.objectContaining({
       value: 'value2',
       selected: 'value2',
       disabled: false,
       children: 'rendered: value2',
       onSelect: props.onSelect,
       onRemove: props.onRemove
-    })
+    }))
   })
 
   it('should return key from prop "keyFn" function for every chip component instance' , () => {
@@ -52,21 +53,21 @@ describe('Chips', () => {
   })
 
   it('should not render input component when prop "onAdd" function is undefined', () => {
-    const hotkeys = createComponent().find(Hotkeys)
+    const input = createComponent().find('Input')
 
-    expect(hotkeys.exists()).toEqual(false)
+    expect(input.exists()).toEqual(false)
   })
 
   it('should render input component when prop "onAdd" function is defined', () => {
     props.onAdd = jest.fn()
-    const hotkeys = createComponent().find(Hotkeys)
+    const input = createComponent().find('Input')
 
-    expect(hotkeys.exists()).toEqual(true)
+    expect(input.exists()).toEqual(true)
   })
 
   it('should pass expected props to input component', () => {
     props.onAdd = jest.fn()
-    const input = createComponent().find(Input)
+    const input = createComponent().find('Input')
 
     expect(input.props()).toContainObject({
       disabled: false,
@@ -78,23 +79,21 @@ describe('Chips', () => {
   it('should trigger prop "onAdd" function when input value changed and enter key pressed', () => {
     props.onAdd = jest.fn()
     const wrapper = createComponent()
-    const hotkeys = wrapper.find(Hotkeys)
-    const input = wrapper.find(Input)
+    const input = wrapper.find('Input')
 
-    input.props().onChange({target: {value: 'expected value'}})
-    hotkeys.props().onKeys.enter()
+    input.props().onChange({target: {value: expectedValue}})
+    input.invoke('onEnter')()
 
-    expect(props.onAdd).toHaveBeenCalledWith('expected value')
+    expect(props.onAdd).toHaveBeenCalledWith(expectedValue)
   })
 
   it('should not trigger prop "onAdd" function when input value is an empty string and enter key pressed', () => {
     props.onAdd = jest.fn()
     const wrapper = createComponent()
-    const hotkeys = wrapper.find(Hotkeys)
-    const input = wrapper.find(Input)
+    const input = wrapper.find('Input')
 
     input.props().onChange({target: {value: ''}})
-    hotkeys.props().onKeys.enter()
+    input.invoke('onEnter')()
 
     expect(props.onAdd).not.toHaveBeenCalled()
   })
@@ -102,22 +101,21 @@ describe('Chips', () => {
   it('should reset prop "value" of input component when input value changed and enter key pressed', () => {
     props.onAdd = jest.fn()
     const wrapper = createComponent()
-    const hotkeys = wrapper.find(Hotkeys)
-    const input = wrapper.find(Input)
+    const input = wrapper.find('Input')
 
-    input.props().onChange({target: {value: 'expected value'}})
-    hotkeys.props().onKeys.enter()
+    input.props().onChange({target: {value: expectedValue}})
+    input.invoke('onEnter')()
 
-    expect(wrapper.find(Input).prop('value')).toEqual('')
+    expect(wrapper.find('Input').prop('value')).toEqual('')
   })
 
   it('should not reset prop "value" of input component when input value changed but enter key not pressed', () => {
     props.onAdd = jest.fn()
     const wrapper = createComponent()
-    const input = wrapper.find(Input)
+    const input = wrapper.find('Input')
 
-    input.props().onChange({target: {value: 'expected value'}})
+    input.props().onChange({target: {value: expectedValue}})
 
-    expect(wrapper.find(Input).prop('value')).toEqual('expected value')
+    expect(wrapper.find('Input').prop('value')).toEqual(expectedValue)
   })
 })

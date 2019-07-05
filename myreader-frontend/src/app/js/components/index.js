@@ -1,7 +1,7 @@
 export {EntryList} from './EntryList/EntryList'
 export * from './Buttons'
 export {default as IntersectionObserver} from './IntersectionObserver/IntersectionObserver'
-export {default as Chips} from './Chips/Chips'
+export {Chips} from './Chips/Chips'
 export {Icon} from './Icon/Icon'
 export {default as Hotkeys} from './Hotkeys/Hotkeys'
 export * from './Input'
