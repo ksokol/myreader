@@ -2,12 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
-import {EntryList, Hotkeys, IconButton, ListLayout} from '../../components'
+import {EntryList, IconButton, ListLayout} from '../../components'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {changeEntry, entryClear, fetchEntries, getEntries} from '../../store'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
 import {withAppContext} from '../../contexts'
-import {isDefined} from '../../shared/utils'
+import {withAutofocusEntry} from '../../components/EntryList/withAutofocusEntry'
 
 const mapStateToProps = state => ({
   ...getEntries(state)
@@ -18,6 +18,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   fetchEntries,
   entryClear
 }, dispatch)
+
+const EntryListWithAutofocus = withAutofocusEntry(EntryList)
 
 class Component extends React.Component {
 
@@ -38,27 +40,7 @@ class Component extends React.Component {
     fetchEntries: PropTypes.func.isRequired,
     showUnseenEntries: PropTypes.bool.isRequired,
     pageSize: PropTypes.number.isRequired,
-  }
-
-  state = {
-    entryInFocus: {}
-  }
-
-  constructor(props) {
-    super(props)
-
-    this.onKeys = {
-      down: this.nextEntry,
-      up: this.previousEntry,
-      esc: this.toggleEntryReadFlag
-    }
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    const entryInFocus = props.entries.find(it => it.uuid === state.entryInFocus.uuid) || {}
-    return {
-      entryInFocus
-    }
+    onKeyUp: PropTypes.func.isRequired
   }
 
   componentDidMount() {
@@ -66,13 +48,8 @@ class Component extends React.Component {
   }
 
   componentDidUpdate() {
-    if ((this.props.locationChanged || this.props.locationReload)) {
+    if (this.props.locationChanged || this.props.locationReload) {
       this.fetchEntries()
-      this.setState(state => {
-        return isDefined(state.entryInFocus.uuid) ? {
-          entryInFocus: {}
-        } : null
-      })
     }
   }
 
@@ -93,68 +70,6 @@ class Component extends React.Component {
     })
   }
 
-  toggleEntryReadFlag = () => {
-    if (this.state.entryInFocus.uuid) {
-      this.props.changeEntry({
-        ...this.state.entryInFocus,
-        seen: !this.state.entryInFocus.seen
-      })
-    }
-  }
-
-  nextEntry = () => {
-    const {
-      entries
-    } = this.props
-
-    const {
-      entryInFocus
-    } = this.state
-
-    let nextFocusableEntry
-
-    if (!entryInFocus.uuid) {
-      nextFocusableEntry = entries[0]
-    } else {
-      const index = entries.findIndex(it => it.uuid === entryInFocus.uuid)
-      nextFocusableEntry = entries[index + 1]
-    }
-
-    if (nextFocusableEntry) {
-      if (nextFocusableEntry.seen === false) {
-        this.props.changeEntry({
-          ...nextFocusableEntry,
-          seen: true
-        })
-      }
-
-      this.setState({
-        entryInFocus: nextFocusableEntry
-      })
-    }
-  }
-
-  previousEntry = () => {
-    const {
-      entries
-    } = this.props
-
-    const {
-      entryInFocus
-    } = this.state
-
-    if (!entryInFocus.uuid) {
-      return
-    }
-
-    const index = entries.findIndex(it => it.uuid === entryInFocus.uuid)
-
-    this.setState({
-      entryInFocus: entries[index - 1] || {}
-    })
-
-  }
-
   render() {
     const {
       entries,
@@ -162,36 +77,30 @@ class Component extends React.Component {
       loading,
       mediaBreakpoint,
       changeEntry,
-      fetchEntries
+      fetchEntries,
+      onKeyUp
     } = this.props
-
-    const {
-      entryInFocus
-    } = this.state
 
     const actionPanel = mediaBreakpoint === 'desktop' ?
       <React.Fragment>
         <IconButton
           type='chevron-left'
-          onClick={this.previousEntry}
+          onClick={() => onKeyUp({key: 'ArrowLeft'})}
         />
         <IconButton
           type='chevron-right'
-          onClick={this.nextEntry}
+          onClick={() => onKeyUp({key: 'ArrowRight'})}
         />
       </React.Fragment> : null
 
     const listPanel =
-      <Hotkeys onKeys={this.onKeys}>
-        <EntryList
-          entries={entries}
-          links={links}
-          entryInFocus={entryInFocus}
-          loading={loading}
-          onChangeEntry={changeEntry}
-          onLoadMore={fetchEntries}
-        />
-      </Hotkeys>
+      <EntryListWithAutofocus
+        entries={entries}
+        links={links}
+        loading={loading}
+        onChangeEntry={changeEntry}
+        onLoadMore={fetchEntries}
+      />
 
     return (
       <ListLayout
