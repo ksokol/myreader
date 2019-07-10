@@ -40,7 +40,7 @@ export const SettingsPage = () => {
         <Option
           value={showUnseenEntries}
           options={unseenEntriesOptions}
-          onSelect={setShowEntryDetails}
+          onSelect={setShowUnseenEntries}
         />
       </div>
 
@@ -51,7 +51,7 @@ export const SettingsPage = () => {
         <Option
           value={showEntryDetails}
           options={entryDetailsOptions}
-          onSelect={setShowUnseenEntries}
+          onSelect={setShowEntryDetails}
         />
       </div>
 

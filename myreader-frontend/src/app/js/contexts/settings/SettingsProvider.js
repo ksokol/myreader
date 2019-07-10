@@ -18,17 +18,17 @@ export class SettingsProvider extends React.Component {
     })
   }
 
-  setShowEntryDetails = showUnseenEntries => {
-    setShowEntryDetails(showUnseenEntries)
+  setShowEntryDetails = showEntryDetails => {
+    setShowEntryDetails(showEntryDetails)
     this.setState({
-      showUnseenEntries
+      showEntryDetails
     })
   }
 
-  setShowUnseenEntries = showEntryDetails => {
-    setShowUnseenEntries(showEntryDetails)
+  setShowUnseenEntries = showUnseenEntries => {
+    setShowUnseenEntries(showUnseenEntries)
     this.setState({
-      showEntryDetails
+      showUnseenEntries
     })
   }
 

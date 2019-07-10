@@ -59,7 +59,7 @@ describe('settings context', () => {
     const wrapper = createWrapper()
     wrapper.instance().context.setShowEntryDetails(value)
 
-    expect(wrapper.instance().context.showUnseenEntries).toEqual(value)
+    expect(wrapper.instance().context.showEntryDetails).toEqual(value)
     expect(setShowEntryDetails).toHaveBeenCalledWith(value)
   })
 
@@ -68,7 +68,7 @@ describe('settings context', () => {
     const wrapper = createWrapper()
     wrapper.instance().context.setShowUnseenEntries(value)
 
-    expect(wrapper.instance().context.showEntryDetails).toEqual(value)
+    expect(wrapper.instance().context.showUnseenEntries).toEqual(value)
     expect(setShowUnseenEntries).toHaveBeenCalledWith(value)
   })
 })

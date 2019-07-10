@@ -54,12 +54,12 @@ describe('SettingsPage', () => {
   })
 
   it('should trigger setShowEntryDetails with changed showUnseenEntries option', () => {
-    createWrapper().find('Option').at(1).props().onSelect(false)
+    createWrapper().find('Option').at(2).props().onSelect(false)
     expect(setShowEntryDetails).toHaveBeenCalledWith(false)
   })
 
   it('should trigger setShowUnseenEntries with changed showEntryDetails option', () => {
-    createWrapper().find('Option').at(2).props().onSelect(true)
+    createWrapper().find('Option').at(1).props().onSelect(true)
     expect(setShowUnseenEntries).toHaveBeenCalledWith(true)
   })
 
