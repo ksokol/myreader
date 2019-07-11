@@ -27,7 +27,13 @@ jest.mock('../../api', () => ({
 jest.mock('../../components/Toast', () => ({
   toast: jest.fn()
 }))
+
+jest.mock('../../components/EntryList/withEntriesFromApi', () => ({
+  withEntriesFromApi: Component => Component
+}))
 /* eslint-enable */
+
+const expectedTag = 'expected tag'
 
 describe('BookmarkListPage', () => {
 
@@ -57,18 +63,13 @@ describe('BookmarkListPage', () => {
       },
       common: {
         mediaBreakpoint: 'desktop'
-      },
-      entry: {
-        entries: ['expected entries'],
-        links: {next: {path: 'expected-next-path', query: {size: '2'}}},
-        tags: ['tag1', 'tag2'],
-        loading: true
       }
     }
 
     props = {
       searchParams: {
-        entryTagEqual: 'expected tag'
+        entryTagEqual: expectedTag,
+        q: 'expectedQ'
       },
       historyReplace: jest.fn(),
       locationChanged: false,
@@ -82,7 +83,7 @@ describe('BookmarkListPage', () => {
 
     expect(wrapper.find('Chips').props()).toEqual(expect.objectContaining({
       values: ['tag3', 'tag4'],
-      selected: 'expected tag'
+      selected: expectedTag
     }))
   })
 
@@ -95,35 +96,23 @@ describe('BookmarkListPage', () => {
   it('should pass expected props to entry list component', async () => {
     const wrapper = await createWrapper()
 
-    expect(wrapper.find('EntryList').props()).toEqual(expect.objectContaining({
-      entries: ['expected entries'],
-      links: {next: {path: 'expected-next-path', query: {size: '2'}}},
-      loading: true
-    }))
+    expect(wrapper.find('EntryList').prop('query')).toEqual({
+      entryTagEqual: expectedTag,
+      q: 'expectedQ',
+      seenEqual: '*',
+      size: 2
+    })
   })
 
-  it('should dispatch action PATCH_ENTRY when prop function "onChangeEntry" of entry list component triggered', async () => {
+  it('should pass expected props to entry list component with prop "searchParam.entryTagEqual" undefined', async () => {
+    delete props.searchParams.entryTagEqual
     const wrapper = await createWrapper()
-    wrapper.find('EntryList').props().onChangeEntry({uuid: '1', seen: true, tag: 'expected tag'})
 
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
-      type: 'PATCH_ENTRY',
-      url: 'api/2/subscriptionEntries/1',
-      body: {
-        seen: true,
-        tag: 'expected tag'
-      }
-    }))
-  })
-
-  it('should dispatch action GET_ENTRIES when prop function "onLoadMore" of entry list component triggered', async () => {
-    const wrapper = await createWrapper()
-    wrapper.find('EntryList').props().onLoadMore({...state.entry.links.next})
-
-    expect(dispatch).toHaveBeenNthCalledWith(2, expect.objectContaining({
-      type: 'GET_ENTRIES',
-      url: 'expected-next-path?size=2'
-    }))
+    expect(wrapper.find('EntryList').prop('query')).toEqual({
+      q: 'expectedQ',
+      seenEqual: '',
+      size: 2
+    })
   })
 
   it('should return expected prop from Chips prop function "renderItem"', async () => {
@@ -134,55 +123,6 @@ describe('BookmarkListPage', () => {
         pathname: '/app/bookmark',
         search: '?entryTagEqual=tag'
       }
-    }))
-  })
-
-  it('should dispatch action GET_ENTRIES when mounted', async () => {
-    props.searchParams = {
-      entryTagEqual: 'expected entryTagEqual',
-      size: '5',
-      q: 'expectedQ'
-    }
-
-    await createWrapper()
-
-    expect(dispatch).toHaveBeenNthCalledWith(1, expect.objectContaining({
-      type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?size=2&q=expectedQ&entryTagEqual=expected entryTagEqual&seenEqual=*'
-    }))
-  })
-
-  it('should dispatch action GET_ENTRIES when prop "locationReload" is set to true', async () => {
-    const wrapper = await createWrapper()
-    entryApi.fetchEntryTags = rejected()
-    wrapper.setProps({locationReload: true})
-
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?size=2&entryTagEqual=expected tag&seenEqual=*'
-    }))
-  })
-
-  it('should dispatch action GET_ENTRIES with seenEqual set to an empty string when prop "entryTagEqual" is undefined', async () => {
-    props.searchParams.entryTagEqual = null
-    const wrapper = await createWrapper()
-    entryApi.fetchEntryTags = rejected()
-    wrapper.setProps({locationReload: true})
-
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?size=2&seenEqual='
-    }))
-  })
-
-  it('should dispatch action GET_ENTRIES when prop "locationChanged" is set to true', async () => {
-    const wrapper = await createWrapper()
-    entryApi.fetchEntryTags = rejected()
-    wrapper.setProps({locationChanged: true})
-
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'GET_ENTRIES',
-      url: 'api/2/subscriptionEntries?size=2&entryTagEqual=expected tag&seenEqual=*'
     }))
   })
 

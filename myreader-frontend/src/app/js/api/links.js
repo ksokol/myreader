@@ -25,33 +25,10 @@ export function extractLinks(links = []) {
   }, {})
 }
 
-function toFilteredKeys(ignore, query = {}) {
-  return Object.keys(query).filter(it => !ignore.includes(it))
-}
-
-export function equalLinks(left = {}, right = {}, ignore = []) {
-  if (left.path !== right.path) {
-    return false
-  }
-
-  const leftQueryKeys = toFilteredKeys(ignore, left.query)
-  const rightQueryKeys = toFilteredKeys(ignore, right.query)
-
-  if (leftQueryKeys.length !== rightQueryKeys.length) {
-    return false
-  }
-
-  if (leftQueryKeys.some(it => !rightQueryKeys.includes(it))) {
-    return false
-  }
-
-  return !leftQueryKeys.some(key => left.query[key] !== right.query[key])
-}
-
 function toQueryParams(query = {}) {
   const queryParams = Object
     .entries(query)
-    .filter(([key, value]) => value !== undefined && value !== null)
+    .filter(([, value]) => value !== undefined && value !== null)
     .reduce((acc, [key, value]) => `${key}=${value}&${acc}`, '')
   return queryParams ? queryParams.slice(0, -1) : queryParams
 }

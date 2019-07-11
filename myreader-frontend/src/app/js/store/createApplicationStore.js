@@ -5,7 +5,6 @@ import guardMiddleware from './middleware/guard/guardMiddleware'
 import fetchMiddleware from './middleware/fetch'
 import {commonReducers} from './common'
 import {securityReducers} from './security'
-import {entryReducers} from './entry'
 import {subscriptionReducers} from './subscription'
 import {getLastSecurityState} from './security/security'
 import {isInDevMode, isInProdMode} from '../constants'
@@ -30,7 +29,6 @@ function enhancer(enabled) {
 const reducers = combineReducers({
   security: securityReducers,
   common: commonReducers,
-  entry: entryReducers,
   subscription: subscriptionReducers
 })
 
