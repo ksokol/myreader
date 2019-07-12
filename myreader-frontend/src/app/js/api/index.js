@@ -8,6 +8,7 @@ import {SubscriptionApi} from './SubscriptionApi'
 import {SubscriptionExclusionsApi} from './SubscriptionExclusionsApi'
 import {SubscriptionTagsApi} from './SubscriptionTagsApi'
 import {EntryApi} from './EntryApi'
+import {AuthenticationApi} from './AuthenticationApi'
 
 export const api = new Api()
 export const adminApi = new AdminApi(api)
@@ -16,3 +17,4 @@ export const subscriptionApi = new SubscriptionApi(api)
 export const subscriptionExclusionsApi = new SubscriptionExclusionsApi(api)
 export const subscriptionTagsApi = new SubscriptionTagsApi(api)
 export const entryApi = new EntryApi(api)
+export const authenticationApi = new AuthenticationApi(api)

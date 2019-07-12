@@ -1,6 +1,6 @@
 import * as types from '../../store/action-types'
 import {getLastSecurityState, setLastSecurityState} from './security'
-import {LOGIN, LOGOUT} from '../../constants'
+import {LOGIN} from '../../constants'
 
 export const updateSecurity = () => {
   const {roles} = getLastSecurityState()
@@ -19,14 +19,6 @@ export const unauthorized = () => {
 export const authorized = ({roles}) => {
   setLastSecurityState({roles})
   return updateSecurity()
-}
-
-export const logout = finalize => {
-  return {
-    type: 'POST_LOGOUT',
-    url: LOGOUT,
-    finalize
-  }
 }
 
 export const tryLogin = ({username, password, success, finalize}) => {

@@ -1,4 +1,4 @@
-import {authorized, logout, tryLogin, unauthorized, updateSecurity} from '../../store'
+import {authorized, tryLogin, unauthorized, updateSecurity} from '../../store'
 import {createMockStore} from '../../shared/test-utils'
 
 describe('security actions', () => {
@@ -50,18 +50,6 @@ describe('security actions', () => {
         authorized: true,
         roles: ['expected role']
       })
-    })
-  })
-
-  describe('action creator logout', () => {
-
-    it('should create expected action', () => {
-      expect(logout()).toEqualActionType('POST_LOGOUT')
-      expect(logout()).toContainActionData({url: 'logout'})
-    })
-
-    it('should contain expected finalize callback', () => {
-      expect(logout('expected callback').finalize).toEqual('expected callback')
     })
   })
 

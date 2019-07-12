@@ -36,6 +36,7 @@ describe('locationState context', () => {
       history: {
         push: jest.fn(),
         replace: jest.fn(),
+        goBack: jest.fn(),
       }
     }
 
@@ -61,7 +62,8 @@ describe('locationState context', () => {
       locationReload: false,
       historyPush: expect.any(Function),
       historyReplace: expect.any(Function),
-      historyReload: expect.any(Function)
+      historyReload: expect.any(Function),
+      historyGoBack: expect.any(Function),
     })
   })
 
@@ -152,5 +154,11 @@ describe('locationState context', () => {
       expect(wrapper.find('WrappedComponent').prop('locationChanged')).toEqual(true)
       done()
     })
+  })
+
+  it('should trigger prop function "props.history.goBack"', () => {
+    createWrapper().find('WrappedComponent').invoke('historyGoBack')()
+
+    expect(routerProps.history.goBack).toHaveBeenCalled()
   })
 })

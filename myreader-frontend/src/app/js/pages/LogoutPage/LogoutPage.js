@@ -3,23 +3,33 @@ import PropTypes from 'prop-types'
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {LOGIN_URL} from '../../constants'
-import {logout, unauthorized} from '../../store'
+import {unauthorized} from '../../store'
+import {authenticationApi} from '../../api'
+import {toast} from '../../components/Toast'
+import {withLocationState} from '../../contexts/locationState/withLocationState'
 
 class LogoutPage extends React.Component {
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      loggedOut: false
-    }
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    historyGoBack: PropTypes.func.isRequired
   }
 
-  componentDidMount() {
-    this.props.dispatch(logout(() => {
-      this.setState({loggedOut: true})
-      return unauthorized()
-    }))
+  state = {
+    loggedOut: false
+  }
+
+  async componentDidMount() {
+    try {
+      await authenticationApi.logout()
+      this.setState({
+        loggedOut: true
+      })
+      this.props.dispatch(unauthorized())
+    } catch (error) {
+      this.props.historyGoBack()
+      toast('Logout failed', {error: true})
+    }
   }
 
   render() {
@@ -27,9 +37,7 @@ class LogoutPage extends React.Component {
   }
 }
 
-LogoutPage.propTypes = {
-  dispatch: PropTypes.func.isRequired
-}
-
-export default connect()(LogoutPage)
+export default connect()(
+  withLocationState(LogoutPage)
+)
 
