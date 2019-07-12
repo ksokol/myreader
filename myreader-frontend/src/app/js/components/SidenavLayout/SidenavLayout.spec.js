@@ -31,7 +31,8 @@ describe('SidenavLayout', () => {
   beforeEach(() => {
     props = {
       mediaBreakpoint: 'phone',
-      locationReload: false
+      locationReload: false,
+      fetchSubscriptions: jest.fn()
     }
   })
 
@@ -56,6 +57,12 @@ describe('SidenavLayout', () => {
 
     props.mediaBreakpoint = 'desktop'
     expect(createWrapper().find(hamburgerMenu).exists()).toEqual(false)
+  })
+
+  it('should trigger prop function "fetchSubscriptions" when mounted', () => {
+    createWrapper()
+
+    expect(props.fetchSubscriptions).toHaveBeenCalledWith()
   })
 
   it('should toggle navigation when hamburger menu and backdrop clicked', () => {

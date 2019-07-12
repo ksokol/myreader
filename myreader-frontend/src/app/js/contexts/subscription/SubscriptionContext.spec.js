@@ -31,16 +31,12 @@ describe('subscription context', () => {
 
   let dispatch, props, subscriptions
 
-  const createWrapper = async (onMount = resolved(subscriptions)) => {
-    subscriptionApi.fetchSubscriptions = onMount
-    const wrapper = mount(
+  const createWrapper = () => {
+    return mount(
       <SubscriptionProvider {...props} dispatch={dispatch}>
         <TestComponent />
       </SubscriptionProvider>
     )
-    await flushPromises()
-    wrapper.update()
-    return wrapper
   }
 
   beforeEach(() => {
@@ -57,19 +53,26 @@ describe('subscription context', () => {
     }
   })
 
-  it('should render children', async () => {
-    const wrapper = await createWrapper()
+  it('should render children', () => {
+    const wrapper = createWrapper()
     expect(wrapper.find(TestComponent).html()).toEqual('expected component')
   })
 
-  it('should contain expected context values in child component', async () => {
-    const wrapper = await createWrapper()
+  it('should contain expected context values in child component', () => {
+    const wrapper = createWrapper()
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual({subscriptions: []})
+    expect(wrapper.find(TestComponent).instance().context).toEqual({
+      subscriptions: [],
+      fetchSubscriptions: expect.any(Function)
+    })
   })
 
   it('should dispatch action SUBSCRIPTIONS_RECEIVED when subscriptionApi.fetchSubscriptions succeeded', async () => {
-    await createWrapper()
+    const wrapper = createWrapper()
+    subscriptionApi.fetchSubscriptions = resolved(subscriptions)
+    wrapper.find(TestComponent).instance().context.fetchSubscriptions()
+    await flushPromises()
+    wrapper.update()
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SUBSCRIPTIONS_RECEIVED',
@@ -81,19 +84,27 @@ describe('subscription context', () => {
   })
 
   it('should not dispatch action SUBSCRIPTIONS_RECEIVED when subscriptionApi.fetchSubscriptions failed', async () => {
-    await createWrapper(rejected())
+    const wrapper = createWrapper()
+    subscriptionApi.fetchSubscriptions = rejected()
+    wrapper.find(TestComponent).instance().context.fetchSubscriptions()
+    await flushPromises()
+    wrapper.update()
 
     expect(dispatch).not.toHaveBeenCalled()
   })
 
   it('should contain empty context value in child component when subscriptionApi.fetchSubscriptions succeeded', async () => {
-    await createWrapper(rejected(expectedError))
+    const wrapper = createWrapper()
+    subscriptionApi.fetchSubscriptions = rejected(expectedError)
+    wrapper.find(TestComponent).instance().context.fetchSubscriptions()
+    await flushPromises()
+    wrapper.update()
 
     expect(toast).toHaveBeenCalledWith('expected error', {error: true})
   })
 
   it('should dispatch action SUBSCRIPTIONS_RECEIVED when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions succeeded', async () => {
-    const wrapper = await createWrapper()
+    const wrapper = createWrapper()
     subscriptionApi.fetchSubscriptions = resolved([{uuid: '3'}])
     dispatch.mockClear()
     wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
@@ -109,7 +120,7 @@ describe('subscription context', () => {
   })
 
   it('should not dispatch action SUBSCRIPTIONS_RECEIVED when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions failed', async () => {
-    const wrapper = await createWrapper()
+    const wrapper = createWrapper()
     subscriptionApi.fetchSubscriptions = rejected(expectedError)
     dispatch.mockClear()
     wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
@@ -120,7 +131,7 @@ describe('subscription context', () => {
   })
 
   it('should trigger toast when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions failed', async () => {
-    const wrapper = await createWrapper()
+    const wrapper = createWrapper()
     subscriptionApi.fetchSubscriptions = rejected(expectedError)
     dispatch.mockClear()
     wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
