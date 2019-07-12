@@ -12,6 +12,10 @@ export function toSubscription(raw = {}) {
   return raw
 }
 
+export function toSubscriptions(raw = {}) {
+  return raw.content.map(toSubscription)
+}
+
 function toBody(subscription) {
   const clone = {...subscription}
   if (!clone.feedTag || !isString(clone.feedTag.name)) {
@@ -54,5 +58,12 @@ export class SubscriptionApi {
       url: `${SUBSCRIPTIONS}/${uuid}`,
       method: 'GET',
     }).then(({ok, data}) => ok ? toSubscription(data) : Promise.reject(data))
+  }
+
+  fetchSubscriptions = () => {
+    return this.api.request({
+      url: SUBSCRIPTIONS,
+      method: 'GET',
+    }).then(({ok, data}) => ok ? toSubscriptions(data) : Promise.reject(data))
   }
 }

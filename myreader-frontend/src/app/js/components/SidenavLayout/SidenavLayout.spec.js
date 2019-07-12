@@ -1,6 +1,6 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import SidenavLayout from './SidenavLayout'
+import {SidenavLayout} from './SidenavLayout'
 
 /* eslint-disable react/prop-types */
 jest.mock('../Backdrop/Backdrop', () => ({
@@ -12,6 +12,10 @@ jest.mock('../Navigation/Navigation', () => props => <div className='navigation'
 jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
+
+jest.mock('../../contexts', () => ({
+  withAppContext: Component => Component
+}))
 /* eslint-enable */
 
 const hamburgerMenu = 'IconButton[type="bars"]'
@@ -20,13 +24,11 @@ const openNavigation = '.my-sidenav-layout__nav--open'
 
 describe('SidenavLayout', () => {
 
-  let props, dispatch
+  let props
 
-  const createWrapper = () => mount(<SidenavLayout {...props} dispatch={dispatch} />)
+  const createWrapper = () => mount(<SidenavLayout {...props} />)
 
   beforeEach(() => {
-    dispatch = jest.fn()
-
     props = {
       mediaBreakpoint: 'phone',
       locationReload: false
@@ -54,36 +56,6 @@ describe('SidenavLayout', () => {
 
     props.mediaBreakpoint = 'desktop'
     expect(createWrapper().find(hamburgerMenu).exists()).toEqual(false)
-  })
-
-  it('should dispatch action GET_SUBSCRIPTIONS when mounted', () => {
-    createWrapper()
-
-    expect(dispatch).toHaveBeenNthCalledWith(1, expect.objectContaining({
-      type: 'GET_SUBSCRIPTIONS',
-      url: 'api/2/subscriptions'
-    }))
-  })
-
-  it('should dispatch action GET_SUBSCRIPTIONS when prop "locationReload" is set to true', () => {
-    const wrapper = createWrapper()
-    dispatch.mockClear()
-
-    wrapper.setProps({locationReload: true})
-
-    expect(dispatch).toHaveBeenNthCalledWith(1, expect.objectContaining({
-      type: 'GET_SUBSCRIPTIONS',
-      url: 'api/2/subscriptions'
-    }))
-  })
-
-  it('should not dispatch action GET_SUBSCRIPTIONS when prop "locationReload" is set to false', () => {
-    const wrapper = createWrapper()
-    dispatch.mockClear()
-
-    wrapper.setProps({locationReload: false})
-
-    expect(dispatch).not.toHaveBeenCalled()
   })
 
   it('should toggle navigation when hamburger menu and backdrop clicked', () => {

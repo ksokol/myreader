@@ -1,25 +1,17 @@
 import './SidenavLayout.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {bindActionCreators} from 'redux'
-import {connect} from 'react-redux'
 import {IconButton} from '../Buttons'
-import {fetchSubscriptions} from '../../store'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import Navigation from '../Navigation/Navigation'
 import {Backdrop} from '../Backdrop/Backdrop'
-import MediaBreakpointContext from '../../contexts/mediaBreakpoint/MediaBreakpointContext'
+import {withAppContext} from '../../contexts'
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchSubscriptions
-}, dispatch)
-
-class SidenavLayout extends React.Component {
+class Component extends React.Component {
 
   static propTypes = {
     mediaBreakpoint: PropTypes.string.isRequired,
     locationReload: PropTypes.bool.isRequired,
-    fetchSubscriptions: PropTypes.func.isRequired,
     children: PropTypes.any
   }
 
@@ -35,13 +27,7 @@ class SidenavLayout extends React.Component {
     }
   }
 
-  componentDidMount = () => this.fetchSubscriptions()
-
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.locationReload) {
-      this.fetchSubscriptions()
-    }
-
     if (this.state.isDesktop !== prevState.isDesktop && this.state.isDesktop) {
       this.setState({
         backdropVisible: false,
@@ -49,8 +35,6 @@ class SidenavLayout extends React.Component {
       })
     }
   }
-
-  fetchSubscriptions = () => this.props.fetchSubscriptions()
 
   toggleSidenav = () => {
     if (!this.state.isDesktop) {
@@ -122,13 +106,4 @@ class SidenavLayout extends React.Component {
   }
 }
 
-export default withLocationState(
-  connect(
-    () => ({}),
-    mapDispatchToProps
-  )(props => (
-    <MediaBreakpointContext.Consumer>
-      {value => <SidenavLayout {...props} {...value} />}
-    </MediaBreakpointContext.Consumer>
-  ))
-)
+export const SidenavLayout = withLocationState(withAppContext(Component))

@@ -163,4 +163,34 @@ describe('SubscriptionApi', () => {
     await expect(subscriptionApi.fetchSubscription()).rejects.toEqual(expectedError)
   })
 
+  it(`should call GET ${SUBSCRIPTIONS} endpoint`, () => {
+    api.request = jest.fn().mockResolvedValue({ok: true, data: {content: []}})
+    subscriptionApi.fetchSubscriptions()
+
+    expect(api.request).toHaveBeenCalledWith({
+      method: 'GET',
+      url: `${SUBSCRIPTIONS}`
+    })
+  })
+
+  it(`should return expected response when GET ${SUBSCRIPTIONS} succeeded`, async () => {
+    const data = {
+      content: [
+        {uuid: '1'},
+        {uuid: '2', feedTag: {uuid: '2'}}
+      ]
+    }
+    api.request = jest.fn().mockResolvedValue({ok: true, data})
+
+    await expect(subscriptionApi.fetchSubscriptions()).resolves.toEqual([
+      {uuid: '1', feedTag: {}},
+      {uuid: '2', feedTag: {uuid: '2'}}
+    ])
+  })
+
+  it(`should return expected error response when GET ${SUBSCRIPTIONS} failed`, async () => {
+    api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
+
+    await expect(subscriptionApi.fetchSubscriptions()).rejects.toEqual(expectedError)
+  })
 })

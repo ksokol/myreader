@@ -21,13 +21,13 @@ api.addInterceptor(new AuthInterceptor(store.dispatch))
 
 ReactDOM.render(
   <Provider store={store}>
-    <AppContextProvider>
-      <Router hashType='hashbang'>
-        <LocationStateProvider>
+    <Router hashType='hashbang'>
+      <LocationStateProvider>
+        <AppContextProvider>
           <App />
-        </LocationStateProvider>
-      </Router>
-    </AppContextProvider>
+        </AppContextProvider>
+      </LocationStateProvider>
+    </Router>
   </Provider>,
   document.getElementById('root')
 )

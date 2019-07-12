@@ -9,7 +9,10 @@ jest.mock('./settings/settings', () => ({
     showUnseenEntries: true,
     showEntryDetails: false
   })
+}))
 
+jest.mock('./locationState/withLocationState', () => ({
+  withLocationState: Component => props => <Component {...props} locationReload={true} />
 }))
 /* eslint-enable */
 
@@ -36,7 +39,8 @@ describe('app context', () => {
       showUnseenEntries: true,
       showEntryDetails: false,
       hotkeysStamp: 2,
-      hotkey: 'ArrowLeft'
+      hotkey: 'ArrowLeft',
+      subscriptions: []
     })
   })
 
