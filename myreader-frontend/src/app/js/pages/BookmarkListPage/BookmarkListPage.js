@@ -18,7 +18,8 @@ class BookmarkListPage extends React.Component {
 
   static propTypes = {
     searchParams: PropTypes.shape({
-      entryTagEqual: PropTypes.string
+      entryTagEqual: PropTypes.string,
+      q: PropTypes.string
     }).isRequired,
     locationReload: PropTypes.bool.isRequired,
     pageSize: PropTypes.number.isRequired
