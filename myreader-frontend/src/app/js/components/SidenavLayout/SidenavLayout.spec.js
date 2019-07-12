@@ -59,12 +59,6 @@ describe('SidenavLayout', () => {
     expect(createWrapper().find(hamburgerMenu).exists()).toEqual(false)
   })
 
-  it('should trigger prop function "fetchSubscriptions" when mounted', () => {
-    createWrapper()
-
-    expect(props.fetchSubscriptions).toHaveBeenCalledWith()
-  })
-
   it('should toggle navigation when hamburger menu and backdrop clicked', () => {
     const wrapper = createWrapper()
     wrapper.find(hamburgerMenu).invoke('onClick')()

@@ -6,17 +6,13 @@ import {SettingsProvider} from './settings/SettingsProvider'
 import {MediaBreakpointProvider} from './mediaBreakpoint/MediaBreakpointProvider'
 import {HotkeysProvider} from './hotkeys/HotkeysProvider'
 import HotkeysContext from './hotkeys/HotkeysContext'
-import {SubscriptionProvider} from './subscription/SubscriptionProvider'
-import SubscriptionContext from './subscription/SubscriptionContext'
 
 export function AppContextProvider({children}) {
   return (
     <HotkeysProvider>
       <SettingsProvider>
         <MediaBreakpointProvider>
-          <SubscriptionProvider>
-            {children}
-          </SubscriptionProvider>
+          {children}
         </MediaBreakpointProvider>
       </SettingsProvider>
     </HotkeysProvider>
@@ -35,17 +31,12 @@ export function withAppContext(WrappedComponent) {
           {mediaBreakpoint => (
             <SettingsContext.Consumer>
               {settings => (
-                <SubscriptionContext.Consumer>
-                  {subscriptions => (
-                    <WrappedComponent
-                      {...props}
-                      {...mediaBreakpoint}
-                      {...settings}
-                      {...hotkeys}
-                      {...subscriptions}
-                    />
-                  )}
-                </SubscriptionContext.Consumer>
+                <WrappedComponent
+                  {...props}
+                  {...mediaBreakpoint}
+                  {...settings}
+                  {...hotkeys}
+                />
               )}
             </SettingsContext.Consumer>
           )}
@@ -59,7 +50,6 @@ export function useAppContext() {
   return {
     ...useContext(MediaBreakpointContext),
     ...useContext(SettingsContext),
-    ...useContext(HotkeysContext),
-    ...useContext(SubscriptionContext)
+    ...useContext(HotkeysContext)
   }
 }

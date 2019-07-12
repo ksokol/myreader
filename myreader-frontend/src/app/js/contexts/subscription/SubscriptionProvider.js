@@ -24,6 +24,8 @@ class Provider extends React.Component {
     subscriptions: []
   }
 
+  componentDidMount = async () => await this.fetchSubscriptions()
+
   async componentDidUpdate(prevProps) {
     if (this.props.locationReload) {
       await this.fetchSubscriptions()
@@ -43,8 +45,7 @@ class Provider extends React.Component {
     return (
       <SubscriptionContext.Provider
         value={{
-          subscriptions: this.state.subscriptions,
-          fetchSubscriptions: this.fetchSubscriptions
+          subscriptions: this.state.subscriptions
         }}
       >
         {this.props.children}

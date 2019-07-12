@@ -12,7 +12,6 @@ class Component extends React.Component {
   static propTypes = {
     mediaBreakpoint: PropTypes.string.isRequired,
     locationReload: PropTypes.bool.isRequired,
-    fetchSubscriptions: PropTypes.func.isRequired,
     children: PropTypes.any
   }
 
@@ -27,8 +26,6 @@ class Component extends React.Component {
       isDesktop: props.mediaBreakpoint === 'desktop'
     }
   }
-
-  componentDidMount = () => this.props.fetchSubscriptions()
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.isDesktop !== prevState.isDesktop && this.state.isDesktop) {

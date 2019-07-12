@@ -32,21 +32,24 @@ import {FeedListPage} from './pages/FeedListPage/FeedListPage'
 import {SettingsPage} from './pages/SettingsPage/SettingsPage'
 import {EntryStreamPage} from './pages/EntryStreamPage/EntryStreamPage'
 import {SidenavLayout} from './components/SidenavLayout/SidenavLayout'
+import {SubscriptionProvider} from './contexts/subscription/SubscriptionProvider'
 
 const withSidenav = () => (
-  <SidenavLayout>
-    <Switch>
-      <Route exact={true} path={ENTRIES_URL} component={EntryStreamPage}/>
-      <Route exact={true} path={BOOKMARK_URL} component={BookmarkListPage}/>
-      <Route exact={true} path={SUBSCRIPTION_ADD_URL} component={SubscribePage}/>
-      <Route exact={true} path={SUBSCRIPTION_URL} component={SubscriptionEditPage}/>
-      <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>
-      <Route exact={true} path={SETTINGS_URL} component={SettingsPage}/>
-      <Route exact={true} path={ADMIN_OVERVIEW_URL} component={AdminOverviewPage}/>
-      <Route exact={true} path={ADMIN_FEEDS_URL} component={FeedListPage}/>
-      <Route exact={true} path={ADMIN_FEED_URL} component={FeedEditPage}/>
-    </Switch>
-  </SidenavLayout>
+  <SubscriptionProvider>
+    <SidenavLayout>
+      <Switch>
+        <Route exact={true} path={ENTRIES_URL} component={EntryStreamPage}/>
+        <Route exact={true} path={BOOKMARK_URL} component={BookmarkListPage}/>
+        <Route exact={true} path={SUBSCRIPTION_ADD_URL} component={SubscribePage}/>
+        <Route exact={true} path={SUBSCRIPTION_URL} component={SubscriptionEditPage}/>
+        <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>
+        <Route exact={true} path={SETTINGS_URL} component={SettingsPage}/>
+        <Route exact={true} path={ADMIN_OVERVIEW_URL} component={AdminOverviewPage}/>
+        <Route exact={true} path={ADMIN_FEEDS_URL} component={FeedListPage}/>
+        <Route exact={true} path={ADMIN_FEED_URL} component={FeedEditPage}/>
+      </Switch>
+    </SidenavLayout>
+  </SubscriptionProvider>
 )
 
 const App = () => {
