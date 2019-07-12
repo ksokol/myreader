@@ -71,7 +71,7 @@ public class ApiSecurityTests {
         mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .param("username", TestConstants.USER1)
                 .param("password", "wrong"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
     }
 
     @Test

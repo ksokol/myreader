@@ -54,27 +54,4 @@ describe('createApplicationStore', () => {
       expect(store.getState().security).toContainObject({roles: []})
     })
   })
-
-  describe('middleware', () => {
-
-    afterEach(() => {
-      fetch.resetMocks()
-    })
-
-    it('should integrate with redux thunk and custom fetch middleware', done => {
-      const store = createApplicationStore(OTHER)
-
-      store.dispatch({
-        type: 'GET_SOMETHING',
-        url: '/',
-        success: done
-      })
-    })
-
-    it('should integrate with custom guard middleware', () => {
-      const store = createApplicationStore(OTHER)
-
-      expect(() => store.dispatch(undefined)).not.toThrowError()
-    })
-  })
 })

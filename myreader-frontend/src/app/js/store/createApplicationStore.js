@@ -1,8 +1,5 @@
 import {applyMiddleware, combineReducers, compose as reduxCompose, createStore} from 'redux'
 import thunk from 'redux-thunk'
-import arrayMiddleware from './middleware/array/arrayMiddleware'
-import guardMiddleware from './middleware/guard/guardMiddleware'
-import fetchMiddleware from './middleware/fetch'
 import {commonReducers} from './common'
 import {securityReducers} from './security'
 import {subscriptionReducers} from './subscription'
@@ -23,7 +20,7 @@ function determineComposeFn(enabled) {
 }
 
 function enhancer(enabled) {
-  return determineComposeFn(enabled)(applyMiddleware(thunk, arrayMiddleware, guardMiddleware, fetchMiddleware))
+  return determineComposeFn(enabled)(applyMiddleware(thunk))
 }
 
 const reducers = combineReducers({

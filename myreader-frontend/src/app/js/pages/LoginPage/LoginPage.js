@@ -4,7 +4,8 @@ import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {LoginForm} from '../../components'
 import {ENTRIES_URL} from '../../constants'
-import {authorized, authorizedSelector, tryLogin} from '../../store'
+import {authorized, authorizedSelector} from '../../store'
+import {authenticationApi} from '../../api'
 
 const mapStateToProps = state => ({
   ...authorizedSelector(state)
@@ -17,44 +18,38 @@ class LoginPage extends React.Component {
     dispatch: PropTypes.func.isRequired
   }
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      loginPending: false,
-      loginFailed: false
-    }
+  state = {
+    loginPending: false,
+    loginFailed: false
   }
 
-  onLogin = ({username, password}) => {
+  onLogin = async ({username, password}) => {
     this.setState({
       loginPending: true,
       loginFailed: false
     })
 
-    this.props.dispatch(tryLogin({
-      username,
-      password,
-      success: this.onSuccess,
-      finalize: this.onFinalize
-    }))
+    try {
+      const roles = await authenticationApi.login(username, password)
+      this.onSuccess(roles)
+    } catch {
+      this.setState({
+        loginFailed: true
+      })
+    } finally {
+      this.setState({
+        loginPending: false
+      })
+    }
   }
 
-  onSuccess = (response, headers) => {
+  onSuccess = (roles) => {
     this.setState({
       loginPending: false,
       loginFailed: false
     })
 
-    const roles = headers['x-my-authorities'].split(',')
-    return authorized({roles})
-  }
-
-  onFinalize = (data, headers, status) => {
-    this.setState({
-      loginPending: false,
-      loginFailed: status === 401
-    })
+    this.props.dispatch(authorized({roles}))
   }
 
   render() {

@@ -1,12 +1,8 @@
-import {authorized, tryLogin, unauthorized, updateSecurity} from '../../store'
-import {createMockStore} from '../../shared/test-utils'
+import {authorized, unauthorized, updateSecurity} from '../../store'
 
 describe('security actions', () => {
 
-  let store
-
   beforeEach(() => {
-    store = createMockStore()
     localStorage.clear()
   })
 
@@ -50,32 +46,6 @@ describe('security actions', () => {
         authorized: true,
         roles: ['expected role']
       })
-    })
-  })
-
-  describe('action creator tryLogin', () => {
-
-    it('should contain expected action type', () => {
-      store.dispatch(tryLogin({}))
-
-      expect(store.getActionTypes()).toEqual(['POST_LOGIN'])
-    })
-
-    it('should contain expected action data', () => {
-      store.dispatch(tryLogin({username: 'a', password: 'b'}))
-
-      expect(store.getActions()[0])
-        .toContainActionData({url: 'check', headers: {'content-type': 'application/x-www-form-urlencoded'}})
-      expect(store.getActions()[0].body.toString()).toEqual('username=a&password=b')
-    })
-
-    it('should contain expected success and finalize callback functions', () => {
-      const success = () => ({})
-      const finalize = () => ({})
-      store.dispatch(tryLogin({success, finalize}))
-
-      expect(store.getActions()[0].success).toEqual(success)
-      expect(store.getActions()[0].finalize).toEqual(finalize)
     })
   })
 })

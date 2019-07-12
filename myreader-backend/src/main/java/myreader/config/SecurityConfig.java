@@ -66,7 +66,7 @@ public class SecurityConfig {
                     response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                     response.addHeader(MY_AUTHORITIES, XAuthoritiesFilterUtils.buildAuthorities(authentication));
                 })
-                .failureHandler((request, response, exception) -> response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
+                .failureHandler((request, response, exception) -> response.setStatus(HttpServletResponse.SC_BAD_REQUEST))
                 .and()
                 .rememberMe().key(rememberMeKey).alwaysRemember(true)
                 .and()
