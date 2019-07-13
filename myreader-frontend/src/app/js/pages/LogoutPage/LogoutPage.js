@@ -22,10 +22,10 @@ class LogoutPage extends React.Component {
   async componentDidMount() {
     try {
       await authenticationApi.logout()
+      this.props.dispatch(unauthorized())
       this.setState({
         loggedOut: true
       })
-      this.props.dispatch(unauthorized())
     } catch (error) {
       this.props.historyGoBack()
       toast('Logout failed', {error: true})
