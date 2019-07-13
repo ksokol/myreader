@@ -1,21 +1,19 @@
 import {AuthenticationApi} from './AuthenticationApi'
 import {LOGIN, LOGOUT} from '../constants'
 
-const expectedError = 'expected error'
-
 describe('AuthenticationApi', () => {
 
   let api, authenticationApi
 
   beforeEach(() => {
     api = {
-      request: jest.fn().mockResolvedValueOnce({ok: true})
+      request: jest.fn().mockResolvedValueOnce({})
     }
     authenticationApi = new AuthenticationApi(api)
   })
 
-  it(`should call GET ${LOGOUT} endpoint`, () => {
-    api.request = jest.fn().mockResolvedValue({ok: true})
+  it('should call GET logout endpoint', () => {
+    api.request = jest.fn().mockResolvedValueOnce({ok: true})
     authenticationApi.logout()
 
     expect(api.request).toHaveBeenCalledWith({
@@ -24,20 +22,13 @@ describe('AuthenticationApi', () => {
     })
   })
 
-  it(`should return expected response when GET ${LOGOUT} succeeded`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: true})
+  it('should return expected response when GET logout succeeded', async () => {
+    api.request = jest.fn().mockResolvedValueOnce(null)
 
-    await expect(authenticationApi.logout()).resolves.toBeUndefined()
+    await expect(authenticationApi.logout()).resolves.toBeNull()
   })
 
-  it(`should return expected error response when GET ${LOGOUT} failed`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
-
-    await expect(authenticationApi.logout()).rejects.toEqual(expectedError)
-  })
-
-  it(`should call GET ${LOGIN} endpoint`, () => {
-    api.request = jest.fn().mockResolvedValue({ok: true, status: 200, headers: {}})
+  it('should call GET login endpoint', () => {
     authenticationApi.login('expected username', 'expected password')
 
     expect(api.request).toHaveBeenCalledWith(expect.objectContaining({
@@ -52,29 +43,21 @@ describe('AuthenticationApi', () => {
     )
   })
 
-  it(`should return expected response when GET ${LOGIN} succeeded`, async () => {
-    api.request = jest.fn().mockResolvedValue({
-      ok: true,
-      status: 204,
-      headers: {'x-my-authorities': 'ROLE1,ROLE2'}
+  it('should return expected response when GET login succeeded', async () => {
+    api.request = jest.fn().mockResolvedValueOnce({
+      roles: ['ROLE1', 'ROLE2']
     })
 
-    await expect(authenticationApi.login()).resolves.toEqual(['ROLE1', 'ROLE2'])
+    await expect(authenticationApi.login()).resolves.toEqual({
+      roles: ['ROLE1', 'ROLE2']
+    })
   })
 
-  it(`should return expected response when GET ${LOGIN} succeeded without any roles attached`, async () => {
-    api.request = jest.fn().mockResolvedValue({
-      ok: true,
-      status: 204,
-      headers: {}
+  it('should return expected response when GET login succeeded without any roles attached', async () => {
+    api.request = jest.fn().mockResolvedValueOnce({
+      roles: []
     })
 
-    await expect(authenticationApi.login()).resolves.toEqual([''])
-  })
-
-  it(`should return expected error response when GET ${LOGIN} failed`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: true, status: 400})
-
-    await expect(authenticationApi.login()).rejects.toBeUndefined()
+    await expect(authenticationApi.login()).resolves.toEqual({roles: []})
   })
 })

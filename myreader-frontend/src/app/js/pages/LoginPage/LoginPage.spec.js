@@ -18,7 +18,7 @@ describe('LoginPage', () => {
 
   let state, dispatch
 
-  const createWrapper = async (onMount = resolved(['USER'])) => {
+  const createWrapper = async (onMount = resolved({roles: ['USER']})) => {
     authenticationApi.login = onMount
     const wrapper = mount(<LoginPage state={state} dispatch={dispatch} />)
     await flushPromises()

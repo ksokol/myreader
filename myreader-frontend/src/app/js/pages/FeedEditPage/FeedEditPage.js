@@ -21,26 +21,19 @@ class FeedEditPage extends React.Component {
     validations: []
   }
 
-  componentDidMount = async () => {
-    await this.loadFeed(this.props.params.uuid)
-  }
+  componentDidMount = async () => await this.loadFeed(this.props.params.uuid)
 
   loadFeed = async uuid => {
     try {
       const feed = await feedApi.fetchFeed(uuid)
-      this.setState({
-        feed
-      })
-    } catch(error) {
-      toast(error, {error: true})
+      this.setState({feed})
+    } catch({data}) {
+      toast(data, {error: true})
     }
   }
 
   onSaveFeed = async feed => {
-    this.setState({
-      changePending: true,
-      validations: []
-    })
+    this.setState({changePending: true, validations: []})
 
     try {
       await feedApi.saveFeed(feed)
@@ -51,27 +44,21 @@ class FeedEditPage extends React.Component {
           validations: error.data.fieldErrors
         })
       } else {
-        toast(error, {error: true})
+        toast(error.data, {error: true})
       }
     } finally {
-      this.setState({
-        changePending: false
-      })
+      this.setState({changePending: false})
     }
   }
 
   onDeleteFeed = async uuid => {
-    this.setState({
-      changePending: true
-    })
+    this.setState({changePending: true})
 
     try {
       await feedApi.deleteFeed(uuid)
       this.props.historyReplace({pathname: ADMIN_FEEDS_URL})
     } catch(error) {
-      this.setState({
-        changePending: false
-      })
+      this.setState({changePending: false})
       if (error.status === 409) {
         toast('Can not delete. Feed has subscriptions', {error: true})
       } else {

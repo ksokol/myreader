@@ -48,10 +48,10 @@ describe('withEntriesFromApi', () => {
       links: {
         next: {
           query: {
-          a: 'b'
+            a: 'b'
+          }
         }
       }
-    }
     }
 
     props = {
@@ -100,7 +100,7 @@ describe('withEntriesFromApi', () => {
   })
 
   it('should trigger toast when call to entryApi.fetchEntries failed', async () => {
-    await createWrapper(rejected(expectedError))
+    await createWrapper(rejected({data: expectedError}))
 
     expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
   })
@@ -148,7 +148,7 @@ describe('withEntriesFromApi', () => {
   })
 
   it('should trigger toast when call to entryApi.updateEntry failed', async () => {
-    entryApi.updateEntry = rejected(expectedError)
+    entryApi.updateEntry = rejected({data: expectedError})
     const wrapper = await createWrapper()
     wrapper.find('TestComponent').props().onChangeEntry({uuid: '2', seen: true, tag: 'expectedTag'})
     await flushPromises()
@@ -173,7 +173,7 @@ describe('withEntriesFromApi', () => {
   })
 
   it('should trigger toast when entryApi.fetchEntries failed after prop function "onLoadMore" triggered', async () => {
-    const wrapper = await createWrapper(rejected(expectedError))
+    const wrapper = await createWrapper(rejected({data: expectedError}))
     wrapper.find('TestComponent').props().onLoadMore({})
 
     expect(toast).toHaveBeenCalledWith(expectedError, {error: true})

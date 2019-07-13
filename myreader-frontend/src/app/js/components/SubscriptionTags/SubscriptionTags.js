@@ -14,9 +14,8 @@ export class SubscriptionTags extends React.Component {
 
   componentDidMount = async () => {
     try {
-      this.setState({
-        subscriptionTags: await subscriptionTagsApi.fetchSubscriptionTags()
-      })
+      const {content: subscriptionTags} = await subscriptionTagsApi.fetchSubscriptionTags()
+      this.setState({subscriptionTags})
     } catch (error) {
       toast(error, {error: true})
     }
@@ -29,13 +28,12 @@ export class SubscriptionTags extends React.Component {
   onSave = async color => {
     try {
       const subscriptionTag = await subscriptionTagsApi.saveSubscriptionTag({...this.state.tag, color})
-      this.setState(state => ({
-          subscriptionTags: state.subscriptionTags.map(tag => tag.uuid === subscriptionTag.uuid ? subscriptionTag : tag)
-        })
-      )
+      const subscriptionTags = this.state.subscriptionTags
+        .map(tag => tag.uuid === subscriptionTag.uuid ? subscriptionTag : tag)
+      this.setState({subscriptionTags})
       toast('Tag updated')
     } catch (error) {
-      toast(error, {error: true})
+      toast(error.data, {error: true})
     }
   }
 

@@ -26,7 +26,7 @@ class LogoutPage extends React.Component {
       this.setState({
         loggedOut: true
       })
-    } catch (error) {
+    } catch {
       this.props.historyGoBack()
       toast('Logout failed', {error: true})
     }

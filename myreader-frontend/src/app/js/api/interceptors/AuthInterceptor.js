@@ -6,11 +6,9 @@ export class AuthInterceptor {
     this.dispatch = dispatch
   }
 
-  onThen = (response, next) => {
-    if (response.status === 401) {
+  onError = ({status}) => {
+    if (status === 401) {
       this.dispatch(unauthorized())
-    } else {
-      next(response)
     }
   }
 }

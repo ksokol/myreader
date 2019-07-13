@@ -26,7 +26,7 @@ class Provider extends React.Component {
 
   componentDidMount = async () => await this.fetchSubscriptions()
 
-  async componentDidUpdate(prevProps) {
+  async componentDidUpdate() {
     if (this.props.locationReload) {
       await this.fetchSubscriptions()
     }
@@ -36,8 +36,8 @@ class Provider extends React.Component {
     try {
       const subscriptions = await subscriptionApi.fetchSubscriptions()
       this.props.subscriptionsReceived(subscriptions)
-    } catch (error) {
-      toast(error, {error: true})
+    } catch ({data}) {
+      toast(data, {error: true})
     }
   }
 

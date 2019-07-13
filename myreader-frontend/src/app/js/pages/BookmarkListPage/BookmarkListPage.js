@@ -41,11 +41,9 @@ class BookmarkListPage extends React.Component {
 
   fetchEntryTags = async () => {
     try {
-      this.setState({
-        entryTags: await entryApi.fetchEntryTags()
-      })
-    } catch (error) {
-      toast(error, {error: true})
+      this.setState({entryTags: await entryApi.fetchEntryTags()})
+    } catch ({data}) {
+      toast(data, {error: true})
     }
   }
 

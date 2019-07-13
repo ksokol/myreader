@@ -2,16 +2,15 @@ import {AuthInterceptor} from './AuthInterceptor'
 
 describe('AuthInterceptor', () => {
 
-  let dispatch, interceptor, next
+  let dispatch, interceptor
 
   beforeEach(() => {
     dispatch = jest.fn()
-    next = jest.fn()
     interceptor = new AuthInterceptor(dispatch)
   })
 
   it('should dispatch action SECURITY_UPDATE when status is 401', () => {
-    interceptor.onThen({status: 401}, next)
+    interceptor.onError({status: 401})
 
     expect(dispatch).toHaveBeenCalledWith({
       authorized: false,
@@ -20,21 +19,9 @@ describe('AuthInterceptor', () => {
     })
   })
 
-  it('should not dispatch action SECURITY_UPDATE when status is 401', () => {
-    interceptor.onThen({status: 401}, next)
-
-    expect(next).not.toHaveBeenCalled()
-  })
-
   it('should not dispatch action SECURITY_UPDATE when status is 200', () => {
-    interceptor.onThen({status: 200}, next)
+    interceptor.onError({status: 200})
 
     expect(dispatch).not.toHaveBeenCalled()
-  })
-
-  it('should called next when status is 200', () => {
-    interceptor.onThen({status: 200}, next)
-
-    expect(next).toHaveBeenCalledWith({status: 200})
   })
 })

@@ -44,21 +44,21 @@ export class FeedApi {
     return this.api.request({
       url,
       method: 'GET'
-    }).then(({ok, data}) => ok ? toFeedFetchFailures(data) : Promise.reject(data))
+    }).then(toFeedFetchFailures)
   }
 
   fetchFeeds = () => {
     return this.api.request({
       url: FEEDS,
       method: 'GET'
-    }).then(({ok, data}) => ok ? toFeeds(data) : Promise.reject(data))
+    }).then(toFeeds)
   }
 
   fetchFeed = uuid => {
     return this.api.request({
       url: `${FEEDS}/${uuid}`,
       method: 'GET'
-    }).then(({ok, data}) => ok ? toFeed(data) : Promise.reject(data))
+    }).then(toFeed)
   }
 
   saveFeed = body => {
@@ -66,13 +66,13 @@ export class FeedApi {
       url: `${FEEDS}/${body.uuid}`,
       method: 'PATCH',
       body
-    }).then(({ok, status, data}) => ok ? null : Promise.reject({status, data}))
+    })
   }
 
   deleteFeed = uuid => {
     return this.api.request({
       url: `${FEEDS}/${uuid}`,
       method: 'DELETE'
-    }).then(({ok, status, data}) => ok ? null : Promise.reject({status, data}))
+    })
   }
 }

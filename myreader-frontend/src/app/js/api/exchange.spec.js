@@ -1,6 +1,10 @@
 import {exchange} from './exchange'
 import '../../../../__mocks__/global/fetch'
 
+const jsonContentType = 'application/json'
+const textPlainContentType = 'text/plain'
+const expectedBody = 'expected body'
+
 describe('exchange', () => {
 
   const execute = (method, params) => exchange({...params, method})
@@ -28,7 +32,7 @@ describe('exchange', () => {
 
   it('should use default content-type "application/json"', done => {
     execute('POST', {url: 'test', body: {id: 1}}).then(() => {
-      expect(fetch.mock.calls[0][0].headers.get('content-type')).toEqual('application/json')
+      expect(fetch.mock.calls[0][0].headers.get('content-type')).toEqual(jsonContentType)
       done()
     })
   })
@@ -41,8 +45,8 @@ describe('exchange', () => {
   })
 
   it('should use given content-type', done => {
-    execute('POST', {url: '', body: '{id: 1}', headers: {'Content-type': 'text/plain'}}).then(() => {
-      expect(fetch.mock.calls[0][0].headers.get('content-type')).toEqual('text/plain')
+    execute('POST', {url: '', body: '{id: 1}', headers: {'Content-type': textPlainContentType}}).then(() => {
+      expect(fetch.mock.calls[0][0].headers.get('content-type')).toEqual(textPlainContentType)
       done()
     })
   })
@@ -56,91 +60,110 @@ describe('exchange', () => {
   })
 
   it('should return json body when http request succeeded', done => {
-    fetch.once('{"id": 1}', {headers: {'content-type': 'application/json'}})
+    fetch.once('{"id": 1}', {headers: {'content-type': jsonContentType}})
 
     execute('GET').then(response => {
-      expect(response).toContainObject({ok: true, status: 200, data: {id: 1}})
+      expect(response).toEqual({id: 1})
       done()
     })
   })
 
   it('should return text body when http request succeeded', done => {
-    fetch.once('expected body', {headers: {'content-type': 'text/plain'}})
+    fetch.once(expectedBody, {headers: {'content-type': 'text/plain'}})
 
     execute('POST').then(response => {
-      expect(response).toContainObject({ok: true, status: 200, data: 'expected body'})
+      expect(response).toEqual(expectedBody)
       done()
     })
   })
 
   it('should return json body when http request is unauthorized', done => {
-    fetch.once('{"id": 1}', {status: 401, headers: {'content-type': 'application/json'}})
+    fetch.once('{"id": 1}', {status: 401, headers: {'content-type': jsonContentType}})
 
-    execute('POST').then(response => {
-      expect(response).toContainObject({ok: false, status: 401, data: {id: 1}})
+    execute('POST').catch(response => {
+      expect(response).toEqual({
+        status: 401,
+        headers: {'content-type': jsonContentType},
+        data: {id: 1}
+      })
       done()
     })
   })
 
   it('should return text body when http request is unauthorized', done => {
-    fetch.once('expected body', {status: 401, headers: {'content-type': 'text/plain'}})
+    fetch.once(expectedBody, {status: 401, headers: {'content-type': textPlainContentType}})
 
-    execute('POST').then(response => {
-      expect(response).toContainObject({ok: false, status: 401, data: 'expected body'})
+    execute('POST').catch(response => {
+      expect(response).toEqual({
+        status: 401,
+        headers: {'content-type': textPlainContentType},
+        data: expectedBody
+      })
       done()
     })
   })
 
   it('should return json body when http request failed', done => {
-    fetch.once('{"id": 1}', {status: 400, headers: {'content-type': 'application/json'}})
+    fetch.once('{"id": 1}', {status: 400, headers: {'content-type': jsonContentType}})
 
-    execute('POST').then(response => {
-      expect(response).toContainObject({ok: false, status: 400, data: {id: 1}})
+    execute('POST').catch(response => {
+      expect(response).toEqual({
+        status: 400,
+        headers: {'content-type': jsonContentType},
+        data: {id: 1}
+      })
       done()
     })
   })
 
   it('should return text body when http request failed', done => {
-    fetch.once('expected body', {status: 400, headers: {'content-type': 'text/plain'}})
+    fetch.once(expectedBody, {status: 400, headers: {'content-type': textPlainContentType}})
 
-    execute('POST').then(response => {
-      expect(response).toContainObject({ok: false, status: 400, data: 'expected body'})
+    execute('POST').catch(response => {
+      expect(response).toEqual({
+        status: 400,
+        headers: {'content-type': textPlainContentType},
+        data: expectedBody
+      })
       done()
     })
   })
 
   it('should return all headers when response is of type text/plain', done => {
-    fetch.once('{"id": 1}', {status: 401, headers: {'content-type': 'text/plain', a: 'b'}})
+    fetch.once(expectedBody, {status: 401, headers: {'content-type': textPlainContentType, a: 'b'}})
 
-    execute('POST').then(response => {
-      expect(response).toContainObject({headers: {'content-type': 'text/plain', a: 'b'}})
+    execute('POST').catch(response => {
+      expect(response).toEqual({
+        status: 401,
+        headers: {'content-type': textPlainContentType, a: 'b'},
+        data: expectedBody
+      })
       done()
     })
   })
 
   it('should return all headers when response is of type application/json', done => {
-    fetch.once('{"id": 1}', {status: 401, headers: {'content-type': 'application/json', a: 'b'}})
+    fetch.once('{"id": 1}', {status: 401, headers: {'content-type': jsonContentType, a: 'b'}})
 
-    execute('POST').then(response => {
-      expect(response).toContainObject({headers: {'content-type': 'application/json', a: 'b'}})
+    execute('POST').catch(response => {
+      expect(response).toEqual({
+        status: 401,
+        headers: {'content-type': jsonContentType, a: 'b'},
+        data: {id: 1}
+      })
       done()
     })
   })
 
   it('should return empty headers when http request failed for unknown reason', done => {
-    fetch.mockRejectOnce('expected error')
+    fetch.mockRejectOnce(new Error('expected error'))
 
-    execute('POST').then(response => {
-      expect(response).toContainObject({headers: {}})
-      done()
-    })
-  })
-
-  it('should return text error message when http request failed for unknown reason', done => {
-    fetch.mockRejectOnce('expected error')
-
-    execute('POST').then(response => {
-      expect(response).toContainObject({ok: false, status: -1, data: 'expected error'})
+    execute('POST').catch(response => {
+      expect(response).toEqual({
+        data: 'Error: expected error',
+        headers: {},
+        status: -1
+      })
       done()
     })
   })

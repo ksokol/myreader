@@ -27,7 +27,7 @@ describe('SubscriptionExclusions', () => {
 
   let props
 
-  const createWrapper = async (onMount = resolved([...exclusions])) => {
+  const createWrapper = async (onMount = resolved({content: [...exclusions]})) => {
     subscriptionExclusionsApi.fetchExclusions = onMount
 
     const wrapper = shallow(<SubscriptionExclusions {...props} />)
@@ -70,7 +70,7 @@ describe('SubscriptionExclusions', () => {
   })
 
   it('should trigger toast on mount when exclusions could not be fetched', async () => {
-    await createWrapper(rejected(expectedError))
+    await createWrapper(rejected({data: expectedError}))
 
     expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
   })
@@ -95,7 +95,7 @@ describe('SubscriptionExclusions', () => {
   })
 
   it('should trigger toast when new exclusion could not be saved', async () => {
-    subscriptionExclusionsApi.saveExclusion = rejected(expectedError)
+    subscriptionExclusionsApi.saveExclusion = rejected({data: expectedError})
     const wrapper = await createWrapper()
     wrapper.find('Chips').props().onAdd()
     await flushPromises()
@@ -139,7 +139,7 @@ describe('SubscriptionExclusions', () => {
   })
 
   it('should trigger toast when exclusion deletion failed', async () => {
-    subscriptionExclusionsApi.removeExclusion = rejected(expectedError)
+    subscriptionExclusionsApi.removeExclusion = rejected({data: expectedError})
     const wrapper = await createWrapper()
     wrapper.find('Chips').props().onRemove({})
     await flushPromises()

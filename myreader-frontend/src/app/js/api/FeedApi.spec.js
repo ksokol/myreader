@@ -1,20 +1,18 @@
 import {FeedApi} from './FeedApi'
 import {FEEDS} from '../constants'
 
-const expectedError = 'expected error'
-
 describe('FeedApi', () => {
 
   let api, feedApi
 
   beforeEach(() => {
     api = {
-      request: jest.fn().mockResolvedValueOnce({ok: true})
+      request: jest.fn().mockResolvedValueOnce({content: []})
     }
     feedApi = new FeedApi(api)
   })
 
-  it(`should GET ${FEEDS}/uuid1/fetchError with proper url derived from uuid`, () => {
+  it('should GET feed errors for uuid1 with proper url derived from uuid', () => {
     feedApi.fetchFeedFetchErrors('uuid1')
 
     expect(api.request).toHaveBeenCalledWith({
@@ -23,7 +21,7 @@ describe('FeedApi', () => {
     })
   })
 
-  it(`should GET ${FEEDS}/uuid1/fetchError with proper url derived from object`, () => {
+  it('should GET feed errors for uuid1 with proper url derived from object', () => {
     feedApi.fetchFeedFetchErrors({path: `${FEEDS}/uuid2/fetchError`})
 
     expect(api.request).toHaveBeenCalledWith({
@@ -32,7 +30,7 @@ describe('FeedApi', () => {
     })
   })
 
-  it(`should return expected response when GET ${FEEDS}/uuid1/fetchError succeeded`, async () => {
+  it('should return expected response when GET feeds error for uuid1 succeeded', async () => {
     const data = {
       content: [
         {uuid: 'uuid1', message: 'message1', createdAt: 'createdAt1'},
@@ -44,7 +42,7 @@ describe('FeedApi', () => {
       ]
     }
 
-    api.request = jest.fn().mockResolvedValue({ok: true, data})
+    api.request = jest.fn().mockResolvedValueOnce(data)
 
     await expect(feedApi.fetchFeedFetchErrors('uuid1')).resolves.toEqual({
       links: {next: {path: 'next href', query: {}}, self: {path: 'self href', query: {a: 'b'}}},
@@ -55,13 +53,7 @@ describe('FeedApi', () => {
     })
   })
 
-  it(`should return expected error response when ${FEEDS}/uuid1/fetchError failed`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
-
-    await expect(feedApi.fetchFeedFetchErrors('uuid1')).rejects.toEqual(expectedError)
-  })
-
-  it(`should GET ${FEEDS}`, () => {
+  it('should GET feeds', () => {
     feedApi.fetchFeeds()
 
     expect(api.request).toHaveBeenCalledWith({
@@ -70,7 +62,7 @@ describe('FeedApi', () => {
     })
   })
 
-  it(`should return expected response when GET ${FEEDS} succeeded`, async () => {
+  it('should return expected response when GET feeds succeeded', async () => {
     const data = {
       content: [
         {
@@ -87,7 +79,7 @@ describe('FeedApi', () => {
       ]
     }
 
-    api.request = jest.fn().mockResolvedValue({ok: true, data})
+    api.request = jest.fn().mockResolvedValueOnce(data)
 
     await expect(feedApi.fetchFeeds()).resolves.toEqual([
       {
@@ -104,13 +96,7 @@ describe('FeedApi', () => {
     ])
   })
 
-  it(`should return expected error response when GET ${FEEDS} failed`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
-
-    await expect(feedApi.fetchFeeds()).rejects.toEqual(expectedError)
-  })
-
-  it(`should GET ${FEEDS}`, () => {
+  it('should GET feed', () => {
     feedApi.fetchFeed('uuid1')
 
     expect(api.request).toHaveBeenCalledWith({
@@ -119,7 +105,7 @@ describe('FeedApi', () => {
     })
   })
 
-  it(`should return expected response when GET ${FEEDS} succeeded`, async () => {
+  it('should return expected response when GET feed succeeded', async () => {
     const data = {
       uuid: 'uuid1',
       a: 'b',
@@ -127,7 +113,7 @@ describe('FeedApi', () => {
       links: [{rel: 'self', href: '/uuid1?a=b'}, {rel: 'other', href: '/other'}]
     }
 
-    api.request = jest.fn().mockResolvedValue({ok: true, data})
+    api.request = jest.fn().mockResolvedValueOnce(data)
 
     await expect(feedApi.fetchFeed('uuid1')).resolves.toEqual({
       uuid: 'uuid1',
@@ -137,13 +123,7 @@ describe('FeedApi', () => {
     })
   })
 
-  it(`should return expected error response when GET ${FEEDS} failed`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: false, data: expectedError})
-
-    await expect(feedApi.fetchFeed('uuid1')).rejects.toEqual(expectedError)
-  })
-
-  it(`should PATCH ${FEEDS}`, () => {
+  it('should PATCH feed', () => {
     feedApi.saveFeed({uuid: 'uuid1', a: 'b', c: 'd'})
 
     expect(api.request).toHaveBeenCalledWith({
@@ -157,19 +137,10 @@ describe('FeedApi', () => {
     })
   })
 
-  it(`should return expected response when PATCH ${FEEDS} succeeded`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: true})
+  it('should return expected response when PATCH feed succeeded', async () => {
+    api.request = jest.fn().mockResolvedValueOnce(null)
 
     await expect(feedApi.saveFeed({uuid: 'uuid1'})).resolves.toBeNull()
-  })
-
-  it(`should return expected error response when PATCH ${FEEDS} failed`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: false, status: 400, data: expectedError})
-
-    await expect(feedApi.saveFeed({uuid: 'uuid1'})).rejects.toEqual({
-      status: 400,
-      data: expectedError
-    })
   })
 
   it(`should DELETE ${FEEDS}`, () => {
@@ -181,18 +152,9 @@ describe('FeedApi', () => {
     })
   })
 
-  it(`should return expected response when DELETE ${FEEDS} succeeded`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: true})
+  it('should return expected response when DELETE feed succeeded', async () => {
+    api.request = jest.fn().mockResolvedValueOnce(null)
 
     await expect(feedApi.deleteFeed('uuid1')).resolves.toBeNull()
-  })
-
-  it(`should return expected error response when DELETE ${FEEDS}/uuid1 failed`, async () => {
-    api.request = jest.fn().mockResolvedValue({ok: false, status: 500, data: expectedError})
-
-    await expect(feedApi.deleteFeed('uuid1')).rejects.toEqual({
-      status: 500,
-      data: expectedError
-    })
   })
 })

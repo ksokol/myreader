@@ -27,22 +27,14 @@ class SubscriptionEditPage extends React.Component {
 
     try {
       const subscription = await subscriptionApi.fetchSubscription(uuid)
-      const subscriptionTags = await subscriptionTagsApi.fetchSubscriptionTags()
-
-      this.setState({
-        subscription,
-        subscriptionTags
-      })
-    } catch (error) {
-      toast(error, {error: true})
+      const {content: subscriptionTags} = await subscriptionTagsApi.fetchSubscriptionTags()
+      this.setState({subscription, subscriptionTags})
+    } catch ({data}) {
+      toast(data, {error: true})
     }
   }
 
-  pendingEnd = () => {
-    this.setState({
-      changePending: false
-    })
-  }
+  pendingEnd = () => this.setState({changePending: false})
 
   onSaveSubscription = async subscription => {
     try {
@@ -55,9 +47,9 @@ class SubscriptionEditPage extends React.Component {
       this.props.historyReload()
     } catch (error) {
       if (error.status === 400) {
-        this.setState({validations: error.fieldErrors})
+        this.setState({validations: error.data.fieldErrors})
       } else {
-        toast(error, {error: true})
+        toast(error.data, {error: true})
       }
     } finally {
       this.pendingEnd()
@@ -65,18 +57,16 @@ class SubscriptionEditPage extends React.Component {
   }
 
   onDeleteSubscription = async uuid => {
-    this.setState({
-      changePending: true
-    })
+    this.setState({changePending: true})
 
     try {
       await subscriptionApi.deleteSubscription(uuid)
       toast('Subscription deleted')
       this.props.historyReplace({pathname: SUBSCRIPTIONS_URL})
       this.props.historyReload()
-    } catch (error) {
+    } catch ({data}) {
       this.pendingEnd()
-      toast(error, {error: true})
+      toast(data, {error: true})
     }
   }
 

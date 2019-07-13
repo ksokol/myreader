@@ -116,7 +116,7 @@ describe('SubscriptionEditPage', () => {
   })
 
   it('should pass state "validations" to feed edit page when subscriptionApi.saveSubscription failed with HTTP 400', async() => {
-    subscriptionApi.saveSubscription = rejected({status: 400, fieldErrors: ['error']})
+    subscriptionApi.saveSubscription = rejected({status: 400, data: {fieldErrors: ['error']}})
     const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     await flushPromises()
@@ -136,7 +136,7 @@ describe('SubscriptionEditPage', () => {
   })
 
   it('should clear state "validations" when subscriptionApi.saveSubscription called again', async () => {
-    subscriptionApi.saveSubscription = rejected({status: 400, fieldErrors: ['error']})
+    subscriptionApi.saveSubscription = rejected({status: 400, data: {fieldErrors: ['error']}})
     const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     await flushPromises()
@@ -175,7 +175,7 @@ describe('SubscriptionEditPage', () => {
   })
 
   it('should trigger prop function "props.showErrorNotification" when call to subscriptionApi.deleteSubscription failed', async () => {
-    subscriptionApi.deleteSubscription = rejected('expected error')
+    subscriptionApi.deleteSubscription = rejected({data: 'expected error'})
     const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().deleteSubscription()
     await flushPromises()
@@ -213,19 +213,19 @@ describe('SubscriptionEditPage', () => {
   })
 
   it('should show toast when call to subscriptionApi.fetchSubscription failed on mount', async () => {
-    await createWrapper({subscription: rejected(expectedError)})
+    await createWrapper({subscription: rejected({data: expectedError})})
 
     expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
   })
 
   it('should show toast when call to subscriptionApi.fetchSubscriptionTags failed on mount', async () => {
-    await createWrapper({subscription: resolved(), tags: rejected(expectedError)})
+    await createWrapper({subscription: resolved(), tags: rejected({data: expectedError})})
 
     expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
   })
 
-  it('should pass tags to component when call too ubscriptionApi.fetchSubscriptionTags succeeded', async () => {
-    const wrapper = await createWrapper({subscription: resolved(), tags: resolved('expected tags')})
+  it('should pass tags to component when call too subscriptionApi.fetchSubscriptionTags succeeded', async () => {
+    const wrapper = await createWrapper({subscription: resolved(), tags: resolved({content: 'expected tags'})})
 
     expect(wrapper.find('SubscriptionEditForm').prop('subscriptionTags')).toEqual('expected tags')
   })

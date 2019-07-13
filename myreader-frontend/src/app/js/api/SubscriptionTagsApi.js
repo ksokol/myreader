@@ -10,7 +10,7 @@ export class SubscriptionTagsApi {
     return this.api.request({
       url: SUBSCRIPTION_TAGS,
       method: 'GET',
-    }).then(({ok, data}) => ok ? data.content : Promise.reject(data))
+    })
   }
 
   saveSubscriptionTag = subscriptionTag => {
@@ -18,6 +18,6 @@ export class SubscriptionTagsApi {
       url: `${SUBSCRIPTION_TAGS}/${subscriptionTag.uuid}`,
       method: 'PATCH',
       body: subscriptionTag,
-    }).then(({ok, data}) => ok ? data : Promise.reject(data))
+    })
   }
 }

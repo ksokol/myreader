@@ -63,7 +63,7 @@ describe('SubscriptionTags', () => {
 
   let subscriptionTags
 
-  const createPage = async (onMount = resolved(subscriptionTags)) => {
+  const createPage = async (onMount = resolved({content: subscriptionTags})) => {
     subscriptionTagsApi.fetchSubscriptionTags = onMount
     const wrapper = mount(<SubscriptionTags />)
     await flushPromises()

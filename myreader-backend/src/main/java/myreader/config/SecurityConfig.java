@@ -9,10 +9,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import spring.security.UserRepositoryUserDetailsService;
-import spring.security.XAuthoritiesFilter;
-import spring.security.XAuthoritiesFilterUtils;
+import spring.security.CustomAuthenticationSuccessHandler;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,7 +19,6 @@ import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT;
 import static myreader.config.UrlMappings.API_2;
 import static myreader.config.UrlMappings.LANDING_PAGE;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
-import static spring.security.SecurityConstants.MY_AUTHORITIES;
 
 /**
  * @author Kamill Sokol
@@ -50,6 +48,8 @@ public class SecurityConfig {
     @Configuration
     class LoginSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+        private final AuthenticationSuccessHandler authenticationSuccessHandler = new CustomAuthenticationSuccessHandler();
+
         @Override
         public void configure(WebSecurity webSecurity) {
             webSecurity
@@ -62,10 +62,7 @@ public class SecurityConfig {
             http
                 .formLogin().loginPage("/")
                 .loginProcessingUrl(LOGIN_PROCESSING.mapping()).permitAll()
-                .successHandler((request, response, authentication) -> {
-                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                    response.addHeader(MY_AUTHORITIES, XAuthoritiesFilterUtils.buildAuthorities(authentication));
-                })
+                .successHandler(authenticationSuccessHandler::onAuthenticationSuccess)
                 .failureHandler((request, response, exception) -> response.setStatus(HttpServletResponse.SC_BAD_REQUEST))
                 .and()
                 .rememberMe().key(rememberMeKey).alwaysRemember(true)
@@ -95,7 +92,6 @@ public class SecurityConfig {
                 .and()
                 .rememberMe().key(rememberMeKey)
                 .and()
-                .addFilterAfter(new XAuthoritiesFilter(), FilterSecurityInterceptor.class)
                 .csrf().disable()
                 .exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
                     response.setHeader("WWW-Authenticate", "Form realm=\"MyReader\"");

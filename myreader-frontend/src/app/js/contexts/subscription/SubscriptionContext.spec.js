@@ -87,7 +87,7 @@ describe('subscription context', () => {
   })
 
   it('should contain empty context value in child component when subscriptionApi.fetchSubscriptions succeeded', async () => {
-    await createWrapper(rejected(expectedError))
+    await createWrapper(rejected({data: expectedError}))
 
     expect(toast).toHaveBeenCalledWith('expected error', {error: true})
   })
@@ -121,7 +121,7 @@ describe('subscription context', () => {
 
   it('should trigger toast when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions failed', async () => {
     const wrapper = await createWrapper()
-    subscriptionApi.fetchSubscriptions = rejected(expectedError)
+    subscriptionApi.fetchSubscriptions = rejected({data: expectedError})
     dispatch.mockClear()
     wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
     await flushPromises()

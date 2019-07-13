@@ -47,23 +47,26 @@ function collectHeaders(response) {
 }
 
 function handleResponse(response) {
-  return isJSON(response.headers) ?
-    response.json().then(json => ({
-      ok: response.ok,
+  const ok = response.status >= 200 && response.status < 400
+  const payload = isJSON(response.headers) ? response.json() : response.text()
+
+  return ok ?
+    payload.then(data =>
+      data
+    ) :
+    payload.then(data => Promise.reject({
       status: response.status,
-      data: json,
-      headers: collectHeaders(response)
-    })) :
-    response.text().then(text => ({
-      ok: response.ok,
-      status: response.status,
-      data: text,
+      data,
       headers: collectHeaders(response)
     }))
 }
 
 function handleError(error) {
-  return {ok: false, status: -1, data: error.toString(), headers: {}}
+  return Promise.reject(
+    Object.keys(error).length !== 0
+      ? error
+      : {status: -1, data: error.toString(), headers: {}}
+    )
 }
 
 export function exchange(params) {

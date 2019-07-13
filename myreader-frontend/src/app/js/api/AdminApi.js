@@ -1,14 +1,16 @@
 import {INFO, PROCESSING} from '../constants'
 
+const defaultText = 'not available'
+
 const noApplicationInfo = {
   git: {
-    branch: 'not available',
+    branch: defaultText,
     commit: {
-      id: 'not available'
+      id: defaultText
     }
   },
   build: {
-    version: 'not available',
+    version: defaultText,
     time: ''
   }
 }
@@ -34,13 +36,13 @@ export class AdminApi {
       url: PROCESSING,
       method: 'PUT',
       body: {process: 'indexSyncJob'}
-    }).then(({ok, data}) => ok ? {} : Promise.reject(data))
+    })
   }
 
   fetchApplicationInfo = () => {
     return this.api.request({
       url: INFO,
       method: 'GET',
-    }).then(({ok, data}) => ok ? toApplicationInfo(data) : Promise.reject(data))
+    }).then(toApplicationInfo)
   }
 }

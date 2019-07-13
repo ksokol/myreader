@@ -18,14 +18,14 @@ export class EntryApi {
     return this.api.request({
       url: ENTRY_AVAILABLE_TAGS,
       method: 'GET',
-    }).then(({ok, data}) => ok ? data : Promise.reject(data))
+    })
   }
 
   fetchEntries = ({path = SUBSCRIPTION_ENTRIES, query}) => {
     return this.api.request({
       method: 'GET',
       url: toUrlString({path, query}),
-    }).then(({ok, data}) => ok ? toEntries(data) : Promise.reject(data))
+    }).then(toEntries)
   }
 
   updateEntry = ({uuid, seen, tag}) => {
@@ -33,6 +33,6 @@ export class EntryApi {
       method: 'PATCH',
       url: `${SUBSCRIPTION_ENTRIES}/${uuid}`,
       body: {seen, tag},
-    }).then(({ok, data}) => ok ? data : Promise.reject(data))
+    })
   }
 }

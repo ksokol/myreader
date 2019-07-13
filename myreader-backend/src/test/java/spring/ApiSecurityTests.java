@@ -19,15 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 
+import static java.util.Collections.singletonList;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
 import static myreader.test.request.RequestedWithHeaderPostProcessors.xmlHttpRequest;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -58,12 +62,22 @@ public class ApiSecurityTests {
     }
 
     @Test
-    public void testSuccessfulAuthorization() throws Exception {
+    public void testSuccessfulUserAuthorization() throws Exception {
         mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .param("username", TestConstants.USER1)
                 .param("password", TestConstants.DEFAULT_PASSWORD))
-                .andExpect(status().isNoContent())
-                .andExpect(header().string("X-MY-AUTHORITIES", "USER"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.roles", is(singletonList("USER"))));
+    }
+
+    @Test
+    public void testSuccessfulAdminAuthorization() throws Exception {
+        mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", TestConstants.USER0)
+                .param("password", TestConstants.DEFAULT_PASSWORD))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.roles", is(singletonList("ADMIN"))));
     }
 
     @Test
@@ -79,14 +93,13 @@ public class ApiSecurityTests {
         Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .param("username", TestConstants.USER1)
                 .param("password", TestConstants.DEFAULT_PASSWORD))
-                .andExpect(status().isNoContent())
+                .andExpect(status().isOk())
                 .andReturn()
                 .getResponse().getCookie("remember-me");
 
         mockMvc.perform(get(API_2 + "/sub")
                 .cookie(rememberMeCookie))
-                .andExpect(status().isOk())
-                .andExpect(header().string("X-MY-AUTHORITIES", "USER"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -95,30 +108,13 @@ public class ApiSecurityTests {
                 .with(xmlHttpRequest())
                 .param("username", TestConstants.USER1)
                 .param("password", TestConstants.DEFAULT_PASSWORD))
-                .andExpect(status().isNoContent())
+                .andExpect(status().isOk())
                 .andReturn()
                 .getResponse().getCookie("remember-me");
 
         mockMvc.perform(get(API_2)
                 .cookie(rememberMeCookie))
-                .andExpect(status().isOk())
-                .andExpect(header().string("X-MY-AUTHORITIES", "USER"));
-    }
-
-    @Test
-    @WithMockUser(TestConstants.USER1)
-    public void testApiOkWithUserRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/sub"))
-                .andExpect(status().isOk())
-                .andExpect(header().string("X-MY-AUTHORITIES", "USER"));
-    }
-
-    @Test
-    @WithMockUser(username = TestConstants.ADMIN, roles = "ADMIN")
-    public void testApiOkWithAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/sub"))
-                .andExpect(status().isOk())
-                .andExpect(header().string("X-MY-AUTHORITIES", "ADMIN"));
+                .andExpect(status().isOk());
     }
 
     @Test

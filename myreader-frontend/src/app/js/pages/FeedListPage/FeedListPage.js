@@ -13,8 +13,8 @@ export class FeedListPage extends React.Component {
     try {
       const feeds = await feedApi.fetchFeeds()
       this.setState({feeds})
-    } catch (error) {
-      toast(error, {error: true})
+    } catch ({data}) {
+      toast(data, {error: true})
     }
   }
 

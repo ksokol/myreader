@@ -27,9 +27,10 @@ export class SubscriptionExclusions extends React.Component {
   componentDidMount = async () => {
     try {
       this.pendingStart()
-      this.setExclusions(await api.fetchExclusions(this.props.subscription.uuid))
-    } catch (error) {
-      toast(error, {error: true})
+      const {content} = await api.fetchExclusions(this.props.subscription.uuid)
+      this.setExclusions(content)
+    } catch ({data}) {
+      toast(data, {error: true})
     } finally {
       this.pendingEnd()
     }
@@ -39,19 +40,15 @@ export class SubscriptionExclusions extends React.Component {
 
   pendingEnd = () => this.setState({pending: false})
 
-  setExclusions = exclusions => {
-    this.setState({
-      exclusions: exclusions.sort(byPattern)
-    })
-  }
+  setExclusions = exclusions => this.setState({exclusions: exclusions.sort(byPattern)})
 
   onAdd = async pattern => {
     try {
       this.pendingStart()
       const exclusion = await api.saveExclusion(this.props.subscription.uuid, pattern)
       this.setExclusions([...this.state.exclusions, exclusion])
-    } catch (error) {
-      toast(error, {error: true})
+    } catch ({data}) {
+      toast(data, {error: true})
     } finally {
       this.pendingEnd()
     }
@@ -62,8 +59,8 @@ export class SubscriptionExclusions extends React.Component {
       this.pendingStart()
       await api.removeExclusion(this.props.subscription.uuid, uuid)
       this.setExclusions(this.state.exclusions.filter(exclusion => exclusion.uuid !== uuid))
-    } catch (error) {
-      toast(error, {error: true})
+    } catch ({data}) {
+      toast(data, {error: true})
     } finally {
       this.pendingEnd()
     }

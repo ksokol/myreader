@@ -61,8 +61,8 @@ export const withEntriesFromApi = WrappedComponent => {
           entries: state.entries.concat(entries),
           links,
         }))
-      } catch (error) {
-        toast(error, {error: true})
+      } catch ({data}) {
+        toast(data, {error: true})
       } finally {
         this.setState({
           loading: false
@@ -79,8 +79,8 @@ export const withEntriesFromApi = WrappedComponent => {
         this.setState(state => ({
           entries: state.entries.map(it => it.uuid === newEntry.uuid ? newEntry : it)
         }))
-      } catch (error) {
-        toast(error, {error: true})
+      } catch ({data}) {
+        toast(data, {error: true})
       }
     }
 

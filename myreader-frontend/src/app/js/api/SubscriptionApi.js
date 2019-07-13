@@ -35,14 +35,14 @@ export class SubscriptionApi {
       url: SUBSCRIPTIONS,
       method: 'POST',
       body
-    }).then(({ok, status, data}) => ok ? data : Promise.reject({status, data}))
+    })
   }
 
   deleteSubscription = uuid => {
     return this.api.request({
       url: `${SUBSCRIPTIONS}/${uuid}`,
       method: 'DELETE',
-    }).then(({ok, data}) => ok ? null : Promise.reject(data))
+    })
   }
 
   saveSubscription = subscription => {
@@ -50,20 +50,20 @@ export class SubscriptionApi {
       url: `${SUBSCRIPTIONS}/${subscription.uuid}`,
       method: 'PATCH',
       body: toBody(subscription),
-    }).then(({ok, data}) => ok ? null : Promise.reject(data))
+    })
   }
 
   fetchSubscription = uuid => {
     return this.api.request({
       url: `${SUBSCRIPTIONS}/${uuid}`,
       method: 'GET',
-    }).then(({ok, data}) => ok ? toSubscription(data) : Promise.reject(data))
+    }).then(toSubscription)
   }
 
   fetchSubscriptions = () => {
     return this.api.request({
       url: SUBSCRIPTIONS,
       method: 'GET',
-    }).then(({ok, data}) => ok ? toSubscriptions(data) : Promise.reject(data))
+    }).then(toSubscriptions)
   }
 }

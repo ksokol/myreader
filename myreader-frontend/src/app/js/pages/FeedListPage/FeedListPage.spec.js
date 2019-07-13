@@ -42,7 +42,7 @@ describe('FeedListPage', () => {
   })
 
   it('should trigger toast when feedApi.fetchFeeds failed', async () => {
-    feedApi.fetchFeeds = rejected('some error')
+    feedApi.fetchFeeds = rejected({data: 'some error'})
     const wrapper = createWrapper()
     await flushPromises()
     wrapper.update()

@@ -5,7 +5,7 @@ import {flushPromises, rejected, resolved} from '../../shared/test-utils'
 import {entryApi} from '../../api'
 import {toast} from '../../components/Toast'
 
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types, react/display-name */
 jest.mock('../../components/EntryList/EntryList', () => ({
   EntryList: () => null
 }))
@@ -88,7 +88,7 @@ describe('BookmarkListPage', () => {
   })
 
   it('should trigger toast when call to entryApi.fetchEntryTags failed', async () => {
-    await createWrapper(rejected('expected error'))
+    await createWrapper(rejected({data: 'expected error'}))
 
     expect(toast).toHaveBeenCalledWith('expected error', {error: true})
   })

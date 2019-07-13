@@ -30,7 +30,7 @@ class LoginPage extends React.Component {
     })
 
     try {
-      const roles = await authenticationApi.login(username, password)
+      const {roles} = await authenticationApi.login(username, password)
       this.onSuccess(roles)
     } catch {
       this.setState({
