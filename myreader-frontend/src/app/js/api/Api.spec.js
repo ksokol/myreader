@@ -31,7 +31,7 @@ describe('Api', () => {
     })
   })
 
-  it('should call configure onThen interceptors', done => {
+  it('should trigger interceptors with function "onThen"', done => {
     const interceptor1 = onThenInterceptor(jest.fn())
     const interceptor2 = onThenInterceptor(jest.fn())
 
@@ -39,8 +39,8 @@ describe('Api', () => {
     api.addInterceptor(interceptor2)
 
     api.request({a: 'b'}).then(() => {
-      expect(interceptor1.onThen).toHaveBeenCalledWith({a: 'b'}, {c: 'd'})
-      expect(interceptor2.onThen).toHaveBeenCalledWith({a: 'b'}, {c: 'd'})
+      expect(interceptor1.onThen).toHaveBeenCalledWith({a: 'b', context: {}}, {c: 'd'})
+      expect(interceptor2.onThen).toHaveBeenCalledWith({a: 'b', context: {}}, {c: 'd'})
       done()
     })
   })
@@ -64,8 +64,8 @@ describe('Api', () => {
     api.addInterceptor(interceptor2)
 
     api.request({c: 'd'}).then(() => {
-      expect(interceptor1.onBefore).toHaveBeenCalledWith({c: 'd'})
-      expect(interceptor2.onBefore).toHaveBeenCalledWith({c: 'd'})
+      expect(interceptor1.onBefore).toHaveBeenCalledWith({c: 'd', context: {}})
+      expect(interceptor2.onBefore).toHaveBeenCalledWith({c: 'd', context: {}})
       done()
     })
   })
@@ -80,8 +80,8 @@ describe('Api', () => {
     exchange.mockImplementationOnce(() => Promise.reject(expectedError))
 
     api.request({a: 'b'}).catch(() => {
-      expect(interceptor1.onError).toHaveBeenCalledWith({a: 'b'}, expectedError)
-      expect(interceptor2.onError).toHaveBeenCalledWith({a: 'b'}, expectedError)
+      expect(interceptor1.onError).toHaveBeenCalledWith({a: 'b', context: {}}, expectedError)
+      expect(interceptor2.onError).toHaveBeenCalledWith({a: 'b', context: {}}, expectedError)
       done()
     })
   })
@@ -114,6 +114,30 @@ describe('Api', () => {
     api.request({}).then(() => {
       expect(interceptor1.onThen).toHaveBeenCalled()
       expect(interceptor2.onThen).not.toHaveBeenCalled()
+      done()
+    })
+  })
+
+  it('should trigger interceptors with function "onThen" and context', done => {
+    const interceptor = onThenInterceptor(jest.fn())
+
+    api.addInterceptor(interceptor)
+
+    api.request({a: 'b', context: {e: 'f'}}).then(() => {
+      expect(interceptor.onThen).toHaveBeenCalledWith({a: 'b', context: {e: 'f'}}, {c: 'd'})
+      done()
+    })
+  })
+
+  it('should trigger interceptors with function "onError" and context', done => {
+    const interceptor = onErrorInterceptor(jest.fn())
+
+    api.addInterceptor(interceptor)
+
+    exchange.mockImplementationOnce(() => Promise.reject(expectedError))
+
+    api.request({a: 'b', context: {e: 'f'}}).catch(() => {
+      expect(interceptor.onError).toHaveBeenCalledWith({a: 'b', context: {e: 'f'}}, expectedError)
       done()
     })
   })

@@ -8,11 +8,13 @@ export class Api {
 
   removeInterceptor = interceptor => interceptors = interceptors.filter(it => it !== interceptor)
 
-  request = request => {
+  request = ({context = {}, ...incomingRequest}) => {
+    const request = {...incomingRequest, context}
+
     return new Promise((resolve, reject) => {
       this.findFn('onBefore').forEach(fn => fn(request))
 
-      exchange(request).then(response => {
+      exchange(incomingRequest).then(response => {
         this.findFn('onThen').forEach(fn => fn(request, response))
         resolve(response)
       }).catch(error => {
