@@ -3,42 +3,32 @@ import {exchange} from './exchange'
 export class Api {
 
   constructor() {
-    this.interceptors = {
-      before: [],
-      then: [],
-      error: [],
-      finally: []
-    }
+    this.interceptors = []
   }
 
-  addInterceptor = interceptor => {
-    if (typeof interceptor.onBefore === 'function') {
-      this.interceptors.before.push(interceptor)
-    }
-    if (typeof interceptor.onThen === 'function') {
-      this.interceptors.then.push(interceptor)
-    }
-    if (typeof interceptor.onError === 'function') {
-      this.interceptors.error.push(interceptor)
-    }
-    if (typeof interceptor.onFinally === 'function') {
-      this.interceptors.finally.push(interceptor)
-    }
-  }
+  addInterceptor = interceptor => this.interceptors.push(interceptor)
+
+  removeInterceptor = interceptor => this.interceptors = this.interceptors.filter(it => it !== interceptor)
 
   request = request => {
     return new Promise((resolve, reject) => {
-      this.interceptors.before.forEach(interceptor => interceptor.onBefore(request))
+      this.findFn('onBefore').forEach(fn => fn(request))
 
       exchange(request).then(response => {
-        this.interceptors.then.forEach(interceptor => interceptor.onThen(response))
+        this.findFn('onThen').forEach(fn => fn(response))
         resolve(response)
       }).catch(error => {
-        this.interceptors.error.forEach(interceptor => interceptor.onError(error))
+        this.findFn('onError').forEach(fn => fn(error))
         reject(error)
       }).finally(() => {
-        this.interceptors.finally.forEach(interceptor => interceptor.onFinally())
+        this.findFn('onFinally').forEach(fn => fn())
       })
     })
+  }
+
+  findFn = fn => {
+    return this.interceptors
+      .filter(interceptor => typeof interceptor[fn] === 'function')
+      .map(interceptor => interceptor[fn])
   }
 }
