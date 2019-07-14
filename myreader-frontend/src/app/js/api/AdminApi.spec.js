@@ -1,21 +1,25 @@
 import {AdminApi} from './AdminApi'
 import {PROCESSING, INFO} from '../constants'
+import {exchange} from './exchange'
+
+jest.mock('./exchange', () => ({
+  exchange: jest.fn()
+}))
 
 describe('AdminApi', () => {
 
-  let api, adminApi
+  let adminApi
 
   beforeEach(() => {
-    api = {
-      request: jest.fn().mockResolvedValueOnce({})
-    }
-    adminApi = new AdminApi(api)
+    exchange.mockClear()
+    adminApi = new AdminApi()
   })
 
   it('should call PUT processing endpoint', () => {
+    exchange.mockResolvedValueOnce({})
     adminApi.rebuildSearchIndex()
 
-    expect(api.request).toHaveBeenCalledWith({
+    expect(exchange).toHaveBeenCalledWith({
       body: {
         process: 'indexSyncJob'
       },
@@ -25,19 +29,23 @@ describe('AdminApi', () => {
   })
 
   it('should return expected response when PUT processing succeeded', async () => {
+    exchange.mockResolvedValueOnce({})
+
     await expect(adminApi.rebuildSearchIndex()).resolves.toEqual({})
   })
 
   it('should call info endpoint', () => {
+    exchange.mockResolvedValueOnce({})
     adminApi.fetchApplicationInfo()
 
-    expect(api.request).toHaveBeenCalledWith({
+    expect(exchange).toHaveBeenCalledWith({
       method: 'GET',
       url: INFO
     })
   })
 
   it('should return expected response with default values when GET info succeeded', async () => {
+    exchange.mockResolvedValueOnce({})
     const notAvailable = 'not available'
 
     await expect(adminApi.fetchApplicationInfo()).resolves.toEqual({
@@ -49,7 +57,7 @@ describe('AdminApi', () => {
   })
 
   it('should return expected response when GET info succeeded', async () => {
-    const data = {
+    exchange.mockResolvedValueOnce({
       git: {
         commit: {
           id: 'aec45'
@@ -60,9 +68,7 @@ describe('AdminApi', () => {
         version: '1.0',
         time: '2017-05-16T12:07:26Z'
       }
-    }
-
-    api.request = jest.fn().mockResolvedValueOnce(data)
+    })
 
     await expect(adminApi.fetchApplicationInfo()).resolves.toEqual({
       branch: 'a-branch-name',

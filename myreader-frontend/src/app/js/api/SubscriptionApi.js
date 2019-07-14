@@ -1,5 +1,6 @@
 import {SUBSCRIPTIONS} from '../constants'
 import {isString} from '../shared/utils'
+import {Api} from './Api'
 
 export function toSubscription(raw = {}) {
   if (raw.feedTag === null || typeof raw.feedTag === 'undefined') {
@@ -24,14 +25,10 @@ function toBody(subscription) {
   return clone
 }
 
-export class SubscriptionApi {
-
-  constructor(api) {
-    this.api = api
-  }
+export class SubscriptionApi extends Api {
 
   subscribe = body => {
-    return this.api.request({
+    return this.request({
       url: SUBSCRIPTIONS,
       method: 'POST',
       body
@@ -39,14 +36,14 @@ export class SubscriptionApi {
   }
 
   deleteSubscription = uuid => {
-    return this.api.request({
+    return this.request({
       url: `${SUBSCRIPTIONS}/${uuid}`,
       method: 'DELETE',
     })
   }
 
   saveSubscription = subscription => {
-    return this.api.request({
+    return this.request({
       url: `${SUBSCRIPTIONS}/${subscription.uuid}`,
       method: 'PATCH',
       body: toBody(subscription),
@@ -54,14 +51,14 @@ export class SubscriptionApi {
   }
 
   fetchSubscription = uuid => {
-    return this.api.request({
+    return this.request({
       url: `${SUBSCRIPTIONS}/${uuid}`,
       method: 'GET',
     }).then(toSubscription)
   }
 
   fetchSubscriptions = () => {
-    return this.api.request({
+    return this.request({
       url: SUBSCRIPTIONS,
       method: 'GET',
     }).then(toSubscriptions)

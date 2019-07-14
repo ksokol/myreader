@@ -1,50 +1,54 @@
 import {AuthenticationApi} from './AuthenticationApi'
 import {LOGIN, LOGOUT} from '../constants'
+import {exchange} from './exchange'
+
+jest.mock('./exchange', () => ({
+  exchange: jest.fn()
+}))
 
 describe('AuthenticationApi', () => {
 
-  let api, authenticationApi
+  let  authenticationApi
 
   beforeEach(() => {
-    api = {
-      request: jest.fn().mockResolvedValueOnce({})
-    }
-    authenticationApi = new AuthenticationApi(api)
+    exchange.mockClear()
+    authenticationApi = new AuthenticationApi()
   })
 
   it('should call GET logout endpoint', () => {
-    api.request = jest.fn().mockResolvedValueOnce({ok: true})
+    exchange.mockResolvedValueOnce({ok: true})
     authenticationApi.logout()
 
-    expect(api.request).toHaveBeenCalledWith({
+    expect(exchange).toHaveBeenCalledWith({
       method: 'POST',
       url: LOGOUT
     })
   })
 
   it('should return expected response when GET logout succeeded', async () => {
-    api.request = jest.fn().mockResolvedValueOnce(null)
+    exchange.mockResolvedValueOnce(null)
 
     await expect(authenticationApi.logout()).resolves.toBeNull()
   })
 
   it('should call GET login endpoint', () => {
+    exchange.mockResolvedValueOnce({})
     authenticationApi.login('expected username', 'expected password')
 
-    expect(api.request).toHaveBeenCalledWith(expect.objectContaining({
+    expect(exchange).toHaveBeenCalledWith(expect.objectContaining({
       method: 'POST',
       url: LOGIN,
       'headers': {
         'content-type': 'application/x-www-form-urlencoded'
       }
     }))
-    expect(api.request.mock.calls[0][0].body.toString()).toEqual(
+    expect(exchange.mock.calls[0][0].body.toString()).toEqual(
       'username=expected+username&password=expected+password'
     )
   })
 
   it('should return expected response when GET login succeeded', async () => {
-    api.request = jest.fn().mockResolvedValueOnce({
+    exchange.mockResolvedValueOnce({
       roles: ['ROLE1', 'ROLE2']
     })
 
@@ -54,7 +58,7 @@ describe('AuthenticationApi', () => {
   })
 
   it('should return expected response when GET login succeeded without any roles attached', async () => {
-    api.request = jest.fn().mockResolvedValueOnce({
+    exchange.mockResolvedValueOnce({
       roles: []
     })
 

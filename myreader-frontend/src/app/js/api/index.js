@@ -11,10 +11,10 @@ import {EntryApi} from './EntryApi'
 import {AuthenticationApi} from './AuthenticationApi'
 
 export const api = new Api()
-export const adminApi = new AdminApi(api)
-export const feedApi = new FeedApi(api)
-export const subscriptionApi = new SubscriptionApi(api)
-export const subscriptionExclusionsApi = new SubscriptionExclusionsApi(api)
-export const subscriptionTagsApi = new SubscriptionTagsApi(api)
-export const entryApi = new EntryApi(api)
-export const authenticationApi = new AuthenticationApi(api)
+export const adminApi = new AdminApi()
+export const feedApi = new FeedApi()
+export const subscriptionApi = new SubscriptionApi()
+export const subscriptionExclusionsApi = new SubscriptionExclusionsApi()
+export const subscriptionTagsApi = new SubscriptionTagsApi()
+export const entryApi = new EntryApi()
+export const authenticationApi = new AuthenticationApi()

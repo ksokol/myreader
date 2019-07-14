@@ -1,5 +1,6 @@
 import {extractLinks, toUrlString} from './links'
 import {FEEDS} from '../constants'
+import {Api} from './Api'
 
 function toFeedFetchFailure(raw = {}) {
   return {
@@ -30,39 +31,35 @@ export function toFeeds(raw = {}) {
   return (raw.content || []).map(toFeed)
 }
 
-export class FeedApi {
-
-  constructor(api) {
-    this.api = api
-  }
+export class FeedApi extends Api {
 
   fetchFeedFetchErrors = uuidOrLink => {
     const url = typeof uuidOrLink === 'object'
       ? toUrlString(uuidOrLink)
       : `${FEEDS}/${uuidOrLink}/fetchError`
 
-    return this.api.request({
+    return this.request({
       url,
       method: 'GET'
     }).then(toFeedFetchFailures)
   }
 
   fetchFeeds = () => {
-    return this.api.request({
+    return this.request({
       url: FEEDS,
       method: 'GET'
     }).then(toFeeds)
   }
 
   fetchFeed = uuid => {
-    return this.api.request({
+    return this.request({
       url: `${FEEDS}/${uuid}`,
       method: 'GET'
     }).then(toFeed)
   }
 
   saveFeed = body => {
-    return this.api.request({
+    return this.request({
       url: `${FEEDS}/${body.uuid}`,
       method: 'PATCH',
       body
@@ -70,7 +67,7 @@ export class FeedApi {
   }
 
   deleteFeed = uuid => {
-    return this.api.request({
+    return this.request({
       url: `${FEEDS}/${uuid}`,
       method: 'DELETE'
     })

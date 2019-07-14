@@ -1,14 +1,12 @@
 import {exchange} from './exchange'
 
+let interceptors = []
+
 export class Api {
 
-  constructor() {
-    this.interceptors = []
-  }
+  addInterceptor = interceptor => interceptors.push(interceptor)
 
-  addInterceptor = interceptor => this.interceptors.push(interceptor)
-
-  removeInterceptor = interceptor => this.interceptors = this.interceptors.filter(it => it !== interceptor)
+  removeInterceptor = interceptor => interceptors = interceptors.filter(it => it !== interceptor)
 
   request = request => {
     return new Promise((resolve, reject) => {
@@ -27,7 +25,7 @@ export class Api {
   }
 
   findFn = fn => {
-    return this.interceptors
+    return interceptors
       .filter(interceptor => typeof interceptor[fn] === 'function')
       .map(interceptor => interceptor[fn])
   }

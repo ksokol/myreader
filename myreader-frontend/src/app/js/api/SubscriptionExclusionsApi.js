@@ -1,20 +1,17 @@
 import {EXCLUSION_TAGS} from '../constants'
+import {Api} from './Api'
 
-export class SubscriptionExclusionsApi {
-
-  constructor(api) {
-    this.api = api
-  }
+export class SubscriptionExclusionsApi extends Api {
 
   fetchExclusions = subscriptionUuid => {
-    return this.api.request({
+    return this.request({
       url: `${EXCLUSION_TAGS}/${subscriptionUuid}/pattern`,
       method: 'GET'
     })
   }
 
   saveExclusion = (subscriptionUuid, pattern) => {
-    return this.api.request({
+    return this.request({
       url: `${EXCLUSION_TAGS}/${subscriptionUuid}/pattern`,
       method: 'POST',
       body: {pattern},
@@ -22,7 +19,7 @@ export class SubscriptionExclusionsApi {
   }
 
   removeExclusion = (subscriptionUuid, uuid) => {
-    return this.api.request({
+    return this.request({
       url: `${EXCLUSION_TAGS}/${subscriptionUuid}/pattern/${uuid}`,
       method: 'DELETE',
     })

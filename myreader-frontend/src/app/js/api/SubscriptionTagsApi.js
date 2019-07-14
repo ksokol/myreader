@@ -1,20 +1,17 @@
 import {SUBSCRIPTION_TAGS} from '../constants'
+import {Api} from './Api'
 
-export class SubscriptionTagsApi {
-
-  constructor(api) {
-    this.api = api
-  }
+export class SubscriptionTagsApi extends Api {
 
   fetchSubscriptionTags = () => {
-    return this.api.request({
+    return this.request({
       url: SUBSCRIPTION_TAGS,
       method: 'GET',
     })
   }
 
   saveSubscriptionTag = subscriptionTag => {
-    return this.api.request({
+    return this.request({
       url: `${SUBSCRIPTION_TAGS}/${subscriptionTag.uuid}`,
       method: 'PATCH',
       body: subscriptionTag,

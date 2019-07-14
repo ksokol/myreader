@@ -1,5 +1,6 @@
 import {ENTRY_AVAILABLE_TAGS, SUBSCRIPTION_ENTRIES} from '../constants'
 import {extractLinks, toUrlString} from './links'
+import {Api} from './Api'
 
 function toEntries(raw = {}) {
   return {
@@ -8,28 +9,24 @@ function toEntries(raw = {}) {
   }
 }
 
-export class EntryApi {
-
-  constructor(api) {
-    this.api = api
-  }
+export class EntryApi extends Api {
 
   fetchEntryTags = () => {
-    return this.api.request({
+    return this.request({
       url: ENTRY_AVAILABLE_TAGS,
       method: 'GET',
     })
   }
 
   fetchEntries = ({path = SUBSCRIPTION_ENTRIES, query}) => {
-    return this.api.request({
+    return this.request({
       method: 'GET',
       url: toUrlString({path, query}),
     }).then(toEntries)
   }
 
   updateEntry = ({uuid, seen, tag}) => {
-    return this.api.request({
+    return this.request({
       method: 'PATCH',
       url: `${SUBSCRIPTION_ENTRIES}/${uuid}`,
       body: {seen, tag},

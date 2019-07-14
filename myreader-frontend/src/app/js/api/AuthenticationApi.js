@@ -1,17 +1,14 @@
 import {LOGIN, LOGOUT} from '../constants'
+import {Api} from './Api'
 
-export class AuthenticationApi {
-
-  constructor(api) {
-    this.api = api
-  }
+export class AuthenticationApi extends Api {
 
   login = (username, password) => {
     const searchParams = new URLSearchParams()
     searchParams.set('username', username)
     searchParams.set('password', password)
 
-    return this.api.request({
+    return this.request({
       url: LOGIN,
       method: 'POST',
       headers: {
@@ -22,7 +19,7 @@ export class AuthenticationApi {
   }
 
   logout = () => {
-    return this.api.request({
+    return this.request({
       url: LOGOUT,
       method: 'POST'
     })
