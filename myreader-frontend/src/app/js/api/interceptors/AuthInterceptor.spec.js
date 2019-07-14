@@ -10,7 +10,7 @@ describe('AuthInterceptor', () => {
   })
 
   it('should dispatch action SECURITY_UPDATE when status is 401', () => {
-    interceptor.onError({status: 401})
+    interceptor.onError(null, {status: 401})
 
     expect(dispatch).toHaveBeenCalledWith({
       authorized: false,
@@ -20,7 +20,7 @@ describe('AuthInterceptor', () => {
   })
 
   it('should not dispatch action SECURITY_UPDATE when status is 200', () => {
-    interceptor.onError({status: 200})
+    interceptor.onError(null, {status: 200})
 
     expect(dispatch).not.toHaveBeenCalled()
   })

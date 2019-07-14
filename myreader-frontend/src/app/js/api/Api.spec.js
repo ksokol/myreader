@@ -19,14 +19,14 @@ describe('Api', () => {
   const otherInterceptor = otherFn => ({otherFn})
 
   beforeEach(() => {
-    exchange.mockImplementation(request => Promise.resolve(request))
+    exchange.mockImplementation(() => Promise.resolve({c: 'd'}))
 
     api = new Api()
   })
 
   it('should return promise with expected response', done => {
     api.request({a: 'b'}).then(response => {
-      expect(response).toEqual({a: 'b'})
+      expect(response).toEqual({c: 'd'})
       done()
     })
   })
@@ -39,8 +39,8 @@ describe('Api', () => {
     api.addInterceptor(interceptor2)
 
     api.request({a: 'b'}).then(() => {
-      expect(interceptor1.onThen).toHaveBeenCalledWith({a: 'b'})
-      expect(interceptor2.onThen).toHaveBeenCalledWith({a: 'b'})
+      expect(interceptor1.onThen).toHaveBeenCalledWith({a: 'b'}, {c: 'd'})
+      expect(interceptor2.onThen).toHaveBeenCalledWith({a: 'b'}, {c: 'd'})
       done()
     })
   })
@@ -79,9 +79,9 @@ describe('Api', () => {
 
     exchange.mockImplementationOnce(() => Promise.reject(expectedError))
 
-    api.request({}).catch(() => {
-      expect(interceptor1.onError).toHaveBeenCalledWith(expectedError)
-      expect(interceptor2.onError).toHaveBeenCalledWith(expectedError)
+    api.request({a: 'b'}).catch(() => {
+      expect(interceptor1.onError).toHaveBeenCalledWith({a: 'b'}, expectedError)
+      expect(interceptor2.onError).toHaveBeenCalledWith({a: 'b'}, expectedError)
       done()
     })
   })

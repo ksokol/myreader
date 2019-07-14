@@ -13,10 +13,10 @@ export class Api {
       this.findFn('onBefore').forEach(fn => fn(request))
 
       exchange(request).then(response => {
-        this.findFn('onThen').forEach(fn => fn(response))
+        this.findFn('onThen').forEach(fn => fn(request, response))
         resolve(response)
       }).catch(error => {
-        this.findFn('onError').forEach(fn => fn(error))
+        this.findFn('onError').forEach(fn => fn(request, error))
         reject(error)
       }).finally(() => {
         this.findFn('onFinally').forEach(fn => fn())
