@@ -7,9 +7,12 @@ import {subscriptionsReceived} from '../../store/subscription'
 import {withLocationState} from '../locationState/withLocationState'
 import {subscriptionApi} from '../../api'
 import {toast} from '../../components/Toast'
+import {SubscriptionProviderInterceptor} from './SubscriptionProviderInterceptor'
+import {changeEntry} from '../../store'
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  subscriptionsReceived
+  subscriptionsReceived,
+  changeEntry
 }, dispatch)
 
 class Provider extends React.Component {
@@ -17,14 +20,24 @@ class Provider extends React.Component {
   static propTypes = {
     children: PropTypes.any,
     locationReload: PropTypes.bool.isRequired,
-    subscriptionsReceived: PropTypes.func.isRequired
+    subscriptionsReceived: PropTypes.func.isRequired,
+    changeEntry: PropTypes.func.isRequired
   }
 
   state = {
     subscriptions: []
   }
 
-  componentDidMount = async () => await this.fetchSubscriptions()
+  interceptor = new SubscriptionProviderInterceptor(this.props.changeEntry)
+
+  componentDidMount = async () => {
+    subscriptionApi.addInterceptor(this.interceptor)
+    await this.fetchSubscriptions()
+  }
+
+  componentWillUnmount() {
+    subscriptionApi.removeInterceptor(this.interceptor)
+  }
 
   async componentDidUpdate() {
     if (this.props.locationReload) {

@@ -1,15 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {bindActionCreators} from 'redux'
-import {connect} from 'react-redux'
-import {changeEntry} from '../../store'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {entryApi} from '../../api'
 import {toast} from '../Toast'
-
-const mapDispatchToProps = dispatch => bindActionCreators({
-  changeEntry
-}, dispatch)
 
 export const withEntriesFromApi = WrappedComponent => {
 
@@ -18,7 +11,6 @@ export const withEntriesFromApi = WrappedComponent => {
     static propTypes = {
       locationChanged: PropTypes.bool.isRequired,
       locationReload: PropTypes.bool.isRequired,
-      changeEntry: PropTypes.func.isRequired,
       query: PropTypes.object.isRequired,
     }
 
@@ -72,10 +64,9 @@ export const withEntriesFromApi = WrappedComponent => {
 
     changeEntry = async entry => {
       try {
-        const oldEntry = this.state.entries.find(it => it.uuid === entry.uuid)
-        const newEntry = await entryApi.updateEntry(entry)
+        const oldValue = this.state.entries.find(it => it.uuid === entry.uuid)
+        const newEntry = await entryApi.updateEntry({...entry, context: {oldValue}})
 
-        this.props.changeEntry(newEntry, oldEntry)
         this.setState(state => ({
           entries: state.entries.map(it => it.uuid === newEntry.uuid ? newEntry : it)
         }))
@@ -103,8 +94,5 @@ export const withEntriesFromApi = WrappedComponent => {
     }
   }
 
-  return connect(
-    null,
-    mapDispatchToProps
-  )(withLocationState(WithEntriesFromApi))
+  return withLocationState(WithEntriesFromApi)
 }

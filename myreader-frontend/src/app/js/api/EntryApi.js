@@ -25,11 +25,12 @@ export class EntryApi extends Api {
     }).then(toEntries)
   }
 
-  updateEntry = ({uuid, seen, tag}) => {
+  updateEntry = ({uuid, seen, tag, context}) => {
     return this.request({
       method: 'PATCH',
       url: `${SUBSCRIPTION_ENTRIES}/${uuid}`,
       body: {seen, tag},
+      context
     })
   }
 }

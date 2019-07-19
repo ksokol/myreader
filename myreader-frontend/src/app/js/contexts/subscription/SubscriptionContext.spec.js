@@ -5,6 +5,7 @@ import SubscriptionContext from './SubscriptionContext'
 import {subscriptionApi} from '../../api'
 import {toast} from '../../components/Toast'
 import {flushPromises, rejected, resolved} from '../../shared/test-utils'
+import {SubscriptionProviderInterceptor} from './SubscriptionProviderInterceptor'
 
 /* eslint-disable react/prop-types */
 jest.mock('../locationState/withLocationState', () => ({
@@ -17,6 +18,10 @@ jest.mock('../../api', () => ({
 
 jest.mock('../../components/Toast', () => ({
   toast: jest.fn()
+}))
+
+jest.mock('./SubscriptionProviderInterceptor', () => ({
+  SubscriptionProviderInterceptor: jest.fn()
 }))
 /* eslint-enable */
 
@@ -46,6 +51,9 @@ describe('subscription context', () => {
   beforeEach(() => {
     dispatch = jest.fn()
     toast.mockClear()
+    SubscriptionProviderInterceptor.mockClear()
+    subscriptionApi.addInterceptor = jest.fn()
+    subscriptionApi.removeInterceptor = jest.fn()
 
     subscriptions = [
       {uuid: '1'},
@@ -129,4 +137,23 @@ describe('subscription context', () => {
 
     expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
   })
+
+  it('should dispatch action ENTRY_CHANGED when interceptor calls provider', async () => {
+    await createWrapper()
+    SubscriptionProviderInterceptor.mock.calls[0][0]({a: 'b'}, {c: 'd'})
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'ENTRY_CHANGED',
+      newValue: {a: 'b'},
+      oldValue: {c: 'd'}
+    })
+  })
+
+  it('should remove interceptor on unmount', async () => {
+    const wrapper = await createWrapper()
+    wrapper.unmount()
+
+    expect(subscriptionApi.removeInterceptor.mock.calls[0][0]).toBeInstanceOf(SubscriptionProviderInterceptor)
+  })
+
 })

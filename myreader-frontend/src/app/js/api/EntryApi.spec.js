@@ -83,7 +83,7 @@ describe('EntryApi', () => {
 
   it('should call PATCH subscription entries endpoint', () => {
     exchange.mockResolvedValueOnce({content: []})
-    entryApi.updateEntry({uuid: '1', seen: true, tag: 'tag', a: 'b'})
+    entryApi.updateEntry({uuid: '1', seen: true, tag: 'tag', a: 'b', context: {c: 'd'}})
 
     expect(exchange).toHaveBeenCalledWith({
       method: 'PATCH',

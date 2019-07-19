@@ -24,14 +24,13 @@ const expectedError = 'expected error'
 
 describe('withEntriesFromApi', () => {
 
-  let props, response, dispatch
+  let props, response
 
   const createWrapper = async (onMount = resolved(response)) => {
-    dispatch = jest.fn()
     entryApi.fetchEntries = onMount
 
     const Component = withEntriesFromApi(TestComponent)
-    const wrapper = mount(<Component {...props} dispatch={dispatch} />)
+    const wrapper = mount(<Component {...props} />)
     await flushPromises()
     wrapper.update()
     return wrapper
@@ -57,7 +56,6 @@ describe('withEntriesFromApi', () => {
     props = {
       locationChanged: false,
       locationReload: false,
-      changeEntry: jest.fn(),
       query: {
         c: 'd'
       }
@@ -105,25 +103,23 @@ describe('withEntriesFromApi', () => {
     expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
   })
 
-  it('should dispatch action ENTRY_CHANGED when entry changed', async () => {
+  it('should call entryApi.updateEntry when prop function "onChangeEntry" triggered', async () => {
     entryApi.updateEntry = resolved({uuid: '2' , seen: true, tag: 'expectedTag'})
     const wrapper = await createWrapper()
     wrapper.find('TestComponent').props().onChangeEntry({uuid: '2', seen: true, tag: 'expectedTag'})
-    await flushPromises()
 
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'ENTRY_CHANGED',
-      newValue: {
-        uuid: '2',
-        seen: true,
-        tag: 'expectedTag',
-      },
-      oldValue: {
-        uuid: '2',
-        seen: false,
-        tag: 'tag2',
+    expect(entryApi.updateEntry).toHaveBeenCalledWith({
+      uuid: '2',
+      seen: true,
+      tag: 'expectedTag',
+      context: {
+        oldValue: {
+          uuid: '2',
+          seen: false,
+          tag: 'tag2',
+        }
       }
-    }))
+    })
   })
 
   it('should pass updated state to entry list component when call to entryApi.updateEntry succeeded', async () => {
