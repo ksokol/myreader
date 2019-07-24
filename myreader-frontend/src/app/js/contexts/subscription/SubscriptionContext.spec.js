@@ -73,7 +73,12 @@ describe('subscription context', () => {
   it('should contain expected context values in child component', async () => {
     const wrapper = await createWrapper()
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual({subscriptions: []})
+    expect(wrapper.find(TestComponent).instance().context).toEqual({
+      subscriptions: [
+        {uuid: '1'},
+        {uuid: '2'}
+      ]
+    })
   })
 
   it('should dispatch action SUBSCRIPTIONS_RECEIVED when subscriptionApi.fetchSubscriptions succeeded', async () => {

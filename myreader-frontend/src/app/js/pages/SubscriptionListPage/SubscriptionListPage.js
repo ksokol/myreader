@@ -1,20 +1,16 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
 import {ListLayout, SubscriptionList} from '../../components'
-import {subscriptionsSelector} from '../../store'
+import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 
-const mapStateToProps = subscriptionsSelector
-
-const SubscriptionListPage = props =>
-  <ListLayout
-    listPanel={<SubscriptionList subscriptions={props.subscriptions} />}
-  />
-
-SubscriptionListPage.propTypes = {
-  subscriptions: PropTypes.any.isRequired
+export const SubscriptionListPage = () => {
+  return (
+    <SubscriptionContext.Consumer>
+      {({subscriptions}) => (
+        <ListLayout
+          listPanel={<SubscriptionList subscriptions={subscriptions} />}
+        />
+      )}
+    </SubscriptionContext.Consumer>
+  )
 }
 
-export default connect(
-  mapStateToProps
-)(SubscriptionListPage)

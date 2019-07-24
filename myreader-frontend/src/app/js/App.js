@@ -7,8 +7,7 @@ import {
   LoginPage,
   LogoutPage,
   SubscribePage,
-  SubscriptionEditPage,
-  SubscriptionListPage
+  SubscriptionEditPage
 } from './pages'
 import {LoadingBar, secured} from './components'
 import {
@@ -33,6 +32,7 @@ import {SettingsPage} from './pages/SettingsPage/SettingsPage'
 import {EntryStreamPage} from './pages/EntryStreamPage/EntryStreamPage'
 import {SidenavLayout} from './components/SidenavLayout/SidenavLayout'
 import {SubscriptionProvider} from './contexts/subscription/SubscriptionProvider'
+import {SubscriptionListPage} from './pages/SubscriptionListPage/SubscriptionListPage'
 
 const withSidenav = () => (
   <SubscriptionProvider>

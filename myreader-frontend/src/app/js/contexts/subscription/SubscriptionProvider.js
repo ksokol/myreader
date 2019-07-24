@@ -49,6 +49,7 @@ class Provider extends React.Component {
     try {
       const subscriptions = await subscriptionApi.fetchSubscriptions()
       this.props.subscriptionsReceived(subscriptions)
+      this.setState({subscriptions})
     } catch ({data}) {
       toast(data, {error: true})
     }

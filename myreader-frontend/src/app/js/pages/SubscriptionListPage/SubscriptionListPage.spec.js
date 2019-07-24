@@ -1,6 +1,7 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import SubscriptionListPage from './SubscriptionListPage'
+import {SubscriptionListPage} from './SubscriptionListPage'
+import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -11,37 +12,29 @@ jest.mock('../../components', () => ({
 
 describe('SubscriptionListPage', () => {
 
-  let state, props
+  let props
 
-  const createWrapper = () => mount(<SubscriptionListPage {...props} state={state} />)
+  const createWrapper = () => mount(
+    <SubscriptionContext.Provider value={props}>
+      <SubscriptionListPage {...props} />
+    </SubscriptionContext.Provider>
+  )
 
   beforeEach(() => {
-    state = {
-      subscription: {
-        subscriptions: [
-          {uuid: '1', title: 'title1'},
-          {uuid: '2', title: 'title2'}
-        ]
-      }
-    }
-
     props = {
-      searchParams: {
-        q: ''
-      }
+      subscriptions: [
+        {uuid: '1', title: 'title1'},
+        {uuid: '2', title: 'title2'}
+      ]
     }
   })
 
   it('should initialize list panel component with given props', () => {
-    expect(createWrapper().find('ListLayout').props()).toContainObject({
-      listPanel: {
-        props: {
-          subscriptions: [
-            {uuid: '1', title: 'title1'},
-            {uuid: '2', title: 'title2'}
-          ]
-        }
-      }
+    expect(createWrapper().find('SubscriptionList').props()).toEqual({
+      subscriptions: [
+        {uuid: '1', title: 'title1'},
+        {uuid: '2', title: 'title2'}
+      ]
     })
   })
 })
