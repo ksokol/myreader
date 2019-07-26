@@ -2,32 +2,24 @@ import React from 'react'
 import {mount} from 'enzyme'
 import secured from './secured'
 import {LOGIN_URL} from '../../constants'
-import {createMockStore} from '../../shared/test-utils'
-import {Provider} from 'react-redux'
+
+/* eslint-disable react/prop-types, react/display-name */
+jest.mock('../../contexts', () => ({
+  withAppContext: Component => Component
+}))
+/* eslint-enable */
 
 const wrappedComponent = 'wrapped component'
 
 describe('secured', () => {
 
-  let store
+  let props
 
   const createWrapper = (roles, allowedRole) => {
     const Wrapped = secured(() => <p>{wrappedComponent}</p>, allowedRole)
-    store.setState({
-      security: {
-        roles
-      }
-    })
-    return mount(
-      <Provider store={store}>
-        <Wrapped />
-      </Provider>
-    )
+    props = {roles}
+    return mount(<Wrapped {...props} />)
   }
-
-  beforeEach(() => {
-    store = createMockStore()
-  })
 
   it('should render component when allowed role USER is equal to role', () => {
     expect(createWrapper(['USER'], ['USER']).text()).toEqual(wrappedComponent)
