@@ -6,16 +6,20 @@ import {SettingsProvider} from './settings/SettingsProvider'
 import {MediaBreakpointProvider} from './mediaBreakpoint/MediaBreakpointProvider'
 import {HotkeysProvider} from './hotkeys/HotkeysProvider'
 import HotkeysContext from './hotkeys/HotkeysContext'
+import SecurityContext from './security/SecurityContext'
+import {SecurityProvider} from './security/SecurityProvider'
 
 export function AppContextProvider({children}) {
   return (
-    <HotkeysProvider>
-      <SettingsProvider>
-        <MediaBreakpointProvider>
-          {children}
-        </MediaBreakpointProvider>
-      </SettingsProvider>
-    </HotkeysProvider>
+    <SecurityProvider>
+      <HotkeysProvider>
+        <SettingsProvider>
+          <MediaBreakpointProvider>
+            {children}
+          </MediaBreakpointProvider>
+        </SettingsProvider>
+      </HotkeysProvider>
+    </SecurityProvider>
   )
 }
 
@@ -25,24 +29,29 @@ AppContextProvider.propTypes = {
 
 export function withAppContext(WrappedComponent) {
   return props => (
-    <HotkeysContext.Consumer>
-      {hotkeys => (
-        <MediaBreakpointContext.Consumer>
-          {mediaBreakpoint => (
-            <SettingsContext.Consumer>
-              {settings => (
-                <WrappedComponent
-                  {...props}
-                  {...mediaBreakpoint}
-                  {...settings}
-                  {...hotkeys}
-                />
+    <SecurityContext.Consumer>
+      {security => (
+        <HotkeysContext.Consumer>
+          {hotkeys => (
+            <MediaBreakpointContext.Consumer>
+              {mediaBreakpoint => (
+                <SettingsContext.Consumer>
+                  {settings => (
+                    <WrappedComponent
+                      {...props}
+                      {...mediaBreakpoint}
+                      {...settings}
+                      {...hotkeys}
+                      {...security}
+                    />
+                  )}
+                </SettingsContext.Consumer>
               )}
-            </SettingsContext.Consumer>
+            </MediaBreakpointContext.Consumer>
           )}
-        </MediaBreakpointContext.Consumer>
+        </HotkeysContext.Consumer>
       )}
-    </HotkeysContext.Consumer>
+    </SecurityContext.Consumer>
   )
 }
 
@@ -50,6 +59,7 @@ export function useAppContext() {
   return {
     ...useContext(MediaBreakpointContext),
     ...useContext(SettingsContext),
-    ...useContext(HotkeysContext)
+    ...useContext(HotkeysContext),
+    ...useContext(SecurityContext)
   }
 }
