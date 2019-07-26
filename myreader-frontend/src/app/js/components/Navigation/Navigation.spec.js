@@ -12,8 +12,6 @@ import {
 } from '../../constants'
 import {useAppContext} from '../../contexts'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
-import {Provider} from 'react-redux'
-import {createMockStore} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
 jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => () => null)
@@ -51,26 +49,21 @@ class NavigationPage {
 
 describe('Navigation', () => {
 
-  let props, value, store
+  let props, value
 
   const createWrapper = () => new NavigationPage(
     mount(
-      <Provider store={store}>
-        <SubscriptionContext.Provider value={value}>
-          <Navigation {...props} />
-        </SubscriptionContext.Provider>
-      </Provider>
+      <SubscriptionContext.Provider value={value}>
+        <Navigation {...props} />
+      </SubscriptionContext.Provider>
     )
   )
 
   beforeEach(() => {
     useAppContext.mockClear()
-    useAppContext.mockReturnValue({showUnseenEntries: false})
-
-    store = createMockStore()
-    store.setState({
-      settings: {showUnseenEntries: false},
-      security: {roles: ['USER']}
+    useAppContext.mockReturnValue({
+      showUnseenEntries: false,
+      isAdmin: false
     })
 
     props = {
@@ -103,10 +96,8 @@ describe('Navigation', () => {
   })
 
   it('should render admin navigation', () => {
-    store.setState({
-      security: {
-        roles: ['ADMIN']
-      }
+    useAppContext.mockReturnValue({
+      isAdmin: true
     })
 
     expect(createWrapper().navigationItemLabels).toEqual([
@@ -135,10 +126,8 @@ describe('Navigation', () => {
   })
 
   it('should render expected routes for admin', () => {
-    store.setState({
-      security: {
-        roles: ['ADMIN']
-      }
+    useAppContext.mockReturnValue({
+      isAdmin: true
     })
 
     expect(createWrapper().navigationItemRoute).toEqual([
@@ -176,11 +165,9 @@ describe('Navigation', () => {
   })
 
   it('should render admin navigation with subscriptions.unseen > 0', () => {
-    useAppContext.mockReturnValue({showUnseenEntries: true})
-    store.setState({
-      security: {
-        roles: ['ADMIN']
-      }
+    useAppContext.mockReturnValue({
+      showUnseenEntries: true,
+      isAdmin: true
     })
 
     expect(createWrapper().navigationItemLabels).toEqual([

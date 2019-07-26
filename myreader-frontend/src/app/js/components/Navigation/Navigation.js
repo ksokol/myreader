@@ -1,7 +1,6 @@
 import './Navigation.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
 import createSubscriptionNavigation from './SubscriptionNavigation/createSubscriptionNavigation'
 import NavigationItem from './NavigationItem'
 import SubscriptionNavigationItem from './SubscriptionNavigation/SubscriptionNavigationItem'
@@ -14,22 +13,17 @@ import {
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
 } from '../../constants'
-import {authorizedSelector} from '../../store'
 import {useAppContext} from '../../contexts'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
-
-const mapStateToProps = state => ({
-  ...authorizedSelector(state)
-})
 
 const Navigation = props => {
   const {
     subscriptions,
-    isAdmin,
     onClick
   } = props
 
   const {
+    isAdmin,
     showUnseenEntries
   } = useAppContext()
 
@@ -100,20 +94,15 @@ const Navigation = props => {
 
 Navigation.propTypes = {
   subscriptions: PropTypes.arrayOf(PropTypes.any),
-  isAdmin: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired
 }
 
-Navigation.defaultProps = {
-  subscriptions: []
-}
-
-export default connect(
-  mapStateToProps
-)(props => (
-  <SubscriptionContext.Consumer>
-    {({subscriptions}) => (
-      <Navigation {...props} subscriptions={subscriptions}/>
-    )}
-  </SubscriptionContext.Consumer>
-))
+export default (
+  props => (
+    <SubscriptionContext.Consumer>
+      {({subscriptions}) => (
+        <Navigation {...props} subscriptions={subscriptions}/>
+      )}
+    </SubscriptionContext.Consumer>
+  )
+)
