@@ -6,7 +6,10 @@ const key = STORAGE_SECURITY_KEY
 
 export function getLastSecurityState() {
   const {authorized, roles} = readFromStorage(key)
-  return {authorized: isBoolean(authorized) ? authorized : false, roles: roles ? roles : []}
+  return {
+    authorized: isBoolean(authorized) ? authorized : false,
+    roles: roles ? roles : []
+  }
 }
 
 export function setLastSecurityState({authorized, roles}) {

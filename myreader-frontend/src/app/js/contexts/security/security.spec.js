@@ -1,19 +1,17 @@
 import {getLastSecurityState, setLastSecurityState} from './security'
-import {createMockStore} from '../../shared/test-utils'
+
+const expectedRole = 'expected role'
 
 describe('security', () => {
 
-  let store
-
   beforeEach(() => {
     window.location.hash = ''
-    store = createMockStore()
   })
 
   it('should read last security state from storage', () => {
-    localStorage.setItem('myreader-security', '{"authorized": true, "roles": ["expected role"]}')
+    localStorage.setItem('myreader-security', `{"authorized": true, "roles": ["${expectedRole}"]}`)
 
-    expect(getLastSecurityState()).toEqual({authorized: true, roles: ['expected role']})
+    expect(getLastSecurityState()).toEqual({authorized: true, roles: [expectedRole]})
   })
 
   it('should return default last security state from storage when state is not available', () => {
@@ -21,9 +19,9 @@ describe('security', () => {
   })
 
   it('should write last security state to storage', () => {
-    setLastSecurityState({authorized: true, roles: ['expected role']})
+    setLastSecurityState({authorized: true, roles: [expectedRole]})
 
     expect(JSON.parse(localStorage.getItem('myreader-security')))
-      .toEqual({authorized: true, roles: ['expected role']})
+      .toEqual({authorized: true, roles: [expectedRole]})
   })
 })
