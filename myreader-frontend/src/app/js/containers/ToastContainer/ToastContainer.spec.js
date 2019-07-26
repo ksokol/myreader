@@ -1,6 +1,8 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import ToastContainer from './ToastContainer'
+import {createMockStore} from '../../shared/test-utils'
+import {Provider} from 'react-redux'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -10,16 +12,19 @@ jest.mock('../../components', () => ({
 
 describe('ToastContainer', () => {
 
-  let state, dispatch
+  let store
 
   const createWrapper = () => {
-    return mount(<ToastContainer dispatch={dispatch} state={state} />).find('Toast')
+    return mount(
+      <Provider store={store}>
+        <ToastContainer />
+      </Provider>
+    ).find('Toast')
   }
 
   beforeEach(() => {
-    dispatch = jest.fn()
-
-    state = {
+    store = createMockStore()
+    store.setState({
       common: {
         notification: {
           nextId: 5,
@@ -29,7 +34,7 @@ describe('ToastContainer', () => {
           ]
         }
       }
-    }
+    })
   })
 
   it('should initialize toast component with given notifications', () => {
@@ -43,7 +48,7 @@ describe('ToastContainer', () => {
     const wrapper = createWrapper()
     wrapper.props().removeNotification({id: 1, a: 'b'})
 
-    expect(dispatch).toHaveBeenCalledWith({
+    expect(store.getActions()[0]).toEqual({
       type: 'REMOVE_NOTIFICATION',
       id: 1
     })

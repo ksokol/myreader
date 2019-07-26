@@ -4,7 +4,8 @@ import LogoutPage from './LogoutPage'
 import {LOGIN_URL} from '../../constants'
 import {authenticationApi} from '../../api'
 import {toast} from '../../components/Toast'
-import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
+import {createMockStore, flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
+import {Provider} from 'react-redux'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../contexts/locationState/withLocationState', () => ({
@@ -22,23 +23,28 @@ jest.mock('../../components/Toast', () => ({
 
 describe('LogoutPage', () => {
 
-  let dispatch, props
+  let store, props
 
   const createWrapper = async (onMount = resolved()) => {
     authenticationApi.logout = onMount
-    const wrapper = mount(<LogoutPage {...props} dispatch={dispatch} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <LogoutPage {...props} />
+      </Provider>
+    )
     await flushPromises()
     wrapper.update()
     return wrapper
   }
 
   beforeEach(() => {
-    dispatch = jest.fn().mockImplementation(dispatch)
     toast.mockClear()
 
     props = {
       historyGoBack: jest.fn()
     }
+
+    store = createMockStore()
   })
 
   it('should not redirect to login page when authenticationApi.logout is pending', async () => {
@@ -55,10 +61,11 @@ describe('LogoutPage', () => {
   it('should reset security context when authenticationApi.logout succeeded', async () => {
     await createWrapper()
 
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+    expect(store.getActions()[0]).toEqual({
       type: 'SECURITY_UPDATE',
-      roles: []
-    }))
+      roles: [],
+      authorized: false
+    })
   })
 
   it('should not trigger toast when authenticationApi.logout succeeded', async () => {

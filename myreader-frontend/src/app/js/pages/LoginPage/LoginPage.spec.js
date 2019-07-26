@@ -2,7 +2,8 @@ import React from 'react'
 import {mount} from 'enzyme'
 import LoginPage from './LoginPage'
 import {authenticationApi} from '../../api'
-import {flushPromises, rejected, resolved} from '../../shared/test-utils'
+import {createMockStore, flushPromises, rejected, resolved} from '../../shared/test-utils'
+import {Provider} from 'react-redux'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -16,24 +17,27 @@ jest.mock('../../api', () => ({
 
 describe('LoginPage', () => {
 
-  let state, dispatch
+  let store
 
   const createWrapper = async (onMount = resolved({roles: ['USER']})) => {
     authenticationApi.login = onMount
-    const wrapper = mount(<LoginPage state={state} dispatch={dispatch} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <LoginPage />
+      </Provider>
+    )
     await flushPromises()
     wrapper.update()
     return wrapper
   }
 
   beforeEach(() => {
-    dispatch = jest.fn()
-
-    state = {
+    store = createMockStore()
+    store.setState({
       security: {
         roles: []
       }
-    }
+    })
   })
 
   it('should pass expected props to login form component', async () => {
@@ -63,7 +67,11 @@ describe('LoginPage', () => {
   })
 
   it('should redirect to entries page when user is authorized', async () => {
-    state.security.roles = ['USER']
+    store.setState({
+      security: {
+        roles: ['USER']
+      }
+    })
     const wrapper = await createWrapper()
 
     expect(wrapper.find('Redirect').prop('to')).toEqual('/app/entries')
@@ -124,7 +132,7 @@ describe('LoginPage', () => {
     await flushPromises()
     wrapper.update()
 
-    expect(dispatch).toHaveBeenCalledWith({
+    expect(store.getActions()[0]).toEqual({
       type: 'SECURITY_UPDATE',
       authorized: true,
       roles: ['USER']
