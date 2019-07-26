@@ -23,7 +23,6 @@ public class TestConstants {
     public static final String USER112 = "user112@localhost";
     public static final String USER103 = "user103@localhost";
     public static final String USER111 = "user111@localhost";
-    public static final String USER113 = "user113@localhost";
     public static final String USER114 = "user114@localhost";
     public static final String USER115 = "user115@localhost";
     public static final String USER116 = "user116@localhost";

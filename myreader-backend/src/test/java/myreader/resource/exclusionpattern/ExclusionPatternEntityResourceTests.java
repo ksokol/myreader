@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
+@Sql("classpath:test-data.sql")
 @SpringBootTest
 public class ExclusionPatternEntityResourceTests {
 
@@ -28,13 +30,13 @@ public class ExclusionPatternEntityResourceTests {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser(TestConstants.USER113)
+    @WithMockUser(TestConstants.USER1)
     public void testEntityResourceForUser1JsonStructureEquality() throws Exception {
-        mockMvc.perform(get("/api/2/exclusions/1101/pattern/7"))
+        mockMvc.perform(get("/api/2/exclusions/1/pattern/0"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.uuid", is("7")))
+                .andExpect(jsonPath("$.uuid", is("0")))
                 .andExpect(jsonPath("$.hitCount", is(1)))
-                .andExpect(jsonPath("$.pattern", is("user113_subscription1_pattern1")));
+                .andExpect(jsonPath("$.pattern", is("user1_subscription1_pattern1")));
     }
 
     @Test
