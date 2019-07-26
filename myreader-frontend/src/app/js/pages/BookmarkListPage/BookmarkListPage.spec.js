@@ -37,12 +37,12 @@ const expectedTag = 'expected tag'
 
 describe('BookmarkListPage', () => {
 
-  let props, state, dispatch
+  let props
 
   const createWrapper = async (onMount = resolved(['tag3', 'tag4'])) => {
     entryApi.fetchEntryTags = onMount
 
-    const wrapper = mount(<BookmarkListPage {...props} state={state} dispatch={dispatch} />)
+    const wrapper = mount(<BookmarkListPage {...props} />)
     await flushPromises()
     wrapper.update()
     return wrapper
@@ -50,21 +50,6 @@ describe('BookmarkListPage', () => {
 
   beforeEach(() => {
     toast.mockClear()
-
-    dispatch = jest.fn().mockImplementation(action => {
-      if (typeof action === 'function') {
-        action(dispatch, () => state)
-      }
-    })
-
-    state = {
-      settings: {
-        showEntryDetails: true
-      },
-      common: {
-        mediaBreakpoint: 'desktop'
-      }
-    }
 
     props = {
       searchParams: {
