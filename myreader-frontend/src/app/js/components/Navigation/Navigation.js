@@ -14,12 +14,12 @@ import {
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
 } from '../../constants'
-import {authorizedSelector, subscriptionsSelector} from '../../store'
+import {authorizedSelector} from '../../store'
 import {useAppContext} from '../../contexts'
+import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 
 const mapStateToProps = state => ({
-  ...authorizedSelector(state),
-  ...subscriptionsSelector(state)
+  ...authorizedSelector(state)
 })
 
 const Navigation = props => {
@@ -110,4 +110,10 @@ Navigation.defaultProps = {
 
 export default connect(
   mapStateToProps
-)(Navigation)
+)(props => (
+  <SubscriptionContext.Consumer>
+    {({subscriptions}) => (
+      <Navigation {...props} subscriptions={subscriptions}/>
+    )}
+  </SubscriptionContext.Consumer>
+))

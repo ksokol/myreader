@@ -1,34 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {bindActionCreators} from 'redux'
-import {connect} from 'react-redux'
 import SubscriptionContext from './SubscriptionContext'
-import {subscriptionsReceived} from '../../store/subscription'
 import {withLocationState} from '../locationState/withLocationState'
 import {subscriptionApi} from '../../api'
 import {toast} from '../../components/Toast'
 import {SubscriptionProviderInterceptor} from './SubscriptionProviderInterceptor'
-import {changeEntry} from '../../store'
-
-const mapDispatchToProps = dispatch => bindActionCreators({
-  subscriptionsReceived,
-  changeEntry
-}, dispatch)
 
 class Provider extends React.Component {
 
   static propTypes = {
     children: PropTypes.any,
-    locationReload: PropTypes.bool.isRequired,
-    subscriptionsReceived: PropTypes.func.isRequired,
-    changeEntry: PropTypes.func.isRequired
+    locationReload: PropTypes.bool.isRequired
   }
 
   state = {
     subscriptions: []
   }
 
-  interceptor = new SubscriptionProviderInterceptor(this.props.changeEntry)
+  interceptor = new SubscriptionProviderInterceptor((newEntry, oldEntry) => this.entryChanged(newEntry, oldEntry))
 
   componentDidMount = async () => {
     subscriptionApi.addInterceptor(this.interceptor)
@@ -48,11 +37,23 @@ class Provider extends React.Component {
   fetchSubscriptions = async () => {
     try {
       const subscriptions = await subscriptionApi.fetchSubscriptions()
-      this.props.subscriptionsReceived(subscriptions)
       this.setState({subscriptions})
     } catch ({data}) {
       toast(data, {error: true})
     }
+  }
+
+  entryChanged = (newEntry, oldEntry) => {
+    const subscriptions = this.state.subscriptions.map(it => {
+      const unseenChanged = it.uuid === newEntry.feedUuid && newEntry.seen !== oldEntry.seen
+
+      return unseenChanged ? {
+        ...it,
+        unseen: newEntry.seen ? it.unseen - 1 : it.unseen + 1
+      } : it
+    })
+
+    this.setState({subscriptions})
   }
 
   render() {
@@ -68,9 +69,4 @@ class Provider extends React.Component {
   }
 }
 
-export const SubscriptionProvider = withLocationState(
-  connect(
-    null,
-    mapDispatchToProps
-  )(Provider)
-)
+export const SubscriptionProvider = withLocationState(Provider)

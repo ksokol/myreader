@@ -2,7 +2,6 @@ import {applyMiddleware, combineReducers, compose as reduxCompose, createStore} 
 import thunk from 'redux-thunk'
 import {commonReducers} from './common'
 import {securityReducers} from './security'
-import {subscriptionReducers} from './subscription'
 import {getLastSecurityState} from './security/security'
 import {isInDevMode, isInProdMode} from '../constants'
 
@@ -25,8 +24,7 @@ function enhancer(enabled) {
 
 const reducers = combineReducers({
   security: securityReducers,
-  common: commonReducers,
-  subscription: subscriptionReducers
+  common: commonReducers
 })
 
 function initialState(enabled) {

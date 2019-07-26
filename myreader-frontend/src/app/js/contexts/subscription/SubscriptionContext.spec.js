@@ -34,12 +34,12 @@ const expectedError = 'expected error'
 
 describe('subscription context', () => {
 
-  let dispatch, props, subscriptions
+  let props, subscriptions
 
   const createWrapper = async (onMount = resolved(subscriptions)) => {
     subscriptionApi.fetchSubscriptions = onMount
     const wrapper = mount(
-      <SubscriptionProvider {...props} dispatch={dispatch}>
+      <SubscriptionProvider {...props}>
         <TestComponent />
       </SubscriptionProvider>
     )
@@ -49,15 +49,14 @@ describe('subscription context', () => {
   }
 
   beforeEach(() => {
-    dispatch = jest.fn()
     toast.mockClear()
     SubscriptionProviderInterceptor.mockClear()
     subscriptionApi.addInterceptor = jest.fn()
     subscriptionApi.removeInterceptor = jest.fn()
 
     subscriptions = [
-      {uuid: '1'},
-      {uuid: '2'}
+      {uuid: '1', unseen: 3},
+      {uuid: '2', unseen: 2}
     ]
 
     props = {
@@ -70,33 +69,15 @@ describe('subscription context', () => {
     expect(wrapper.find(TestComponent).html()).toEqual('expected component')
   })
 
-  it('should contain expected context values in child component', async () => {
+  it('should contain expected context values in child component when subscriptionApi.fetchSubscriptions succeeded', async () => {
     const wrapper = await createWrapper()
 
     expect(wrapper.find(TestComponent).instance().context).toEqual({
       subscriptions: [
-        {uuid: '1'},
-        {uuid: '2'}
+        {uuid: '1', unseen: 3},
+        {uuid: '2', unseen: 2}
       ]
     })
-  })
-
-  it('should dispatch action SUBSCRIPTIONS_RECEIVED when subscriptionApi.fetchSubscriptions succeeded', async () => {
-    await createWrapper()
-
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SUBSCRIPTIONS_RECEIVED',
-      subscriptions: [
-        {uuid: '1'},
-        {uuid: '2'}
-      ]
-    })
-  })
-
-  it('should not dispatch action SUBSCRIPTIONS_RECEIVED when subscriptionApi.fetchSubscriptions failed', async () => {
-    await createWrapper(rejected())
-
-    expect(dispatch).not.toHaveBeenCalled()
   })
 
   it('should contain empty context value in child component when subscriptionApi.fetchSubscriptions succeeded', async () => {
@@ -105,37 +86,38 @@ describe('subscription context', () => {
     expect(toast).toHaveBeenCalledWith('expected error', {error: true})
   })
 
-  it('should dispatch action SUBSCRIPTIONS_RECEIVED when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions succeeded', async () => {
+  it('should contain expected context values in child component when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions succeeded', async () => {
     const wrapper = await createWrapper()
     subscriptionApi.fetchSubscriptions = resolved([{uuid: '3'}])
-    dispatch.mockClear()
     wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
     await flushPromises()
     wrapper.update()
 
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SUBSCRIPTIONS_RECEIVED',
+    expect(wrapper.find(TestComponent).instance().context).toEqual({
       subscriptions: [
         {uuid: '3'}
       ]
     })
   })
 
-  it('should not dispatch action SUBSCRIPTIONS_RECEIVED when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions failed', async () => {
+  it('should contain expected context values in child component when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions failed', async () => {
     const wrapper = await createWrapper()
     subscriptionApi.fetchSubscriptions = rejected(expectedError)
-    dispatch.mockClear()
     wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
     await flushPromises()
     wrapper.update()
 
-    expect(dispatch).not.toHaveBeenCalled()
+    expect(wrapper.find(TestComponent).instance().context).toEqual({
+      subscriptions: [
+        {uuid: '1', unseen: 3},
+        {uuid: '2', unseen: 2}
+      ]
+    })
   })
 
   it('should trigger toast when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions failed', async () => {
     const wrapper = await createWrapper()
     subscriptionApi.fetchSubscriptions = rejected({data: expectedError})
-    dispatch.mockClear()
     wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
     await flushPromises()
     wrapper.update()
@@ -143,14 +125,63 @@ describe('subscription context', () => {
     expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
   })
 
-  it('should dispatch action ENTRY_CHANGED when interceptor calls provider', async () => {
-    await createWrapper()
-    SubscriptionProviderInterceptor.mock.calls[0][0]({a: 'b'}, {c: 'd'})
+  it('should decrease subscription unseen count', async () => {
+    const wrapper = await createWrapper()
+    SubscriptionProviderInterceptor.mock.calls[0][0](
+      {feedUuid: '1', unseen: 3, seen: true},
+      {feedUuid: '1', unseen: 2, seen: false}
+    )
 
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'ENTRY_CHANGED',
-      newValue: {a: 'b'},
-      oldValue: {c: 'd'}
+    expect(wrapper.find(TestComponent).instance().context).toEqual({
+      subscriptions: [
+        {uuid: '1', unseen: 2},
+        {uuid: '2', unseen: 2}
+      ]
+    })
+  })
+
+  it('should increase subscription unseen count', async () => {
+    const wrapper = await createWrapper()
+    SubscriptionProviderInterceptor.mock.calls[0][0](
+      {feedUuid: '1', unseen: 3, seen: false},
+      {feedUuid: '1', unseen: 2, seen: true}
+    )
+
+    expect(wrapper.find(TestComponent).instance().context).toEqual({
+      subscriptions: [
+        {uuid: '1', unseen: 4},
+        {uuid: '2', unseen: 2}
+      ]
+    })
+  })
+
+  it('should do nothing when seen flag does not changed', async () => {
+    const wrapper = await createWrapper()
+    SubscriptionProviderInterceptor.mock.calls[0][0](
+      {feedUuid: '1', unseen: 3, seen: false},
+      {feedUuid: '1', unseen: 2, seen: false}
+    )
+
+    expect(wrapper.find(TestComponent).instance().context).toEqual({
+      subscriptions: [
+        {uuid: '1', unseen: 3},
+        {uuid: '2', unseen: 2}
+      ]
+    })
+  })
+
+  it('should do nothing when subscription is not available', async () => {
+    const wrapper = await createWrapper()
+    SubscriptionProviderInterceptor.mock.calls[0][0](
+      {feedUuid: '3', unseen: 3, seen: true},
+      {feedUuid: '3', unseen: 2, seen: false}
+    )
+
+    expect(wrapper.find(TestComponent).instance().context).toEqual({
+      subscriptions: [
+        {uuid: '1', unseen: 3},
+        {uuid: '2', unseen: 2}
+      ]
     })
   })
 

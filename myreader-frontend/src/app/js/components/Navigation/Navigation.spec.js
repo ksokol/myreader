@@ -11,6 +11,7 @@ import {
   SUBSCRIPTIONS_URL
 } from '../../constants'
 import {useAppContext} from '../../contexts'
+import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 
 /* eslint-disable react/prop-types */
 jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => () => null)
@@ -48,26 +49,33 @@ class NavigationPage {
 
 describe('Navigation', () => {
 
-  let props, state
+  let props, state, value
 
-  const createWrapper = () => new NavigationPage(mount(<Navigation {...props} state={state} />))
+  const createWrapper = () => new NavigationPage(mount(
+    <SubscriptionContext.Provider value={value}>
+      <Navigation {...props} state={state}/>
+    </SubscriptionContext.Provider>
+  ))
 
   beforeEach(() => {
     useAppContext.mockClear()
     useAppContext.mockReturnValue({showUnseenEntries: false})
 
     state = {
-      subscription: {subscriptions: [
-          {title: 'subscription 1', uuid: '1', feedTag: {name: 'group 1'}, unseen: 2},
-          {title: 'subscription 2', uuid: '2', feedTag: {name: 'group 2'}, unseen: 1},
-          {title: 'subscription 3', uuid: '3', feedTag: {name: undefined}, unseen: 0}
-      ]},
       settings: {showUnseenEntries: false},
       security: {roles: ['USER']}
     }
 
     props = {
       onClick: jest.fn()
+    }
+
+    value = {
+      subscriptions: [
+        {title: 'subscription 1', uuid: '1', feedTag: {name: 'group 1'}, unseen: 2},
+        {title: 'subscription 2', uuid: '2', feedTag: {name: 'group 2'}, unseen: 1},
+        {title: 'subscription 3', uuid: '3', feedTag: {name: undefined}, unseen: 0}
+      ]
     }
   })
 
