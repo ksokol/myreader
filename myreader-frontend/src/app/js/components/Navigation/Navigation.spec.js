@@ -14,7 +14,7 @@ import {useAppContext} from '../../contexts'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 
 /* eslint-disable react/prop-types */
-jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => () => null)
+jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => () => null) //eslint-disable-line unicorn/consistent-function-scoping
 
 jest.mock('../../contexts', () => ({
   useAppContext: jest.fn()

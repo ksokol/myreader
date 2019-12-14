@@ -5,9 +5,9 @@ const jsonContentType = 'application/json'
 const textPlainContentType = 'text/plain'
 const expectedBody = 'expected body'
 
-describe('exchange', () => {
+const execute = (method, params) => exchange({...params, method})
 
-  const execute = (method, params) => exchange({...params, method})
+describe('exchange', () => {
 
   afterEach(() => {
     fetch.resetMocks()

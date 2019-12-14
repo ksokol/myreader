@@ -8,7 +8,12 @@ export const isBoolean = value => typeof value === 'boolean'
 
 export const isDate = value => value instanceof Date
 
-export const toArray = value => value ? Array.isArray(value) ? value : [value] : []
+export const toArray = value => {
+  if (value) {
+    return Array.isArray(value) ? value : [value]
+  }
+  return []
+}
 
 export const noop = () => {}
 

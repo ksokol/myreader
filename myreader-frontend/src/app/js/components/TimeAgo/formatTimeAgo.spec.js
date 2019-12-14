@@ -1,11 +1,11 @@
 import formatTimeAgo from './formatTimeAgo'
 
-describe('formatTimeAgo', () => {
+const givenDate = (now, date = '2018-01-01T00:00:00Z') => {
+  jest.spyOn(Date, 'now').mockImplementation(() => new Date(now))
+  return formatTimeAgo(date)
+}
 
-  const givenDate = (now, date = '2018-01-01T00:00:00Z') => {
-    jest.spyOn(Date, 'now').mockImplementation(() => new Date(now))
-    return formatTimeAgo(date)
-  }
+describe('formatTimeAgo', () => {
 
   it('should format to "sometime" when given date is null', () => {
     expect(givenDate('2018-01-01T00:00:00Z', null)).toEqual('sometime')

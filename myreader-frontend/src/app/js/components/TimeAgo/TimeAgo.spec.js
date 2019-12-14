@@ -2,7 +2,7 @@ import React from 'react'
 import TimeAgo from './TimeAgo'
 import {shallow} from 'enzyme'
 
-jest.mock('./formatTimeAgo', () => date => `formatTimeAgo(${date})`)
+jest.mock('./formatTimeAgo', () => date => `formatTimeAgo(${date})`) //eslint-disable-line unicorn/consistent-function-scoping
 
 describe('TimeAgo', () => {
 

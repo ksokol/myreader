@@ -1,11 +1,9 @@
 import {getNextNotificationId, getNotifications} from '../../store'
 import {pendingRequestCountSelector} from './selectors'
 
-describe('common selectors', () => {
+const state = common => ({common})
 
-  const state = common => {
-    return {common}
-  }
+describe('common selectors', () => {
 
   it('should select notifications', () => {
     const currentState = state({

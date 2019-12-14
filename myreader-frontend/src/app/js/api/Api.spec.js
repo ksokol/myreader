@@ -7,16 +7,15 @@ jest.mock('./exchange', () => ({
 }))
 
 const expectedError = 'expected error'
+const onBeforeInterceptor = onBefore => ({onBefore})
+const onThenInterceptor = onThen => ({onThen})
+const onErrorInterceptor = onError => ({onError})
+const onFinallyInterceptor = onFinally => ({onFinally})
+const otherInterceptor = otherFn => ({otherFn})
 
 describe('Api', () => {
 
   let api
-
-  const onBeforeInterceptor = onBefore => ({onBefore})
-  const onThenInterceptor = onThen => ({onThen})
-  const onErrorInterceptor = onError => ({onError})
-  const onFinallyInterceptor = onFinally => ({onFinally})
-  const otherInterceptor = otherFn => ({otherFn})
 
   beforeEach(() => {
     exchange.mockImplementation(() => Promise.resolve({c: 'd'}))
