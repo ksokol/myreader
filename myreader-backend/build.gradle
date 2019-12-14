@@ -92,12 +92,6 @@ task devRun(type: com.github.psxpaul.task.ExecFork) {
     waitForOutput 'Started Starter'
 }
 
-task resolve() {
-    doLast {
-        resolveDependencies(project)
-    }
-}
-
 tasks.matching {it instanceof Test}.all {
     testLogging.events = ["failed", "passed", "skipped"]
 }

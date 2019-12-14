@@ -15,12 +15,6 @@ node {
     download = true
 }
 
-task resolve(dependsOn: npm_install) {
-    doLast {
-        resolveDependencies(project)
-    }
-}
-
 // Workaround for https://github.com/srs/gradle-node-plugin/issues/131
 project.afterEvaluate {
     tasks.npm_install.inputs.file(file('package.json'))

@@ -1,4 +1,4 @@
-MyReader [![Build Status](https://api.travis-ci.org/ksokol/myreader.png?branch=master)](https://travis-ci.org/ksokol/myreader/) [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=MyReader%3AMyReader&metric=alert_status)](https://sonarcloud.io/dashboard/index/MyReader:MyReader)
+MyReader [![Build Status](https://github.com/ksokol/myreader/workflows/CI/badge.svg)](https://github.com/ksokol/myreader/) [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=MyReader%3AMyReader&metric=alert_status)](https://sonarcloud.io/dashboard/index/MyReader:MyReader)
 ========
 
 MyReader is a web-based RSS reader.
