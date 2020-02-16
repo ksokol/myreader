@@ -4,6 +4,7 @@ import SecurityContext from './SecurityContext'
 import {authorizedSelector, unauthorized, updateSecurity} from '../../store/security'
 import {connect} from 'react-redux'
 import {setLastSecurityState} from './security'
+import {api} from '../../api'
 
 const mapStateToProps = state => ({
   ...authorizedSelector(state)
@@ -19,6 +20,12 @@ class Provider extends React.Component {
     dispatch: PropTypes.func.isRequired
   }
 
+  constructor(props) {
+    super(props)
+
+    api.addInterceptor(this)
+  }
+
   doAuthorize = roles => {
     setLastSecurityState({roles})
     this.props.dispatch(updateSecurity())
@@ -26,6 +33,12 @@ class Provider extends React.Component {
 
   doUnAuthorize = () => {
     this.props.dispatch(unauthorized())
+  }
+
+  onError = (request, error) => {
+    if (error.status === 401) {
+      this.doUnAuthorize()
+    }
   }
 
   render() {

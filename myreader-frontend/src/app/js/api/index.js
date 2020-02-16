@@ -1,4 +1,3 @@
-export {AuthInterceptor} from './interceptors/AuthInterceptor'
 export {PendingFetchInterceptor} from './interceptors/PendingFetchInterceptor'
 
 import {Api} from './Api'
