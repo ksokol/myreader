@@ -8,9 +8,10 @@
     "test-watch": "export NODE_ENV=test && jest --watch --verbose false",
     "start": "npm run server",
     "report": "export NODE_ENV=production && webpack --bail --progress --profile && webpack-bundle-analyzer dist/stats.json",
-    "lint": "npm run lint:js-report",
+    "lint": "npm run lint:js-report && npm run lint:lockfile",
     "lint:js-report": "eslint -f json -o build/reports/eslint.json -c .eslintrc.js src/app/js",
-    "lint:js": "eslint -c .eslintrc.js src/app/js"
+    "lint:js": "eslint -c .eslintrc.js src/app/js",
+    "lint:lockfile": "npx lockfile-lint --path package-lock.json -s -a registry.npmjs.org -o https:"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.9.0",
@@ -52,6 +53,7 @@
     "intersection-observer": "0.7.0",
     "jest": "24.9.0",
     "jest-sonar-reporter": "2.0.0",
+    "lockfile-lint": "3.0.5",
     "lodash.ismatch": "4.4.0",
     "mini-css-extract-plugin": "0.7.0",
     "mock-local-storage": "1.1.8",
