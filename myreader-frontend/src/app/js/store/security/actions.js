@@ -14,8 +14,3 @@ export const unauthorized = () => {
   setLastSecurityState({roles: []})
   return updateSecurity()
 }
-
-export const authorized = ({roles}) => {
-  setLastSecurityState({roles})
-  return updateSecurity()
-}

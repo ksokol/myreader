@@ -25,6 +25,14 @@ describe('security context', () => {
   }
 
   beforeEach(() => {
+    localStorage.clear()
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+  })
+
+  beforeEach(() => {
     store = createMockStore()
 
     store.setState({
@@ -56,5 +64,13 @@ describe('security context', () => {
       authorized: true,
       roles: ['SOME_ROLE']
     }])
+  })
+
+  it('should persist roles to local storage when "doAuthorize" triggered', () => {
+    createWrapper().instance().context.doAuthorize(['SOME_ROLE'])
+
+    expect(JSON.parse(localStorage.getItem('myreader-security'))).toEqual({
+      roles: ['SOME_ROLE']
+    })
   })
 })

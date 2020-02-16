@@ -1,4 +1,4 @@
-import {authorized, unauthorized, updateSecurity} from '../../store'
+import {unauthorized, updateSecurity} from '../../store'
 
 describe('security actions', () => {
 
@@ -34,17 +34,6 @@ describe('security actions', () => {
 
       expect(JSON.parse(localStorage.getItem('myreader-security'))).toEqual({
         roles: []
-      })
-    })
-  })
-
-  describe('action creator authorized', () => {
-
-    it('should return SECURITY_UPDATE action with updated last security state', () => {
-      expect(authorized({roles: ['expected role']})).toEqual({
-        type: 'SECURITY_UPDATE',
-        authorized: true,
-        roles: ['expected role']
       })
     })
   })

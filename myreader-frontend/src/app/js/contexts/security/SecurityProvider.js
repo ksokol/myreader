@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import SecurityContext from './SecurityContext'
-import {authorized, authorizedSelector} from '../../store/security'
+import {authorizedSelector, updateSecurity} from '../../store/security'
 import {connect} from 'react-redux'
+import {setLastSecurityState} from './security'
 
 const mapStateToProps = state => ({
   ...authorizedSelector(state)
@@ -18,7 +19,10 @@ class Provider extends React.Component {
     dispatch: PropTypes.func.isRequired
   }
 
-  doAuthorize = roles => this.props.dispatch(authorized({roles}))
+  doAuthorize = roles => {
+    setLastSecurityState({roles})
+    this.props.dispatch(updateSecurity())
+  }
 
   render() {
     const {
