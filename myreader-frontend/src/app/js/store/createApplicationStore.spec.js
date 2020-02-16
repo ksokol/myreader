@@ -38,13 +38,13 @@ describe('createApplicationStore', () => {
     it('should initialize last security state when in production environment', () => {
       const store = createApplicationStore(PROD)
 
-      expect(store.getState().security).toContainObject({authorized: false, roles: []})
+      expect(store.getState().security).toContainObject({roles: []})
     })
 
     it('should initialize last security state when in development environment', () => {
       const store = createApplicationStore(DEV)
 
-      expect(store.getState().security).toContainObject({authorized: false, roles: []})
+      expect(store.getState().security).toContainObject({roles: []})
     })
 
     it('should not initialize last security state when environment is other', () => {
