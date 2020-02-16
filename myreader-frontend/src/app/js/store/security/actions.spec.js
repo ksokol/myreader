@@ -1,4 +1,4 @@
-import {unauthorized, updateSecurity} from '../../store'
+import {updateSecurity} from '../../store'
 
 describe('security actions', () => {
 
@@ -19,21 +19,6 @@ describe('security actions', () => {
         type: 'SECURITY_UPDATE',
         authorized: true,
         roles: ['expected role']
-      })
-    })
-  })
-
-  describe('action creator unauthorized', () => {
-
-    it('should persist last security state to local storage', () => {
-      expect(unauthorized()).toEqual({
-        type: 'SECURITY_UPDATE',
-        authorized: false,
-        roles: []
-      })
-
-      expect(JSON.parse(localStorage.getItem('myreader-security'))).toEqual({
-        roles: []
       })
     })
   })

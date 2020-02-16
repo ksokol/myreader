@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import SecurityContext from './SecurityContext'
-import {authorizedSelector, unauthorized, updateSecurity} from '../../store/security'
+import {authorizedSelector, updateSecurity} from '../../store/security'
 import {connect} from 'react-redux'
 import {setLastSecurityState} from './security'
 import {api} from '../../api'
@@ -32,7 +32,8 @@ class Provider extends React.Component {
   }
 
   doUnAuthorize = () => {
-    this.props.dispatch(unauthorized())
+    setLastSecurityState({roles: []})
+    this.props.dispatch(updateSecurity())
   }
 
   onError = (request, error) => {

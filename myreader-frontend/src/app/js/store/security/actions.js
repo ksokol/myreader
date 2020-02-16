@@ -1,5 +1,5 @@
 import * as types from '../../store/action-types'
-import {getLastSecurityState, setLastSecurityState} from '../../contexts/security/security'
+import {getLastSecurityState} from '../../contexts/security/security'
 
 export const updateSecurity = () => {
   const {roles} = getLastSecurityState()
@@ -8,9 +8,4 @@ export const updateSecurity = () => {
     authorized: roles.length > 0,
     roles
   }
-}
-
-export const unauthorized = () => {
-  setLastSecurityState({roles: []})
-  return updateSecurity()
 }

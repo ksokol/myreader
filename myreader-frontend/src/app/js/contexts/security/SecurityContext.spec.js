@@ -94,6 +94,14 @@ describe('security context', () => {
     }])
   })
 
+  it('should clear roles from local storage when "doUnAuthorize" triggered', () => {
+    createWrapper().find(TestComponent).instance().context.doUnAuthorize()
+
+    expect(JSON.parse(localStorage.getItem('myreader-security'))).toEqual({
+      roles: []
+    })
+  })
+
   it('should dispatch action SECURITY_UPDATE when status is 401', () => {
     createWrapper()
 
