@@ -4,12 +4,15 @@ import LogoutPage from './LogoutPage'
 import {LOGIN_URL} from '../../constants'
 import {authenticationApi} from '../../api'
 import {toast} from '../../components/Toast'
-import {createMockStore, flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
-import {Provider} from 'react-redux'
+import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
+}))
+
+jest.mock('../../contexts', () => ({
+  withAppContext: Component => Component
 }))
 
 jest.mock('../../api', () => ({
@@ -23,15 +26,11 @@ jest.mock('../../components/Toast', () => ({
 
 describe('LogoutPage', () => {
 
-  let store, props
+  let props
 
   const createWrapper = async (onMount = resolved()) => {
     authenticationApi.logout = onMount
-    const wrapper = mount(
-      <Provider store={store}>
-        <LogoutPage {...props} />
-      </Provider>
-    )
+    const wrapper = mount(<LogoutPage {...props} />)
     await flushPromises()
     wrapper.update()
     return wrapper
@@ -41,10 +40,9 @@ describe('LogoutPage', () => {
     toast.mockClear()
 
     props = {
+      doUnAuthorize: jest.fn(),
       historyGoBack: jest.fn()
     }
-
-    store = createMockStore()
   })
 
   it('should not redirect to login page when authenticationApi.logout is pending', async () => {
@@ -58,14 +56,16 @@ describe('LogoutPage', () => {
     expect(wrapper.find('Redirect').prop('to')).toEqual(LOGIN_URL)
   })
 
-  it('should reset security context when authenticationApi.logout succeeded', async () => {
+  it('should trigger prop function "doUnAuthorize" when authenticationApi.logout succeeded', async () => {
     await createWrapper()
 
-    expect(store.getActions()[0]).toEqual({
-      type: 'SECURITY_UPDATE',
-      roles: [],
-      authorized: false
-    })
+    expect(props.doUnAuthorize).toHaveBeenCalled()
+  })
+
+  it('should not trigger prop function "doUnAuthorize" when authenticationApi.logout failed', async () => {
+    await createWrapper(rejected('some error'))
+
+    expect(props.doUnAuthorize).not.toHaveBeenCalled()
   })
 
   it('should not trigger toast when authenticationApi.logout succeeded', async () => {

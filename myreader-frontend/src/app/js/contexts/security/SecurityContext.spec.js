@@ -73,4 +73,14 @@ describe('security context', () => {
       roles: ['SOME_ROLE']
     })
   })
+
+  it('should dispatch action SECURITY_UPDATE when "doUnAuthorize" triggered', () => {
+    createWrapper().instance().context.doUnAuthorize()
+
+    expect(store.getActions()).toEqual([{
+      type: 'SECURITY_UPDATE',
+      authorized: false,
+      roles: []
+    }])
+  })
 })

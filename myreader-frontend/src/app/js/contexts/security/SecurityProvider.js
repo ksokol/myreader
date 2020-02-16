@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import SecurityContext from './SecurityContext'
-import {authorizedSelector, updateSecurity} from '../../store/security'
+import {authorizedSelector, unauthorized, updateSecurity} from '../../store/security'
 import {connect} from 'react-redux'
 import {setLastSecurityState} from './security'
 
@@ -24,6 +24,10 @@ class Provider extends React.Component {
     this.props.dispatch(updateSecurity())
   }
 
+  doUnAuthorize = () => {
+    this.props.dispatch(unauthorized())
+  }
+
   render() {
     const {
       isAdmin,
@@ -34,7 +38,13 @@ class Provider extends React.Component {
 
     return (
       <SecurityContext.Provider
-        value={{authorized, isAdmin, roles, doAuthorize: this.doAuthorize}}
+        value={{
+          authorized,
+          isAdmin,
+          roles,
+          doAuthorize: this.doAuthorize,
+          doUnAuthorize: this.doUnAuthorize
+        }}
       >
         {children}
       </SecurityContext.Provider>
