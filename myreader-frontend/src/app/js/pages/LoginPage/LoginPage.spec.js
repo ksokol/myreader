@@ -2,8 +2,7 @@ import React from 'react'
 import {mount} from 'enzyme'
 import LoginPage from './LoginPage'
 import {authenticationApi} from '../../api'
-import {createMockStore, flushPromises, rejected, resolved} from '../../shared/test-utils'
-import {Provider} from 'react-redux'
+import {flushPromises, rejected, resolved} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -13,31 +12,29 @@ jest.mock('../../components', () => ({
 jest.mock('../../api', () => ({
   authenticationApi: {}
 }))
+
+jest.mock('../../contexts/locationState/withLocationState', () => ({
+  withLocationState: Component => Component
+}))
 /* eslint-enable */
 
 describe('LoginPage', () => {
 
-  let store
+  let props
 
   const createWrapper = async (onMount = resolved({roles: ['USER']})) => {
     authenticationApi.login = onMount
-    const wrapper = mount(
-      <Provider store={store}>
-        <LoginPage />
-      </Provider>
-    )
+    const wrapper = mount(<LoginPage {...props} />)
     await flushPromises()
     wrapper.update()
     return wrapper
   }
 
   beforeEach(() => {
-    store = createMockStore()
-    store.setState({
-      security: {
-        roles: []
-      }
-    })
+    props = {
+      authorized: false,
+      doAuthorize: jest.fn()
+    }
   })
 
   it('should pass expected props to login form component', async () => {
@@ -67,11 +64,8 @@ describe('LoginPage', () => {
   })
 
   it('should redirect to entries page when user is authorized', async () => {
-    store.setState({
-      security: {
-        roles: ['USER']
-      }
-    })
+    props.authorized = true
+
     const wrapper = await createWrapper()
 
     expect(wrapper.find('Redirect').prop('to')).toEqual('/app/entries')
@@ -126,16 +120,12 @@ describe('LoginPage', () => {
     }))
   })
 
-  it('should dispatch action SECURITY_UPDATE when login succeeded', async () => {
+  it('should trigger prop function "doAuthorize" when login succeeded', async () => {
     const wrapper = await createWrapper()
     wrapper.find('LoginForm').props().onLogin({})
     await flushPromises()
     wrapper.update()
 
-    expect(store.getActions()[0]).toEqual({
-      type: 'SECURITY_UPDATE',
-      authorized: true,
-      roles: ['USER']
-    })
+    expect(props.doAuthorize).toHaveBeenCalledWith(['USER'])
   })
 })

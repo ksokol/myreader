@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import SecurityContext from './SecurityContext'
-import {authorizedSelector} from '../../store/security'
+import {authorized, authorizedSelector} from '../../store/security'
 import {connect} from 'react-redux'
 
 const mapStateToProps = state => ({
@@ -14,8 +14,11 @@ class Provider extends React.Component {
     children: PropTypes.any,
     isAdmin: PropTypes.bool.isRequired,
     roles: PropTypes.arrayOf(PropTypes.string).isRequired,
-    authorized: PropTypes.bool.isRequired
+    authorized: PropTypes.bool.isRequired,
+    dispatch: PropTypes.func.isRequired
   }
+
+  doAuthorize = roles => this.props.dispatch(authorized({roles}))
 
   render() {
     const {
@@ -27,7 +30,7 @@ class Provider extends React.Component {
 
     return (
       <SecurityContext.Provider
-        value={{authorized, isAdmin, roles}}
+        value={{authorized, isAdmin, roles, doAuthorize: this.doAuthorize}}
       >
         {children}
       </SecurityContext.Provider>

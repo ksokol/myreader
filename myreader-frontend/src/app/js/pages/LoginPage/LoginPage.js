@@ -1,21 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {Redirect} from 'react-router-dom'
-import {connect} from 'react-redux'
 import {LoginForm} from '../../components'
 import {ENTRIES_URL} from '../../constants'
-import {authorized, authorizedSelector} from '../../store'
 import {authenticationApi} from '../../api'
-
-const mapStateToProps = state => ({
-  ...authorizedSelector(state)
-})
+import {withAppContext} from '../../contexts'
 
 class LoginPage extends React.Component {
 
   static propTypes = {
     authorized: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired
+    doAuthorize: PropTypes.func.isRequired
   }
 
   state = {
@@ -43,13 +38,13 @@ class LoginPage extends React.Component {
     }
   }
 
-  onSuccess = (roles) => {
+  onSuccess = roles => {
     this.setState({
       loginPending: false,
       loginFailed: false
     })
 
-    this.props.dispatch(authorized({roles}))
+    this.props.doAuthorize(roles)
   }
 
   render() {
@@ -76,6 +71,4 @@ class LoginPage extends React.Component {
   }
 }
 
-export default connect(
-  mapStateToProps
-)(LoginPage)
+export default withAppContext(LoginPage)
