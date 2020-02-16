@@ -13,8 +13,8 @@ jest.mock('../../api', () => ({
   authenticationApi: {}
 }))
 
-jest.mock('../../contexts/locationState/withLocationState', () => ({
-  withLocationState: Component => Component
+jest.mock('../../contexts', () => ({
+  withAppContext: Component => Component
 }))
 /* eslint-enable */
 
