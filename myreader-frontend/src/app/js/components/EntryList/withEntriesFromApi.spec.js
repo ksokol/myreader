@@ -54,8 +54,7 @@ describe('withEntriesFromApi', () => {
     }
 
     props = {
-      locationChanged: false,
-      locationReload: false,
+      locationStateStamp: 0,
       query: {
         c: 'd'
       }
@@ -206,18 +205,18 @@ describe('withEntriesFromApi', () => {
     }))
   })
 
-  it('should trigger entryApi.fetchEntries when prop "locationReload" is set to true', async () => {
+  it('should trigger entryApi.fetchEntries when prop "query" changed', async () => {
     const wrapper = await createWrapper()
     entryApi.fetchEntries.mockClear()
-    wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
+    wrapper.setProps({query: {e: 'f'}})
 
-    expect(entryApi.fetchEntries).toHaveBeenCalledWith({query: {c: 'd'}})
+    expect(entryApi.fetchEntries).toHaveBeenCalledWith({query: {e: 'f'}})
   })
 
-  it('should trigger entryApi.fetchEntries when prop "locationChanged" is set to true', async () => {
+  it('should trigger entryApi.fetchEntries when prop "locationStateStamp" changed', async () => {
     const wrapper = await createWrapper()
     entryApi.fetchEntries.mockClear()
-    wrapper.setProps({locationChanged: true}, () => wrapper.setProps({locationChanged: false}))
+    wrapper.setProps({locationStateStamp: 1}, () => wrapper.setProps({locationStateStamp: 2}))
 
     expect(entryApi.fetchEntries).toHaveBeenCalledWith({query: {c: 'd'}})
   })

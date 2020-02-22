@@ -57,8 +57,7 @@ describe('BookmarkListPage', () => {
         q: 'expectedQ'
       },
       historyReplace: jest.fn(),
-      locationChanged: false,
-      locationReload: false,
+      locationStateStamp: 0,
       pageSize: 2
     }
   })
@@ -111,10 +110,10 @@ describe('BookmarkListPage', () => {
     }))
   })
 
-  it('should trigger entryApi.fetchEntryTags when prop "locationReload" is set to true', async () => {
+  it('should trigger entryApi.fetchEntryTags when prop "locationStateStamp" changed', async () => {
     const wrapper = await createWrapper()
     entryApi.fetchEntryTags = rejected()
-    wrapper.setProps({locationReload: true})
+    wrapper.setProps({locationStateStamp: 1})
 
     expect(entryApi.fetchEntryTags).toHaveBeenCalled()
   })

@@ -2,14 +2,13 @@ import React from 'react'
 import {mount} from 'enzyme'
 import {SecurityProvider} from './SecurityProvider'
 import SecurityContext from './SecurityContext'
-import {createMockStore} from '../../shared/test-utils'
-import {Provider} from 'react-redux'
 import {api} from '../../api'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../api', () => ({
   api: {
-    addInterceptor: jest.fn()
+    addInterceptor: jest.fn(),
+    removeInterceptor: jest.fn()
   }
 }))
 /* eslint-enable */
@@ -19,39 +18,26 @@ class TestComponent extends React.Component {
   render = () => 'expected component'
 }
 
-describe('security context', () => {
+const STORAGE_KEY = 'myreader-security'
 
-  let store
+describe('security context', () => {
 
   const createWrapper = () => {
     return mount(
-      <Provider store={store}>
-        <SecurityProvider>
-          <TestComponent />
-        </SecurityProvider>
-      </Provider>
+      <SecurityProvider>
+        <TestComponent />
+      </SecurityProvider>
     )
   }
 
   beforeEach(() => {
     api.addInterceptor.mockClear()
     localStorage.clear()
+    localStorage.setItem(STORAGE_KEY, '{"roles": ["ADMIN", "USER"]}')
   })
 
   afterEach(() => {
     localStorage.clear()
-  })
-
-  beforeEach(() => {
-    store = createMockStore()
-
-    store.setState({
-      security: {
-        isAdmin: true,
-        authorized: true,
-        roles: ['ADMIN', 'USER']
-      }
-    })
   })
 
   it('should render children', () => {
@@ -66,14 +52,15 @@ describe('security context', () => {
     }))
   })
 
-  it('should dispatch action SECURITY_UPDATE when "doAuthorize" triggered', () => {
-    createWrapper().find(TestComponent).instance().context.doAuthorize(['SOME_ROLE'])
+  it('should set prop "isAdmin" to false and prop "roles" when "doAuthorize" triggered', () => {
+    const wrapper = createWrapper()
+    wrapper.find(TestComponent).instance().context.doAuthorize(['SOME_ROLE'])
 
-    expect(store.getActions()).toEqual([{
-      type: 'SECURITY_UPDATE',
+    expect(wrapper.find(TestComponent).instance().context).toEqual(expect.objectContaining({
+      isAdmin: false,
       authorized: true,
       roles: ['SOME_ROLE']
-    }])
+    }))
   })
 
   it('should persist roles to local storage when "doAuthorize" triggered', () => {
@@ -84,14 +71,15 @@ describe('security context', () => {
     })
   })
 
-  it('should dispatch action SECURITY_UPDATE when "doUnAuthorize" triggered', () => {
-    createWrapper().find(TestComponent).instance().context.doUnAuthorize()
+  it('should set prop "isAdmin" to false and prop "roles" to empty array when "doUnAuthorize" triggered', () => {
+    const wrapper = createWrapper()
+    wrapper.find(TestComponent).instance().context.doUnAuthorize()
 
-    expect(store.getActions()).toEqual([{
-      type: 'SECURITY_UPDATE',
+    expect(wrapper.find(TestComponent).instance().context).toEqual(expect.objectContaining({
+      isAdmin: false,
       authorized: false,
       roles: []
-    }])
+    }))
   })
 
   it('should clear roles from local storage when "doUnAuthorize" triggered', () => {
@@ -102,23 +90,35 @@ describe('security context', () => {
     })
   })
 
-  it('should dispatch action SECURITY_UPDATE when status is 401', () => {
-    createWrapper()
+  it('should set prop "isAdmin" to false and prop "roles" to empty array when status is 401', () => {
+    const wrapper = createWrapper()
 
     api.addInterceptor.mock.calls[0][0].onError(null, {status: 401})
 
-    expect(store.getActions()).toEqual([{
+    expect(wrapper.find(TestComponent).instance().context).toEqual(expect.objectContaining({
+      isAdmin: false,
       authorized: false,
-      roles: [],
-      type: 'SECURITY_UPDATE'
-    }])
+      roles: []
+    }))
   })
 
-  it('should not dispatch action SECURITY_UPDATE when status is 200', () => {
-    createWrapper()
+  it('should not change props when status is 200', () => {
+    const wrapper = createWrapper()
 
     api.addInterceptor.mock.calls[0][0].onError(null, {status: 200})
 
-    expect(store.getActions()).toEqual([])
+    expect(wrapper.find(TestComponent).instance().context).toEqual(expect.objectContaining({
+      isAdmin: true,
+      authorized: true,
+      roles: ['ADMIN', 'USER']
+    }))
+  })
+
+  it('should remove component from api interceptors on unmount', () => {
+    const wrapper = createWrapper()
+    const instance = wrapper.instance()
+    wrapper.unmount()
+
+    expect(api.removeInterceptor).toHaveBeenCalledWith(instance)
   })
 })

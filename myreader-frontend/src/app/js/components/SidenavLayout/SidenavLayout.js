@@ -11,7 +11,6 @@ class Component extends React.Component {
 
   static propTypes = {
     mediaBreakpoint: PropTypes.string.isRequired,
-    locationReload: PropTypes.bool.isRequired,
     children: PropTypes.any
   }
 

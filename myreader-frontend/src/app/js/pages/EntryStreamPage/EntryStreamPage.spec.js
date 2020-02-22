@@ -2,7 +2,7 @@ import React from 'react'
 import {mount} from 'enzyme'
 import {EntryStreamPage} from './EntryStreamPage'
 
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types, react/display-name */
 jest.mock('../../components', () => ({
   EntryList: ({children}) => <div>{children}</div>,
   IconButton: ({children}) => <div>{children}</div>,
@@ -45,8 +45,6 @@ describe('EntryStreamPage', () => {
       searchParams: {
         q: 'expectedQ'
       },
-      locationChanged: false,
-      locationReload: false,
       showUnseenEntries: false,
       pageSize: 2,
       onKeyUp: jest.fn()

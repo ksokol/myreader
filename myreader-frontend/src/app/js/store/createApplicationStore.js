@@ -1,9 +1,7 @@
 import {applyMiddleware, combineReducers, compose as reduxCompose, createStore} from 'redux'
 import thunk from 'redux-thunk'
 import {commonReducers} from './common'
-import {securityReducers} from './security'
-import {getLastSecurityState} from '../contexts/security/security'
-import {isInDevMode, isInProdMode} from '../constants'
+import {isInDevMode} from '../constants'
 
 function devToolsExtensionCompose() {
   return window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']
@@ -23,20 +21,13 @@ function enhancer(enabled) {
 }
 
 const reducers = combineReducers({
-  security: securityReducers,
   common: commonReducers
 })
-
-function initialState(enabled) {
-  return enabled ? {
-    security: getLastSecurityState()
-  } : {}
-}
 
 export default function createApplicationStore(environment) {
   return createStore(
     reducers,
-    initialState(isInDevMode(environment) || isInProdMode(environment)),
+    {},
     enhancer(isInDevMode(environment))
   )
 }

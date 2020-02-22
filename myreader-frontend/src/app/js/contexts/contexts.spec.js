@@ -1,8 +1,6 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {AppContextProvider, useAppContext, withAppContext} from '.'
-import {Provider} from 'react-redux'
-import {createMockStore} from '../shared/test-utils'
 
 /* eslint-disable react/prop-types */
 jest.mock('./settings/settings', () => ({
@@ -15,9 +13,11 @@ jest.mock('./settings/settings', () => ({
 }))
 /* eslint-enable */
 
+const STORAGE_KEY = 'myreader-security'
+
 describe('app context', () => {
 
-  let expectedResult, mediaMatchListeners, store
+  let expectedResult, mediaMatchListeners
 
   beforeEach(() => {
     mediaMatchListeners = []
@@ -44,21 +44,14 @@ describe('app context', () => {
       roles: ['USER', 'ADMIN']
     })
 
-    store = createMockStore()
-    store.setState({
-      security: {
-        roles: ['USER', 'ADMIN']
-      }
-    })
+    localStorage.setItem(STORAGE_KEY, '{"roles": ["USER", "ADMIN"]}')
   })
 
   const createWrapperFor = Component => {
     const wrapper = mount(
-      <Provider store={store}>
-        <AppContextProvider>
-          <Component />
-        </AppContextProvider>
-      </Provider>
+      <AppContextProvider>
+        <Component />
+      </AppContextProvider>
     )
 
     mediaMatchListeners[1]()

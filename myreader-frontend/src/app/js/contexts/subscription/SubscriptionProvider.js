@@ -10,7 +10,7 @@ class Provider extends React.Component {
 
   static propTypes = {
     children: PropTypes.any,
-    locationReload: PropTypes.bool.isRequired
+    locationStateStamp: PropTypes.number.isRequired
   }
 
   state = {
@@ -28,8 +28,8 @@ class Provider extends React.Component {
     subscriptionApi.removeInterceptor(this.interceptor)
   }
 
-  async componentDidUpdate() {
-    if (this.props.locationReload) {
+  async componentDidUpdate(prevProps) {
+    if (this.props.locationStateStamp !== prevProps.locationStateStamp) {
       await this.fetchSubscriptions()
     }
   }
@@ -38,8 +38,8 @@ class Provider extends React.Component {
     try {
       const subscriptions = await subscriptionApi.fetchSubscriptions()
       this.setState({subscriptions})
-    } catch ({data}) {
-      toast(data, {error: true})
+    } catch (error) {
+      toast(error.data, {error: true})
     }
   }
 

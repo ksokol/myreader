@@ -60,7 +60,7 @@ describe('subscription context', () => {
     ]
 
     props = {
-      locationReload: false
+      locationStateStamp: 0
     }
   })
 
@@ -86,10 +86,10 @@ describe('subscription context', () => {
     expect(toast).toHaveBeenCalledWith('expected error', {error: true})
   })
 
-  it('should contain expected context values in child component when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions succeeded', async () => {
+  it('should contain expected context values in child component when prop "locationStateStamp" changed and subscriptionApi.fetchSubscriptions succeeded', async () => {
     const wrapper = await createWrapper()
     subscriptionApi.fetchSubscriptions = resolved([{uuid: '3'}])
-    wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
+    wrapper.setProps({locationStateStamp: 1})
     await flushPromises()
     wrapper.update()
 
@@ -100,10 +100,10 @@ describe('subscription context', () => {
     })
   })
 
-  it('should contain expected context values in child component when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions failed', async () => {
+  it('should contain expected context values in child component when prop "locationStateStamp" changed and subscriptionApi.fetchSubscriptions failed', async () => {
     const wrapper = await createWrapper()
     subscriptionApi.fetchSubscriptions = rejected(expectedError)
-    wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
+    wrapper.setProps({locationStateStamp: 1})
     await flushPromises()
     wrapper.update()
 
@@ -115,10 +115,10 @@ describe('subscription context', () => {
     })
   })
 
-  it('should trigger toast when prop "locationReload" is set to true and subscriptionApi.fetchSubscriptions failed', async () => {
+  it('should trigger toast when prop "locationStateStamp" changed and subscriptionApi.fetchSubscriptions failed', async () => {
     const wrapper = await createWrapper()
     subscriptionApi.fetchSubscriptions = rejected({data: expectedError})
-    wrapper.setProps({locationReload: true}, () => wrapper.setProps({locationReload: false}))
+    wrapper.setProps({locationStateStamp: 1})
     await flushPromises()
     wrapper.update()
 

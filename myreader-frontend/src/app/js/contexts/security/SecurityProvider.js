@@ -1,40 +1,33 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import SecurityContext from './SecurityContext'
-import {authorizedSelector, updateSecurity} from '../../store/security'
-import {connect} from 'react-redux'
-import {setLastSecurityState} from './security'
+import {getLastSecurityState, setLastSecurityState} from './security'
 import {api} from '../../api'
+import {ROLE_ADMIN} from '../../constants'
 
-const mapStateToProps = state => ({
-  ...authorizedSelector(state)
-})
-
-class Provider extends React.Component {
+export class SecurityProvider extends React.Component {
 
   static propTypes = {
-    children: PropTypes.any,
-    isAdmin: PropTypes.bool.isRequired,
-    roles: PropTypes.arrayOf(PropTypes.string).isRequired,
-    authorized: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired
+    children: PropTypes.any
   }
 
   constructor(props) {
     super(props)
 
+    this.state = this.deriveStateFromRoles(getLastSecurityState())
+  }
+
+  componentDidMount() {
     api.addInterceptor(this)
   }
 
-  doAuthorize = roles => {
-    setLastSecurityState({roles})
-    this.props.dispatch(updateSecurity())
+  componentWillUnmount() {
+    api.removeInterceptor(this)
   }
 
-  doUnAuthorize = () => {
-    setLastSecurityState({roles: []})
-    this.props.dispatch(updateSecurity())
-  }
+  doAuthorize = roles => this.updateStateAndLocalStorage({roles})
+
+  doUnAuthorize = () => this.updateStateAndLocalStorage({})
 
   onError = (request, error) => {
     if (error.status === 401) {
@@ -42,13 +35,29 @@ class Provider extends React.Component {
     }
   }
 
+  updateStateAndLocalStorage = ({roles = []}) => {
+    setLastSecurityState({roles})
+    this.setState(this.deriveStateFromRoles({roles}))
+  }
+
+  deriveStateFromRoles = ({roles = []}) => {
+    return {
+      authorized: roles.length > 0,
+      isAdmin: roles.includes(ROLE_ADMIN),
+      roles
+    }
+  }
+
   render() {
+    const {
+      children
+    } = this.props
+
     const {
       isAdmin,
       roles,
-      authorized,
-      children
-    } = this.props
+      authorized
+    } = this.state
 
     return (
       <SecurityContext.Provider
@@ -65,7 +74,3 @@ class Provider extends React.Component {
     )
   }
 }
-
-export const SecurityProvider = connect(
-  mapStateToProps
-)(Provider)

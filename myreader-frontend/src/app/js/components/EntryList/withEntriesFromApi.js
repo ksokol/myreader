@@ -6,11 +6,10 @@ import {toast} from '../Toast'
 
 export const withEntriesFromApi = WrappedComponent => {
 
-  const WithEntriesFromApi = class WithEntriesFromApi extends React.Component {
+  class WithEntriesFromApi extends React.Component {
 
     static propTypes = {
-      locationChanged: PropTypes.bool.isRequired,
-      locationReload: PropTypes.bool.isRequired,
+      locationStateStamp: PropTypes.number.isRequired,
       query: PropTypes.object.isRequired,
     }
 
@@ -28,8 +27,8 @@ export const withEntriesFromApi = WrappedComponent => {
       await this.fetchEntries({query: this.props.query})
     }
 
-    async componentDidUpdate() {
-      if (this.props.locationChanged || this.props.locationReload) {
+    async componentDidUpdate(prevProps) {
+      if (JSON.stringify(this.props.query) !== JSON.stringify(prevProps.query) || this.props.locationStateStamp !== prevProps.locationStateStamp) {
         this.setState({
           entries: [],
           links: {}
@@ -53,8 +52,8 @@ export const withEntriesFromApi = WrappedComponent => {
           entries: state.entries.concat(entries),
           links,
         }))
-      } catch ({data}) {
-        toast(data, {error: true})
+      } catch (error) {
+        toast(error.data, {error: true})
       } finally {
         this.setState({
           loading: false
@@ -70,8 +69,8 @@ export const withEntriesFromApi = WrappedComponent => {
         this.setState(state => ({
           entries: state.entries.map(it => it.uuid === newEntry.uuid ? newEntry : it)
         }))
-      } catch ({data}) {
-        toast(data, {error: true})
+      } catch (error) {
+        toast(error.data, {error: true})
       }
     }
 

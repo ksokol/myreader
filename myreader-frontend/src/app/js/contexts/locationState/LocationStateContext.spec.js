@@ -22,6 +22,8 @@ describe('locationState context', () => {
   }
 
   beforeEach(() => {
+    jest.spyOn(Date, 'now').mockImplementation(() => 0)
+
     routerProps = {
       location: {
         pathname,
@@ -58,12 +60,11 @@ describe('locationState context', () => {
         e: 'f',
         g: 'h'
       },
-      locationChanged: false,
-      locationReload: false,
       historyPush: expect.any(Function),
       historyReplace: expect.any(Function),
       historyReload: expect.any(Function),
       historyGoBack: expect.any(Function),
+      locationStateStamp: 0
     })
   })
 
@@ -119,39 +120,29 @@ describe('locationState context', () => {
     })
   })
 
-  it('should set prop "locationReload" once only to true when prop function "props.reload" triggered', () => {
+  it('should set prop "locationStateStamp" once only to true when prop function "props.reload" triggered', () => {
     const wrapper = createWrapper()
 
-    expect(wrapper.find('WrappedComponent').prop('locationReload')).toEqual(false)
+    expect(wrapper.find('WrappedComponent').prop('locationStateStamp')).toEqual(0)
+
+    Date.now.mockImplementation(() => 1)
     wrapper.find('WrappedComponent').props().historyReload()
     wrapper.update()
 
-    expect(wrapper.find('WrappedComponent').prop('locationReload')).toEqual(true)
+    expect(wrapper.find('WrappedComponent').prop('locationStateStamp')).toEqual(1)
 
     wrapper.setProps({a: 1})
-    expect(wrapper.find('WrappedComponent').prop('locationReload')).toEqual(false)
+    expect(wrapper.find('WrappedComponent').prop('locationStateStamp')).toEqual(1)
   })
 
-  it('should set prop "locationChanged" to true when prop "location.search" changed', done => {
+  it('should set prop "searchParams" when prop "location.search" changed', done => {
     const wrapper = createWrapper()
-    expect(wrapper.find('WrappedComponent').prop('locationChanged')).toEqual(false)
+    expect(wrapper.find('WrappedComponent').prop('searchParams')).toEqual({a: 'b', c: 'd'})
 
     routerProps.location.search = '?e=f'
 
     wrapper.setProps(null, () => {
-      expect(wrapper.find('WrappedComponent').prop('locationChanged')).toEqual(true)
-      done()
-    })
-  })
-
-  it('should set prop "locationChanged" to true when prop "location.pathname" changed', done => {
-    const wrapper = createWrapper()
-    expect(wrapper.find('WrappedComponent').prop('locationChanged')).toEqual(false)
-
-    routerProps.location.pathname = '/changed-path'
-
-    wrapper.setProps(null, () => {
-      expect(wrapper.find('WrappedComponent').prop('locationChanged')).toEqual(true)
+      expect(wrapper.find('WrappedComponent').prop('searchParams')).toEqual({e: 'f'})
       done()
     })
   })

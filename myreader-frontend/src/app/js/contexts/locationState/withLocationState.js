@@ -23,7 +23,7 @@ function toSearch(queryParam) {
 
 export const withLocationState = Component => {
 
-  const WithLocationState = class WithLocationState extends React.Component {
+  class WithLocationState extends React.Component {
 
     static propTypes = {
       children: PropTypes.any,
@@ -41,12 +41,10 @@ export const withLocationState = Component => {
     state = {
       pathname: this.props.location.pathname,
       search: this.props.location.search,
-      locationChanged: false,
-      locationReload: false,
       locationStateStamp: this.props.locationStateStamp
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props) {
       const {
         location: {
           pathname,
@@ -55,14 +53,9 @@ export const withLocationState = Component => {
         locationStateStamp
       } = props
 
-      const locationChanged = pathname !== state.pathname || search !== state.search
-      const locationReload = locationStateStamp !== state.locationStateStamp
-
       return {
         pathname,
         search,
-        locationChanged,
-        locationReload,
         locationStateStamp
       }
     }
@@ -91,11 +84,6 @@ export const withLocationState = Component => {
         ...componentProps
       } = this.props
 
-      const {
-        locationChanged,
-        locationReload
-      } = this.state
-
       return (
         <Component
           {...componentProps}
@@ -105,8 +93,7 @@ export const withLocationState = Component => {
           historyReplace={this.replace}
           historyReload={reload}
           historyGoBack={history.goBack}
-          locationChanged={locationChanged}
-          locationReload={locationReload}
+          locationStateStamp={locationStateStamp}
         />
       )
     }

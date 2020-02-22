@@ -31,7 +31,6 @@ describe('SidenavLayout', () => {
   beforeEach(() => {
     props = {
       mediaBreakpoint: 'phone',
-      locationReload: false,
       fetchSubscriptions: jest.fn()
     }
   })

@@ -21,7 +21,7 @@ class BookmarkListPage extends React.Component {
       entryTagEqual: PropTypes.string,
       q: PropTypes.string
     }).isRequired,
-    locationReload: PropTypes.bool.isRequired,
+    locationStateStamp: PropTypes.number.isRequired,
     pageSize: PropTypes.number.isRequired
   }
 
@@ -33,8 +33,8 @@ class BookmarkListPage extends React.Component {
     await this.fetchEntryTags()
   }
 
-  async componentDidUpdate() {
-    if (this.props.locationReload) {
+  async componentDidUpdate(prevProps) {
+    if (this.props.locationStateStamp !== prevProps.locationStateStamp) {
       await this.fetchEntryTags()
     }
   }
@@ -42,8 +42,8 @@ class BookmarkListPage extends React.Component {
   fetchEntryTags = async () => {
     try {
       this.setState({entryTags: await entryApi.fetchEntryTags()})
-    } catch ({data}) {
-      toast(data, {error: true})
+    } catch (error) {
+      toast(error.data, {error: true})
     }
   }
 
