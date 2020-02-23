@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 
+import java.util.TimeZone;
+
 import static java.util.Collections.singletonList;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
@@ -42,6 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql("classpath:test-data.sql")
 @SpringBootTest(classes = { Starter.class, ApiSecurityTests.TestConfiguration.class })
 public class ApiSecurityTests {
+
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
 
     private static final String API_2 = "/api/2";
 
