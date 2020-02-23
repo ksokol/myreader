@@ -3,5 +3,3 @@ export const getNotifications = state => ({
 })
 
 export const getNextNotificationId = state => state.common.notification.nextId
-
-export const pendingRequestCountSelector = state => state.common.pendingRequests

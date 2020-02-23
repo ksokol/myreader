@@ -1,5 +1,4 @@
 import {getNextNotificationId, getNotifications} from '../../store'
-import {pendingRequestCountSelector} from './selectors'
 
 const state = common => ({common})
 
@@ -26,9 +25,5 @@ describe('common selectors', () => {
 
   it('should select nextId', () => {
     expect(getNextNotificationId(state({notification: {nextId: 3}}))).toEqual(3)
-  })
-
-  it('pendingRequestCountSelector should return 2 for pendingRequests', () => {
-    expect(pendingRequestCountSelector(state({pendingRequests: 2}))).toEqual(2)
   })
 })

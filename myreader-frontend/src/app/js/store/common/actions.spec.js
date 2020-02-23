@@ -1,4 +1,4 @@
-import {fetchEnd, fetchStart, removeNotification, showErrorNotification, showSuccessNotification} from '../../store'
+import {removeNotification, showErrorNotification, showSuccessNotification} from '../../store'
 import {createMockStore} from '../../shared/test-utils'
 
 describe('common actions', () => {
@@ -39,17 +39,5 @@ describe('common actions', () => {
     jest.advanceTimersByTime(3000)
 
     expect(store.getActions()[1]).toEqual({type: 'REMOVE_NOTIFICATION', id: 0})
-  })
-
-  it('action creator fetchStart', () => {
-    store.dispatch(fetchStart())
-
-    expect(store.getActionTypes()).toEqual(['FETCH_START'])
-  })
-
-  it('action creator fetchEnd', () => {
-    store.dispatch(fetchEnd())
-
-    expect(store.getActionTypes()).toEqual(['FETCH_END'])
   })
 })

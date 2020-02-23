@@ -58,17 +58,4 @@ describe('common reducers', () => {
 
     expect(commonReducers(currentState, action)).toContainObject(expectedState)
   })
-
-  it('action FETCH_START', () => {
-    const state1 = commonReducers(state, {type: 'FETCH_START'})
-    expect(state1).toContainObject({pendingRequests: 1})
-
-    const state2 = commonReducers(state1, {type: 'FETCH_START'})
-    expect(state2).toContainObject({pendingRequests: 2})
-  })
-
-  it('action FETCH_END', () => {
-    state.pendingRequests = 1
-    expect(commonReducers(state, {type: 'FETCH_END'})).toContainObject({pendingRequests: 0})
-  })
 })

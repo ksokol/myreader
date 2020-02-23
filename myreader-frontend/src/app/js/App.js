@@ -9,7 +9,7 @@ import {
   SubscribePage,
   SubscriptionEditPage
 } from './pages'
-import {LoadingBar, secured} from './components'
+import {secured} from './components'
 import {
   ADMIN_FEED_URL,
   ADMIN_FEEDS_URL,
@@ -33,6 +33,7 @@ import {EntryStreamPage} from './pages/EntryStreamPage/EntryStreamPage'
 import {SidenavLayout} from './components/SidenavLayout/SidenavLayout'
 import {SubscriptionProvider} from './contexts/subscription/SubscriptionProvider'
 import {SubscriptionListPage} from './pages/SubscriptionListPage/SubscriptionListPage'
+import {LoadingBar} from './components/LoadingBar/LoadingBar'
 
 const withSidenav = () => (
   <SubscriptionProvider>

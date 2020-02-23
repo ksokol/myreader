@@ -1,5 +1,3 @@
-export {PendingFetchInterceptor} from './interceptors/PendingFetchInterceptor'
-
 import {Api} from './Api'
 import {AdminApi} from './AdminApi'
 import {FeedApi} from './FeedApi'
