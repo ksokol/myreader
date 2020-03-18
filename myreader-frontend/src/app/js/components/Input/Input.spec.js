@@ -93,7 +93,9 @@ describe('Input', () => {
   })
 
   it('should render prop "renderValidations" function', () => {
+    /* eslint-disable react/display-name */
     props.renderValidations = () => <p>expected validation</p>
+    /* eslint-enable */
 
     expect(createComponent().find('input + p').text()).toEqual('expected validation')
   })
@@ -106,10 +108,13 @@ describe('Input', () => {
 
   it('should focus input field', () => {
     const wrapper = createComponent()
-    expect(document.activeElement).not.toEqual(wrapper.find('input').instance())
+    const {inputRef} = wrapper.instance()
+    jest.spyOn(inputRef.current, 'focus')
+
+    expect(inputRef.current.focus).not.toHaveBeenCalled()
 
     wrapper.find('input').simulate('focus')
-    expect(document.activeElement).toEqual(wrapper.find('input').instance())
+    expect(inputRef.current.focus).toHaveBeenCalledTimes(1)
   })
 
   it('should restore focus when prop "disabled" changed back to true and input field was focused before', () => {
