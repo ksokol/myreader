@@ -1,48 +1,88 @@
-import React from 'react'
-import {shallow} from 'enzyme'
-import {Toast} from './Toast'
+import {toast} from '.'
+import { act } from 'react-dom/test-utils'
+
+const errorClass = 'my-toast__item--error'
+const expectedText = 'expected text'
+
+const notifications = () => document.querySelectorAll('.my-toast__item')
 
 describe('Toast', () => {
 
-  let props
-
-  const createComponent = () => shallow(<Toast {...props} />)
-
-  beforeEach(() => {
-    props = {
-      removeNotification: jest.fn()
-    }
+  afterEach(() =>  {
+    act(() => jest.runAllTimers())
   })
 
-  it('should not render component when prop "notification" is empty', () => {
-    expect(createComponent().find('.my-toast').exists()).toEqual(false)
+  it('should not render any toast message when mounted', () => {
+    expect(document.querySelector('.my-toast')).toEqual(null)
   })
 
-  it('should render component when prop "notification" is not empty', () => {
-    props.notifications = [{id: 1, text: '', type: ''}]
-    expect(createComponent().find('.my-toast').exists()).toEqual(true)
+  it('should render toast message when message is present', () => {
+    act(() => toast(expectedText))
+
+    expect(notifications()[0].innerHTML).toEqual(expectedText)
+  })
+
+  it('should render message object as string when message is an object', () => {
+    act(() => toast({a: 'b'}))
+
+    expect(notifications()[0].innerHTML).toEqual('{"a":"b"}')
   })
 
   it('should render three notifications in reverse order', () => {
-    props.notifications = [
-      {id: 1, text: 'text1', type: 'success'},
-      {id: 2, text: 'text2', type: 'success'},
-      {id: 3, text: 'text3', type: 'error'},
-      {id: 4, text: 'text4', type: 'success'}
-    ]
+    act(() => toast('text1'))
+    act(() => toast('text2'))
+    act(() => toast('text3', {error: true}))
+    act(() => toast('text4'))
 
-    const notifications = createComponent().find('.my-toast__item')
-
-    expect(notifications.length).toEqual(3)
-    expect(notifications.at(0).props()).toContainObject({children: 'text4', className: 'my-toast__item'})
-    expect(notifications.at(1).props()).toContainObject({children: 'text3', className: 'my-toast__item my-toast__item--error'})
-    expect(notifications.at(2).props()).toContainObject({children: 'text2', className: 'my-toast__item'})
+    expect(notifications()).toHaveLength(3)
+    expect(notifications()[0].innerHTML).toEqual('text4')
+    expect(notifications()[0].classList.contains(errorClass)).toEqual(false)
+    expect(notifications()[1].innerHTML).toEqual('text3')
+    expect(notifications()[1].classList.contains(errorClass)).toEqual(true)
+    expect(notifications()[2].innerHTML).toEqual('text2')
+    expect(notifications()[2].classList.contains(errorClass)).toEqual(false)
   })
 
-  it('should trigger prop function "removeNotification" when notification clicked', () => {
-    props.notifications = [{id: 1, text: 'expected text', type: 'expected type'}]
-    createComponent().find('.my-toast__item').at(0).props().onClick()
+  it('should remove toast message when clicked', () => {
+    act(() => toast(expectedText))
+    expect(notifications()).toHaveLength(1)
 
-    expect(props.removeNotification).toHaveBeenCalledWith({id: 1, text: 'expected text', type: 'expected type'})
+    act(() => notifications()[0].click())
+    expect(notifications()).toHaveLength(0)
+  })
+
+  it('should remove toast message after a predefined amount of time', () => {
+    act(() => toast('text1'))
+    jest.advanceTimersByTime(500)
+    act(() => toast('text2'))
+    jest.advanceTimersByTime(500)
+    act(() => toast('text3'))
+    jest.advanceTimersByTime(500)
+
+    expect(notifications()).toHaveLength(3)
+
+    jest.advanceTimersByTime(1499)
+    expect(notifications()).toHaveLength(3)
+    expect(notifications()[0].innerHTML).toEqual('text3')
+    expect(notifications()[1].innerHTML).toEqual('text2')
+    expect(notifications()[2].innerHTML).toEqual('text1')
+
+    act(() => jest.advanceTimersByTime(1))
+    expect(notifications()).toHaveLength(2)
+    expect(notifications()[0].innerHTML).toEqual('text3')
+    expect(notifications()[1].innerHTML).toEqual('text2')
+
+    act(() => jest.advanceTimersByTime(499))
+    expect(notifications()).toHaveLength(2)
+
+    act(() => jest.advanceTimersByTime(1))
+    expect(notifications()).toHaveLength(1)
+    expect(notifications()[0].innerHTML).toEqual('text3')
+
+    act(() => jest.advanceTimersByTime(499))
+    expect(notifications()).toHaveLength(1)
+
+    act(() => jest.advanceTimersByTime(1))
+    expect(notifications()).toHaveLength(0)
   })
 })

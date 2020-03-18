@@ -1,6 +1,5 @@
 import React from 'react'
 import {Redirect, Route, Switch} from 'react-router'
-import {ToastContainer} from './containers'
 import {
   BookmarkListPage,
   FeedEditPage,
@@ -63,7 +62,6 @@ const App = () => {
         <Redirect to={LOGIN_URL} />
       </Switch>
       <LoadingBar />
-      <ToastContainer/>
     </React.Fragment>
   )
 }

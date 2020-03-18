@@ -1,42 +1,72 @@
 import './Toast.css'
-import React from 'react'
+import React, {useEffect, useReducer, useCallback} from 'react'
 import PropTypes from 'prop-types'
-import * as ReactDom from 'react-dom'
-import classNames from 'classnames'
 
-export const Toast = props => {
-  const notifications = [...props.notifications].reverse().splice(0, 3)
+const dismissTimeout = 3000
 
-  return notifications.length > 0 ? ReactDom.createPortal(
-    <div className='my-toast'>
-      {notifications.map(notification => {
-        const classes = classNames(
-          'my-toast__item',
-          {'my-toast__item--error': notification.type === 'error'}
-        )
+function reducer(state, action) {
+  let newState = state
 
-        return (
-          <div key={notification.id} className={classes}
-               onClick={() => props.removeNotification(notification)}>
-            {notification.text}
-          </div>
-        )
-      })}
-    </div>,
-    document.body
-  ) : null
+  if (action.type === 'add' && !state.includes(action.notification)) {
+    newState = [action.notification, ...state.splice(0, 2)]
+  } else if (action.type === 'remove') {
+    newState = state.filter(it => it.id !== action.notification.id)
+  }
+
+  return newState
 }
 
-Toast.propTypes = {
-  notifications: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      type: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired,
-    }).isRequired
+const ToastItem = ({notification, dispatch}) => {
+  const removeNotification = () => dispatch({type: 'remove', notification})
+  const savedCallback = React.useRef()
+  const callback = useCallback(removeNotification, [dispatch, notification])
+
+  useEffect(() => {
+    savedCallback.current = callback
+  }, [callback])
+
+  useEffect(() => {
+    const id = setTimeout(savedCallback.current, dismissTimeout)
+    return () => clearTimeout(id)
+  }, [callback])
+
+  const typeClass = notification.type === 'error' ? 'my-toast__item--error' : ''
+
+  return (
+    <div
+      className={`my-toast__item ${typeClass}`}
+      onClick={() => dispatch({type: 'remove', notification})}>
+      {notification.text}
+    </div>
   )
 }
 
-Toast.defaultProps = {
-  notifications: []
+ToastItem.propTypes = {
+  notification: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+  }).isRequired,
+  dispatch: PropTypes.func.isRequired
+}
+
+export const Toast = ({notification}) => {
+  const [state, dispatch] = useReducer(reducer, [])
+
+  useEffect(() => dispatch({type: 'add', notification}), [notification])
+
+  return state.map(notification =>
+    <ToastItem
+      key={notification.id}
+      notification={notification}
+      dispatch={dispatch}
+    />
+  )
+}
+
+Toast.propTypes = {
+  notification: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    type: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+  }).isRequired
 }

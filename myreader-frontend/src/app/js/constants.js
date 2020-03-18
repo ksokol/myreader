@@ -1,9 +1,3 @@
-export const ENVIRONMENT = process.env.NODE_ENV
-
-export function isInDevMode(environment) {
-  return 'development' === environment
-}
-
 export const APP_URL = '/app'
 export const LOGIN_URL = `${APP_URL}/login`
 export const LOGOUT_URL = `${APP_URL}/logout`
