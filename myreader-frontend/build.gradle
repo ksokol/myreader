@@ -10,8 +10,8 @@ idea.module {
 }
 
 node {
-    version = '10.16.0'
-    npmVersion = '6.9.0'
+    version = '12.16.1'
+    npmVersion = '6.13.4'
     download = true
 }
 
