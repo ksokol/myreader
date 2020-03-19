@@ -11,7 +11,8 @@
     "lint": "npm run lint:js-report && npm run lint:lockfile",
     "lint:js-report": "eslint -f json -o build/reports/eslint.json -c .eslintrc.js src/app/js",
     "lint:js": "eslint -c .eslintrc.js src/app/js",
-    "lint:lockfile": "npx lockfile-lint -p package-lock.json -s -a npm -t npm"
+    "lint:lockfile": "npx lockfile-lint -p package-lock.json -s -a npm -t npm",
+    "audit:high": "npm audit --audit-level=high"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.12.1",

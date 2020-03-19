@@ -23,7 +23,7 @@ project.afterEvaluate {
 }
 
 task dependencyCheckAnalyze(type: NpmTask, dependsOn: npm_install) {
-    args = ['audit']
+    args = ['run', 'audit:high']
 }
 
 task lint(type: NpmTask, dependsOn: npm_install) {
