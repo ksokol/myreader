@@ -10,28 +10,17 @@ class Component extends React.Component {
 
 describe('hotkeys context', () => {
 
-  let wrapper, nowSpy
+  let wrapper
 
-  const createWrapper = () => {
-    return mount(
+  const createWrapper = () =>
+    mount(
       <HotkeysProvider>
         <Component />
       </HotkeysProvider>
     )
-  }
 
   beforeEach(() => {
-    nowSpy = jest.spyOn(Date, 'now')
-      .mockReturnValueOnce(1)
-      .mockReturnValueOnce(2)
-      .mockReturnValueOnce(3)
-
     wrapper = createWrapper()
-  })
-
-  afterEach(() => {
-    nowSpy.mockRestore()
-    wrapper.unmount()
   })
 
   const onKey = key => {
@@ -47,7 +36,7 @@ describe('hotkeys context', () => {
 
     expect(wrapper.find(Component).instance().context).toEqual(expect.objectContaining({
       hotkey: 'z',
-      hotkeysStamp: 2
+      hotkeysStamp: 1
     }))
   })
 
@@ -57,7 +46,7 @@ describe('hotkeys context', () => {
 
     expect(wrapper.find(Component).instance().context).toEqual(expect.objectContaining({
       hotkey: 'y',
-      hotkeysStamp: 3
+      hotkeysStamp: 2
     }))
   })
 })

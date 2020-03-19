@@ -37,7 +37,7 @@ describe('app context', () => {
       pageSize: 5,
       showUnseenEntries: true,
       showEntryDetails: false,
-      hotkeysStamp: 2,
+      hotkeysStamp: 1,
       hotkey: 'ArrowLeft',
       authorized: true,
       isAdmin: true,

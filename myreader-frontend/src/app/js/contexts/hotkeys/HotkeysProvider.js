@@ -11,7 +11,7 @@ export class HotkeysProvider extends React.Component {
   }
 
   state = {
-    hotkeysStamp: Date.now(),
+    hotkeysStamp: 0,
     hotkey: null
   }
 
@@ -20,10 +20,10 @@ export class HotkeysProvider extends React.Component {
   componentWillUnmount = () => document.removeEventListener(KEY_EVENT, this.onKeyUp)
 
   onKeyUp = ({key: hotkey}) => {
-    this.setState({
-      hotkeysStamp: Date.now(),
+    this.setState(state => ({
+      hotkeysStamp: state.hotkeysStamp + 1,
       hotkey
-    })
+    }))
   }
 
   render() {
