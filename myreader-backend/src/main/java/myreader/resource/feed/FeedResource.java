@@ -12,8 +12,8 @@ import myreader.resource.feed.beans.FetchErrorGetResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,18 +37,20 @@ import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 public class FeedResource {
 
     private final PagedResourcesAssembler<FetchError> pagedResourcesAssembler;
-    private final ResourceAssembler<Feed, FeedGetResponse> assembler;
-    private final ResourceAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler;
+    private final RepresentationModelAssembler<Feed, FeedGetResponse> assembler;
+    private final RepresentationModelAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler;
     private final FetchErrorRepository fetchErrorRepository;
     private final FeedRepository feedRepository;
     private final SubscriptionRepository subscriptionRepository;
 
-    public FeedResource(PagedResourcesAssembler<FetchError> pagedResourcesAssembler,
-                        ResourceAssembler<Feed, FeedGetResponse> assembler,
-                        ResourceAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler,
-                        FeedRepository feedRepository,
-                        FetchErrorRepository fetchErrorRepository,
-                        SubscriptionRepository subscriptionRepository) {
+    public FeedResource(
+            PagedResourcesAssembler<FetchError> pagedResourcesAssembler,
+            RepresentationModelAssembler<Feed, FeedGetResponse> assembler,
+            RepresentationModelAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler,
+            FeedRepository feedRepository,
+            FetchErrorRepository fetchErrorRepository,
+            SubscriptionRepository subscriptionRepository
+    ) {
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.assembler = assembler;
         this.fetchErrorAssembler = fetchErrorAssembler;
@@ -60,7 +62,7 @@ public class FeedResource {
     @RequestMapping(value = FEED_URL, method = GET)
     public FeedGetResponse get(@PathVariable("id") Long id) {
         return feedRepository.findById(id)
-                .map(assembler::toResource)
+                .map(assembler::toModel)
                 .orElseGet(FeedGetResponse::new);
     }
 
@@ -95,9 +97,9 @@ public class FeedResource {
     }
 
     @RequestMapping(value = FEED_FETCH_ERROR_URL, method = GET)
-    public PagedResources<FetchErrorGetResponse> getFetchError(@PathVariable("id") Long id, Pageable pageable) {
+    public PagedModel<FetchErrorGetResponse> getFetchError(@PathVariable("id") Long id, Pageable pageable) {
         Page<FetchError> page = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(id, pageable);
-        return pagedResourcesAssembler.toResource(page, fetchErrorAssembler);
+        return pagedResourcesAssembler.toModel(page, fetchErrorAssembler);
     }
 
     private Feed findOrThrowException(Long id) {

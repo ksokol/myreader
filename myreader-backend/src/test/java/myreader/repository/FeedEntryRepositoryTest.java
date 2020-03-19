@@ -44,7 +44,7 @@ public class FeedEntryRepositoryTest {
     private Subscription user2Subscription;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         feed = new Feed("feed");
         em.persistAndFlush(feed);
 
@@ -62,7 +62,7 @@ public class FeedEntryRepositoryTest {
     }
 
     @Test
-    public void shouldCountByFeedId() throws Exception {
+    public void shouldCountByFeedId() {
         givenEntryWithTitle("entry1");
         givenEntryWithTitle("entry2");
 
@@ -72,11 +72,11 @@ public class FeedEntryRepositoryTest {
     }
 
     @Test
-    public void shouldOrderEntriesByCreationDateDescending() throws Exception {
+    public void shouldOrderEntriesByCreationDateDescending() {
         givenEntryWithTitle("entry1");
         givenEntryWithTitle("entry2");
 
-        Page<FeedEntry> actual = feedEntryRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), new PageRequest(0, 2));
+        Page<FeedEntry> actual = feedEntryRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), PageRequest.of(0, 2));
 
         assertThat(actual.getContent(), contains(
                 hasProperty("title", is("entry2")),
@@ -85,33 +85,33 @@ public class FeedEntryRepositoryTest {
     }
 
     @Test
-    public void shouldNotReturnFeedEntryIdWhenSubscriptionIsNotRead() throws Exception {
+    public void shouldNotReturnFeedEntryIdWhenSubscriptionIsNotRead() {
         FeedEntry entry = givenEntry();
         givenUser1SubscriptionEntry(entry);
 
         Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
                 feed.getId(),
                 toDate(now().plusDays(1)),
-                new PageRequest(0, 2));
+                PageRequest.of(0, 2));
 
         assertThat(actual.getContent(), empty());
     }
 
     @Test
-    public void shouldNotReturnFeedEntryIdWhenSubscriptionEntryIsTaggedAndIsUnread() throws Exception {
+    public void shouldNotReturnFeedEntryIdWhenSubscriptionEntryIsTaggedAndIsUnread() {
         FeedEntry entry = givenEntry();
         givenUser1SubscriptionEntry(entry).setTag("not null");
 
         Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
                 feed.getId(),
                 toDate(now().plusDays(1)),
-                new PageRequest(0, 2));
+                PageRequest.of(0, 2));
 
         assertThat(actual.getContent(), empty());
     }
 
     @Test
-    public void shouldNotReturnFeedEntryIdSubscriptionEntryIsReadButIsTagged() throws Exception {
+    public void shouldNotReturnFeedEntryIdSubscriptionEntryIsReadButIsTagged() {
         FeedEntry entry = givenEntry();
         SubscriptionEntry subscriptionEntry = givenUser1SubscriptionEntry(entry);
 
@@ -121,26 +121,26 @@ public class FeedEntryRepositoryTest {
         Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
                 feed.getId(),
                 toDate(now().plusDays(1)),
-                new PageRequest(0, 2));
+                PageRequest.of(0, 2));
 
         assertThat(actual.getContent(), empty());
     }
 
     @Test
-    public void shouldReturnFeedEntryIdWhenCreatedAtIsEarlierThanRetainDateAndSubscriptionEntryHasNoTagAndIsRead() throws Exception {
+    public void shouldReturnFeedEntryIdWhenCreatedAtIsEarlierThanRetainDateAndSubscriptionEntryHasNoTagAndIsRead() {
         FeedEntry entry = givenEntry();
         givenUser1SubscriptionEntry(entry).setSeen(true);
 
         Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
                 feed.getId(),
                 toDate(now().plusDays(1)),
-                new PageRequest(0, 2));
+                PageRequest.of(0, 2));
 
         assertThat(actual.getContent(), contains(entry.getId()));
     }
 
     @Test
-    public void shouldReturnUniqueFeedEntryIds() throws Exception {
+    public void shouldReturnUniqueFeedEntryIds() {
         FeedEntry entry = givenEntry();
         givenUser1SubscriptionEntry(entry).setSeen(true);
         givenUser2SubscriptionEntry(entry).setSeen(true);
@@ -148,13 +148,13 @@ public class FeedEntryRepositoryTest {
         Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
                 feed.getId(),
                 toDate(now().plusDays(1)),
-                new PageRequest(0, 2));
+                PageRequest.of(0, 2));
 
         assertThat(actual.getContent(), contains(entry.getId()));
     }
 
     @Test
-    public void shouldNotReturnFeedEntryIdWhenAtLeastOneSubscriptionEntryIsUnreadOrIsTagged() throws Exception {
+    public void shouldNotReturnFeedEntryIdWhenAtLeastOneSubscriptionEntryIsUnreadOrIsTagged() {
         FeedEntry entry1 = givenEntry();
         FeedEntry entry2 = givenEntry();
         givenUser1SubscriptionEntry(entry1).setSeen(true);
@@ -165,13 +165,13 @@ public class FeedEntryRepositoryTest {
         Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
                 feed.getId(),
                 toDate(now().plusDays(1)),
-                new PageRequest(0, 2));
+                PageRequest.of(0, 2));
 
         assertThat(actual.getContent(), contains(entry2.getId()));
     }
 
     @Test
-    public void shouldReturnFeedEntryIdWithoutSubscriptionEntry() throws Exception {
+    public void shouldReturnFeedEntryIdWithoutSubscriptionEntry() {
         FeedEntry entry1 = givenEntry();
         FeedEntry entry2 = givenEntry();
         givenUser1SubscriptionEntry(entry1);
@@ -179,20 +179,20 @@ public class FeedEntryRepositoryTest {
         Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
                 feed.getId(),
                 toDate(now().plusDays(1)),
-                new PageRequest(0, 2));
+                PageRequest.of(0, 2));
 
         assertThat(actual.getContent(), contains(entry2.getId()));
     }
 
     @Test
-    public void shouldNotReturnFeedEntryIdWhenRetainDateIsEarlierThanCreatedAtAndSubscriptionEntryHasNoTagAndIsRead() throws Exception {
+    public void shouldNotReturnFeedEntryIdWhenRetainDateIsEarlierThanCreatedAtAndSubscriptionEntryHasNoTagAndIsRead() {
         FeedEntry entry = givenEntry();
         givenUser1SubscriptionEntry(entry).setSeen(true);
 
         Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
                 feed.getId(),
                 toDate(now().minusDays(1)),
-                new PageRequest(0, 2));
+                PageRequest.of(0, 2));
 
         assertThat(actual.getContent(), empty());
     }

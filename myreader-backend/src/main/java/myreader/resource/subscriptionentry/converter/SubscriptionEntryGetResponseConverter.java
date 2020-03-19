@@ -5,21 +5,21 @@ import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionTag;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class SubscriptionEntryGetResponseConverter extends ResourceAssemblerSupport<SubscriptionEntry, SubscriptionEntryGetResponse> {
+public class SubscriptionEntryGetResponseConverter extends RepresentationModelAssemblerSupport<SubscriptionEntry, SubscriptionEntryGetResponse> {
 
     public SubscriptionEntryGetResponseConverter() {
         super(SubscriptionEntry.class, SubscriptionEntryGetResponse.class);
     }
 
     @Override
-    public SubscriptionEntryGetResponse toResource(final SubscriptionEntry source) {
+    public SubscriptionEntryGetResponse toModel(final SubscriptionEntry source) {
         SubscriptionEntryGetResponse target = new SubscriptionEntryGetResponse();
 
         target.setUuid(source.getId().toString());
@@ -36,7 +36,7 @@ public class SubscriptionEntryGetResponseConverter extends ResourceAssemblerSupp
         target.setFeedTitle(subscription.getTitle());
         target.setFeedUuid(subscription.getId().toString());
 
-        if(subscription.getSubscriptionTag() != null) {
+        if (subscription.getSubscriptionTag() != null) {
             SubscriptionTag subscriptionTag = subscription.getSubscriptionTag();
             target.setFeedTag(subscriptionTag.getName());
             target.setFeedTagColor(subscriptionTag.getColor());

@@ -3,7 +3,7 @@ package myreader.resource.subscriptiontag;
 import myreader.entity.SubscriptionTag;
 import myreader.repository.SubscriptionTagRepository;
 import myreader.resource.subscriptiontag.beans.SubscriptionTagGetResponse;
-import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,11 +22,11 @@ import static java.util.stream.Collectors.toList;
 public class SubscriptionTagCollectionResource {
 
     private final SubscriptionTagRepository subscriptionTagRepository;
-    private final ResourceAssembler<SubscriptionTag, SubscriptionTagGetResponse> assembler;
+    private final RepresentationModelAssembler<SubscriptionTag, SubscriptionTagGetResponse> assembler;
 
     public SubscriptionTagCollectionResource(
             SubscriptionTagRepository subscriptionTagRepository,
-            ResourceAssembler<SubscriptionTag, SubscriptionTagGetResponse> assembler
+            RepresentationModelAssembler<SubscriptionTag, SubscriptionTagGetResponse> assembler
     ) {
         this.subscriptionTagRepository = subscriptionTagRepository;
         this.assembler = assembler;
@@ -35,7 +35,7 @@ public class SubscriptionTagCollectionResource {
     @GetMapping
     public Map<String, List<SubscriptionTagGetResponse>> get() {
         List<SubscriptionTag> source = subscriptionTagRepository.findAllByCurrentUser();
-        List<SubscriptionTagGetResponse> target = source.stream().map(assembler::toResource).collect(toList());
+        List<SubscriptionTagGetResponse> target = source.stream().map(assembler::toModel).collect(toList());
 
         Map<String, List<SubscriptionTagGetResponse>> body = new HashMap<>(2);
         body.put("content", target);

@@ -31,14 +31,14 @@ public class RetainDateDeterminer {
 
     public Optional<Date> determine(Feed feed) {
         long entryCount = feedEntryRepository.countByFeedId(feed.getId());
-        Integer feedThreshold = Math.max(feed.getResultSizePerFetch(), minFeedThreshold);
+        int feedThreshold = Math.max(feed.getResultSizePerFetch(), minFeedThreshold);
 
         if(feedThreshold >= entryCount) {
             log.info("skipping. threshold of {} entries not reached for feed '{} ({})' (actual {})", feedThreshold, feed.getTitle(), feed.getId(), entryCount);
             return Optional.empty();
         }
 
-        Page<FeedEntry> page = feedEntryRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), new PageRequest(0, feedThreshold));
+        Page<FeedEntry> page = feedEntryRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), PageRequest.of(0, feedThreshold));
 
         if(page.getTotalElements() == 0) {
             return Optional.empty();

@@ -23,7 +23,7 @@ public class EntryPurger {
 
     public EntryPurger(FeedEntryRepository feedEntryRepository, @Value("${myreader.entry-purger.page-size:1000}") int pageSize) {
         this.feedEntryRepository = feedEntryRepository;
-        pageRequest = new PageRequest(0, pageSize);
+        pageRequest = PageRequest.of(0, pageSize);
     }
 
     public void purge(Long feedId, Date retainAfterDate) {
@@ -33,7 +33,7 @@ public class EntryPurger {
                 retainAfterDate,
                 pageRequest);
 
-        while(feedEntries.getContent().size() > 0) {
+        while(!feedEntries.getContent().isEmpty()) {
             log.info("{} elements left for deletion for feed {}", feedEntries.getTotalElements(), feedId);
 
             for (Long feedEntry : feedEntries) {

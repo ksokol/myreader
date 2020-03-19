@@ -204,7 +204,7 @@ public class FeedParserTests {
             verify(eventPublisher).publishEvent(MockitoHamcrest.argThat(
                     allOf(
                             hasProperty("source", is(HTTP_EXAMPLE_COM)),
-                            hasProperty("errorMessage", is("500 Internal Server Error")),
+                            hasProperty("errorMessage", is("500 Internal Server Error: [no body]")),
                             hasProperty("timestamp", is(greaterThan(0L)))
                     )));
         }

@@ -7,6 +7,7 @@ import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.hateoas.Link;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -15,7 +16,6 @@ import java.time.Instant;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
@@ -76,19 +76,16 @@ public class FeedGetResponseAssemblerSupportTest {
     @Test
     public void shouldContainExpectedLinks() {
         givenFeedWithErrors(0);
+        Link model = assembler.toModel(feed).getLinks().getRequiredLink("fetchErrors");
 
-        assertFeed(
-                hasProperty("links",
-                        contains(allOf(
-                                hasProperty("rel", is("fetchErrors")),
-                                hasProperty("href", is("http://localhost/api/2/feeds/1/fetchError"))
-                        ))
-                )
+        assertThat(
+                model.getHref(),
+                is("http://localhost/api/2/feeds/1/fetchError")
         );
     }
 
     private void assertFeed(Matcher<FeedGetResponse> matcher) {
-        assertThat(assembler.toResource(feed), matcher);
+        assertThat(assembler.toModel(feed), matcher);
     }
 
     private void givenFeedWithErrors(int errors) {

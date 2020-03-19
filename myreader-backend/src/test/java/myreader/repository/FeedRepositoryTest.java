@@ -35,7 +35,7 @@ public class FeedRepositoryTest {
     private TestEntityManager em;
 
     @Test
-    public void shouldFindFeedWithoutSubscription() throws Exception {
+    public void shouldFindFeedWithoutSubscription() {
         em.persist(new Feed("feed without subscription"));
 
         User user = new User("email");
@@ -53,12 +53,12 @@ public class FeedRepositoryTest {
     }
 
     @Test
-    public void shouldFindByUrlIn() throws Exception {
+    public void shouldFindByUrlIn() {
         em.persist(new Feed("http://url1","feed1"));
         em.persist(new Feed("http://url2","feed2"));
         em.persist(new Feed("http://url3","feed3"));
 
-        Page<Feed> actual = feedRepository.findByUrlIn(Arrays.asList("http://url1", "http://url3"), new PageRequest(0, 10));
+        Page<Feed> actual = feedRepository.findByUrlIn(Arrays.asList("http://url1", "http://url3"), PageRequest.of(0, 10));
 
         assertThat(actual.getContent(), contains(
                 hasProperty("url", is("http://url1")),

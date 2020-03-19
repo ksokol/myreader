@@ -1,13 +1,13 @@
 package myreader.resource.subscriptiontag.beans;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
 
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionTagGetResponse extends ResourceSupport {
+public class SubscriptionTagGetResponse extends RepresentationModel<SubscriptionTagGetResponse> {
 
     private String uuid;
     private String name;

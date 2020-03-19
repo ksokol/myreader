@@ -1,14 +1,14 @@
 package myreader.resource.subscriptiontag.beans;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.Pattern;
 
 /**
  * @author Kamill Sokol
  */
-public class SubscriptionTagPatchRequest extends ResourceSupport {
+public class SubscriptionTagPatchRequest extends RepresentationModel<SubscriptionTagPatchRequest> {
 
     @NotBlank(message = "may not be empty")
     private String name;

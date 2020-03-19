@@ -46,9 +46,9 @@ public class SubscriptionEntryBatch {
             Slice<FeedEntry> slice;
 
             if(subscription.getLastFeedEntryId() == null) {
-                slice = feedEntryRepository.findByFeedId(subscription.getFeed().getId(), new PageRequest(0, 10));
+                slice = feedEntryRepository.findByFeedId(subscription.getFeed().getId(), PageRequest.of(0, 10));
             } else {
-                slice = feedEntryRepository.findByGreaterThanFeedEntryId(subscription.getLastFeedEntryId(), subscription.getFeed().getId(), new PageRequest(0, 10));
+                slice = feedEntryRepository.findByGreaterThanFeedEntryId(subscription.getLastFeedEntryId(), subscription.getFeed().getId(), PageRequest.of(0, 10));
             }
 
             do {

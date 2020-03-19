@@ -8,7 +8,7 @@ import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,12 +30,14 @@ public class SubscriptionEntityResource {
 
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionTagRepository subscriptionTagRepository;
-    private final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler;
+    private final RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler;
 
     @Autowired
-    public SubscriptionEntityResource(ResourceAssembler<Subscription, SubscriptionGetResponse> assembler,
-                                      SubscriptionTagRepository subscriptionTagRepository,
-                                      SubscriptionRepository subscriptionRepository) {
+    public SubscriptionEntityResource(
+            RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler,
+            SubscriptionTagRepository subscriptionTagRepository,
+            SubscriptionRepository subscriptionRepository
+    ) {
         this.assembler = assembler;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionTagRepository = subscriptionTagRepository;
@@ -44,7 +46,7 @@ public class SubscriptionEntityResource {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public SubscriptionGetResponse get(@PathVariable("id") Long id) {
         Subscription subscription = findOrThrowException(id);
-        return assembler.toResource(subscription);
+        return assembler.toModel(subscription);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

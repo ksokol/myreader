@@ -1,6 +1,6 @@
 package myreader.resource.feed.beans;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
 
@@ -8,7 +8,7 @@ import java.util.Date;
  * @author Kamill Sokol
  */
 @SuppressWarnings("PMD.UselessOverridingMethod")
-public class FetchErrorGetResponse extends ResourceSupport {
+public class FetchErrorGetResponse extends RepresentationModel<FetchErrorGetResponse> {
 
     private String uuid;
     private String message;

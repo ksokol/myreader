@@ -3,7 +3,7 @@ package myreader.resource.subscriptionentry;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -21,10 +21,10 @@ final class SequencedResourcesUtils {
     private static final String DEFAULT_NEXT_PARAMETER = "next";
     private static final String DEFAULT_SIZE_PARAMETER = "size";
 
-    protected static PagedResources<SubscriptionEntryGetResponse> toSequencedResources(final int pageSize, List<SubscriptionEntryGetResponse> entries) {
+    protected static PagedModel<SubscriptionEntryGetResponse> toSequencedResources(final int pageSize, List<SubscriptionEntryGetResponse> entries) {
         Long nextId = getNextId(pageSize, entries);
         // TODO add page metadata
-        PagedResources<SubscriptionEntryGetResponse> pagedResources = new PagedResources<>(entries, null);
+        PagedModel<SubscriptionEntryGetResponse> pagedResources = new PagedModel<>(entries, null);
         List<Link> links = addPaginationLinks(nextId, pageSize);
 
         pagedResources.add(links);
@@ -47,7 +47,7 @@ final class SequencedResourcesUtils {
     private static List<Link> addPaginationLinks(Long nextId, long pageSize) {
         List<Link> links = new ArrayList<>(2);
         if (nextId != null) {
-            links.add(createLink(nextId, pageSize, Link.REL_NEXT));
+            links.add(createLink(nextId, pageSize, Link.REL_NEXT.value()));
         }
 
         links.add(new Link(getRelativeUriString()));

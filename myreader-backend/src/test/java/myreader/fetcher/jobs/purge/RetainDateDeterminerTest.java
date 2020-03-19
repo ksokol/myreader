@@ -34,7 +34,7 @@ public class RetainDateDeterminerTest {
     private Feed feed;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         determiner = new RetainDateDeterminer(feedEntryRepository, 2);
         feed = new Feed("feed");
         feed.setId(1L);
@@ -42,7 +42,7 @@ public class RetainDateDeterminerTest {
     }
 
     @Test
-    public void shouldNotDetermineRetainDateWhenEntryCountIsBelowThreshold() throws Exception {
+    public void shouldNotDetermineRetainDateWhenEntryCountIsBelowThreshold() {
         given(feedEntryRepository.countByFeedId(1L)).willReturn(1L);
 
         Optional<Date> determine = determiner.determine(feed);
@@ -51,7 +51,7 @@ public class RetainDateDeterminerTest {
     }
 
     @Test
-    public void shouldNotDetermineRetainDateWhenEntryCountIsEqualToThreshold() throws Exception {
+    public void shouldNotDetermineRetainDateWhenEntryCountIsEqualToThreshold() {
         given(feedEntryRepository.countByFeedId(1L)).willReturn(5L);
 
         Optional<Date> determine = determiner.determine(feed);
@@ -60,9 +60,9 @@ public class RetainDateDeterminerTest {
     }
 
     @Test
-    public void shouldNotDetermineRetainDateWhenNoEntriesReturnedFromRepositoryQuery() throws Exception {
+    public void shouldNotDetermineRetainDateWhenNoEntriesReturnedFromRepositoryQuery() {
         given(feedEntryRepository.countByFeedId(1L)).willReturn(20L);
-        given(feedEntryRepository.findByFeedIdOrderByCreatedAtDesc(1L, new PageRequest(0, 5))).willReturn(new PageImpl<>(createEntries(0)));
+        given(feedEntryRepository.findByFeedIdOrderByCreatedAtDesc(1L, PageRequest.of(0, 5))).willReturn(new PageImpl<>(createEntries(0)));
 
         Optional<Date> determine = determiner.determine(feed);
 
@@ -70,9 +70,9 @@ public class RetainDateDeterminerTest {
     }
 
     @Test
-    public void shouldDetermineRetainDate() throws Exception {
+    public void shouldDetermineRetainDate() {
         given(feedEntryRepository.countByFeedId(1L)).willReturn(20L);
-        given(feedEntryRepository.findByFeedIdOrderByCreatedAtDesc(1L, new PageRequest(0, 5))).willReturn(new PageImpl<>(createEntries(5)));
+        given(feedEntryRepository.findByFeedIdOrderByCreatedAtDesc(1L, PageRequest.of(0, 5))).willReturn(new PageImpl<>(createEntries(5)));
 
         Optional<Date> determine = determiner.determine(this.feed);
 

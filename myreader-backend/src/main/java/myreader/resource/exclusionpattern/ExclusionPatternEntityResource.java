@@ -5,7 +5,7 @@ import myreader.repository.ExclusionRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "api/2/exclusions/{subscriptionId}/pattern/{patternId}")
 public class ExclusionPatternEntityResource {
 
-    private final ResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler;
+    private final RepresentationModelAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler;
     private final ExclusionRepository exclusionRepository;
 
     @Autowired
-    public ExclusionPatternEntityResource(final ResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler,
-                                          final ExclusionRepository exclusionRepository) {
+    public ExclusionPatternEntityResource(
+            RepresentationModelAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler,
+            ExclusionRepository exclusionRepository
+    ) {
         this.assembler = assembler;
         this.exclusionRepository = exclusionRepository;
     }
@@ -40,7 +42,7 @@ public class ExclusionPatternEntityResource {
 
     @RequestMapping(value="", method = RequestMethod.GET)
     public ExclusionPatternGetResponse get(@ModelAttribute("pattern") ExclusionPattern pattern) {
-        return assembler.toResource(pattern);
+        return assembler.toModel(pattern);
     }
 
     @RequestMapping(value="", method = RequestMethod.DELETE)

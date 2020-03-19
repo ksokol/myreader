@@ -6,7 +6,7 @@ import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,11 +25,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 public class SubscriptionEntryEntityResource {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;
-    private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
+    private final RepresentationModelAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
 
     @Autowired
-    public SubscriptionEntryEntityResource(ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
-                                           final SubscriptionEntryRepository subscriptionEntryRepository) {
+    public SubscriptionEntryEntityResource(
+            RepresentationModelAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
+            SubscriptionEntryRepository subscriptionEntryRepository
+    ) {
         this.assembler = assembler;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
     }
@@ -37,7 +39,7 @@ public class SubscriptionEntryEntityResource {
     @RequestMapping(method = GET)
     public SubscriptionEntryGetResponse get(@PathVariable("id") Long id) {
         final SubscriptionEntry subscriptionEntry = findOrThrowException(id);
-        return assembler.toResource(subscriptionEntry);
+        return assembler.toModel(subscriptionEntry);
     }
 
     @RequestMapping(method = PATCH)

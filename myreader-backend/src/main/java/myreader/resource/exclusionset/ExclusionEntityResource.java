@@ -5,7 +5,7 @@ import myreader.repository.ExclusionRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.exclusionset.beans.ExclusionSetGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "api/2/exclusions")
 public class ExclusionEntityResource {
 
-    private final ResourceAssemblerSupport<ExclusionSet, ExclusionSetGetResponse> assembler;
+    private final RepresentationModelAssembler<ExclusionSet, ExclusionSetGetResponse> assembler;
     private final ExclusionRepository exclusionRepository;
 
     @Autowired
-    public ExclusionEntityResource(final ResourceAssemblerSupport<ExclusionSet, ExclusionSetGetResponse> assembler,
-                                   final ExclusionRepository exclusionRepository) {
+    public ExclusionEntityResource(
+            RepresentationModelAssembler<ExclusionSet, ExclusionSetGetResponse> assembler,
+            ExclusionRepository exclusionRepository
+    ) {
         this.assembler = assembler;
         this.exclusionRepository = exclusionRepository;
     }
@@ -40,6 +42,6 @@ public class ExclusionEntityResource {
 
     @RequestMapping(value="/{id}", method = RequestMethod.GET)
     public ExclusionSetGetResponse get(@ModelAttribute("exclusionSet") ExclusionSet exclusionSet) {
-        return assembler.toResource(exclusionSet);
+        return assembler.toModel(exclusionSet);
     }
 }

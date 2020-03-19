@@ -1,6 +1,6 @@
 package myreader.resource.feed.beans;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
 
@@ -8,7 +8,7 @@ import java.util.Date;
  * @author Kamill Sokol
  */
 @SuppressWarnings("PMD.UselessOverridingMethod")
-public class FeedGetResponse extends ResourceSupport {
+public class FeedGetResponse extends RepresentationModel<FeedGetResponse> {
 
     private String uuid;
     private String title;

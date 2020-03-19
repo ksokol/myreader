@@ -3,21 +3,21 @@ package myreader.resource.subscription.assembler;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionTag;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class SubscriptionGetResponseAssemblerSupport extends ResourceAssemblerSupport<Subscription, SubscriptionGetResponse> {
+public class SubscriptionGetResponseAssemblerSupport extends RepresentationModelAssemblerSupport<Subscription, SubscriptionGetResponse> {
 
     public SubscriptionGetResponseAssemblerSupport() {
         super(Subscription.class, SubscriptionGetResponse.class);
     }
 
     @Override
-    public SubscriptionGetResponse toResource(Subscription source) {
+    public SubscriptionGetResponse toModel(Subscription source) {
         SubscriptionGetResponse target = new SubscriptionGetResponse();
 
         target.setUuid(source.getId().toString());

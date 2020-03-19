@@ -2,21 +2,21 @@ package myreader.resource.exclusionpattern.assembler;
 
 import myreader.entity.ExclusionPattern;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class ExclusionPatternGetResponseAssemblerSupport extends ResourceAssemblerSupport<ExclusionPattern, ExclusionPatternGetResponse> {
+public class ExclusionPatternGetResponseAssemblerSupport extends RepresentationModelAssemblerSupport<ExclusionPattern, ExclusionPatternGetResponse> {
 
     public ExclusionPatternGetResponseAssemblerSupport() {
         super(ExclusionPattern.class, ExclusionPatternGetResponse.class);
     }
 
     @Override
-    public ExclusionPatternGetResponse toResource(ExclusionPattern source) {
+    public ExclusionPatternGetResponse toModel(ExclusionPattern source) {
         ExclusionPatternGetResponse target = new ExclusionPatternGetResponse();
 
         target.setUuid(String.valueOf(source.getId()));

@@ -5,13 +5,12 @@ import myreader.repository.SubscriptionTagRepository;
 import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.subscriptiontag.beans.SubscriptionTagGetResponse;
 import myreader.resource.subscriptiontag.beans.SubscriptionTagPatchRequest;
-import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -25,11 +24,11 @@ import javax.validation.Valid;
 public class SubscriptionTagEntityResource {
 
     private final SubscriptionTagRepository subscriptionTagRepository;
-    private final ResourceAssembler<SubscriptionTag, SubscriptionTagGetResponse> assembler;
+    private final RepresentationModelAssembler<SubscriptionTag, SubscriptionTagGetResponse> assembler;
 
     public SubscriptionTagEntityResource(
             SubscriptionTagRepository subscriptionTagRepository,
-            ResourceAssembler<SubscriptionTag,
+            RepresentationModelAssembler<SubscriptionTag,
             SubscriptionTagGetResponse> assembler
     ) {
         this.subscriptionTagRepository = subscriptionTagRepository;
@@ -47,6 +46,6 @@ public class SubscriptionTagEntityResource {
         subscriptionTag.setName(request.getName());
         subscriptionTag.setColor(request.getColor());
 
-        return assembler.toResource(subscriptionTagRepository.save(subscriptionTag));
+        return assembler.toModel(subscriptionTagRepository.save(subscriptionTag));
     }
 }

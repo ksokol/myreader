@@ -8,7 +8,7 @@ import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternPostRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,14 +34,16 @@ public class ExclusionPatternCollectionResource {
     protected static final String EXCLUSIONS_URL = "/api/2/exclusions/";
     protected static final String EXCLUSIONS_PATTERN_URL = "/pattern";
 
-    private final ResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler;
+    private final RepresentationModelAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler;
     private final ExclusionRepository exclusionRepository;
     private final SubscriptionRepository subscriptionRepository;
 
     @Autowired
-    public ExclusionPatternCollectionResource(ResourceAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler,
-                                              ExclusionRepository exclusionRepository,
-                                              SubscriptionRepository subscriptionRepository) {
+    public ExclusionPatternCollectionResource(
+            RepresentationModelAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler,
+            ExclusionRepository exclusionRepository,
+            SubscriptionRepository subscriptionRepository
+    ) {
         this.assembler = assembler;
         this.exclusionRepository = exclusionRepository;
         this.subscriptionRepository = subscriptionRepository;
@@ -59,7 +61,7 @@ public class ExclusionPatternCollectionResource {
     @RequestMapping(method = GET)
     public Map<String, List<ExclusionPatternGetResponse>> get(@ModelAttribute("subscription") Subscription subscription) {
         List<ExclusionPattern> source = exclusionRepository.findBySubscriptionId(subscription.getId());
-        List<ExclusionPatternGetResponse> target = source.stream().map(assembler::toResource).collect(toList());
+        List<ExclusionPatternGetResponse> target = source.stream().map(assembler::toModel).collect(toList());
 
         Map<String, List<ExclusionPatternGetResponse>> body = new HashMap<>(3);
         body.put("content", target);
@@ -78,6 +80,6 @@ public class ExclusionPatternCollectionResource {
             exclusionPattern = exclusionRepository.save(exclusionPattern);
         }
 
-        return assembler.toResource(exclusionPattern);
+        return assembler.toModel(exclusionPattern);
     }
 }

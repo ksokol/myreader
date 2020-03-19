@@ -6,7 +6,7 @@ import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,12 +32,14 @@ public class SubscriptionCollectionResource {
 
     private final SubscriptionService subscriptionService;
     private final SubscriptionRepository subscriptionRepository;
-    private final ResourceAssembler<Subscription, SubscriptionGetResponse> assembler;
+    private final RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler;
 
     @Autowired
-    public SubscriptionCollectionResource(ResourceAssembler<Subscription, SubscriptionGetResponse> assembler,
-                                          SubscriptionService subscriptionService,
-                                          SubscriptionRepository subscriptionRepository) {
+    public SubscriptionCollectionResource(
+            RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler,
+            SubscriptionService subscriptionService,
+            SubscriptionRepository subscriptionRepository
+    ) {
         this.assembler = assembler;
         this.subscriptionService = subscriptionService;
         this.subscriptionRepository = subscriptionRepository;
@@ -48,7 +50,7 @@ public class SubscriptionCollectionResource {
             @Valid @RequestBody SubscribePostRequest request,
             @AuthenticationPrincipal User user) {
         Subscription subscription = subscriptionService.subscribe(user.getUsername(), request.getOrigin());
-        return assembler.toResource(subscription);
+        return assembler.toModel(subscription);
     }
 
     @RequestMapping(method = GET)
@@ -57,7 +59,7 @@ public class SubscriptionCollectionResource {
         final List<Subscription> source = subscriptionRepository.findAllByUnseenGreaterThanAndCurrentUser(unseenCount);
         final List<SubscriptionGetResponse> target = new ArrayList<>(source.size());
         for (final Subscription subscription : source) {
-            target.add(assembler.toResource(subscription));
+            target.add(assembler.toModel(subscription));
         }
         final HashMap<String, Object> body = new HashMap<>(2);
         body.put("content", target);

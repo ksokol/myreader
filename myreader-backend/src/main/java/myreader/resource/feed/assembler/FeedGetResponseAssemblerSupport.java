@@ -4,18 +4,18 @@ import myreader.entity.Feed;
 import myreader.repository.FetchErrorRepository;
 import myreader.resource.feed.FeedResource;
 import myreader.resource.feed.beans.FeedGetResponse;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import static java.util.Objects.requireNonNull;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class FeedGetResponseAssemblerSupport extends ResourceAssemblerSupport<Feed, FeedGetResponse> {
+public class FeedGetResponseAssemblerSupport extends RepresentationModelAssemblerSupport<Feed, FeedGetResponse> {
 
     private final FetchErrorRepository fetchErrorRepository;
 
@@ -25,7 +25,7 @@ public class FeedGetResponseAssemblerSupport extends ResourceAssemblerSupport<Fe
     }
 
     @Override
-    public FeedGetResponse toResource(Feed source) {
+    public FeedGetResponse toModel(Feed source) {
         FeedGetResponse target = new FeedGetResponse();
 
         target.setUuid(source.getId().toString());

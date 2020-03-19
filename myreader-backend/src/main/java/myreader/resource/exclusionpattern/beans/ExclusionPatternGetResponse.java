@@ -1,12 +1,12 @@
 package myreader.resource.exclusionpattern.beans;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
  * @author Kamill Sokol
  */
 @SuppressWarnings("PMD.UselessOverridingMethod")
-public class ExclusionPatternGetResponse extends ResourceSupport {
+public class ExclusionPatternGetResponse extends RepresentationModel<ExclusionPatternGetResponse> {
 
     private String uuid;
     private long hitCount;

@@ -2,21 +2,21 @@ package myreader.resource.feed.assembler;
 
 import myreader.entity.FetchError;
 import myreader.resource.feed.beans.FetchErrorGetResponse;
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class FetchErrorGetResponseAssemblerSupport extends ResourceAssemblerSupport<FetchError, FetchErrorGetResponse> {
+public class FetchErrorGetResponseAssemblerSupport extends RepresentationModelAssemblerSupport<FetchError, FetchErrorGetResponse> {
 
     public FetchErrorGetResponseAssemblerSupport() {
         super(FetchError.class, FetchErrorGetResponse.class);
     }
 
     @Override
-    public FetchErrorGetResponse toResource(FetchError source) {
+    public FetchErrorGetResponse toModel(FetchError source) {
         FetchErrorGetResponse target = new FetchErrorGetResponse();
 
         target.setUuid(source.getId().toString());

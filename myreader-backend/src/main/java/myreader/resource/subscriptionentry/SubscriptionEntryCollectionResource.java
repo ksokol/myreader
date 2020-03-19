@@ -8,9 +8,9 @@ import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.ResourceAssembler;
-import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,18 +31,20 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequestMapping(value = "api/2/subscriptionEntries")
 public class SubscriptionEntryCollectionResource {
 
-    private final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
+    private final RepresentationModelAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
 
     @Autowired
-    public SubscriptionEntryCollectionResource(final ResourceAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
-                                               final SubscriptionEntryRepository subscriptionEntryRepository) {
+    public SubscriptionEntryCollectionResource(
+            RepresentationModelAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
+            SubscriptionEntryRepository subscriptionEntryRepository
+    ) {
         this.assembler = assembler;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
     }
 
     @RequestMapping(method = GET)
-    public PagedResources<SubscriptionEntryGetResponse> get(SearchRequest page) {
+    public PagedModel<SubscriptionEntryGetResponse> get(SearchRequest page) {
         Slice<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findByForCurrentUser(
                 page.getQ(),
                 page.getFeedUuidEqual(),
@@ -55,7 +57,7 @@ public class SubscriptionEntryCollectionResource {
 
         List<SubscriptionEntryGetResponse> list = new ArrayList<>(pagedEntries.getSize());
         for (SubscriptionEntry pagedEntry : pagedEntries) {
-            list.add(assembler.toResource(pagedEntry));
+            list.add(assembler.toModel(pagedEntry));
         }
 
         return SequencedResourcesUtils.toSequencedResources(page.getSize(), list);
@@ -66,10 +68,9 @@ public class SubscriptionEntryCollectionResource {
         return subscriptionEntryRepository.findDistinctTagsForCurrentUser();
     }
 
-    //TODO remove RequestMethod.PUT after Android 2.x phased out
     @Transactional
-    @RequestMapping(method = {RequestMethod.PATCH, RequestMethod.PUT})
-    public Resources<SubscriptionEntryGetResponse> patch(@Valid @RequestBody SubscriptionEntryBatchPatchRequest request) {
+    @RequestMapping(method = RequestMethod.PATCH)
+    public CollectionModel<SubscriptionEntryGetResponse> patch(@Valid @RequestBody SubscriptionEntryBatchPatchRequest request) {
         List<SubscriptionEntryGetResponse> subscriptionEntryGetResponses = new ArrayList<>(request.getContent().size());
 
         for (final SubscriptionEntryPatchRequest subscriptionPatch : request.getContent()) {
@@ -84,10 +85,10 @@ public class SubscriptionEntryCollectionResource {
             subscriptionEntry.setTag(subscriptionPatch.getTag());
 
             SubscriptionEntry saved = subscriptionEntryRepository.save(subscriptionEntry);
-            SubscriptionEntryGetResponse subscriptionEntryGetResponse = assembler.toResource(saved);
+            SubscriptionEntryGetResponse subscriptionEntryGetResponse = assembler.toModel(saved);
             subscriptionEntryGetResponses.add(subscriptionEntryGetResponse);
         }
 
-        return new Resources<>(subscriptionEntryGetResponses);
+        return new CollectionModel<SubscriptionEntryGetResponse>(subscriptionEntryGetResponses);
     }
 }
