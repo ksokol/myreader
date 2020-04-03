@@ -2,6 +2,7 @@ package spring;
 
 import myreader.Starter;
 import myreader.test.TestConstants;
+import myreader.test.TestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,6 +53,11 @@ public class ApiSecurityTests {
     }
 
     private static final String API_2 = "/api/2";
+
+    @DynamicPropertySource
+    static void withProperties(DynamicPropertyRegistry registry) {
+        TestProperties.withProperties(registry);
+    }
 
     @Autowired
     private MockMvc mockMvc;

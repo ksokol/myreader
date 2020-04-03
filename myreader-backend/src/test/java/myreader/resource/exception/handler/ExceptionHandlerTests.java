@@ -2,6 +2,7 @@ package myreader.resource.exception.handler;
 
 import myreader.service.subscription.SubscriptionService;
 import myreader.test.TestConstants;
+import myreader.test.TestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,6 +32,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 public class ExceptionHandlerTests {
+
+    @DynamicPropertySource
+    static void withProperties(DynamicPropertyRegistry registry) {
+        TestProperties.withProperties(registry);
+    }
 
     @Autowired
     private MockMvc mockMvc;
