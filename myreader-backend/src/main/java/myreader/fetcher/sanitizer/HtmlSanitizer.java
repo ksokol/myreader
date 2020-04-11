@@ -3,6 +3,7 @@ package myreader.fetcher.sanitizer;
 import org.apache.commons.text.StringEscapeUtils;
 import org.owasp.html.CssSchema;
 import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.HtmlStreamEventReceiverWrapper;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 
@@ -53,6 +54,16 @@ public final class HtmlSanitizer {
 
                         .allowAttributes("alt")
                         .onElements("img")
+                        .withPostprocessor(sink -> new HtmlStreamEventReceiverWrapper(sink) {
+                            @Override
+                            public void openTag(String elementName, List<String> attrs) {
+                                if ("img".equalsIgnoreCase(elementName)) {
+                                    attrs.add("loading");
+                                    attrs.add("lazy");
+                                }
+                                super.openTag(elementName, attrs);
+                            }
+                        })
 
                         .allowAttributes("href")
                         .matching(HTTP_PROTOCOLS)
