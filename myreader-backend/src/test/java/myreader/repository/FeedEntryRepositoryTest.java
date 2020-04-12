@@ -45,7 +45,7 @@ public class FeedEntryRepositoryTest {
 
     @Before
     public void setUp() {
-        feed = new Feed("feed");
+        feed = new Feed("feed", "http://example.com");
         em.persistAndFlush(feed);
 
         User user1 = new User("email");
@@ -73,8 +73,8 @@ public class FeedEntryRepositoryTest {
 
     @Test
     public void shouldOrderEntriesByCreationDateDescending() {
-        givenEntryWithTitle("entry1");
-        givenEntryWithTitle("entry2");
+        givenEntryWithTitleAndCreatedAt("entry1", new Date(0));
+        givenEntryWithTitleAndCreatedAt("entry2", new Date(1));
 
         Page<FeedEntry> actual = feedEntryRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), PageRequest.of(0, 2));
 
@@ -201,11 +201,19 @@ public class FeedEntryRepositoryTest {
         return givenEntryWithTitle("entry");
     }
 
-    private FeedEntry givenEntryWithTitle(String entry) {
+    private FeedEntry givenEntryWithTitle(String title) {
         FeedEntry feedEntry = new FeedEntry(feed);
-        feedEntry.setTitle(entry);
+        feedEntry.setTitle(title);
         return em.persistAndFlush(feedEntry);
     }
+
+    private void givenEntryWithTitleAndCreatedAt(String title, Date createdAt) {
+        FeedEntry feedEntry = new FeedEntry(feed);
+        feedEntry.setTitle(title);
+        feedEntry.setCreatedAt(createdAt);
+        em.persistAndFlush(feedEntry);
+    }
+
 
     private SubscriptionEntry givenUser1SubscriptionEntry(FeedEntry feedEntry) {
         SubscriptionEntry subscriptionEntry = new SubscriptionEntry(user1Subscription, feedEntry);

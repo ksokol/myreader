@@ -11,7 +11,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -39,7 +41,7 @@ public class SubscriptionEntryRepositoryTests {
     @Autowired
     private TestEntityManager testEntityManager;
 
-    private Slice<SubscriptionEntry> slice;
+    private Page<SubscriptionEntry> page;
 
     @Before
     public void setUp() {
@@ -56,160 +58,178 @@ public class SubscriptionEntryRepositoryTests {
     @Test
     @WithMockUser(TestConstants.USER4)
     public void searchWithPageSizeOne() {
-        givenQuery(null, null, null, null, null, null, 1);
-        assertThat(slice.getContent().get(0).getId(), is(1013L));
+        givenQuery(null, null, null, null, null, null, PageRequest.of(0, 1));
+        assertThat(page.getContent().get(0).getId(), is(1013L));
     }
 
     @Test
     @WithMockUser(TestConstants.USER1)
     public void searchSubscriptionEntryByTitle() {
-        givenQuery("mysql", null, null, null, null, null, 10);
-        assertThat(slice.getContent().get(0).getId(), is(1002L));
+        givenQuery("mysql", null, null, null, null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent().get(0).getId(), is(1002L));
     }
 
     @Test
     @WithMockUser(TestConstants.USER1)
     public void searchSubscriptionEntryByContent() {
-        givenQuery("content", null, null, null, null, null, 10);
-        assertThat(slice.getContent(), hasSize(2));
+        givenQuery("content", null, null, null, null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(2));
     }
 
     @Test
     @WithMockUser(TestConstants.USER1)
-    public void searchWithNextId() {
-        givenQuery(null, null, null, null, null, 1001L, 10);
-        assertThat(slice.getContent().get(0).getId(), is(1001L));
+    public void searchPaginated() {
+        givenQuery(null, null, null, null, null, null, PageRequest.of(0, 1));
+        assertThat(page.getContent().get(0).getId(), is(1002L));
 
-        givenQuery(null, null, null, null, null, 1000L, 10);
-        assertThat(slice.getContent(), hasSize(0));
+        givenQuery(null, null, null, null, null, null, page.nextPageable());
+        assertThat(page.getContent().get(0).getId(), is(1001L));
+
+        assertThat(page.getTotalElements(), is(2L));
+    }
+
+    @Test
+    @WithMockUser(TestConstants.USER1)
+    public void searchNextPage() {
+        givenQuery(null, null, null, null, null, 1582801646000L, PageRequest.of(1, 1));
+        assertThat(page.getContent().get(0).getId(), is(1001L));
+        assertThat(page.getTotalElements(), is(2L));
     }
 
     @Test
     @WithMockUser(TestConstants.USER1)
     public void searchSubscriptionEntryByTag() {
-        givenQuery("tag1", null, null, null, null, null, 10);
-        assertThat(slice.getContent(), hasSize(2));
+        givenQuery("tag1", null, null, null, null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(2));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void searchSubscriptionEntryTag() {
-        givenQuery("help", null, null, null, null, null, 10);
-        assertThat(slice.getContent().get(0).getId(), is(1011L));
+        givenQuery("help", null, null, null, null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent().get(0).getId(), is(1011L));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void seenEqualFalse() {
-        givenQuery(null, null, null, null, "false", null, 10);
-        assertThat(slice.getContent(), hasSize(5));
+        givenQuery(null, null, null, null, "false", null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(5));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void seenEqualTrue() {
-        givenQuery(null, null, null, null, "true", null, 10);
-        assertThat(slice.getContent(), hasSize(0));
+        givenQuery(null, null, null, null, "true", null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(0));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void seenEqualWildcard() {
-        givenQuery(null, null, null, null, "*", null, 10);
-        assertThat(slice.getContent(), hasSize(5));
+        givenQuery(null, null, null, null, "*", null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(5));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void feedUuidEqual14() {
-        givenQuery(null, "14", null, null, null, null, 10);
-        assertThat(slice.getContent(), hasSize(5));
+        givenQuery(null, "14", null, null, null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(5));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void feedUuidEqual9114() {
-        givenQuery(null, "9114", null, null, null, null, 10);
-        assertThat(slice.getContent(), hasSize(0));
+        givenQuery(null, "9114", null, null, null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(0));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void feedTagEqualUnknown() {
-        givenQuery(null, null, "unknown", null, null, null, 10);
-        assertThat(slice.getContent(), hasSize(0));
+        givenQuery(null, null, "unknown", null, null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(0));
     }
 
     @Test
     @WithMockUser(TestConstants.USER115)
     public void feedTagEqualTag1() {
-        givenQuery(null, null, "tag1", null, null, null, 10);
-        assertThat(slice.getContent(), hasSize(2));
+        givenQuery(null, null, "tag1", null, null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(2));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void entryTagEqualTag2Tag3() {
-        givenQuery(null, null, null, "tag2", null, null, 10);
-        assertThat(slice.getContent(), hasSize(0));
+        givenQuery(null, null, null, "tag2", null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(0));
 
-        givenQuery(null, null, null, "tag2-tag3", null, null, 10);
-        assertThat(slice.getContent().get(0).getId(), is(1010L));
-        assertThat(slice.getContent().get(0).getTag(), is("tag2-tag3"));
+        givenQuery(null, null, null, "tag2-tag3", null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent().get(0).getId(), is(1010L));
+        assertThat(page.getContent().get(0).getTag(), is("tag2-tag3"));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void entryTagEqualTag4AndTag5() {
-        givenQuery(null, null, null, "tag4", null, null, 10);
-        assertThat(slice.getContent(), hasSize(1));
-        assertThat(slice.getContent().get(0).getId(), is(1011L));
-        assertThat(slice.getContent().get(0).getTag(), is("tag4 tag5"));
+        givenQuery(null, null, null, "tag4", null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(1));
+        assertThat(page.getContent().get(0).getId(), is(1011L));
+        assertThat(page.getContent().get(0).getTag(), is("tag4 tag5"));
 
-        givenQuery(null, null, null, "tag5", null, null, 10);
-        assertThat(slice.getContent(), hasSize(1));
-        assertThat(slice.getContent().get(0).getId(), is(1011L));
-        assertThat(slice.getContent().get(0).getTag(), is("tag4 tag5"));
+        givenQuery(null, null, null, "tag5", null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(1));
+        assertThat(page.getContent().get(0).getId(), is(1011L));
+        assertThat(page.getContent().get(0).getTag(), is("tag4 tag5"));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void entryTagEqualTag6AndTag7() {
-        givenQuery(null, null, null, "tag6", null, null, 10);
-        assertThat(slice.getContent(), hasSize(1));
-        assertThat(slice.getContent().get(0).getId(), is(1012L));
-        assertThat(slice.getContent().get(0).getTag(), is("tag6,tag7"));
+        givenQuery(null, null, null, "tag6", null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(1));
+        assertThat(page.getContent().get(0).getId(), is(1012L));
+        assertThat(page.getContent().get(0).getTag(), is("tag6,tag7"));
 
-        givenQuery(null, null, null, "tag7", null, null, 10);
-        assertThat(slice.getContent(), hasSize(1));
-        assertThat(slice.getContent().get(0).getId(), is(1012L));
-        assertThat(slice.getContent().get(0).getTag(), is("tag6,tag7"));
+        givenQuery(null, null, null, "tag7", null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(1));
+        assertThat(page.getContent().get(0).getId(), is(1012L));
+        assertThat(page.getContent().get(0).getTag(), is("tag6,tag7"));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void entryTagEqualTag8Tag9() {
-        givenQuery(null, null, null, "tag8tag9", null, null, 10);
-        assertThat(slice.getContent(), hasSize(0));
+        givenQuery(null, null, null, "tag8tag9", null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(0));
 
-        givenQuery(null, null, null, "tag8Tag9", null, null, 10);
-        assertThat(slice.getContent().get(0).getId(), is(1013L));
-        assertThat(slice.getContent().get(0).getTag(), is("tag8Tag9"));
+        givenQuery(null, null, null, "tag8Tag9", null, null, PageRequest.of(0, 10));
+        assertThat(page.getContent().get(0).getId(), is(1013L));
+        assertThat(page.getContent().get(0).getTag(), is("tag8Tag9"));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void shouldAppendAsteriskToSearchParameterWhenSearchParameterDoesNotEndWithAsterisk() {
-        givenQuery("con", null, null, null, "*", null, 10);
-        assertThat(slice.getContent(), hasSize(5));
+        givenQuery("con", null, null, null, "*", null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(5));
 
-        givenQuery("con*", null, null, null, "*", null, 10);
-        assertThat(slice.getContent(), hasSize(5));
+        givenQuery("con*", null, null, null, "*", null, PageRequest.of(0, 10));
+        assertThat(page.getContent(), hasSize(5));
     }
 
     @WithMockUser(TestConstants.USER4)
-    public void givenQuery(String q, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, int pageSize) {
-        slice = subscriptionEntryRepository.findByForCurrentUser(q, feedId, feedTagEqual, entryTagEqual, seen, nextId, pageSize);
+    public void givenQuery(String q, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long stamp, Pageable pageRequest) {
+        page = subscriptionEntryRepository.findByForCurrentUser(
+                pageRequest,
+                q,
+                feedId,
+                feedTagEqual,
+                entryTagEqual,
+                seen,
+                stamp
+        );
     }
 
     static class TestConfiguration {

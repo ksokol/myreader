@@ -14,14 +14,16 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
@@ -44,19 +46,27 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     private static final String SEEN = "seen";
     private static final String SUBSCRIPTION_TAG = "subscription.subscriptionTag.tag";
     private static final String ID = "id";
-    private static final Pattern TAG_SPLIT_PATTERN = Pattern.compile("( |,)");
+    private static final String CREATED_AT = "createdAt";
+    private static final Pattern TAG_SPLIT_PATTERN = Pattern.compile("[ |,]");
 
     private final EntityManager em;
     private final UserRepository userRepository;
 
-    public SubscriptionEntryRepositoryImpl(final EntityManager em, UserRepository userRepository) {
-        this.em = em;
-        this.userRepository = userRepository;
+    public SubscriptionEntryRepositoryImpl(EntityManager em, UserRepository userRepository) {
+        this.em = Objects.requireNonNull(em, "em is null");
+        this.userRepository = Objects.requireNonNull(userRepository, "userRepository is null");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Slice<SubscriptionEntry> findByForCurrentUser(String q, String feedId, String feedTagEqual, String entryTagEqual, String seen, Long nextId, int pageSize) {
+    public Page<SubscriptionEntry> findByForCurrentUser(
+            Pageable pageRequest,
+            String q,
+            String feedId,
+            String feedTagEqual,
+            String entryTagEqual,
+            String seen,
+            Long stamp
+    ) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(SubscriptionEntry.class).get();
         Query query = createQuery(q, queryBuilder);
@@ -68,13 +78,20 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         addFilter(SUBSCRIPTION_TAG, feedTagEqual, builder);
         addFilter(TAG, entryTagEqual, builder);
         addSeenFilter(seen, builder);
-        addPagination(nextId, builder);
+        addPagination(stamp, builder);
 
         FullTextQuery fullTextQuery = fullTextEntityManager.createFullTextQuery(builder.build(), SubscriptionEntry.class);
-        fullTextQuery.setMaxResults(pageSize);
         fullTextQuery.setSort(new Sort(new SortField(ID, SortField.Type.LONG, true)));
 
-        return new SliceImpl<>(fullTextQuery.getResultList());
+        int total = fullTextQuery.getResultSize();
+
+        fullTextQuery.setFirstResult(pageRequest.getPageNumber() * pageRequest.getPageSize());
+        fullTextQuery.setMaxResults(pageRequest.getPageSize());
+
+        @SuppressWarnings("unchecked")
+        List<SubscriptionEntry> resultList = fullTextQuery.getResultList();
+
+        return new PageImpl<>(resultList, pageRequest, total);
     }
 
     @Override
@@ -122,9 +139,9 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         }
     }
 
-    private void addPagination(final Long nextId, BooleanQuery.Builder builder) {
-        if (nextId != null) {
-            builder.add(newLongRange(ID, 0L, nextId, true, true), Occur.FILTER);
+    private void addPagination(final Long stamp, BooleanQuery.Builder builder) {
+        if (stamp != null) {
+            builder.add(newLongRange(CREATED_AT, 0L, stamp, true, true), Occur.FILTER);
         }
     }
 }

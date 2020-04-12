@@ -1,15 +1,16 @@
 package myreader.config;
 
+import myreader.resource.subscriptionentry.SearchRequestHandlerMethodArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.time.Clock;
 import java.util.List;
 
 import static myreader.config.UrlMappings.LANDING_PAGE;
@@ -21,7 +22,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Configuration
 @EnableTransactionManagement
 @EnableAsync
-public class MvcConfig extends WebMvcConfigurerAdapter {
+public class MvcConfig implements WebMvcConfigurer {
+
+    private final Clock clock;
+
+    public MvcConfig(Clock clock) {
+        this.clock = clock;
+    }
 
     @Override
     public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
@@ -30,11 +37,9 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
                 .favorParameter(false);
     }
 
-    //TODO should be added automatically when @EnableWebMvcSecurity is enabled
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.clear();
-        argumentResolvers.add(new AuthenticationPrincipalArgumentResolver());
+        argumentResolvers.add(new SearchRequestHandlerMethodArgumentResolver(clock));
     }
 
     @Override

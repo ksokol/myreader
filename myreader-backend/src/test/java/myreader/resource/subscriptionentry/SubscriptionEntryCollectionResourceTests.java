@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -17,15 +18,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.TimeZone;
 
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -50,6 +55,9 @@ public class SubscriptionEntryCollectionResourceTests {
         TestProperties.withProperties(registry);
     }
 
+    @MockBean
+    private Clock clock;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -61,86 +69,100 @@ public class SubscriptionEntryCollectionResourceTests {
         indexSyncJob.work();
     }
 
+    @Before
+    public void before() {
+        when(clock.instant()).thenReturn(Instant.ofEpochMilli(1586644784000L));
+    }
+
     @Test
-    @WithMockUser(TestConstants.USER1)
+    @WithMockUser(TestConstants.USER4)
     public void shouldReturnExpectedJsonStructure() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptionEntries"))
+        mockMvc.perform(get("/api/2/subscriptionEntries?size=2&page=1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.links[0].rel", is("self")))
-                .andExpect(jsonPath("$.links[0].href", endsWith("/api/2/subscriptionEntries")))
-                .andExpect(jsonPath("$.content[0].uuid", is("1002")))
-                .andExpect(jsonPath("$.content[0].title", is("MySQL is to SQL like ??? to NoSQL")))
-                .andExpect(jsonPath("$.content[0].feedTitle", is("user1_subscription3")))
-                .andExpect(jsonPath("$.content[0].tag", is("tag1")))
+                .andExpect(jsonPath("$.links[0].rel", is("first")))
+                .andExpect(jsonPath("$.links[0].href", endsWith("/api/2/subscriptionEntries?page=0&size=2&stamp=1586644784000")))
+                .andExpect(jsonPath("$.links[1].rel", is("prev")))
+                .andExpect(jsonPath("$.links[1].href", endsWith("/api/2/subscriptionEntries?page=0&size=2&stamp=1586644784000")))
+                .andExpect(jsonPath("$.links[2].rel", is("self")))
+                .andExpect(jsonPath("$.links[2].href", endsWith("/api/2/subscriptionEntries?page=1&size=2&stamp=1586644784000")))
+                .andExpect(jsonPath("$.links[3].rel", is("next")))
+                .andExpect(jsonPath("$.links[3].href", endsWith("/api/2/subscriptionEntries?page=2&size=2&stamp=1586644784000")))
+                .andExpect(jsonPath("$.links[4].rel", is("last")))
+                .andExpect(jsonPath("$.links[4].href", endsWith("/api/2/subscriptionEntries?page=2&size=2&stamp=1586644784000")))
+                .andExpect(jsonPath("$.content[0].uuid", is("1011")))
+                .andExpect(jsonPath("$.content[0].title", is("I need your help!")))
+                .andExpect(jsonPath("$.content[0].feedTitle", is("user4_subscription1")))
+                .andExpect(jsonPath("$.content[0].tag", is("tag4 tag5")))
                 .andExpect(jsonPath("$.content[0].content", is("content")))
-                .andExpect(jsonPath("$.content[0].seen", is(true)))
-                .andExpect(jsonPath("$.content[0].feedTag", is("tag2")))
+                .andExpect(jsonPath("$.content[0].seen", is(false)))
+                .andExpect(jsonPath("$.content[0].feedTag", nullValue()))
                 .andExpect(jsonPath("$.content[0].feedTagColor", nullValue()))
-                .andExpect(jsonPath("$.content[0].feedUuid", is("3")))
-                .andExpect(jsonPath("$.content[0].origin", is("http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql")))
+                .andExpect(jsonPath("$.content[0].feedUuid", is("14")))
+                .andExpect(jsonPath("$.content[0].origin", is("http://Use-The-Index-Luke.com/blog/2013-04/i-need-your-help")))
                 .andExpect(jsonPath("$.content[0].createdAt", is("2011-04-15T19:20:46.000+0000")))
-                .andExpect(jsonPath("$.content[1].uuid", is("1001")))
-                .andExpect(jsonPath("$.content[1].title", is("Party time")))
-                .andExpect(jsonPath("$.content[1].feedTitle", is("user1_subscription3")))
-                .andExpect(jsonPath("$.content[1].tag", is("tag1")))
+                .andExpect(jsonPath("$.content[1].uuid", is("1010")))
+                .andExpect(jsonPath("$.content[1].title", is("MySQL is to SQL like ??? to NoSQL")))
+                .andExpect(jsonPath("$.content[1].feedTitle", is("user4_subscription1")))
+                .andExpect(jsonPath("$.content[1].tag", is("tag2-tag3")))
                 .andExpect(jsonPath("$.content[1].content", is("content")))
                 .andExpect(jsonPath("$.content[1].seen", is(false)))
-                .andExpect(jsonPath("$.content[1].feedTag", is("tag2")))
+                .andExpect(jsonPath("$.content[1].feedTag", nullValue()))
                 .andExpect(jsonPath("$.content[1].feedTagColor", nullValue()))
-                .andExpect(jsonPath("$.content[1].feedUuid", is("3")))
-                .andExpect(jsonPath("$.content[1].origin", is("http://Use-The-Index-Luke.com/blog/2013-03/Party-Time")))
+                .andExpect(jsonPath("$.content[1].feedUuid", is("14")))
+                .andExpect(jsonPath("$.content[1].origin", is("http://Use-The-Index-Luke.com/blog/2013-10/mysql-is-to-sql-like-mongodb-to-nosql")))
                 .andExpect(jsonPath("$.content[1].createdAt", is("2011-04-15T19:20:46.000+0000")))
-                .andExpect(jsonPath("$.page", nullValue()));
+                .andExpect(jsonPath("$.page.size", is(2)))
+                .andExpect(jsonPath("$.page.totalElements", is(5)))
+                .andExpect(jsonPath("$.page.totalPages", is(3)))
+                .andExpect(jsonPath("$.page.number", is(1)));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void shouldReturnFirstPage() throws Exception {
         mockMvc.perform(get("/api/2/subscriptionEntries?size=1"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?next=1012&size=1"))))
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?page=1&size=1&stamp=1586644784000"))))
                 .andExpect(jsonPath("content[0].uuid", is("1013")));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void shouldReturnSecondPage() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptionEntries?size=1&next=1012"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?next=1011&size=1"))))
+        mockMvc.perform(get("/api/2/subscriptionEntries?size=1&page=1"))
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?page=2&size=1&stamp=1586644784000"))))
                 .andExpect(jsonPath("content[0].uuid", is("1012")));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void shouldReturnLastPage() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptionEntries?size=1&next=1009"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?next=1008&size=1"))))
+        mockMvc.perform(get("/api/2/subscriptionEntries?size=1&page=4"))
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", is(empty())))
                 .andExpect(jsonPath("content[0].uuid", is("1009")));
-
-        mockMvc.perform(get("/api/2/subscriptionEntries?size=1&next=1008"))
-                .andExpect(jsonPath("content..uuid", emptyIterable()));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void shouldReturnFirstSearchResultPage() throws Exception {
         mockMvc.perform(get("/api/2/subscriptionEntries?size=1&q=l*"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=l*&next=1012&size=1"))))
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=l*&page=1&size=1&stamp=1586644784000"))))
                 .andExpect(jsonPath("content[0].uuid", is("1013")));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void shouldReturnSecondSearchResultPage() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptionEntries?q=*&size=1&next=1012"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=*&next=1011&size=1"))))
+        mockMvc.perform(get("/api/2/subscriptionEntries?q=*&size=1&page=1"))
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=*&page=2&size=1&stamp=1586644784000"))))
                 .andExpect(jsonPath("content[0].uuid", is("1012")));
     }
 
     @Test
     @WithMockUser(TestConstants.USER4)
     public void shouldReturnLastSearchResultPage() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptionEntries?q=l*&size=1&next=1010"))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", contains(endsWith("?q=l*&next=1009&size=1"))))
+        mockMvc.perform(get("/api/2/subscriptionEntries?q=l*&size=1&page=1"))
+                .andExpect(jsonPath("links[?(@.rel=='self')].href", contains(endsWith("?q=l*&page=1&size=1&stamp=1586644784000"))))
+                .andExpect(jsonPath("links[?(@.rel=='next')].href", is(empty())))
                 .andExpect(jsonPath("content[0].uuid", is("1010")));
     }
 

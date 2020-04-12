@@ -1,34 +1,25 @@
 package myreader.resource.subscriptionentry.beans;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.util.Objects;
+
 /**
  * @author Kamill Sokol
  */
 public class SearchRequest {
 
-    private static final int DEFAULT_PAGE_SIZE = 20;
+    private final Clock clock;
 
     private String q;
     private String feedUuidEqual;
     private String seenEqual;
     private String feedTagEqual;
     private String entryTagEqual;
-    private String size;
-    private String next;
+    private Long stamp;
 
-    public int getSize() {
-        return size == null ? DEFAULT_PAGE_SIZE : Integer.parseInt(size);
-    }
-
-    public void setSize(String size) {
-        this.size = size;
-    }
-
-    public Long getNext() {
-        return next == null ? Long.valueOf(Long.MAX_VALUE) : Long.valueOf(next);
-    }
-
-    public void setNext(String next) {
-        this.next = next;
+    public SearchRequest(Clock clock) {
+        this.clock = Objects.requireNonNull(clock, "clock is null");
     }
 
     public String getQ() {
@@ -69,5 +60,13 @@ public class SearchRequest {
 
     public void setEntryTagEqual(String entryTagEqual) {
         this.entryTagEqual = entryTagEqual;
+    }
+
+    public Long getStamp() {
+        return stamp != null ? stamp : Instant.now(clock).toEpochMilli();
+    }
+
+    public void setStamp(Long stamp) {
+        this.stamp = stamp;
     }
 }

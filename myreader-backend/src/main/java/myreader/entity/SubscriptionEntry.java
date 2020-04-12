@@ -118,6 +118,7 @@ public class SubscriptionEntry {
         this.feedEntry = feedEntry;
     }
 
+    @Field
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "user_feed_entry_created_at")
     public Date getCreatedAt() {
