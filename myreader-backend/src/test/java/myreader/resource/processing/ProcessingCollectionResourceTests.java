@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.oneOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,7 +47,7 @@ public class ProcessingCollectionResourceTests {
         mockMvc.perform(put("/api/2/processing")
                 .with(jsonBody("{'process': 'indexSyncJob'}")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("done", is(false)))
+                .andExpect(jsonPath("done", is(oneOf(true, false))))
                 .andExpect(jsonPath("cancelled", is(false)));
     }
 }
