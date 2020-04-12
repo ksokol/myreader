@@ -40,7 +40,7 @@ jobs:
       - name: Check Project
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew --console=plain --no-daemon dependencyCheckAnalyze check sonarqube
+        run: ./gradlew --console=plain --no-daemon dependencyCheckAnalyze check jacocoTestReport sonarqube
 
       - name: Build Project
         if: contains(github.ref, 'master')
