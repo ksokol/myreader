@@ -30,6 +30,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.willReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,6 +63,7 @@ public class SubscriptionCollectionResourceTests {
     public void shouldReturnExpectedJsonStructure() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions"))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andExpect(jsonPath("$.content[0].uuid", is("1104")))
                 .andExpect(jsonPath("$.content[0].title", is("user116_subscription1")))
                 .andExpect(jsonPath("$.content[0].sum", is(0)))
