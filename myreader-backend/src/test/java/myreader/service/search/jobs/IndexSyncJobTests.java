@@ -35,7 +35,7 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest(includeFilters = @Filter(type = ASSIGNABLE_TYPE, classes = IndexSyncJob.class))
+@DataJpaTest(showSql = false, includeFilters = @Filter(type = ASSIGNABLE_TYPE, classes = IndexSyncJob.class))
 @Sql("classpath:test-data.sql")
 public class IndexSyncJobTests {
 

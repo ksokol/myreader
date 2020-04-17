@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
-
 import java.util.TimeZone;
 
 import static java.util.Collections.singletonList;
@@ -33,7 +32,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -90,7 +88,6 @@ public class ApiSecurityTests {
                 .param("username", TestConstants.USER0)
                 .param("password", TestConstants.DEFAULT_PASSWORD))
                 .andExpect(status().isOk())
-                .andDo(print())
                 .andExpect(jsonPath("$.roles", is(singletonList("ADMIN"))));
     }
 

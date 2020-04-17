@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest
+@DataJpaTest(showSql = false)
 @Sql("classpath:test-data.sql")
 public class SubscriptionRepositoryTests {
 

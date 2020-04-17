@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.notNullValue;
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest
+@DataJpaTest(showSql = false)
 public class FetchErrorRepositoryTests {
 
     @Autowired

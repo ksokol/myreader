@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest(includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionEntryBatch.class))
+@DataJpaTest(showSql = false, includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionEntryBatch.class))
 @Sql("classpath:test-data.sql")
 public class SubscriptionEntryBatchTests {
 

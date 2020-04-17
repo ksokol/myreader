@@ -27,7 +27,7 @@ import static org.hamcrest.core.Is.is;
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest(includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionBatch.class))
+@DataJpaTest(showSql = false, includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionBatch.class))
 @Sql("classpath:test-data.sql")
 public class SubscriptionBatchTests {
 

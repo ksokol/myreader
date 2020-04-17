@@ -94,12 +94,10 @@ task devRun(type: com.github.psxpaul.task.ExecFork) {
     waitForOutput 'Started Starter'
 }
 
-tasks.matching {it instanceof Test}.all {
-    testLogging.events = ["failed", "passed", "skipped"]
-}
-
 test {
     testLogging {
         exceptionFormat = 'full'
+
+        events = ["failed", "passed", "skipped", "standardOut", "standardError"]
     }
 }

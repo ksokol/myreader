@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringRunner.class)
 @Import(SubscriptionEntryRepositoryTests.TestConfiguration.class)
 @Sql("classpath:test-data.sql")
-@DataJpaTest
+@DataJpaTest(showSql = false)
 public class SubscriptionEntryRepositoryTests {
 
     @Autowired
