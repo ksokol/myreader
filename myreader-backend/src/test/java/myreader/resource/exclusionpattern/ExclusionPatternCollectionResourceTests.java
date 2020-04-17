@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -81,10 +82,7 @@ public class ExclusionPatternCollectionResourceTests {
         mockMvc.perform(post("/api/2/exclusions/9/pattern")
                 .with(jsonBody("{'pattern': ''}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.message", is("validation error")))
-                .andExpect(jsonPath("$.fieldErrors[0].field", is("pattern")))
-                .andExpect(jsonPath("$.fieldErrors[0].message", is("invalid regular expression")));
+                .andExpect(validation().onField("pattern", is("invalid regular expression")));
     }
 
     @Test
@@ -94,10 +92,7 @@ public class ExclusionPatternCollectionResourceTests {
                 .with(jsonBody("{'pattern': null}")))
                 .andExpect(status().isBadRequest())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.message", is("validation error")))
-                .andExpect(jsonPath("$.fieldErrors[0].field", is("pattern")))
-                .andExpect(jsonPath("$.fieldErrors[0].message", is("invalid regular expression")));
+                .andExpect(validation().onField("pattern", is("invalid regular expression")));
     }
 
     @Test
@@ -106,10 +101,7 @@ public class ExclusionPatternCollectionResourceTests {
         mockMvc.perform(post("/api/2/exclusions/9/pattern")
                 .with(jsonBody("{'pattern': '\\\\k'}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.message", is("validation error")))
-                .andExpect(jsonPath("$.fieldErrors[0].field", is("pattern")))
-                .andExpect(jsonPath("$.fieldErrors[0].message", is("invalid regular expression")));
+                .andExpect(validation().onField("pattern", is("invalid regular expression")));
     }
 
     @Test

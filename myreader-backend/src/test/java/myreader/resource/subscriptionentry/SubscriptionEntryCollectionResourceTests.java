@@ -22,6 +22,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.TimeZone;
 
+import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
@@ -231,9 +232,7 @@ public class SubscriptionEntryCollectionResourceTests {
         mockMvc.perform(patch("/api/2/subscriptionEntries")
                 .with(jsonBody("{'content':[{'uuid': 'digits-only'}]}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", contains("content[0].uuid")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("numeric value out of bounds (<2147483647 digits>.<0 digits> expected)")));
+                .andExpect(validation().onField("content[0].uuid", is("numeric value out of bounds (<2147483647 digits>.<0 digits> expected)")));
     }
 
     @Test

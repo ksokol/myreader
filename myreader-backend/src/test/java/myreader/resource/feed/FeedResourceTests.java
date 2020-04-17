@@ -10,17 +10,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.TimeZone;
 
+import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -112,10 +110,8 @@ public class FeedResourceTests {
         mockMvc.perform(patch("/api/2/feeds/18")
                 .with(jsonBody("{}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("status", is(400)))
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", containsInAnyOrder("url", "title")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("invalid syndication feed", "may not be empty")));
+                .andExpect(validation().onField("url", is("invalid syndication feed")))
+                .andExpect(validation().onField("title", is("may not be empty")));
     }
 
     @Test

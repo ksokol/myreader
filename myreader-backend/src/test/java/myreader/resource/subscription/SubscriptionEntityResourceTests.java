@@ -16,8 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.TimeZone;
 
+import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -137,10 +137,7 @@ public class SubscriptionEntityResourceTests {
         mockMvc.perform(patch("/api/2/subscriptions/101")
                 .with(jsonBody("{'title': ' '}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("status", is(400)))
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", containsInAnyOrder("title")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("may not be empty")));
+                .andExpect(validation().onField("title", is("may not be empty")));
     }
 
     @Test
@@ -149,10 +146,7 @@ public class SubscriptionEntityResourceTests {
         mockMvc.perform(patch("/api/2/subscriptions/101")
                 .with(jsonBody("{'title': 'irrelevant', 'feedTag': {'name': ' '}}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("status", is(400)))
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", containsInAnyOrder("feedTag.name")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("may not be empty")));
+                .andExpect(validation().onField("feedTag.name", is("may not be empty")));
     }
 
     @Test

@@ -2,16 +2,18 @@ package myreader.resource.subscriptiontag;
 
 import myreader.entity.SubscriptionTag;
 import myreader.repository.SubscriptionTagRepository;
-import myreader.resource.exception.ResourceNotFoundException;
+import myreader.resource.ResourceConstants;
 import myreader.resource.subscriptiontag.beans.SubscriptionTagGetResponse;
 import myreader.resource.subscriptiontag.beans.SubscriptionTagPatchRequest;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 
@@ -20,7 +22,7 @@ import javax.validation.Valid;
  */
 @Transactional
 @RestController
-@RequestMapping(value = "api/2/subscriptionTags/{id}")
+@RequestMapping(ResourceConstants.SUBSCRIPTION_TAGS)
 public class SubscriptionTagEntityResource {
 
     private final SubscriptionTagRepository subscriptionTagRepository;
@@ -40,8 +42,9 @@ public class SubscriptionTagEntityResource {
             @PathVariable("id") Long id,
             @Valid @RequestBody SubscriptionTagPatchRequest request
     ) {
-        SubscriptionTag subscriptionTag =
-                subscriptionTagRepository.findByCurrentUserAndId(id).orElseThrow(ResourceNotFoundException::new);
+        SubscriptionTag subscriptionTag = subscriptionTagRepository
+                .findByCurrentUserAndId(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         subscriptionTag.setName(request.getName());
         subscriptionTag.setColor(request.getColor());

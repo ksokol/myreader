@@ -13,8 +13,8 @@ describe('withValidations', () => {
       name: 'expectedName',
       value: 'expectedValue',
       validations: [
-        {field: 'expectedName', message: 'expectedMessage1'},
-        {field: 'expectedName', message: 'expectedMessage2'}
+        {field: 'expectedName', defaultMessage: 'expectedMessage1'},
+        {field: 'expectedName', defaultMessage: 'expectedMessage2'}
       ]
     }
 
@@ -45,10 +45,9 @@ describe('withValidations', () => {
     expect(createMount().children().prop('className')).toEqual('')
   })
 
-  it('should render multiple validations belonging to the same prop "name"', () => {
+  it('should render last validation of the prop "name"', () => {
     expect(createMount().children().props().renderValidations()).toEqual(
       <div className="my-input__validations">
-        <span key="expectedMessage1">expectedMessage1</span>
         <span key="expectedMessage2">expectedMessage2</span>
       </div>
     )
@@ -57,18 +56,18 @@ describe('withValidations', () => {
   it('should not render validations when "validations" prop is undefined', () => {
     props.validations = undefined
 
-    expect(createMount().children().props().renderValidations() ).toEqual(<div className="my-input__validations">{[]}</div>)
+    expect(createMount().children().props().renderValidations() ).toBeNull()
   })
 
   it('should render validations belonging to the same prop "name"', () => {
     props.validations = [
-      {field: 'expectedName', message: 'expectedMessage1'},
-      {field: 'otherName', message: 'expectedMessage2'}
+      {field: 'expectedName', defaultMessage: 'expectedMessage1'},
+      {field: 'otherName', defaultMessage: 'expectedMessage2'}
     ]
 
     expect(createMount().children().props().renderValidations()).toEqual(
       <div className="my-input__validations">
-        {[<span key="expectedMessage1">expectedMessage1</span>]}
+        <span key="expectedMessage1">expectedMessage1</span>
       </div>
     )
   })
@@ -77,8 +76,7 @@ describe('withValidations', () => {
     const wrapper = createMount()
     wrapper.setProps({value: 'otherValue'})
 
-    expect(wrapper.children().props().renderValidations())
-      .toEqual(<div className="my-input__validations">{[]}</div>)
+    expect(wrapper.children().props().renderValidations()).toBeNull()
   })
 
   it('should remove error class from wrapped component prop "className" when prop "value" changed', () => {

@@ -16,9 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.TimeZone;
 
+import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -119,10 +118,7 @@ public class SubscriptionTagEntityResourceTests {
         mockMvc.perform(patch("/api/2/subscriptionTags/1")
                 .with(jsonBody("{}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("status", is(400)))
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", contains("name")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("may not be empty")));
+                .andExpect(validation().onField("name", is("may not be empty")));
     }
 
     @Test
@@ -131,10 +127,7 @@ public class SubscriptionTagEntityResourceTests {
         mockMvc.perform(patch("/api/2/subscriptionTags/1")
                 .with(jsonBody("{'name': 'name', 'color': 'yellow'}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("status", is(400)))
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", contains("color")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("not a RGB hex code")));
+                .andExpect(validation().onField("color", is("not a RGB hex code")));
     }
 
     @Test
@@ -143,9 +136,6 @@ public class SubscriptionTagEntityResourceTests {
         mockMvc.perform(patch("/api/2/subscriptionTags/1")
                 .with(jsonBody("{'name': 'name', 'color': '#0000000'}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("status", is(400)))
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", contains("color")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("not a RGB hex code")));
+                .andExpect(validation().onField("color", is("not a RGB hex code")));
     }
 }

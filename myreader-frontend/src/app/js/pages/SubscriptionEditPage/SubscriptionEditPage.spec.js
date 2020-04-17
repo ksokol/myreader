@@ -116,7 +116,7 @@ describe('SubscriptionEditPage', () => {
   })
 
   it('should pass state "validations" to feed edit page when subscriptionApi.saveSubscription failed with HTTP 400', async() => {
-    subscriptionApi.saveSubscription = rejected({status: 400, data: {fieldErrors: ['error']}})
+    subscriptionApi.saveSubscription = rejected({status: 400, data: {errors: ['error']}})
     const wrapper = await createWrapper()
     wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
     await flushPromises()

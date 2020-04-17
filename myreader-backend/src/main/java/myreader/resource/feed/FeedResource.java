@@ -5,7 +5,6 @@ import myreader.entity.FetchError;
 import myreader.repository.FeedRepository;
 import myreader.repository.FetchErrorRepository;
 import myreader.repository.SubscriptionRepository;
-import myreader.resource.exception.ResourceNotFoundException;
 import myreader.resource.feed.beans.FeedGetResponse;
 import myreader.resource.feed.beans.FeedPatchRequest;
 import myreader.resource.feed.beans.FetchErrorGetResponse;
@@ -17,18 +16,18 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 
-import static myreader.resource.ResourceConstants.FEED_FETCH_ERROR_URL;
-import static myreader.resource.ResourceConstants.FEED_URL;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
+import static myreader.resource.ResourceConstants.FEED_FETCH_ERROR;
+import static myreader.resource.ResourceConstants.FEED;
 
 /**
  * @author Kamill Sokol
@@ -59,7 +58,7 @@ public class FeedResource {
         this.subscriptionRepository = subscriptionRepository;
     }
 
-    @RequestMapping(value = FEED_URL, method = GET)
+    @GetMapping(FEED)
     public FeedGetResponse get(@PathVariable("id") Long id) {
         return feedRepository.findById(id)
                 .map(assembler::toModel)
@@ -67,15 +66,15 @@ public class FeedResource {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping(value = FEED_URL, method = DELETE)
+    @DeleteMapping(FEED)
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         int count = subscriptionRepository.countByFeedId(id);
 
-        if(count > 0) {
+        if (count > 0) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        if(!feedRepository.existsById(id)) {
+        if (!feedRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
@@ -85,7 +84,7 @@ public class FeedResource {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping(value = FEED_URL, method = PATCH)
+    @PatchMapping(FEED)
     public FeedGetResponse patch(@PathVariable("id") Long id, @Valid @RequestBody FeedPatchRequest request) {
         Feed feed = findOrThrowException(id);
 
@@ -96,7 +95,7 @@ public class FeedResource {
         return get(id);
     }
 
-    @RequestMapping(value = FEED_FETCH_ERROR_URL, method = GET)
+    @GetMapping(FEED_FETCH_ERROR)
     public PagedModel<FetchErrorGetResponse> getFetchError(@PathVariable("id") Long id, Pageable pageable) {
         Page<FetchError> page = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(id, pageable);
         return pagedResourcesAssembler.toModel(page, fetchErrorAssembler);
@@ -105,6 +104,6 @@ public class FeedResource {
     private Feed findOrThrowException(Long id) {
         return feedRepository
                 .findById(id)
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 }

@@ -10,8 +10,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.oneOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -35,11 +35,7 @@ public class ProcessingCollectionResourceTests {
         mockMvc.perform(put("/api/2/processing")
                 .with(jsonBody("{}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("status", is(400)))
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors", hasSize(1)))
-                .andExpect(jsonPath("fieldErrors[0].field", is("process")))
-                .andExpect(jsonPath("fieldErrors[0].message", is("process does not exists")));
+                .andExpect(validation().onField("process", is("process does not exists")));
     }
 
     @Test

@@ -108,7 +108,7 @@ describe('FeedEditPage', () => {
   })
 
   it('should pass state "validations" to feed edit page when call to feedApi.saveFeed failed', async () => {
-    feedApi.saveFeed = rejected({status: 400, data: {fieldErrors: ['error']}})
+    feedApi.saveFeed = rejected({status: 400, data: {errors: ['error']}})
     const wrapper = await createWrapper()
     wrapper.find('FeedEditForm').props().onSaveFormData({})
     await flushPromises()

@@ -21,15 +21,15 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.TimeZone;
 
+import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.willReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("classpath:test-data.sql")
 public class SubscriptionCollectionResourceTests {
 
@@ -62,6 +62,7 @@ public class SubscriptionCollectionResourceTests {
     public void shouldReturnExpectedJsonStructure() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions"))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andExpect(jsonPath("$.content[0].uuid", is("1104")))
                 .andExpect(jsonPath("$.content[0].title", is("user116_subscription1")))
                 .andExpect(jsonPath("$.content[0].sum", is(0)))
@@ -106,10 +107,7 @@ public class SubscriptionCollectionResourceTests {
         mockMvc.perform(post("/api/2/subscriptions")
                 .with(jsonBody("{}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("status", is(400)))
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", contains("origin")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("invalid syndication feed")));
+                .andExpect(validation().onField("origin", is("invalid syndication feed")));
     }
 
     @Test
@@ -118,9 +116,7 @@ public class SubscriptionCollectionResourceTests {
         mockMvc.perform(post("/api/2/subscriptions")
                 .with(jsonBody("{'url':'invalid url'}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", contains("origin")))
-                .andExpect(jsonPath("fieldErrors..message", hasItems("invalid syndication feed")));
+                .andExpect(validation().onField("origin", is("invalid syndication feed")));
     }
 
     @Test
@@ -129,9 +125,7 @@ public class SubscriptionCollectionResourceTests {
         mockMvc.perform(post("/api/2/subscriptions")
                 .with(jsonBody("{'origin' : 'http://martinfowler.com/feed.atom'}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", is("validation error")))
-                .andExpect(jsonPath("fieldErrors..field", contains("origin")))
-                .andExpect(jsonPath("fieldErrors..message", contains("subscription exists")));
+                .andExpect(validation().onField("origin", is("subscription exists")));
     }
 
     @Test

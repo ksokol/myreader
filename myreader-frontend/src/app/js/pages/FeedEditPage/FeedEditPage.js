@@ -38,10 +38,10 @@ class FeedEditPage extends React.Component {
     try {
       await feedApi.saveFeed(feed)
       toast('Feed saved')
-    } catch(error) {
+    } catch (error) {
       if (error.status === 400) {
         this.setState({
-          validations: error.data.fieldErrors
+          validations: error.data.errors
         })
       } else {
         toast(error.data, {error: true})
@@ -57,7 +57,7 @@ class FeedEditPage extends React.Component {
     try {
       await feedApi.deleteFeed(uuid)
       this.props.historyReplace({pathname: ADMIN_FEEDS_URL})
-    } catch(error) {
+    } catch (error) {
       this.setState({changePending: false})
       if (error.status === 409) {
         toast('Can not delete. Feed has subscriptions', {error: true})

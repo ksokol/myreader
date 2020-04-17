@@ -1,69 +1,66 @@
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 
-function retrieveValidationsForField({name, validations}) {
-    return validations
-        .filter(validation => name === validation.field)
-        .map(validation => validation.message)
+function retrieveValidationForField({name, validations}) {
+  return validations
+    .filter(validation => name === validation.field)
+    .map(validation => validation.defaultMessage)
+    .pop()
 }
 
 const withValidations = WrappedComponent => {
 
-    const WithValidations = class WithValidations extends Component {
+  return class WithValidations extends React.Component {
 
-        constructor(props) {
-            super(props)
-            this.state = {
-                value: props.value
-            }
-
-            this.renderValidations = this.renderValidations.bind(this)
-        }
-
-        static getDerivedStateFromProps(props, state) {
-            const validations = props.value === state.value ? retrieveValidationsForField(props) : []
-            return {
-                value: props.value,
-                validations
-            }
-        }
-
-        get filteredProps() {
-            const {validations, ...inputProps} = this.props
-            return inputProps
-        }
-
-        renderValidations() {
-            return (
-                <div className="my-input__validations">
-                    {this.state.validations.map(message => <span key={message}>{message}</span>)}
-                </div>
-            )
-        }
-
-        render() {
-            const className = this.state.validations.length > 0 ? 'my-input--error' : '';
-            const props = Object.assign({renderValidations: this.renderValidations, className}, this.filteredProps)
-            return <WrappedComponent {...props} />
-        }
+    static propTypes = {
+      name: PropTypes.string.isRequired,
+      value: PropTypes.string,
+      validations: PropTypes.arrayOf(
+        PropTypes.shape({
+          field: PropTypes.string.isRequired,
+          defaultMessage: PropTypes.string.isRequired
+        })
+      )
     }
 
-    WithValidations.propTypes = {
-        name: PropTypes.string.isRequired,
-        value: PropTypes.string,
-        validations: PropTypes.arrayOf(
-            PropTypes.shape({
-                field: PropTypes.string.isRequired,
-                message: PropTypes.string.isRequired
-            })
-        )
+    static defaultProps = {
+      validations: []
     }
 
-    WithValidations.defaultProps = {
-        validations: []
+    constructor(props) {
+      super(props)
+      this.state = {
+        value: props.value
+      }
     }
 
-    return WithValidations
+    static getDerivedStateFromProps(props, state) {
+      const validation = props.value === state.value ? retrieveValidationForField(props) : undefined
+      return {
+        value: props.value,
+        validation
+      }
+    }
+
+    get filteredProps() {
+      const {validations, ...inputProps} = this.props
+      return inputProps
+    }
+
+    renderValidations = () => {
+      return (this.state.validation ? (
+        <div className="my-input__validations">
+          <span key={this.state.validation}>{this.state.validation}</span>
+        </div>) : null
+      )
+    }
+
+    render() {
+      const className = this.state.validation ? 'my-input--error' : ''
+      const props = Object.assign({renderValidations: this.renderValidations, className}, this.filteredProps)
+      return <WrappedComponent {...props} />
+    }
+  }
 }
 
 export default withValidations

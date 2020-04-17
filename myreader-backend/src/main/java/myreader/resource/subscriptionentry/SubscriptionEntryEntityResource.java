@@ -2,32 +2,31 @@ package myreader.resource.subscriptionentry;
 
 import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.resource.exception.ResourceNotFoundException;
+import myreader.resource.ResourceConstants;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * @author Kamill Sokol
  */
 @Transactional
 @RestController
-@RequestMapping("api/2/subscriptionEntries/{id}")
+@RequestMapping(ResourceConstants.SUBSCRIPTION_ENTRY)
 public class SubscriptionEntryEntityResource {
 
     private final SubscriptionEntryRepository subscriptionEntryRepository;
     private final RepresentationModelAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
 
-    @Autowired
     public SubscriptionEntryEntityResource(
             RepresentationModelAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
             SubscriptionEntryRepository subscriptionEntryRepository
@@ -36,17 +35,17 @@ public class SubscriptionEntryEntityResource {
         this.subscriptionEntryRepository = subscriptionEntryRepository;
     }
 
-    @RequestMapping(method = GET)
+    @GetMapping
     public SubscriptionEntryGetResponse get(@PathVariable("id") Long id) {
-        final SubscriptionEntry subscriptionEntry = findOrThrowException(id);
+        SubscriptionEntry subscriptionEntry = findOrThrowException(id);
         return assembler.toModel(subscriptionEntry);
     }
 
-    @RequestMapping(method = PATCH)
+    @PatchMapping
     public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @RequestBody SubscriptionEntryPatchRequest request) {
-        final SubscriptionEntry subscriptionEntry = findOrThrowException(id);
+        SubscriptionEntry subscriptionEntry = findOrThrowException(id);
 
-        if(request.getSeen() != null) {
+        if (request.getSeen() != null) {
             subscriptionEntry.setSeen(request.getSeen());
         }
 
@@ -59,8 +58,8 @@ public class SubscriptionEntryEntityResource {
 
     private SubscriptionEntry findOrThrowException(Long id) {
         SubscriptionEntry entry = subscriptionEntryRepository.findByIdAndCurrentUser(id);
-        if(entry == null) {
-            throw new ResourceNotFoundException();
+        if (entry == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return entry;
     }

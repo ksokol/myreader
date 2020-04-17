@@ -57,13 +57,33 @@ describe('SubscribePage', () => {
   })
 
   it('should set prop "changePending" to true when subscriptionApi.subscribe called', async () => {
-    subscriptionApi.subscribe = resolved({uuid: 'uuid1'})
+    subscriptionApi.subscribe = pending()
     const wrapper = createWrapper()
     wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
     await flushPromises()
     wrapper.update()
 
     expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(true)
+  })
+
+  it('should set prop "changePending" to false when subscriptionApi.subscribe finished', async () => {
+    subscriptionApi.subscribe = resolved({uuid: 'uuid1'})
+    const wrapper = createWrapper()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
+    await flushPromises()
+    wrapper.update()
+
+    expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(false)
+  })
+
+  it('should set prop "changePending" to false when subscriptionApi.subscribe failed', async () => {
+    subscriptionApi.subscribe = rejected()
+    const wrapper = createWrapper()
+    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
+    await flushPromises()
+    wrapper.update()
+
+    expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(false)
   })
 
   it('should trigger prop function "showSuccessNotification" when prop call to subscriptionApi.subscribe succeeded', async () => {
@@ -92,7 +112,7 @@ describe('SubscribePage', () => {
   })
 
   it('should pass state "validations" to feed edit page when call to subscriptionApi.subscribe failed', async () => {
-    subscriptionApi.subscribe = rejected({status: 400, data: {fieldErrors: ['error']}})
+    subscriptionApi.subscribe = rejected({status: 400, data: {errors: ['error']}})
     const wrapper = createWrapper()
     wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
     await flushPromises()

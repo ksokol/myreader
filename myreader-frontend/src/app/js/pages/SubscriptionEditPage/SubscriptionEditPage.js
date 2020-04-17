@@ -47,7 +47,7 @@ class SubscriptionEditPage extends React.Component {
       this.props.historyReload()
     } catch (error) {
       if (error.status === 400) {
-        this.setState({validations: error.data.fieldErrors})
+        this.setState({validations: error.data.errors})
       } else {
         toast(error.data, {error: true})
       }
