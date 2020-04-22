@@ -1,10 +1,10 @@
 import './FeedEditForm.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Button, ConfirmButton, FeedFetchErrors, Icon, Input, withValidations} from '../../components'
-
-export const FeedTitleInput = withValidations(Input)
-export const FeedUrlInput = withValidations(Input)
+import {Button, ConfirmButton} from '../../components/Buttons'
+import {FeedFetchErrors} from '../../components/FeedFetchErrors/FeedFetchErrors'
+import {Icon} from '../../components/Icon/Icon'
+import {Input} from '../../components/Input/Input'
 
 export class FeedEditForm extends React.Component {
 
@@ -48,7 +48,7 @@ export class FeedEditForm extends React.Component {
         className='my-feed-edit-form'
       >
         <form>
-          <FeedTitleInput
+          <Input
             name='title'
             value={title}
             label='Title'
@@ -60,7 +60,7 @@ export class FeedEditForm extends React.Component {
           <div
             className='my-feed-edit-form__origin'
           >
-            <FeedUrlInput
+            <Input
               name='url'
               value={url}
               label='Url'

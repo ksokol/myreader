@@ -16,7 +16,7 @@ describe('FeedEditForm', () => {
         url: 'url 1'
       },
       validations: [
-        {field: 'title', message: 'validation message'}
+        {field: 'title', defaultMessage: 'validation message'}
       ],
       failures: [{uuid: '2', createdAt: '2017-01-29'}, {uuid: '3', createdAt: '2017-02-28'}],
       changePending: true,
@@ -34,7 +34,7 @@ describe('FeedEditForm', () => {
       value: 'title 1',
       label: 'Title',
       disabled: true,
-      validations: [{field: 'title', message: 'validation message'}]
+      validations: [{field: 'title', defaultMessage: 'validation message'}]
     })
   })
 
@@ -45,7 +45,7 @@ describe('FeedEditForm', () => {
       value: 'url 1',
       label: 'Url',
       disabled: true,
-      validations: [{field: 'title', message: 'validation message'}]
+      validations: [{field: 'title', defaultMessage: 'validation message'}]
     })
   })
 

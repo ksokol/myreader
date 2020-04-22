@@ -31,7 +31,7 @@ describe('SubscriptionEditForm', () => {
         {name: 'name 2'}
       ],
       validations: [
-        {field: 'title', message: 'validation message'}
+        {field: 'title', defaultMessage: 'validation message'}
       ],
       changePending: true,
       saveSubscriptionEditForm: jest.fn(),
@@ -49,7 +49,7 @@ describe('SubscriptionEditForm', () => {
       name: 'title',
       label: 'Title',
       disabled: true,
-      validations: [{field: 'title', message: 'validation message'}]
+      validations: [{field: 'title', defaultMessage: 'validation message'}]
     }))
   })
 

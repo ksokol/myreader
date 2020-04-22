@@ -5,6 +5,13 @@ import {noop} from '../../shared/utils'
 
 const KEY_CODE = 'Enter'
 
+function retrieveValidationForField(name, validations) {
+  return validations
+    .filter(validation => name === validation.field)
+    .map(validation => validation.defaultMessage)
+    .pop()
+}
+
 export class Input extends React.Component {
 
   static propTypes = {
@@ -21,7 +28,12 @@ export class Input extends React.Component {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     onEnter: PropTypes.func,
-    renderValidations: PropTypes.func
+    validations: PropTypes.arrayOf(
+      PropTypes.shape({
+        field: PropTypes.string.isRequired,
+        defaultMessage: PropTypes.string.isRequired
+      })
+    )
   }
 
   static defaultProps = {
@@ -32,11 +44,14 @@ export class Input extends React.Component {
     onFocus: noop,
     onBlur: noop,
     onEnter: noop,
-    renderValidations: noop
+    validations: []
   }
 
   state = {
-    focused: false
+    focused: false,
+    validations: this.props.validations,
+    lastValidations: [],
+    value: this.props.value
   }
 
   inputRef = React.createRef()
@@ -49,6 +64,14 @@ export class Input extends React.Component {
     if (this.state.focused && !this.props.disabled) {
       this.inputRef.current.focus()
     }
+  }
+
+  onChange = event => {
+    this.setState({
+      validations: [],
+      lastValidations: this.props.validations
+    })
+    this.props.onChange(event)
   }
 
   onKeyUp = event => {
@@ -67,25 +90,32 @@ export class Input extends React.Component {
     this.props.onBlur(event)
   }
 
+  retrieveFieldValidation = () => {
+    return this.state.lastValidations !== this.props.validations && this.props.validations.length > 0 ?
+      retrieveValidationForField(this.props.name, this.props.validations) : undefined
+  }
+
   render() {
     const {
       type,
-      className,
+      className = '',
       label,
       name,
       value,
       placeholder,
       autoComplete,
       disabled,
-      onChange,
-      renderValidations,
+      validations,
       onEnter,
       ...otherProps
     } = this.props
 
+    const fieldValidation = this.retrieveFieldValidation()
+    const inputClasses = `my-input ${className} ${fieldValidation ? 'my-input--error' : ''}`
+
     return (
       <div
-        className={`my-input ${className || ''}`}
+        className={inputClasses}
       >
         {label && (
           <label
@@ -105,13 +135,21 @@ export class Input extends React.Component {
           placeholder={placeholder}
           autoComplete={autoComplete}
           disabled={disabled}
-          onChange={onChange}
+          onChange={this.onChange}
           onFocus={this.onFocus}
           onBlur={this.onBlur}
           onKeyUp={this.onKeyUp}
         />
 
-        {renderValidations()}
+        {fieldValidation ? (
+          <div className="my-input__validations">
+            <span
+              key={fieldValidation}
+            >
+              {fieldValidation}
+            </span>
+          </div>) : null
+        }
       </div>
     )
   }

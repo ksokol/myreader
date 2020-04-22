@@ -8,14 +8,23 @@ describe('Input', () => {
 
   beforeEach(() => {
     props = {
+      id: 'expectedId',
+      type: 'expectedType',
       label: 'expectedLabel',
       name: 'expectedName',
       value: 'expectedValue',
       placeholder: 'expected placeholder',
+      autoComplete: 'expectedAutocomplete',
+      disabled: false,
+      validations: [
+        {field: 'expectedName', defaultMessage: 'expectedMessage1'},
+        {field: 'expectedName', defaultMessage: 'expectedMessage2'}
+      ],
       onChange: jest.fn(),
       onFocus: jest.fn(),
       onBlur: jest.fn(),
       onEnter: jest.fn(),
+      onKeyUp: jest.fn(),
       a: 'b',
       c: 'd'
     }
@@ -38,7 +47,16 @@ describe('Input', () => {
     expect(wrapper.find('input').exists()).toEqual(true)
   })
 
-  it('should pass expected props to label', () => {
+  it('should pass expected props to label when prop "id" is defined', () => {
+    expect(createComponent().find('label').props()).toEqual({
+      htmlFor: 'expectedId',
+      children: 'expectedLabel'
+    })
+  })
+
+  it('should pass expected props to label when prop "id" is undefined', () => {
+    props.id = undefined
+
     expect(createComponent().find('label').props()).toEqual({
       htmlFor: 'expectedName',
       children: 'expectedLabel'
@@ -46,20 +64,30 @@ describe('Input', () => {
   })
 
   it('should pass expected props to input', () => {
-    const {onChange, ...props} = createComponent().find('input').props()
+    const {onChange, onBlur, onKeyUp, onFocus, ...props} = createComponent().find('input').props()
 
     expect(onChange).toBeDefined()
-    expect(props).toContainObject({
-      type: 'text',
-      id: 'expectedName',
+    expect(onBlur).toBeDefined()
+    expect(onKeyUp).toBeDefined()
+    expect(onFocus).toBeDefined()
+
+    expect(props).toEqual(expect.objectContaining({
+      type: 'expectedType',
+      id: 'expectedId',
       name: 'expectedName',
       value: 'expectedValue',
       placeholder: 'expected placeholder',
-      autoComplete: 'off',
+      autoComplete: 'expectedAutocomplete',
       disabled: false,
       a: 'b',
       c: 'd'
-    })
+    }))
+  })
+
+  it('should pass expected props to input when prop "id" is undefined', () => {
+    props.id = undefined
+
+    expect(createComponent().find('input').prop('id')).toEqual('expectedName')
   })
 
   it('should disable input when prop "disabled" is true', () => {
@@ -90,14 +118,6 @@ describe('Input', () => {
     props.className = 'expected-class'
 
     expect(createComponent().find('.my-input').prop('className')).toContain('expected-class')
-  })
-
-  it('should render prop "renderValidations" function', () => {
-    /* eslint-disable react/display-name */
-    props.renderValidations = () => <p>expected validation</p>
-    /* eslint-enable */
-
-    expect(createComponent().find('input + p').text()).toEqual('expected validation')
   })
 
   it('should not focus input field after mount', () => {
@@ -172,6 +192,7 @@ describe('Input', () => {
   })
 
   it('should link label with input based on prop "name" when prop "id" is not present', () => {
+    props.id = undefined
     const wrapper = createComponent()
 
     expect(wrapper.find('label').prop('htmlFor')).toEqual('expectedName')
@@ -203,5 +224,67 @@ describe('Input', () => {
     createComponent().find('input').simulate('keyUp', {key: 'Esc'})
 
     expect(props.onEnter).not.toHaveBeenCalled()
+  })
+
+  it('should add error class when prop "validations" contains error for prop "name"', () => {
+    expect(createComponent().children().prop('className')).toContain('my-input--error')
+  })
+
+  it('should not add error class when prop "validations" is undefined', () => {
+    props.validations = undefined
+
+    expect(createComponent().children().prop('className')).not.toContain('my-input--error')
+  })
+
+  it('should render last validation for prop "name"', () => {
+    expect(createComponent().find('.my-input__validations').html())
+      .toEqual('<div class="my-input__validations"><span>expectedMessage2</span></div>')
+  })
+
+  it('should not render last validation when prop "validations" is undefined', () => {
+    props.validations = undefined
+
+    expect(createComponent().find('.my-input__validations').exists()).toBe(false)
+  })
+
+  it('should render last validation belonging to the same prop "name"', () => {
+    props.validations = [
+      {field: 'expectedName', defaultMessage: 'expectedMessage1'},
+      {field: 'otherName', defaultMessage: 'expectedMessage2'}
+    ]
+
+    expect(createComponent().find('.my-input__validations').html())
+      .toEqual('<div class="my-input__validations"><span>expectedMessage1</span></div>')
+  })
+
+  it('should clear validations when input changed', () => {
+    const wrapper = createComponent()
+    wrapper.find('input').simulate('change', {target: {value: 't'}})
+
+    expect(wrapper.find('.my-input__validations').exists()).toBe(false)
+  })
+
+  it('should remove error class when input changed', () => {
+    const wrapper = createComponent()
+    wrapper.find('input').simulate('change', {target: {value: 't'}})
+
+    expect(wrapper.children().prop('className')).not.toContain('my-input--error')
+  })
+
+  it('should not render last validation when prop "value" changed', () => {
+    const wrapper = createComponent()
+    wrapper.find('input').simulate('change', {target: {value: 't'}})
+    wrapper.setProps({value: 't'})
+
+    expect(wrapper.find('.my-input__validations').exists()).toBe(false)
+  })
+
+  it('should render last validation when prop "validations" changed although the values stays the same', () => {
+    const wrapper = createComponent()
+    wrapper.find('input').simulate('change', {target: {value: 't'}})
+    wrapper.setProps({validations: [...props.validations]})
+
+    expect(wrapper.find('.my-input__validations').html())
+      .toEqual('<div class="my-input__validations"><span>expectedMessage2</span></div>')
   })
 })

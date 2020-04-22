@@ -4,10 +4,8 @@ import PropTypes from 'prop-types'
 import {AutocompleteInput} from '../AutocompleteInput/AutocompleteInput'
 import {Button, ConfirmButton} from '../Buttons'
 import {Icon} from '../Icon/Icon'
-import {Input, withValidations} from '../Input'
+import {Input} from '../Input/Input'
 import {SubscriptionExclusions} from './SubscriptionExclusions/SubscriptionExclusions'
-
-export const SubscriptionTitleInput = withValidations(Input)
 
 class SubscriptionEditForm extends React.Component {
 
@@ -65,7 +63,7 @@ class SubscriptionEditForm extends React.Component {
       <form
         className='my-subscription-edit-form'
       >
-        <SubscriptionTitleInput
+        <Input
           name='title'
           value={title}
           label='Title'

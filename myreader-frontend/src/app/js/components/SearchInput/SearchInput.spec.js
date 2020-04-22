@@ -1,12 +1,18 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import SearchInput from './SearchInput'
-import {withDebounce} from '../../components'
+import withDebounce from '../../components/Input/withDebounce'
 
 /* eslint-disable react/prop-types, react/display-name */
-jest.mock('../../components', () => ({
-  withDebounce: jest.fn().mockImplementation(Component => props => <Component {...props} />),
-  Input: props => <div {...props} />,
+jest.mock('../../components/Input/withDebounce', () =>
+  jest.fn().mockImplementation(Component => props => <Component {...props} />)
+)
+
+jest.mock('../../components/Input/Input', () => ({
+  Input: props => <div {...props} />
+}))
+
+jest.mock('../../components/Icon/Icon', () => ({
   Icon: () => null
 }))
 /* eslint-enable */

@@ -10,7 +10,7 @@ describe('SubscribeForm', () => {
 
   beforeEach(() => {
     props = {
-      validations: [{field: 'origin', message: 'may not be empty'}],
+      validations: [{field: 'origin', defaultMessage: 'may not be empty'}],
       changePending: true,
       subscriptionEditFormChangeData: jest.fn(),
       saveSubscribeEditForm: jest.fn()
@@ -22,7 +22,7 @@ describe('SubscribeForm', () => {
       value: '',
       label: 'Url',
       disabled: true,
-      validations: [{field: 'origin', message: 'may not be empty'}],
+      validations: [{field: 'origin', defaultMessage: 'may not be empty'}],
     }))
   })
 

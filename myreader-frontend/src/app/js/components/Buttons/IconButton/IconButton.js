@@ -2,16 +2,16 @@ import './IconButton.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import {Icon} from '../..'
+import {Icon} from '../../Icon/Icon'
 import {noop} from '../../../shared/utils'
 
 const IconButton = props =>
   <button type='button'
-          className={classNames('my-icon-button', props.className)}
-          disabled={props.disabled}
-          onClick={props.onClick}>
+    className={classNames('my-icon-button', props.className)}
+    disabled={props.disabled}
+    onClick={props.onClick}>
     <Icon type={props.type}
-          inverse={props.inverse}/>
+      inverse={props.inverse}/>
   </button>
 
 IconButton.propTypes = {

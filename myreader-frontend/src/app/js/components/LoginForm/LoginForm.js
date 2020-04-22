@@ -1,7 +1,8 @@
 import './LoginForm.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Button, Input} from '../../components'
+import {Button} from '../../components/Buttons'
+import {Input} from '../../components/Input/Input'
 
 export default class LoginForm extends React.Component {
 

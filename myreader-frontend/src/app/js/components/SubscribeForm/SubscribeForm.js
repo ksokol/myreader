@@ -1,9 +1,8 @@
 import './SubscribeForm.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Button, Input, withValidations} from '../../components'
-
-export const SubscribeOriginInput = withValidations(Input)
+import {Button} from '../../components/Buttons'
+import {Input} from '../../components/Input/Input'
 
 class SubscribeForm extends React.Component {
 
@@ -36,7 +35,7 @@ class SubscribeForm extends React.Component {
       <form
         className='my-subscribe-form'
       >
-        <SubscribeOriginInput
+        <Input
           name='origin'
           value={origin}
           label='Url'

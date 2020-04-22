@@ -1,7 +1,9 @@
 import './SearchInput.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Icon, Input, withDebounce} from '../../components'
+import {Icon} from '../../components/Icon/Icon'
+import {Input} from '../../components/Input/Input'
+import withDebounce from '../../components/Input/withDebounce'
 import {isValuePresent} from '../../shared/utils'
 
 const DebounceInput = withDebounce(Input, 250)

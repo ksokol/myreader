@@ -1,7 +1,9 @@
 import './FeedFetchErrors.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {TimeAgo, Button, IntersectionObserver} from '../../components'
+import TimeAgo from '../../components/TimeAgo/TimeAgo'
+import {Button} from '../../components/Buttons'
+import IntersectionObserver from '../../components/IntersectionObserver/IntersectionObserver'
 import {feedApi} from '../../api'
 
 const Failure = props => (
@@ -82,9 +84,9 @@ export class FeedFetchErrors extends React.Component {
 
           hasNextPage && (
             <Button key='load-more'
-                    className='my-feed-fetch-errors__load-more'
-                    disabled={this.state.loading}
-                    onClick={this.fetchFailures}>
+              className='my-feed-fetch-errors__load-more'
+              disabled={this.state.loading}
+              onClick={this.fetchFailures}>
               Load More
             </Button>
           )
