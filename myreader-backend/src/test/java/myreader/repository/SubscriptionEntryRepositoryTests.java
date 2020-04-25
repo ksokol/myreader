@@ -1,8 +1,8 @@
 package myreader.repository;
 
 import myreader.entity.SubscriptionEntry;
-import myreader.service.search.jobs.IndexSyncJob;
 import myreader.test.TestConstants;
+import org.hibernate.search.jpa.Search;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +18,8 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -30,8 +32,9 @@ import static org.junit.Assert.assertThat;
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@Import(SubscriptionEntryRepositoryTests.TestConfiguration.class)
+@Import({SubscriptionEntryRepositoryTests.TestConfiguration.class})
 @Sql("classpath:test-data.sql")
+@Transactional(propagation = Propagation.SUPPORTS)
 @DataJpaTest(showSql = false)
 public class SubscriptionEntryRepositoryTests {
 
@@ -44,8 +47,8 @@ public class SubscriptionEntryRepositoryTests {
     private Page<SubscriptionEntry> page;
 
     @Before
-    public void setUp() {
-        new IndexSyncJob(testEntityManager.getEntityManager()).work();
+    public void setUp() throws InterruptedException {
+        Search.getFullTextEntityManager(testEntityManager.getEntityManager()).createIndexer().startAndWait();
     }
 
     @Test

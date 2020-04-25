@@ -27,7 +27,7 @@ public abstract class BaseJob implements Runnable, ApplicationListener<ContextCl
         return alive;
     }
 
-    public abstract void work();
+    public abstract void work() throws InterruptedException;
 
     @Override
     public final void run() {

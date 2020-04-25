@@ -1,8 +1,8 @@
 package myreader.resource.subscriptionentry;
 
-import myreader.service.search.jobs.IndexSyncJob;
 import myreader.test.TestConstants;
 import myreader.test.TestProperties;
+import org.hibernate.search.jpa.Search;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +16,10 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.TimeZone;
@@ -44,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 @Sql("classpath:test-data.sql")
-@Transactional
+@Transactional(propagation = Propagation.SUPPORTS)
 public class SubscriptionEntryCollectionResourceTests {
 
     static {
@@ -63,11 +65,11 @@ public class SubscriptionEntryCollectionResourceTests {
     private MockMvc mockMvc;
 
     @Autowired
-    private IndexSyncJob indexSyncJob;
+    private EntityManager em;
 
     @Before
-    public void setUp() {
-        indexSyncJob.work();
+    public void setUp() throws InterruptedException {
+        Search.getFullTextEntityManager(em).createIndexer().startAndWait();
     }
 
     @Before
