@@ -6,10 +6,9 @@ import myreader.resource.subscriptionentry.beans.SearchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.data.domain.Slice;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -17,70 +16,67 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
+import static myreader.resource.ResourceConstants.SUBSCRIPTION_ENTRIES;
+import static myreader.resource.ResourceConstants.SUBSCRIPTION_ENTRIES_AVAILABLE_TAGS;
 
 /**
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping(value = "api/2/subscriptionEntries")
 public class SubscriptionEntryCollectionResource {
 
-    private final PagedResourcesAssembler<SubscriptionEntry> pagedResourcesAssembler;
     private final RepresentationModelAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
     private final SubscriptionEntryRepository subscriptionEntryRepository;
 
     public SubscriptionEntryCollectionResource(
-            PagedResourcesAssembler<SubscriptionEntry> pagedResourcesAssembler,
             RepresentationModelAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
             SubscriptionEntryRepository subscriptionEntryRepository
     ) {
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.assembler = assembler;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
     }
 
-    @GetMapping
-    public PagedModel<SubscriptionEntryGetResponse> get(Pageable pageRequest, SearchRequest page) {
-        Page<SubscriptionEntry> pagedEntries = subscriptionEntryRepository.findByForCurrentUser(
-                pageRequest,
-                page.getQ(),
-                page.getFeedUuidEqual(),
-                page.getFeedTagEqual(),
-                page.getEntryTagEqual(),
-                page.getSeenEqual(),
-                page.getStamp()
-        );
+    @GetMapping(SUBSCRIPTION_ENTRIES)
+    public PagedModel<SubscriptionEntryGetResponse> get(SearchRequest searchRequest) {
+        Slice<SubscriptionEntryGetResponse> slicedEntries = subscriptionEntryRepository.findByForCurrentUser(
+                searchRequest.getSize(),
+                searchRequest.getQ(),
+                searchRequest.getFeedUuidEqual(),
+                searchRequest.getFeedTagEqual(),
+                searchRequest.getEntryTagEqual(),
+                searchRequest.getSeenEqual(),
+                searchRequest.getNext()
+        ).map(assembler::toModel);
 
-        PagedModel<SubscriptionEntryGetResponse> pagedModel = pagedResourcesAssembler.toModel(pagedEntries, assembler);
+        UriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentRequest().replaceQueryParam("next", Collections.emptyList());
+        List<Link> links = new ArrayList<>();
+        links.add(new Link(builder.toUriString(), IanaLinkRelations.SELF));
 
-        List<Link> links = pagedModel.getLinks()
-                .stream()
-                .map(link -> link.withHref(fromUriString(link.getHref()).queryParam("stamp", page.getStamp()).toUriString()))
-                .collect(Collectors.toList());
+        if (slicedEntries.hasNext()) {
+            SubscriptionEntryGetResponse last = slicedEntries.getContent().get(slicedEntries.getSize() - 1);
+            links.add(new Link(builder.queryParam("next", last.getUuid()).toUriString(), IanaLinkRelations.NEXT));
+        }
 
-        pagedModel.removeLinks();
-        pagedModel.add(links);
-
-        return pagedModel;
+        return new PagedModel<>(slicedEntries.getContent(), null, links);
     }
 
-    @GetMapping("availableTags")
+    @GetMapping(SUBSCRIPTION_ENTRIES_AVAILABLE_TAGS)
     public Set<String> tags() {
         return subscriptionEntryRepository.findDistinctTagsForCurrentUser();
     }
 
     @Transactional
-    @PatchMapping
+    @PatchMapping(SUBSCRIPTION_ENTRIES)
     public CollectionModel<SubscriptionEntryGetResponse> patch(@Valid @RequestBody SubscriptionEntryBatchPatchRequest request) {
         List<SubscriptionEntryGetResponse> subscriptionEntryGetResponses = new ArrayList<>(request.getContent().size());
 

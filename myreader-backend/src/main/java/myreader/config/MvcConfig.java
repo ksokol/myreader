@@ -1,6 +1,6 @@
 package myreader.config;
 
-import myreader.resource.subscriptionentry.SearchRequestHandlerMethodArgumentResolver;
+import myreader.resource.subscriptionentry.converter.SearchRequestHandlerMethodArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -10,7 +10,6 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.time.Clock;
 import java.util.List;
 
 import static myreader.config.UrlMappings.LANDING_PAGE;
@@ -24,12 +23,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @EnableAsync
 public class MvcConfig implements WebMvcConfigurer {
 
-    private final Clock clock;
-
-    public MvcConfig(Clock clock) {
-        this.clock = clock;
-    }
-
     @Override
     public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
         configurer
@@ -39,7 +32,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new SearchRequestHandlerMethodArgumentResolver(clock));
+        argumentResolvers.add(new SearchRequestHandlerMethodArgumentResolver());
     }
 
     @Override

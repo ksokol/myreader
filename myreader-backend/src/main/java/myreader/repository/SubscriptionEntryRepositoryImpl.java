@@ -14,11 +14,10 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -27,6 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.lucene.search.NumericRangeQuery.newLongRange;
@@ -35,7 +35,6 @@ import static org.apache.lucene.search.NumericRangeQuery.newLongRange;
 * @author Kamill Sokol
 */
 @Component
-@Transactional
 public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryRepositoryCustom {
 
     private static final String USER_ID = "subscription.user.userId";
@@ -46,7 +45,6 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     private static final String SEEN = "seen";
     private static final String SUBSCRIPTION_TAG = "subscription.subscriptionTag.tag";
     private static final String ID = "id";
-    private static final String CREATED_AT = "createdAt";
     private static final Pattern TAG_SPLIT_PATTERN = Pattern.compile("[ |,]");
 
     private final EntityManager em;
@@ -58,15 +56,16 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     }
 
     @Override
-    public Page<SubscriptionEntry> findByForCurrentUser(
-            Pageable pageRequest,
+    public Slice<SubscriptionEntry> findByForCurrentUser(
+            int size,
             String q,
             String feedId,
             String feedTagEqual,
             String entryTagEqual,
             String seen,
-            Long stamp
+            Long next
     ) {
+        int sizePlusOne = size + 1;
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(SubscriptionEntry.class).get();
         Query query = createQuery(q, queryBuilder);
@@ -78,40 +77,40 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         addFilter(SUBSCRIPTION_TAG, feedTagEqual, builder);
         addFilter(TAG, entryTagEqual, builder);
         addSeenFilter(seen, builder);
-        addPagination(stamp, builder);
+        addPagination(next, builder);
 
         FullTextQuery fullTextQuery = fullTextEntityManager.createFullTextQuery(builder.build(), SubscriptionEntry.class);
         fullTextQuery.setSort(new Sort(new SortField(ID, SortField.Type.LONG, true)));
-
-        int total = fullTextQuery.getResultSize();
-
-        fullTextQuery.setFirstResult(pageRequest.getPageNumber() * pageRequest.getPageSize());
-        fullTextQuery.setMaxResults(pageRequest.getPageSize());
+        fullTextQuery.setMaxResults(sizePlusOne);
 
         @SuppressWarnings("unchecked")
         List<SubscriptionEntry> resultList = fullTextQuery.getResultList();
 
-        return new PageImpl<>(resultList, pageRequest, total);
+        List<SubscriptionEntry> limit = resultList.stream()
+                .limit(size)
+                .collect(Collectors.toList());
+
+        return new SliceImpl<>(limit, Pageable.unpaged(), resultList.size() == sizePlusOne);
     }
 
     @Override
     public Set<String> findDistinctTagsForCurrentUser() {
-        final TypedQuery<String> query = em.createQuery("select distinct(se.tag) from SubscriptionEntry as se where se.subscription.user.id = :id and se.tag is not null", String.class);
+        TypedQuery<String> query = em.createQuery("select distinct(se.tag) from SubscriptionEntry as se where se.subscription.user.id = :id and se.tag is not null", String.class);
 
         query.setParameter("id", userRepository.findByCurrentUser().getId());
 
-        final List<String> resultList = query.getResultList();
-        final Set<String> distinctTags = new TreeSet<>();
+        List<String> resultList = query.getResultList();
+        Set<String> distinctTags = new TreeSet<>();
 
-        for (final String distinctTag : resultList) {
-            final Iterable<String> splitted = Splitter.on(TAG_SPLIT_PATTERN).trimResults().omitEmptyStrings().split(distinctTag);
+        for (String distinctTag : resultList) {
+            Iterable<String> splitted = Splitter.on(TAG_SPLIT_PATTERN).trimResults().omitEmptyStrings().split(distinctTag);
             Iterables.addAll(distinctTags, splitted);
         }
 
         return distinctTags;
     }
 
-    private Query createQuery(final String q, final QueryBuilder queryBuilder) {
+    private Query createQuery(String q, QueryBuilder queryBuilder) {
         Query query;
 
         if (isNotEmpty(q)) {
@@ -127,21 +126,21 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         return query;
     }
 
-    private void addSeenFilter(final String seenValue, BooleanQuery.Builder builder) {
+    private void addSeenFilter(String seenValue, BooleanQuery.Builder builder) {
         if (seenValue != null && !"*".equals(seenValue)) {
             builder.add(new TermQuery(new Term(SEEN, seenValue)), Occur.FILTER);
         }
     }
 
-    private void addFilter(final String fieldName, final Object fieldValue, BooleanQuery.Builder builder) {
+    private void addFilter(String fieldName, Object fieldValue, BooleanQuery.Builder builder) {
         if (fieldValue != null) {
             builder.add(new TermQuery(new Term(fieldName, fieldValue.toString())), Occur.FILTER);
         }
     }
 
-    private void addPagination(final Long stamp, BooleanQuery.Builder builder) {
-        if (stamp != null) {
-            builder.add(newLongRange(CREATED_AT, 0L, stamp, true, true), Occur.FILTER);
+    private void addPagination(Long next, BooleanQuery.Builder builder) {
+        if (next != null) {
+            builder.add(newLongRange(ID, 0L, next, true, false), Occur.FILTER);
         }
     }
 }
