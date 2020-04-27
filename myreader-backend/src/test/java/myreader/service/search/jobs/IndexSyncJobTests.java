@@ -89,7 +89,7 @@ public class IndexSyncJobTests {
         return fullTextEm.getSearchFactory().getStatistics().getNumberOfIndexedEntities(SubscriptionEntry.class.getName());
     }
 
-    public void addAnSubscriptionEntry() {
+    private void addAnSubscriptionEntry() {
         tx.execute(s -> testEntitiesBuilder.someSubscriptionEntry());
     }
 

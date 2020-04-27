@@ -18,11 +18,11 @@ public class TestEntitiesBuilder {
 
     private final TestEntityManager testEntityManager;
 
-    private User user;
-    private Feed feed;
-    private FeedEntry feedEntry;
-    private Subscription subscription;
-    private SubscriptionEntry subscriptionEntry;
+    private User userEntity;
+    private Feed feedEntity;
+    private FeedEntry feedEntryEntity;
+    private Subscription subscriptionEntity;
+    private SubscriptionEntry subscriptionEntryEntity;
 
     public TestEntitiesBuilder(TestEntityManager testEntityManager) {
         this.testEntityManager = testEntityManager;
@@ -33,54 +33,54 @@ public class TestEntitiesBuilder {
     }
 
     public TestEntitiesBuilder user(String email) {
-        user = new User(email);
+        userEntity = new User(email);
         return this;
     }
 
     public TestEntitiesBuilder someFeed() {
-        feed = new Feed("http://example.com", "expected feed title");
+        feedEntity = new Feed("http://example.com", "expected feed title");
         build();
         return this;
     }
 
     public TestEntitiesBuilder someFeedEntry() {
-        feedEntry = new FeedEntry(feed);
+        feedEntryEntity = new FeedEntry(feedEntity);
         build();
         return this;
     }
 
     public TestEntitiesBuilder someSubscription() {
-        subscription = new Subscription(user, feed);
+        subscriptionEntity = new Subscription(userEntity, feedEntity);
         build();
         return this;
     }
 
     public TestEntitiesBuilder someSubscriptionEntry() {
-        subscriptionEntry = new SubscriptionEntry(subscription, feedEntry);
+        subscriptionEntryEntity = new SubscriptionEntry(subscriptionEntity, feedEntryEntity);
         build();
         return this;
     }
 
     public TestEntitiesBuilder build() {
-        if (feed != null) {
-            feed = testEntityManager.merge(feed);
-            feed = testEntityManager.persistAndFlush(feed);
+        if (feedEntity != null) {
+            feedEntity = testEntityManager.merge(feedEntity);
+            feedEntity = testEntityManager.persistAndFlush(feedEntity);
         }
-        if (feedEntry != null) {
-            feedEntry = testEntityManager.merge(feedEntry);
-            feedEntry = testEntityManager.persistAndFlush(feedEntry);
+        if (feedEntryEntity != null) {
+            feedEntryEntity = testEntityManager.merge(feedEntryEntity);
+            feedEntryEntity = testEntityManager.persistAndFlush(feedEntryEntity);
         }
-        if (user != null) {
-            user = testEntityManager.merge(user);
-            user = testEntityManager.persistFlushFind(user);
+        if (userEntity != null) {
+            userEntity = testEntityManager.merge(userEntity);
+            userEntity = testEntityManager.persistFlushFind(userEntity);
         }
-        if (subscription != null) {
-            subscription = testEntityManager.merge(subscription);
-            subscription = testEntityManager.persistFlushFind(subscription);
+        if (subscriptionEntity != null) {
+            subscriptionEntity = testEntityManager.merge(subscriptionEntity);
+            subscriptionEntity = testEntityManager.persistFlushFind(subscriptionEntity);
         }
-        if (subscriptionEntry != null) {
-            subscriptionEntry = testEntityManager.merge(subscriptionEntry);
-            subscriptionEntry = testEntityManager.persistFlushFind(subscriptionEntry);
+        if (subscriptionEntryEntity != null) {
+            subscriptionEntryEntity = testEntityManager.merge(subscriptionEntryEntity);
+            subscriptionEntryEntity = testEntityManager.persistFlushFind(subscriptionEntryEntity);
         }
         return this;
     }
