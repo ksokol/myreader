@@ -64,7 +64,7 @@ public class SearchRequest {
     }
 
     public Long getNext() {
-        return next == null ? Long.MAX_VALUE : next;
+        return next;
     }
 
     public void setNext(Long next) {

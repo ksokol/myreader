@@ -139,8 +139,6 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     }
 
     private void addPagination(Long next, BooleanQuery.Builder builder) {
-        if (next != null) {
-            builder.add(newLongRange(ID, 0L, next, true, false), Occur.FILTER);
-        }
+        builder.add(newLongRange(ID, 0L, next == null ? Long.valueOf(Long.MAX_VALUE) : next, true, false), Occur.FILTER);
     }
 }
