@@ -2,6 +2,7 @@
   "name": "myreader-frontend",
   "description": "Myreader frontend package",
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "build": "export NODE_ENV=production && webpack --bail --progress --profile --display-optimization-bailout",
     "server": "export NODE_ENV=development && webpack-dev-server --history-api-fallback --inline --progress",
     "test": "export NODE_ENV=test && jest --coverage --ci --silent",
@@ -62,11 +63,14 @@
     "svg-url-loader": "5.0.0",
     "sw-precache-webpack-plugin": "1.0.0",
     "terser-webpack-plugin": "2.3.5",
-    "webpack": "4.42.0",
+    "webpack": "4.43.0",
     "webpack-bundle-analyzer": "3.6.1",
     "webpack-cli": "3.3.11",
     "webpack-dev-server": "3.10.3",
     "webpack-pwa-manifest": "4.2.0"
+  },
+  "resolutions": {
+    "minimist": "1.2.5"
   },
   "directories": {
     "test": "test"
