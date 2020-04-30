@@ -4,7 +4,8 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const WebpackPwaManifest = require('webpack-pwa-manifest')
+//const WebpackPwaManifest = require('webpack-pwa-manifest')
+const WebpackPwaManifest = require('./srcBuild')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
@@ -158,14 +159,6 @@ module.exports = function makeWebpackConfig() {
 
       new WebpackPwaManifest({
         filename: "app/manifest.[hash].json",
-        includeDirectory: true,
-        name: 'MyReader',
-        short_name: 'MyReader',
-        lang: 'en-US',
-        background_color: '#fff',
-        theme_color: '#3f51b5',
-        orientation: 'any',
-        display: 'standalone',
         start_url: `${PUBLIC_URL}/`,
         scope: `${PUBLIC_URL}/`,
         icons: [
