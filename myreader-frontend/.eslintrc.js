@@ -32,7 +32,7 @@ module.exports = {
       2
     ],
     'linebreak-style': [
-      'warn',
+      'error',
       'unix'
     ],
     quotes: [
@@ -40,7 +40,7 @@ module.exports = {
       'single'
     ],
     semi: [
-      'warn',
+      'error',
       'never'
     ],
     'no-undef': 'warn',
@@ -54,8 +54,8 @@ module.exports = {
     'unicorn/prevent-abbreviations': 'off',
     'unicorn/catch-error-name': 'warn',
     'unicorn/filename-case': 'off',
-    'unicorn/prefer-query-selector': 'warn',
-    'unicorn/import-index': 'warn',
+    'unicorn/prefer-query-selector': 'error',
+    'unicorn/import-index': 'error',
     'unicorn/prefer-includes': 'warn',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'error'
