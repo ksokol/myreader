@@ -16,15 +16,17 @@ describe('IntersectionObserver', () => {
       disconnect: jest.fn()
     }
 
-    jest.spyOn(window, 'IntersectionObserver').mockImplementationOnce(() => observer)
+    window.IntersectionObserver = jest.fn().mockImplementationOnce(() => observer)
     wrapper = mount(<IntersectionObserver {...props}>expected children</IntersectionObserver>)
+  })
+
+  afterEach(() => {
+    delete window['IntersectionObserver']
   })
 
   const intersect = intersections => {
     window.IntersectionObserver.mock.calls[0][0](intersections.map(isIntersecting => ({isIntersecting})))
   }
-
-  afterEach(() => window.IntersectionObserver.mockClear())
 
   it('should render children', () => {
     expect(wrapper.props().children).toEqual('expected children')

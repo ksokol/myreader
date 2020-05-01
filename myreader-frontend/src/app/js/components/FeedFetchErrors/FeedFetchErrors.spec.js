@@ -10,7 +10,16 @@ jest.mock('../../api', () => ({
     fetchFeedFetchErrors: jest.fn().mockResolvedValue({})
   }
 }))
+
+jest.mock('../../components/IntersectionObserver/IntersectionObserver', () => ({children, ...props}) => {
+  const IntersectionObserver = () => children
+  return <IntersectionObserver {...props} />
+})
 /* eslint-enable */
+
+const loadMoreButtonSelector = '[className="my-feed-fetch-errors__load-more"]'
+const errorItemsSelector = '.my-feed-fetch-errors__item'
+const expectedNextPath = 'expected next'
 
 describe('FeedFetchErrors', () => {
 
@@ -32,7 +41,7 @@ describe('FeedFetchErrors', () => {
       ],
       links: {
         next: {
-          path: 'expected next'
+          path: expectedNextPath
         }
       }
     }
@@ -41,7 +50,7 @@ describe('FeedFetchErrors', () => {
   it('should render each fetch error in a wrapper node', async () =>  {
     const wrapper = await createWrapper(mockResponse)
 
-    expect(wrapper.find('.my-feed-fetch-errors__item').length).toEqual(2)
+    expect(wrapper.find(errorItemsSelector)).toHaveLength(2)
   })
 
   it('should render intersection observer when fetch errors and next link exists', async () =>  {
@@ -77,7 +86,7 @@ describe('FeedFetchErrors', () => {
       wrapper.find('IntersectionObserver').find('[className="my-feed-fetch-errors__item"]').exists()
     ).toEqual(false)
     expect(
-      wrapper.find('.my-feed-fetch-errors__item').at(1).exists()
+      wrapper.find(errorItemsSelector).at(1).exists()
     ).toEqual(true)
   })
 
@@ -85,14 +94,14 @@ describe('FeedFetchErrors', () => {
     const wrapper = await createWrapper(mockResponse)
     wrapper.find('IntersectionObserver').props().onIntersection()
 
-    expect(feedApi.fetchFeedFetchErrors).toHaveBeenCalledWith({path: 'expected next'})
+    expect(feedApi.fetchFeedFetchErrors).toHaveBeenCalledWith({path: expectedNextPath})
   })
 
   it('should not render any fetch error wrapper node nor an intersection observer when prop fetch errors is empty', async () =>  {
     const wrapper = await createWrapper({content: [], links: {}})
 
     expect(wrapper.find('IntersectionObserver').exists()).toEqual(false)
-    expect(wrapper.find('.my-feed-fetch-errors__item').children().length).toEqual(0)
+    expect(wrapper.find(errorItemsSelector).children()).toHaveLength(0)
   })
 
   it('should render load more button when next link exists', async () =>  {
@@ -111,23 +120,23 @@ describe('FeedFetchErrors', () => {
     const wrapper = await createWrapper(mockResponse)
     wrapper.find('IntersectionObserver').props().onIntersection()
     wrapper.update()
-    const loadMoreButton = wrapper.find('[className="my-feed-fetch-errors__load-more"]')
+    const loadMoreButton = wrapper.find(loadMoreButtonSelector)
 
     expect(loadMoreButton.prop('disabled')).toEqual(true)
   })
 
   it('should enable button when error fetching succeeded', async () =>  {
     const wrapper = await createWrapper(mockResponse)
-    const loadMoreButton = wrapper.find('[className="my-feed-fetch-errors__load-more"]')
+    const loadMoreButton = wrapper.find(loadMoreButtonSelector)
 
     expect(loadMoreButton.prop('disabled')).toEqual(false)
   })
 
   it('should trigger feedApi.fetchFeedFetchErrors when button load more clicked', async () =>  {
     const wrapper = await createWrapper(mockResponse)
-    wrapper.find('[className="my-feed-fetch-errors__load-more"]').props().onClick()
+    wrapper.find(loadMoreButtonSelector).props().onClick()
 
-    expect(feedApi.fetchFeedFetchErrors).toHaveBeenCalledWith({path: 'expected next'})
+    expect(feedApi.fetchFeedFetchErrors).toHaveBeenCalledWith({path: expectedNextPath})
   })
 
   it('should trigger feedApi.fetchFeedFetchErrors with prop "uuid"', async () =>  {
