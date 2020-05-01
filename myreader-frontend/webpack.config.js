@@ -4,8 +4,7 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-//const WebpackPwaManifest = require('webpack-pwa-manifest')
-const WebpackPwaManifest = require('./srcBuild')
+const WebpackPwaManifest = require('./buildSrc')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
@@ -31,13 +30,8 @@ module.exports = function makeWebpackConfig() {
 
   config.stats = 'verbose'
 
-  /**
-   * Reference: http://webpack.github.io/docs/configuration.html#entry
-   * Should be an empty object if it's generating a test build
-   * Karma will set this when it's a test build
-   */
   config.entry = isTest ? void 0 : {
-    app: './src/app/js/index.js'
+    app: './src/app/js/index.js',
   }
 
   config.output = isTest ? {} : {
@@ -69,14 +63,9 @@ module.exports = function makeWebpackConfig() {
   }
 
   if (isServed) {
-      config.devtool = 'inline-source-map'
+    config.devtool = 'inline-source-map'
   }
 
-  /**
-   * Reference: http://webpack.github.io/docs/configuration.html#module-loaders
-   * List: http://webpack.github.io/docs/list-of-loaders.html
-   * This handles most of the magic responsible for converting modules
-   */
   config.module = {
     rules: [{
       test: /\.css$/,
@@ -85,10 +74,6 @@ module.exports = function makeWebpackConfig() {
         'css-loader'
       ]
     }, {
-      // ASSET LOADER
-      // Reference: https://github.com/webpack/file-loader
-      // Rename the file using the asset hash
-      // Pass along the updated reference to your code
       test: /\.(png|jpg|jpeg|gif|woff|woff2|ttf|eot)$/,
       query: {
         publicPath: '../',
@@ -96,8 +81,6 @@ module.exports = function makeWebpackConfig() {
       },
       loader: 'file-loader'
     }, {
-      // HTML LOADER
-      // Reference: https://github.com/webpack/raw-loader
       test: /\.html$/,
       exclude: /node_modules/,
       use: 'raw-loader'
@@ -105,22 +88,18 @@ module.exports = function makeWebpackConfig() {
       test: /\.svg$/,
       loader: 'svg-url-loader'
     },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            plugins: isProd ? ['transform-react-remove-prop-types'] : []
-          }
+    {
+      test: /\.js$/,
+      exclude: /node_modules/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          plugins: isProd ? ['transform-react-remove-prop-types'] : []
         }
-      }]
+      }
+    }]
   }
 
-  /**
-   * Reference: http://webpack.github.io/docs/configuration.html#plugins
-   * List: http://webpack.github.io/docs/list-of-plugins.html
-   */
   config.plugins = [
     new CleanWebpackPlugin(),
     new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'}),
@@ -156,19 +135,9 @@ module.exports = function makeWebpackConfig() {
         minify: true,
         navigateFallback: `${PUBLIC_URL}/`
       }),
-
       new WebpackPwaManifest({
-        filename: "app/manifest.[hash].json",
-        start_url: `${PUBLIC_URL}/`,
-        scope: `${PUBLIC_URL}/`,
-        icons: [
-          {
-            src: path.resolve('./src/app/img/favicon.png'),
-            destination: 'assets',
-            sizes: [36, 48, 72, 96, 128, 192, 256, 384, 512],
-            type: 'image/png'
-          }
-        ]
+        template: './src/manifest.json',
+        outputPath: 'app/'
       })
     )
   }

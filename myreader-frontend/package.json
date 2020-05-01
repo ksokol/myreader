@@ -63,9 +63,7 @@
     "webpack": "4.43.0",
     "webpack-bundle-analyzer": "3.6.1",
     "webpack-cli": "3.3.11",
-    "webpack-dev-server": "3.10.3",
-    "jimp": "^0.6.0",
-    "mime": "^2.4.0"
+    "webpack-dev-server": "3.10.3"
   },
   "directories": {
     "test": "test"
