@@ -3,7 +3,7 @@ import {mount} from 'enzyme'
 import SubscribePage from './SubscribePage'
 import {SUBSCRIPTION_URL} from '../../constants'
 import {subscriptionApi} from '../../api'
-import {flushPromises, rejected, resolved} from '../../shared/test-utils'
+import {flushPromises, rejected, resolved, pending} from '../../shared/test-utils'
 import {toast} from '../../components/Toast'
 
 /* eslint-disable react/prop-types */
@@ -68,16 +68,6 @@ describe('SubscribePage', () => {
 
   it('should set prop "changePending" to false when subscriptionApi.subscribe finished', async () => {
     subscriptionApi.subscribe = resolved({uuid: 'uuid1'})
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.update()
-
-    expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(false)
-  })
-
-  it('should set prop "changePending" to false when subscriptionApi.subscribe failed', async () => {
-    subscriptionApi.subscribe = rejected()
     const wrapper = createWrapper()
     wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
     await flushPromises()
