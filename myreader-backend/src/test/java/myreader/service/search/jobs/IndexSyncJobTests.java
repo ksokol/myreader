@@ -1,7 +1,11 @@
 package myreader.service.search.jobs;
 
+import myreader.entity.Feed;
+import myreader.entity.FeedEntry;
+import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-import myreader.test.TestEntitiesBuilder;
+import myreader.entity.User;
+import myreader.test.TestUser;
 import myreader.test.WithTestProperties;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
@@ -10,8 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
@@ -30,36 +34,37 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 @RunWith(SpringRunner.class)
 @Transactional(propagation = Propagation.SUPPORTS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@DataJpaTest(showSql = false, includeFilters = @Filter(type = ASSIGNABLE_TYPE, classes = {IndexSyncJob.class, TestEntitiesBuilder.class}))
+@DataJpaTest(showSql = false, includeFilters = @Filter(type = ASSIGNABLE_TYPE, classes = {IndexSyncJob.class}))
 @WithTestProperties
 public class IndexSyncJobTests {
-
-    private static final String USER = "user1@localhost";
 
     @Autowired
     private IndexSyncJob job;
 
     @Autowired
-    private TestEntitiesBuilder testEntitiesBuilder;
+    private EntityManager em;
 
     @Autowired
-    private EntityManager em;
+    private TestEntityManager testEntityManager;
 
     @Autowired
     private TransactionTemplate tx;
 
+    private FeedEntry feedEntry;
+    private Subscription subscription;
+
     @Before
     public void before() {
-        tx.execute(s ->
-            testEntitiesBuilder
-                    .user(USER).build()
-                    .someFeed()
-                    .someFeedEntry()
-                    .someSubscription()
+        tx.execute(s -> {
+                    User user = testEntityManager.persistFlushFind(new User(TestUser.USER4.email));
+                    Feed feed = testEntityManager.persistFlushFind(new Feed("http://example.com", "expected feed title"));
+                    feedEntry = testEntityManager.persistFlushFind(new FeedEntry(feed));
+                    subscription = testEntityManager.persistFlushFind(new Subscription(user, feed));
+                    return null;
+                }
         );
     }
 
-    @WithMockUser(USER)
     @Test
     public void testReindexAllSubscriptionEntries() throws InterruptedException {
         job.work();
@@ -81,6 +86,6 @@ public class IndexSyncJobTests {
     }
 
     private void addAnSubscriptionEntry() {
-        tx.execute(s -> testEntitiesBuilder.someSubscriptionEntry());
+        tx.execute(s -> testEntityManager.persist(new SubscriptionEntry(subscription, feedEntry)));
     }
 }
