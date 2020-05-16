@@ -1,8 +1,8 @@
-package spring;
+package myreader.security;
 
 import myreader.Starter;
 import myreader.test.TestConstants;
-import myreader.test.TestProperties;
+import myreader.test.WithTestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
-import java.util.TimeZone;
 
 import static java.util.Collections.singletonList;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
@@ -44,18 +41,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Sql("classpath:test-data.sql")
 @SpringBootTest(classes = { Starter.class, ApiSecurityTests.TestConfiguration.class })
+@WithTestProperties
 public class ApiSecurityTests {
 
-    static {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
-
     private static final String API_2 = "/api/2";
-
-    @DynamicPropertySource
-    static void withProperties(DynamicPropertyRegistry registry) {
-        TestProperties.withProperties(registry);
-    }
 
     @Autowired
     private MockMvc mockMvc;

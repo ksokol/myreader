@@ -1,6 +1,7 @@
 package myreader.repository;
 
 import myreader.entity.ExclusionPattern;
+import myreader.test.WithTestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
 @Sql("classpath:test-data.sql")
+@WithTestProperties
 public class ExclusionRepositoryTests {
 
     private static final long EXCLUSION_PATTERN_ID = 0L;

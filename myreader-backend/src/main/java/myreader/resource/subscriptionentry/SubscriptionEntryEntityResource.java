@@ -5,9 +5,10 @@ import myreader.repository.SubscriptionEntryRepository;
 import myreader.resource.ResourceConstants;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
+import myreader.security.AuthenticatedUser;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 /**
  * @author Kamill Sokol
  */
-@Transactional
 @RestController
 @RequestMapping(ResourceConstants.SUBSCRIPTION_ENTRY)
 public class SubscriptionEntryEntityResource {
@@ -36,14 +36,20 @@ public class SubscriptionEntryEntityResource {
     }
 
     @GetMapping
-    public SubscriptionEntryGetResponse get(@PathVariable("id") Long id) {
-        SubscriptionEntry subscriptionEntry = findOrThrowException(id);
+    public SubscriptionEntryGetResponse get(@PathVariable("id") Long id, @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+        SubscriptionEntry subscriptionEntry = subscriptionEntryRepository.findByIdAndUserId(id, authenticatedUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return assembler.toModel(subscriptionEntry);
     }
 
     @PatchMapping
-    public SubscriptionEntryGetResponse patch(@PathVariable("id") Long id, @RequestBody SubscriptionEntryPatchRequest request) {
-        SubscriptionEntry subscriptionEntry = findOrThrowException(id);
+    public SubscriptionEntryGetResponse patch(
+            @PathVariable("id") Long id,
+            @RequestBody SubscriptionEntryPatchRequest request,
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser
+    ) {
+        SubscriptionEntry subscriptionEntry = subscriptionEntryRepository.findByIdAndUserId(id, authenticatedUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (request.getSeen() != null) {
             subscriptionEntry.setSeen(request.getSeen());
@@ -53,14 +59,6 @@ public class SubscriptionEntryEntityResource {
 
         subscriptionEntryRepository.save(subscriptionEntry);
 
-        return get(id);
-    }
-
-    private SubscriptionEntry findOrThrowException(Long id) {
-        SubscriptionEntry entry = subscriptionEntryRepository.findByIdAndCurrentUser(id);
-        if (entry == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return entry;
+        return get(id, authenticatedUser);
     }
 }

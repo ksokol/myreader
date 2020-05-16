@@ -7,6 +7,7 @@ import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedEntryRepository;
 import myreader.repository.FeedRepository;
 import myreader.service.time.TimeService;
+import myreader.test.WithTestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import static org.hamcrest.core.Is.is;
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false, includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionBatch.class))
 @Sql("classpath:test-data.sql")
+@WithTestProperties
 public class SubscriptionBatchTests {
 
     private static final String KNOWN_FEED_URL = "http://feeds.feedburner.com/javaposse";

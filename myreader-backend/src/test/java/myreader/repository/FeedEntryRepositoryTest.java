@@ -5,6 +5,7 @@ import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.User;
+import myreader.test.WithTestProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,7 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
+@WithTestProperties
 public class FeedEntryRepositoryTest {
 
     @Autowired

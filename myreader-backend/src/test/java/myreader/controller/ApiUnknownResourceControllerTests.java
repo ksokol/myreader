@@ -1,6 +1,7 @@
 package myreader.controller;
 
 import myreader.test.TestConstants;
+import myreader.test.WithTestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 @WithMockUser(TestConstants.USER1)
+@WithTestProperties
 public class ApiUnknownResourceControllerTests {
 
     @Autowired

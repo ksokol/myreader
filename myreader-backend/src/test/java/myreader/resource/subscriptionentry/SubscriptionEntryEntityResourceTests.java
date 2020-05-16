@@ -1,26 +1,33 @@
 package myreader.resource.subscriptionentry;
 
+import myreader.entity.FeedEntry;
+import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
+import myreader.entity.SubscriptionTag;
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.test.TestConstants;
-import myreader.test.TestProperties;
+import myreader.test.TestUser;
+import myreader.test.WithAuthenticatedUser;
+import myreader.test.WithTestProperties;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.hamcrest.MockitoHamcrest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.TimeZone;
+import java.util.Date;
+import java.util.Optional;
 
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,30 +39,49 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@Sql("classpath:test-data.sql")
+@WithAuthenticatedUser(TestUser.USER4)
+@WithTestProperties
 public class SubscriptionEntryEntityResourceTests {
-
-    static {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
-
-    @DynamicPropertySource
-    static void withProperties(DynamicPropertyRegistry registry) {
-        TestProperties.withProperties(registry);
-    }
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private SubscriptionEntryRepository subscriptionEntryRepository;
 
+    @Before
+    public void before() {
+        SubscriptionEntry se = new SubscriptionEntry();
+        se.setId(1014L);
+        se.setTag("tag3");
+        se.setSeen(true);
+        se.setCreatedAt(new Date(1000));
+
+        FeedEntry fe = new FeedEntry();
+        fe.setTitle("Bliki: TellDontAsk");
+        fe.setContent("content");
+        fe.setUrl("http://martinfowler.com/bliki/TellDontAsk.html");
+        se.setFeedEntry(fe);
+
+        Subscription subscription1 = new Subscription();
+        se.setSubscription(subscription1);
+        subscription1.setId(1100L);
+        subscription1.setTitle("user112_subscription1");
+
+        SubscriptionTag st1 = new SubscriptionTag();
+        subscription1.setSubscriptionTag(st1);
+        st1.setColor("#777");
+        st1.setName("tag1");
+
+        given(subscriptionEntryRepository.findByIdAndUserId(1014L, TestUser.USER4.id))
+                .willReturn(Optional.of(se));
+    }
+
     @Test
-    @WithMockUser(TestConstants.USER112)
     public void shouldReturnExpectedJsonStructure() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptionEntries/1004"))
+        mockMvc.perform(get("/api/2/subscriptionEntries/1014"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.uuid", is("1004")))
+                .andExpect(jsonPath("$.uuid", is("1014")))
                 .andExpect(jsonPath("$.title", is("Bliki: TellDontAsk")))
                 .andExpect(jsonPath("$.feedTitle", is("user112_subscription1")))
                 .andExpect(jsonPath("$.tag", is("tag3")))
@@ -65,99 +91,62 @@ public class SubscriptionEntryEntityResourceTests {
                 .andExpect(jsonPath("$.feedTagColor", is("#777")))
                 .andExpect(jsonPath("$.feedUuid", is("1100")))
                 .andExpect(jsonPath("$.origin", is("http://martinfowler.com/bliki/TellDontAsk.html")))
-                .andExpect(jsonPath("$.createdAt", is("2011-04-15T19:20:46.000+0000")));
+                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+0000")));
     }
 
     @Test
-    @WithMockUser(TestConstants.USER2)
     public void shouldReturnNotFound() throws Exception {
         mockMvc.perform(get("/api/2/subscriptionEntries/1001"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @WithMockUser(TestConstants.USER112)
-    public void shouldSetSeenFlagFromTrueToFalse() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findById(1004L).orElseThrow(AssertionError::new);
-        assertThat(before.isSeen(), is(true));
-
-        mockMvc.perform(get("/api/2/subscriptionEntries/1004"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("seen", is(true)));
-
-        mockMvc.perform(patch("/api/2/subscriptionEntries/1004")
-                .with(jsonBody("{'seen':false}")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("seen", is(false)));
-
-        mockMvc.perform(get("/api/2/subscriptionEntries/1004"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("seen", is(false)));
-
-        SubscriptionEntry after = subscriptionEntryRepository.findById(1004L).orElseThrow(AssertionError::new);
-        assertThat(after.isSeen(), is(false));
-    }
-
-    @Test
-    @WithMockUser(TestConstants.USER110)
-    public void shouldSetSeenFlagFromFalseToTrue() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findById(1022L).orElseThrow(AssertionError::new);
-        assertThat(before.isSeen(), is(false));
-
-        mockMvc.perform(get("/api/2/subscriptionEntries/1022"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("seen", is(false)));
-
-        mockMvc.perform(patch("/api/2/subscriptionEntries/1022")
-                .with(jsonBody("{'seen':true}")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("seen", is(true)));
-
-        SubscriptionEntry after = subscriptionEntryRepository.findById(1022L).orElseThrow(AssertionError::new);
-        assertThat(after.isSeen(), is(true));
-    }
-
-    @Test
-    @WithMockUser(TestConstants.USER105)
-    public void shouldNotChangeSeen() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findById(1014L).orElseThrow(AssertionError::new);
-        assertThat(before.isSeen(), is(true));
-
-        mockMvc.perform(get("/api/2/subscriptionEntries/1014"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("seen", is(true)));
-
+    public void shouldOnlyChangeTag() throws Exception {
         mockMvc.perform(patch("/api/2/subscriptionEntries/1014")
-                .with(jsonBody("{'seen':true}")))
-                .andExpect(jsonPath("seen", is(true)));
-
-        mockMvc.perform(get("/api/2/subscriptionEntries/1014"))
+                .with(jsonBody("{'tag': 'tag-patched'}")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("seen", is(true)));
+                .andExpect(jsonPath("$.uuid", is("1014")))
+                .andExpect(jsonPath("$.title", is("Bliki: TellDontAsk")))
+                .andExpect(jsonPath("$.feedTitle", is("user112_subscription1")))
+                .andExpect(jsonPath("$.tag", is("tag-patched")))
+                .andExpect(jsonPath("$.content", is("content")))
+                .andExpect(jsonPath("$.seen", is(true)))
+                .andExpect(jsonPath("$.feedTag", is("tag1")))
+                .andExpect(jsonPath("$.feedTagColor", is("#777")))
+                .andExpect(jsonPath("$.feedUuid", is("1100")))
+                .andExpect(jsonPath("$.origin", is("http://martinfowler.com/bliki/TellDontAsk.html")))
+                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+0000")));
 
-        SubscriptionEntry after = subscriptionEntryRepository.findById(1014L).orElseThrow(AssertionError::new);
-        assertThat(after.isSeen(), is(true));
+        verify(subscriptionEntryRepository).save(MockitoHamcrest.argThat(
+                allOf(
+                        hasProperty("id", is(1014L)),
+                        hasProperty("tag", is("tag-patched")),
+                        hasProperty("seen", is(true))
+                )));
     }
 
     @Test
-    @WithMockUser(TestConstants.USER106)
-    public void shouldChangeTag() throws Exception {
-        SubscriptionEntry before = subscriptionEntryRepository.findById(1015L).orElseThrow(AssertionError::new);
-        assertThat(before.getTag(), is("tag3"));
-
-        mockMvc.perform(get("/api/2/subscriptionEntries/1015"))
+    public void shouldChangeTagAndSeenFlag() throws Exception {
+        mockMvc.perform(patch("/api/2/subscriptionEntries/1014")
+                .with(jsonBody("{'tag':'tag-patched', 'seen': false}")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("tag", is("tag3")));
+                .andExpect(jsonPath("$.uuid", is("1014")))
+                .andExpect(jsonPath("$.title", is("Bliki: TellDontAsk")))
+                .andExpect(jsonPath("$.feedTitle", is("user112_subscription1")))
+                .andExpect(jsonPath("$.tag", is("tag-patched")))
+                .andExpect(jsonPath("$.content", is("content")))
+                .andExpect(jsonPath("$.seen", is(false)))
+                .andExpect(jsonPath("$.feedTag", is("tag1")))
+                .andExpect(jsonPath("$.feedTagColor", is("#777")))
+                .andExpect(jsonPath("$.feedUuid", is("1100")))
+                .andExpect(jsonPath("$.origin", is("http://martinfowler.com/bliki/TellDontAsk.html")))
+                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+0000")));
 
-        mockMvc.perform(patch("/api/2/subscriptionEntries/1015")
-                .with(jsonBody("{'tag':'tag-patched'}")))
-                .andExpect(jsonPath("tag", is("tag-patched")));
-
-        mockMvc.perform(get("/api/2/subscriptionEntries/1015"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("tag", is("tag-patched")));
-
-        SubscriptionEntry after = subscriptionEntryRepository.findById(1015L).orElseThrow(AssertionError::new);
-        assertThat(after.getTag(), is("tag-patched"));
+        verify(subscriptionEntryRepository).save(MockitoHamcrest.argThat(
+                allOf(
+                        hasProperty("id", is(1014L)),
+                        hasProperty("tag", is("tag-patched")),
+                        hasProperty("seen", is(false))
+                )));
     }
 }

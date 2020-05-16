@@ -13,8 +13,8 @@ import java.util.Optional;
  */
 public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionEntry, Long>, SubscriptionEntryRepositoryCustom {
 
-    @Query("select se from SubscriptionEntry se join fetch se.subscription join fetch se.feedEntry where se.id = ?1 and se.subscription.user.email = ?#{principal.username}")
-    SubscriptionEntry findByIdAndCurrentUser(Long id);
+    @Query("select se from SubscriptionEntry se join fetch se.subscription join fetch se.feedEntry where se.id = ?1 and se.subscription.user.id = ?2")
+    Optional<SubscriptionEntry> findByIdAndUserId(Long id, Long userId);
 
     @Query(value="select se from SubscriptionEntry se join fetch se.feedEntry join fetch se.subscription",countQuery = "select count(se) from SubscriptionEntry se")
     @Override

@@ -3,6 +3,7 @@ package myreader.repository;
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
+import myreader.test.WithTestProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
 @Sql("classpath:test-data.sql")
+@WithTestProperties
 public class SubscriptionRepositoryTests {
 
     private static final long SUBSCRIPTION_ID = 1L;

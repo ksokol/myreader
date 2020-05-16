@@ -3,16 +3,16 @@ package myreader.resource.subscriptiontag;
 import myreader.entity.SubscriptionTag;
 import myreader.repository.SubscriptionTagRepository;
 import myreader.resource.subscriptiontag.beans.SubscriptionTagGetResponse;
+import myreader.security.AuthenticatedUser;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static java.util.stream.Collectors.toList;
+import java.util.Objects;
 
 /**
  * @author Kamill Sokol
@@ -28,17 +28,14 @@ public class SubscriptionTagCollectionResource {
             SubscriptionTagRepository subscriptionTagRepository,
             RepresentationModelAssembler<SubscriptionTag, SubscriptionTagGetResponse> assembler
     ) {
-        this.subscriptionTagRepository = subscriptionTagRepository;
-        this.assembler = assembler;
+        this.subscriptionTagRepository = Objects.requireNonNull(subscriptionTagRepository, "subscriptionTagRepository is null");
+        this.assembler = Objects.requireNonNull(assembler, "assembler is null");
     }
 
     @GetMapping
-    public Map<String, List<SubscriptionTagGetResponse>> get() {
-        List<SubscriptionTag> source = subscriptionTagRepository.findAllByCurrentUser();
-        List<SubscriptionTagGetResponse> target = source.stream().map(assembler::toModel).collect(toList());
+    public CollectionModel<SubscriptionTagGetResponse> get(@AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+        List<SubscriptionTag> source = subscriptionTagRepository.findAllByUserId(authenticatedUser.getId());
 
-        Map<String, List<SubscriptionTagGetResponse>> body = new HashMap<>(2);
-        body.put("content", target);
-        return body;
+        return assembler.toCollectionModel(source);
     }
 }

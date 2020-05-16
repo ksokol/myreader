@@ -2,7 +2,7 @@ package myreader.service.search.jobs;
 
 import myreader.entity.SubscriptionEntry;
 import myreader.test.TestEntitiesBuilder;
-import myreader.test.TestProperties;
+import myreader.test.WithTestProperties;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.junit.Before;
@@ -10,13 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +29,9 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
  */
 @RunWith(SpringRunner.class)
 @Transactional(propagation = Propagation.SUPPORTS)
-@Import({IndexSyncJobTests.TestConfiguration.class})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @DataJpaTest(showSql = false, includeFilters = @Filter(type = ASSIGNABLE_TYPE, classes = {IndexSyncJob.class, TestEntitiesBuilder.class}))
+@WithTestProperties
 public class IndexSyncJobTests {
 
     private static final String USER = "user1@localhost";
@@ -50,12 +47,6 @@ public class IndexSyncJobTests {
 
     @Autowired
     private TransactionTemplate tx;
-
-    @DynamicPropertySource
-    static void withProperties(DynamicPropertyRegistry registry) {
-        TestProperties.withProperties(registry);
-        registry.add("spring.jpa.properties.hibernate.search.indexing_strategy", () -> "manual");
-    }
 
     @Before
     public void before() {
@@ -91,13 +82,5 @@ public class IndexSyncJobTests {
 
     private void addAnSubscriptionEntry() {
         tx.execute(s -> testEntitiesBuilder.someSubscriptionEntry());
-    }
-
-    static class TestConfiguration {
-
-        @Bean
-        public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
-            return new SecurityEvaluationContextExtension();
-        }
     }
 }

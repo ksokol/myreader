@@ -5,31 +5,26 @@ import myreader.entity.Subscription;
 import myreader.entity.User;
 import myreader.service.subscription.SubscriptionService;
 import myreader.test.TestConstants;
-import myreader.test.TestProperties;
+import myreader.test.WithTestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.TimeZone;
 
 import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.BDDMockito.willReturn;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,23 +33,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @Sql("classpath:test-data.sql")
+@WithTestProperties
 public class SubscriptionCollectionResourceTests {
-
-    static {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
-
-    @DynamicPropertySource
-    static void withProperties(DynamicPropertyRegistry registry) {
-        TestProperties.withProperties(registry);
-    }
 
     @Autowired
     private MockMvc mockMvc;
 
-    @SpyBean
+    @MockBean
     private SubscriptionService subscriptionService;
 
     @Test
@@ -62,7 +49,6 @@ public class SubscriptionCollectionResourceTests {
     public void shouldReturnExpectedJsonStructure() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions"))
                 .andExpect(status().isOk())
-                .andDo(print())
                 .andExpect(jsonPath("$.content[0].uuid", is("1104")))
                 .andExpect(jsonPath("$.content[0].title", is("user116_subscription1")))
                 .andExpect(jsonPath("$.content[0].sum", is(0)))
@@ -135,7 +121,8 @@ public class SubscriptionCollectionResourceTests {
         subscription.setId(1L);
         subscription.setTitle("expected title");
 
-        willReturn(subscription).given(subscriptionService).subscribe(TestConstants.USER102, "http://use-the-index-luke.com/blog/feed");
+        given(subscriptionService.subscribe(TestConstants.USER102, "http://use-the-index-luke.com/blog/feed"))
+                .willReturn(subscription);
 
         mockMvc.perform(post("/api/2/subscriptions")
                 .with(jsonBody("{'origin': 'http://use-the-index-luke.com/blog/feed'}")))

@@ -2,6 +2,7 @@ package myreader.repository;
 
 import myreader.entity.Feed;
 import myreader.entity.FetchError;
+import myreader.test.WithTestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static org.hamcrest.Matchers.notNullValue;
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
+@WithTestProperties
 public class FetchErrorRepositoryTests {
 
     @Autowired

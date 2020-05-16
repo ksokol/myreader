@@ -48,22 +48,21 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     private static final Pattern TAG_SPLIT_PATTERN = Pattern.compile("[ |,]");
 
     private final EntityManager em;
-    private final UserRepository userRepository;
 
-    public SubscriptionEntryRepositoryImpl(EntityManager em, UserRepository userRepository) {
+    public SubscriptionEntryRepositoryImpl(EntityManager em) {
         this.em = Objects.requireNonNull(em, "em is null");
-        this.userRepository = Objects.requireNonNull(userRepository, "userRepository is null");
     }
 
     @Override
-    public Slice<SubscriptionEntry> findByForCurrentUser(
+    public Slice<SubscriptionEntry> findBy(
             int size,
             String q,
             String feedId,
             String feedTagEqual,
             String entryTagEqual,
             String seen,
-            Long next
+            Long next,
+            long userId
     ) {
         int sizePlusOne = size + 1;
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
@@ -72,7 +71,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
 
         builder.add(query, Occur.MUST);
-        addFilter(USER_ID, userRepository.findByCurrentUser().getId(), builder);
+        addFilter(USER_ID, userId, builder);
         addFilter(SUBSCRIPTION_ID, feedId, builder);
         addFilter(SUBSCRIPTION_TAG, feedTagEqual, builder);
         addFilter(TAG, entryTagEqual, builder);
@@ -94,10 +93,10 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     }
 
     @Override
-    public Set<String> findDistinctTagsForCurrentUser() {
+    public Set<String> findDistinctTagsByUserId(long userId) {
         TypedQuery<String> query = em.createQuery("select distinct(se.tag) from SubscriptionEntry as se where se.subscription.user.id = :id and se.tag is not null", String.class);
 
-        query.setParameter("id", userRepository.findByCurrentUser().getId());
+        query.setParameter("id", userId);
 
         List<String> resultList = query.getResultList();
         Set<String> distinctTags = new TreeSet<>();

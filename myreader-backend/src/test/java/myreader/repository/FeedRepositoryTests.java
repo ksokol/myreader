@@ -3,6 +3,7 @@ package myreader.repository;
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.User;
+import myreader.test.WithTestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,8 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
-public class FeedRepositoryTest {
+@WithTestProperties
+public class FeedRepositoryTests {
 
     @Autowired
     private FeedRepository feedRepository;
@@ -36,12 +38,12 @@ public class FeedRepositoryTest {
 
     @Test
     public void shouldFindFeedWithoutSubscription() {
-        em.persist(new Feed("feed without subscription"));
+        em.persist(new Feed("http://localhost", "feed without subscription"));
 
         User user = new User("email");
         em.persist(user);
 
-        Feed feed = new Feed("feed with subscription");
+        Feed feed = new Feed("http://localhost", "feed with subscription");
         em.persist(feed);
 
         em.persist(new Subscription(user, feed));

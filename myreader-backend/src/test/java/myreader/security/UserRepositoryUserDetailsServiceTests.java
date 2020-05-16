@@ -1,4 +1,4 @@
-package spring.security;
+package myreader.security;
 
 import myreader.entity.User;
 import myreader.repository.UserRepository;
@@ -12,7 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Kamill Sokol
  */
-public class UserRepositoryUserDetailsServiceTest {
+public class UserRepositoryUserDetailsServiceTests {
 
     private static UserRepositoryUserDetailsService uut;
     private static UserRepository userRepositoryMock = mock(UserRepository.class);
@@ -43,11 +43,10 @@ public class UserRepositoryUserDetailsServiceTest {
 
     @Test
     public void testLoadUserByUsername() {
-        User user = new User();
+        User user = new User("email");
         user.setId(1L);
         user.setPassword("password");
         user.setRole("role");
-        user.setEmail("email");
 
         when(userRepositoryMock.findByEmail("email")).thenReturn(user);
         UserDetails userDetails = uut.loadUserByUsername("email");
