@@ -75,7 +75,7 @@ public class SubscriptionEntryCollectionResourceTests {
     private SubscriptionEntry se3;
 
     @Before
-    public void setup() {
+    public void setUp() {
         SubscriptionTag subscriptionTag1 = new SubscriptionTag();
         subscriptionTag1.setName("subscriptiontag name");
         subscriptionTag1.setColor("#111111");
