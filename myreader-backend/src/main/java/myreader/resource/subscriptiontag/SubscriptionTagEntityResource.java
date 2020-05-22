@@ -5,9 +5,10 @@ import myreader.repository.SubscriptionTagRepository;
 import myreader.resource.ResourceConstants;
 import myreader.resource.subscriptiontag.beans.SubscriptionTagGetResponse;
 import myreader.resource.subscriptiontag.beans.SubscriptionTagPatchRequest;
+import myreader.security.AuthenticatedUser;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,6 @@ import javax.validation.Valid;
 /**
  * @author Kamill Sokol
  */
-@Transactional
 @RestController
 @RequestMapping(ResourceConstants.SUBSCRIPTION_TAGS)
 public class SubscriptionTagEntityResource {
@@ -40,10 +40,11 @@ public class SubscriptionTagEntityResource {
     @PatchMapping
     public SubscriptionTagGetResponse patch(
             @PathVariable("id") Long id,
-            @Valid @RequestBody SubscriptionTagPatchRequest request
+            @Valid @RequestBody SubscriptionTagPatchRequest request,
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser
     ) {
         SubscriptionTag subscriptionTag = subscriptionTagRepository
-                .findByCurrentUserAndId(id)
+                .findByIdAndUserId(id, authenticatedUser.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         subscriptionTag.setName(request.getName());

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Kamill Sokol
@@ -17,8 +18,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
                  "and (select count(1) from SubscriptionEntry se where se.subscription.id = s.id and se.seen = false) > ?1")
     List<Subscription> findAllByUnseenGreaterThanAndCurrentUser(long unseenCount);
 
-    @Query("select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.id = ?1 and s.user.email = ?#{principal.username}")
-    Subscription findByIdAndCurrentUser(Long id);
+    @Query("select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.id = ?1 and s.user.id = ?2")
+    Optional<Subscription> findByIdAndUserId(Long id, long userId);
 
     @Query("select s from Subscription s where s.user.email = ?#{principal.username} and s.feed.url = ?1")
     Subscription findByFeedUrlAndCurrentUser(String url);

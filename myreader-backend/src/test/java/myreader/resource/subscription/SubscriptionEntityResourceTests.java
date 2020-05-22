@@ -1,13 +1,13 @@
 package myreader.resource.subscription;
 
-import myreader.test.TestConstants;
+import myreader.test.TestUser;
+import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,14 +40,14 @@ public class SubscriptionEntityResourceTests {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser(TestConstants.USER1)
+    @WithAuthenticatedUser(TestUser.USER1)
     public void shouldReturnSubscriptionWhenItIsNotOwnedByCurrentUser() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions/1"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(TestConstants.USER1)
+    @WithAuthenticatedUser(TestUser.USER1)
     public void shouldReturnNotFoundWhenRequestedSubscriptionIsNotOwnedByCurrentUser() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions/6"))
                 .andExpect(status().isNotFound());
@@ -55,7 +55,7 @@ public class SubscriptionEntityResourceTests {
 
 
     @Test
-    @WithMockUser(TestConstants.USER1)
+    @WithAuthenticatedUser(TestUser.USER1)
     public void shouldReturnExpectedJsonStructure() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions/1"))
                 .andExpect(status().isOk())
@@ -72,7 +72,7 @@ public class SubscriptionEntityResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER1)
+    @WithAuthenticatedUser(TestUser.USER1)
     public void shouldDeleteSubscription() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions?unseenGreaterThan=-1"))
                 .andExpect(status().isOk())
@@ -89,7 +89,7 @@ public class SubscriptionEntityResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER2)
+    @WithAuthenticatedUser(TestUser.USER2)
     public void shouldReturnNotFoundWhenTryingToDeleteSubscriptionThatIsNotOwnedByCurrentUser() throws Exception {
         mockMvc.perform(patch("/api/2/subscriptions/1")
                 .with(jsonBody("{'title': 'irrelevant',  'tag' : 'irrelevant'}")))
@@ -97,7 +97,7 @@ public class SubscriptionEntityResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER103)
+    @WithAuthenticatedUser(TestUser.USER103)
     public void shouldPatchSubscription() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions/101"))
                 .andExpect(status().isOk())
@@ -120,7 +120,7 @@ public class SubscriptionEntityResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER103)
+    @WithAuthenticatedUser(TestUser.USER103)
     public void shouldValidateSubscriptionTitle() throws Exception {
         mockMvc.perform(patch("/api/2/subscriptions/101")
                 .with(jsonBody("{'title': ' '}")))
@@ -129,7 +129,7 @@ public class SubscriptionEntityResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER103)
+    @WithAuthenticatedUser(TestUser.USER103)
     public void shouldValidateSubscriptionTagName() throws Exception {
         mockMvc.perform(patch("/api/2/subscriptions/101")
                 .with(jsonBody("{'title': 'irrelevant', 'feedTag': {'name': ' '}}")))
@@ -138,7 +138,7 @@ public class SubscriptionEntityResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER116)
+    @WithAuthenticatedUser(TestUser.USER116)
     public void shouldUpdateColorForAllSubscriptionsWithGivenTag() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions"))
                 .andExpect(status().isOk())

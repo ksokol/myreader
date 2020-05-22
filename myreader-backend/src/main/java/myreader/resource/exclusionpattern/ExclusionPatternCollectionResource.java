@@ -7,14 +7,14 @@ import myreader.repository.SubscriptionRepository;
 import myreader.resource.ResourceConstants;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternPostRequest;
+import myreader.security.AuthenticatedUser;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,7 +29,6 @@ import static java.util.stream.Collectors.toList;
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping(ResourceConstants.EXCLUSIONS_PATTERN)
 public class ExclusionPatternCollectionResource {
 
     private final RepresentationModelAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler;
@@ -46,17 +45,15 @@ public class ExclusionPatternCollectionResource {
         this.subscriptionRepository = subscriptionRepository;
     }
 
-    @ModelAttribute("subscription")
-    public Subscription model(@PathVariable("id") Long id) {
-        Subscription subscription = subscriptionRepository.findByIdAndCurrentUser(id);
-        if (subscription == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return subscription;
-    }
+    @GetMapping(ResourceConstants.EXCLUSIONS_PATTERN)
+    public Map<String, List<ExclusionPatternGetResponse>> get(
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser
+    ) {
+        Subscription subscription = subscriptionRepository
+                .findByIdAndUserId(id, authenticatedUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-    @GetMapping
-    public Map<String, List<ExclusionPatternGetResponse>> get(@ModelAttribute("subscription") Subscription subscription) {
         List<ExclusionPattern> source = exclusionRepository.findBySubscriptionId(subscription.getId());
         List<ExclusionPatternGetResponse> target = source.stream().map(assembler::toModel).collect(toList());
 
@@ -65,11 +62,15 @@ public class ExclusionPatternCollectionResource {
         return body;
     }
 
-    @PostMapping
+    @PostMapping(ResourceConstants.EXCLUSIONS_PATTERN)
     public ExclusionPatternGetResponse post(
-            @ModelAttribute("subscription") Subscription subscription,
-            @Valid @RequestBody ExclusionPatternPostRequest request
+            @PathVariable("id") Long id,
+            @Valid @RequestBody ExclusionPatternPostRequest request,
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser
     ) {
+        Subscription subscription = subscriptionRepository
+                .findByIdAndUserId(id, authenticatedUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ExclusionPattern exclusionPattern = exclusionRepository.findBySubscriptionIdAndPattern(subscription.getId(), request.getPattern());
 
         if (exclusionPattern == null) {

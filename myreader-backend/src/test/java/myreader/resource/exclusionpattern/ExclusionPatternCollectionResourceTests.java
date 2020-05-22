@@ -1,13 +1,13 @@
 package myreader.resource.exclusionpattern;
 
-import myreader.test.TestConstants;
+import myreader.test.TestUser;
+import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,7 +34,7 @@ public class ExclusionPatternCollectionResourceTests {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser(TestConstants.USER111)
+    @WithAuthenticatedUser(TestUser.USER111)
     public void testCollectionResourceForUser111JsonStructureEquality() throws Exception {
         mockMvc.perform(get("/api/2/exclusions/109/pattern"))
                 .andExpect(status().isOk())
@@ -47,14 +47,14 @@ public class ExclusionPatternCollectionResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER2)
+    @WithAuthenticatedUser(TestUser.USER2)
     public void testCollectionResourceForUser2NotFound() throws Exception {
         mockMvc.perform(get("/api/2/exclusions/1/pattern"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @WithMockUser(TestConstants.USER2)
+    @WithAuthenticatedUser(TestUser.USER2)
     public void testPost() throws Exception {
         mockMvc.perform(post("/api/2/exclusions/9/pattern")
                 .with(jsonBody("{'pattern': 'test'}")))
@@ -71,7 +71,7 @@ public class ExclusionPatternCollectionResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER2)
+    @WithAuthenticatedUser(TestUser.USER2)
     public void testPostInvalidEmptyPattern() throws Exception {
         mockMvc.perform(post("/api/2/exclusions/9/pattern")
                 .with(jsonBody("{'pattern': ''}")))
@@ -80,7 +80,7 @@ public class ExclusionPatternCollectionResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER2)
+    @WithAuthenticatedUser(TestUser.USER2)
     public void testPostInvalidNullPattern() throws Exception {
         mockMvc.perform(post("/api/2/exclusions/9/pattern")
                 .with(jsonBody("{'pattern': null}")))
@@ -90,7 +90,7 @@ public class ExclusionPatternCollectionResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER2)
+    @WithAuthenticatedUser(TestUser.USER2)
     public void testPostInvalidPattern() throws Exception {
         mockMvc.perform(post("/api/2/exclusions/9/pattern")
                 .with(jsonBody("{'pattern': '\\\\k'}")))
@@ -99,7 +99,7 @@ public class ExclusionPatternCollectionResourceTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER115)
+    @WithAuthenticatedUser(TestUser.USER115)
     public void testPostDuplicate() throws Exception {
         mockMvc.perform(get("/api/2/exclusions/1103/pattern"))
                 .andExpect(jsonPath("$.content[0].uuid", is("9")))

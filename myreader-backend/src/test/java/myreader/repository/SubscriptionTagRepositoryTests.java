@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
@@ -39,6 +40,8 @@ public class SubscriptionTagRepositoryTests {
 
     private User user1;
     private User user2;
+    private SubscriptionTag subscriptionTag1;
+    private SubscriptionTag subscriptionTag3;
 
     @Before
     public void setUp() {
@@ -52,7 +55,7 @@ public class SubscriptionTagRepositoryTests {
         Subscription subscription2 = testEntityManager.persistFlushFind(new Subscription(user1, feed2));
         Subscription subscription3 = testEntityManager.persistFlushFind(new Subscription(user2, feed1));
 
-        SubscriptionTag subscriptionTag1 = new SubscriptionTag("b-tag", user1);
+        subscriptionTag1 = new SubscriptionTag("b-tag", user1);
         subscriptionTag1.setColor("#111111");
         subscriptionTag1.setSubscriptions(Collections.singleton(subscription1));
         testEntityManager.persistAndFlush(subscriptionTag1);
@@ -62,10 +65,36 @@ public class SubscriptionTagRepositoryTests {
         subscriptionTag2.setSubscriptions(Collections.singleton(subscription2));
         testEntityManager.persistAndFlush(subscriptionTag2);
 
-        SubscriptionTag subscriptionTag3 = new SubscriptionTag("tag3", user2);
+        subscriptionTag3 = new SubscriptionTag("tag3", user2);
         subscriptionTag3.setColor("#333333");
         subscriptionTag3.setSubscriptions(Collections.singleton(subscription3));
         testEntityManager.persistAndFlush(subscriptionTag3);
+    }
+
+    @Test
+    public void shouldFindByIdAndUserIdForUser1() {
+        SubscriptionTag subscriptionTag = subscriptionTagRepository
+                .findByIdAndUserId(subscriptionTag1.getId(), user1.getId())
+                .orElseThrow(AssertionError::new);
+
+        assertThat(subscriptionTag, hasProperty("name", is("b-tag")));
+    }
+
+    @Test
+    public void shouldFindByIdAndUserIdForUser2() {
+        SubscriptionTag subscriptionTag = subscriptionTagRepository
+                .findByIdAndUserId(subscriptionTag3.getId(), user2.getId())
+                .orElseThrow(AssertionError::new);
+
+        assertThat(subscriptionTag, hasProperty("name", is("tag3")));
+    }
+
+    @Test
+    public void shouldNotFindByIdAndUserIdForUser2() {
+        Optional<SubscriptionTag> subscriptionTag = subscriptionTagRepository
+                .findByIdAndUserId(subscriptionTag1.getId(), user2.getId());
+
+        assertThat(subscriptionTag.isPresent(), is(false));
     }
 
     @Test

@@ -13,6 +13,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
+
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -91,5 +94,31 @@ public class SubscriptionRepositoryTests {
 
         subscription = em.refresh(subscription);
         assertThat(subscription.getUnseen(), is(2));
+    }
+
+    @Test
+    public void shouldFindByIdAndUserIdForUser1() {
+        Subscription subscription = subscriptionRepository
+                .findByIdAndUserId(1L, 1)
+                .orElseThrow(AssertionError::new);
+
+        assertThat(subscription, hasProperty("title", is("user1_subscription1")));
+    }
+
+    @Test
+    public void shouldFindByIdAndUserIdForUser2() {
+        Subscription subscriptionTag = subscriptionRepository
+                .findByIdAndUserId(6L, 2L)
+                .orElseThrow(AssertionError::new);
+
+        assertThat(subscriptionTag, hasProperty("title", is("user2_subscription1")));
+    }
+
+    @Test
+    public void shouldNotFindByIdAndUserIdForUser2() {
+        Optional<Subscription> subscription = subscriptionRepository
+                .findByIdAndUserId(1L, 2L);
+
+        assertThat(subscription.isPresent(), is(false));
     }
 }
