@@ -72,6 +72,32 @@ public class SubscriptionTagRepositoryTests {
     }
 
     @Test
+    public void shouldFindByTagAndUserIdForUser1() {
+        SubscriptionTag subscriptionTag = subscriptionTagRepository
+                .findByTagAndUserId(subscriptionTag1.getName(), user1.getId())
+                .orElseThrow(AssertionError::new);
+
+        assertThat(subscriptionTag, hasProperty("name", is("b-tag")));
+    }
+
+    @Test
+    public void shouldFindByTagAndUserIdForUser2() {
+        SubscriptionTag subscriptionTag = subscriptionTagRepository
+                .findByTagAndUserId(subscriptionTag3.getName(), user2.getId())
+                .orElseThrow(AssertionError::new);
+
+        assertThat(subscriptionTag, hasProperty("name", is("tag3")));
+    }
+
+    @Test
+    public void shouldNotFindByTagAndUserIdForUser2() {
+        Optional<SubscriptionTag> subscriptionTag = subscriptionTagRepository
+                .findByTagAndUserId(subscriptionTag1.getName(), user2.getId());
+
+        assertThat(subscriptionTag.isPresent(), is(false));
+    }
+
+    @Test
     public void shouldFindByIdAndUserIdForUser1() {
         SubscriptionTag subscriptionTag = subscriptionTagRepository
                 .findByIdAndUserId(subscriptionTag1.getId(), user1.getId())

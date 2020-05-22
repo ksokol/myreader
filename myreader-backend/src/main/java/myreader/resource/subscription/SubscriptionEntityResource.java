@@ -85,7 +85,7 @@ public class SubscriptionEntityResource {
             String name = feedTag.getName();
 
             subscriptionTag = subscriptionTagRepository
-                    .findByCurrentUserAndTag(name)
+                    .findByTagAndUserId(name, authenticatedUser.getId())
                     .orElse(new SubscriptionTag(name, subscription.getUser()));
 
             subscriptionTag.setColor(feedTag.getColor());
