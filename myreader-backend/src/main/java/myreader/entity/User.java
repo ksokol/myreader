@@ -30,10 +30,6 @@ public class User {
     private String password;
     private Set<Subscription> subscriptions;
 
-    /**
-     * @deprecated Use {@link #User(String)} instead.
-     */
-    @Deprecated
     public User() {}
 
     public User(String email) {

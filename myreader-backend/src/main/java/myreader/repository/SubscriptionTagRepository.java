@@ -19,6 +19,6 @@ public interface SubscriptionTagRepository extends CrudRepository<SubscriptionTa
     @Query("select st from SubscriptionTag st where st.id = ?1 and st.user.email = ?#{principal.username}")
     Optional<SubscriptionTag> findByCurrentUserAndId(Long id);
 
-    @Query("select st from SubscriptionTag st where st.user.email = ?1 order by st.name")
+    @Query("select st from SubscriptionTag st where st.user.id = ?1 order by st.name")
     List<SubscriptionTag> findAllByUserId(long userId);
 }
