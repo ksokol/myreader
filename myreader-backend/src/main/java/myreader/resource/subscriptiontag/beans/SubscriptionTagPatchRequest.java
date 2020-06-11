@@ -1,19 +1,13 @@
 package myreader.resource.subscriptiontag.beans;
 
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.hateoas.RepresentationModel;
-
-import javax.validation.constraints.Pattern;
 
 /**
  * @author Kamill Sokol
  */
 public class SubscriptionTagPatchRequest extends RepresentationModel<SubscriptionTagPatchRequest> {
 
-    @NotBlank(message = "may not be empty")
     private String name;
-
-    @Pattern(regexp="^#(?:[0-9a-fA-F]{3}){1,2}$", message = "not a RGB hex code")
     private String color;
 
     public String getName() {

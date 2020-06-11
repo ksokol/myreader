@@ -1,6 +1,5 @@
 package myreader.resource.subscriptionentry.beans;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -8,7 +7,6 @@ import java.util.List;
  */
 public class SubscriptionEntryBatchPatchRequest {
 
-    @Valid
     private List<SubscriptionEntryPatchRequest> content;
 
     public List<SubscriptionEntryPatchRequest> getContent() {

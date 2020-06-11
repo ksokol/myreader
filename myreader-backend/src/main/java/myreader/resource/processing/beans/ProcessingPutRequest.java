@@ -1,13 +1,10 @@
 package myreader.resource.processing.beans;
 
-import myreader.resource.processing.validation.ValidProcess;
-
 /**
  * @author Kamill Sokol
  */
 public class ProcessingPutRequest {
 
-    @ValidProcess
     private String process;
 
     public String getProcess() {

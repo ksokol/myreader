@@ -1,16 +1,12 @@
 package myreader.resource.subscriptionentry.beans;
 
-import javax.validation.constraints.Digits;
-
-import static java.lang.Integer.MAX_VALUE;
+import java.util.Objects;
 
 /**
  * @author Kamill Sokol
  */
-@SuppressWarnings("PMD.UselessOverridingMethod")
 public class SubscriptionEntryPatchRequest {
 
-    @Digits(integer = MAX_VALUE, fraction = 0)
     private String uuid;
     private String tag;
     private Boolean seen;
@@ -37,5 +33,24 @@ public class SubscriptionEntryPatchRequest {
 
     public void setSeen(Boolean seen) {
         this.seen = seen;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof SubscriptionEntryPatchRequest)) {
+            return false;
+        }
+        SubscriptionEntryPatchRequest that = (SubscriptionEntryPatchRequest) other;
+        return Objects.equals(uuid, that.uuid) &&
+                Objects.equals(tag, that.tag) &&
+                Objects.equals(seen, that.seen);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, tag, seen);
     }
 }

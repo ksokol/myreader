@@ -6,6 +6,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.util.function.Consumer;
+
 import static org.junit.Assert.assertThat;
 
 /**
@@ -22,17 +24,33 @@ public final class CustomMockMvcResultMatchers {
     }
 
     public ResultMatcher onField(String field, Matcher<String> matcher) {
+        return extractException(exception -> {
+            BindingResult bindingResult = exception.getBindingResult();
+            FieldError fieldError = bindingResult.getFieldError(field);
+
+            if (fieldError != null) {
+                assertThat(String.format("field %s", field), fieldError.getDefaultMessage(), matcher);
+            } else {
+                throw new AssertionError(String.format("field %s not present", field));
+            }
+        });
+    }
+
+    public ResultMatcher absentField(String field) {
+        return extractException(exception -> {
+            BindingResult bindingResult = exception.getBindingResult();
+            FieldError fieldError = bindingResult.getFieldError(field);
+
+            if (fieldError != null) {
+                throw new AssertionError(String.format("field %s not present", field));
+            }
+        });
+    }
+
+    private static ResultMatcher extractException(Consumer<MethodArgumentNotValidException> consumer) {
         return result -> {
             if (result.getResolvedException() instanceof MethodArgumentNotValidException) {
-                MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
-                BindingResult bindingResult = exception.getBindingResult();
-                FieldError fieldError = bindingResult.getFieldError(field);
-
-                if (fieldError != null) {
-                    assertThat("field " + field, fieldError.getDefaultMessage(), matcher);
-                } else {
-                    throw new AssertionError("field " + field + " not present");
-                }
+                consumer.accept((MethodArgumentNotValidException) result.getResolvedException());
             } else {
                 throw new AssertionError("validation messages not present");
             }

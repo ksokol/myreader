@@ -1,25 +1,37 @@
 package myreader.resource.subscription;
 
+import myreader.entity.Feed;
+import myreader.entity.Subscription;
+import myreader.entity.SubscriptionTag;
+import myreader.entity.User;
+import myreader.repository.SubscriptionRepository;
+import myreader.repository.SubscriptionTagRepository;
 import myreader.test.TestUser;
 import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Date;
+import java.util.Optional;
+
 import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -32,124 +44,118 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@Sql("classpath:test-data.sql")
 @WithTestProperties
+@WithAuthenticatedUser(TestUser.USER4)
 public class SubscriptionEntityResourceTests {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    @WithAuthenticatedUser(TestUser.USER1)
-    public void shouldReturnSubscriptionWhenItIsNotOwnedByCurrentUser() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptions/1"))
-                .andExpect(status().isOk());
+    @MockBean
+    private SubscriptionRepository subscriptionRepository;
+
+    @MockBean
+    private SubscriptionTagRepository subscriptionTagRepository;
+
+    @Before
+    public void setUp() {
+        SubscriptionTag subscriptionTag = new SubscriptionTag();
+        subscriptionTag.setId(2L);
+        subscriptionTag.setName("subscriptiontag name");
+        subscriptionTag.setColor("#111111");
+        subscriptionTag.setCreatedAt(new Date(1000));
+
+        Feed feed = new Feed();
+        feed.setUrl("http://feeds.feedburner.com/javaposse");
+
+        Subscription subscription = new Subscription(new User(TestUser.USER4.email), feed);
+        subscription.setId(1L);
+        subscription.setTitle("expected title");
+        subscription.setSubscriptionTag(subscriptionTag);
+        subscription.setFetchCount(15);
+        subscription.setUnseen(10);
+        subscription.setCreatedAt(new Date(2000));
+
+        given(subscriptionRepository.findByIdAndUserId(subscription.getId(), TestUser.USER4.id))
+                .willReturn(Optional.of(subscription));
     }
 
     @Test
-    @WithAuthenticatedUser(TestUser.USER1)
-    public void shouldReturnNotFoundWhenRequestedSubscriptionIsNotOwnedByCurrentUser() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptions/6"))
-                .andExpect(status().isNotFound());
-    }
-
-
-    @Test
-    @WithAuthenticatedUser(TestUser.USER1)
-    public void shouldReturnExpectedJsonStructure() throws Exception {
+    public void shouldReturnResponse() throws Exception {
         mockMvc.perform(get("/api/2/subscriptions/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uuid", is("1")))
-                .andExpect(jsonPath("$.title", is("user1_subscription1")))
+                .andExpect(jsonPath("$.title", is("expected title")))
                 .andExpect(jsonPath("$.sum", is(15)))
-                .andExpect(jsonPath("$.unseen", is(0)))
+                .andExpect(jsonPath("$.unseen", is(10)))
                 .andExpect(jsonPath("$.origin", is("http://feeds.feedburner.com/javaposse")))
-                .andExpect(jsonPath("$.feedTag.uuid", is("1")))
-                .andExpect(jsonPath("$.feedTag.name", is("tag1")))
-                .andExpect(jsonPath("$.feedTag.color", nullValue()))
-                .andExpect(jsonPath("$.feedTag.createdAt", is("2011-05-15T19:20:46.000+0000")))
-                .andExpect(jsonPath("$.createdAt", is("2011-04-15T19:20:46.000+0000")));
+                .andExpect(jsonPath("$.feedTag.uuid", is("2")))
+                .andExpect(jsonPath("$.feedTag.name", is("subscriptiontag name")))
+                .andExpect(jsonPath("$.feedTag.color", is("#111111")))
+                .andExpect(jsonPath("$.feedTag.createdAt", is("1970-01-01T00:00:01.000+0000")))
+                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:02.000+0000")));
     }
 
     @Test
-    @WithAuthenticatedUser(TestUser.USER1)
     public void shouldDeleteSubscription() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptions?unseenGreaterThan=-1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content..origin", hasSize(5)))
-                .andExpect(jsonPath("$.content..origin", hasItem("http://feeds.feedburner.com/javaposse")));
-
         mockMvc.perform(delete("/api/2/subscriptions/1"))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/api/2/subscriptions?unseenGreaterThan=-1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content..origin", hasSize(4)))
-                .andExpect(jsonPath("$.content..origin", not(hasItem("http://feeds.feedburner.com/javaposse"))));
+        verify(subscriptionRepository).delete(argThat(hasProperty("id", is(1L))));
     }
 
     @Test
-    @WithAuthenticatedUser(TestUser.USER2)
-    public void shouldReturnNotFoundWhenTryingToDeleteSubscriptionThatIsNotOwnedByCurrentUser() throws Exception {
-        mockMvc.perform(patch("/api/2/subscriptions/1")
+    public void shouldReturnNotFoundWhenDeletingSubscriptionThatIsNotOwnedByCurrentUser() throws Exception {
+        mockMvc.perform(patch("/api/2/subscriptions/2")
                 .with(jsonBody("{'title': 'irrelevant',  'tag' : 'irrelevant'}")))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @WithAuthenticatedUser(TestUser.USER103)
     public void shouldPatchSubscription() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptions/101"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("title", is("user103_subscription1")))
-                .andExpect(jsonPath("feedTag.name", is("tag1")))
-                .andExpect(jsonPath("feedTag.color", nullValue()));
+        given(subscriptionTagRepository.save(any())).willAnswer((Answer<SubscriptionTag>) invocation -> {
+            SubscriptionTag tag = (SubscriptionTag) invocation.getArguments()[0];
+            tag.setId(3L);
+            return tag;
+        });
 
-        mockMvc.perform(patch("/api/2/subscriptions/101")
-                .with(jsonBody("{'title': 'expected title', 'feedTag': {'name':'expected name', 'color': 'expected color'}}")))
+        mockMvc.perform(patch("/api/2/subscriptions/1")
+                .with(jsonBody("{'title': 'changed title', 'feedTag': {'name':'changed name', 'color': '#222222'}}")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("title", is("expected title")))
-                .andExpect(jsonPath("feedTag.name", is("expected name")))
-                .andExpect(jsonPath("feedTag.color", is("expected color")));
+                .andExpect(jsonPath("title", is("changed title")))
+                .andExpect(jsonPath("feedTag.uuid", is("3")))
+                .andExpect(jsonPath("feedTag.name", is("changed name")))
+                .andExpect(jsonPath("feedTag.color", is("#222222")));
 
-        mockMvc.perform(patch("/api/2/subscriptions/101")
-                .with(jsonBody("{'title': 'expected title2'}")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("title", is("expected title2")))
-                .andExpect(jsonPath("feedTag", nullValue()));
+        verify(subscriptionRepository).save(argThat(hasProperty("title", is("changed title"))));
+        verify(subscriptionTagRepository).save(argThat(allOf(
+                hasProperty("name", is("changed name")),
+                hasProperty("color", is("#222222"))
+        )));
     }
 
     @Test
-    @WithAuthenticatedUser(TestUser.USER103)
+    public void shouldRejectPatchRequestWhenTitleAndFeedTagNamePropertyIsAbsent() throws Exception {
+        mockMvc.perform(patch("/api/2/subscriptions/1")
+                .with(jsonBody("{'feedTag': {}}")))
+                .andExpect(status().isBadRequest())
+                .andExpect(validation().onField("title", is("may not be empty")))
+                .andExpect(validation().onField("feedTag.name", is("may not be empty")));
+    }
+
+    @Test
     public void shouldValidateSubscriptionTitle() throws Exception {
-        mockMvc.perform(patch("/api/2/subscriptions/101")
+        mockMvc.perform(patch("/api/2/subscriptions/1")
                 .with(jsonBody("{'title': ' '}")))
                 .andExpect(status().isBadRequest())
                 .andExpect(validation().onField("title", is("may not be empty")));
     }
 
     @Test
-    @WithAuthenticatedUser(TestUser.USER103)
     public void shouldValidateSubscriptionTagName() throws Exception {
-        mockMvc.perform(patch("/api/2/subscriptions/101")
+        mockMvc.perform(patch("/api/2/subscriptions/1")
                 .with(jsonBody("{'title': 'irrelevant', 'feedTag': {'name': ' '}}")))
                 .andExpect(status().isBadRequest())
                 .andExpect(validation().onField("feedTag.name", is("may not be empty")));
-    }
-
-    @Test
-    @WithAuthenticatedUser(TestUser.USER116)
-    public void shouldUpdateColorForAllSubscriptionsWithGivenTag() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptions"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("content..feedTag.color", hasItems(nullValue(), nullValue())));
-
-        mockMvc.perform(patch("/api/2/subscriptions/1104")
-                .with(jsonBody("{'title': 'user116_subscription1', 'feedTag': {'name':'tag1', 'color': '#777'}}")))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/api/2/subscriptions"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("content..feedTag.color", hasItems(is("#777"), is("#777"))));
     }
 }

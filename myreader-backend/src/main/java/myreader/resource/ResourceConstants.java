@@ -31,4 +31,6 @@ public final class ResourceConstants {
     public static final String EXCLUSION = EXCLUSIONS + "/" + ID_VARIABLE;
     public static final String EXCLUSIONS_SUBSCRIPTION_PATTERN = EXCLUSIONS + "/{subscriptionId}/pattern/{patternId}";
     public static final String EXCLUSIONS_PATTERN = EXCLUSIONS + "/" + ID_VARIABLE + "/pattern";
+
+    public static final String PROCESSING = API + "/processing";
 }

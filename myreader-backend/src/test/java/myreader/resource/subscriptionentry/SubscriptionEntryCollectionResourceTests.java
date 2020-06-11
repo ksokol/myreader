@@ -226,11 +226,23 @@ public class SubscriptionEntryCollectionResourceTests {
     }
 
     @Test
+    public void shouldRejectPatchRequestWhenContentPropertyIsAbsent() throws Exception {
+        mockMvc.perform(patch("/api/2/subscriptionEntries")
+                .with(jsonBody("{}")))
+                .andExpect(status().isBadRequest())
+                .andExpect(validation().onField("content", is("may not be null")));
+    }
+
+    @Test
     public void shouldRejectPatchRequestWhenUuidContainsAnInvalidValue() throws Exception {
         mockMvc.perform(patch("/api/2/subscriptionEntries")
-                .with(jsonBody("{'content':[{'uuid': 'digits-only'}]}")))
+                .with(jsonBody("{'content':[{'uuid': 'digits-on1y'}, {'uuid': '0'}, {'uuid': '100'}, {'uuid': '-1'}, {'uuid': '2147483648'}]}")))
                 .andExpect(status().isBadRequest())
-                .andExpect(validation().onField("content[0].uuid", is("numeric value out of bounds (<2147483647 digits>.<0 digits> expected)")));
+                .andExpect(validation().onField("content[0].uuid", is("numeric value out of bounds (<2147483647 digits>.<0 digits> expected)")))
+                .andExpect(validation().absentField("content[1].uuid"))
+                .andExpect(validation().absentField("content[2].uuid"))
+                .andExpect(validation().onField("content[3].uuid", is("numeric value out of bounds (<2147483647 digits>.<0 digits> expected)")))
+                .andExpect(validation().onField("content[4].uuid", is("numeric value out of bounds (<2147483647 digits>.<0 digits> expected)")));
     }
 
     @Test

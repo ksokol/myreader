@@ -4,6 +4,7 @@ import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.resource.subscriptionentry.beans.SearchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequest;
+import myreader.resource.subscriptionentry.beans.SubscriptionEntryBatchPatchRequestValidator;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
 import org.springframework.data.domain.Slice;
@@ -14,7 +15,10 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +26,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 import myreader.security.AuthenticatedUser;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +50,11 @@ public class SubscriptionEntryCollectionResource {
     ) {
         this.assembler = assembler;
         this.subscriptionEntryRepository = subscriptionEntryRepository;
+    }
+
+    @InitBinder
+    protected void binder(WebDataBinder binder) {
+        binder.addValidators(new SubscriptionEntryBatchPatchRequestValidator());
     }
 
     @GetMapping(SUBSCRIPTION_ENTRIES)
@@ -85,7 +93,7 @@ public class SubscriptionEntryCollectionResource {
     @Transactional
     @PatchMapping(SUBSCRIPTION_ENTRIES)
     public CollectionModel<SubscriptionEntryGetResponse> patch(
-            @Valid @RequestBody SubscriptionEntryBatchPatchRequest request,
+            @Validated @RequestBody SubscriptionEntryBatchPatchRequest request,
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser
     ) {
         List<SubscriptionEntryGetResponse> subscriptionEntryGetResponses = new ArrayList<>(request.getContent().size());

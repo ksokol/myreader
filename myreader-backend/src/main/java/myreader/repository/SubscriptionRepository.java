@@ -14,15 +14,18 @@ import java.util.Optional;
  */
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
-    @Query(value="select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.user.email = ?#{principal.username} " +
+    @Query(value="select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.user.id = ?2 " +
                  "and (select count(1) from SubscriptionEntry se where se.subscription.id = s.id and se.seen = false) > ?1")
-    List<Subscription> findAllByUnseenGreaterThanAndCurrentUser(long unseenCount);
+    List<Subscription> findAllByUnseenGreaterThanAndUserId(long unseenCount, long userId);
 
     @Query("select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.id = ?1 and s.user.id = ?2")
     Optional<Subscription> findByIdAndUserId(Long id, long userId);
 
     @Query("select s from Subscription s where s.user.email = ?#{principal.username} and s.feed.url = ?1")
     Subscription findByFeedUrlAndCurrentUser(String url);
+
+    @Query("select s from Subscription s where s.user.id = ?2 and s.feed.url = ?1")
+    Optional<Subscription> findByFeedUrlAndUserId(String url, long userId);
 
     Subscription findByUserEmailAndFeedUrl(String email, String url);
 
