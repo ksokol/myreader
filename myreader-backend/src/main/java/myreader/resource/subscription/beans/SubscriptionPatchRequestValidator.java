@@ -1,5 +1,6 @@
 package myreader.resource.subscription.beans;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -18,14 +19,14 @@ public class SubscriptionPatchRequestValidator implements Validator {
         SubscriptionPatchRequest request = (SubscriptionPatchRequest) target;
 
         String title = request.getTitle();
-        if (title == null || "".equals(title.trim())) {
+        if (StringUtils.isBlank(title)) {
             errors.rejectValue("title", "NotBlank.title", "may not be empty");
         }
 
         SubscriptionPatchRequest.FeedTag feedTag = request.getFeedTag();
         if (feedTag != null) {
             String feedTagName = feedTag.getName();
-            if (feedTagName == null || "".equals(feedTagName.trim())) {
+            if (StringUtils.isBlank(feedTagName)) {
                 errors.rejectValue("feedTag.name", "NotBlank.feedTag.name", "may not be empty");
             }
         }

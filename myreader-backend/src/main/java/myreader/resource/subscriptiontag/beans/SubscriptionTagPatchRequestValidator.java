@@ -1,5 +1,6 @@
 package myreader.resource.subscriptiontag.beans;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -22,7 +23,7 @@ public class SubscriptionTagPatchRequestValidator implements Validator {
         SubscriptionTagPatchRequest request = (SubscriptionTagPatchRequest) target;
 
         String name = request.getName();
-        if (name == null || "".equals(name.trim())) {
+        if (StringUtils.isBlank(name)) {
             errors.rejectValue("name", "NotBlank.color", "may not be empty");
         }
 

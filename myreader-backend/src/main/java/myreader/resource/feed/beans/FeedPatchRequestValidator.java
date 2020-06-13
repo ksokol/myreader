@@ -1,6 +1,7 @@
 package myreader.resource.feed.beans;
 
 import myreader.service.feed.FeedService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -31,7 +32,7 @@ public class FeedPatchRequestValidator implements Validator {
         FeedPatchRequest request = (FeedPatchRequest) target;
 
         String title = request.getTitle();
-        if (title == null || "".equals(title.trim())) {
+        if (StringUtils.isBlank(title)) {
             errors.rejectValue("title", "NotBlank.title", "may not be empty");
         }
 

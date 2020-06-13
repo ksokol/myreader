@@ -45,8 +45,7 @@ public class SubscriptionEntryBatchPatchRequestValidator implements Validator {
         try {
             return Integer.parseInt(uuid) >= 0;
         } catch (NumberFormatException exception) {
-            // ignore me
+            return false;
         }
-        return false;
     }
 }

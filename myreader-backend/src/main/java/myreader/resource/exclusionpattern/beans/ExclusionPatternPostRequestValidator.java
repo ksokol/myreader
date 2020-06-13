@@ -1,5 +1,6 @@
 package myreader.resource.exclusionpattern.beans;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -21,7 +22,7 @@ public class ExclusionPatternPostRequestValidator implements Validator {
         ExclusionPatternPostRequest request = (ExclusionPatternPostRequest) target;
 
         String pattern = request.getPattern();
-        if (pattern == null || "".equals(pattern.trim())) {
+        if (StringUtils.isBlank(pattern)) {
             errors.rejectValue("pattern", "ValidRegexp.pattern", "invalid regular expression");
             return;
         }
