@@ -112,8 +112,8 @@ public class SubscriptionCollectionResourceTests {
                 .andExpect(jsonPath("$.content[0].feedTag.uuid", is("21")))
                 .andExpect(jsonPath("$.content[0].feedTag.name", is("tag1")))
                 .andExpect(jsonPath("$.content[0].feedTag.color", nullValue()))
-                .andExpect(jsonPath("$.content[0].feedTag.createdAt", is("1970-01-01T00:00:01.000+0000")))
-                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:02.000+0000")))
+                .andExpect(jsonPath("$.content[0].feedTag.createdAt", is("1970-01-01T00:00:01.000+00:00")))
+                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:02.000+00:00")))
                 .andExpect(jsonPath("$.content[1].uuid", is("1105")))
                 .andExpect(jsonPath("$.content[1].title", is("user102_subscription2")))
                 .andExpect(jsonPath("$.content[1].sum", is(20)))
@@ -122,8 +122,8 @@ public class SubscriptionCollectionResourceTests {
                 .andExpect(jsonPath("$.content[1].feedTag.uuid", is("22")))
                 .andExpect(jsonPath("$.content[1].feedTag.name", is("tag2")))
                 .andExpect(jsonPath("$.content[1].feedTag.color", is("#ffffff")))
-                .andExpect(jsonPath("$.content[1].feedTag.createdAt", is("1970-01-01T00:00:03.000+0000")))
-                .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:04.000+0000")));
+                .andExpect(jsonPath("$.content[1].feedTag.createdAt", is("1970-01-01T00:00:03.000+00:00")))
+                .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:04.000+00:00")));
     }
 
     @Test
@@ -202,6 +202,6 @@ public class SubscriptionCollectionResourceTests {
                 .andExpect(jsonPath("unseen", is(0)))
                 .andExpect(jsonPath("origin", is(url)))
                 .andExpect(jsonPath("feedTag", nullValue()))
-                .andExpect(jsonPath("createdAt", is("1970-01-01T00:00:01.000+0000")));
+                .andExpect(jsonPath("createdAt", is("1970-01-01T00:00:01.000+00:00")));
     }
 }

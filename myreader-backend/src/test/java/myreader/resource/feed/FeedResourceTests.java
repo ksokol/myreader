@@ -104,7 +104,7 @@ public class FeedResourceTests {
                 .andExpect(jsonPath("$.links[0].href", endsWith("/api/2/feeds/18/fetchError?page=0&size=20")))
                 .andExpect(jsonPath("$.content[0].uuid", is("1")))
                 .andExpect(jsonPath("$.content[0].message", is("error message for feed 18")))
-                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:02.000+0000")))
+                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:02.000+00:00")))
                 .andExpect(jsonPath("$.page.totalElements", is(1)));
     }
 
@@ -118,7 +118,7 @@ public class FeedResourceTests {
                 .andExpect(jsonPath("$.lastModified", is("Thu, 27 Mar 2014 13:53:36 GMT")))
                 .andExpect(jsonPath("$.fetched", is(142)))
                 .andExpect(jsonPath("$.hasErrors", is(true)))
-                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+0000")));
+                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+00:00")));
     }
 
     @Test

@@ -92,8 +92,8 @@ public class SubscriptionEntityResourceTests {
                 .andExpect(jsonPath("$.feedTag.uuid", is("2")))
                 .andExpect(jsonPath("$.feedTag.name", is("subscriptiontag name")))
                 .andExpect(jsonPath("$.feedTag.color", is("#111111")))
-                .andExpect(jsonPath("$.feedTag.createdAt", is("1970-01-01T00:00:01.000+0000")))
-                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:02.000+0000")));
+                .andExpect(jsonPath("$.feedTag.createdAt", is("1970-01-01T00:00:01.000+00:00")))
+                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:02.000+00:00")));
     }
 
     @Test

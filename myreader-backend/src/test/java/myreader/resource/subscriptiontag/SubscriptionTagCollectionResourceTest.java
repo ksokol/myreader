@@ -59,10 +59,10 @@ public class SubscriptionTagCollectionResourceTest {
                 .andExpect(jsonPath("$.content[0].uuid", is("1")))
                 .andExpect(jsonPath("$.content[0].name", is("tag1")))
                 .andExpect(jsonPath("$.content[0].color", is("#111111")))
-                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:01.000+0000")))
+                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:01.000+00:00")))
                 .andExpect(jsonPath("$.content[1].uuid", is("2")))
                 .andExpect(jsonPath("$.content[1].name", is("tag2")))
                 .andExpect(jsonPath("$.content[1].color", is("#000000")))
-                .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:02.000+0000")));
+                .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:02.000+00:00")));
     }
 }

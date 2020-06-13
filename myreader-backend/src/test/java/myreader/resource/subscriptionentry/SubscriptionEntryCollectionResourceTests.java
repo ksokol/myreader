@@ -139,7 +139,7 @@ public class SubscriptionEntryCollectionResourceTests {
                 .andExpect(jsonPath("$.content[0].feedTagColor", is("#111111")))
                 .andExpect(jsonPath("$.content[0].feedUuid", is("1")))
                 .andExpect(jsonPath("$.content[0].origin", is("http://www.javaspecialists.eu/archive/Issue213.html")))
-                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:01.000+0000")))
+                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:01.000+00:00")))
                 .andExpect(jsonPath("$.content[1].uuid", is("1019")))
                 .andExpect(jsonPath("$.content[1].title", is("Throwing Exceptions from Fields")))
                 .andExpect(jsonPath("$.content[1].feedTitle", is("user4_subscription1")))
@@ -150,7 +150,7 @@ public class SubscriptionEntryCollectionResourceTests {
                 .andExpect(jsonPath("$.content[1].feedTagColor", nullValue()))
                 .andExpect(jsonPath("$.content[1].feedUuid", is("2")))
                 .andExpect(jsonPath("$.content[1].origin", is("http://www.javaspecialists.eu/archive/Issue208.html")))
-                .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:02.000+0000")))
+                .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:02.000+00:00")))
                 .andExpect(jsonPath("$.page", nullValue()));
     }
 

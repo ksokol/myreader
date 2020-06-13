@@ -42,7 +42,7 @@ public class FeedCollectionResourceTests {
                 .andExpect(jsonPath("$.content[0].lastModified", is("Thu, 27 Mar 2014 13:23:32 GMT")))
                 .andExpect(jsonPath("$.content[0].fetched", is(282)))
                 .andExpect(jsonPath("$.content[0].hasErrors", is(false)))
-                .andExpect(jsonPath("$.content[0].createdAt", is("2011-04-15T22:20:46.000+0000")))
+                .andExpect(jsonPath("$.content[0].createdAt", is("2011-04-15T22:20:46.000+00:00")))
                 .andExpect(jsonPath("$.content[1].uuid", is("1")))
                 .andExpect(jsonPath("$.content[2].uuid", is("2")))
                 .andExpect(jsonPath("$.content[3].uuid", is("3")))

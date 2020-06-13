@@ -91,7 +91,7 @@ public class SubscriptionEntryEntityResourceTests {
                 .andExpect(jsonPath("$.feedTagColor", is("#777")))
                 .andExpect(jsonPath("$.feedUuid", is("1100")))
                 .andExpect(jsonPath("$.origin", is("http://martinfowler.com/bliki/TellDontAsk.html")))
-                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+0000")));
+                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+00:00")));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class SubscriptionEntryEntityResourceTests {
                 .andExpect(jsonPath("$.feedTagColor", is("#777")))
                 .andExpect(jsonPath("$.feedUuid", is("1100")))
                 .andExpect(jsonPath("$.origin", is("http://martinfowler.com/bliki/TellDontAsk.html")))
-                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+0000")));
+                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+00:00")));
 
         verify(subscriptionEntryRepository).save(MockitoHamcrest.argThat(
                 allOf(
@@ -140,7 +140,7 @@ public class SubscriptionEntryEntityResourceTests {
                 .andExpect(jsonPath("$.feedTagColor", is("#777")))
                 .andExpect(jsonPath("$.feedUuid", is("1100")))
                 .andExpect(jsonPath("$.origin", is("http://martinfowler.com/bliki/TellDontAsk.html")))
-                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+0000")));
+                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+00:00")));
 
         verify(subscriptionEntryRepository).save(MockitoHamcrest.argThat(
                 allOf(
