@@ -19,11 +19,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
@@ -53,7 +55,7 @@ public class SubscriptionEntryEntityResourceTests {
     public void before() {
         SubscriptionEntry se = new SubscriptionEntry();
         se.setId(1014L);
-        se.setTag("tag3");
+        se.setTags(Collections.singleton("tag3"));
         se.setSeen(true);
         se.setCreatedAt(new Date(1000));
 
@@ -84,7 +86,7 @@ public class SubscriptionEntryEntityResourceTests {
                 .andExpect(jsonPath("$.uuid", is("1014")))
                 .andExpect(jsonPath("$.title", is("Bliki: TellDontAsk")))
                 .andExpect(jsonPath("$.feedTitle", is("user112_subscription1")))
-                .andExpect(jsonPath("$.tag", is("tag3")))
+                .andExpect(jsonPath("$.tags", contains("tag3")))
                 .andExpect(jsonPath("$.content", is("content")))
                 .andExpect(jsonPath("$.seen", is(true)))
                 .andExpect(jsonPath("$.feedTag", is("tag1")))
@@ -103,12 +105,12 @@ public class SubscriptionEntryEntityResourceTests {
     @Test
     public void shouldOnlyChangeTag() throws Exception {
         mockMvc.perform(patch("/api/2/subscriptionEntries/1014")
-                .with(jsonBody("{'tag': 'tag-patched'}")))
+                .with(jsonBody("{'tags': ['tag-patched']}")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uuid", is("1014")))
                 .andExpect(jsonPath("$.title", is("Bliki: TellDontAsk")))
                 .andExpect(jsonPath("$.feedTitle", is("user112_subscription1")))
-                .andExpect(jsonPath("$.tag", is("tag-patched")))
+                .andExpect(jsonPath("$.tags", contains("tag-patched")))
                 .andExpect(jsonPath("$.content", is("content")))
                 .andExpect(jsonPath("$.seen", is(true)))
                 .andExpect(jsonPath("$.feedTag", is("tag1")))
@@ -120,7 +122,7 @@ public class SubscriptionEntryEntityResourceTests {
         verify(subscriptionEntryRepository).save(MockitoHamcrest.argThat(
                 allOf(
                         hasProperty("id", is(1014L)),
-                        hasProperty("tag", is("tag-patched")),
+                        hasProperty("tags", contains("tag-patched")),
                         hasProperty("seen", is(true))
                 )));
     }
@@ -128,12 +130,12 @@ public class SubscriptionEntryEntityResourceTests {
     @Test
     public void shouldChangeTagAndSeenFlag() throws Exception {
         mockMvc.perform(patch("/api/2/subscriptionEntries/1014")
-                .with(jsonBody("{'tag':'tag-patched', 'seen': false}")))
+                .with(jsonBody("{'tags': ['tag-patched'], 'seen': false}")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uuid", is("1014")))
                 .andExpect(jsonPath("$.title", is("Bliki: TellDontAsk")))
                 .andExpect(jsonPath("$.feedTitle", is("user112_subscription1")))
-                .andExpect(jsonPath("$.tag", is("tag-patched")))
+                .andExpect(jsonPath("$.tags", contains("tag-patched")))
                 .andExpect(jsonPath("$.content", is("content")))
                 .andExpect(jsonPath("$.seen", is(false)))
                 .andExpect(jsonPath("$.feedTag", is("tag1")))
@@ -145,7 +147,7 @@ public class SubscriptionEntryEntityResourceTests {
         verify(subscriptionEntryRepository).save(MockitoHamcrest.argThat(
                 allOf(
                         hasProperty("id", is(1014L)),
-                        hasProperty("tag", is("tag-patched")),
+                        hasProperty("tags", contains("tag-patched")),
                         hasProperty("seen", is(false))
                 )));
     }

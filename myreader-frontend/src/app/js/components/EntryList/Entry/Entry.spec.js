@@ -45,7 +45,7 @@ describe('Entry', () => {
         uuid: 'expected uuid',
         title: 'expected title',
         feedTitle: 'expected feedTitle',
-        tag: 'expected tag',
+        tags: ['expected tag'],
         origin: 'expected origin',
         seen: false,
         createdAt: 'expected createdAt',
@@ -71,7 +71,7 @@ describe('Entry', () => {
         feedTag: props.item.feedTag,
         content: props.item.content,
         seen: props.item.seen,
-        tag: props.item.tag,
+        tags: props.item.tags,
         uuid: props.item.uuid
       }
     })
@@ -79,7 +79,7 @@ describe('Entry', () => {
       seen: props.item.seen
     }))
     expect(page.entryTags().props()).toEqual(expect.objectContaining({
-      tags: props.item.tag
+      tags: props.item.tags
     }))
     expect(page.entryContent().props()).toEqual(expect.objectContaining({
       content: props.item.content
@@ -102,11 +102,11 @@ describe('Entry', () => {
 
   it('should trigger prop function "onChangeEntry" when entry tags prop function "onChange" called', () => {
     page.entryActions().props().onToggleShowMore()
-    page.entryTags().props().onChange('tag1')
+    page.entryTags().props().onChange(['tag1'])
 
     expect(props.onChangeEntry).toHaveBeenCalledWith({
       seen: false,
-      tag: 'tag1',
+      tags: ['tag1'],
       uuid: 'expected uuid'
     })
   })

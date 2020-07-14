@@ -3,6 +3,7 @@ package myreader.resource.subscriptionentry.beans;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
+import java.util.Set;
 
 /**
  * @author Kamill Sokol
@@ -14,7 +15,7 @@ public class SubscriptionEntryGetResponse extends RepresentationModel<Subscripti
     private String title;
     private String feedTitle;
     private String feedUuid;
-    private String tag;
+    private Set<String> tags;
     private String content;
     private boolean seen;
     private String origin;
@@ -54,12 +55,12 @@ public class SubscriptionEntryGetResponse extends RepresentationModel<Subscripti
         this.feedUuid = feedUuid;
     }
 
-    public String getTag() {
-        return tag;
+    public Set<String> getTags() {
+        return tags;
     }
 
-    public void setTag(final String tag) {
-        this.tag = tag;
+    public void setTags(final Set<String> tags) {
+        this.tags = tags;
     }
 
     public String getContent() {

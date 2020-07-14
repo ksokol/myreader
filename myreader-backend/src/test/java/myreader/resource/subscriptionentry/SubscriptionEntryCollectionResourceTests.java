@@ -35,6 +35,7 @@ import java.util.TreeSet;
 import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.endsWith;
@@ -94,7 +95,7 @@ public class SubscriptionEntryCollectionResourceTests {
         se1 = new SubscriptionEntry(subscription1, fe1);
         se1.setId(1018L);
         se1.setSeen(true);
-        se1.setTag("tag8Tag9");
+        se1.setTags(Collections.singleton("tag8Tag9"));
         se1.setCreatedAt(new Date(1000));
 
         Subscription subscription2 = new Subscription();
@@ -109,8 +110,8 @@ public class SubscriptionEntryCollectionResourceTests {
         se2 = new SubscriptionEntry(subscription2, fe2);
         se2.setId(1019L);
         se2.setSeen(true);
-        se2.setTag("otherTag");
-        se2.setTag("tag6,tag7");
+        se2.setTags(Collections.singleton("otherTag"));
+        se2.setTags(new TreeSet<>(Arrays.asList("tag6", "tag7")));
         se2.setCreatedAt(new Date(2000));
 
         Subscription subscription3 = new Subscription();
@@ -132,7 +133,7 @@ public class SubscriptionEntryCollectionResourceTests {
                 .andExpect(jsonPath("$.content[0].uuid", is("1018")))
                 .andExpect(jsonPath("$.content[0].title", is("Livelocks from wait/notify")))
                 .andExpect(jsonPath("$.content[0].feedTitle", is("user4_subscription1")))
-                .andExpect(jsonPath("$.content[0].tag", is("tag8Tag9")))
+                .andExpect(jsonPath("$.content[0].tags", contains("tag8Tag9")))
                 .andExpect(jsonPath("$.content[0].content", is("content")))
                 .andExpect(jsonPath("$.content[0].seen", is(true)))
                 .andExpect(jsonPath("$.content[0].feedTag", is("subscriptiontag name")))
@@ -143,7 +144,7 @@ public class SubscriptionEntryCollectionResourceTests {
                 .andExpect(jsonPath("$.content[1].uuid", is("1019")))
                 .andExpect(jsonPath("$.content[1].title", is("Throwing Exceptions from Fields")))
                 .andExpect(jsonPath("$.content[1].feedTitle", is("user4_subscription1")))
-                .andExpect(jsonPath("$.content[1].tag", is("tag6,tag7")))
+                .andExpect(jsonPath("$.content[1].tags", contains("tag6", "tag7")))
                 .andExpect(jsonPath("$.content[1].content", is("content")))
                 .andExpect(jsonPath("$.content[1].seen", is(true)))
                 .andExpect(jsonPath("$.content[1].feedTag", nullValue()))
@@ -205,9 +206,9 @@ public class SubscriptionEntryCollectionResourceTests {
         given(subscriptionEntryRepository.save(se2)).willReturn(se2);
 
         mockMvc.perform(patch("/api/2/subscriptionEntries")
-                .with(jsonBody("{'content': [{'uuid': '1018', 'seen': false}, {'uuid': '1019', 'tag': 'expectedTag'}]}")))
-                .andExpect(jsonPath("content[0].tag", nullValue()))
-                .andExpect(jsonPath("content[1].tag", is("expectedTag")))
+                .with(jsonBody("{'content': [{'uuid': '1018', 'seen': false}, {'uuid': '1019', 'tags': ['expectedTag']}]}")))
+                .andExpect(jsonPath("content[0].tags", is(Collections.emptyList())))
+                .andExpect(jsonPath("content[1].tags", contains("expectedTag")))
                 .andExpect(jsonPath("content[0].seen", is(false)))
                 .andExpect(jsonPath("content[1].seen", is(true)));
 
@@ -215,13 +216,13 @@ public class SubscriptionEntryCollectionResourceTests {
                 allOf(
                         hasProperty("id", is(1018L)),
                         hasProperty("seen", is(false)),
-                        hasProperty("tag", nullValue())
+                        hasProperty("tags", nullValue())
                 )));
         verify(subscriptionEntryRepository).save(argThat(
                 allOf(
                         hasProperty("id", is(1019L)),
                         hasProperty("seen", is(true)),
-                        hasProperty("tag", is("expectedTag"))
+                        hasProperty("tags", contains("expectedTag"))
                 )));
     }
 

@@ -1,6 +1,7 @@
 package myreader.resource.subscriptionentry.beans;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Kamill Sokol
@@ -8,7 +9,7 @@ import java.util.Objects;
 public class SubscriptionEntryPatchRequest {
 
     private String uuid;
-    private String tag;
+    private Set<String> tags;
     private Boolean seen;
 
     public String getUuid() {
@@ -19,12 +20,12 @@ public class SubscriptionEntryPatchRequest {
         this.uuid = uuid;
     }
 
-    public String getTag() {
-        return tag;
+    public Set<String> getTags() {
+        return tags;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setTags(Set<String> tags) {
+        this.tags = tags;
     }
 
     public Boolean getSeen() {
@@ -45,12 +46,12 @@ public class SubscriptionEntryPatchRequest {
         }
         SubscriptionEntryPatchRequest that = (SubscriptionEntryPatchRequest) other;
         return Objects.equals(uuid, that.uuid) &&
-                Objects.equals(tag, that.tag) &&
+                Objects.equals(tags, that.tags) &&
                 Objects.equals(seen, that.seen);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, tag, seen);
+        return Objects.hash(uuid, tags, seen);
     }
 }

@@ -27,10 +27,10 @@ public interface FeedEntryRepository extends PagingAndSortingRepository<FeedEntr
 
     Page<FeedEntry> findByFeedIdOrderByCreatedAtDesc(Long feedId, Pageable pageable);
 
-    @Query("select distinct fe.id from FeedEntry fe left join fe.subscriptionEntries se " +
-           " where fe.feed.id = ?1 and se.tag is null and se.seen = true and fe.createdAt < ?2" +
-           "  and not exists (select 1 from SubscriptionEntry sub_se " +
-           "   where (sub_se.tag is not null or sub_se.seen = false) and sub_se.feedEntry.id = se.feedEntry.id) " +
+    @Query("select distinct fe.id from FeedEntry fe left join fe.subscriptionEntries se" +
+           " where fe.feed.id = ?1 and size(se.tags) = 0 and se.seen = true and fe.createdAt < ?2" +
+           "  and not exists (select 1 from SubscriptionEntry sub_se" +
+           "   where (size(sub_se.tags) > 0 or sub_se.seen = false) and sub_se.feedEntry.id = se.feedEntry.id) " +
            " or se is null")
     Page<Long> findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(Long id, Date retainDate, Pageable pageable);
 }

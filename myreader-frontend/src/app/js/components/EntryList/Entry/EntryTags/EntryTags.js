@@ -1,52 +1,35 @@
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import {Chips} from '../../..'
 
-class EntryTags extends Component {
+export function EntryTags({tags, onChange}) {
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      tags: []
-    }
-
-    this.onTagAdd = this.onTagAdd.bind(this)
-    this.onTagRemove = this.onTagRemove.bind(this)
-  }
-
-  static getDerivedStateFromProps(props) {
-    return {
-      tags: props.tags ? props.tags.split(/[ ,]+/) : []
+  const onTagAdd = value => {
+    if (!tags.includes(value)) {
+      onChange([...tags, value])
     }
   }
 
-  onTagAdd(value) {
-    if (!this.state.tags.includes(value)) {
-      this.props.onChange([...this.state.tags, value].join(', '))
-    }
+  const onTagRemove = key => {
+    const filteredTags = tags.filter(it => it !== key)
+    onChange(filteredTags.length > 0 ? filteredTags : null)
   }
 
-  onTagRemove(key) {
-    const tags = this.state.tags.filter(it => it !== key).join(', ')
-    this.props.onChange(tags.length > 0 ? tags : null)
-  }
-
-  render() {
-    return (
-      <Chips keyFn={tag => tag}
-             values={this.state.tags}
-             placeholder='Enter a tag...'
-             onAdd={this.onTagAdd}
-             onRemove={this.onTagRemove}
-             renderItem={tag => tag} />
-    )
-  }
+  return (
+    <Chips
+      keyFn={tag => tag}
+      values={tags}
+      placeholder='Enter a tag...'
+      onAdd={onTagAdd}
+      onRemove={onTagRemove}
+      renderItem={tag => tag}
+    />
+  )
 }
 
 EntryTags.propTypes = {
-  tags: PropTypes.string,
+  tags: PropTypes.arrayOf(
+    PropTypes.string
+  ).isRequired,
   onChange: PropTypes.func.isRequired
 }
-
-export default EntryTags

@@ -75,14 +75,14 @@ public class SubscriptionEntryCollectionResource {
 
         UriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentRequest().replaceQueryParam("next", Collections.emptyList());
         List<Link> links = new ArrayList<>();
-        links.add(new Link(builder.toUriString(), IanaLinkRelations.SELF));
+        links.add(Link.of(builder.toUriString(), IanaLinkRelations.SELF));
 
         if (slicedEntries.hasNext()) {
             SubscriptionEntryGetResponse last = slicedEntries.getContent().get(slicedEntries.getSize() - 1);
-            links.add(new Link(builder.queryParam("next", last.getUuid()).toUriString(), IanaLinkRelations.NEXT));
+            links.add(Link.of(builder.queryParam("next", last.getUuid()).toUriString(), IanaLinkRelations.NEXT));
         }
 
-        return new PagedModel<>(slicedEntries.getContent(), null, links);
+        return PagedModel.of(slicedEntries.getContent(), null, links);
     }
 
     @GetMapping(SUBSCRIPTION_ENTRIES_AVAILABLE_TAGS)
@@ -112,13 +112,13 @@ public class SubscriptionEntryCollectionResource {
             if (subscriptionPatch.getSeen() != null) {
                 subscriptionEntry.setSeen(subscriptionPatch.getSeen());
             }
-            subscriptionEntry.setTag(subscriptionPatch.getTag());
+            subscriptionEntry.setTags(subscriptionPatch.getTags());
 
             SubscriptionEntry saved = subscriptionEntryRepository.save(subscriptionEntry);
             SubscriptionEntryGetResponse subscriptionEntryGetResponse = assembler.toModel(saved);
             subscriptionEntryGetResponses.add(subscriptionEntryGetResponse);
         }
 
-        return new CollectionModel<>(subscriptionEntryGetResponses);
+        return CollectionModel.of(subscriptionEntryGetResponses);
     }
 }

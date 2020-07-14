@@ -31,7 +31,7 @@ describe('EntryApi', () => {
     await expect(entryApi.fetchEntryTags()).resolves.toEqual(['a', 'b'])
   })
 
-  it('should call GET available tags endpoint', () => {
+  it('should call GET subscription entry endpoint', () => {
     exchange.mockResolvedValueOnce({content: []})
     entryApi.fetchEntries({})
 
@@ -83,14 +83,14 @@ describe('EntryApi', () => {
 
   it('should call PATCH subscription entries endpoint', () => {
     exchange.mockResolvedValueOnce({content: []})
-    entryApi.updateEntry({uuid: '1', seen: true, tag: 'tag', a: 'b', context: {c: 'd'}})
+    entryApi.updateEntry({uuid: '1', seen: true, tags: ['tag'], a: 'b', context: {c: 'd'}})
 
     expect(exchange).toHaveBeenCalledWith({
       method: 'PATCH',
       url: `${SUBSCRIPTION_ENTRIES}/1`,
       body: {
         seen: true,
-        tag: 'tag'
+        tags: ['tag']
       }
     })
   })

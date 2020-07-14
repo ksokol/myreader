@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import {EntryTitle} from './EntryTitle/EntryTitle'
 import {EntryActions} from './EntryActions/EntryActions'
 import {EntryContent} from './EntryContent/EntryContent'
-import EntryTags from './EntryTags/EntryTags'
+import {EntryTags} from './EntryTags/EntryTags'
 
 export class Entry extends Component {
 
@@ -13,7 +13,9 @@ export class Entry extends Component {
       uuid: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
       feedTitle: PropTypes.string.isRequired,
-      tag: PropTypes.string,
+      tags: PropTypes.arrayOf(
+        PropTypes.string
+      ).isRequired,
       origin: PropTypes.string.isRequired,
       seen: PropTypes.bool.isRequired,
       createdAt: PropTypes.string.isRequired,
@@ -45,11 +47,11 @@ export class Entry extends Component {
     })
   }
 
-  onTagUpdate = tag => {
+  onTagUpdate = tags => {
     this.props.onChangeEntry({
       uuid: this.props.item.uuid,
       seen: this.props.item.seen,
-      tag
+      tags
     })
   }
 
@@ -93,7 +95,7 @@ export class Entry extends Component {
 
         {showMore &&
           <EntryTags
-            tags={item.tag}
+            tags={item.tags}
             onChange={this.onTagUpdate}
           />
         }

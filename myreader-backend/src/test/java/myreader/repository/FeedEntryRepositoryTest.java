@@ -18,14 +18,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.Date;
 
 import static java.time.LocalDateTime.now;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author Kamill Sokol
@@ -102,7 +103,7 @@ public class FeedEntryRepositoryTest {
     @Test
     public void shouldNotReturnFeedEntryIdWhenSubscriptionEntryIsTaggedAndIsUnread() {
         FeedEntry entry = givenEntry();
-        givenUser1SubscriptionEntry(entry).setTag("not null");
+        givenUser1SubscriptionEntry(entry).setTags(Collections.singleton("not null"));
 
         Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
                 feed.getId(),
@@ -117,7 +118,7 @@ public class FeedEntryRepositoryTest {
         FeedEntry entry = givenEntry();
         SubscriptionEntry subscriptionEntry = givenUser1SubscriptionEntry(entry);
 
-        subscriptionEntry.setTag("");
+        subscriptionEntry.setTags(Collections.singleton("some tag"));
         subscriptionEntry.setSeen(true);
 
         Page<Long> actual = feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(
@@ -215,7 +216,6 @@ public class FeedEntryRepositoryTest {
         feedEntry.setCreatedAt(createdAt);
         em.persistAndFlush(feedEntry);
     }
-
 
     private SubscriptionEntry givenUser1SubscriptionEntry(FeedEntry feedEntry) {
         SubscriptionEntry subscriptionEntry = new SubscriptionEntry(user1Subscription, feedEntry);

@@ -1,21 +1,19 @@
 package myreader.entity;
 
-import org.apache.lucene.analysis.pattern.PatternTokenizerFactory;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.NumericField;
-import org.hibernate.search.annotations.Parameter;
 import org.hibernate.search.annotations.SortableField;
-import org.hibernate.search.annotations.TokenizerDef;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -27,18 +25,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import java.util.Set;
 
 @Access(AccessType.PROPERTY)
-@AnalyzerDef(
-    name = "tag" ,
-    tokenizer = @TokenizerDef(
-        factory = PatternTokenizerFactory.class,
-        params = @Parameter(
-            name = "pattern",
-            value = "\\ |,"
-        )
-    )
-)
 @Indexed
 @Entity
 @Table(name = "user_feed_entry")
@@ -46,7 +35,7 @@ public class SubscriptionEntry {
 
     private Long id;
     private boolean seen;
-    private String tag;
+    private Set<String> tags;
     private Subscription subscription;
     private FeedEntry feedEntry;
     private Date createdAt;
@@ -85,15 +74,20 @@ public class SubscriptionEntry {
         this.seen = seen;
     }
 
-    @Analyzer(definition = "tag")
-    @Field(boost = @Boost(value = 0.5F))
-    @Column(columnDefinition = "VARCHAR(1000)", name = "user_feed_entry_tag")
-    public String getTag() {
-        return tag;
+    @Field(boost = @Boost(value = 0.5F), analyze = Analyze.NO)
+    @IndexedEmbedded
+    @Column(columnDefinition = "VARCHAR(32)", name = "tag")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name="user_feed_entry_tags",
+            joinColumns = @JoinColumn(name = "user_feed_entry_id", referencedColumnName = "user_feed_entry_id")
+    )
+    public Set<String> getTags() {
+        return tags;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setTags(Set<String> tags) {
+        this.tags = tags;
     }
 
     @IndexedEmbedded

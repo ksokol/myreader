@@ -8,6 +8,9 @@ import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.TreeSet;
+
 /**
  * @author Kamill Sokol
  */
@@ -23,7 +26,13 @@ public class SubscriptionEntryGetResponseConverter extends RepresentationModelAs
         SubscriptionEntryGetResponse target = new SubscriptionEntryGetResponse();
 
         target.setUuid(source.getId().toString());
-        target.setTag(source.getTag());
+
+        if (source.getTags() != null) {
+            target.setTags(new TreeSet<>(source.getTags()));
+        } else {
+            target.setTags(Collections.emptySet());
+        }
+
         target.setCreatedAt(source.getCreatedAt());
         target.setSeen(source.isSeen());
 

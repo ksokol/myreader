@@ -3,8 +3,6 @@ package myreader.repository;
 import myreader.entity.SubscriptionEntry;
 import org.springframework.data.domain.Slice;
 
-import java.util.Set;
-
 /**
  * @author Kamill Sokol
  */
@@ -20,6 +18,4 @@ public interface SubscriptionEntryRepositoryCustom {
             Long next,
             long userId
     );
-
-    Set<String> findDistinctTagsByUserId(long userId);
 }

@@ -55,7 +55,7 @@ public class SubscriptionEntryEntityResource {
             subscriptionEntry.setSeen(request.getSeen());
         }
 
-        subscriptionEntry.setTag(request.getTag());
+        subscriptionEntry.setTags(request.getTags());
 
         subscriptionEntryRepository.save(subscriptionEntry);
 
