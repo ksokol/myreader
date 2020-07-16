@@ -8,7 +8,7 @@ Installation
 
 **Dependencies**
 
-- Java 8
+- Java 11 or higher
 
 **Build and package**
 

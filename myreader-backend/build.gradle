@@ -16,7 +16,7 @@ repositories {
     mavenCentral()
 }
 
-def javaLangVersion = '1.8'
+def javaLangVersion = JavaVersion.VERSION_11
 def romeToolsVersion = '1.12.0'
 def commonsLang3Version = '3.8.1'
 def commonsIoVersion = '2.6'
