@@ -1,10 +1,10 @@
 plugins {
     id "jacoco"
     id "org.springframework.boot" version "2.3.2.RELEASE"
-    id "com.gorylenko.gradle-git-properties" version "2.2.2"
+    id "com.gorylenko.gradle-git-properties" version "2.2.3"
     id "org.owasp.dependencycheck" version "5.3.2.1"
     id "com.github.psxpaul.execfork" version "0.1.13"
-    id "com.github.spotbugs" version "4.3.0"
+    id "com.github.spotbugs" version "4.4.4"
 }
 
 apply plugin: 'java'
@@ -44,11 +44,6 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-}
-
-spotbugs {
-    // https://github.com/spotbugs/spotbugs-gradle-plugin/issues/241
-    toolVersion = '4.0.4'
 }
 
 spotbugsMain {
