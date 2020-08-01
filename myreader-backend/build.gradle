@@ -46,6 +46,10 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 }
 
+spotbugs {
+    excludeFilter = file("$projectDir/spotbugs-excludes.xml")
+}
+
 spotbugsMain {
     reports {
         xml.enabled = true
@@ -67,7 +71,7 @@ compileJava {
 
 pmd {
     ruleSets = []
-    ruleSetConfig = resources.text.fromFile("$projectDir/rulesets.xml")
+    ruleSetConfig = resources.text.fromFile("$projectDir/pmd-rulesets.xml")
 }
 
 bootJar {

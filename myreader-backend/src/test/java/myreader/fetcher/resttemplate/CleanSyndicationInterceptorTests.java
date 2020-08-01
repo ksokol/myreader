@@ -4,6 +4,9 @@ import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
@@ -13,26 +16,30 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Kamill Sokol
- */
+@RunWith(MockitoJUnitRunner.class)
 public class CleanSyndicationInterceptorTests {
 
-    private CleanSyndicationInterceptor interceptor = new CleanSyndicationInterceptor();
+    private final CleanSyndicationInterceptor interceptor = new CleanSyndicationInterceptor();
 
-    private HttpHeaders httpHeaders = new HttpHeaders();
-    private HttpRequest httpRequest = mock(HttpRequest.class);
-    private ClientHttpRequestExecution execution = mock(ClientHttpRequestExecution.class);
-    private ClientHttpResponse mockResponse = mock(ClientHttpResponse.class);
+    private HttpHeaders httpHeaders;
+
+    @Mock
+    private HttpRequest httpRequest;
+
+    @Mock
+    private ClientHttpRequestExecution execution;
+
+    @Mock
+    private ClientHttpResponse mockResponse;
 
     @Before
     public void setUp() throws Exception {
+        httpHeaders = new HttpHeaders();
         when(execution.execute(any(), any())).thenReturn(mockResponse);
         when(mockResponse.getHeaders()).thenReturn(httpHeaders);
         when(mockResponse.getRawStatusCode()).thenReturn(200);
@@ -43,10 +50,10 @@ public class CleanSyndicationInterceptorTests {
         withContentType("text/plain;charset=ISO-8859-1");
         withBody("ä", "ISO-8859-1");
 
-        final ClientHttpResponse response = intercept();
-        final String body = body(response, "ISO-8859-1");
-
-        assertThat(body, is("ä"));
+        try (ClientHttpResponse response = intercept()) {
+            var body = body(response, "ISO-8859-1");
+            assertThat(body, is("ä"));
+        }
     }
 
     @Test
@@ -54,10 +61,10 @@ public class CleanSyndicationInterceptorTests {
         withContentType("text/plain;charset=UTF-8");
         withBody("\fstring\f", "UTF-8");
 
-        final ClientHttpResponse response = intercept();
-        final String body = body(response, "UTF-8");
-
-        assertThat(body, is("string"));
+        try (ClientHttpResponse response = intercept()) {
+            var body = body(response, "UTF-8");
+            assertThat(body, is("string"));
+        }
     }
 
     @Test
@@ -66,20 +73,20 @@ public class CleanSyndicationInterceptorTests {
 
         when(mockResponse.getRawStatusCode()).thenReturn(302);
 
-        final ClientHttpResponse response = intercept();
-        final String body = body(response, "UTF-8");
-
-        assertThat(body, is(""));
+        try (ClientHttpResponse response = intercept()) {
+            var body = body(response, "UTF-8");
+            assertThat(body, is(""));
+        }
     }
 
     @Test
     public void testRemoveByteOrderMark() throws Exception {
         withBody(ByteOrderMark.UTF_8.getBytes());
 
-        final ClientHttpResponse response = intercept();
-        byte[] actualBytes = IOUtils.toByteArray(response.getBody());
-
-        assertThat(actualBytes.length, is(0));
+        try (ClientHttpResponse response = intercept()) {
+            var actualBytes = IOUtils.toByteArray(response.getBody());
+            assertThat(actualBytes.length, is(0));
+        }
     }
 
     private String body(ClientHttpResponse response, String charset) throws IOException {

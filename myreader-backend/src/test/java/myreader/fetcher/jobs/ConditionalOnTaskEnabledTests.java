@@ -8,43 +8,43 @@ import org.springframework.stereotype.Component;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author Kamill Sokol
- */
 public class ConditionalOnTaskEnabledTests {
 
     protected static final String BEAN_NAME = "testBean";
 
     @Test
     public void shouldNotContainBeanWhenTaskEnabledIsNotSet() {
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.register(TestBean.class);
+        try (var applicationContext = new AnnotationConfigApplicationContext()) {
+            applicationContext.register(TestBean.class);
 
-        assertFalse(applicationContext.containsBean(BEAN_NAME));
+            assertFalse(applicationContext.containsBean(BEAN_NAME));
+        }
     }
 
     @Test
     public void shouldNotContainBeanWhenTaskEnabledIsSetToFalse() {
-        MockEnvironment environment = new MockEnvironment();
+        var environment = new MockEnvironment();
         environment.setProperty("task.enabled", "false");
 
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.setEnvironment(environment);
-        applicationContext.register(TestBean.class);
+        try (var applicationContext = new AnnotationConfigApplicationContext()) {
+            applicationContext.setEnvironment(environment);
+            applicationContext.register(TestBean.class);
 
-        assertFalse(applicationContext.containsBean(BEAN_NAME));
+            assertFalse(applicationContext.containsBean(BEAN_NAME));
+        }
     }
 
     @Test
     public void shouldContainBeanWhenTaskEnabledIsSetToTrue() {
-        MockEnvironment environment = new MockEnvironment();
+        var environment = new MockEnvironment();
         environment.setProperty("task.enabled", "true");
 
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.setEnvironment(environment);
-        applicationContext.register(TestBean.class);
+        try (var applicationContext = new AnnotationConfigApplicationContext()) {
+            applicationContext.setEnvironment(environment);
+            applicationContext.register(TestBean.class);
 
-        assertTrue(applicationContext.containsBean(BEAN_NAME));
+            assertTrue(applicationContext.containsBean(BEAN_NAME));
+        }
     }
 
     @Component(BEAN_NAME)

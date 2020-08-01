@@ -2,6 +2,9 @@ package myreader.fetcher.resttemplate;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -10,14 +13,12 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_ATOM_XML;
@@ -25,25 +26,26 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 
-/**
- * @author Kamill Sokol
- */
-public class ContentTypeAdjusterInterceptorTest {
+@RunWith(MockitoJUnitRunner.class)
+public class ContentTypeAdjusterInterceptorTests {
 
-    private ClientHttpRequestExecution execution = mock(ClientHttpRequestExecution.class);
-    private ClientHttpResponse mockResponse = mock(ClientHttpResponse.class);
+    private final ContentTypeAdjusterInterceptor interceptor =
+            new ContentTypeAdjusterInterceptor(Arrays.asList(APPLICATION_XML, APPLICATION_ATOM_XML));
 
-    private HttpHeaders httpHeaders = new HttpHeaders();
+    private HttpHeaders httpHeaders;
     private MockClientHttpRequest httpRequest;
 
-    private ContentTypeAdjusterInterceptor interceptor =
-            new ContentTypeAdjusterInterceptor(Arrays.asList(APPLICATION_XML, APPLICATION_ATOM_XML));
+    @Mock
+    private ClientHttpRequestExecution execution;
+
+    @Mock
+    private ClientHttpResponse mockResponse;
 
     @Before
     public void setUp() throws Exception {
+        httpHeaders = new HttpHeaders();
         when(execution.execute(any(), any())).thenReturn(mockResponse);
         when(mockResponse.getHeaders()).thenReturn(httpHeaders);
-        when(mockResponse.getRawStatusCode()).thenReturn(200);
     }
 
     @Test
@@ -101,7 +103,7 @@ public class ContentTypeAdjusterInterceptorTest {
     public void shouldSetAtomContentTypeFromFileExtensionWhenContentTypeHeaderIsMissing() throws IOException {
         givenRequest("/index.atom", null);
 
-        assertContentType(new MediaType("application", "atom+xml", Charset.forName("UTF-8")));
+        assertContentType(new MediaType("application", "atom+xml", UTF_8));
     }
 
     @Test
@@ -121,14 +123,13 @@ public class ContentTypeAdjusterInterceptorTest {
     private void givenRequest(String pathOrPathAndQueryString, MediaType mediaType) {
         httpRequest = new MockClientHttpRequest(GET, URI.create("http://localhost" + pathOrPathAndQueryString));
         if (mediaType != null) {
-            mockResponse.getHeaders().setContentType(mediaType);
+            httpHeaders.setContentType(mediaType);
         }
     }
 
     private void assertContentType(MediaType mediaType) throws IOException {
-        ClientHttpResponse response = interceptor.intercept(httpRequest, "".getBytes(UTF_8), execution);
-
-        assertThat(response.getHeaders().getContentType(), is(mediaType));
+        try (var response = interceptor.intercept(httpRequest, "".getBytes(UTF_8), execution)) {
+            assertThat(response.getHeaders().getContentType(), is(mediaType));
+        }
     }
-
 }
