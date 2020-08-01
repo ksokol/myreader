@@ -57,15 +57,16 @@
     "raw-loader": "4.0.1",
     "svg-url-loader": "6.0.0",
     "sw-precache-webpack-plugin": "1.0.0",
-    "terser-webpack-plugin": "3.0.3",
-    "webpack": "4.43.0",
+    "terser-webpack-plugin": "3.0.8",
+    "webpack": "4.44.1",
     "webpack-bundle-analyzer": "3.8.0",
-    "webpack-cli": "3.3.11",
+    "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.0",
     "webpack-pwa-manifest": "4.2.0"
   },
   "resolutions": {
-    "minimist": "1.2.5"
+    "minimist": "1.2.5",
+    "dot-prop": "5.2.0"
   },
   "directories": {
     "test": "test"
