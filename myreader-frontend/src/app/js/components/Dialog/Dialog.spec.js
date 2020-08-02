@@ -45,14 +45,14 @@ describe('Dialog', () => {
   })
 
   it('should show dialog when mounted', () => {
-    let spy = undefined
+    let spy
     mount(<Dialog dialogRef={el => spy = jest.spyOn(el, 'showModal')} />)
 
     expect(spy).toHaveBeenCalled()
   })
 
   it('should close dialog when unmounted', () => {
-    let spy = undefined
+    let spy
     const wrapper = mount(<Dialog dialogRef={el => spy = jest.spyOn(el, 'close')} />)
     wrapper.unmount()
 

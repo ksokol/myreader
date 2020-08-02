@@ -1,4 +1,6 @@
-import {equalLinks, extractLinks, toUrlString} from './links'
+import {extractLinks, toUrlString} from './links'
+
+const path = '/context/path'
 
 describe('links', () => {
 
@@ -7,13 +9,13 @@ describe('links', () => {
     it('should extract self link with path and query parameters', () =>
       expect(extractLinks([{rel: 'self', href: '/context/path?a=b&c=d'}])).toEqual({
         self: {
-          path: '/context/path',
+          path,
           query: {a: 'b', c: 'd'}
         }
       }))
 
     it('should extract self link with path and without query parameters', () =>
-      expect(extractLinks([{rel: 'self', href: '/context/path'}])).toEqual({self: {path: '/context/path', query: {}}}))
+      expect(extractLinks([{rel: 'self', href: '/context/path'}])).toEqual({self: {path, query: {}}}))
 
     it('should extract empty self link', () =>
       expect(extractLinks([{rel: 'self', href: ''}])).toEqual({self: {path: '', query: {}}}))
@@ -25,7 +27,7 @@ describe('links', () => {
       expect(extractLinks([{rel: 'self'}])).toEqual({}))
 
     it('should return empty object when no links defined', () =>
-      expect(extractLinks(undefined)).toEqual({}))
+      expect(extractLinks()).toEqual({}))
 
     it('should extract self and other link', () =>
       expect(extractLinks([{rel: 'self', href: 'expected'}, {rel: 'other', href: '/other/path?a=b'}]))
@@ -69,6 +71,6 @@ describe('links', () => {
       expect(toUrlString({})).toEqual(''))
 
     it('should skip query params with undefined or null value', () =>
-      expect(toUrlString({path: '', query: {a: 'b', c: undefined, d: null}})).toEqual('?a=b'))
+      expect(toUrlString({path: '', query: {a: 'b', c: undefined, d: undefined}})).toEqual('?a=b'))
   })
 })

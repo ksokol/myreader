@@ -1,8 +1,11 @@
-const READ_METHODS = ['GET', 'HEAD']
 const MIME_APPLICATION_JSON = 'application/json'
 const XML_HTTP_REQUEST = 'XMLHttpRequest'
 const CONTENT_TYPE = 'content-type'
 const credentials = {credentials: 'same-origin'}
+
+const readMethods = new Set()
+readMethods.add('GET')
+readMethods.add('HEAD')
 
 function sanitizeHeaders(headers = {}) {
   return Object.entries(headers).reduce((acc, [key, value]) => {
@@ -29,7 +32,7 @@ function transformBody(headers, body = '') {
 }
 
 function constructBody(method, headers, body) {
-  return READ_METHODS.includes(method) ? null : transformBody(headers, body)
+  return readMethods.has(method) ? undefined : transformBody(headers, body)
 }
 
 function toRequest({url, method, headers, body}) {
@@ -66,7 +69,7 @@ function handleError(error) {
     Object.keys(error).length !== 0
       ? error
       : {status: -1, data: error.toString(), headers: {}}
-    )
+  )
 }
 
 export function exchange(params) {

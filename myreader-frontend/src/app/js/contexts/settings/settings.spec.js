@@ -48,12 +48,12 @@ describe('settings', () => {
   })
 
   it('should return default value true for showUnseenEntries setting when given value is undefined', () => {
-    setShowUnseenEntries(undefined)
+    setShowUnseenEntries()
     expect(isShowUnseenEntries()).toBe(true)
   })
 
   it('should return default value true for showEntryDetails setting when given value is undefined', () => {
-    setShowEntryDetails(undefined)
+    setShowEntryDetails()
     expect(isShowEntryDetails()).toBe(true)
   })
 

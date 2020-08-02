@@ -10,9 +10,9 @@ function toFeedFetchFailure(raw = {}) {
   }
 }
 
-function toFeedFetchFailures(raw = {content: []}) {
+function toFeedFetchFailures(raw) {
   const links = extractLinks(raw.links)
-  const failures = raw.content.map(toFeedFetchFailure)
+  const failures = raw.content.map(it => toFeedFetchFailure(it))
   return {
     failures,
     links
@@ -28,7 +28,7 @@ function toFeed(raw = {}) {
 }
 
 export function toFeeds(raw = {}) {
-  return (raw.content || []).map(toFeed)
+  return (raw.content || []).map(it => toFeed(it))
 }
 
 export class FeedApi extends Api {

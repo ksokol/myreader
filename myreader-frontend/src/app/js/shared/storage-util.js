@@ -4,7 +4,7 @@ export function readFromStorage(key) {
   let source = {}
   try {
     source = JSON.parse(storage.getItem(key)) || {}
-  } catch (error) {
+  } catch {
     // ignore
   }
   return source

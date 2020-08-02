@@ -28,29 +28,29 @@
     "react-router-dom": "5.1.2"
   },
   "devDependencies": {
-    "@babel/core": "7.8.7",
-    "@babel/plugin-proposal-class-properties": "7.8.3",
-    "@babel/preset-env": "7.8.7",
-    "@babel/preset-react": "7.8.3",
+    "@babel/core": "7.11.0",
+    "@babel/plugin-proposal-class-properties": "7.10.4",
+    "@babel/preset-env": "7.11.0",
+    "@babel/preset-react": "7.10.4",
     "babel-eslint": "10.1.0",
-    "babel-jest": "25.1.0",
+    "babel-jest": "26.2.2",
     "babel-loader": "8.1.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "clean-webpack-plugin": "3.0.0",
-    "css-loader": "3.5.3",
+    "css-loader": "4.2.0",
     "cssnano": "4.1.10",
     "enzyme": "3.11.0",
     "enzyme-adapter-react-16": "1.15.2",
-    "eslint": "6.8.0",
-    "eslint-plugin-jest": "23.8.2",
-    "eslint-plugin-react": "7.19.0",
-    "eslint-plugin-react-hooks": "2.5.0",
-    "eslint-plugin-unicorn": "17.2.0",
+    "eslint": "7.6.0",
+    "eslint-plugin-jest": "23.20.0",
+    "eslint-plugin-react": "7.20.5",
+    "eslint-plugin-react-hooks": "4.0.8",
+    "eslint-plugin-unicorn": "21.0.0",
     "file-loader": "6.0.0",
     "html-webpack-plugin": "4.3.0",
-    "jest": "25.1.0",
+    "jest": "26.2.2",
     "jest-sonar-reporter": "2.0.0",
-    "lockfile-lint": "4.1.0",
+    "lockfile-lint": "4.3.7",
     "lodash.ismatch": "4.4.0",
     "mini-css-extract-plugin": "0.9.0",
     "optimize-css-assets-webpack-plugin": "5.0.3",
@@ -74,68 +74,5 @@
   "jestSonar": {
     "reportPath": "build",
     "reportFile": "TESTS.xml"
-  },
-  "eslintConfig": {
-    "parser": "babel-eslint",
-    "env": {
-      "browser": true,
-      "es6": true,
-      "jest/globals": true
-    },
-    "extends": [
-      "eslint:recommended",
-      "plugin:react/recommended",
-      "plugin:unicorn/recommended"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2018,
-      "sourceType": "module",
-      "ecmaFeatures": {
-        "jsx": true
-      }
-    },
-    "settings": {
-      "react": {
-        "version": "16"
-      }
-    },
-    "plugins": [
-      "jest",
-      "react-hooks"
-    ],
-    "rules": {
-      "indent": [
-        "warn",
-        2
-      ],
-      "linebreak-style": [
-        "error",
-        "unix"
-      ],
-      "quotes": [
-        "warn",
-        "single"
-      ],
-      "semi": [
-        "error",
-        "never"
-      ],
-      "no-undef": "warn",
-      "no-unused-vars": "warn",
-      "jest/no-disabled-tests": "warn",
-      "jest/no-focused-tests": "error",
-      "jest/no-identical-title": "warn",
-      "jest/prefer-to-have-length": "warn",
-      "jest/valid-expect": "error",
-      "react/display-name": "warn",
-      "unicorn/prevent-abbreviations": "off",
-      "unicorn/catch-error-name": "warn",
-      "unicorn/filename-case": "off",
-      "unicorn/prefer-query-selector": "error",
-      "unicorn/import-index": "error",
-      "unicorn/prefer-includes": "warn",
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "error"
-    }
   }
 }

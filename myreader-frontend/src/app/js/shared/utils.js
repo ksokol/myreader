@@ -22,7 +22,7 @@ export const isValidDate = value => {
     return false
   }
 
-  return !isNaN(
+  return !Number.isNaN(
     isDate(value)
       ? value.getTime()
       : new Date(value).getTime()
