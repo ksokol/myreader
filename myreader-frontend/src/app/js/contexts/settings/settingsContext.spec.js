@@ -1,74 +1,86 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {SettingsProvider} from './SettingsProvider'
-import SettingsContext from './SettingsContext'
-import {setPageSize, setShowEntryDetails, setShowUnseenEntries} from './settings'
+import {useSettings} from '.'
 
-/* eslint-disable react/prop-types */
-jest.mock('./settings', () => ({
-  settings: () => ({
-    pageSize: 'page size value',
-    showUnseenEntries: 'unseen entries value',
-    showEntryDetails: 'entry details value'
-  }),
-  setPageSize: jest.fn(),
-  setShowEntryDetails: jest.fn(),
-  setShowUnseenEntries: jest.fn()
+const storageKey = 'myreader-settings'
 
-}))
-/* eslint-enable */
-
-class TestComponent extends React.Component {
-  static contextType = SettingsContext
-  render = () => 'expected component'
+function TestComponent() {
+  return JSON.stringify(useSettings())
 }
 
 describe('settings context', () => {
+
+  const storedValues = {
+    pageSize: 20,
+    showUnseenEntries: false,
+    showEntryDetails: false,
+  }
 
   const createWrapper = () => {
     return mount(
       <SettingsProvider>
         <TestComponent />
       </SettingsProvider>
-    ).find(TestComponent)
+    )
   }
 
-  it('should render children', () => {
-    expect(createWrapper().html()).toEqual('expected component')
+  beforeEach(() => {
+    localStorage.setItem(storageKey, JSON.stringify(storedValues))
   })
 
   it('should contain expected context values in child component', () => {
-    expect(createWrapper().instance().context).toEqual(expect.objectContaining({
-      pageSize: 'page size value',
-      showUnseenEntries: 'unseen entries value',
-      showEntryDetails: 'entry details value'
+    expect(createWrapper().html()).toEqual(JSON.stringify({
+      ...storedValues,
+      pageSize: 20,
     }))
   })
 
   it('should trigger setPageSize function in settings context provider', () => {
-    const value = 'new page size value'
+    const value = 30
     const wrapper = createWrapper()
-    wrapper.instance().context.setPageSize(value)
 
-    expect(wrapper.instance().context.pageSize).toEqual(value)
-    expect(setPageSize).toHaveBeenCalledWith(value)
+    wrapper.instance().setPageSize(value)
+    wrapper.update()
+
+    const expectedValues = JSON.stringify({
+      ...storedValues,
+      pageSize: value,
+    })
+
+    expect(localStorage.getItem(storageKey)).toEqual(expectedValues)
+    expect(wrapper.html()).toEqual(expectedValues)
   })
 
   it('should trigger setShowEntryDetails function in settings context provider', () => {
-    const value = 'new unseen entries value'
+    const value = true
     const wrapper = createWrapper()
-    wrapper.instance().context.setShowEntryDetails(value)
 
-    expect(wrapper.instance().context.showEntryDetails).toEqual(value)
-    expect(setShowEntryDetails).toHaveBeenCalledWith(value)
+    wrapper.instance().setShowEntryDetails(value)
+    wrapper.update()
+
+    const expectedValues = JSON.stringify({
+      ...storedValues,
+      showEntryDetails: value,
+    })
+
+    expect(localStorage.getItem(storageKey)).toEqual(expectedValues)
+    expect(wrapper.html()).toEqual(expectedValues)
   })
 
   it('should trigger setShowUnseenEntries function in settings context provider', () => {
-    const value = 'new entry details value'
+    const value = true
     const wrapper = createWrapper()
-    wrapper.instance().context.setShowUnseenEntries(value)
 
-    expect(wrapper.instance().context.showUnseenEntries).toEqual(value)
-    expect(setShowUnseenEntries).toHaveBeenCalledWith(value)
+    wrapper.instance().setShowUnseenEntries(value)
+    wrapper.update()
+
+    const expectedValues = JSON.stringify({
+      ...storedValues,
+      showUnseenEntries: value,
+    })
+
+    expect(localStorage.getItem(storageKey)).toEqual(expectedValues)
+    expect(wrapper.html()).toEqual(expectedValues)
   })
 })

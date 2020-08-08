@@ -1,56 +1,57 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {MediaBreakpointProvider} from './MediaBreakpointProvider'
-import MediaBreakpointContext from './MediaBreakpointContext'
+import {useMediaBreakpoint} from '.'
 
-class TestComponent extends React.Component {
-  static contextType = MediaBreakpointContext
-  render = () => 'expected component'
+function TestComponent() {
+  return JSON.stringify(useMediaBreakpoint())
 }
 
 describe('mediaBreakpoint', () => {
 
-  let mediaMatchListeners
+  let capturedListener
 
   const createWrapper = () => {
     return mount(
       <MediaBreakpointProvider>
         <TestComponent />
       </MediaBreakpointProvider>
-    ).find(TestComponent)
+    )
   }
 
   beforeEach(() => {
-    mediaMatchListeners = []
+    capturedListener = []
 
     window.matchMedia = media => ({
       media,
-      addListener: fn => mediaMatchListeners.push(() => fn({matches: true, media}))
+      addListener: fn => capturedListener.push(() => {
+
+        fn({matches: true, media})
+      })
     })
   })
 
-  it('should render children', () => {
-    expect(createWrapper().html()).toEqual('expected component')
+  it('should set state "mediaBreakpoint" to "phone"', () => {
+    const wrapper = createWrapper()
+    capturedListener[0]()
+    wrapper.update()
+
+    expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'phone'}))
   })
 
-  it('should set state "mediaBreakpoint" to "phone" when media breakpoint is set to "phone"', () => {
-    const component = createWrapper()
-    mediaMatchListeners[0]()
+  it('should set state "mediaBreakpoint" to "tablet"', () => {
+    const wrapper = createWrapper()
+    capturedListener[1]()
+    wrapper.update()
 
-    expect(component.instance().context).toEqual({mediaBreakpoint: 'phone'})
+    expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'tablet'}))
   })
 
-  it('should set state "mediaBreakpoint" to "tablet" when media breakpoint is set to "tablet"', () => {
-    const component = createWrapper()
-    mediaMatchListeners[1]()
+  it('should set state "mediaBreakpoint" to "desktop"', () => {
+    const wrapper = createWrapper()
+    capturedListener[2]()
+    wrapper.update()
 
-    expect(component.instance().context).toEqual({mediaBreakpoint: 'tablet'})
-  })
-
-  it('should set state "mediaBreakpoint" to "desktop" when media breakpoint is set to "desktop"', () => {
-    const component = createWrapper()
-    mediaMatchListeners[2]()
-
-    expect(component.instance().context).toEqual({mediaBreakpoint: 'desktop'})
+    expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'desktop'}))
   })
 })
