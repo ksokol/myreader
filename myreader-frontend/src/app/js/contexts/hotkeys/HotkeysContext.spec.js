@@ -1,11 +1,10 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {HotkeysProvider} from './HotkeysProvider'
-import HotkeysContext from './HotkeysContext'
+import {useHotkeys} from '.'
 
-class Component extends React.Component {
-  static contextType = HotkeysContext
-  render = () => 'wrapped component'
+function TestComponent() {
+  return JSON.stringify(useHotkeys())
 }
 
 describe('hotkeys context', () => {
@@ -15,7 +14,7 @@ describe('hotkeys context', () => {
   const createWrapper = () =>
     mount(
       <HotkeysProvider>
-        <Component />
+        <TestComponent />
       </HotkeysProvider>
     )
 
@@ -25,18 +24,15 @@ describe('hotkeys context', () => {
 
   const onKey = key => {
     document.dispatchEvent(new KeyboardEvent('keyup', {key}))
+    wrapper.update()
   }
-
-  it('should render wrapped element', () => {
-    expect(wrapper.find(Component).text()).toEqual('wrapped component')
-  })
 
   it('should pass expected context when key "z" pressed', () => {
     onKey('z')
 
-    expect(wrapper.find(Component).instance().context).toEqual(expect.objectContaining({
-      hotkey: 'z',
-      hotkeysStamp: 1
+    expect(wrapper.html()).toEqual(JSON.stringify({
+      hotkeysStamp: 1,
+      hotkey: 'z'
     }))
   })
 
@@ -44,9 +40,9 @@ describe('hotkeys context', () => {
     onKey('z')
     onKey('y')
 
-    expect(wrapper.find(Component).instance().context).toEqual(expect.objectContaining({
+    expect(wrapper.html()).toEqual(JSON.stringify({
+      hotkeysStamp: 2,
       hotkey: 'y',
-      hotkeysStamp: 2
     }))
   })
 })

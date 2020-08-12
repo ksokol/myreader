@@ -1,6 +1,9 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {EntryStreamPage} from './EntryStreamPage'
+import {useSettings} from '../../contexts/settings'
+import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
+import {useHotkeys} from '../../contexts/hotkeys'
 
 /* eslint-disable react/prop-types, react/display-name */
 jest.mock('../../components', () => ({
@@ -13,9 +16,28 @@ jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
 
-jest.mock('../../contexts', () => ({
-  withAppContext: Component => Component
+jest.mock('../../contexts/settings', () => ({
+  useSettings: jest.fn().mockReturnValue({
+    pageSize: 2,
+    showUnseenEntries: true,
+  })
 }))
+
+jest.mock('../../contexts/mediaBreakpoint', () => ({
+  useMediaBreakpoint: jest.fn().mockReturnValue({
+    mediaBreakpoint: 'desktop',
+  })
+}))
+
+jest.mock('../../contexts/hotkeys', () => {
+  const onKeyUp = jest.fn()
+
+  return {
+    useHotkeys: () => ({
+      onKeyUp
+    })
+  }
+})
 
 jest.mock('../../components/EntryList/withAutofocusEntry', () => ({
   withAutofocusEntry: Component => Component
@@ -31,12 +53,11 @@ const buttonNext = 'IconButton[type="chevron-right"]'
 
 describe('EntryStreamPage', () => {
 
-  let props, value
+  let props
 
   const createWrapper = () => {
-    const mergedProps = {...value, ...props}
     return mount(
-      <EntryStreamPage {...mergedProps} />
+      <EntryStreamPage {...props} />
     )
   }
 
@@ -45,18 +66,13 @@ describe('EntryStreamPage', () => {
       searchParams: {
         q: 'expectedQ'
       },
-      showUnseenEntries: false,
-      pageSize: 2,
-      onKeyUp: jest.fn()
-    }
-
-    value = {
-      mediaBreakpoint: 'desktop'
     }
   })
 
   it('should not render next and previous buttons when media breakpoint is not desktop', () => {
-    value.mediaBreakpoint = 'phone'
+    useMediaBreakpoint.mockReturnValueOnce(() => ({
+      mediaBreakpoint: 'phone',
+    }))
     const wrapper = createWrapper()
 
     expect(wrapper.find(buttonPrevious).exists()).toEqual(false)
@@ -71,7 +87,10 @@ describe('EntryStreamPage', () => {
   })
 
   it('should pass expected props to entry list component with seenEqual set to "*" and prop "showUnseenEntries" set to false', () => {
-    props.showUnseenEntries = false
+    useSettings.mockReturnValue({
+      pageSize: 2,
+      showUnseenEntries: false,
+    })
 
     expect(createWrapper().find('EntryList').prop('query')).toEqual({
       q: 'expectedQ',
@@ -93,12 +112,12 @@ describe('EntryStreamPage', () => {
   it('should trigger prop function "onKeyUp" when previous button clicked', () => {
     createWrapper().find(buttonPrevious).props().onClick()
 
-    expect(props.onKeyUp).toHaveBeenCalledWith({key: 'ArrowLeft'})
+    expect(useHotkeys().onKeyUp).toHaveBeenCalledWith({key: 'ArrowLeft'})
   })
 
   it('should trigger prop function "onKeyUp" when next button clicked', () => {
     createWrapper().find(buttonNext).props().onClick()
 
-    expect(props.onKeyUp).toHaveBeenCalledWith({key: 'ArrowRight'})
+    expect(useHotkeys().onKeyUp).toHaveBeenCalledWith({key: 'ArrowRight'})
   })
 })

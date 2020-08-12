@@ -2,19 +2,19 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {EntryList as EntryListComponent, IconButton, ListLayout} from '../../components'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
-import {withAppContext} from '../../contexts'
 import {withAutofocusEntry} from '../../components/EntryList/withAutofocusEntry'
 import {withEntriesFromApi} from '../../components/EntryList/withEntriesFromApi'
+import {useSettings} from '../../contexts/settings'
+import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
+import {useHotkeys} from '../../contexts/hotkeys'
 
 const EntryList = withEntriesFromApi(withAutofocusEntry(EntryListComponent))
 
-const Component = ({
- mediaBreakpoint,
- onKeyUp,
- searchParams,
- showUnseenEntries,
- pageSize: size
-}) => {
+function Component({searchParams}) {
+  const {pageSize: size, showUnseenEntries} = useSettings()
+  const {mediaBreakpoint} = useMediaBreakpoint()
+  const {onKeyUp} = useHotkeys()
+
   const showAll = showUnseenEntries === true ? false : '*'
   const seenEqual = searchParams.seenEqual === undefined ? showAll : searchParams.seenEqual
   const query = {...searchParams, seenEqual, size}
@@ -45,13 +45,9 @@ const Component = ({
 }
 
 Component.propTypes = {
-  mediaBreakpoint: PropTypes.string.isRequired,
   searchParams: PropTypes.shape({
     seenEqual: PropTypes.bool
   }).isRequired,
-  showUnseenEntries: PropTypes.bool.isRequired,
-  pageSize: PropTypes.number.isRequired,
-  onKeyUp: PropTypes.func.isRequired
 }
 
-export const EntryStreamPage = withLocationState(withAppContext(Component))
+export const EntryStreamPage = withLocationState(Component)
