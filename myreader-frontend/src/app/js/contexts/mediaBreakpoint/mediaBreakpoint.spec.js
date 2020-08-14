@@ -1,4 +1,5 @@
 import React from 'react'
+import {act} from 'react-dom/test-utils'
 import {mount} from 'enzyme'
 import {MediaBreakpointProvider} from './MediaBreakpointProvider'
 import {useMediaBreakpoint} from '.'
@@ -25,7 +26,6 @@ describe('mediaBreakpoint', () => {
     window.matchMedia = media => ({
       media,
       addListener: fn => capturedListener.push(() => {
-
         fn({matches: true, media})
       })
     })
@@ -33,7 +33,7 @@ describe('mediaBreakpoint', () => {
 
   it('should set state "mediaBreakpoint" to "phone"', () => {
     const wrapper = createWrapper()
-    capturedListener[0]()
+    act(() =>capturedListener[0]())
     wrapper.update()
 
     expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'phone'}))
@@ -41,7 +41,7 @@ describe('mediaBreakpoint', () => {
 
   it('should set state "mediaBreakpoint" to "tablet"', () => {
     const wrapper = createWrapper()
-    capturedListener[1]()
+    act(() =>capturedListener[1]())
     wrapper.update()
 
     expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'tablet'}))
@@ -49,9 +49,15 @@ describe('mediaBreakpoint', () => {
 
   it('should set state "mediaBreakpoint" to "desktop"', () => {
     const wrapper = createWrapper()
-    capturedListener[2]()
+    act(() => capturedListener[2]())
     wrapper.update()
 
     expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'desktop'}))
+  })
+
+  it('should not render prop "children" when current mediaBreakpoint is unknown', () => {
+    const wrapper = createWrapper()
+
+    expect(wrapper.html()).toBeNull()
   })
 })

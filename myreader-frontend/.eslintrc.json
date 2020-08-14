@@ -56,7 +56,7 @@
     "unicorn/prefer-includes": "warn",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
-    "unicorn/no-null":  "warn",
+    "unicorn/no-null":  "off",
     "unicorn/no-fn-reference-in-iterator": "warn",
     "unicorn/no-reduce": "off"
   }

@@ -1,52 +1,44 @@
-import React from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import PropTypes from 'prop-types'
 import MediaBreakpointContext from './MediaBreakpointContext'
-import {createMediaQueryList} from './createMediaQueryList'
+import {breakPoints} from './breakPoints'
 
-export class MediaBreakpointProvider extends React.Component {
+export function MediaBreakpointProvider({children}) {
+  const {mediaQueryList, mediaBreakpointNames} = useMemo(breakPoints, [])
+  const [mediaBreakpoint, setMediaBreakPoint] = useState('')
 
-  static propTypes = {
-    children: PropTypes.any
-  }
-
-  state = {
-    mediaBreakpoint: ''
-  }
-
-  mediaQueryList = createMediaQueryList()
-  mediaBreakpointNames = Object.values(this.mediaQueryList).map(query => query.name)
-
-  componentDidMount() {
-    Object
-      .values(this.mediaQueryList)
-      .forEach(({mql}) => {
-        mql.addListener(this.handleMediaBreakpointChange)
-        this.handleMediaBreakpointChange(mql)
-      })
-  }
-
-  componentWillUnmount() {
-    Object
-      .values(this.mediaQueryList)
-      .forEach(({mql}) => mql.removeListener(this.handleMediaBreakpointChange))
-  }
-
-  handleMediaBreakpointChange = event => event.matches && this.updateState(event.media)
-
-  updateState = media => {
-    const mediaBreakpoint = this.mediaBreakpointNames.find(name => name === this.mediaQueryList[media].name)
-    if (mediaBreakpoint) {
-      this.setState({
-        mediaBreakpoint
-      })
+  const handleMediaBreakpointChange = useCallback(event => {
+    if (!event.matches) {
+      return
     }
-  }
+    const found = mediaBreakpointNames.find(name => name === mediaQueryList[event.media].name)
+    if (found) {
+      setMediaBreakPoint(found)
+    }
+  }, [setMediaBreakPoint, mediaQueryList, mediaBreakpointNames])
 
-  render() {
-    return (
-      <MediaBreakpointContext.Provider value={this.state}>
-        {this.props.children}
-      </MediaBreakpointContext.Provider>
-    )
-  }
+  useEffect(() => {
+    Object
+      .values(mediaQueryList)
+      .forEach(({mql}) => {
+        mql.addListener(handleMediaBreakpointChange)
+        handleMediaBreakpointChange(mql)
+      })
+
+    return () => {
+      Object
+        .values(mediaQueryList)
+        .forEach(({mql}) => mql.removeListener(handleMediaBreakpointChange))
+    }
+  }, [mediaQueryList, handleMediaBreakpointChange])
+
+  return mediaBreakpoint !== '' ? (
+    <MediaBreakpointContext.Provider value={{mediaBreakpoint}}>
+      {children}
+    </MediaBreakpointContext.Provider>
+  ) : null
+}
+
+MediaBreakpointProvider.propTypes = {
+  children: PropTypes.any
 }
