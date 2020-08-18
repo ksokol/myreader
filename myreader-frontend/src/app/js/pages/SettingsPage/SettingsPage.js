@@ -2,7 +2,7 @@ import './SettingsPage.css'
 import React from 'react'
 import Option from '../../components/Option/Option'
 import {SubscriptionTags} from '../../components/SubscriptionTags/SubscriptionTags'
-import {useAppContext} from '../../contexts'
+import {useSettings} from '../../contexts/settings'
 
 const pageSizeOptions = [10, 20, 30]
 const unseenEntriesOptions = [{label: 'show', value: false}, {label: 'hide', value: true}]
@@ -16,7 +16,7 @@ export const SettingsPage = () => {
     setPageSize,
     setShowEntryDetails,
     setShowUnseenEntries,
-  } = useAppContext()
+  } = useSettings()
 
   return (
     <div

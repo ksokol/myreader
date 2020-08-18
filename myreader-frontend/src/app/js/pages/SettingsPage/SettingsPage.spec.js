@@ -1,11 +1,11 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {SettingsPage} from './SettingsPage'
-import {useAppContext} from '../../contexts'
+import {useSettings} from '../../contexts/settings'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../contexts', () => ({
-  useAppContext: jest.fn()
+jest.mock('../../contexts/settings', () => ({
+  useSettings: jest.fn()
 }))
 /* eslint-enable */
 
@@ -20,8 +20,7 @@ describe('SettingsPage', () => {
     setShowEntryDetails = jest.fn()
     setShowUnseenEntries = jest.fn()
 
-    useAppContext.mockClear()
-    useAppContext.mockReturnValue({
+    useSettings.mockReturnValue({
       pageSize: 30,
       showUnseenEntries: true,
       showEntryDetails: false,
