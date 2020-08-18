@@ -1,108 +1,119 @@
 import './SidenavLayout.css'
-import React from 'react'
+import React, {useEffect, useReducer} from 'react'
 import PropTypes from 'prop-types'
 import {IconButton} from '../Buttons'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import Navigation from '../Navigation/Navigation'
 import {Backdrop} from '../Backdrop/Backdrop'
-import {withAppContext} from '../../contexts'
+import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
 
-class Component extends React.Component {
+function reducer(state, action) {
+  let newState = state
 
-  static propTypes = {
-    mediaBreakpoint: PropTypes.string.isRequired,
-    children: PropTypes.any
-  }
-
-  state = {
-    isDesktop: false,
-    sidenavSlideIn: false,
-    backdropVisible: false
-  }
-
-  static getDerivedStateFromProps(props) {
-    return {
-      isDesktop: props.mediaBreakpoint === 'desktop'
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.isDesktop !== prevState.isDesktop && this.state.isDesktop) {
-      this.setState({
-        backdropVisible: false,
-        sidenavSlideIn: false
-      })
-    }
-  }
-
-  toggleSidenav = () => {
-    if (!this.state.isDesktop) {
-      this.setState(state => ({
+  switch(action.type) {
+  case 'toggle': {
+    if (!state.isDesktop) {
+      newState = {
+        ...state,
         backdropVisible: !state.backdropVisible,
-        sidenavSlideIn: !state.sidenavSlideIn
-      }))
-    }
-  }
-
-  hideBackdrop = () => {
-    this.setState(state => {
-      let backdropVisible = !state.backdropVisible
-      return {
-        backdropVisible,
-        sidenavSlideIn: backdropVisible
+        sidenavSlideIn: !state.sidenavSlideIn,
       }
-    })
+    }
+    break
   }
+  case 'change': {
+    if (action.isDesktop && state.mediaBreakpoint !== action.mediaBreakpoint) {
+      newState = {
+        ...state,
+        backdropVisible: false,
+        sidenavSlideIn: false,
+        mediaBreakpoint: action.mediaBreakpoint,
+        isDesktop: action.isDesktop,
+      }
+    }
 
-  render() {
-    const {
-      isDesktop,
-      sidenavSlideIn,
-      backdropVisible
-    } = this.state
-
-    const classes = [
-      'my-sidenav-layout__nav',
-      sidenavSlideIn ? 'my-sidenav-layout__nav--open': '',
-      isDesktop ? '': 'my-sidenav-layout__nav--animate'
-    ]
-
-    return (
-      <div
-        className='my-sidenav-layout'
-      >
-        <header
-          className='my-sidenav-layout__header'
-        >
-          {!isDesktop && (
-            <IconButton
-              type='bars'
-              onClick={this.toggleSidenav}
-              inverse
-            />
-          )}
-        </header>
-
-        <nav
-          className={classes.join(' ')}
-        >
-          <Navigation
-            onClick={this.toggleSidenav}
-          />
-        </nav>
-
-        <main
-          className='my-sidenav-layout__main'
-        >{this.props.children}
-        </main>
-
-        <Backdrop
-          maybeVisible={backdropVisible}
-          onClick={this.hideBackdrop}
-        />
-      </div>
-    )
+    if (!action.isDesktop && state.isDesktop) {
+      newState = {
+        ...state,
+        backdropVisible: false,
+        sidenavSlideIn: false,
+        mediaBreakpoint: action.mediaBreakpoint,
+        isDesktop: action.isDesktop,
+      }
+    }
+    break
   }
+  case 'hide': {
+    newState = {
+      ...state,
+      backdropVisible: false,
+      sidenavSlideIn: false,
+    }
+    break
+  }
+  }
+  return newState
 }
 
-export const SidenavLayout = withLocationState(withAppContext(Component))
+function Component({children}) {
+  const {mediaBreakpoint, isDesktop} = useMediaBreakpoint()
+
+  const [state, dispatch] = useReducer(reducer, {
+    backdropVisible: false,
+    sidenavSlideIn: false,
+    mediaBreakpoint,
+    isDesktop,
+  })
+
+  useEffect(() => {
+    dispatch({type: 'change', mediaBreakpoint, isDesktop})
+  },[mediaBreakpoint, isDesktop])
+
+  const classes = [
+    'my-sidenav-layout__nav',
+    state.sidenavSlideIn ? 'my-sidenav-layout__nav--open': '',
+    isDesktop ? '': 'my-sidenav-layout__nav--animate'
+  ]
+
+  return (
+    <div
+      className='my-sidenav-layout'
+    >
+      <header
+        className='my-sidenav-layout__header'
+      >
+        {!isDesktop && (
+          <IconButton
+            type='bars'
+            onClick={() => dispatch({type: 'toggle'})}
+            inverse
+          />
+        )}
+      </header>
+
+      <nav
+        className={classes.join(' ')}
+      >
+        <Navigation
+          onClick={() => dispatch({type: 'toggle'})}
+        />
+      </nav>
+
+      <main
+        className='my-sidenav-layout__main'
+      >{children}
+      </main>
+
+      <Backdrop
+        maybeVisible={state.backdropVisible}
+        onClick={() => dispatch({type: 'hide'})}
+      />
+    </div>
+  )
+}
+
+Component.propTypes = {
+  children: PropTypes.any
+}
+
+export const SidenavLayout = withLocationState(Component)

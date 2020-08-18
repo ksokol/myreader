@@ -33,7 +33,12 @@ export function MediaBreakpointProvider({children}) {
   }, [mediaQueryList, handleMediaBreakpointChange])
 
   return mediaBreakpoint !== '' ? (
-    <MediaBreakpointContext.Provider value={{mediaBreakpoint}}>
+    <MediaBreakpointContext.Provider
+      value={{
+        mediaBreakpoint,
+        isDesktop: mediaBreakpoint === 'desktop'
+      }}
+    >
       {children}
     </MediaBreakpointContext.Provider>
   ) : null

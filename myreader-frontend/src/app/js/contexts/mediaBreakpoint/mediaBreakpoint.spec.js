@@ -33,18 +33,18 @@ describe('mediaBreakpoint', () => {
 
   it('should set state "mediaBreakpoint" to "phone"', () => {
     const wrapper = createWrapper()
-    act(() =>capturedListener[0]())
+    act(() => capturedListener[0]())
     wrapper.update()
 
-    expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'phone'}))
+    expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'phone', isDesktop: false}))
   })
 
   it('should set state "mediaBreakpoint" to "tablet"', () => {
     const wrapper = createWrapper()
-    act(() =>capturedListener[1]())
+    act(() => capturedListener[1]())
     wrapper.update()
 
-    expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'tablet'}))
+    expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'tablet', isDesktop: false}))
   })
 
   it('should set state "mediaBreakpoint" to "desktop"', () => {
@@ -52,7 +52,7 @@ describe('mediaBreakpoint', () => {
     act(() => capturedListener[2]())
     wrapper.update()
 
-    expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'desktop'}))
+    expect(wrapper.html()).toEqual(JSON.stringify({mediaBreakpoint: 'desktop', isDesktop: true}))
   })
 
   it('should not render prop "children" when current mediaBreakpoint is unknown', () => {

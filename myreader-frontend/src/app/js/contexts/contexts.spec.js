@@ -9,7 +9,6 @@ jest.mock('./settings/settings', () => ({
     showUnseenEntries: true,
     showEntryDetails: false
   })
-
 }))
 /* eslint-enable */
 
@@ -34,6 +33,7 @@ describe('app context', () => {
 
     expectedResult = JSON.stringify({
       mediaBreakpoint: 'tablet',
+      isDesktop: false,
       pageSize: 5,
       showUnseenEntries: true,
       showEntryDetails: false,
