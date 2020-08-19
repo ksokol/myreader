@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import MediaBreakpointContext from './mediaBreakpoint/MediaBreakpointContext'
 import SettingsContext from './settings/SettingsContext'
@@ -53,13 +53,4 @@ export function withAppContext(WrappedComponent) {
       )}
     </SecurityContext.Consumer>
   )
-}
-
-export function useAppContext() {
-  return {
-    ...useContext(MediaBreakpointContext),
-    ...useContext(SettingsContext),
-    ...useContext(HotkeysContext),
-    ...useContext(SecurityContext)
-  }
 }

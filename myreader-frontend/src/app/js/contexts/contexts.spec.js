@@ -1,6 +1,6 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import {AppContextProvider, useAppContext, withAppContext} from '.'
+import {AppContextProvider, withAppContext} from '.'
 
 /* eslint-disable react/prop-types */
 jest.mock('./settings/settings', () => ({
@@ -63,13 +63,6 @@ describe('app context', () => {
 
   it('with hoc should contain expected context values', () => {
     const wrapper = createWrapperFor(withAppContext(props => JSON.stringify(props)))
-
-    expect(wrapper.html()).toEqual(expectedResult)
-    wrapper.unmount()
-  })
-
-  it('with hook should contain expected context values', () => {
-    const wrapper = createWrapperFor(() => JSON.stringify(useAppContext()))
 
     expect(wrapper.html()).toEqual(expectedResult)
     wrapper.unmount()

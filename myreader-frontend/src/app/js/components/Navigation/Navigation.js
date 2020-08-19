@@ -13,8 +13,9 @@ import {
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
 } from '../../constants'
-import {useAppContext} from '../../contexts'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
+import {useSettings} from '../../contexts/settings'
+import {useSecurity} from '../../contexts/security'
 
 const Navigation = props => {
   const {
@@ -22,10 +23,8 @@ const Navigation = props => {
     onClick
   } = props
 
-  const {
-    isAdmin,
-    showUnseenEntries
-  } = useAppContext()
+  const {isAdmin} = useSecurity()
+  const {showUnseenEntries} = useSettings()
 
   const filteredSubscriptions = subscriptions.filter(it => showUnseenEntries ? it.unseen > 0 : true)
 

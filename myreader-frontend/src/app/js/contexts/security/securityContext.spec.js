@@ -1,8 +1,8 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {SecurityProvider} from './SecurityProvider'
-import SecurityContext from './SecurityContext'
 import {api} from '../../api'
+import {useSecurity} from '.'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../api', () => ({
@@ -13,9 +13,8 @@ jest.mock('../../api', () => ({
 }))
 /* eslint-enable */
 
-class TestComponent extends React.Component {
-  static contextType = SecurityContext
-  render = () => 'expected component'
+function TestComponent() {
+  return JSON.stringify(useSecurity())
 }
 
 const STORAGE_KEY = 'myreader-security'
@@ -40,52 +39,50 @@ describe('security context', () => {
     localStorage.clear()
   })
 
-  it('should render children', () => {
-    expect(createWrapper().find(TestComponent).html()).toEqual('expected component')
-  })
-
   it('should contain expected context values in child component', () => {
-    expect(createWrapper().find(TestComponent).instance().context).toEqual(expect.objectContaining({
-      isAdmin: true,
+    expect(createWrapper().html()).toEqual(JSON.stringify({
       authorized: true,
+      isAdmin: true,
       roles: ['ADMIN', 'USER']
     }))
   })
 
   it('should set prop "isAdmin" to false and prop "roles" when "doAuthorize" triggered', () => {
     const wrapper = createWrapper()
-    wrapper.find(TestComponent).instance().context.doAuthorize(['SOME_ROLE'])
+    wrapper.instance().doAuthorize(['SOME_ROLE'])
+    wrapper.update()
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual(expect.objectContaining({
-      isAdmin: false,
+    expect(wrapper.html()).toEqual(JSON.stringify({
       authorized: true,
+      isAdmin: false,
       roles: ['SOME_ROLE']
     }))
   })
 
   it('should persist roles to local storage when "doAuthorize" triggered', () => {
-    createWrapper().find(TestComponent).instance().context.doAuthorize(['SOME_ROLE'])
+    createWrapper().instance().doAuthorize(['SOME_ROLE'])
 
-    expect(JSON.parse(localStorage.getItem('myreader-security'))).toEqual({
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY))).toEqual({
       roles: ['SOME_ROLE']
     })
   })
 
   it('should set prop "isAdmin" to false and prop "roles" to empty array when "doUnAuthorize" triggered', () => {
     const wrapper = createWrapper()
-    wrapper.find(TestComponent).instance().context.doUnAuthorize()
+    wrapper.instance().doUnAuthorize()
+    wrapper.update()
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual(expect.objectContaining({
-      isAdmin: false,
+    expect(wrapper.html()).toEqual(JSON.stringify({
       authorized: false,
+      isAdmin: false,
       roles: []
     }))
   })
 
   it('should clear roles from local storage when "doUnAuthorize" triggered', () => {
-    createWrapper().find(TestComponent).instance().context.doUnAuthorize()
+    createWrapper().instance().doUnAuthorize()
 
-    expect(JSON.parse(localStorage.getItem('myreader-security'))).toEqual({
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY))).toEqual({
       roles: []
     })
   })
@@ -94,10 +91,11 @@ describe('security context', () => {
     const wrapper = createWrapper()
 
     api.addInterceptor.mock.calls[0][0].onError(null, {status: 401})
+    wrapper.update()
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual(expect.objectContaining({
-      isAdmin: false,
+    expect(wrapper.html()).toEqual(JSON.stringify({
       authorized: false,
+      isAdmin: false,
       roles: []
     }))
   })
@@ -106,10 +104,11 @@ describe('security context', () => {
     const wrapper = createWrapper()
 
     api.addInterceptor.mock.calls[0][0].onError(null, {status: 200})
+    wrapper.update()
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual(expect.objectContaining({
-      isAdmin: true,
+    expect(wrapper.html()).toEqual(JSON.stringify({
       authorized: true,
+      isAdmin: true,
       roles: ['ADMIN', 'USER']
     }))
   })

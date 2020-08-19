@@ -1,7 +1,7 @@
 import React from 'react'
+import {mount} from 'enzyme'
 import Navigation from './Navigation'
 import NavigationItem from './NavigationItem'
-import {mount} from 'enzyme'
 import {
   ADMIN_FEEDS_URL,
   ADMIN_OVERVIEW_URL,
@@ -10,14 +10,19 @@ import {
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
 } from '../../constants'
-import {useAppContext} from '../../contexts'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
+import {useSettings} from '../../contexts/settings'
+import {useSecurity} from '../../contexts/security'
 
 /* eslint-disable react/prop-types */
 jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => () => null) //eslint-disable-line unicorn/consistent-function-scoping
 
-jest.mock('../../contexts', () => ({
-  useAppContext: jest.fn()
+jest.mock('../../contexts/settings', () => ({
+  useSettings: jest.fn()
+}))
+
+jest.mock('../../contexts/security', () => ({
+  useSecurity: jest.fn()
 }))
 /* eslint-enable */
 
@@ -60,9 +65,11 @@ describe('Navigation', () => {
   )
 
   beforeEach(() => {
-    useAppContext.mockClear()
-    useAppContext.mockReturnValue({
+    useSettings.mockReturnValue({
       showUnseenEntries: false,
+    })
+
+    useSecurity.mockReturnValue({
       isAdmin: false
     })
 
@@ -96,7 +103,7 @@ describe('Navigation', () => {
   })
 
   it('should render admin navigation', () => {
-    useAppContext.mockReturnValue({
+    useSecurity.mockReturnValue({
       isAdmin: true
     })
 
@@ -126,7 +133,7 @@ describe('Navigation', () => {
   })
 
   it('should render expected routes for admin', () => {
-    useAppContext.mockReturnValue({
+    useSecurity.mockReturnValue({
       isAdmin: true
     })
 
@@ -149,7 +156,7 @@ describe('Navigation', () => {
   })
 
   it('should render user navigation with subscriptions.unseen > 0', () => {
-    useAppContext.mockReturnValue({showUnseenEntries: true})
+    useSettings.mockReturnValue({showUnseenEntries: true})
     const page = createWrapper()
 
     expect(page.navigationItemLabels).toEqual([
@@ -165,8 +172,10 @@ describe('Navigation', () => {
   })
 
   it('should render admin navigation with subscriptions.unseen > 0', () => {
-    useAppContext.mockReturnValue({
+    useSettings.mockReturnValue({
       showUnseenEntries: true,
+    })
+    useSecurity.mockReturnValue({
       isAdmin: true
     })
 
