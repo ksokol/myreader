@@ -1,8 +1,10 @@
 import React from 'react'
+import {act} from 'react-dom/test-utils'
 import {mount} from 'enzyme'
-import LoginPage from './LoginPage'
+import {LoginPage} from './LoginPage'
 import {authenticationApi} from '../../api'
-import {flushPromises, rejected, resolved} from '../../shared/test-utils'
+import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
+import {useSecurity} from '../../contexts/security'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
@@ -13,8 +15,8 @@ jest.mock('../../api', () => ({
   authenticationApi: {}
 }))
 
-jest.mock('../../contexts', () => ({
-  withAppContext: Component => Component
+jest.mock('../../contexts/security', () => ({
+  useSecurity: jest.fn()
 }))
 /* eslint-enable */
 
@@ -31,10 +33,10 @@ describe('LoginPage', () => {
   }
 
   beforeEach(() => {
-    props = {
+    useSecurity.mockReturnValue({
       authorized: false,
-      doAuthorize: jest.fn()
-    }
+      doAuthorize: jest.fn(),
+    })
   })
 
   it('should pass expected props to login form component', async () => {
@@ -49,9 +51,11 @@ describe('LoginPage', () => {
   it('should call authenticationApi.login with given username and password when prop function "onLogin" called', async () => {
     const wrapper = await createWrapper()
 
-    wrapper.find('LoginForm').props().onLogin({
-      username: 'expected-username',
-      password: 'expected-password'
+    await act(async () => {
+      await wrapper.find('LoginForm').props().onLogin({
+        username: 'expected-username',
+        password: 'expected-password'
+      })
     })
 
     expect(authenticationApi.login).toHaveBeenCalledWith('expected-username', 'expected-password')
@@ -64,7 +68,9 @@ describe('LoginPage', () => {
   })
 
   it('should redirect to entries page when user is authorized', async () => {
-    props.authorized = true
+    useSecurity.mockReturnValue({
+      authorized: true
+    })
 
     const wrapper = await createWrapper()
 
@@ -72,8 +78,10 @@ describe('LoginPage', () => {
   })
 
   it('should set prop "loginPending" to true when prop function "onLogin" called', async () => {
-    const wrapper = await createWrapper()
-    wrapper.find('LoginForm').props().onLogin({})
+    const wrapper = await createWrapper(pending())
+    act(() => {
+      wrapper.find('LoginForm').props().onLogin({})
+    })
     wrapper.update()
 
     expect(wrapper.find('LoginForm').props()).toEqual(expect.objectContaining({
@@ -84,7 +92,9 @@ describe('LoginPage', () => {
 
   it('should set prop "loginPending" to false when authenticationApi.login succeeded', async () => {
     const wrapper = await createWrapper()
-    wrapper.find('LoginForm').props().onLogin({})
+    await act(async () => {
+      await wrapper.find('LoginForm').props().onLogin({})
+    })
     await flushPromises()
     wrapper.update()
 
@@ -95,9 +105,10 @@ describe('LoginPage', () => {
   })
 
   it('should not set prop "loginFailed" to true when authenticationApi.login succeeded', async () => {
-    const wrapper = await createWrapper()
-    authenticationApi.login = rejected()
-    wrapper.find('LoginForm').props().onLogin({})
+    const wrapper = await createWrapper(rejected())
+    await act(async () => {
+      await wrapper.find('LoginForm').props().onLogin({})
+    })
     await flushPromises()
     wrapper.update()
 
@@ -108,9 +119,11 @@ describe('LoginPage', () => {
   })
 
   it('should set prop "loginFailed" to true when authenticationApi.login failed', async () => {
-    const wrapper = await createWrapper()
+    const wrapper = await createWrapper(rejected())
     authenticationApi.login = rejected()
-    wrapper.find('LoginForm').props().onLogin({})
+    await act(async () => {
+      await wrapper.find('LoginForm').props().onLogin({})
+    })
     await flushPromises()
     wrapper.update()
 
@@ -121,11 +134,22 @@ describe('LoginPage', () => {
   })
 
   it('should trigger prop function "doAuthorize" when login succeeded', async () => {
+    const doAuthorize = jest.fn()
+    useSecurity.mockReturnValue({
+      authorized: false,
+      doAuthorize,
+    })
+
     const wrapper = await createWrapper()
-    wrapper.find('LoginForm').props().onLogin({})
-    await flushPromises()
+    act(() => {
+      wrapper.find('LoginForm').props().onLogin({})
+    })
+    await act(async () => {
+      await flushPromises()
+    })
+    wrapper.mount()
     wrapper.update()
 
-    expect(props.doAuthorize).toHaveBeenCalledWith(['USER'])
+    expect(doAuthorize).toHaveBeenCalledWith(['USER'])
   })
 })

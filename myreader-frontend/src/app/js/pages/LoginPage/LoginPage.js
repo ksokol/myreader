@@ -1,74 +1,55 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom'
 import {LoginForm} from '../../components'
 import {ENTRIES_URL} from '../../constants'
 import {authenticationApi} from '../../api'
-import {withAppContext} from '../../contexts'
+import {useSecurity} from '../../contexts/security'
 
-class LoginPage extends React.Component {
-
-  static propTypes = {
-    authorized: PropTypes.bool.isRequired,
-    doAuthorize: PropTypes.func.isRequired
-  }
-
-  state = {
+export function LoginPage() {
+  const [{loginPending, loginFailed}, setState] = useState({
     loginPending: false,
     loginFailed: false
+  })
+  const {doAuthorize, authorized} = useSecurity()
+
+  const onSuccess = roles => {
+    setState({
+      loginPending: false,
+      loginFailed: false
+    })
+
+    doAuthorize(roles)
   }
 
-  onLogin = async ({username, password}) => {
-    this.setState({
+  const onLogin = async ({username, password}) => {
+    setState({
       loginPending: true,
       loginFailed: false
     })
 
     try {
       const {roles} = await authenticationApi.login(username, password)
-      this.onSuccess(roles)
-    } catch {
-      this.setState({
-        loginFailed: true
+      setState({
+        loginPending: false
       })
-    } finally {
-      this.setState({
+      onSuccess(roles)
+    } catch {
+      setState({
+        loginFailed: true,
         loginPending: false
       })
     }
   }
 
-  onSuccess = roles => {
-    this.setState({
-      loginPending: false,
-      loginFailed: false
-    })
-
-    this.props.doAuthorize(roles)
-  }
-
-  render() {
-    const {
-      authorized
-    } = this.props
-
-    const {
-      loginPending,
-      loginFailed
-    } = this.state
-
-    return authorized ? (
-      <Redirect
-        to={ENTRIES_URL}
-      />
-    ) : (
-      <LoginForm
-        loginPending={loginPending}
-        loginFailed={loginFailed}
-        onLogin={this.onLogin}
-      />
-    )
-  }
+  return authorized ? (
+    <Redirect
+      to={ENTRIES_URL}
+    />
+  ) : (
+    <LoginForm
+      loginPending={loginPending}
+      loginFailed={loginFailed}
+      onLogin={onLogin}
+    />
+  )
 }
-
-export default withAppContext(LoginPage)
