@@ -1,19 +1,26 @@
 import React from 'react'
+import {act} from 'react-dom/test-utils'
 import {mount} from 'enzyme'
 import LogoutPage from './LogoutPage'
 import {LOGIN_URL} from '../../constants'
 import {authenticationApi} from '../../api'
 import {toast} from '../../components/Toast'
 import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
+import {useSecurity} from '../../contexts/security'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
 
-jest.mock('../../contexts', () => ({
-  withAppContext: Component => Component
-}))
+jest.mock('../../contexts/security', () => {
+  const doUnAuthorize = jest.fn()
+  return {
+    useSecurity: () => ({
+      doUnAuthorize
+    })
+  }
+})
 
 jest.mock('../../api', () => ({
   authenticationApi: {}
@@ -51,15 +58,22 @@ describe('LogoutPage', () => {
   })
 
   it('should redirect to login page when authenticationApi.logout succeeded', async () => {
-    const wrapper = await createWrapper()
+    let wrapper
+
+    await act(async () => {
+      wrapper = await createWrapper()
+    })
+    wrapper.mount()
 
     expect(wrapper.find('Redirect').prop('to')).toEqual(LOGIN_URL)
   })
 
   it('should trigger prop function "doUnAuthorize" when authenticationApi.logout succeeded', async () => {
-    await createWrapper()
+    await act(async () => {
+      await createWrapper()
+    })
 
-    expect(props.doUnAuthorize).toHaveBeenCalled()
+    expect(useSecurity().doUnAuthorize).toHaveBeenCalled()
   })
 
   it('should not trigger prop function "doUnAuthorize" when authenticationApi.logout failed', async () => {
@@ -69,13 +83,19 @@ describe('LogoutPage', () => {
   })
 
   it('should not trigger toast when authenticationApi.logout succeeded', async () => {
-    await createWrapper()
+    await act(async () => {
+      await createWrapper()
+    })
 
     expect(toast).not.toHaveBeenCalled()
   })
 
   it('should not trigger prop function "historyGoBack" when authenticationApi.logout succeeded', async () => {
-    await createWrapper()
+    let wrapper
+    await act(async () => {
+      wrapper = await createWrapper()
+    })
+    wrapper.mount()
 
     expect(props.historyGoBack).not.toHaveBeenCalled()
   })
