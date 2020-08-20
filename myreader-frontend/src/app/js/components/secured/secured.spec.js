@@ -2,10 +2,13 @@ import React from 'react'
 import {mount} from 'enzyme'
 import secured from './secured'
 import {LOGIN_URL} from '../../constants'
+import {useSecurity} from '../../contexts/security'
 
 /* eslint-disable react/prop-types, react/display-name */
-jest.mock('../../contexts', () => ({
-  withAppContext: Component => Component
+jest.mock('../../contexts/security', () => ({
+  useSecurity: jest.fn().mockReturnValue({
+    roles: []
+  })
 }))
 /* eslint-enable */
 
@@ -13,12 +16,10 @@ const wrappedComponent = 'wrapped component'
 
 describe('secured', () => {
 
-  let props
-
   const createWrapper = (roles, allowedRole) => {
+    useSecurity.mockReturnValueOnce({roles})
     const Wrapped = secured(() => <p>{wrappedComponent}</p>, allowedRole)
-    props = {roles}
-    return mount(<Wrapped {...props} />)
+    return mount(<Wrapped />)
   }
 
   it('should render component when allowed role USER is equal to role', () => {
