@@ -1,4 +1,5 @@
 import React from 'react'
+import {act} from 'react-dom/test-utils'
 import {mount} from 'enzyme'
 import BookmarkListPage from './BookmarkListPage'
 import {flushPromises, rejected, resolved} from '../../shared/test-utils'
@@ -16,8 +17,10 @@ jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component
 }))
 
-jest.mock('../../contexts', () => ({
-  withAppContext: Component => Component
+jest.mock('../../contexts/settings', () => ({
+  useSettings: jest.fn().mockReturnValue({
+    pageSize: 2
+  })
 }))
 
 jest.mock('../../api', () => ({
@@ -58,12 +61,16 @@ describe('BookmarkListPage', () => {
       },
       historyReplace: jest.fn(),
       locationStateStamp: 0,
-      pageSize: 2
     }
   })
 
   it('should pass expected props to chips component on mount when call to entryApi.fetchEntryTags succeeded', async () => {
-    const wrapper = await createWrapper()
+    let wrapper
+
+    await act(async () => {
+      wrapper = await createWrapper()
+    })
+    wrapper.update()
 
     expect(wrapper.find('Chips').props()).toEqual(expect.objectContaining({
       values: ['tag3', 'tag4'],
@@ -78,7 +85,12 @@ describe('BookmarkListPage', () => {
   })
 
   it('should pass expected props to entry list component', async () => {
-    const wrapper = await createWrapper()
+    let wrapper
+
+    await act(async () => {
+      wrapper = await createWrapper()
+    })
+    wrapper.update()
 
     expect(wrapper.find('EntryList').prop('query')).toEqual({
       entryTagEqual: expectedTag,
@@ -90,7 +102,12 @@ describe('BookmarkListPage', () => {
 
   it('should pass expected props to entry list component with prop "searchParam.entryTagEqual" undefined', async () => {
     delete props.searchParams.entryTagEqual
-    const wrapper = await createWrapper()
+    let wrapper
+
+    await act(async () => {
+      wrapper = await createWrapper()
+    })
+    wrapper.update()
 
     expect(wrapper.find('EntryList').prop('query')).toEqual({
       q: 'expectedQ',
@@ -100,7 +117,12 @@ describe('BookmarkListPage', () => {
   })
 
   it('should return expected prop from Chips prop function "renderItem"', async () => {
-    const wrapper = await createWrapper()
+    let wrapper
+
+    await act(async () => {
+      wrapper = await createWrapper()
+    })
+    wrapper.update()
 
     expect(wrapper.find('Chips').props().renderItem('tag').props).toEqual(expect.objectContaining({
       to: {
@@ -111,7 +133,12 @@ describe('BookmarkListPage', () => {
   })
 
   it('should trigger entryApi.fetchEntryTags when prop "locationStateStamp" changed', async () => {
-    const wrapper = await createWrapper()
+    let wrapper
+
+    await act(async () => {
+      wrapper = await createWrapper()
+    })
+    wrapper.update()
     entryApi.fetchEntryTags = rejected()
     wrapper.setProps({locationStateStamp: 1})
 
@@ -119,7 +146,12 @@ describe('BookmarkListPage', () => {
   })
 
   it('should not trigger entryApi.fetchEntryTags when prop "locationChanged" is set to true', async () => {
-    const wrapper = await createWrapper()
+    let wrapper
+
+    await act(async () => {
+      wrapper = await createWrapper()
+    })
+    wrapper.update()
     entryApi.fetchEntryTags.mockClear()
     wrapper.setProps({locationChanged: true})
 

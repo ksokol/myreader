@@ -1,5 +1,5 @@
 import './BookmarkListPage.css'
-import React from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
 import {Chips} from '../../components/Chips/Chips'
@@ -7,84 +7,68 @@ import {EntryList  as EntryListComponent} from '../../components/EntryList/Entry
 import ListLayout from '../../components/ListLayout/ListLayout'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {BOOKMARK_URL} from '../../constants'
-import {withAppContext} from '../../contexts'
 import {entryApi} from '../../api'
 import {toast} from '../../components/Toast'
 import {withEntriesFromApi} from '../../components/EntryList/withEntriesFromApi'
+import {useSettings} from '../../contexts/settings'
 
 const EntryList = withEntriesFromApi(EntryListComponent)
 
-class BookmarkListPage extends React.Component {
+function BookmarkListPage(props) {
+  const [entryTags, setEntryTags] = useState([])
+  const {pageSize} = useSettings()
 
-  static propTypes = {
-    searchParams: PropTypes.shape({
-      entryTagEqual: PropTypes.string,
-      q: PropTypes.string
-    }).isRequired,
-    locationStateStamp: PropTypes.number.isRequired,
-    pageSize: PropTypes.number.isRequired
-  }
-
-  state = {
-    entryTags: []
-  }
-
-  async componentDidMount() {
-    await this.fetchEntryTags()
-  }
-
-  async componentDidUpdate(prevProps) {
-    if (this.props.locationStateStamp !== prevProps.locationStateStamp) {
-      await this.fetchEntryTags()
-    }
-  }
-
-  fetchEntryTags = async () => {
+  const fetchEntryTags = useCallback(async () => {
     try {
-      this.setState({entryTags: await entryApi.fetchEntryTags()})
+      setEntryTags(await entryApi.fetchEntryTags())
     } catch (error) {
       toast(error.data, {error: true})
     }
-  }
+  }, [])
 
-  render() {
-    const {
-      searchParams: {entryTagEqual, q},
-      pageSize: size
-    } = this.props
+  useEffect(() => {
+    fetchEntryTags()
+  }, [props.locationStateStamp, fetchEntryTags])
 
-    const {
-      entryTags
-    } = this.state
+  const {
+    searchParams: {entryTagEqual, q},
+  } = props
 
-    const seenEqual = entryTagEqual ? '*' : ''
-    const query = {seenEqual, entryTagEqual, q, size}
+  const seenEqual = entryTagEqual ? '*' : ''
+  const query = {seenEqual, entryTagEqual, q, size: pageSize}
 
-    return (
-      <ListLayout
-        className='my-bookmark-list'
-        listPanel={
-          <React.Fragment>
-            <Chips
-              keyFn={props => props}
-              className='my-bookmark-list__tags'
-              values={entryTags}
-              selected={entryTagEqual}
-              renderItem={entryTagEqual => (
-                <Link
-                  to={{pathname: BOOKMARK_URL, search: `?entryTagEqual=${entryTagEqual}`}}>
-                  {entryTagEqual}
-                </Link>
-              )}
-            />
-            <EntryList
-              query={query}
-            />
-          </React.Fragment>
-        }
-      />
-    )
-  }
+  return (
+    <ListLayout
+      className='my-bookmark-list'
+      listPanel={
+        <React.Fragment>
+          <Chips
+            keyFn={itemProps => itemProps}
+            className='my-bookmark-list__tags'
+            values={entryTags}
+            selected={entryTagEqual}
+            renderItem={item => (
+              <Link
+                to={{pathname: BOOKMARK_URL, search: `?entryTagEqual=${item}`}}>
+                {item}
+              </Link>
+            )}
+          />
+          <EntryList
+            query={query}
+          />
+        </React.Fragment>
+      }
+    />
+  )
 }
 
-export default withLocationState(withAppContext(BookmarkListPage))
+BookmarkListPage.propTypes = {
+  searchParams: PropTypes.shape({
+    entryTagEqual: PropTypes.string,
+    q: PropTypes.string
+  }).isRequired,
+  locationStateStamp: PropTypes.number.isRequired,
+}
+
+export default withLocationState(BookmarkListPage)
