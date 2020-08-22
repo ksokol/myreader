@@ -2,7 +2,6 @@ import './SidenavLayout.css'
 import React, {useEffect, useReducer} from 'react'
 import PropTypes from 'prop-types'
 import {IconButton} from '../Buttons'
-import {withLocationState} from '../../contexts/locationState/withLocationState'
 import Navigation from '../Navigation/Navigation'
 import {Backdrop} from '../Backdrop/Backdrop'
 import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
@@ -55,7 +54,7 @@ function reducer(state, action) {
   return newState
 }
 
-function Component({children}) {
+export function SidenavLayout({children}) {
   const {mediaBreakpoint, isDesktop} = useMediaBreakpoint()
 
   const [state, dispatch] = useReducer(reducer, {
@@ -112,8 +111,6 @@ function Component({children}) {
   )
 }
 
-Component.propTypes = {
+SidenavLayout.propTypes = {
   children: PropTypes.any
 }
-
-export const SidenavLayout = withLocationState(Component)

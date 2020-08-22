@@ -10,10 +10,6 @@ jest.mock('../Backdrop/Backdrop', () => ({
 
 jest.mock('../Navigation/Navigation', () => props => <div className='navigation' {...props} />)
 
-jest.mock('../../contexts/locationState/withLocationState', () => ({
-  withLocationState: Component => Component
-}))
-
 jest.mock('../../contexts/mediaBreakpoint', () => ({
   useMediaBreakpoint: jest.fn()
 }))
