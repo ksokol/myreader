@@ -1,134 +1,152 @@
-import React from 'react'
+import React, {useEffect, useReducer} from 'react'
 import PropTypes from 'prop-types'
-import {withAppContext} from '../../contexts'
+import {useHotkeys} from '../../contexts/hotkeys'
 
-export const withAutofocusEntry = Component => {
+function reducer(state, action) {
+  switch(action.type) {
+  case 'ArrowRight': {
+    let nextFocusableEntry
 
-  const WithAutofocusEntry = class WithAutofocusEntry extends React.Component {
-
-    static propTypes = {
-      entries: PropTypes.arrayOf(
-        PropTypes.shape({
-          uuid: PropTypes.string.isRequired
-        })
-      ).isRequired,
-      hotkeysStamp: PropTypes.number.isRequired,
-      hotkey: PropTypes.string,
-      onChangeEntry: PropTypes.func.isRequired,
+    if (!state.entryInFocus.uuid) {
+      nextFocusableEntry = state.entries[0]
+    } else {
+      const index = state.entries.findIndex(it => it.uuid === state.entryInFocus.uuid)
+      nextFocusableEntry = state.entries[index + 1]
     }
 
-    state = {
-      hotkeysStamp: 0,
-      hotkey: null,
-      entryInFocus: {}
+    const newState = {
+      ...state,
+      hotkey: action.hotkey,
     }
 
-    static getDerivedStateFromProps(props, state) {
-      const entryInFocus = props.entries.find(it => it.uuid === state.entryInFocus.uuid) || {}
-      return {
-        hotkeysStamp: props.hotkeysStamp,
-        hotkey: props.hotkey,
-        entryInFocus
-      }
+    return nextFocusableEntry ? {
+      ...newState,
+      entryInFocus: nextFocusableEntry,
+    } : newState
+  }
+  case 'ArrowLeft': {
+    const entryInFocus = state.entryInFocus
+
+    if (!entryInFocus.uuid) {
+      return state
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-      if (this.state.hotkeysStamp !== prevState.hotkeysStamp) {
-        switch(this.state.hotkey) {
-          case 'ArrowLeft': {
-            this.previousEntry()
-            break
-          }
-          case 'ArrowRight': {
-            this.nextEntry()
-            break
-          }
-          case 'Escape': {
-            this.toggleEntryReadFlag()
-            break
-          }
-        }
-      }
-    }
+    const index = state.entries.findIndex(it => it.uuid === entryInFocus.uuid)
 
-    nextEntry = () => {
-      const {
-        entries
-      } = this.props
-
-      const {
-        entryInFocus
-      } = this.state
-
-      let nextFocusableEntry
-
-      if (!entryInFocus.uuid) {
-        nextFocusableEntry = entries[0]
-      } else {
-        const index = entries.findIndex(it => it.uuid === entryInFocus.uuid)
-        nextFocusableEntry = entries[index + 1]
-      }
-
-      if (nextFocusableEntry) {
-        if (nextFocusableEntry.seen === false) {
-          this.props.onChangeEntry({
-            ...nextFocusableEntry,
-            seen: true
-          })
-        }
-
-        this.setState({
-          entryInFocus: nextFocusableEntry
-        })
-      }
-    }
-
-    previousEntry = () => {
-      const {
-        entries
-      } = this.props
-
-      const {
-        entryInFocus
-      } = this.state
-
-      if (!entryInFocus.uuid) {
-        return
-      }
-
-      const index = entries.findIndex(it => it.uuid === entryInFocus.uuid)
-
-      this.setState({
-        entryInFocus: entries[index - 1] || {}
-      })
-    }
-
-    toggleEntryReadFlag = () => {
-      if (this.state.entryInFocus.uuid) {
-        this.props.onChangeEntry({
-          ...this.state.entryInFocus,
-          seen: !this.state.entryInFocus.seen
-        })
-      }
-    }
-
-    render() {
-      const {
-        ...componentProps
-      } = this.props
-
-      const {
-        entryInFocus
-      } = this.state
-
-      return (
-        <Component
-          {...componentProps}
-          entryInFocus={entryInFocus}
-        />
-      )
+    return {
+      ...state,
+      hotkey: action.hotkey,
+      entryInFocus: state.entries[index - 1] || {},
     }
   }
 
-  return withAppContext(WithAutofocusEntry)
+  case 'Escape': {
+    return {
+      ...state,
+      hotkey: action.hotkey,
+    }
+  }
+  case 'entries': {
+    let entryInFocus = state.entryInFocus
+    const entries = action.entries
+
+    if (entries.length === 0) {
+      entryInFocus = {}
+    } else if (state.entryInFocus.uuid) {
+      const index = entries.findIndex(it => it.uuid === entryInFocus.uuid)
+      if (index !== -1) {
+        entryInFocus.seen = entries[index].seen
+      }
+    }
+
+    return {
+      ...state,
+      entryInFocus,
+      entries,
+    }
+  } default: {
+    return state
+  }
+  }
+}
+
+/**
+ * Move escape key handler into child component.
+ * Replace hoc with hooks.
+ *
+ * @deprecated
+ */
+export const withAutofocusEntry = Component => {
+
+  const WithAutofocusEntry = function WithAutofocusEntry({
+    entries,
+    onChangeEntry,
+    ...componentProps
+  }) {
+
+    const {hotkeysStamp, hotkey} = useHotkeys()
+
+    const [state, dispatch] = useReducer(reducer, {
+      hotkey,
+      hotkeysStamp,
+      entries: entries || [],
+      entryInFocus: {},
+    })
+
+    useEffect(() => {
+      dispatch({type: 'entries', entries})
+    }, [entries])
+
+    useEffect(() => {
+      dispatch({type: hotkey, hotkey})
+    }, [dispatch, hotkey, hotkeysStamp])
+
+    useEffect(() => {
+      if (
+        state.hotkey === 'ArrowRight' &&
+        state.hotkey === hotkey &&
+        state.entryInFocus.uuid &&
+        state.entryInFocus.seen === false
+      ) {
+        onChangeEntry({
+          ...state.entryInFocus,
+          seen: !state.entryInFocus.seen
+        })
+      }
+    }, [onChangeEntry, state.entryInFocus, state.hotkey, hotkey, hotkeysStamp])
+
+
+    useEffect(() => {
+      if (
+        state.hotkey === 'Escape' &&
+        state.hotkey === hotkey &&
+        state.entryInFocus.uuid
+      ) {
+        onChangeEntry({
+          ...state.entryInFocus,
+          seen: !state.entryInFocus.seen
+        })
+      }
+    }, [onChangeEntry, state.entryInFocus, state.hotkey, hotkey, hotkeysStamp])
+
+    return (
+      <Component
+        {...componentProps}
+        entries={entries}
+        onChangeEntry={onChangeEntry}
+        entryInFocus={state.entryInFocus}
+      />
+    )
+  }
+
+  WithAutofocusEntry.propTypes = {
+    entries: PropTypes.arrayOf(
+      PropTypes.shape({
+        uuid: PropTypes.string.isRequired
+      })
+    ).isRequired,
+    onChangeEntry: PropTypes.func.isRequired,
+  }
+
+  return WithAutofocusEntry
 }
