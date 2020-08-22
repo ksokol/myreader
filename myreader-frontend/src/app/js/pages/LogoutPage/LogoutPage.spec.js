@@ -1,7 +1,8 @@
 import React from 'react'
 import {act} from 'react-dom/test-utils'
+import {useHistory} from 'react-router-dom'
 import {mount} from 'enzyme'
-import LogoutPage from './LogoutPage'
+import {LogoutPage} from './LogoutPage'
 import {LOGIN_URL} from '../../constants'
 import {authenticationApi} from '../../api'
 import {toast} from '../../components/Toast'
@@ -9,10 +10,6 @@ import {flushPromises, pending, rejected, resolved} from '../../shared/test-util
 import {useSecurity} from '../../contexts/security'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../contexts/locationState/withLocationState', () => ({
-  withLocationState: Component => Component
-}))
-
 jest.mock('../../contexts/security', () => {
   const doUnAuthorize = jest.fn()
   return {
@@ -39,7 +36,9 @@ describe('LogoutPage', () => {
     authenticationApi.logout = onMount
     const wrapper = mount(<LogoutPage {...props} />)
     await flushPromises()
-    wrapper.update()
+    act(() => {
+      wrapper.update()
+    })
     return wrapper
   }
 
@@ -48,7 +47,6 @@ describe('LogoutPage', () => {
 
     props = {
       doUnAuthorize: jest.fn(),
-      historyGoBack: jest.fn()
     }
   })
 
@@ -90,14 +88,12 @@ describe('LogoutPage', () => {
     expect(toast).not.toHaveBeenCalled()
   })
 
-  it('should not trigger prop function "historyGoBack" when authenticationApi.logout succeeded', async () => {
-    let wrapper
+  it('should not trigger history.goBack when authenticationApi.logout succeeded', async () => {
     await act(async () => {
-      wrapper = await createWrapper()
+      await createWrapper()
     })
-    wrapper.mount()
 
-    expect(props.historyGoBack).not.toHaveBeenCalled()
+    expect(useHistory().goBack).not.toHaveBeenCalled()
   })
 
   it('should trigger toast when authenticationApi.logout failed', async () => {
@@ -106,9 +102,9 @@ describe('LogoutPage', () => {
     expect(toast).toHaveBeenCalledWith('Logout failed', {error: true})
   })
 
-  it('should trigger prop function "historyGoBack" when authenticationApi.logout failed', async () => {
+  it('should trigger history.goBack when authenticationApi.logout failed', async () => {
     await createWrapper(rejected())
 
-    expect(props.historyGoBack).toHaveBeenCalled()
+    expect(useHistory().goBack).toHaveBeenCalled()
   })
 })
