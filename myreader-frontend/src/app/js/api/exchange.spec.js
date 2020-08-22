@@ -9,6 +9,10 @@ const execute = (method, params) => exchange({...params, method})
 
 describe('exchange', () => {
 
+  beforeEach(() => {
+    jest.useRealTimers()
+  })
+
   afterEach(() => {
     fetch.resetMocks()
     fetch.mockResponse('')
@@ -80,8 +84,8 @@ describe('exchange', () => {
   it('should return json body when http request is unauthorized', done => {
     fetch.once('{"id": 1}', {status: 401, headers: {'content-type': jsonContentType}})
 
-    execute('POST').catch(response => {
-      expect(response).toEqual({
+    execute('POST').catch(error => {
+      expect(error).toEqual({
         status: 401,
         headers: {'content-type': jsonContentType},
         data: {id: 1}
@@ -93,8 +97,8 @@ describe('exchange', () => {
   it('should return text body when http request is unauthorized', done => {
     fetch.once(expectedBody, {status: 401, headers: {'content-type': textPlainContentType}})
 
-    execute('POST').catch(response => {
-      expect(response).toEqual({
+    execute('POST').catch(error => {
+      expect(error).toEqual({
         status: 401,
         headers: {'content-type': textPlainContentType},
         data: expectedBody
@@ -106,8 +110,8 @@ describe('exchange', () => {
   it('should return json body when http request failed', done => {
     fetch.once('{"id": 1}', {status: 400, headers: {'content-type': jsonContentType}})
 
-    execute('POST').catch(response => {
-      expect(response).toEqual({
+    execute('POST').catch(error => {
+      expect(error).toEqual({
         status: 400,
         headers: {'content-type': jsonContentType},
         data: {id: 1}
@@ -119,8 +123,8 @@ describe('exchange', () => {
   it('should return text body when http request failed', done => {
     fetch.once(expectedBody, {status: 400, headers: {'content-type': textPlainContentType}})
 
-    execute('POST').catch(response => {
-      expect(response).toEqual({
+    execute('POST').catch(error => {
+      expect(error).toEqual({
         status: 400,
         headers: {'content-type': textPlainContentType},
         data: expectedBody
@@ -132,8 +136,8 @@ describe('exchange', () => {
   it('should return all headers when response is of type text/plain', done => {
     fetch.once(expectedBody, {status: 401, headers: {'content-type': textPlainContentType, a: 'b'}})
 
-    execute('POST').catch(response => {
-      expect(response).toEqual({
+    execute('POST').catch(error => {
+      expect(error).toEqual({
         status: 401,
         headers: {'content-type': textPlainContentType, a: 'b'},
         data: expectedBody
@@ -145,8 +149,8 @@ describe('exchange', () => {
   it('should return all headers when response is of type application/json', done => {
     fetch.once('{"id": 1}', {status: 401, headers: {'content-type': jsonContentType, a: 'b'}})
 
-    execute('POST').catch(response => {
-      expect(response).toEqual({
+    execute('POST').catch(error => {
+      expect(error).toEqual({
         status: 401,
         headers: {'content-type': jsonContentType, a: 'b'},
         data: {id: 1}
@@ -156,14 +160,27 @@ describe('exchange', () => {
   })
 
   it('should return empty headers when http request failed for unknown reason', done => {
-    fetch.mockRejectOnce(new Error('expected error'))
+    fetch.mockRejectOnce(new Error('expected error1'))
+    fetch.mockRejectOnce(new Error('expected error2'))
 
-    execute('POST').catch(response => {
-      expect(response).toEqual({
-        data: 'Error: expected error',
+    execute('POST').catch(error => {
+      expect(error).toEqual({
+        data: 'Error: expected error2',
         headers: {},
         status: -1
       })
+      done()
+    })
+  })
+
+  it('should retry request after one second', done => {
+    fetch.mockRejectOnce(new Error('expected error1'))
+    fetch.mockRejectOnce(new Error('expected error2'))
+    const start = Date.now()
+
+    execute('POST').catch(() => {
+      const end = Date.now()
+      expect(end - start).toBeGreaterThanOrEqual(1000)
       done()
     })
   })

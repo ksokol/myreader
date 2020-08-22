@@ -72,8 +72,27 @@ function handleError(error) {
   )
 }
 
-export function exchange(params) {
+function doExchange(params) {
   return fetch(toRequest(params))
     .then(response => handleResponse(response))
     .catch(error => handleError(error))
+}
+
+function retryExchange(params) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      doExchange(params)
+        .then(response => resolve(response))
+        .catch(error => reject(error))
+    }, 1000)
+  })
+}
+
+export function exchange(params) {
+  return doExchange(params)
+    .catch(error => {
+      return error.status === -1 ?
+        retryExchange(params) :
+        Promise.reject(error)
+    })
 }
