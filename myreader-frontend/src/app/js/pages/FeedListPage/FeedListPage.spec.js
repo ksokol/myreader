@@ -7,8 +7,11 @@ import {flushPromises, rejected, resolved} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
+  ListLayout: ({listPanel}) => <div>{listPanel}</div>,
+}))
+
+jest.mock('../../components/FeedList/FeedList', () => ({
   FeedList: () => null,
-  ListLayout: ({listPanel}) => <div>{listPanel}</div>
 }))
 
 jest.mock('../../api', () => ({

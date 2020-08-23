@@ -21,6 +21,10 @@ function toSearch(queryParam) {
   return searchParams.toString()
 }
 
+/**
+ *
+ * @deprecated
+ */
 export const withLocationState = Component => {
 
   class WithLocationState extends React.Component {

@@ -6,15 +6,16 @@ import {Link} from 'react-router-dom'
 import {Icon} from '../Icon/Icon'
 import TimeAgo from '../TimeAgo/TimeAgo'
 import {ADMIN_FEED_URL} from '../../constants'
-import {withLocationState} from '../../contexts/locationState/withLocationState'
+import {useSearchParams} from '../../hooks/useSearchParams'
 
 function filterFeeds(feeds, q = '') {
   return q
-    ? feeds.filter(({title}) => title.toLowerCase().indexOf(q.toLowerCase()) !== -1)
+    ? feeds.filter(({title}) => title.toLowerCase().includes(q.toLowerCase()))
     : feeds
 }
 
-const FeedList = ({feeds, searchParams: {q}}) => {
+export function FeedList({feeds}) {
+  const {q} = useSearchParams()
   const filteredFeeds = filterFeeds(feeds, q)
 
   return (
@@ -50,10 +51,5 @@ FeedList.propTypes = {
       hasErrors: PropTypes.bool.isRequired,
       createdAt: PropTypes.string.isRequired
     })
-  ).isRequired,
-  searchParams: PropTypes.shape({
-    q: PropTypes.string
-  }).isRequired,
+  ).isRequired
 }
-
-export default withLocationState(FeedList)
