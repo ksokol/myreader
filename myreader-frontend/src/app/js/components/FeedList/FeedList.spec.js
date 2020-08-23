@@ -2,10 +2,10 @@ import React from 'react'
 import {mount} from 'enzyme'
 import {FeedList} from './FeedList'
 import {ADMIN_FEEDS_URL} from '../../constants'
-import {useSearchParams} from '../../hooks/useSearchParams'
+import {useSearchParams} from '../../hooks/router'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../hooks/useSearchParams', () => ({
+jest.mock('../../hooks/router', () => ({
   useSearchParams: jest.fn().mockReturnValue({})
 }))
 /* eslint-enable */

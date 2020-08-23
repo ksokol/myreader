@@ -6,7 +6,10 @@ import SubscriptionContext from '../../contexts/subscription/SubscriptionContext
 /* eslint-disable react/prop-types */
 jest.mock('../../components', () => ({
   SubscriptionList: () => null,
-  ListLayout: ({listPanel}) => <div>{listPanel}</div>
+}))
+
+jest.mock('../../components/ListLayout/ListLayout', () => ({
+  ListLayout: ({listPanel}) => <div>{listPanel}</div>,
 }))
 /* eslint-enable */
 

@@ -1,8 +1,8 @@
 import React from 'react'
-import {ListLayout} from '../../components'
 import {feedApi} from '../../api'
 import {toast} from '../../components/Toast'
 import {FeedList} from '../../components/FeedList/FeedList'
+import {ListLayout} from '../../components/ListLayout/ListLayout'
 
 export class FeedListPage extends React.Component {
 

@@ -11,7 +11,9 @@ jest.mock('../../components/EntryList/EntryList', () => ({
   EntryList: () => null
 }))
 
-jest.mock('../../components/ListLayout/ListLayout', () => ({listPanel}) => <div>{listPanel}</div>)
+jest.mock('../../components/ListLayout/ListLayout', () => ({
+  ListLayout: ({listPanel}) => <div>{listPanel}</div>
+}))
 
 jest.mock('../../contexts/locationState/withLocationState', () => ({
   withLocationState: Component => Component

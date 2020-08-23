@@ -1,12 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {EntryList as EntryListComponent, IconButton, ListLayout} from '../../components'
+import {EntryList as EntryListComponent, IconButton} from '../../components'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {withAutofocusEntry} from '../../components/EntryList/withAutofocusEntry'
 import {withEntriesFromApi} from '../../components/EntryList/withEntriesFromApi'
 import {useSettings} from '../../contexts/settings'
 import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
 import {useHotkeys} from '../../contexts/hotkeys'
+import {ListLayout} from '../../components/ListLayout/ListLayout'
 
 const EntryList = withEntriesFromApi(withAutofocusEntry(EntryListComponent))
 

@@ -2,69 +2,60 @@ import './ListLayout.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {SearchInput, IconButton} from '..'
-import {withLocationState} from '../../contexts/locationState/withLocationState'
+import {useSearchParams, useHistory} from '../../hooks/router'
 
-class ListLayout extends React.Component {
+export function ListLayout(props) {
+  const searchParams = useSearchParams()
+  const {push, reload} = useHistory()
 
-  static propTypes = {
-    className: PropTypes.string,
-    searchParams: PropTypes.shape({
-      q: PropTypes.string
-    }).isRequired,
-    actionPanel: PropTypes.node,
-    listPanel: PropTypes.node,
-    historyPush: PropTypes.func.isRequired,
-    historyReload: PropTypes.func.isRequired
-  }
-
-  onChange = q => {
-    this.props.historyPush({
+  const onChange = q => {
+    push({
       searchParams: {
-        ...this.props.searchParams,
+        ...searchParams,
         q
       }
     })
   }
 
-  render() {
-    const {
-      className,
-      actionPanel,
-      listPanel,
-      searchParams,
-      historyReload
-    } = this.props
+  const {
+    className,
+    actionPanel,
+    listPanel,
+  } = props
 
-    return (
+  return (
+    <div
+      className={`my-list-layout ${className}`}
+    >
       <div
-        className={`my-list-layout ${className}`}
+        className='my-list-layout__action-panel'
+      >
+        <SearchInput
+          className='my-list-layout__search-input'
+          onChange={onChange}
+          value={searchParams.q}
+        />
+        {actionPanel}
+        <IconButton
+          type='redo'
+          onClick={reload}
+        />
+      </div>
+      <div
+        className='my-list-layout__list-panel'
       >
         <div
-          className='my-list-layout__action-panel'
+          className='my-list-layout__list-content'
         >
-          <SearchInput
-            className='my-list-layout__search-input'
-            onChange={this.onChange}
-            value={searchParams.q}
-          />
-          {actionPanel}
-          <IconButton
-            type='redo'
-            onClick={historyReload}
-          />
-        </div>
-        <div
-          className='my-list-layout__list-panel'
-        >
-          <div
-            className='my-list-layout__list-content'
-          >
-            {listPanel}
-          </div>
+          {listPanel}
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
-export default withLocationState(ListLayout)
+ListLayout.propTypes = {
+  className: PropTypes.string,
+  actionPanel: PropTypes.node,
+  listPanel: PropTypes.node,
+}

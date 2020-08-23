@@ -1,6 +1,7 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import ListLayout from './ListLayout'
+import {ListLayout} from './ListLayout'
+import {useHistory} from '../../hooks/router'
 
 /* eslint-disable react/prop-types */
 jest.mock('..', () => ({
@@ -8,9 +9,21 @@ jest.mock('..', () => ({
   IconButton: () => <div />
 }))
 
-jest.mock('../../contexts/locationState/withLocationState', () => ({
-  withLocationState: Component => Component
-}))
+jest.mock('../../hooks/router', () => {
+  const push = jest.fn()
+  const reload = jest.fn()
+
+  return {
+    useSearchParams: jest.fn().mockReturnValue({
+      a: 'b',
+      q: 'q'
+    }),
+    useHistory: () => ({
+      push,
+      reload,
+    })
+  }
+})
 /* eslint-enable */
 
 describe('ListLayout', () => {
@@ -27,10 +40,6 @@ describe('ListLayout', () => {
 
   beforeEach(() => {
     props = {
-      searchParams: {
-        a: 'b',
-        q: 'q'
-      },
       historyReload: jest.fn(),
       historyPush: jest.fn()
     }
@@ -40,10 +49,10 @@ describe('ListLayout', () => {
     expect(createWrapper().find('SearchInput').prop('value')).toEqual('q')
   })
 
-  it('should trigger prop function "historyPush" when search input value changed', () => {
+  it('should trigger history push when search input value changed', () => {
     createWrapper().find('SearchInput').props().onChange('changed q')
 
-    expect(props.historyPush).toHaveBeenCalledWith({
+    expect(useHistory().push).toHaveBeenCalledWith({
       searchParams: {
         a: 'b',
         q: 'changed q'
@@ -51,10 +60,10 @@ describe('ListLayout', () => {
     })
   })
 
-  it('should trigger prop function "historyReplace" when refresh icon button clicked', () => {
+  it('should trigger history reload when refresh icon button clicked', () => {
     createWrapper().find('IconButton').props().onClick()
 
-    expect(props.historyReload).toHaveBeenCalled()
+    expect(useHistory().reload).toHaveBeenCalled()
   })
 
   it('should pass expected props to icon button component', () => {

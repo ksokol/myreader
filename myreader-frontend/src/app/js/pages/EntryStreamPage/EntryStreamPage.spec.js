@@ -9,7 +9,10 @@ import {useHotkeys} from '../../contexts/hotkeys'
 jest.mock('../../components', () => ({
   EntryList: ({children}) => <div>{children}</div>,
   IconButton: ({children}) => <div>{children}</div>,
-  ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>
+}))
+
+jest.mock('../../components/ListLayout/ListLayout', () => ({
+  ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>,
 }))
 
 jest.mock('../../contexts/locationState/withLocationState', () => ({

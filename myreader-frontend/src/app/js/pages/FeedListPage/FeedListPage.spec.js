@@ -6,7 +6,7 @@ import {toast} from '../../components/Toast'
 import {flushPromises, rejected, resolved} from '../../shared/test-utils'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../components', () => ({
+jest.mock('../../components/ListLayout/ListLayout', () => ({
   ListLayout: ({listPanel}) => <div>{listPanel}</div>,
 }))
 

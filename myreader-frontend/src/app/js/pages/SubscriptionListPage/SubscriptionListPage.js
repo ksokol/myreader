@@ -1,6 +1,7 @@
 import React from 'react'
-import {ListLayout, SubscriptionList} from '../../components'
+import {SubscriptionList} from '../../components'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
+import {ListLayout} from '../../components/ListLayout/ListLayout'
 
 export const SubscriptionListPage = () => {
   return (
