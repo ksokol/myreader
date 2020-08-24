@@ -15,7 +15,7 @@ function isVisible(searchParams, item) {
 
 function isSelected(searchParams, tag, uuid) {
   const feedUuidEqual = searchParams.feedUuidEqual || null
-  const feedTagEqual = searchParams.feedTagEqual || null
+  const feedTagEqual = searchParams.feedTagEqual
   return feedUuidEqual === uuid && feedTagEqual === tag
 }
 
