@@ -15,7 +15,9 @@ import {useSettings} from '../../contexts/settings'
 import {useSecurity} from '../../contexts/security'
 
 /* eslint-disable react/prop-types */
-jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => () => null) //eslint-disable-line unicorn/consistent-function-scoping
+jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => ({
+  SubscriptionNavigationItem: () => null
+}))
 
 jest.mock('../../contexts/settings', () => ({
   useSettings: jest.fn()

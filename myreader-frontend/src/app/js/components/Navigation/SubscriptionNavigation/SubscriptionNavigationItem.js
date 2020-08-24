@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {NavigationItem} from '..'
 import {ENTRIES_URL} from '../../../constants'
-import {withLocationState} from '../../../contexts/locationState/withLocationState'
+import {useSearchParams} from '../../../hooks/router'
 
 function isOpen(searchParams, item) {
   return searchParams.feedTagEqual === item.tag
@@ -14,7 +14,9 @@ function isVisible(searchParams, item) {
 }
 
 function isSelected(searchParams, tag, uuid) {
-  return searchParams.feedUuidEqual === uuid && searchParams.feedTagEqual === tag
+  const feedUuidEqual = searchParams.feedUuidEqual || null
+  const feedTagEqual = searchParams.feedTagEqual || null
+  return feedUuidEqual === uuid && feedTagEqual === tag
 }
 
 function generateEntriesPath(feedTagEqual, feedUuidEqual) {
@@ -38,8 +40,9 @@ function generateEntriesPath(feedTagEqual, feedUuidEqual) {
   return {pathname: ENTRIES_URL}
 }
 
-const SubscriptionNavigationItem = props => {
-  const {item, searchParams, onClick} = props
+export function SubscriptionNavigationItem(props) {
+  const searchParams = useSearchParams()
+  const {item, onClick} = props
 
   return [
     <NavigationItem
@@ -87,11 +90,5 @@ SubscriptionNavigationItem.propTypes = {
       }).isRequired
     )
   }).isRequired,
-  searchParams: PropTypes.shape({
-    feedTagEqual: PropTypes.string,
-    feedUuidEqual: PropTypes.string
-  }).isRequired,
   onClick: PropTypes.func.isRequired
 }
-
-export default withLocationState(SubscriptionNavigationItem)

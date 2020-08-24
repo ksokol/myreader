@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import createSubscriptionNavigation from './SubscriptionNavigation/createSubscriptionNavigation'
 import NavigationItem from './NavigationItem'
-import SubscriptionNavigationItem from './SubscriptionNavigation/SubscriptionNavigationItem'
+import {SubscriptionNavigationItem} from './SubscriptionNavigation/SubscriptionNavigationItem'
 import {
   ADMIN_FEEDS_URL,
   ADMIN_OVERVIEW_URL,
