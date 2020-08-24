@@ -5,7 +5,7 @@ import {generatePath} from 'react-router'
 import {Link} from 'react-router-dom'
 import TimeAgo from '../TimeAgo/TimeAgo'
 import {SUBSCRIPTION_URL} from '../../constants'
-import {withLocationState} from '../../contexts/locationState/withLocationState'
+import {useSearchParams} from '../../hooks/router'
 
 function filterSubscriptions(subscriptions, q = '') {
   return q
@@ -13,7 +13,8 @@ function filterSubscriptions(subscriptions, q = '') {
     : subscriptions
 }
 
-const SubscriptionList = ({subscriptions, searchParams: {q}}) => {
+export function SubscriptionList({subscriptions}) {
+  const {q} = useSearchParams()
   const filteredSubscriptions = filterSubscriptions(subscriptions, q)
 
   return (
@@ -50,9 +51,4 @@ SubscriptionList.propTypes = {
       createdAt: PropTypes.string.isRequired
     })
   ).isRequired,
-  searchParams: PropTypes.shape({
-    q: PropTypes.string
-  }).isRequired
 }
-
-export default withLocationState(SubscriptionList)

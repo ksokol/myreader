@@ -18,7 +18,10 @@ const withRouter = WrappedComponent => {
 }
 /* eslint-enable */
 
+const useLocation = () => ({})
+
 export {
   withRouter,
-  generatePath
+  generatePath,
+  useLocation
 }

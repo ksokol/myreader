@@ -3,7 +3,7 @@ import {mount} from 'enzyme'
 import {SubscriptionListPage} from './SubscriptionListPage'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types, react/display-name */
 jest.mock('../../components', () => ({
   SubscriptionList: () => null,
 }))
@@ -26,8 +26,8 @@ describe('SubscriptionListPage', () => {
   beforeEach(() => {
     props = {
       subscriptions: [
-        {uuid: '1', title: 'title1'},
-        {uuid: '2', title: 'title2'}
+        {uuid: '1', title: 'title1', createdAt: 'createdAt1'},
+        {uuid: '2', title: 'title2', createdAt: 'createdAt2'},
       ]
     }
   })
@@ -35,8 +35,8 @@ describe('SubscriptionListPage', () => {
   it('should initialize list panel component with given props', () => {
     expect(createWrapper().find('SubscriptionList').props()).toEqual({
       subscriptions: [
-        {uuid: '1', title: 'title1'},
-        {uuid: '2', title: 'title2'}
+        {uuid: '1', title: 'title1', createdAt: 'createdAt1'},
+        {uuid: '2', title: 'title2', createdAt: 'createdAt2'},
       ]
     })
   })

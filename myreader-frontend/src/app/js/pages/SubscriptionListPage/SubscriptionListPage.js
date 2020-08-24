@@ -1,5 +1,5 @@
 import React from 'react'
-import {SubscriptionList} from '../../components'
+import {SubscriptionList} from '../../components/SubscriptionList/SubscriptionList'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
 

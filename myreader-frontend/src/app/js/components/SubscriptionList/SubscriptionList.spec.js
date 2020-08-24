@@ -1,11 +1,12 @@
 import React from 'react'
 import {shallow} from 'enzyme'
-import SubscriptionList from './SubscriptionList'
+import {SubscriptionList} from './SubscriptionList'
 import {SUBSCRIPTIONS_URL} from '../../constants'
+import {useSearchParams} from '../../hooks/router'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../contexts/locationState/withLocationState', () => ({
-  withLocationState: Component => Component
+jest.mock('../../hooks/router', () => ({
+  useSearchParams: jest.fn().mockReturnValue({})
 }))
 /* eslint-enable */
 
@@ -21,7 +22,6 @@ describe('SubscriptionList', () => {
         {uuid: '1', title: 'title1', createdAt: '1'},
         {uuid: '2', title: 'title2', createdAt: '2'}
       ],
-      searchParams: {}
     }
   })
 
@@ -33,7 +33,7 @@ describe('SubscriptionList', () => {
   })
 
   it('filteredBySearchSubscriptionsSelector should return first subscription matching query "title1"', () => {
-    props.searchParams.q = 'title1'
+    useSearchParams.mockReturnValue({q: 'title1'})
     const links = createWrapper().find('Link')
 
     expect(links).toHaveLength(1)
@@ -41,7 +41,7 @@ describe('SubscriptionList', () => {
   })
 
   it('filteredBySearchSubscriptionsSelector should return second subscription matching query "title2"', () => {
-    props.searchParams.q = 'title2'
+    useSearchParams.mockReturnValue({q: 'title2'})
     const links = createWrapper().find('Link')
 
     expect(links).toHaveLength(1)
@@ -49,7 +49,7 @@ describe('SubscriptionList', () => {
   })
 
   it('filteredBySearchSubscriptionsSelector should return first subscription matching query "TITLE1"', () => {
-    props.searchParams.q = 'TITLE1'
+    useSearchParams.mockReturnValue({q: 'TITLE1'})
     const links = createWrapper().find('Link')
 
     expect(links).toHaveLength(1)
@@ -57,7 +57,7 @@ describe('SubscriptionList', () => {
   })
 
   it('filteredBySearchSubscriptionsSelector should return two subscriptions matching query "titl"', () => {
-    props.searchParams.q = 'titl'
+    useSearchParams.mockReturnValue({q: 'titl'})
     const links = createWrapper().find('Link')
 
     expect(links).toHaveLength(2)
@@ -66,7 +66,7 @@ describe('SubscriptionList', () => {
   })
 
   it('filteredBySearchSubscriptionsSelector should return no subscriptions for query "other"', () => {
-    props.searchParams.q = 'other'
+    useSearchParams.mockReturnValue({q: 'other'})
     const links = createWrapper().find('Link')
 
     expect(links).toHaveLength(0)
