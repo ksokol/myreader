@@ -4,6 +4,7 @@ import {EntryStreamPage} from './EntryStreamPage'
 import {useSettings} from '../../contexts/settings'
 import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
 import {useHotkeys} from '../../contexts/hotkeys'
+import {useSearchParams} from '../../hooks/router'
 
 /* eslint-disable react/prop-types, react/display-name */
 jest.mock('../../components', () => ({
@@ -15,8 +16,10 @@ jest.mock('../../components/ListLayout/ListLayout', () => ({
   ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>,
 }))
 
-jest.mock('../../contexts/locationState/withLocationState', () => ({
-  withLocationState: Component => Component
+jest.mock('../../hooks/router', () => ({
+  useSearchParams: jest.fn().mockReturnValue({
+    q: 'expectedQ'
+  })
 }))
 
 jest.mock('../../contexts/settings', () => ({
@@ -56,21 +59,9 @@ const buttonNext = 'IconButton[type="chevron-right"]'
 
 describe('EntryStreamPage', () => {
 
-  let props
-
   const createWrapper = () => {
-    return mount(
-      <EntryStreamPage {...props} />
-    )
+    return mount(<EntryStreamPage />)
   }
-
-  beforeEach(() => {
-    props = {
-      searchParams: {
-        q: 'expectedQ'
-      },
-    }
-  })
 
   it('should not render next and previous buttons when media breakpoint is not desktop', () => {
     useMediaBreakpoint.mockReturnValueOnce(() => ({
@@ -103,7 +94,10 @@ describe('EntryStreamPage', () => {
   })
 
   it('should pass expected props to entry list component with seenEqual set to true and prop "searchParams.seenEqual" set to true', () => {
-    props.searchParams.seenEqual = true
+    useSearchParams.mockReturnValue({
+      q: 'expectedQ',
+      seenEqual: true,
+    })
 
     expect(createWrapper().find('EntryList').prop('query')).toEqual({
       q: 'expectedQ',
