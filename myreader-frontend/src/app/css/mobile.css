@@ -54,6 +54,10 @@ input {
     flex-direction: column;
 }
 
+.flex-grow {
+    flex-grow: 1;
+}
+
 .w-full {
     width: 100%;
 }

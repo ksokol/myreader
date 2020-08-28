@@ -1,6 +1,6 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import SearchInput from './SearchInput'
+import {SearchInput} from './SearchInput'
 import withDebounce from '../../components/Input/withDebounce'
 
 /* eslint-disable react/prop-types, react/display-name */

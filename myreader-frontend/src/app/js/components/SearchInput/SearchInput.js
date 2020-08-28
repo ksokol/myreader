@@ -8,8 +8,10 @@ import {isValuePresent} from '../../shared/utils'
 
 const DebounceInput = withDebounce(Input, 250)
 
-const SearchInput = props => {
-  const onChange = ({target: {value}}) => props.onChange(value.trim() === '' ? undefined : value)
+export function SearchInput(props) {
+  const onChange = ({target}) => {
+    props.onChange(target.value.trim() === '' ? undefined : target.value)
+  }
   const value = isValuePresent(props.value) ? props.value : ''
 
   return (
@@ -32,5 +34,3 @@ SearchInput.propTypes = {
   className: PropTypes.string,
   onChange: PropTypes.func.isRequired,
 }
-
-export default SearchInput

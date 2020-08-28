@@ -6,10 +6,6 @@
 .my-list-layout__action-panel {
     align-items: center;
     display: flex;
-}
-
-.my-list-layout__search-input {
-    flex-grow: 1;
     padding: 10px;
 }
 

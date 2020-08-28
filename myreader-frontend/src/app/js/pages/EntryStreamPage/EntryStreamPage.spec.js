@@ -4,11 +4,10 @@ import {EntryStreamPage} from './EntryStreamPage'
 import {useSettings} from '../../contexts/settings'
 import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
 import {useHotkeys} from '../../contexts/hotkeys'
-import {useSearchParams} from '../../hooks/router'
+import {useHistory, useSearchParams} from '../../hooks/router'
 
 /* eslint-disable react/prop-types, react/display-name */
 jest.mock('../../components', () => ({
-  EntryList: ({children}) => <div>{children}</div>,
   IconButton: ({children}) => <div>{children}</div>,
 }))
 
@@ -16,11 +15,25 @@ jest.mock('../../components/ListLayout/ListLayout', () => ({
   ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>,
 }))
 
-jest.mock('../../hooks/router', () => ({
-  useSearchParams: jest.fn().mockReturnValue({
-    q: 'expectedQ'
-  })
+jest.mock('../../components/EntryList/EntryList', () => ({
+  EntryList: ({children}) => <div>{children}</div>,
 }))
+
+jest.mock('../../hooks/router', () => {
+  const push = jest.fn()
+  const reload = jest.fn()
+
+  return {
+    useSearchParams: jest.fn().mockReturnValue({
+      feedTagEqual: 'a',
+      q: 'expectedQ',
+    }),
+    useHistory: () => ({
+      push,
+      reload,
+    })
+  }
+})
 
 jest.mock('../../contexts/settings', () => ({
   useSettings: jest.fn().mockReturnValue({
@@ -52,6 +65,22 @@ jest.mock('../../components/EntryList/withAutofocusEntry', () => ({
 jest.mock('../../components/EntryList/withEntriesFromApi', () => ({
   withEntriesFromApi: Component => Component
 }))
+
+jest.mock('../../hooks/router', () => {
+  const push = jest.fn()
+  const reload = jest.fn()
+
+  return {
+    useSearchParams: jest.fn().mockReturnValue({
+      a: 'b',
+      q: 'q'
+    }),
+    useHistory: () => ({
+      push,
+      reload,
+    })
+  }
+})
 /* eslint-enable */
 
 const buttonPrevious = 'IconButton[type="chevron-left"]'
@@ -81,12 +110,13 @@ describe('EntryStreamPage', () => {
   })
 
   it('should pass expected props to entry list component with seenEqual set to "*" and prop "showUnseenEntries" set to false', () => {
-    useSettings.mockReturnValue({
+    useSettings.mockReturnValueOnce({
       pageSize: 2,
       showUnseenEntries: false,
     })
 
     expect(createWrapper().find('EntryList').prop('query')).toEqual({
+      feedTagEqual: 'a',
       q: 'expectedQ',
       seenEqual: '*',
       size: 2
@@ -94,7 +124,7 @@ describe('EntryStreamPage', () => {
   })
 
   it('should pass expected props to entry list component with seenEqual set to true and prop "searchParams.seenEqual" set to true', () => {
-    useSearchParams.mockReturnValue({
+    useSearchParams.mockReturnValueOnce({
       q: 'expectedQ',
       seenEqual: true,
     })
@@ -116,5 +146,55 @@ describe('EntryStreamPage', () => {
     createWrapper().find(buttonNext).props().onClick()
 
     expect(useHotkeys().onKeyUp).toHaveBeenCalledWith({key: 'ArrowRight'})
+  })
+
+  it('should pass expected props to search input component', () => {
+    expect(createWrapper().find('SearchInput').prop('value')).toEqual('expectedQ')
+  })
+
+  it('should trigger history push when search input value changed', () => {
+    const wrapper = createWrapper()
+    wrapper.find('SearchInput').props().onChange('changed q')
+    wrapper.mount()
+    wrapper.update()
+
+    expect(useHistory().push).toHaveBeenCalledWith({
+      searchParams: {
+        feedTagEqual: 'a',
+        q: 'changed q'
+      }
+    })
+  })
+
+  it('should trigger history push when search params and search input value changed', done => {
+    jest.useRealTimers()
+    const wrapper = createWrapper()
+
+    useSearchParams.mockReturnValueOnce({
+      feedTagEqual: 'b',
+    })
+    wrapper.mount()
+
+    wrapper.find('input[name="search-input"]').simulate('change', {
+      target: {
+        value: 'changed q'
+      }
+    })
+
+    setTimeout(() => {
+      expect(useHistory().push).toHaveBeenCalledWith({
+        searchParams: {
+          feedTagEqual: 'b',
+          q: 'changed q'
+        }
+      })
+      done()
+    }, 250)
+  })
+
+  it('should trigger history reload when refresh icon button clicked', () => {
+    createWrapper().find('[type="redo"]').props().onClick()
+
+    expect(useHistory().reload).toHaveBeenCalled()
   })
 })

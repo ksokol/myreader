@@ -1,12 +1,14 @@
-import React from 'react'
-import {EntryList as EntryListComponent, IconButton} from '../../components'
+import React, {useEffect, useRef} from 'react'
+import {IconButton} from '../../components'
 import {withAutofocusEntry} from '../../components/EntryList/withAutofocusEntry'
 import {withEntriesFromApi} from '../../components/EntryList/withEntriesFromApi'
 import {useSettings} from '../../contexts/settings'
 import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
 import {useHotkeys} from '../../contexts/hotkeys'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
-import {useSearchParams} from '../../hooks/router'
+import {useHistory, useSearchParams} from '../../hooks/router'
+import {SearchInput} from '../../components/SearchInput/SearchInput'
+import {EntryList as EntryListComponent} from '../../components/EntryList/EntryList'
 
 const EntryList = withEntriesFromApi(withAutofocusEntry(EntryListComponent))
 
@@ -15,22 +17,51 @@ export function EntryStreamPage() {
   const {mediaBreakpoint} = useMediaBreakpoint()
   const {onKeyUp} = useHotkeys()
   const searchParams = useSearchParams()
+  const ref = useRef(searchParams)
+  const {push, reload} = useHistory()
 
   const showAll = showUnseenEntries === true ? false : '*'
   const seenEqual = searchParams.seenEqual === undefined ? showAll : searchParams.seenEqual
   const query = {...searchParams, seenEqual, size}
 
-  const actionPanel = mediaBreakpoint === 'desktop' ?
+  useEffect(() => {
+    ref.current = searchParams
+  }, [searchParams])
+
+  const onChange = q => {
+    push({
+      searchParams: {
+        ...searchParams,
+        ...ref.current,
+        q
+      }
+    })
+  }
+
+  const actionPanel =
     <React.Fragment>
-      <IconButton
-        type='chevron-left'
-        onClick={() => onKeyUp({key: 'ArrowLeft'})}
+      <SearchInput
+        className='flex-grow'
+        onChange={onChange}
+        value={searchParams.q}
       />
+      {mediaBreakpoint === 'desktop' ?
+        <React.Fragment>
+          <IconButton
+            type='chevron-left'
+            onClick={() => onKeyUp({key: 'ArrowLeft'})}
+          />
+          <IconButton
+            type='chevron-right'
+            onClick={() => onKeyUp({key: 'ArrowRight'})}
+          />
+        </React.Fragment> : null
+      }
       <IconButton
-        type='chevron-right'
-        onClick={() => onKeyUp({key: 'ArrowRight'})}
+        type='redo'
+        onClick={reload}
       />
-    </React.Fragment> : null
+    </React.Fragment>
 
   const listPanel =
     <EntryList

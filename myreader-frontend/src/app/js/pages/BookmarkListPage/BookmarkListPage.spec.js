@@ -5,6 +5,7 @@ import BookmarkListPage from './BookmarkListPage'
 import {flushPromises, rejected, resolved} from '../../shared/test-utils'
 import {entryApi} from '../../api'
 import {toast} from '../../components/Toast'
+import {useHistory, useSearchParams} from '../../hooks/router'
 
 /* eslint-disable react/prop-types, react/display-name */
 jest.mock('../../components/EntryList/EntryList', () => ({
@@ -12,7 +13,7 @@ jest.mock('../../components/EntryList/EntryList', () => ({
 }))
 
 jest.mock('../../components/ListLayout/ListLayout', () => ({
-  ListLayout: ({listPanel}) => <div>{listPanel}</div>
+  ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>
 }))
 
 jest.mock('../../contexts/locationState/withLocationState', () => ({
@@ -36,6 +37,26 @@ jest.mock('../../components/Toast', () => ({
 jest.mock('../../components/EntryList/withEntriesFromApi', () => ({
   withEntriesFromApi: Component => Component
 }))
+
+jest.mock('../../hooks/router', () => {
+  const push = jest.fn()
+  const reload = jest.fn()
+
+  return {
+    useSearchParams: jest.fn().mockReturnValue({
+      entryTagEqual: 'a',
+      q: 'expectedQ'
+    }),
+    useHistory: () => ({
+      push,
+      reload,
+    })
+  }
+})
+
+jest.mock('../../components', () => ({
+  IconButton: ({children}) => <div>{children}</div>,
+}))
 /* eslint-enable */
 
 const expectedTag = 'expected tag'
@@ -45,11 +66,18 @@ describe('BookmarkListPage', () => {
   let props
 
   const createWrapper = async (onMount = resolved(['tag3', 'tag4'])) => {
-    entryApi.fetchEntryTags = onMount
+    let wrapper
 
-    const wrapper = mount(<BookmarkListPage {...props} />)
-    await flushPromises()
+    await act(async () => {
+      entryApi.fetchEntryTags = onMount
+
+      wrapper = mount(<BookmarkListPage {...props} />)
+      await flushPromises()
+      wrapper.update()
+    })
+    wrapper.mount()
     wrapper.update()
+
     return wrapper
   }
 
@@ -67,12 +95,7 @@ describe('BookmarkListPage', () => {
   })
 
   it('should pass expected props to chips component on mount when call to entryApi.fetchEntryTags succeeded', async () => {
-    let wrapper
-
-    await act(async () => {
-      wrapper = await createWrapper()
-    })
-    wrapper.update()
+    const wrapper = await createWrapper()
 
     expect(wrapper.find('Chips').props()).toEqual(expect.objectContaining({
       values: ['tag3', 'tag4'],
@@ -87,12 +110,7 @@ describe('BookmarkListPage', () => {
   })
 
   it('should pass expected props to entry list component', async () => {
-    let wrapper
-
-    await act(async () => {
-      wrapper = await createWrapper()
-    })
-    wrapper.update()
+    const wrapper = await createWrapper()
 
     expect(wrapper.find('EntryList').prop('query')).toEqual({
       entryTagEqual: expectedTag,
@@ -104,12 +122,7 @@ describe('BookmarkListPage', () => {
 
   it('should pass expected props to entry list component with prop "searchParam.entryTagEqual" undefined', async () => {
     delete props.searchParams.entryTagEqual
-    let wrapper
-
-    await act(async () => {
-      wrapper = await createWrapper()
-    })
-    wrapper.update()
+    const wrapper = await createWrapper()
 
     expect(wrapper.find('EntryList').prop('query')).toEqual({
       q: 'expectedQ',
@@ -119,12 +132,7 @@ describe('BookmarkListPage', () => {
   })
 
   it('should return expected prop from Chips prop function "renderItem"', async () => {
-    let wrapper
-
-    await act(async () => {
-      wrapper = await createWrapper()
-    })
-    wrapper.update()
+    const wrapper = await createWrapper()
 
     expect(wrapper.find('Chips').props().renderItem('tag').props).toEqual(expect.objectContaining({
       to: {
@@ -135,12 +143,8 @@ describe('BookmarkListPage', () => {
   })
 
   it('should trigger entryApi.fetchEntryTags when prop "locationStateStamp" changed', async () => {
-    let wrapper
+    const wrapper = await createWrapper()
 
-    await act(async () => {
-      wrapper = await createWrapper()
-    })
-    wrapper.update()
     entryApi.fetchEntryTags = rejected()
     wrapper.setProps({locationStateStamp: 1})
 
@@ -148,15 +152,66 @@ describe('BookmarkListPage', () => {
   })
 
   it('should not trigger entryApi.fetchEntryTags when prop "locationChanged" is set to true', async () => {
-    let wrapper
+    const wrapper = await createWrapper()
 
-    await act(async () => {
-      wrapper = await createWrapper()
-    })
-    wrapper.update()
     entryApi.fetchEntryTags.mockClear()
     wrapper.setProps({locationChanged: true})
 
     expect(entryApi.fetchEntryTags).not.toHaveBeenCalled()
+  })
+
+  it('should pass expected props to search input component', async () => {
+    const wrapper = await createWrapper()
+
+    expect(wrapper.find('SearchInput').prop('value')).toEqual('expectedQ')
+  })
+
+  it('should trigger history push when search input value changed', async () => {
+    const wrapper = await createWrapper()
+
+    wrapper.find('SearchInput').props().onChange('changed q')
+    wrapper.mount()
+    wrapper.update()
+
+    expect(useHistory().push).toHaveBeenCalledWith({
+      searchParams: {
+        entryTagEqual: 'a',
+        q: 'changed q'
+      }
+    })
+  })
+
+  it('should trigger history push when search params and search input value changed', async (done) => {
+    jest.useRealTimers()
+    const wrapper = await createWrapper()
+
+    useSearchParams.mockReturnValueOnce({
+      entryTagEqual: 'b',
+    })
+    wrapper.mount()
+
+    wrapper.find('input[name="search-input"]').simulate('change', {
+      target: {
+        value: 'changed q'
+      }
+    })
+
+    setTimeout(() => {
+      expect(useHistory().push).toHaveBeenCalledWith({
+        searchParams: {
+          entryTagEqual: 'b',
+          q: 'changed q'
+        }
+      })
+      done()
+    }, 250)
+  })
+
+  it('should trigger history reload when refresh icon button clicked', async () => {
+    const wrapper = await createWrapper()
+
+    wrapper.find('[type="redo"]').props().onClick()
+
+    expect(useHistory().reload).toHaveBeenCalled()
   })
 })
