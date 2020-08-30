@@ -1,7 +1,7 @@
 import React from 'react'
 import {act} from 'react-dom/test-utils'
 import {mount} from 'enzyme'
-import BookmarkListPage from './BookmarkListPage'
+import {BookmarkListPage} from './BookmarkListPage'
 import {flushPromises, rejected, resolved} from '../../shared/test-utils'
 import {entryApi} from '../../api'
 import {toast} from '../../components/Toast'
@@ -16,10 +16,6 @@ jest.mock('../../components/EntryList/EntryList', () => ({
 
 jest.mock('../../components/ListLayout/ListLayout', () => ({
   ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>
-}))
-
-jest.mock('../../contexts/locationState/withLocationState', () => ({
-  withLocationState: Component => Component
 }))
 
 jest.mock('../../contexts/settings', () => ({
@@ -178,22 +174,10 @@ describe('BookmarkListPage', () => {
     }))
   })
 
-  it('should trigger entryApi.fetchEntryTags when prop "locationStateStamp" changed', async () => {
-    const wrapper = await createWrapper()
-
-    entryApi.fetchEntryTags = rejected()
-    wrapper.setProps({locationStateStamp: 1})
+  it('should trigger entryApi.fetchEntryTags on mount', async () => {
+    await createWrapper()
 
     expect(entryApi.fetchEntryTags).toHaveBeenCalled()
-  })
-
-  it('should not trigger entryApi.fetchEntryTags when prop "locationChanged" is set to true', async () => {
-    const wrapper = await createWrapper()
-
-    entryApi.fetchEntryTags.mockClear()
-    wrapper.setProps({locationChanged: true})
-
-    expect(entryApi.fetchEntryTags).not.toHaveBeenCalled()
   })
 
   it('should pass expected props to search input component', async () => {
@@ -247,7 +231,9 @@ describe('BookmarkListPage', () => {
   it('should trigger history reload when refresh icon button clicked', async () => {
     const wrapper = await createWrapper()
 
-    wrapper.find('[type="redo"]').props().onClick()
+    await act(async () => {
+      await wrapper.find('[type="redo"]').props().onClick()
+    })
 
     expect(useHistory().reload).toHaveBeenCalled()
   })
@@ -256,9 +242,12 @@ describe('BookmarkListPage', () => {
     const wrapper = await createWrapper()
     useEntries().fetchEntries.mockClear()
 
-    wrapper.find('[type="redo"]').props().onClick()
+    await act(async () => {
+      wrapper.find('[type="redo"]').props().onClick()
+    })
 
     expect(useEntries().clearEntries).toHaveBeenCalledWith()
+    expect(entryApi.fetchEntryTags).toHaveBeenCalled()
     expect(useEntries().fetchEntries).toHaveBeenCalledWith({
       query: {
         entryTagEqual: expectedTag,

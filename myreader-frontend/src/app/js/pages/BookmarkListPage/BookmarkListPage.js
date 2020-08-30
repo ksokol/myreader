@@ -1,11 +1,9 @@
 import './BookmarkListPage.css'
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react'
-import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
 import {Chips} from '../../components/Chips/Chips'
 import {EntryList} from '../../components/EntryList/EntryList'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
-import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {BOOKMARK_URL} from '../../constants'
 import {entryApi} from '../../api'
 import {toast} from '../../components/Toast'
@@ -15,7 +13,7 @@ import {useHistory, useSearchParams} from '../../hooks/router'
 import {SearchInput} from '../../components/SearchInput/SearchInput'
 import {useEntries} from '../../hooks/entries'
 
-function BookmarkListPage(props) {
+export function BookmarkListPage() {
   const [entryTags, setEntryTags] = useState([])
   const {pageSize} = useSettings()
   const searchParams = useSearchParams()
@@ -54,7 +52,7 @@ function BookmarkListPage(props) {
 
   useEffect(() => {
     fetchEntryTags()
-  }, [props.locationStateStamp, fetchEntryTags])
+  }, [fetchEntryTags])
 
   const onChange = value => {
     clearEntries()
@@ -69,6 +67,7 @@ function BookmarkListPage(props) {
 
   const refresh = () => {
     clearEntries()
+    fetchEntryTags()
     fetchEntries({query})
     reload()
   }
@@ -117,9 +116,3 @@ function BookmarkListPage(props) {
     />
   )
 }
-
-BookmarkListPage.propTypes = {
-  locationStateStamp: PropTypes.number.isRequired,
-}
-
-export default withLocationState(BookmarkListPage)
