@@ -6,6 +6,8 @@ import {flushPromises, rejected, resolved} from '../../shared/test-utils'
 import {entryApi} from '../../api'
 import {toast} from '../../components/Toast'
 import {useHistory, useSearchParams} from '../../hooks/router'
+import {useEntries} from '../../hooks/entries'
+import {useSettings} from '../../contexts/settings'
 
 /* eslint-disable react/prop-types, react/display-name */
 jest.mock('../../components/EntryList/EntryList', () => ({
@@ -34,17 +36,13 @@ jest.mock('../../components/Toast', () => ({
   toast: jest.fn()
 }))
 
-jest.mock('../../components/EntryList/withEntriesFromApi', () => ({
-  withEntriesFromApi: Component => Component
-}))
-
 jest.mock('../../hooks/router', () => {
   const push = jest.fn()
   const reload = jest.fn()
 
   return {
     useSearchParams: jest.fn().mockReturnValue({
-      entryTagEqual: 'a',
+      entryTagEqual: 'expected tag',
       q: 'expectedQ'
     }),
     useHistory: () => ({
@@ -57,9 +55,16 @@ jest.mock('../../hooks/router', () => {
 jest.mock('../../components', () => ({
   IconButton: ({children}) => <div>{children}</div>,
 }))
+
+jest.mock('../../hooks/entries', () => {
+  return {
+    useEntries: jest.fn()
+  }
+})
 /* eslint-enable */
 
 const expectedTag = 'expected tag'
+const expectedQ = 'expectedQ'
 
 describe('BookmarkListPage', () => {
 
@@ -83,11 +88,15 @@ describe('BookmarkListPage', () => {
 
   beforeEach(() => {
     toast.mockClear()
+    useEntries.mockReturnValue({
+      fetchEntries: jest.fn(),
+      clearEntries: jest.fn(),
+    })
 
     props = {
       searchParams: {
         entryTagEqual: expectedTag,
-        q: 'expectedQ'
+        q: expectedQ
       },
       historyReplace: jest.fn(),
       locationStateStamp: 0,
@@ -109,25 +118,52 @@ describe('BookmarkListPage', () => {
     expect(toast).toHaveBeenCalledWith('expected error', {error: true})
   })
 
-  it('should pass expected props to entry list component', async () => {
-    const wrapper = await createWrapper()
+  it('should fetch entries with seenEqual set to "*"', async () => {
+    await createWrapper()
 
-    expect(wrapper.find('EntryList').prop('query')).toEqual({
-      entryTagEqual: expectedTag,
-      q: 'expectedQ',
-      seenEqual: '*',
-      size: 2
+    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
+      query: {
+        entryTagEqual: expectedTag,
+        q: expectedQ,
+        seenEqual: '*',
+        size: 2
+      }
     })
   })
 
-  it('should pass expected props to entry list component with prop "searchParam.entryTagEqual" undefined', async () => {
-    delete props.searchParams.entryTagEqual
+  it('should fetch entries with prop "searchParam.entryTagEqual" undefined', async () => {
+    useSearchParams.mockReturnValueOnce({
+      q: expectedQ,
+    })
+    await createWrapper()
+
+    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
+      query: {
+        q: expectedQ,
+        seenEqual: '',
+        size: 2
+      }
+    })
+  })
+
+  it('should pass expected props to entry list component', async () => {
+    const expected = {
+      entries: [{uuid: '1'}, {uuid: '2'}],
+      links: {a: 'b'},
+      loading: true,
+      fetchEntries: jest.fn(),
+      changeEntry: jest.fn(),
+      onLoadMore: jest.fn()
+    }
+    useEntries.mockReturnValue(expected)
     const wrapper = await createWrapper()
 
-    expect(wrapper.find('EntryList').prop('query')).toEqual({
-      q: 'expectedQ',
-      seenEqual: '',
-      size: 2
+    expect(wrapper.find('EntryList').props()).toEqual({
+      entries: [{uuid: '1'}, {uuid: '2'}],
+      links: {a: 'b'},
+      loading: true,
+      onChangeEntry: expected.changeEntry,
+      onLoadMore: expected.fetchEntries,
     })
   })
 
@@ -163,7 +199,7 @@ describe('BookmarkListPage', () => {
   it('should pass expected props to search input component', async () => {
     const wrapper = await createWrapper()
 
-    expect(wrapper.find('SearchInput').prop('value')).toEqual('expectedQ')
+    expect(wrapper.find('SearchInput').prop('value')).toEqual(expectedQ)
   })
 
   it('should trigger history push when search input value changed', async () => {
@@ -175,7 +211,7 @@ describe('BookmarkListPage', () => {
 
     expect(useHistory().push).toHaveBeenCalledWith({
       searchParams: {
-        entryTagEqual: 'a',
+        entryTagEqual: expectedTag,
         q: 'changed q'
       }
     })
@@ -197,6 +233,7 @@ describe('BookmarkListPage', () => {
     })
 
     setTimeout(() => {
+      expect(useEntries().clearEntries).toHaveBeenCalledWith()
       expect(useHistory().push).toHaveBeenCalledWith({
         searchParams: {
           entryTagEqual: 'b',
@@ -213,5 +250,63 @@ describe('BookmarkListPage', () => {
     wrapper.find('[type="redo"]').props().onClick()
 
     expect(useHistory().reload).toHaveBeenCalled()
+  })
+
+  it('should reload content on page when refresh icon button clicked', async () => {
+    const wrapper = await createWrapper()
+    useEntries().fetchEntries.mockClear()
+
+    wrapper.find('[type="redo"]').props().onClick()
+
+    expect(useEntries().clearEntries).toHaveBeenCalledWith()
+    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
+      query: {
+        entryTagEqual: expectedTag,
+        q: expectedQ,
+        seenEqual: '*',
+        size: 2,
+      }
+    })
+    expect(useHistory().reload).toHaveBeenCalledWith()
+  })
+
+  it('should not fetch entries again if query does not changed', async () => {
+    const fetchEntries = jest.fn()
+    useEntries.mockReturnValue({
+      fetchEntries,
+      clearEntries: jest.fn(),
+    })
+    const wrapper = await createWrapper()
+    wrapper.mount()
+
+    expect(fetchEntries).toHaveBeenCalledTimes(1)
+  })
+
+  it('should fetch entries again if query or settings changed', async () => {
+    const fetchEntries = jest.fn()
+    useEntries.mockReturnValue({
+      fetchEntries,
+      clearEntries: jest.fn(),
+    })
+    const wrapper = await createWrapper()
+    wrapper.mount()
+
+    useSearchParams.mockReturnValueOnce({
+      entryTagEqual: expectedTag,
+      q: 'changed q',
+    })
+    wrapper.mount()
+
+    useSearchParams.mockReturnValueOnce({
+      q: expectedQ,
+    })
+    wrapper.mount()
+
+    useSettings.mockReturnValueOnce({
+      pageSize: 10,
+    })
+    wrapper.mount()
+
+    expect(fetchEntries).toHaveBeenCalledTimes(4)
   })
 })

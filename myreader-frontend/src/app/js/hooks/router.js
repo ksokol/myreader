@@ -1,10 +1,10 @@
-import {useLocation, useHistory as useRouterHistory} from 'react-router'
+import {useContext, useMemo} from 'react'
+import {useHistory as useRouterHistory, useLocation} from 'react-router'
 import LocationStateContext from '../contexts/locationState/LocationStateContext'
-import {useContext} from 'react'
 
-function toSearchParams(location = {}) {
+function toSearchParams(search) {
   const query = {}
-  for (const [key, value] of new URLSearchParams(location.search || '').entries()) {
+  for (const [key, value] of new URLSearchParams(search).entries()) {
     query[key] = value
   }
   return query
@@ -21,8 +21,8 @@ function toSearch(queryParam) {
 }
 
 export function useSearchParams() {
-  const location = useLocation()
-  return toSearchParams(location)
+  const search = useLocation().search || ''
+  return useMemo(() => toSearchParams(search), [search])
 }
 
 export function useHistory() {

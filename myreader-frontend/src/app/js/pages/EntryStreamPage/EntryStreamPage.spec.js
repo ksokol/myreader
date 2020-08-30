@@ -5,6 +5,7 @@ import {useSettings} from '../../contexts/settings'
 import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
 import {useHotkeys} from '../../contexts/hotkeys'
 import {useHistory, useSearchParams} from '../../hooks/router'
+import {useEntries} from '../../hooks/entries'
 
 /* eslint-disable react/prop-types, react/display-name */
 jest.mock('../../components', () => ({
@@ -22,12 +23,13 @@ jest.mock('../../components/EntryList/EntryList', () => ({
 jest.mock('../../hooks/router', () => {
   const push = jest.fn()
   const reload = jest.fn()
+  const searchParams = {
+    feedTagEqual: 'a',
+    q: 'expectedQ',
+  }
 
   return {
-    useSearchParams: jest.fn().mockReturnValue({
-      feedTagEqual: 'a',
-      q: 'expectedQ',
-    }),
+    useSearchParams: jest.fn().mockReturnValue(searchParams),
     useHistory: () => ({
       push,
       reload,
@@ -44,7 +46,7 @@ jest.mock('../../contexts/settings', () => ({
 
 jest.mock('../../contexts/mediaBreakpoint', () => ({
   useMediaBreakpoint: jest.fn().mockReturnValue({
-    mediaBreakpoint: 'desktop',
+    isDesktop: true,
   })
 }))
 
@@ -62,23 +64,9 @@ jest.mock('../../components/EntryList/withAutofocusEntry', () => ({
   withAutofocusEntry: Component => Component
 }))
 
-jest.mock('../../components/EntryList/withEntriesFromApi', () => ({
-  withEntriesFromApi: Component => Component
-}))
-
-jest.mock('../../hooks/router', () => {
-  const push = jest.fn()
-  const reload = jest.fn()
-
+jest.mock('../../hooks/entries', () => {
   return {
-    useSearchParams: jest.fn().mockReturnValue({
-      a: 'b',
-      q: 'q'
-    }),
-    useHistory: () => ({
-      push,
-      reload,
-    })
+    useEntries: jest.fn()
   }
 })
 /* eslint-enable */
@@ -92,9 +80,16 @@ describe('EntryStreamPage', () => {
     return mount(<EntryStreamPage />)
   }
 
+  beforeEach(() => {
+    useEntries.mockReturnValue({
+      fetchEntries: jest.fn(),
+      clearEntries: jest.fn(),
+    })
+  })
+
   it('should not render next and previous buttons when media breakpoint is not desktop', () => {
     useMediaBreakpoint.mockReturnValueOnce(() => ({
-      mediaBreakpoint: 'phone',
+      isDesktop: false,
     }))
     const wrapper = createWrapper()
 
@@ -109,40 +104,46 @@ describe('EntryStreamPage', () => {
     expect(wrapper.find(buttonNext).exists()).toEqual(true)
   })
 
-  it('should pass expected props to entry list component with seenEqual set to "*" and prop "showUnseenEntries" set to false', () => {
+  it('should fetch entries with seenEqual set to "*" and prop "showUnseenEntries" set to false', () => {
     useSettings.mockReturnValueOnce({
       pageSize: 2,
       showUnseenEntries: false,
     })
+    createWrapper()
 
-    expect(createWrapper().find('EntryList').prop('query')).toEqual({
-      feedTagEqual: 'a',
-      q: 'expectedQ',
-      seenEqual: '*',
-      size: 2
+    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
+      query: {
+        feedTagEqual: 'a',
+        q: 'expectedQ',
+        seenEqual: '*',
+        size: 2
+      }
     })
   })
 
-  it('should pass expected props to entry list component with seenEqual set to true and prop "searchParams.seenEqual" set to true', () => {
+  it('should fetch entries with seenEqual set to true and prop "searchParams.seenEqual" set to true', () => {
     useSearchParams.mockReturnValueOnce({
       q: 'expectedQ',
       seenEqual: true,
     })
+    createWrapper()
 
-    expect(createWrapper().find('EntryList').prop('query')).toEqual({
-      q: 'expectedQ',
-      seenEqual: true,
-      size: 2
+    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
+      query: {
+        q: 'expectedQ',
+        seenEqual: true,
+        size: 2
+      }
     })
   })
 
-  it('should trigger prop function "onKeyUp" when previous button clicked', () => {
+  it('should trigger function "onKeyUp" when previous button clicked', () => {
     createWrapper().find(buttonPrevious).props().onClick()
 
     expect(useHotkeys().onKeyUp).toHaveBeenCalledWith({key: 'ArrowLeft'})
   })
 
-  it('should trigger prop function "onKeyUp" when next button clicked', () => {
+  it('should trigger function "onKeyUp" when next button clicked', () => {
     createWrapper().find(buttonNext).props().onClick()
 
     expect(useHotkeys().onKeyUp).toHaveBeenCalledWith({key: 'ArrowRight'})
@@ -182,6 +183,7 @@ describe('EntryStreamPage', () => {
     })
 
     setTimeout(() => {
+      expect(useEntries().clearEntries).toHaveBeenCalledWith()
       expect(useHistory().push).toHaveBeenCalledWith({
         searchParams: {
           feedTagEqual: 'b',
@@ -192,9 +194,84 @@ describe('EntryStreamPage', () => {
     }, 250)
   })
 
-  it('should trigger history reload when refresh icon button clicked', () => {
-    createWrapper().find('[type="redo"]').props().onClick()
+  it('should reload content on page when refresh icon button clicked', () => {
+    const wrapper = createWrapper()
+    useEntries().fetchEntries.mockClear()
 
-    expect(useHistory().reload).toHaveBeenCalled()
+    wrapper.find('[type="redo"]').props().onClick()
+
+    expect(useEntries().clearEntries).toHaveBeenCalledWith()
+    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
+      query: {
+        feedTagEqual: 'a',
+        q: 'expectedQ',
+        seenEqual: false,
+        size: 2,
+      }
+    })
+    expect(useHistory().reload).toHaveBeenCalledWith()
+  })
+
+  it('should pass expected props to entry list component', () => {
+    const expected = {
+      entries: [{uuid: '1'}, {uuid: '2'}],
+      links: {a: 'b'},
+      loading: true,
+      fetchEntries: jest.fn(),
+      changeEntry: jest.fn(),
+      onLoadMore: jest.fn()
+    }
+    useEntries.mockReturnValueOnce(expected)
+    const wrapper = createWrapper()
+
+    expect(wrapper.find('EntryList').props()).toEqual({
+      entries: [{uuid: '1'}, {uuid: '2'}],
+      links: {a: 'b'},
+      loading: true,
+      onChangeEntry: expected.changeEntry,
+      onLoadMore: expected.fetchEntries,
+    })
+  })
+
+  it('should not fetch entries again if query does not changed', () => {
+    const fetchEntries = jest.fn()
+    useEntries.mockReturnValue({
+      fetchEntries,
+      clearEntries: jest.fn(),
+    })
+    const wrapper = createWrapper()
+    wrapper.mount()
+
+    expect(fetchEntries).toHaveBeenCalledTimes(1)
+  })
+
+  it('should fetch entries again if query or settings changed', () => {
+    const fetchEntries = jest.fn()
+    useEntries.mockReturnValue({
+      fetchEntries,
+      clearEntries: jest.fn(),
+    })
+    const wrapper = createWrapper()
+    wrapper.mount()
+
+    useSearchParams.mockReturnValueOnce({
+      feedTagEqual: 'a',
+      q: 'changed q',
+    })
+    wrapper.mount()
+
+    useSettings.mockReturnValueOnce({
+      pageSize: 10,
+      showUnseenEntries: true,
+    })
+    wrapper.mount()
+
+    useSettings.mockReturnValueOnce({
+      pageSize: 2,
+      showUnseenEntries: false,
+    })
+    wrapper.mount()
+
+    expect(fetchEntries).toHaveBeenCalledTimes(4)
   })
 })

@@ -1,5 +1,5 @@
 import React, {useContext} from 'react'
-import {mount, shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import {useHistory, useSearchParams} from './router'
 import {useLocation, useHistory as useRouterHistory} from 'react-router'
 import {LocationStateProvider} from '../contexts/locationState/LocationStateProvider'
@@ -18,22 +18,50 @@ jest.mock('react-router', () => {
 
 describe('router', () => {
 
+  beforeEach(() => {
+    useLocation.mockClear()
+    useRouterHistory().push.mockClear()
+  })
+
   describe('useSearchParams', () => {
 
+    let searchParams
+
+    function TestComponent() {
+      searchParams = useSearchParams()
+      return null
+    }
+
     it('should return empty object when search is undefined', () => {
-      expect(useSearchParams()).toEqual({})
+      useLocation.mockReturnValueOnce({search: ''})
+      mount(<TestComponent />)
+
+      expect(searchParams).toEqual({})
     })
 
     it('should return search string as object', () => {
       useLocation.mockReturnValueOnce({search: '?a=b&c=d'})
+      mount(<TestComponent />)
 
-      expect(useSearchParams()).toEqual({a: 'b', c: 'd',})
+      expect(searchParams).toEqual({a: 'b', c: 'd',})
     })
 
     it('should return empty string for key when value in search query is undefined', () => {
       useLocation.mockReturnValueOnce({search: '?a'})
+      mount(<TestComponent />)
 
-      expect(useSearchParams()).toEqual({a: ''})
+      expect(searchParams).toEqual({a: ''})
+    })
+
+    it('should not return a new object if search query does not change', () => {
+      useLocation.mockReturnValueOnce({search: '?b'})
+      const wrapper = mount(<TestComponent />)
+      const call1 = searchParams
+
+      useLocation.mockReturnValueOnce({search: '?b'})
+      wrapper.mount()
+
+      expect(call1 === searchParams).toEqual(true)
     })
   })
 
@@ -48,7 +76,7 @@ describe('router', () => {
         return null
       }
 
-      shallow(<TestComponent />)
+      mount(<TestComponent />)
 
       push({
         searchParams: {

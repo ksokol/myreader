@@ -1,7 +1,6 @@
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useMemo, useRef} from 'react'
 import {IconButton} from '../../components'
 import {withAutofocusEntry} from '../../components/EntryList/withAutofocusEntry'
-import {withEntriesFromApi} from '../../components/EntryList/withEntriesFromApi'
 import {useSettings} from '../../contexts/settings'
 import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
 import {useHotkeys} from '../../contexts/hotkeys'
@@ -9,26 +8,39 @@ import {ListLayout} from '../../components/ListLayout/ListLayout'
 import {useHistory, useSearchParams} from '../../hooks/router'
 import {SearchInput} from '../../components/SearchInput/SearchInput'
 import {EntryList as EntryListComponent} from '../../components/EntryList/EntryList'
+import {useEntries} from '../../hooks/entries'
 
-const EntryList = withEntriesFromApi(withAutofocusEntry(EntryListComponent))
+const EntryList = withAutofocusEntry(EntryListComponent)
 
 export function EntryStreamPage() {
   const {pageSize: size, showUnseenEntries} = useSettings()
-  const {mediaBreakpoint} = useMediaBreakpoint()
+  const {isDesktop} = useMediaBreakpoint()
   const {onKeyUp} = useHotkeys()
   const searchParams = useSearchParams()
   const ref = useRef(searchParams)
   const {push, reload} = useHistory()
 
-  const showAll = showUnseenEntries === true ? false : '*'
-  const seenEqual = searchParams.seenEqual === undefined ? showAll : searchParams.seenEqual
-  const query = {...searchParams, seenEqual, size}
+  const query = useMemo(() => {
+    const showAll = showUnseenEntries === true ? false : '*'
+    const seenEqual = searchParams.seenEqual === undefined ? showAll : searchParams.seenEqual
+    return {...searchParams, seenEqual, size}
+  }, [searchParams, showUnseenEntries, size])
+
+  const {
+    entries,
+    links,
+    loading,
+    fetchEntries,
+    changeEntry,
+    clearEntries
+  } = useEntries()
 
   useEffect(() => {
     ref.current = searchParams
   }, [searchParams])
 
   const onChange = q => {
+    clearEntries()
     push({
       searchParams: {
         ...searchParams,
@@ -38,6 +50,16 @@ export function EntryStreamPage() {
     })
   }
 
+  const refresh = () => {
+    clearEntries()
+    fetchEntries({query})
+    reload()
+  }
+
+  useEffect(() => {
+    fetchEntries({query})
+  }, [fetchEntries, query])
+
   const actionPanel =
     <React.Fragment>
       <SearchInput
@@ -45,7 +67,7 @@ export function EntryStreamPage() {
         onChange={onChange}
         value={searchParams.q}
       />
-      {mediaBreakpoint === 'desktop' ?
+      {isDesktop ?
         <React.Fragment>
           <IconButton
             type='chevron-left'
@@ -59,13 +81,17 @@ export function EntryStreamPage() {
       }
       <IconButton
         type='redo'
-        onClick={reload}
+        onClick={refresh}
       />
     </React.Fragment>
 
   const listPanel =
     <EntryList
-      query={query}
+      entries={entries}
+      links={links}
+      loading={loading}
+      onChangeEntry={changeEntry}
+      onLoadMore={fetchEntries}
     />
 
   return (

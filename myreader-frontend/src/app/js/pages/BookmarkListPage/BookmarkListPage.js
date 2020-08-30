@@ -1,21 +1,19 @@
 import './BookmarkListPage.css'
-import React, {useCallback, useEffect, useState, useRef} from 'react'
+import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react'
 import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
 import {Chips} from '../../components/Chips/Chips'
-import {EntryList as EntryListComponent} from '../../components/EntryList/EntryList'
+import {EntryList} from '../../components/EntryList/EntryList'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
 import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {BOOKMARK_URL} from '../../constants'
 import {entryApi} from '../../api'
 import {toast} from '../../components/Toast'
-import {withEntriesFromApi} from '../../components/EntryList/withEntriesFromApi'
 import {useSettings} from '../../contexts/settings'
 import {IconButton} from '../../components'
 import {useHistory, useSearchParams} from '../../hooks/router'
 import {SearchInput} from '../../components/SearchInput/SearchInput'
-
-const EntryList = withEntriesFromApi(EntryListComponent)
+import {useEntries} from '../../hooks/entries'
 
 function BookmarkListPage(props) {
   const [entryTags, setEntryTags] = useState([])
@@ -23,6 +21,20 @@ function BookmarkListPage(props) {
   const searchParams = useSearchParams()
   const ref = useRef(searchParams)
   const {push, reload} = useHistory()
+
+  const query = useMemo(() => {
+    const seenEqual = searchParams.entryTagEqual ? '*' : ''
+    return {...searchParams, seenEqual, size: pageSize}
+  }, [searchParams, pageSize])
+
+  const {
+    entries,
+    links,
+    loading,
+    fetchEntries,
+    changeEntry,
+    clearEntries
+  } = useEntries()
 
   const fetchEntryTags = useCallback(async () => {
     try {
@@ -37,17 +49,15 @@ function BookmarkListPage(props) {
   }, [searchParams])
 
   useEffect(() => {
+    fetchEntries({query})
+  }, [fetchEntries, query])
+
+  useEffect(() => {
     fetchEntryTags()
   }, [props.locationStateStamp, fetchEntryTags])
 
-  const {
-    searchParams: {entryTagEqual, q},
-  } = props
-
-  const seenEqual = entryTagEqual ? '*' : ''
-  const query = {seenEqual, entryTagEqual, q, size: pageSize}
-
   const onChange = value => {
+    clearEntries()
     push({
       searchParams: {
         ...searchParams,
@@ -55,6 +65,12 @@ function BookmarkListPage(props) {
         q: value,
       }
     })
+  }
+
+  const refresh = () => {
+    clearEntries()
+    fetchEntries({query})
+    reload()
   }
 
   const actionPanel =
@@ -66,7 +82,7 @@ function BookmarkListPage(props) {
       />
       <IconButton
         type='redo'
-        onClick={reload}
+        onClick={refresh}
       />
     </React.Fragment>
 
@@ -81,7 +97,7 @@ function BookmarkListPage(props) {
             keyFn={itemProps => itemProps}
             className='my-bookmark-list__tags'
             values={entryTags}
-            selected={entryTagEqual}
+            selected={searchParams.entryTagEqual}
             renderItem={item => (
               <Link
                 to={{pathname: BOOKMARK_URL, search: `?entryTagEqual=${item}`}}>
@@ -90,7 +106,11 @@ function BookmarkListPage(props) {
             )}
           />
           <EntryList
-            query={query}
+            entries={entries}
+            links={links}
+            loading={loading}
+            onChangeEntry={changeEntry}
+            onLoadMore={fetchEntries}
           />
         </React.Fragment>
       }
@@ -99,10 +119,6 @@ function BookmarkListPage(props) {
 }
 
 BookmarkListPage.propTypes = {
-  searchParams: PropTypes.shape({
-    entryTagEqual: PropTypes.string,
-    q: PropTypes.string
-  }).isRequired,
   locationStateStamp: PropTypes.number.isRequired,
 }
 
