@@ -6,7 +6,6 @@ import registerServiceWorker from '../../registerServiceWorker'
 import {LocationStateProvider} from './contexts/locationState/LocationStateProvider'
 import App from './App'
 import {SecurityProvider} from './contexts/security/SecurityProvider'
-import {HotkeysProvider} from './contexts/hotkeys/HotkeysProvider'
 import {SettingsProvider} from './contexts/settings/SettingsProvider'
 import {MediaBreakpointProvider} from './contexts/mediaBreakpoint/MediaBreakpointProvider'
 
@@ -14,13 +13,11 @@ ReactDOM.render(
   <Router hashType='hashbang'>
     <LocationStateProvider>
       <SecurityProvider>
-        <HotkeysProvider>
-          <SettingsProvider>
-            <MediaBreakpointProvider>
-              <App />
-            </MediaBreakpointProvider>
-          </SettingsProvider>
-        </HotkeysProvider>
+        <SettingsProvider>
+          <MediaBreakpointProvider>
+            <App />
+          </MediaBreakpointProvider>
+        </SettingsProvider>
       </SecurityProvider>
     </LocationStateProvider>
   </Router>,

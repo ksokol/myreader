@@ -1,8 +1,6 @@
 export * from './Buttons'
 export {default as IntersectionObserver} from './IntersectionObserver/IntersectionObserver'
 export {Chips} from './Chips/Chips'
-export {Icon} from './Icon/Icon'
-export * from './Input'
 export {default as TimeAgo} from './TimeAgo/TimeAgo'
 export {default as Badge} from './Badge/Badge'
 export * from './Navigation'

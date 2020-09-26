@@ -1,57 +1,41 @@
 import React from 'react'
-import {mount} from 'enzyme'
+import {render, fireEvent, waitFor, screen} from '@testing-library/react'
 import {SearchInput} from './SearchInput'
-import withDebounce from '../../components/Input/withDebounce'
-
-/* eslint-disable react/prop-types, react/display-name */
-jest.mock('../../components/Input/withDebounce', () =>
-  jest.fn().mockImplementation(Component => props => <Component {...props} />)
-)
-
-jest.mock('../../components/Input/Input', () => ({
-  Input: props => <div {...props} />
-}))
-
-jest.mock('../../components/Icon/Icon', () => ({
-  Icon: () => null
-}))
-/* eslint-enable */
 
 describe('SearchInput', () => {
 
-  let props
-
-  const createWrapper = () => mount(<SearchInput {...props} />)
-
-  beforeEach(() => {
-    props = {
-      onChange: jest.fn(),
-      className: 'expected-class'
-    }
-  })
-
-  it('should pass expected class to host node', () => {
-    expect(createWrapper().first().prop('className')).toEqual('expected-class')
-  })
-
   it('should set default value when prop "value" is undefined', () => {
-    expect(createWrapper().find('Input').prop('value')).toEqual('')
+    render(<SearchInput />)
+
+    expect(screen.getByRole('search')).toBeVisible()
   })
 
   it('should set default value when prop "value" is null', () => {
-    props.value = null
-    expect(createWrapper().find('Input').prop('value')).toEqual('')
+    render(<SearchInput value={null} />)
+
+    expect(screen.getByRole('search')).toBeVisible()
   })
 
   it('should set initial value', () => {
-    props.value = 'a value'
+    render(<SearchInput value='expectedValue' />)
 
-    expect(createWrapper().find('Input').prop('value')).toEqual('a value')
+    expect(screen.getByRole('search')).toHaveValue('expectedValue')
   })
 
-  it('should debounce input for a predefined amount of time', () => {
-    createWrapper()
+  it('should debounce input change event for a predefined amount of time', async () => {
+    const onChange = jest.fn()
+    render(<SearchInput onChange={onChange} />)
+    fireEvent.change(screen.getByRole('search'), {target: {value: 'expectedValue'}})
 
-    expect(withDebounce).toHaveBeenCalledWith(expect.any(Function), 250)
+    expect(screen.getByRole('search')).toHaveValue('expectedValue')
+    expect(onChange).not.toHaveBeenCalledWith('expectedValue')
+
+    await waitFor(
+      () => expect(onChange).toHaveBeenCalledWith('expectedValue'),
+      {
+        timeout: 250,
+        interval: 1
+      }
+    )
   })
 })

@@ -6,12 +6,13 @@ import classNames from 'classnames'
 const Button = props => {
   const {
     type,
+    role,
     primary,
     disabled,
     caution,
     className,
     onClick,
-    children
+    children,
   } = props
 
   const classes = classNames(
@@ -22,17 +23,20 @@ const Button = props => {
   )
 
   return (
-    <button className={classes}
-            type={type}
-            onClick={onClick}
-            disabled={disabled}>
-      {children}
+    <button
+      className={classes}
+      type={type}
+      role={role}
+      onClick={onClick}
+      disabled={disabled}
+    >{children}
     </button>
   )
 }
 
 Button.propTypes = {
   type: PropTypes.string,
+  role: PropTypes.string,
   primary: PropTypes.bool,
   caution: PropTypes.bool,
   disabled: PropTypes.bool,
@@ -43,6 +47,7 @@ Button.propTypes = {
 
 Button.defaultProps = {
   type: 'button',
+  role: 'button',
   disabled: false
 }
 

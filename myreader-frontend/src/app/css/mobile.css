@@ -43,6 +43,18 @@ input {
     width: 100%;
 }
 
+@media (max-width: 599px) {
+    .hidden-phone {
+        display: none;
+    }
+}
+
+@media (min-width: 600px) and (max-width: 1279px) {
+    .hidden-tablet {
+        display: none;
+    }
+}
+
 /*
  Reference: https://tailwindcss.com/docs
  */
@@ -52,10 +64,6 @@ input {
 
 .flex-col {
     flex-direction: column;
-}
-
-.flex-grow {
-    flex-grow: 1;
 }
 
 .w-full {

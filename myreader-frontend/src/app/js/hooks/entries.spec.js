@@ -1,15 +1,16 @@
-import React from 'react'
-import {act} from 'react-dom/test-utils'
-import {mount} from 'enzyme'
+import {renderHook, act} from '@testing-library/react-hooks'
 import {entryApi} from '../api'
 import {toast} from '../components/Toast'
-import {resolved, pending, rejected} from '../shared/test-utils'
 import {useEntries} from './entries'
 
 /* eslint-disable react/prop-types */
-jest.mock('../api', () => ({
-  entryApi: {}
-}))
+jest.mock('../api', () => {
+  const {entryApi: api} = jest.requireActual('../api')
+  jest.spyOn(api, 'updateEntry')
+  return {
+    entryApi: api
+  }
+})
 
 jest.mock('../components/Toast', () => ({
   toast: jest.fn()
@@ -17,213 +18,324 @@ jest.mock('../components/Toast', () => ({
 /* eslint-enable */
 
 const expectedError = 'expected error'
+const entry2Url = 'api/2/subscriptionEntries/2'
 
-describe('withEntriesFromApi', () => {
+describe('entries hook', () => {
 
-  let response, hook
-
-  function TestComponent() {
-    hook = useEntries()
-    return null
-  }
-
-  const createWrapper = (onMount = resolved(response)) => {
-    entryApi.fetchEntries = onMount
-    const Component = TestComponent
-    return mount(<Component />)
-  }
+  let response
 
   beforeEach(() => {
     toast.mockClear()
 
     response = {
-      entries: [
-        {uuid: '1', seen: true, tag: 'tag1'},
-        {uuid: '2', seen: false, tag: 'tag2'}
+      content: [
+        {uuid: '1', seen: true, tags: ['tag1']},
+        {uuid: '2', seen: false, tags: ['tag2']}
       ],
-      links: {
-        next: {
-          query: {
-            a: 'b'
-          }
-        }
-      }
+      links: [{
+        rel: 'next',
+        href: 'http://localhost/test?a=b'
+      }],
     }
   })
 
-  it('should call entryApi.fetchEntries with query', () => {
-    createWrapper(pending())
+  describe('fetchEntries', () => {
 
-    act(() => {
-      hook.fetchEntries({query: {c: 'd'}})
+    it('should fetch with query', async () => {
+      const {result} = renderHook(() => useEntries())
+
+      await act(async () => {
+        await result.current.fetchEntries({query: {c: 'd'}})
+      })
+
+      expect(fetch.mostRecent()).toMatchGetRequest({
+        url: 'api/2/subscriptionEntries?c=d'
+      })
     })
 
-    expect(entryApi.fetchEntries).toHaveBeenCalledWith({query: {c: 'd'}})
-  })
+    it('should set loading to true', async () => {
+      const {result} = renderHook(() => useEntries())
+      fetch.responsePending()
 
-  it('should set loading to true if call entryApi.fetchEntries is pending', () => {
-    createWrapper(pending())
-
-    act(() => {
-      hook.fetchEntries()
+      act(() => {
+        result.current.fetchEntries({})
+      })
+      expect(result.current.loading).toEqual(true)
     })
 
-    expect(hook.loading).toEqual(true)
-  })
+    it('should set loading to false if call entryApi.fetchEntries failed', async () => {
+      fetch.rejectResponse(expectedError)
+      const {result} = renderHook(() => useEntries())
 
-  it('should set loading to false if call entryApi.fetchEntries failed', async () => {
-    createWrapper(rejected())
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
 
-    await act(async () => {
-      await hook.fetchEntries()
+      expect(result.current.loading).toEqual(false)
     })
 
-    expect(hook.loading).toEqual(false)
-  })
+    it('should return updated entries and links', async () => {
+      fetch.jsonResponse({
+        content: [{uuid: '3'}],
+        links: [{
+          next: {
+            path: 'http://localhost/next',
+            query: {e: 'f'},
+          }
+        }]
+      })
+      const {result} = renderHook(() => useEntries())
 
-  it('should expected return entries and links if call to entryApi.fetchEntries succeeded', async () => {
-    createWrapper()
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
 
-    await act(async () => {
-      await hook.fetchEntries()
-    })
+      fetch.jsonResponse(response)
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
 
-    expect(hook).toEqual(expect.objectContaining({
-      entries: [
-        {uuid: '1', seen: true, tag: 'tag1'},
-        {uuid: '2', seen: false, tag: 'tag2'}
-      ],
-      links: {
-        next: {
-          query: {a: 'b'}
+      expect(result.current).toEqual(expect.objectContaining({
+        entries: [
+          {uuid: '3'},
+          {uuid: '1', seen: true, tags: ['tag1']},
+          {uuid: '2', seen: false, tags: ['tag2']},
+        ],
+        links: {
+          next: {
+            path: 'http://localhost/test',
+            query: {a: 'b'},
+          }
         }
-      }
-    }))
+      }))
+    })
+
+    it('should show error when fetch failed', async () => {
+      fetch.rejectResponse({data: expectedError})
+      const {result} = renderHook(() => useEntries())
+
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
+
+      expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
+    })
   })
 
-  it('should trigger toast when call to entryApi.fetchEntries failed', async () => {
-    createWrapper(rejected({data: expectedError}))
+  describe('changeEntry', () => {
 
-    await act(async () => {
-      await hook.fetchEntries()
-    })
+    it('should change entry', async () => {
+      fetch.jsonResponse(response)
+      const {result} = renderHook(() => useEntries())
 
-    expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
-  })
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
+      await act(async () => {
+        await result.current.changeEntry({uuid: '2', seen: true, tags: ['expectedTag']})
+      })
 
-  it('should call entryApi.updateEntry if function changeEntry triggered', async () => {
-    entryApi.updateEntry = resolved({uuid: '2' , seen: true, tag: 'expectedTag'})
-    createWrapper()
-
-    await act(async () => {
-      await hook.fetchEntries()
-    })
-
-    await act(async () => {
-      await hook.changeEntry({uuid: '2', seen: true, tag: 'expectedTag'})
-    })
-
-    expect(entryApi.updateEntry).toHaveBeenCalledWith({
-      uuid: '2',
-      seen: true,
-      tag: 'expectedTag',
-      context: {
-        oldValue: {
-          uuid: '2',
-          seen: false,
-          tag: 'tag2',
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: entry2Url,
+        body: {
+          seen: true,
+          tags: ['expectedTag'],
+        },
+      })
+      expect(entryApi.updateEntry).toHaveBeenCalledWith(expect.objectContaining({
+        context: {
+          oldValue: {
+            uuid: '2',
+            seen: false,
+            tags: ['tag2'],
+          }
         }
-      }
+      }))
+    })
+
+    it('should show error when change failed', async () => {
+      fetch.rejectResponse({data: expectedError})
+      const {result} = renderHook(() => useEntries())
+
+      await act(async () => {
+        await result.current.changeEntry({uuid: '2', seen: true, tag: 'expectedTag'})
+      })
+
+      expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
     })
   })
 
-  it('should return updated entries and links if call to entryApi.updateEntry succeeded', async () => {
-    entryApi.updateEntry = resolved({uuid: '2' , seen: true, tag: 'expectedTag'})
-    createWrapper()
+  describe('clearEntries', () => {
 
-    await act(async () => {
-      await hook.fetchEntries()
+    it('should return updated entries and links', async () => {
+      fetch.jsonResponse(response)
+      const {result} = renderHook(() => useEntries())
+
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
+
+      fetch.jsonResponse({
+        uuid: '2' ,
+        seen: true,
+        tags: ['expectedTag']
+      })
+      await act(async () => {
+        await result.current.changeEntry({uuid: '2', seen: true, tags: ['expectedTag']})
+      })
+
+      expect(result.current).toEqual(expect.objectContaining({
+        entries: [
+          {uuid: '1', seen: true, tags: ['tag1']},
+          {uuid: '2', seen: true, tags: ['expectedTag']}
+        ],
+        links: {
+          next: {
+            path: 'http://localhost/test',
+            query: {a: 'b'},
+          }
+        },
+        loading: false,
+      }))
     })
 
-    await act(async () => {
-      await hook.changeEntry({uuid: '2', seen: true, tag: 'expectedTag'})
-    })
+    it('should clear entries and links', async () => {
+      fetch.jsonResponse(response)
+      const {result} = renderHook(() => useEntries())
 
-    expect(hook).toEqual(expect.objectContaining({
-      entries: [
-        {uuid: '1', seen: true, tag: 'tag1'},
-        {uuid: '2', seen: true, tag: 'expectedTag'}
-      ],
-      links: {
-        next: {
-          query: {a: 'b'}
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
+      await act(async () => {
+        await result.current.clearEntries()
+      })
+
+      expect(result.current).toEqual(expect.objectContaining({
+        entries: [],
+        links: {}
+      }))
+    })
+  })
+
+  describe('setSeenFlag', () => {
+
+    it('should set flag', async () => {
+      fetch.jsonResponse(response)
+      const {result} = renderHook(() => useEntries())
+
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
+
+      fetch.jsonResponse({
+        uuid: '2' ,
+        seen: true,
+        tags: ['expectedTag']
+      })
+      await act(async () => {
+        await result.current.setSeenFlag('2')
+      })
+
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: entry2Url,
+        body: {
+          seen: true,
+          tags: ['tag2'],
+        },
+      })
+      expect(entryApi.updateEntry).toHaveBeenCalledWith(expect.objectContaining({
+        context: {
+          oldValue: {
+            uuid: '2',
+            seen: false,
+            tags: ['tag2'],
+          }
         }
-      },
-      loading: false
-    }))
-  })
-
-  it('should trigger toast if call to entryApi.updateEntry failed', async () => {
-    entryApi.updateEntry = rejected({data: expectedError})
-    await createWrapper()
-
-    await act(async () => {
-      await hook.changeEntry({uuid: '2', seen: true, tag: 'expectedTag'})
+      }))
+      expect(result.current).toEqual(expect.objectContaining({
+        entries: [
+          {uuid: '1', seen: true, tags: ['tag1']},
+          {uuid: '2', seen: true, tags: ['expectedTag']}
+        ],
+        loading: false,
+      }))
     })
 
-    expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
+    it('should show error when change to flag failed', async () => {
+      const {result} = renderHook(() => useEntries())
+
+      fetch.jsonResponse(response)
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
+
+      fetch.rejectResponse({data: expectedError})
+      await act(async () => {
+        await result.current.setSeenFlag('2')
+      })
+
+      expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
+    })
   })
 
-  it('should return updated entries and links', async () => {
-    createWrapper()
+  describe('toggleSeenFlag', () => {
 
-    await act(async () => {
-      await hook.fetchEntries({})
-    })
+    it('should toggle flag', async () => {
+      fetch.jsonResponse(response)
+      const {result} = renderHook(() => useEntries())
 
-    entryApi.fetchEntries = resolved({
-      entries: [{uuid: '3'}],
-      links: {
-        next: {
-          path: 'next',
-          query: {e: 'f'}
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
+
+      fetch.jsonResponse({
+        uuid: '2' ,
+        seen: true,
+        tags: ['expectedTag']
+      })
+      await act(async () => {
+        await result.current.toggleSeenFlag('2')
+      })
+
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: 'api/2/subscriptionEntries/2',
+        body: {
+          seen: true,
+          tags: ['tag2'],
+        },
+      })
+      expect(entryApi.updateEntry).toHaveBeenCalledWith(expect.objectContaining({
+        context: {
+          oldValue: {
+            uuid: '2',
+            seen: false,
+            tags: ['tag2'],
+          }
         }
-      }
+      }))
+      expect(result.current).toEqual(expect.objectContaining({
+        entries: [
+          {uuid: '1', seen: true, tags: ['tag1']},
+          {uuid: '2', seen: true, tags: ['expectedTag']}
+        ],
+        loading: false,
+      }))
     })
 
-    await act(async () => {
-      await hook.fetchEntries({})
+    it('should show error when toggle failed', async () => {
+      const {result} = renderHook(() => useEntries())
+
+      fetch.jsonResponse(response)
+      await act(async () => {
+        await result.current.fetchEntries({})
+      })
+
+      fetch.rejectResponse({data: expectedError})
+      await act(async () => {
+        await result.current.toggleSeenFlag('2')
+      })
+
+      expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
     })
-
-    expect(hook).toEqual(expect.objectContaining({
-      entries: [
-        {uuid: '1', seen: true, tag: 'tag1'},
-        {uuid: '2', seen: false, tag: 'tag2'},
-        {uuid: '3'},
-      ],
-      links: {
-        next: {
-          path: 'next',
-          query: {e: 'f'}
-        }
-      }
-    }))
-  })
-
-  it('should clear entries and links', async () => {
-    createWrapper()
-
-    await act(async () => {
-      await hook.fetchEntries({})
-    })
-
-    await act(async () => {
-      await hook.clearEntries()
-    })
-
-    expect(hook).toEqual(expect.objectContaining({
-      entries: [],
-      links: {}
-    }))
   })
 })

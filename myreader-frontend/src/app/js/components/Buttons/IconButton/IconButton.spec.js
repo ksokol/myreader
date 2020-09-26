@@ -1,7 +1,7 @@
 import React from 'react'
 import IconButton from './IconButton'
 import {shallow} from 'enzyme'
-import {Icon} from '../..'
+import {Icon} from '../../Icon/Icon'
 
 describe('IconButton', () => {
 

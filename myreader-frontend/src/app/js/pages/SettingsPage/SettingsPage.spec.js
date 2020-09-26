@@ -7,6 +7,10 @@ import {useSettings} from '../../contexts/settings'
 jest.mock('../../contexts/settings', () => ({
   useSettings: jest.fn()
 }))
+
+jest.mock('../../components/SubscriptionTags/SubscriptionTags', () => ({
+  SubscriptionTags: () => null
+}))
 /* eslint-enable */
 
 describe('SettingsPage', () => {

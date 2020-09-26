@@ -121,9 +121,40 @@ fetch.resetMocks = () => {
   fetch.mockReset()
 }
 
-// Default mock is just a empty string.
+// custom
+fetch.requestCount = () => {
+  return fetch.mock.calls.length
+}
+
+fetch.mostRecent = () => {
+  return fetch.mock.calls[fetch.requestCount() - 1][0]
+}
+
+fetch.jsonResponse = object => {
+  fetch.mockResponse(JSON.stringify(object), {headers: {'content-type': 'application/json'}})
+}
+
+fetch.jsonResponseOnce = object => {
+  fetch.mockResponseOnce(JSON.stringify(object), {headers: {'content-type': 'application/json'}})
+}
+
+fetch.responsePending = () => {
+  fetch.mockResponseOnce(() => new Promise(() => { /* simulate pending request */ }))
+}
+
+fetch.rejectResponse = error => {
+  fetch.mockResponseOnce(() => Promise.reject(error))
+}
+//custom end
+
+// Default mock is just an empty string.
 fetch.mockResponse('')
 
 global.fetch = fetch
 global.Headers = Headers
 global.Request = Request
+
+afterEach(() => {
+  fetch.mockReset()
+  fetch.mockResponse('')
+})

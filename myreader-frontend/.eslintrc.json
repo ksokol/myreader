@@ -8,7 +8,9 @@
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    "plugin:unicorn/recommended"
+    "plugin:unicorn/recommended",
+    "plugin:jest-dom/recommended",
+    "plugin:testing-library/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": 2018,
@@ -58,6 +60,7 @@
     "react-hooks/exhaustive-deps": "error",
     "unicorn/no-null":  "off",
     "unicorn/no-fn-reference-in-iterator": "warn",
-    "unicorn/no-reduce": "off"
+    "unicorn/no-reduce": "off",
+    "jest-dom/prefer-focus": "warn"
   }
 }

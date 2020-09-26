@@ -148,6 +148,7 @@ describe('BookmarkListPage', () => {
       links: {a: 'b'},
       loading: true,
       fetchEntries: jest.fn(),
+      clearEntries: jest.fn(),
       changeEntry: jest.fn(),
       onLoadMore: jest.fn()
     }

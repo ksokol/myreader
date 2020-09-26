@@ -19,6 +19,7 @@ export class Input extends React.Component {
     className: PropTypes.string,
     type: PropTypes.string,
     label: PropTypes.string,
+    role: PropTypes.string,
     name: PropTypes.string.isRequired,
     value: PropTypes.string,
     placeholder: PropTypes.string,
@@ -38,6 +39,7 @@ export class Input extends React.Component {
 
   static defaultProps = {
     type: 'text',
+    role: 'input',
     disabled: false,
     autoComplete: 'off',
     onChange: noop,
@@ -56,7 +58,7 @@ export class Input extends React.Component {
 
   inputRef = React.createRef()
 
-  get id() {
+  id = () => {
     return this.props.id ? this.props.id : this.props.name
   }
 
@@ -97,14 +99,8 @@ export class Input extends React.Component {
 
   render() {
     const {
-      type,
       className = '',
       label,
-      name,
-      value,
-      placeholder,
-      autoComplete,
-      disabled,
       validations,
       onEnter,
       ...otherProps
@@ -119,7 +115,7 @@ export class Input extends React.Component {
       >
         {label && (
           <label
-            htmlFor={this.id}
+            htmlFor={this.id()}
           >
             {label}
           </label>
@@ -128,13 +124,7 @@ export class Input extends React.Component {
         <input
           {...otherProps}
           ref={this.inputRef}
-          id={this.id}
-          type={type}
-          name={name}
-          value={value}
-          placeholder={placeholder}
-          autoComplete={autoComplete}
-          disabled={disabled}
+          id={this.id()}
           onChange={this.onChange}
           onFocus={this.onFocus}
           onBlur={this.onBlur}
@@ -142,7 +132,7 @@ export class Input extends React.Component {
         />
 
         {fieldValidation ? (
-          <div className="my-input__validations">
+          <div className='my-input__validations'>
             <span
               key={fieldValidation}
             >

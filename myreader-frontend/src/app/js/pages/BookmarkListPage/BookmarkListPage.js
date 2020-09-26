@@ -1,5 +1,5 @@
 import './BookmarkListPage.css'
-import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react'
+import React, {useCallback, useEffect, useState, useMemo} from 'react'
 import {Link} from 'react-router-dom'
 import {Chips} from '../../components/Chips/Chips'
 import {EntryList} from '../../components/EntryList/EntryList'
@@ -17,7 +17,6 @@ export function BookmarkListPage() {
   const [entryTags, setEntryTags] = useState([])
   const {pageSize} = useSettings()
   const searchParams = useSearchParams()
-  const ref = useRef(searchParams)
   const {push, reload} = useHistory()
 
   const query = useMemo(() => {
@@ -42,24 +41,10 @@ export function BookmarkListPage() {
     }
   }, [])
 
-  useEffect(() => {
-    ref.current = searchParams
-  }, [searchParams])
-
-  useEffect(() => {
-    fetchEntries({query})
-  }, [fetchEntries, query])
-
-  useEffect(() => {
-    fetchEntryTags()
-  }, [fetchEntryTags])
-
   const onChange = value => {
-    clearEntries()
     push({
       searchParams: {
         ...searchParams,
-        ...ref.current,
         q: value,
       }
     })
@@ -72,10 +57,21 @@ export function BookmarkListPage() {
     reload()
   }
 
+  useEffect(() => {
+    fetchEntries({query})
+  }, [fetchEntries, query])
+
+  useEffect(() => {
+    fetchEntryTags()
+  }, [fetchEntryTags])
+
+  useEffect(() => {
+    clearEntries()
+  }, [clearEntries, searchParams])
+
   const actionPanel =
     <React.Fragment>
       <SearchInput
-        className='flex-grow'
         onChange={onChange}
         value={searchParams.q}
       />
@@ -84,7 +80,6 @@ export function BookmarkListPage() {
         onClick={refresh}
       />
     </React.Fragment>
-
 
   return (
     <ListLayout

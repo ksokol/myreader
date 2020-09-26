@@ -1,5 +1,4 @@
 import {exchange} from './exchange'
-import '../../../../__mocks__/global/fetch'
 
 const jsonContentType = 'application/json'
 const textPlainContentType = 'text/plain'
@@ -11,11 +10,6 @@ describe('exchange', () => {
 
   beforeEach(() => {
     jest.useRealTimers()
-  })
-
-  afterEach(() => {
-    fetch.resetMocks()
-    fetch.mockResponse('')
   })
 
   it('should GET resource', done => {

@@ -22,9 +22,7 @@ export class EntryList extends React.Component {
         uuid: PropTypes.string.isRequired
       })
     ),
-    entryInFocus: PropTypes.shape({
-      uuid: PropTypes.string
-    }),
+    entryInFocusUuid: PropTypes.string,
     loading: PropTypes.bool.isRequired,
     onChangeEntry: PropTypes.func.isRequired,
     onLoadMore: PropTypes.func.isRequired
@@ -35,23 +33,25 @@ export class EntryList extends React.Component {
     entries: []
   }
 
-  get hasNextPage() {
+  hasNextPage = () => {
     return !!this.props.links.next
   }
 
-  loadMore = () => this.props.onLoadMore(this.props.links.next)
+  loadMore = () => {
+    this.props.onLoadMore(this.props.links.next)
+  }
 
   render() {
     const {
       entries,
-      entryInFocus,
+      entryInFocusUuid,
       loading,
       onChangeEntry
     } = this.props
 
     const props = {
       onChangeEntry,
-      focusUuid: entryInFocus && entryInFocus.uuid
+      focusUuid: entryInFocusUuid
     }
 
     const entriesCopy = [...entries]
@@ -63,16 +63,17 @@ export class EntryList extends React.Component {
       >
         {entriesCopy.map(entryProps => entry(entryProps, props))}
 
-        {lastEntry && this.hasNextPage
+        {lastEntry && this.hasNextPage()
           ? <IntersectionObserver
             onIntersection={this.loadMore}
           >{entry(lastEntry, props)}
-            </IntersectionObserver>
+          </IntersectionObserver>
           : lastEntry && entry(lastEntry, props)
         }
 
-        {this.hasNextPage &&
+        {this.hasNextPage() &&
           <Button
+            role='more'
             className='my-button__load-more'
             disabled={loading}
             onClick={this.loadMore}

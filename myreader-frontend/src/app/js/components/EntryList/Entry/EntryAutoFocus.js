@@ -30,7 +30,10 @@ export class EntryAutoFocus extends Component {
       ...props
     } = this.props
 
-    props.className = this.state.focused ? 'my-entry--focus' : undefined
+    if (this.state.focused) {
+      props.className = 'my-entry--focus'
+      props.role = 'focus'
+    }
 
     return (
       <Entry

@@ -1,277 +1,441 @@
 import React from 'react'
-import {mount} from 'enzyme'
+import {Router} from 'react-router'
+import {createMemoryHistory} from 'history'
+import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
 import {EntryStreamPage} from './EntryStreamPage'
-import {useSettings} from '../../contexts/settings'
-import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
-import {useHotkeys} from '../../contexts/hotkeys'
-import {useHistory, useSearchParams} from '../../hooks/router'
-import {useEntries} from '../../hooks/entries'
+import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
+import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
+import {entry1, entry2, entry3, entry4} from '../../shared/test-utils'
 
-/* eslint-disable react/prop-types, react/display-name */
-jest.mock('../../components', () => ({
-  IconButton: ({children}) => <div>{children}</div>,
-}))
+jest.unmock('react-router')
 
-jest.mock('../../components/ListLayout/ListLayout', () => ({
-  ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>,
-}))
+async function clickButtonPrevious() {
+  return act(async () => fireEvent.click(screen.getByRole('previous')))
+}
 
-jest.mock('../../components/EntryList/EntryList', () => ({
-  EntryList: ({children}) => <div>{children}</div>,
-}))
+async function clickButtonNext() {
+  return act(async () => fireEvent.click(screen.getByRole('next')))
+}
 
-jest.mock('../../hooks/router', () => {
-  const push = jest.fn()
-  const reload = jest.fn()
-  const searchParams = {
-    feedTagEqual: 'a',
-    q: 'expectedQ',
-  }
+async function pressEscape() {
+  return act(async () => fireEvent.keyDown(document, {key: 'Escape', keyCode: 27}))
+}
 
-  return {
-    useSearchParams: jest.fn().mockReturnValue(searchParams),
-    useHistory: () => ({
-      push,
-      reload,
-    })
-  }
-})
+async function pressArrowLeft() {
+  return act(async () => fireEvent.keyDown(document, {key: 'ArrowLeft', keyCode: 37}))
+}
 
-jest.mock('../../contexts/settings', () => ({
-  useSettings: jest.fn().mockReturnValue({
-    pageSize: 2,
-    showUnseenEntries: true,
-  })
-}))
+async function pressArrowRight() {
+  return act(async () => fireEvent.keyDown(document, {key: 'ArrowRight', keyCode: 39}))
+}
 
-jest.mock('../../contexts/mediaBreakpoint', () => ({
-  useMediaBreakpoint: jest.fn().mockReturnValue({
-    isDesktop: true,
-  })
-}))
-
-jest.mock('../../contexts/hotkeys', () => {
-  const onKeyUp = jest.fn()
-
-  return {
-    useHotkeys: () => ({
-      onKeyUp
-    })
-  }
-})
-
-jest.mock('../../components/EntryList/withAutofocusEntry', () => ({
-  withAutofocusEntry: Component => Component
-}))
-
-jest.mock('../../hooks/entries', () => {
-  return {
-    useEntries: jest.fn()
-  }
-})
-/* eslint-enable */
-
-const buttonPrevious = 'IconButton[type="chevron-left"]'
-const buttonNext = 'IconButton[type="chevron-right"]'
+const entry1Url = 'api/2/subscriptionEntries/1'
+const entry2Url = 'api/2/subscriptionEntries/2'
 
 describe('EntryStreamPage', () => {
 
-  const createWrapper = () => {
-    return mount(<EntryStreamPage />)
+  let history
+
+  const renderComponent = async () => {
+    await act(async () => {
+      render(
+        <Router history={history}>
+          <LocationStateProvider>
+            <SettingsProvider>
+              <EntryStreamPage />
+            </SettingsProvider>
+          </LocationStateProvider>
+        </Router>
+      )
+    })
   }
 
-  beforeEach(() => {
-    useEntries.mockReturnValue({
-      fetchEntries: jest.fn(),
-      clearEntries: jest.fn(),
-    })
-  })
+  beforeEach(async () => {
+    history = createMemoryHistory()
 
-  it('should not render next and previous buttons when media breakpoint is not desktop', () => {
-    useMediaBreakpoint.mockReturnValueOnce(() => ({
-      isDesktop: false,
-    }))
-    const wrapper = createWrapper()
-
-    expect(wrapper.find(buttonPrevious).exists()).toEqual(false)
-    expect(wrapper.find(buttonNext).exists()).toEqual(false)
-  })
-
-  it('should render next and previous buttons when media breakpoint is desktop', () => {
-    const wrapper = createWrapper()
-
-    expect(wrapper.find(buttonPrevious).exists()).toEqual(true)
-    expect(wrapper.find(buttonNext).exists()).toEqual(true)
-  })
-
-  it('should fetch entries with seenEqual set to "*" and prop "showUnseenEntries" set to false', () => {
-    useSettings.mockReturnValueOnce({
-      pageSize: 2,
-      showUnseenEntries: false,
-    })
-    createWrapper()
-
-    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
-      query: {
-        feedTagEqual: 'a',
-        q: 'expectedQ',
-        seenEqual: '*',
-        size: 2
-      }
-    })
-  })
-
-  it('should fetch entries with seenEqual set to true and prop "searchParams.seenEqual" set to true', () => {
-    useSearchParams.mockReturnValueOnce({
-      q: 'expectedQ',
-      seenEqual: true,
-    })
-    createWrapper()
-
-    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
-      query: {
-        q: 'expectedQ',
-        seenEqual: true,
-        size: 2
-      }
-    })
-  })
-
-  it('should trigger function "onKeyUp" when previous button clicked', () => {
-    createWrapper().find(buttonPrevious).props().onClick()
-
-    expect(useHotkeys().onKeyUp).toHaveBeenCalledWith({key: 'ArrowLeft'})
-  })
-
-  it('should trigger function "onKeyUp" when next button clicked', () => {
-    createWrapper().find(buttonNext).props().onClick()
-
-    expect(useHotkeys().onKeyUp).toHaveBeenCalledWith({key: 'ArrowRight'})
-  })
-
-  it('should pass expected props to search input component', () => {
-    expect(createWrapper().find('SearchInput').prop('value')).toEqual('expectedQ')
-  })
-
-  it('should trigger history push when search input value changed', () => {
-    const wrapper = createWrapper()
-    wrapper.find('SearchInput').props().onChange('changed q')
-    wrapper.mount()
-    wrapper.update()
-
-    expect(useHistory().push).toHaveBeenCalledWith({
-      searchParams: {
-        feedTagEqual: 'a',
-        q: 'changed q'
-      }
-    })
-  })
-
-  it('should trigger history push when search params and search input value changed', done => {
-    jest.useRealTimers()
-    const wrapper = createWrapper()
-
-    useSearchParams.mockReturnValueOnce({
-      feedTagEqual: 'b',
-    })
-    wrapper.mount()
-
-    wrapper.find('input[name="search-input"]').simulate('change', {
-      target: {
-        value: 'changed q'
-      }
-    })
-
-    setTimeout(() => {
-      expect(useEntries().clearEntries).toHaveBeenCalledWith()
-      expect(useHistory().push).toHaveBeenCalledWith({
-        searchParams: {
-          feedTagEqual: 'b',
-          q: 'changed q'
-        }
+    await act(async () => {
+      history.push({
+        search: 'feedTagEqual=a&q=expectedQ'
       })
-      done()
-    }, 250)
-  })
-
-  it('should reload content on page when refresh icon button clicked', () => {
-    const wrapper = createWrapper()
-    useEntries().fetchEntries.mockClear()
-
-    wrapper.find('[type="redo"]').props().onClick()
-
-    expect(useEntries().clearEntries).toHaveBeenCalledWith()
-    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
-      query: {
-        feedTagEqual: 'a',
-        q: 'expectedQ',
-        seenEqual: false,
-        size: 2,
-      }
     })
-    expect(useHistory().reload).toHaveBeenCalledWith()
-  })
 
-  it('should pass expected props to entry list component', () => {
-    const expected = {
-      entries: [{uuid: '1'}, {uuid: '2'}],
-      links: {a: 'b'},
-      loading: true,
-      fetchEntries: jest.fn(),
-      changeEntry: jest.fn(),
-      onLoadMore: jest.fn()
-    }
-    useEntries.mockReturnValueOnce(expected)
-    const wrapper = createWrapper()
+    localStorage.setItem('myreader-settings', '{"pageSize": 2, "showUnseenEntries": false}')
 
-    expect(wrapper.find('EntryList').props()).toEqual({
-      entries: [{uuid: '1'}, {uuid: '2'}],
-      links: {a: 'b'},
-      loading: true,
-      onChangeEntry: expected.changeEntry,
-      onLoadMore: expected.fetchEntries,
+    fetch.jsonResponse({
+      content: [{...entry1}, {...entry2}],
+      links: [{
+        rel: 'next',
+        href: 'http://localhost/test?nextpage'
+      }],
     })
   })
 
-  it('should not fetch entries again if query does not changed', () => {
-    const fetchEntries = jest.fn()
-    useEntries.mockReturnValue({
-      fetchEntries,
-      clearEntries: jest.fn(),
-    })
-    const wrapper = createWrapper()
-    wrapper.mount()
+  it('should fetch entries with seenEqual set to "*" and prop "showUnseenEntries" set to false', async () => {
+    await renderComponent()
 
-    expect(fetchEntries).toHaveBeenCalledTimes(1)
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ&feedTagEqual=a',
+    })
   })
 
-  it('should fetch entries again if query or settings changed', () => {
-    const fetchEntries = jest.fn()
-    useEntries.mockReturnValue({
-      fetchEntries,
-      clearEntries: jest.fn(),
+  it('should fetch entries with seenEqual set to true and prop "searchParams.seenEqual" set to true', async () => {
+    history = createMemoryHistory()
+    await act(async () => {
+      history.push({
+        search: 'q=expectedQ&seenEqual=true'
+      })
     })
-    const wrapper = createWrapper()
-    wrapper.mount()
+    await renderComponent()
 
-    useSearchParams.mockReturnValueOnce({
-      feedTagEqual: 'a',
-      q: 'changed q',
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=true&q=expectedQ',
     })
-    wrapper.mount()
+  })
 
-    useSettings.mockReturnValueOnce({
-      pageSize: 10,
-      showUnseenEntries: true,
+  it('should fetch entries when search query changed', async () => {
+    await renderComponent()
+    await act(async () => {
+      history.push({
+        search: 'q=expectedQ&seenEqual=true&feedTagEqual=a'
+      })
     })
-    wrapper.mount()
 
-    useSettings.mockReturnValueOnce({
-      pageSize: 2,
-      showUnseenEntries: false,
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?size=2&feedTagEqual=a&seenEqual=true&q=expectedQ',
     })
-    wrapper.mount()
+  })
 
-    expect(fetchEntries).toHaveBeenCalledTimes(4)
+  describe('focus next', () => {
+
+    it('should focus and update entry when button clicked', async () => {
+      await renderComponent()
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await clickButtonNext()
+
+      expect(screen.getByRole('focus')).toHaveTextContent('title1')
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: entry1Url,
+        body: {
+          seen: true,
+          tags: entry1.tags,
+        },
+      })
+
+      fetch.jsonResponseOnce({...entry2, seen: true})
+      await clickButtonNext()
+
+      expect(screen.getByRole('focus')).toHaveTextContent('title2')
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: entry2Url,
+        body: {
+          seen: true,
+          tags: entry2.tags,
+        },
+      })
+    })
+
+    it('should focus and update entry when hotkey pressed', async () => {
+      await renderComponent()
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await pressArrowRight()
+
+      expect(screen.getByRole('focus')).toHaveTextContent('title1')
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: entry1Url,
+        body: {
+          seen: true,
+          tags: entry1.tags,
+        },
+      })
+
+      fetch.jsonResponseOnce({...entry2, seen: true})
+      await pressArrowRight()
+
+      expect(screen.getByRole('focus')).toHaveTextContent('title2')
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: entry2Url,
+        body: {
+          seen: true,
+          tags: entry2.tags,
+        },
+      })
+    })
+
+    it('should focus last entry when button clicked', async () => {
+      await renderComponent()
+      fetch.resetMocks()
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await clickButtonNext()
+
+      fetch.jsonResponseOnce({...entry2, seen: true})
+      await clickButtonNext()
+      await clickButtonNext()
+
+      expect(screen.getByRole('focus')).toHaveTextContent('title2')
+      expect(fetch.requestCount()).toEqual(2)
+    })
+
+    it('should focus last entry when hotkey pressed', async () => {
+      await renderComponent()
+      fetch.resetMocks()
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await pressArrowRight()
+
+      fetch.jsonResponseOnce({...entry2, seen: true})
+      await pressArrowRight()
+      await pressArrowRight()
+
+      expect(screen.getByRole('focus')).toHaveTextContent('title2')
+      expect(fetch.requestCount()).toEqual(2)
+    })
+  })
+
+  describe('previous entry', () => {
+
+    it('initially should not focus entry when button clicked', async () => {
+      await renderComponent()
+      fetch.resetMocks()
+
+      await clickButtonPrevious()
+
+      expect(screen.queryByRole('focus')).not.toBeInTheDocument()
+      expect(fetch.requestCount()).toEqual(0)
+    })
+
+    it('initially should not focus entry when hotkey pressed', async () => {
+      await renderComponent()
+      fetch.resetMocks()
+
+      await pressArrowLeft()
+
+      expect(screen.queryByRole('focus')).not.toBeInTheDocument()
+      expect(fetch.requestCount()).toEqual(0)
+    })
+
+    it('should not focus entry when button clicked', async () => {
+      await renderComponent()
+      fetch.resetMocks()
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await clickButtonNext()
+      await clickButtonPrevious()
+
+      expect(screen.queryByRole('focus')).not.toBeInTheDocument()
+      expect(fetch.requestCount()).toEqual(1)
+    })
+
+    it('should not focus entry when hotkey pressed', async () => {
+      await renderComponent()
+      fetch.resetMocks()
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await pressArrowRight()
+      await pressArrowLeft()
+
+      expect(screen.queryByRole('focus')).not.toBeInTheDocument()
+      expect(fetch.requestCount()).toEqual(1)
+    })
+
+    it('should focus and update entry when button clicked', async () => {
+      await renderComponent()
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await clickButtonNext()
+
+      fetch.jsonResponseOnce({...entry2, seen: true})
+      await clickButtonNext()
+      await clickButtonPrevious()
+
+      expect(screen.getByRole('focus')).toHaveTextContent('title1')
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: entry2Url,
+        body: {
+          seen: true,
+          tags: entry2.tags,
+        },
+      })
+    })
+
+    it('should focus and update entry when hotkey clicked', async () => {
+      await renderComponent()
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await pressArrowRight()
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await pressArrowRight()
+      await pressArrowLeft()
+
+      expect(screen.getByRole('focus')).toHaveTextContent('title1')
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: entry2Url,
+        body: {
+          seen: true,
+          tags: entry2.tags,
+        },
+      })
+    })
+  })
+
+  describe('toggle seen flag', () => {
+
+    it('should not update any entry', async () => {
+      await renderComponent()
+      fetch.resetMocks()
+
+      await pressEscape()
+
+      expect(fetch.requestCount()).toEqual(0)
+    })
+
+    it('should not update entry', async () => {
+      await renderComponent()
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await pressArrowRight()
+
+      fetch.jsonResponseOnce({...entry1, seen: false})
+      await pressEscape()
+
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: entry1Url,
+        body: {
+          seen: false,
+          tags: ['expected tag1'],
+        },
+      })
+
+      fetch.jsonResponseOnce({...entry1, seen: true})
+      await pressEscape()
+
+      expect(fetch.mostRecent()).toMatchPatchRequest({
+        url: entry1Url,
+        body: {
+          seen: true,
+          tags: ['expected tag1'],
+        },
+      })
+    })
+  })
+
+  it('should pass expected props to search input component', async () => {
+    await renderComponent()
+
+    expect(screen.getByRole('search')).toHaveValue('expectedQ')
+  })
+
+  it('should show entries for given search', async () => {
+    await renderComponent()
+
+    expect(screen.queryByTitle('title1')).toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+    expect(screen.queryByTitle('title3')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title4')).not.toBeInTheDocument()
+
+    fetch.jsonResponse({content: [{...entry3}, {...entry4}], links: [],})
+    await act(async () => fireEvent.change(screen.getByRole('search'), {target: {value: 'changed q'}}))
+
+    await waitFor(() => {
+      return expect(fetch.mostRecent()).toMatchGetRequest({
+        url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=changed q&feedTagEqual=a',
+      })
+    }, {
+      timeout: 1050,
+      interval: 1
+    })
+
+    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title3')).toBeInTheDocument()
+    expect(screen.queryByTitle('title4')).toBeInTheDocument()
+  })
+
+  it('should load next page', async () => {
+    await renderComponent()
+
+    fetch.jsonResponse({content: [{...entry3}, {...entry4}], links: [],})
+    await act(async () => fireEvent.click(screen.getByRole('more')))
+
+    expect(screen.queryByTitle('title1')).toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+    expect(screen.queryByTitle('title3')).toBeInTheDocument()
+    expect(screen.queryByTitle('title4')).toBeInTheDocument()
+    expect(screen.queryByRole('more')).not.toBeInTheDocument()
+  })
+
+  it('should show empty page when loading', async () => {
+    fetch.responsePending()
+    await renderComponent()
+
+    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+    expect(screen.queryByRole('more')).not.toBeInTheDocument()
+  })
+
+  it('should disable more button when loading', async () => {
+    await renderComponent()
+
+    fetch.responsePending()
+    await act(async () => fireEvent.click(screen.getByRole('more')))
+
+    expect(screen.queryByRole('more')).toBeDisabled()
+  })
+
+  it('should reload content on page when refresh icon button clicked', async () => {
+    await renderComponent()
+
+    fetch.jsonResponse({content: [{...entry2}, {...entry3}], links: [],})
+    await act(async () => fireEvent.click(screen.getByRole('refresh')))
+
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ&feedTagEqual=a',
+    })
+    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+    expect(screen.queryByTitle('title3')).toBeInTheDocument()
+    expect(screen.queryByRole('focus')).not.toBeInTheDocument()
+  })
+
+  it('should reset focus when refreshing entries', async () => {
+    await renderComponent()
+
+    fetch.jsonResponseOnce({...entry1, seen: true})
+    await clickButtonNext()
+
+    fetch.jsonResponse({content: [{...entry1}, {...entry2}], links: [],})
+    await act(async () => fireEvent.click(screen.getByRole('refresh')))
+
+    expect(screen.queryByRole('focus')).not.toBeInTheDocument()
+  })
+
+  it('should retain focus when loading next page', async () => {
+    await renderComponent()
+
+    fetch.jsonResponseOnce({...entry1, seen: true})
+    await clickButtonNext()
+
+    fetch.jsonResponse({content: [{...entry3}, {...entry4}], links: [],})
+    await act(async () => fireEvent.click(screen.getByRole('more')))
+
+    expect(screen.queryByRole('focus')).toHaveTextContent('title1')
+  })
+
+  it('should render entries', async () => {
+    await renderComponent()
+
+    expect(screen.queryByTitle('title1')).toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+  })
+
+  it('should not fetch entries again if query does not changed', async () => {
+    await renderComponent()
+
+    await act(async () => fireEvent.change(screen.getByRole('search'), {target: {value: 'expectedQ'}}))
+
+    expect(fetch.requestCount()).toEqual(1)
   })
 })

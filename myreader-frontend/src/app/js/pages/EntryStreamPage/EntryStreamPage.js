@@ -1,23 +1,17 @@
-import React, {useEffect, useMemo, useRef} from 'react'
+import React, {useEffect, useMemo} from 'react'
+import {useHotkeys} from 'react-hotkeys-hook'
 import {IconButton} from '../../components'
-import {withAutofocusEntry} from '../../components/EntryList/withAutofocusEntry'
+import {useAutofocusEntry} from './useAutofocusEntry'
 import {useSettings} from '../../contexts/settings'
-import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
-import {useHotkeys} from '../../contexts/hotkeys'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
 import {useHistory, useSearchParams} from '../../hooks/router'
 import {SearchInput} from '../../components/SearchInput/SearchInput'
-import {EntryList as EntryListComponent} from '../../components/EntryList/EntryList'
+import {EntryList} from '../../components/EntryList/EntryList'
 import {useEntries} from '../../hooks/entries'
-
-const EntryList = withAutofocusEntry(EntryListComponent)
 
 export function EntryStreamPage() {
   const {pageSize: size, showUnseenEntries} = useSettings()
-  const {isDesktop} = useMediaBreakpoint()
-  const {onKeyUp} = useHotkeys()
   const searchParams = useSearchParams()
-  const ref = useRef(searchParams)
   const {push, reload} = useHistory()
 
   const query = useMemo(() => {
@@ -32,19 +26,22 @@ export function EntryStreamPage() {
     loading,
     fetchEntries,
     changeEntry,
+    setSeenFlag,
+    toggleSeenFlag,
     clearEntries
   } = useEntries()
 
-  useEffect(() => {
-    ref.current = searchParams
-  }, [searchParams])
+  const {
+    entryInFocusUuid,
+    setEntries,
+    focusNext,
+    focusPrevious,
+  } = useAutofocusEntry()
 
   const onChange = q => {
-    clearEntries()
     push({
       searchParams: {
         ...searchParams,
-        ...ref.current,
         q
       }
     })
@@ -56,48 +53,75 @@ export function EntryStreamPage() {
     reload()
   }
 
+  useHotkeys('right', () => {
+    focusNext()
+  })
+
+  useHotkeys('left' ,() => {
+    focusPrevious()
+  })
+
+  useHotkeys('escape' ,() => {
+    if (entryInFocusUuid) {
+      toggleSeenFlag(entryInFocusUuid)
+    }
+  }, [entryInFocusUuid])
+
   useEffect(() => {
     fetchEntries({query})
   }, [fetchEntries, query])
 
-  const actionPanel =
-    <React.Fragment>
-      <SearchInput
-        className='flex-grow'
-        onChange={onChange}
-        value={searchParams.q}
-      />
-      {isDesktop ?
-        <React.Fragment>
-          <IconButton
-            type='chevron-left'
-            onClick={() => onKeyUp({key: 'ArrowLeft'})}
-          />
-          <IconButton
-            type='chevron-right'
-            onClick={() => onKeyUp({key: 'ArrowRight'})}
-          />
-        </React.Fragment> : null
-      }
-      <IconButton
-        type='redo'
-        onClick={refresh}
-      />
-    </React.Fragment>
+  useEffect(() => {
+    setEntries(entries)
+  }, [entries, setEntries])
 
-  const listPanel =
-    <EntryList
-      entries={entries}
-      links={links}
-      loading={loading}
-      onChangeEntry={changeEntry}
-      onLoadMore={fetchEntries}
-    />
+  useEffect(() => {
+    if (entryInFocusUuid) {
+      setSeenFlag(entryInFocusUuid)
+    }
+  }, [entryInFocusUuid, setSeenFlag])
+
+  useEffect(() => {
+    clearEntries()
+  }, [clearEntries, searchParams])
 
   return (
     <ListLayout
-      actionPanel={actionPanel}
-      listPanel={listPanel}
+      actionPanel={
+        <>
+          <SearchInput
+            onChange={onChange}
+            value={searchParams.q}
+          />
+          <IconButton
+            className='hidden-phone hidden-tablet'
+            type='chevron-left'
+            role='previous'
+            onClick={focusPrevious}
+          />
+          <IconButton
+            className='hidden-phone hidden-tablet'
+            type='chevron-right'
+            role='next'
+            onClick={focusNext}
+          />
+          <IconButton
+            type='redo'
+            role='refresh'
+            onClick={refresh}
+          />
+        </>
+      }
+      listPanel={
+        <EntryList
+          entries={entries}
+          links={links}
+          loading={loading}
+          entryInFocusUuid={entryInFocusUuid}
+          onChangeEntry={changeEntry}
+          onLoadMore={fetchEntries}
+        />
+      }
     />
   )
 }

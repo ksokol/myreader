@@ -2,6 +2,9 @@ import React from 'react'
 import {shallow} from 'enzyme'
 import {EntryList} from './EntryList'
 
+const listItemSelector = '.my-entry-list__item'
+const loadMoreButtonSelector = '.my-button__load-more'
+
 describe('EntryList', () => {
 
   let props, commonProps, entries
@@ -28,9 +31,7 @@ describe('EntryList', () => {
     }]
 
     commonProps = {
-      entryInFocus: {
-        uuid: '2'
-      },
+      entryInFocusUuid: '2',
       onChangeEntry: jest.fn(),
     }
 
@@ -49,18 +50,18 @@ describe('EntryList', () => {
   const createWrapper = () => shallow(<EntryList {...props} />)
 
   it('should render each item of prop "entries" in a wrapper node', () =>  {
-    expect(createWrapper().find('.my-entry-list__item')).toHaveLength(2)
+    expect(createWrapper().find(listItemSelector)).toHaveLength(2)
   })
 
   it('should set key on wrapper nodes', () =>  {
-    const items = createWrapper().find('.my-entry-list__item')
+    const items = createWrapper().find(listItemSelector)
 
     expect(items.at(0).key()).toEqual(props.entries[0].uuid)
     expect(items.at(1).key()).toEqual(props.entries[1].uuid)
   })
 
   it('should pass each item of prop "entries" to an entry auto focus component', () =>  {
-    const items = createWrapper().find('.my-entry-list__item')
+    const items = createWrapper().find(listItemSelector)
 
     expect(items.at(0).find('EntryAutoFocus').props()).toEqual({
       item: props.entries[0],
@@ -109,7 +110,7 @@ describe('EntryList', () => {
     props.links = {}
 
     expect(createWrapper().find('IntersectionObserver').exists()).toEqual(false)
-    expect(createWrapper().find('.my-entry-list__item').at(1).find('EntryAutoFocus').props()).toEqual({
+    expect(createWrapper().find(listItemSelector).at(1).find('EntryAutoFocus').props()).toEqual({
       item: props.entries[1],
       onChangeEntry: commonProps.onChangeEntry,
       focusUuid: '2',
@@ -117,8 +118,8 @@ describe('EntryList', () => {
   })
 
   it('should set prop "focusUuid" to undefined when no entry is in focus', () =>  {
-    delete props.entryInFocus
-    const items = createWrapper().find('.my-entry-list__item')
+    delete props.entryInFocusUuid
+    const items = createWrapper().find(listItemSelector)
 
     expect(items.at(0).find('EntryAutoFocus').props()).toEqual(expect.objectContaining({
       focusUuid: undefined
@@ -144,17 +145,17 @@ describe('EntryList', () => {
   })
 
   it('should render load more button when next link exists', () =>  {
-    expect(createWrapper().find('.my-button__load-more').exists()).toEqual(true)
+    expect(createWrapper().find(loadMoreButtonSelector).exists()).toEqual(true)
   })
 
   it('should not render load more button when next link does not exist', () =>  {
     props.links = {}
 
-    expect(createWrapper().find('.my-button__load-more').exists()).toEqual(false)
+    expect(createWrapper().find(loadMoreButtonSelector).exists()).toEqual(false)
   })
 
   it('should pass expected props to button component', () =>  {
-    const loadMoreButton = createWrapper().find('.my-button__load-more')
+    const loadMoreButton = createWrapper().find(loadMoreButtonSelector)
 
     expect(loadMoreButton.props()).toEqual(expect.objectContaining({
       disabled: props.disabled
@@ -162,7 +163,7 @@ describe('EntryList', () => {
   })
 
   it('should trigger prop function "onLoadMore" when button load more clicked', () =>  {
-    createWrapper().find('.my-button__load-more').props().onClick()
+    createWrapper().find(loadMoreButtonSelector).props().onClick()
 
     expect(props.onLoadMore).toHaveBeenCalledWith(props.links.next)
   })

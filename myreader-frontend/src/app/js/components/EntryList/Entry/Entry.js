@@ -22,6 +22,7 @@ export class Entry extends Component {
       content: PropTypes.string
     }).isRequired,
     className: PropTypes.string,
+    role: PropTypes.string,
     onChangeEntry: PropTypes.func.isRequired,
     entryRef: PropTypes.func
   }
@@ -59,16 +60,18 @@ export class Entry extends Component {
     const {
       item,
       className,
-      entryRef
+      role,
+      entryRef,
     } = this.props
 
     const {
-      showMore
+      showMore,
     } = this.state
 
     return (
-      <div
+      <article
         className={`my-entry ${className}`}
+        role={role}
         ref={entryRef}
       >
         <div
@@ -76,6 +79,7 @@ export class Entry extends Component {
         >
           <div
             className='my-entry__title'
+            title={item.title}
           >
             <EntryTitle
               entry={item}
@@ -104,7 +108,7 @@ export class Entry extends Component {
           maybeVisible={showMore}
           content={item.content}
         />
-      </div>
+      </article>
     )
   }
 }

@@ -12,6 +12,7 @@ describe('Input', () => {
       type: 'expectedType',
       label: 'expectedLabel',
       name: 'expectedName',
+      role: 'expectedRole',
       value: 'expectedValue',
       placeholder: 'expected placeholder',
       autoComplete: 'expectedAutocomplete',
@@ -26,7 +27,7 @@ describe('Input', () => {
       onEnter: jest.fn(),
       onKeyUp: jest.fn(),
       a: 'b',
-      c: 'd'
+      c: 'd',
     }
   })
 
@@ -75,6 +76,7 @@ describe('Input', () => {
       type: 'expectedType',
       id: 'expectedId',
       name: 'expectedName',
+      role: 'expectedRole',
       value: 'expectedValue',
       placeholder: 'expected placeholder',
       autoComplete: 'expectedAutocomplete',

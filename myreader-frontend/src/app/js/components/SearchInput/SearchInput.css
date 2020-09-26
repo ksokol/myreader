@@ -1,6 +1,7 @@
 .my-search-input {
     align-items: center;
     display: flex;
+    flex-grow: 1;
 }
 
 .my-search-input > svg {

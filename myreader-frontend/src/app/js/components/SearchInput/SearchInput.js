@@ -1,29 +1,41 @@
 import './SearchInput.css'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
-import {Icon} from '../../components/Icon/Icon'
-import {Input} from '../../components/Input/Input'
-import withDebounce from '../../components/Input/withDebounce'
+import {useDebouncedCallback} from 'use-debounce'
+import {Icon} from '../Icon/Icon'
+import {Input} from '../Input/Input'
 import {isValuePresent} from '../../shared/utils'
 
-const DebounceInput = withDebounce(Input, 250)
+function sanitizeValue(value) {
+  return isValuePresent(value) ? value : ''
+}
 
 export function SearchInput(props) {
-  const onChange = ({target}) => {
-    props.onChange(target.value.trim() === '' ? undefined : target.value)
-  }
-  const value = isValuePresent(props.value) ? props.value : ''
+  const [currentValue, setCurrentValue] = useState(sanitizeValue(props.value))
+  const [onChange] = useDebouncedCallback(inputValue => {
+    props.onChange && props.onChange(inputValue.trim() === '' ? undefined : inputValue)
+  }, 250)
+
+  useEffect(() => {
+    setCurrentValue(sanitizeValue(props.value))
+  }, [props.value])
 
   return (
-    <div className={`my-search-input ${props.className}`}>
+    <div
+      className='my-search-input'
+    >
       <Icon
         type='search'
       />
-      <DebounceInput
+      <Input
         className='my-search-input__input'
         name='search-input'
-        value={value}
-        onChange={onChange}
+        role='search'
+        value={currentValue}
+        onChange={({target: {value}}) => {
+          setCurrentValue(value)
+          onChange(value)
+        }}
       />
     </div>
   )
@@ -31,6 +43,5 @@ export function SearchInput(props) {
 
 SearchInput.propTypes = {
   value: PropTypes.string,
-  className: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
 }
