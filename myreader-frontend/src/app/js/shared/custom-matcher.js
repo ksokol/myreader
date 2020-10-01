@@ -79,3 +79,7 @@ export function toMatchGetRequest(actual, expected) {
 export function toMatchPatchRequest(actual, expected) {
   return toMatchRequest.bind(this)(actual, {...expected, method: 'PATCH'})
 }
+
+export function toMatchPostRequest(actual, expected) {
+  return toMatchRequest.bind(this)(actual, {...expected, method: 'POST'})
+}

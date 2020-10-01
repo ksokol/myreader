@@ -132,7 +132,7 @@ export class Input extends React.Component {
         />
 
         {fieldValidation ? (
-          <div className='my-input__validations'>
+          <div className='my-input__validations' role='validations'>
             <span
               key={fieldValidation}
             >

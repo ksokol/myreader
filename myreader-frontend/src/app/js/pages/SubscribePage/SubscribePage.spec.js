@@ -1,164 +1,154 @@
 import React from 'react'
-import {mount} from 'enzyme'
-import SubscribePage from './SubscribePage'
-import {SUBSCRIPTION_URL} from '../../constants'
-import {subscriptionApi} from '../../api'
-import {flushPromises, rejected, resolved, pending} from '../../shared/test-utils'
-import {toast} from '../../components/Toast'
+import {Router} from 'react-router'
+import {createMemoryHistory} from 'history'
+import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
+import {SubscribePage} from './SubscribePage'
 
-/* eslint-disable react/prop-types */
-jest.mock('../../components', () => ({
-  SubscribeForm: () => null
-}))
+jest.unmock('react-router')
 
-jest.mock('../../contexts/locationState/withLocationState', () => ({
-  withLocationState: Component => Component
-}))
+const expectedUrl = 'expected url'
+const expectedError = 'expected error'
 
-jest.mock('../../api', () => ({
-  subscriptionApi: {}
-}))
-
-jest.mock('../../components/Toast', () => ({
-  toast: jest.fn()
-}))
-/* eslint-enable */
-
+const dialogErrorMessageRole = 'dialog-error-message'
 describe('SubscribePage', () => {
 
-  let props
+  let history
 
-  const createWrapper = () => mount(<SubscribePage {...props} />)
+  const renderComponent = () => {
+    render(
+      <Router history={history}>
+        <SubscribePage />
+      </Router>
+    )
+  }
 
   beforeEach(() => {
-    toast.mockClear()
-
-    props = {
-      historyReplace: jest.fn(),
-      showSuccessNotification: jest.fn(),
-      showErrorNotification: jest.fn()
-    }
+    history = createMemoryHistory()
   })
 
-  it('should pass expected props to component', () => {
-    expect(createWrapper().find('SubscribeForm').props()).toEqual(expect.objectContaining({
-      changePending: false,
-      validations: []
-    }))
+  it('should enable input and button when the page is presented', async () => {
+    renderComponent()
+
+    expect(screen.getByLabelText('Url')).toBeEnabled()
+    expect(screen.getByRole('button')).toBeEnabled()
+    expect(screen.queryByRole('validations')).not.toBeInTheDocument()
   })
 
-  it('should call subscriptionApi.subscribe when prop function "saveSubscribeEditForm" called', () => {
-    subscriptionApi.subscribe = resolved()
-    createWrapper().find('SubscribeForm').props().saveSubscribeEditForm({origin: 'url'})
+  it('should call api with entered url', async () => {
+    renderComponent()
+    await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
+    await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(subscriptionApi.subscribe).toHaveBeenCalledWith({
-      origin: 'url'
+    expect(fetch.mostRecent()).toMatchPostRequest({
+      url: 'api/2/subscriptions',
+      origin: expectedUrl,
     })
   })
 
-  it('should set prop "changePending" to true when subscriptionApi.subscribe called', async () => {
-    subscriptionApi.subscribe = pending()
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should disable input and button when the call to the api is pending', async () => {
+    fetch.responsePending()
+    renderComponent()
+    fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(true)
+    expect(screen.getByLabelText('Url')).toBeDisabled()
+    expect(screen.getByRole('button')).toBeDisabled()
   })
 
-  it('should set prop "changePending" to false when subscriptionApi.subscribe finished', async () => {
-    subscriptionApi.subscribe = resolved({uuid: 'uuid1'})
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should show an info message when the call to the api succeeded', async () => {
+    fetch.jsonResponseOnce({uuid: 'uuid1'})
+    renderComponent()
+    fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(false)
+    await waitFor(() => expect(screen.getByRole('dialog-info-message')).toHaveTextContent('Subscribed'))
   })
 
-  it('should trigger prop function "showSuccessNotification" when prop call to subscriptionApi.subscribe succeeded', async () => {
-    subscriptionApi.subscribe = resolved()
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should redirect to the feed detail page when the call to the api succeeded', async () => {
+    fetch.jsonResponseOnce({uuid: 'uuid1'})
+    renderComponent()
+    fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(toast).toHaveBeenCalledWith('Subscribed')
-  })
-
-  it('should redirect to feed detail page when call to subscriptionApi.subscribe succeeded', async () => {
-    subscriptionApi.subscribe = resolved({uuid: 'uuid1'})
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.update()
-
-    expect(props.historyReplace).toHaveBeenCalledWith({
-      pathname: SUBSCRIPTION_URL,
-      params: {
-        uuid: 'uuid1'
-      }
+    await waitFor(() => {
+      expect(history.location).toEqual(expect.objectContaining({
+        pathname: '/app/subscriptions/uuid1',
+      }))
     })
   })
 
-  it('should pass state "validations" to feed edit page when call to subscriptionApi.subscribe failed', async () => {
-    subscriptionApi.subscribe = rejected({status: 400, data: {errors: ['error']}})
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should present validation errors when the call to the api failed with an validation error', async () => {
+    fetch.rejectResponse({status: 400, data: {errors: [{field: 'origin', defaultMessage: expectedError}]}})
+    renderComponent()
+    await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
+    await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(wrapper.find('SubscribeForm').prop('validations')).toEqual(['error'])
+    expect(screen.getByRole('validations')).toHaveTextContent(expectedError)
+    expect(screen.queryByRole(dialogErrorMessageRole)).not.toBeInTheDocument()
   })
 
-  it('should clear state "validations" when subscriptionApi.subscribe called again', async () => {
-    subscriptionApi.subscribe = rejected({status: 400, data: {fieldErrors: ['error']}})
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    wrapper.update()
+  it('should not present any validation errors when subsequent call to the api succeeded', async () => {
+    fetch.rejectResponse({status: 400, data: {errors: [{field: 'origin', defaultMessage: expectedError}]}})
+    renderComponent()
+    await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
+    await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(wrapper.find('SubscribeForm').prop('validations')).toEqual([])
+    fetch.jsonResponseOnce({uuid: 'uuid1'})
+    await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
+    await act(async () => fireEvent.click(screen.getByRole('button')))
+
+    await waitFor(() => expect(screen.queryByRole('validations')).not.toBeInTheDocument())
   })
 
-  it('should not pass state "validations" to feed edit page when call to subscriptionApi.subscribe failed', async () => {
-    subscriptionApi.subscribe = rejected({status: 401, data: {fieldErrors: ['error']}})
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should not present any validation errors when the call to the api failed with some other error', async () => {
+    fetch.rejectResponse({status: 401})
+    await renderComponent()
+    await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
+    await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(wrapper.find('SubscribeForm').prop('validations')).toEqual([])
+    await waitFor(() => expect(screen.queryByRole('validations')).not.toBeInTheDocument())
   })
 
-  it('should set prop "changePending" to false when call to subscriptionApi.subscribe failed', async () => {
-    subscriptionApi.subscribe = rejected()
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should enable input and button when the call to the api failed with a validation error', async () => {
+    fetch.rejectResponse({status: 400, data: {errors: [{field: 'origin', defaultMessage: expectedError}]}})
+    renderComponent()
+    fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(wrapper.find('SubscribeForm').prop('changePending')).toEqual(false)
+    await waitFor(() => {
+      expect(screen.getByLabelText('Url')).toBeEnabled()
+      expect(screen.getByRole('button')).toBeEnabled()
+    })
   })
 
-  it('should trigger prop function "props.showErrorNotification" when call to subscriptionApi.subscribe failed with HTTP != 400', async () => {
-    subscriptionApi.subscribe = rejected({data: 'expected error'})
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should enable input and button when the call to the api failed with some other error', async () => {
+    fetch.rejectResponse({data: expectedError})
+    renderComponent()
+    fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(toast).toHaveBeenCalledWith('expected error', {error: true})
+    await waitFor(() => {
+      expect(screen.getByLabelText('Url')).toBeEnabled()
+      expect(screen.getByRole('button')).toBeEnabled()
+    })
   })
 
-  it('should not trigger prop function "props.showErrorNotification" when call to subscriptionApi.subscribe failed with HTTP == 400', async () => {
-    subscriptionApi.subscribe = rejected({status: 400, data: {fieldErrors: ['error']}})
-    const wrapper = createWrapper()
-    wrapper.find('SubscribeForm').props().saveSubscribeEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should present an error message when the call to the api failed with some other error', async () => {
+    fetch.rejectResponse({data: expectedError})
+    renderComponent()
+    await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
+    await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(toast).not.toHaveBeenCalled()
+    await waitFor(() => expect(screen.getByRole(dialogErrorMessageRole)).toHaveTextContent(expectedError))
+  })
+
+  it('should not present an error message when the call to the api failed with an validation error', async () => {
+    fetch.rejectResponse({status: 400, data: {errors: [{field: 'origin', defaultMessage: expectedError}]}})
+    renderComponent()
+    await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
+    await act(async () => fireEvent.click(screen.getByRole('button')))
+
+    expect(screen.getByRole('validations')).toHaveTextContent(expectedError)
+    await waitFor(() => expect(screen.queryByRole(dialogErrorMessageRole)).not.toBeInTheDocument())
   })
 })

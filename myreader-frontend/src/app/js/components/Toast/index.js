@@ -8,6 +8,7 @@ function showToasts(notification) {
   if (!containerDomNode) {
     containerDomNode = document.createElement('div')
     containerDomNode.classList.add('my-toast')
+    containerDomNode.setAttribute('role', 'dialog')
     document.body.append(containerDomNode)
   }
 

@@ -1,5 +1,5 @@
 import {useContext, useMemo} from 'react'
-import {useHistory as useRouterHistory, useLocation} from 'react-router'
+import {generatePath, useHistory as useRouterHistory, useLocation} from 'react-router'
 import LocationStateContext from '../contexts/locationState/LocationStateContext'
 
 function toSearchParams(search) {
@@ -37,8 +37,15 @@ export function useHistory() {
     })
   }
 
+  const replace = ({pathname, params}) => {
+    history.replace({
+      pathname: generatePath(pathname, {...params})
+    })
+  }
+
   return {
     push,
+    replace,
     reload: context.reload
   }
 }

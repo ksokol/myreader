@@ -2,7 +2,6 @@ import React from 'react'
 import {Redirect, Route, Switch} from 'react-router'
 import {
   FeedEditPage,
-  SubscribePage,
   SubscriptionEditPage
 } from './pages'
 import {secured} from './components'
@@ -33,6 +32,7 @@ import {LoadingBar} from './components/LoadingBar/LoadingBar'
 import {LoginPage} from './pages/LoginPage/LoginPage'
 import {LogoutPage} from './pages/LogoutPage/LogoutPage'
 import {BookmarkListPage} from './pages/BookmarkListPage/BookmarkListPage'
+import {SubscribePage} from './pages/SubscribePage/SubscribePage'
 
 const withSidenav = () => (
   <SubscriptionProvider>

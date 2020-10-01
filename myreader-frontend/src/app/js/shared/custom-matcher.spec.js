@@ -219,4 +219,95 @@ describe('custom matcher', () => {
       }
     })
   })
+
+
+  describe('toMatchPostRequest', () => {
+
+    it('should match', () => {
+      expect({
+        method: 'POST',
+        url: 'some/url',
+      }).toMatchPostRequest({
+        url: 'some/url',
+      })
+    })
+
+    it('should match with body', () => {
+      expect({
+        method: 'POST',
+        url: 'some/url',
+        body: JSON.stringify({
+          a: 'b',
+        }),
+      }).toMatchPostRequest({
+        url: 'some/url',
+        body: {
+          a: 'b',
+        }
+      })
+    })
+
+    it('should not match when url is empty', () => {
+      try {
+        expect({
+          method: 'POST',
+          url: 'some/url',
+        }).toMatchPostRequest({
+          url: ''
+        })
+        testFail()
+      } catch {
+        // ignore
+      }
+    })
+
+    it('should not match when search is not equal', () => {
+      try {
+        expect({
+          method: 'POST',
+          url: 'some/url?a=b',
+        }).toMatchPostRequest({
+          url: 'some/url'
+        })
+        testFail()
+      } catch {
+        // ignore
+      }
+    })
+
+    it('should not match when method is not equal', () => {
+      try {
+        expect({
+          method: 'GET',
+          url: 'some/url',
+        }).toMatchPostRequest({
+          url: 'some/url'
+        })
+        testFail()
+      } catch {
+        // ignore
+      }
+    })
+
+    it('should not match when body is not equal', () => {
+      try {
+        expect({
+          method: 'POST',
+          url: 'some/url',
+          body: JSON.stringify({
+            a: 'b',
+            c: 'd',
+          }),
+        }).toMatchPostRequest({
+          url: 'some/url',
+          body: {
+            a: 'b'
+          }
+        })
+        testFail()
+      } catch {
+        // ignore
+      }
+    })
+  })
 })

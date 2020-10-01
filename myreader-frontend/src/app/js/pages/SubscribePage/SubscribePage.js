@@ -1,63 +1,41 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, {useCallback, useState} from 'react'
 import {SubscribeForm} from '../../components'
-import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {SUBSCRIPTION_URL} from '../../constants'
 import {subscriptionApi} from '../../api'
 import {toast} from '../../components/Toast'
+import {useHistory} from '../../hooks/router'
 
-class SubscribePage extends React.Component {
+export function SubscribePage() {
+  const [pending, setPending] = useState(false)
+  const [validations, setValidations] = useState([])
+  const {replace} = useHistory()
 
-  static propTypes = {
-    historyReplace: PropTypes.func.isRequired
-  }
-
-  state = {
-    changePending: false,
-    validations: []
-  }
-
-  onSaveNewSubscription = async subscription => {
-    this.setState({
-      changePending: true,
-      validations: []
-    })
+  const onSaveNewSubscription = useCallback(async subscription => {
+    setPending(true)
+    setValidations([])
 
     try {
       const {uuid} = await subscriptionApi.subscribe(subscription)
       toast('Subscribed')
-      this.props.historyReplace({pathname: SUBSCRIPTION_URL, params: {uuid}})
+      replace({pathname: SUBSCRIPTION_URL, params: {uuid}})
     } catch (error) {
+      setPending(false)
+
       if (error.status === 400) {
-        this.setState({
-          validations: error.data.errors
-        })
+        setValidations(error.data.errors)
       }
 
       if (error.status !== 400) {
         toast(error.data, {error: true})
       }
-    } finally {
-      this.setState({
-        changePending: false
-      })
     }
-  }
+  }, [replace])
 
-  render() {
-    const {
-      changePending,
-      validations
-    } = this.state
-
-    return (
-      <SubscribeForm
-        changePending={changePending}
-        validations={validations}
-        saveSubscribeEditForm={this.onSaveNewSubscription}
-      />
-    )
-  }
+  return (
+    <SubscribeForm
+      changePending={pending}
+      validations={validations}
+      saveSubscribeEditForm={onSaveNewSubscription}
+    />
+  )
 }
-
-export default withLocationState(SubscribePage)

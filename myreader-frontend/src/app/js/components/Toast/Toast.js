@@ -31,10 +31,12 @@ const ToastItem = ({notification, dispatch}) => {
   }, [callback])
 
   const typeClass = notification.type === 'error' ? 'my-toast__item--error' : ''
+  const role = notification.type === 'error' ? 'dialog-error-message' : 'dialog-info-message'
 
   return (
     <div
       className={`my-toast__item ${typeClass}`}
+      role={role}
       onClick={() => dispatch({type: 'remove', notification})}>
       {notification.text}
     </div>
@@ -54,10 +56,10 @@ export const Toast = ({notification}) => {
 
   useEffect(() => dispatch({type: 'add', notification}), [notification])
 
-  return state.map(notification =>
+  return state.map(n =>
     <ToastItem
-      key={notification.id}
-      notification={notification}
+      key={n.id}
+      notification={n}
       dispatch={dispatch}
     />
   )
