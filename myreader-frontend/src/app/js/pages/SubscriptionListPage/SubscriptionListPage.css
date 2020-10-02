@@ -1,21 +1,21 @@
-.my-subscription-list {
+.my-subscription-list-page {
     padding: 0 16px;
 }
 
-.my-subscription-list__item {
+.my-subscription-list-page__item {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     cursor: pointer;
     padding: 16px 0;
 }
 
-.my-subscription-list__item-heading {
+.my-subscription-list-page__item-heading {
     color: #000000;
     letter-spacing: 0.01em;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.my-subscription-list__item > span {
+.my-subscription-list-page__item > span {
     color: rgba(0, 0, 0, 0.54);
     font-size: 14px;
     font-weight: 500;
