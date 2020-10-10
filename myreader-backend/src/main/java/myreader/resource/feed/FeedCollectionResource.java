@@ -8,17 +8,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import static myreader.resource.ResourceConstants.FEEDS;
 
-/**
- * @author Kamill Sokol
- */
 @RestController
-@RequestMapping(value = "api/2/feeds")
 public class FeedCollectionResource {
 
     private final PagedResourcesAssembler<Feed> pagedResourcesAssembler;
@@ -35,12 +30,11 @@ public class FeedCollectionResource {
         this.assembler = assembler;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping(FEEDS)
     public PagedModel<FeedGetResponse> get() {
-        List<Feed> feeds = feedRepository.findAll();
+        var feeds = feedRepository.findAllByOrderByCreatedAtDesc();
 
-        // TODO Add proper pagination
-        PageRequest pageRequest = PageRequest.of(0, feeds.size());
+        var pageRequest = PageRequest.of(0, feeds.size());
         return pagedResourcesAssembler.toModel(new PageImpl<>(feeds, pageRequest, feeds.size()), assembler);
     }
 }

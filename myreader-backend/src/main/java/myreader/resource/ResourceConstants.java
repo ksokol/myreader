@@ -1,8 +1,5 @@
 package myreader.resource;
 
-/**
- * @author Kamill Sokol
- */
 public final class ResourceConstants {
 
     private ResourceConstants() {
@@ -13,7 +10,7 @@ public final class ResourceConstants {
 
     private static final String API = "/api/2";
 
-    private static final String FEEDS = API + "/feeds";
+    public static final String FEEDS = API + "/feeds";
 
     public static final String FEED = FEEDS + "/" + ID_VARIABLE;
     public static final String FEED_FETCH_ERROR = FEED + "/fetchError";

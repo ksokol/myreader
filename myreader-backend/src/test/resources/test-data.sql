@@ -7,7 +7,7 @@ delete from fetch_error;
 delete from feed;
 delete from user;
 
-insert into user(user_id,user_email,user_password,user_role) values (0,'user0@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_ADMIN');
+insert into user(user_id,user_email,user_password,user_role) values (0,'admin@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_ADMIN');
 insert into user(user_id,user_email,user_password,user_role) values (1,'user1@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
 insert into user(user_id,user_email,user_password,user_role) values (2,'user2@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
 insert into user(user_id,user_email,user_password,user_role) values (3,'user3@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');

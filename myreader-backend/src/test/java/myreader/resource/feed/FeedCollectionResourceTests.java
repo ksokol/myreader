@@ -1,67 +1,118 @@
 package myreader.resource.feed;
 
-import myreader.test.TestConstants;
+import myreader.entity.Feed;
+import myreader.entity.FetchError;
+import myreader.entity.Subscription;
+import myreader.entity.User;
+import myreader.test.TestUser;
+import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+
+import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
+@AutoConfigureTestEntityManager
+@Transactional
+// TODO remove me together with test-data.sql
+@Sql(statements = {
+    "delete from user_feed_entry",
+    "delete from exclusion_pattern",
+    "delete from user_feed",
+    "delete from user_feed_tag",
+    "delete from entry",
+    "delete from fetch_error",
+    "delete from feed",
+    "delete from user"
+})
 @SpringBootTest
-@Sql("classpath:test-data.sql")
-@WithMockUser(username = TestConstants.ADMIN, roles = { "ADMIN" })
 @WithTestProperties
-public class FeedCollectionResourceTests {
+class FeedCollectionResourceTests {
 
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private TestEntityManager em;
+
+    private Feed feed1;
+    private Feed feed2;
+
+    @BeforeEach
+    public void before() {
+        var user = new User("email");
+        em.persist(user);
+
+        feed1 = new Feed("http://localhost", "expected title1");
+        feed1.setTitle("expected title1");
+        feed1.setUrl("http://url1");
+        feed1.setLastModified("Thu, 27 Mar 2013 13:53:36 GMT");
+        feed1.setFetched(10);
+        feed1.setCreatedAt(new Date(1000));
+        feed1.setFetchErrors(Set.of(new FetchError()));
+        feed1 = em.persist(feed1);
+        em.persist(new Subscription(user, feed1));
+
+        var fetchError1 = new FetchError();
+        fetchError1.setFeed(feed1);
+        em.persist(fetchError1);
+
+        feed2 = new Feed("http://localhost", "expected title2");
+        feed2.setTitle("expected title2");
+        feed2.setUrl("http://url2");
+        feed2.setLastModified("Thu, 27 Mar 2014 13:53:36 GMT");
+        feed2.setFetched(20);
+        feed2.setCreatedAt(new Date(2000));
+        feed2 = em.persist(feed2);
+        em.persist(new Subscription(user, feed2));
+    }
+
+    @WithAuthenticatedUser(TestUser.ADMIN)
     @Test
-    public void testCollectionResource() throws Exception {
+    void shouldReturnFeedsSortedByCreatedAtDescending() throws Exception {
         mockMvc.perform(get("/api/2/feeds"))
                 .andExpect(jsonPath("$.links[0].rel", is("self")))
-                .andExpect(jsonPath("$.links[0].href", endsWith("/api/2/feeds?page=0&size=20")))
-                .andExpect(jsonPath("$.content[0].uuid", is("0")))
-                .andExpect(jsonPath("$.content[0].title", is("The Java Posse")))
-                .andExpect(jsonPath("$.content[0].url", is("http://feeds.feedburner.com/javaposse")))
-                .andExpect(jsonPath("$.content[0].lastModified", is("Thu, 27 Mar 2014 13:23:32 GMT")))
-                .andExpect(jsonPath("$.content[0].fetched", is(282)))
+                .andExpect(jsonPath("$.links[0].href", endsWith("/api/2/feeds?page=0&size=2")))
+                .andExpect(jsonPath("$.content[0].uuid", is(feed2.getId().toString())))
+                .andExpect(jsonPath("$.content[0].title", is("expected title2")))
+                .andExpect(jsonPath("$.content[0].url", is("http://url2")))
+                .andExpect(jsonPath("$.content[0].lastModified", is("Thu, 27 Mar 2014 13:53:36 GMT")))
+                .andExpect(jsonPath("$.content[0].fetched", is(20)))
                 .andExpect(jsonPath("$.content[0].hasErrors", is(false)))
-                .andExpect(jsonPath("$.content[0].createdAt", is("2011-04-15T22:20:46.000+00:00")))
-                .andExpect(jsonPath("$.content[1].uuid", is("1")))
-                .andExpect(jsonPath("$.content[2].uuid", is("2")))
-                .andExpect(jsonPath("$.content[3].uuid", is("3")))
-                .andExpect(jsonPath("$.content[4].uuid", is("4")))
-                .andExpect(jsonPath("$.content[5].uuid", is("5")))
-                .andExpect(jsonPath("$.content[6].uuid", is("6")))
-                .andExpect(jsonPath("$.content[7].uuid", is("7")))
-                .andExpect(jsonPath("$.content[8].uuid", is("8")))
-                .andExpect(jsonPath("$.content[9].uuid", is("9")))
-                .andExpect(jsonPath("$.content[10].uuid", is("10")))
-                .andExpect(jsonPath("$.content[11].uuid", is("11")))
-                .andExpect(jsonPath("$.content[12].uuid", is("12")))
-                .andExpect(jsonPath("$.content[13].uuid", is("13")))
-                .andExpect(jsonPath("$.content[14].uuid", is("14")))
-                .andExpect(jsonPath("$.content[15].uuid", is("15")))
-                .andExpect(jsonPath("$.content[16].uuid", is("16")))
-                .andExpect(jsonPath("$.content[17].uuid", is("17")))
-                .andExpect(jsonPath("$.content[18].uuid", is("18")))
-                .andExpect(jsonPath("$.content[19].uuid", is("100")))
-                .andExpect(jsonPath("$.page.totalElements", is(20)));
+                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:02.000+00:00")))
+                .andExpect(jsonPath("$.content[1].uuid", is(feed1.getId().toString())))
+                .andExpect(jsonPath("$.content[1].title", is("expected title1")))
+                .andExpect(jsonPath("$.content[1].url", is("http://url1")))
+                .andExpect(jsonPath("$.content[1].lastModified", is("Thu, 27 Mar 2013 13:53:36 GMT")))
+                .andExpect(jsonPath("$.content[1].fetched", is(10)))
+                .andExpect(jsonPath("$.content[1].hasErrors", is(true)))
+                .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:01.000+00:00")))
+                .andExpect(jsonPath("$.page.totalElements", is(2)));
+    }
+
+    @WithAuthenticatedUser(TestUser.USER4)
+    @Test
+    void shouldDenyAccessToFeedsForNormalUser() throws Exception {
+        mockMvc.perform(get("/api/2/feeds"))
+                .andExpect(status().isForbidden());
     }
 }

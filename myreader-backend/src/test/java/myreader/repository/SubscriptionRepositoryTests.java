@@ -6,31 +6,28 @@ import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.User;
 import myreader.test.WithTestProperties;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest(showSql = false)
 @WithTestProperties
-public class SubscriptionRepositoryTests {
+class SubscriptionRepositoryTests {
 
     private static final long FEED_ENTRY_ID = 1L;
 
@@ -45,25 +42,27 @@ public class SubscriptionRepositoryTests {
     private Subscription subscription1;
     private Subscription subscription2;
 
-    @Before
+    @BeforeEach
     public void before() {
         user = testEntityManager.persistFlushFind(new User("example@localhost"));
         feed = testEntityManager.persistFlushFind(new Feed("http://example1.com", "expected feed title1"));
-        Feed feed2 = testEntityManager.persistFlushFind(new Feed("http://example2.com", "expected feed title2"));
+        var feed2 = testEntityManager.persistFlushFind(new Feed("http://example2.com", "expected feed title2"));
 
         subscription1 = new Subscription(user, feed);
         subscription1.setTitle("expected title1");
+        subscription1.setCreatedAt(new Date(1000));
         subscription1 = testEntityManager.persistFlushFind(subscription1);
 
         subscription2 = new Subscription(user, feed2);
         subscription2.setTitle("expected title2");
+        subscription2.setCreatedAt(new Date(2000));
         subscription2 = testEntityManager.persistFlushFind(subscription2);
 
-        FeedEntry fe1 = testEntityManager.persistFlushFind(new FeedEntry(subscription1.getFeed()));
-        FeedEntry fe2 = testEntityManager.persistFlushFind(new FeedEntry(subscription1.getFeed()));
+        var fe1 = testEntityManager.persistFlushFind(new FeedEntry(subscription1.getFeed()));
+        var fe2 = testEntityManager.persistFlushFind(new FeedEntry(subscription1.getFeed()));
 
-        SubscriptionEntry subscriptionEntry1 = new SubscriptionEntry(subscription1, fe1);
-        SubscriptionEntry subscriptionEntry2 = new SubscriptionEntry(subscription1, fe2);
+        var subscriptionEntry1 = new SubscriptionEntry(subscription1, fe1);
+        var subscriptionEntry2 = new SubscriptionEntry(subscription1, fe2);
 
         subscriptionEntry1.setSeen(false);
         subscriptionEntry2.setSeen(false);
@@ -74,7 +73,7 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void updateLastFeedEntry() {
+    void updateLastFeedEntry() {
         subscriptionRepository.updateLastFeedEntryId(FEED_ENTRY_ID, subscription1.getId());
         testEntityManager.clear();
 
@@ -85,38 +84,38 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void updateLastFeedEntryIdAndIncrementFetchCount() {
+    void updateLastFeedEntryIdAndIncrementFetchCount() {
         subscriptionRepository.updateLastFeedEntryIdAndIncrementFetchCount(FEED_ENTRY_ID, subscription1.getId());
         testEntityManager.clear();
 
-        Subscription actual  = testEntityManager.find(Subscription.class, subscription1.getId());
+        var actual  = testEntityManager.find(Subscription.class, subscription1.getId());
 
         assertThat(actual, hasProperty("lastFeedEntryId", is(FEED_ENTRY_ID)));
         assertThat(actual, hasProperty("fetchCount", is(1)));
     }
 
     @Test
-    public void shouldReturnZeroWhenCountingByUnknownFeedId() {
+    void shouldReturnZeroWhenCountingByUnknownFeedId() {
         assertThat(subscriptionRepository.countByFeedId(999L), is(0));
     }
 
     @Test
-    public void shouldReturnOneWhenCountingByFeedWithSubscription() {
-        User user = testEntityManager.persistFlushFind(new User("email"));
-        Feed feed = testEntityManager.persistFlushFind(new Feed("http://url1", "feed1"));
+    void shouldReturnOneWhenCountingByFeedWithSubscription() {
+        var user = testEntityManager.persistFlushFind(new User("email"));
+        var feed = testEntityManager.persistFlushFind(new Feed("http://url1", "feed1"));
         testEntityManager.persistAndFlush(new Subscription(user, feed));
 
         assertThat(subscriptionRepository.countByFeedId(feed.getId()), is(1));
     }
 
     @Test
-    public void shouldRecalculateSubscriptionUnseenCount() {
+    void shouldRecalculateSubscriptionUnseenCount() {
         assertThat(subscription1.getUnseen(), is(2));
     }
 
     @Test
-    public void shouldFindByIdAndUserIdForUser1() {
-        Subscription actual = subscriptionRepository
+    void shouldFindByIdAndUserIdForUser1() {
+        var actual = subscriptionRepository
                 .findByIdAndUserId(subscription1.getId(), user.getId())
                 .orElseThrow(AssertionError::new);
 
@@ -124,13 +123,13 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void shouldFindByIdAndUserIdForUser2() {
-        User user2 = testEntityManager.persistFlushFind(new User("example2@localhost"));
-        Subscription subscription2 = new Subscription(user2, feed);
+    void shouldFindByIdAndUserIdForUser2() {
+        var user2 = testEntityManager.persistFlushFind(new User("example2@localhost"));
+        var subscription2 = new Subscription(user2, feed);
         subscription2.setTitle("expected title2");
         subscription2 = testEntityManager.persistFlushFind(subscription2);
 
-        Subscription subscription = subscriptionRepository
+        var subscription = subscriptionRepository
                 .findByIdAndUserId(subscription2.getId(), user2.getId())
                 .orElseThrow(AssertionError::new);
 
@@ -138,17 +137,17 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void shouldNotFindByIdAndUserIdForUser2() {
-        User user2 = testEntityManager.persistFlushFind(new User("example2@localhost"));
-        Optional<Subscription> actual = subscriptionRepository
+    void shouldNotFindByIdAndUserIdForUser2() {
+        var user2 = testEntityManager.persistFlushFind(new User("example2@localhost"));
+        var actual = subscriptionRepository
                 .findByIdAndUserId(subscription1.getId(), user2.getId());
 
         assertThat(actual.isPresent(), is(false));
     }
 
     @Test
-    public void shouldFindAllByNegativeUnseenCount() {
-        List<Subscription> actual = subscriptionRepository.findAllByUnseenGreaterThanAndUserId(-1, user.getId());
+    void shouldFindAllByNegativeUnseenCount() {
+        var actual = subscriptionRepository.findAllByUnseenGreaterThanAndUserId(-1, user.getId());
 
         assertThat(actual, hasItems(
                 allOf(
@@ -163,15 +162,15 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void shouldNotFindAnyByNegativeUnseenCountAndUnknownUserId() {
-        List<Subscription> actual = subscriptionRepository.findAllByUnseenGreaterThanAndUserId(-1, 999L);
+    void shouldNotFindAnyByNegativeUnseenCountAndUnknownUserId() {
+        var actual = subscriptionRepository.findAllByUnseenGreaterThanAndUserId(-1, 999L);
 
         assertThat(actual, emptyIterable());
     }
 
     @Test
-    public void shouldFindAllByPositiveUnseenCount() {
-        List<Subscription> actual = subscriptionRepository.findAllByUnseenGreaterThanAndUserId(1, user.getId());
+    void shouldFindAllByPositiveUnseenCount() {
+        var actual = subscriptionRepository.findAllByUnseenGreaterThanAndUserId(1, user.getId());
 
         assertThat(actual, hasItems(
                 allOf(
@@ -182,24 +181,34 @@ public class SubscriptionRepositoryTests {
     }
 
     @Test
-    public void shouldNotFindByUnknownFeedUrl() {
-        Optional<Subscription> actual = subscriptionRepository.findByFeedUrlAndUserId("unknown", user.getId());
+    void shouldNotFindByUnknownFeedUrl() {
+        var actual = subscriptionRepository.findByFeedUrlAndUserId("unknown", user.getId());
 
         assertThat(actual.isPresent(), is(false));
     }
 
     @Test
-    public void shouldNotFindByFeedUrlAndUnknownUserId() {
-        Optional<Subscription> actual = subscriptionRepository.findByFeedUrlAndUserId(feed.getUrl(), 999L);
+    void shouldNotFindByFeedUrlAndUnknownUserId() {
+        var actual = subscriptionRepository.findByFeedUrlAndUserId(feed.getUrl(), 999L);
 
         assertThat(actual.isPresent(), is(false));
     }
 
     @Test
-    public void shouldindByFeedUrl() {
-        Subscription actual = subscriptionRepository.findByFeedUrlAndUserId(feed.getUrl(), user.getId())
+    void shouldindByFeedUrl() {
+        var actual = subscriptionRepository.findByFeedUrlAndUserId(feed.getUrl(), user.getId())
                 .orElseThrow(AssertionError::new);
 
         assertThat(actual, hasProperty("id", is(subscription1.getId())));
+    }
+
+    @Test
+    void shouldOrderByCreatedAtDescending() {
+        var actual = subscriptionRepository.findAllByUnseenGreaterThanAndUserId(-1, user.getId());
+
+        assertThat(actual, contains(
+                hasProperty("id", is(subscription2.getId())),
+                hasProperty("id", is(subscription1.getId()))
+        ));
     }
 }

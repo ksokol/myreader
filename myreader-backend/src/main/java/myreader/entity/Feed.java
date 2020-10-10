@@ -37,10 +37,7 @@ public class Feed {
     /**
      * Default constructor for Hibernate.
      */
-    public Feed() {
-        //TODO
-        this.createdAt = new Date();
-    }
+    public Feed() {}
 
     /**
      * @deprecated Use {@link #Feed(String, String)} instead.
@@ -148,10 +145,11 @@ public class Feed {
         this.fetchErrors = fetchErrors;
     }
 
-    // TODO
     @PrePersist
     public void onCreate() {
-        this.createdAt = new Date();
+        if (this.createdAt == null) {
+            this.createdAt = new Date();
+        }
     }
 
     @Column(columnDefinition = "INT DEFAULT 0")

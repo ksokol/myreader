@@ -1,28 +1,33 @@
 package myreader.security;
 
 import myreader.Starter;
-import myreader.test.TestConstants;
+import myreader.entity.User;
+import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.Cookie;
+import javax.transaction.Transactional;
 
 import static java.util.Collections.singletonList;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 import static myreader.config.UrlMappings.LOGOUT;
+import static myreader.test.TestUser.ADMIN;
+import static myreader.test.TestUser.USER1;
 import static myreader.test.request.RequestedWithHeaderPostProcessors.xmlHttpRequest;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -34,65 +39,90 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-@Sql("classpath:test-data.sql")
+@AutoConfigureTestEntityManager
+@Transactional
+// TODO remove me together with test-data.sql
+@Sql(statements = {
+    "delete from user_feed_entry",
+    "delete from exclusion_pattern",
+    "delete from user_feed",
+    "delete from user_feed_tag",
+    "delete from entry",
+    "delete from fetch_error",
+    "delete from feed",
+    "delete from user"
+})
 @SpringBootTest(classes = { Starter.class, ApiSecurityTests.TestConfiguration.class })
 @WithTestProperties
-public class ApiSecurityTests {
+class ApiSecurityTests {
 
     private static final String API_2 = "/api/2";
 
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private TestEntityManager em;
+
+    @BeforeEach
+    public void setUp() {
+        var user1 = new User(USER1.email);
+        user1.setPassword(USER1.passwordHash);
+        user1.setRole(USER1.role);
+        em.persist(user1);
+
+        var user2 = new User(ADMIN.email);
+        user2.setPassword(ADMIN.passwordHash);
+        user2.setRole(ADMIN.role);
+        em.persist(user2);
+    }
+
     @Test
-    public void testApiUnauthorizedWithRequestWithAjax() throws Exception {
+    void testApiUnauthorizedWithRequestWithAjax() throws Exception {
         mockMvc.perform(get(API_2 + "/sub")
                 .with(xmlHttpRequest()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void testApiUnauthorized() throws Exception {
+    void testApiUnauthorized() throws Exception {
         mockMvc.perform(get(API_2 + "/sub"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void testSuccessfulUserAuthorization() throws Exception {
+    void testSuccessfulUserAuthorization() throws Exception {
         mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", TestConstants.USER1)
-                .param("password", TestConstants.DEFAULT_PASSWORD))
+                .param("username", USER1.email)
+                .param("password", USER1.password))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.roles", is(singletonList("USER"))));
     }
 
     @Test
-    public void testSuccessfulAdminAuthorization() throws Exception {
+    void testSuccessfulAdminAuthorization() throws Exception {
         mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", TestConstants.USER0)
-                .param("password", TestConstants.DEFAULT_PASSWORD))
+                .param("username", ADMIN.email)
+                .param("password", ADMIN.password))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.roles", is(singletonList("ADMIN"))));
     }
 
     @Test
-    public void testUnsuccessfulAuthorization() throws Exception {
+    void testUnsuccessfulAuthorization() throws Exception {
         mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", TestConstants.USER1)
+                .param("username", USER1.email)
                 .param("password", "wrong"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void testRememberMeWithBrowser() throws Exception {
-        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
-                .param("username", TestConstants.USER1)
-                .param("password", TestConstants.DEFAULT_PASSWORD))
+    void testRememberMeWithBrowser() throws Exception {
+        var rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+                .param("username", USER1.email)
+                .param("password", USER1.password))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse().getCookie("remember-me");
@@ -103,11 +133,11 @@ public class ApiSecurityTests {
     }
 
     @Test
-    public void testRememberMeWithAjax() throws Exception {
-        Cookie rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
+    void testRememberMeWithAjax() throws Exception {
+        var rememberMeCookie = mockMvc.perform(post(LOGIN_PROCESSING.mapping())
                 .with(xmlHttpRequest())
-                .param("username", TestConstants.USER1)
-                .param("password", TestConstants.DEFAULT_PASSWORD))
+                .param("username", USER1.email)
+                .param("password", USER1.password))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse().getCookie("remember-me");
@@ -118,8 +148,8 @@ public class ApiSecurityTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER1)
-    public void testLogoutWithBrowser() throws Exception {
+    @WithAuthenticatedUser(USER1)
+    void testLogoutWithBrowser() throws Exception {
         mockMvc.perform(get(LOGOUT.mapping())
                 .accept(TEXT_HTML))
                 .andExpect(status().isNoContent())
@@ -128,8 +158,8 @@ public class ApiSecurityTests {
     }
 
     @Test
-    @WithMockUser(TestConstants.USER1)
-    public void testLogoutWithAjax() throws Exception {
+    @WithAuthenticatedUser(USER1)
+    void testLogoutWithAjax() throws Exception {
         mockMvc.perform(get(LOGOUT.mapping())
                 .with(xmlHttpRequest()))
                 .andExpect(status().isNoContent())
@@ -139,58 +169,30 @@ public class ApiSecurityTests {
 
     @Test
     @WithAnonymousUser
-    public void shouldRejectAccessToActuatorEndpointsWhenUserIsAnonymous() throws Exception {
+    void shouldRejectAccessToActuatorEndpointsWhenUserIsAnonymous() throws Exception {
         mockMvc.perform(get("/info"))
                 .andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/"))
                 .andExpect(status().isFound());
     }
 
     @Test
-    @WithMockUser(TestConstants.USER1)
-    public void shouldGrantAccessToActuatorEndpointsWhenUserIsAuthenticated() throws Exception {
+    @WithAuthenticatedUser(USER1)
+    void shouldGrantAccessToActuatorEndpointsWhenUserIsAuthenticated() throws Exception {
         mockMvc.perform(get("/info"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(TestConstants.USER1)
-    public void shouldRejectAccessToProcessingEndpointsWhenUserHasNoAdminRole() throws Exception {
+    @WithAuthenticatedUser(USER1)
+    void shouldRejectAccessToProcessingEndpointsWhenUserHasNoAdminRole() throws Exception {
         mockMvc.perform(get(API_2 + "/processing"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @WithMockUser(username = TestConstants.ADMIN, roles = "ADMIN")
-    public void shouldGrantAccessToProcessingEndpointsWhenUserHasAdminRole() throws Exception {
+    @WithAuthenticatedUser(ADMIN)
+    void shouldGrantAccessToProcessingEndpointsWhenUserHasAdminRole() throws Exception {
         mockMvc.perform(get(API_2 + "/processing"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(TestConstants.USER1)
-    public void shouldRejectAccessToFeedsEndpointsWhenUserHasNoAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/feeds"))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(username = TestConstants.ADMIN, roles = "ADMIN")
-    public void shouldGranAccessToFeedsEndpointsWhenUserHasAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/feeds"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(value = TestConstants.USER1)
-    public void shouldRejectAccessToFeedsSubEndpointsWhenUserHasNoAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/feeds/sub1/sub2"))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(username = TestConstants.ADMIN, roles = "ADMIN")
-    public void shouldGrantAccessToFeedsSubEndpointsWhenUserHasAdminRole() throws Exception {
-        mockMvc.perform(get(API_2 + "/feeds/sub1/sub2"))
                 .andExpect(status().isOk());
     }
 
@@ -206,16 +208,6 @@ public class ApiSecurityTests {
 
             @RequestMapping(API_2 + "/processing")
             public void processing() {
-                //returns 200
-            }
-
-            @RequestMapping(API_2 + "/feeds")
-            public void feeds() {
-                //returns 200
-            }
-
-            @RequestMapping(API_2 + "/feeds/sub1/sub2")
-            public void feedsSub1Sub2() {
                 //returns 200
             }
         }
