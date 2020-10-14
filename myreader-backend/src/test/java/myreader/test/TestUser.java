@@ -1,5 +1,7 @@
 package myreader.test;
 
+import myreader.entity.User;
+
 public enum TestUser {
 
     ADMIN(0L, "admin@localhost", "ROLE_ADMIN"),
@@ -19,5 +21,13 @@ public enum TestUser {
         this.password = "0";
         this.passwordHash = "{MD5}cfcd208495d565ef66e7dff9f98764da";
         this.role = role;
+    }
+
+    public User toUser() {
+        var user = new User(this.email);
+        user.setId(this.id);
+        user.setPassword(this.passwordHash);
+        user.setRole(this.role);
+        return user;
     }
 }

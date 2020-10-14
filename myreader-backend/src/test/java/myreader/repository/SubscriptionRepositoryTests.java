@@ -5,6 +5,8 @@ import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.User;
+import myreader.test.ClearDb;
+import myreader.test.TestUser;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,7 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 
 @ExtendWith(SpringExtension.class)
+@ClearDb
 @DataJpaTest(showSql = false)
 @WithTestProperties
 class SubscriptionRepositoryTests {
@@ -43,10 +46,10 @@ class SubscriptionRepositoryTests {
     private Subscription subscription2;
 
     @BeforeEach
-    public void before() {
-        user = testEntityManager.persistFlushFind(new User("example@localhost"));
-        feed = testEntityManager.persistFlushFind(new Feed("http://example1.com", "expected feed title1"));
-        var feed2 = testEntityManager.persistFlushFind(new Feed("http://example2.com", "expected feed title2"));
+    void before() {
+        user = testEntityManager.persist(TestUser.USER4.toUser());
+        feed = testEntityManager.persist(new Feed("http://example1.com", "expected feed title1"));
+        var feed2 = testEntityManager.persist(new Feed("http://example2.com", "expected feed title2"));
 
         subscription1 = new Subscription(user, feed);
         subscription1.setTitle("expected title1");
@@ -101,8 +104,8 @@ class SubscriptionRepositoryTests {
 
     @Test
     void shouldReturnOneWhenCountingByFeedWithSubscription() {
-        var user = testEntityManager.persistFlushFind(new User("email"));
-        var feed = testEntityManager.persistFlushFind(new Feed("http://url1", "feed1"));
+        var user = testEntityManager.persist(TestUser.USER1.toUser());
+        var feed = testEntityManager.persist(new Feed("http://url1", "feed1"));
         testEntityManager.persistAndFlush(new Subscription(user, feed));
 
         assertThat(subscriptionRepository.countByFeedId(feed.getId()), is(1));
@@ -124,7 +127,7 @@ class SubscriptionRepositoryTests {
 
     @Test
     void shouldFindByIdAndUserIdForUser2() {
-        var user2 = testEntityManager.persistFlushFind(new User("example2@localhost"));
+        var user2 = testEntityManager.persistFlushFind(TestUser.USER1.toUser());
         var subscription2 = new Subscription(user2, feed);
         subscription2.setTitle("expected title2");
         subscription2 = testEntityManager.persistFlushFind(subscription2);
@@ -138,9 +141,8 @@ class SubscriptionRepositoryTests {
 
     @Test
     void shouldNotFindByIdAndUserIdForUser2() {
-        var user2 = testEntityManager.persistFlushFind(new User("example2@localhost"));
-        var actual = subscriptionRepository
-                .findByIdAndUserId(subscription1.getId(), user2.getId());
+        var user2 = testEntityManager.persistFlushFind(TestUser.USER1.toUser());
+        var actual = subscriptionRepository.findByIdAndUserId(subscription1.getId(), user2.getId());
 
         assertThat(actual.isPresent(), is(false));
     }

@@ -2,8 +2,8 @@ package myreader.fetcher.jobs;
 
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
-import myreader.entity.User;
 import myreader.repository.FeedRepository;
+import myreader.test.ClearDb;
 import myreader.test.TestUser;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,9 +24,10 @@ import static org.hamcrest.Matchers.nullValue;
 @ExtendWith(SpringExtension.class)
 @AutoConfigureTestEntityManager
 @Transactional
+@ClearDb
 @SpringBootTest
 @WithTestProperties
-public class FeedPurgeJobTests {
+class FeedPurgeJobTests {
 
     @Autowired
     private TestEntityManager em;
@@ -42,15 +43,10 @@ public class FeedPurgeJobTests {
     }
 
     @Test
-    public void shouldDeleteFeedsWithoutSubscription() {
-        var user = new User(TestUser.USER4.email);
-        em.persist(user);
-
-        var feed1 = new Feed("http://localhost", "expected title1");
-        em.persist(feed1);
-
-        var feed2 = new Feed("http://localhost", "expected title2");
-        feed2 = em.persist(feed2);
+    void shouldDeleteFeedsWithoutSubscription() {
+        var user = em.persist(TestUser.USER4.toUser());
+        var feed1 = em.persist(new Feed("http://localhost", "expected title1"));
+        var feed2 =  em.persist(new Feed("http://localhost", "expected title2"));
         em.persist(new Subscription(user, feed2));
 
         job.work();

@@ -1,7 +1,7 @@
 package myreader.security;
 
 import myreader.Starter;
-import myreader.entity.User;
+import myreader.test.ClearDb;
 import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,18 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestEntityManager
 @Transactional
-// TODO remove me together with test-data.sql
-@Sql(statements = {
-    "delete from user_feed_entry",
-    "delete from exclusion_pattern",
-    "delete from user_feed",
-    "delete from user_feed_tag",
-    "delete from entry",
-    "delete from fetch_error",
-    "delete from feed",
-    "delete from user"
-})
-@SpringBootTest(classes = { Starter.class, ApiSecurityTests.TestConfiguration.class })
+@ClearDb
+@SpringBootTest(classes = {Starter.class, ApiSecurityTests.TestConfiguration.class})
 @WithTestProperties
 class ApiSecurityTests {
 
@@ -67,16 +56,9 @@ class ApiSecurityTests {
     private TestEntityManager em;
 
     @BeforeEach
-    public void setUp() {
-        var user1 = new User(USER1.email);
-        user1.setPassword(USER1.passwordHash);
-        user1.setRole(USER1.role);
-        em.persist(user1);
-
-        var user2 = new User(ADMIN.email);
-        user2.setPassword(ADMIN.passwordHash);
-        user2.setRole(ADMIN.role);
-        em.persist(user2);
+    void setUp() {
+        em.persist(USER1.toUser());
+        em.persist(ADMIN.toUser());
     }
 
     @Test

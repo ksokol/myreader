@@ -3,7 +3,7 @@ package myreader.resource.feed;
 import myreader.entity.Feed;
 import myreader.entity.FetchError;
 import myreader.entity.Subscription;
-import myreader.entity.User;
+import myreader.test.ClearDb;
 import myreader.test.TestUser;
 import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
@@ -15,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,17 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestEntityManager
 @Transactional
-// TODO remove me together with test-data.sql
-@Sql(statements = {
-    "delete from user_feed_entry",
-    "delete from exclusion_pattern",
-    "delete from user_feed",
-    "delete from user_feed_tag",
-    "delete from entry",
-    "delete from fetch_error",
-    "delete from feed",
-    "delete from user"
-})
+@ClearDb
 @SpringBootTest
 @WithTestProperties
 class FeedCollectionResourceTests {
@@ -58,9 +47,8 @@ class FeedCollectionResourceTests {
     private Feed feed2;
 
     @BeforeEach
-    public void before() {
-        var user = new User("email");
-        em.persist(user);
+    void before() {
+        var user = em.persist(TestUser.USER4.toUser());
 
         feed1 = new Feed("http://localhost", "expected title1");
         feed1.setTitle("expected title1");
