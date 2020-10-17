@@ -1,58 +1,61 @@
 plugins {
-    id "org.sonarqube" version "3.0"
+  id "org.sonarqube" version "3.0"
 }
 
 configure(allprojects) {
-    apply plugin: 'idea'
+  apply plugin: 'idea'
 
-    idea.module {
-        excludeDirs += [
-            file('data'),
-            file('gradle'),
-            file('.idea')
-        ]
-    }
+  idea.module {
+    excludeDirs += [
+      file('data'),
+      file('gradle'),
+      file('.idea')
+    ]
+  }
 }
 
-subprojects {subProject ->
-    afterEvaluate {
-        if (subProject.plugins.hasPlugin("org.springframework.boot")){
-            project(":myreader-backend") {
-                libsDirName = "../../build"
-                tasks.bootJar.dependsOn(copyFrontend)
-            }
-        }
+subprojects { subProject ->
+  afterEvaluate {
+    if (subProject.plugins.hasPlugin("org.springframework.boot")) {
+      project(":myreader-backend") {
+        libsDirName = "../../build"
+        tasks.bootJar.dependsOn(copyFrontend)
+      }
     }
+  }
 }
 
 task copyFrontend(type: Sync, dependsOn: ':myreader-frontend:build') {
-    from project(':myreader-frontend').file('dist')
-    into project(':myreader-backend').buildDir.absolutePath + '/classes/java/main/static'
+  from project(':myreader-frontend').file('dist')
+  into project(':myreader-backend').buildDir.absolutePath + '/classes/java/main/static'
 }
 
+task testBackend(dependsOn: ':myreader-backend:test')
+task testFrontend(dependsOn: ':myreader-frontend:test')
+
 sonarqube {
-    properties {
-        property "sonar.projectName", "MyReader"
-        property "sonar.projectDescription", "MyReader is a rss reader written in Java."
-        property "sonar.projectKey", "MyReader:MyReader"
-        property "sonar.links.homepage", "https://github.com/ksokol/myreader"
-        property "sonar.links.ci", "https://travis-ci.org/ksokol/myreader"
-        property "sonar.links.issue", "https://github.com/ksokol/myreader/issues"
-        property "sonar.links.scm", "https://github.com/ksokol/myreader"
-        property "sonar.links.scm_dev", "scm:git:git@github.com:ksokol/myreader.git"
-        property "sonar.testExecutionReportPaths", ["${project(':myreader-frontend').buildDir}/TESTS.xml"]
-    }
+  properties {
+    property "sonar.projectName", "MyReader"
+    property "sonar.projectDescription", "MyReader is a rss reader written in Java."
+    property "sonar.projectKey", "MyReader:MyReader"
+    property "sonar.links.homepage", "https://github.com/ksokol/myreader"
+    property "sonar.links.ci", "https://travis-ci.org/ksokol/myreader"
+    property "sonar.links.issue", "https://github.com/ksokol/myreader/issues"
+    property "sonar.links.scm", "https://github.com/ksokol/myreader"
+    property "sonar.links.scm_dev", "scm:git:git@github.com:ksokol/myreader.git"
+    property "sonar.testExecutionReportPaths", ["${project(':myreader-frontend').buildDir}/TESTS.xml"]
+  }
 }
 
 project(':myreader-frontend') {
-    sonarqube {
-        properties {
-            property "sonar.sources", "${projectDir}/src/app/js"
-            property "sonar.exclusions", ["**/*.spec.js", "**/test-utils.js"]
-            property "sonar.tests", ["${projectDir}/src/app/js"]
-            property "sonar.test.inclusions", ["**/*.spec.js"]
-            property "sonar.javascript.lcov.reportPaths", "${buildDir}/reports/coverage/lcov.info"
-            property "sonar.eslint.reportPaths", "${buildDir}/reports/eslint.json"
-        }
+  sonarqube {
+    properties {
+      property "sonar.sources", "${projectDir}/src/app/js"
+      property "sonar.exclusions", ["**/*.spec.js", "**/test-utils.js"]
+      property "sonar.tests", ["${projectDir}/src/app/js"]
+      property "sonar.test.inclusions", ["**/*.spec.js"]
+      property "sonar.javascript.lcov.reportPaths", "${buildDir}/reports/coverage/lcov.info"
+      property "sonar.eslint.reportPaths", "${buildDir}/reports/eslint.json"
     }
+  }
 }
