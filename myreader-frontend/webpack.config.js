@@ -7,7 +7,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
@@ -23,7 +22,7 @@ const BACKEND_PORT = 19340
 const BACKEND_CONTEXT = 'myreader'
 const PUBLIC_URL = environment === 'production' ? `/${BACKEND_CONTEXT}` : ''
 
-module.exports = function makeWebpackConfig() {
+module.exports = function() {
   const config = {}
 
   config.mode = isProd ? 'production' : 'development'
@@ -54,8 +53,8 @@ module.exports = function makeWebpackConfig() {
       new TerserPlugin({
         parallel: true,
         terserOptions: {
-          ecma: 6,
-        },
+          ecma: 6
+        }
       }),
       new OptimizeCssAssetsPlugin({
         assetNameRegExp: /\.css$/g,
@@ -68,7 +67,7 @@ module.exports = function makeWebpackConfig() {
   }
 
   if (isServed) {
-      config.devtool = 'inline-source-map'
+    config.devtool = 'inline-source-map'
   }
 
   /**
@@ -103,17 +102,16 @@ module.exports = function makeWebpackConfig() {
     }, {
       test: /\.svg$/,
       loader: 'svg-url-loader'
-    },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            plugins: isProd ? ['transform-react-remove-prop-types'] : []
-          }
+    }, {
+      test: /\.js$/,
+      exclude: /node_modules/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          plugins: isProd ? ['transform-react-remove-prop-types'] : []
         }
-      }]
+      }
+    }]
   }
 
   /**
@@ -121,11 +119,10 @@ module.exports = function makeWebpackConfig() {
    * List: http://webpack.github.io/docs/list-of-plugins.html
    */
   config.plugins = [
-    new CleanWebpackPlugin(),
     new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'}),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(environment),
-      'process.env.PUBLIC_URL': JSON.stringify(PUBLIC_URL),
+      'process.env.PUBLIC_URL': JSON.stringify(PUBLIC_URL)
     })
   ]
 
@@ -157,7 +154,7 @@ module.exports = function makeWebpackConfig() {
       }),
 
       new WebpackPwaManifest({
-        filename: "app/manifest.[hash].json",
+        filename: 'app/manifest.[hash].json',
         includeDirectory: true,
         name: 'MyReader',
         short_name: 'MyReader',

@@ -1,52 +1,46 @@
 plugins {
-    id "com.github.node-gradle.node" version "2.2.4"
+  id "com.github.node-gradle.node" version "2.2.4"
 }
 
+apply plugin: 'base'
+
 idea.module {
-    excludeDirs += [
-        file('build'),
-        file('dist')
-    ]
+  excludeDirs += [
+    file('build'),
+    file('dist'),
+    file('node_modules')
+  ]
 }
 
 node {
-    version = '12.18.3'
-    npmVersion = '6.14.6'
-    download = true
+  version = '12.18.3'
+  npmVersion = '6.14.6'
+  download = true
 }
 
-// Workaround for https://github.com/srs/gradle-node-plugin/issues/131
-project.afterEvaluate {
-    tasks.npm_install.inputs.file(file('package.json'))
-    tasks.npm_install.outputs.dir(file('node_modules'))
-    tasks.npm_install.outputs.file(file('package-lock.json'))
+task dependencyCheckAnalyze(type: NpmTask, dependsOn: npmInstall) {
+  args = ['run', 'audit:high']
 }
 
-task dependencyCheckAnalyze(type: NpmTask, dependsOn: npm_install) {
-    args = ['run', 'audit:high']
+task lint(type: NpmTask, dependsOn: npmInstall) {
+  args = ['run', 'lint']
 }
 
-task lint(type: NpmTask, dependsOn: npm_install) {
-    args = ['run', 'lint']
+task test(dependsOn: [npmInstall, npm_test])
+
+check.dependsOn = [lint, test]
+
+task build(type: NpmTask, dependsOn: [npmInstall, test], overwrite: true) {
+  inputs.files files('src', 'webpack.config.js', '.babelrc')
+  outputs.dir file('dist')
+
+  args = ['run', 'build']
 }
 
-task test(dependsOn: [npm_install, npm_test]) {
-    inputs.files files('src', 'webpack.config.js', 'package.json')
+clean {
+  delete 'dist'
 }
-
-task build(type: NpmTask, dependsOn: [npm_install, test]) {
-    outputs.files file('dist')
-    inputs.files files('src')
-
-    args = ['run', 'build']
-}
-
-task clean() {
-    delete "dist"
-}
-
-task check(dependsOn: [lint, test])
 
 task devRun(type: NpmTask) {
-    args = ['start']
+  args = ['start']
 }
