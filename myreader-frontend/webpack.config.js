@@ -1,5 +1,3 @@
-'use strict'
-
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -7,8 +5,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const WorkboxPlugin = require('workbox-webpack-plugin')
 
 const ENV = process.env.npm_lifecycle_event
 const isTest = ENV === 'test' || ENV === 'test-watch'
@@ -147,12 +145,6 @@ module.exports = function() {
 
   if (isProd) {
     config.plugins.push(
-      new SWPrecacheWebpackPlugin({
-        filename: 'service-worker.js',
-        minify: true,
-        navigateFallback: `${PUBLIC_URL}/`
-      }),
-
       new WebpackPwaManifest({
         filename: 'app/manifest.[hash].json',
         includeDirectory: true,
@@ -173,6 +165,14 @@ module.exports = function() {
             type: 'image/png'
           }
         ]
+      }),
+      new WorkboxPlugin.GenerateSW({
+        clientsClaim: true,
+        skipWaiting: true,
+        inlineWorkboxRuntime: false,
+        navigateFallback: `${PUBLIC_URL}/`,
+        cleanupOutdatedCaches: true,
+        offlineGoogleAnalytics: false
       })
     )
   }

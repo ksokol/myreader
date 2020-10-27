@@ -2,7 +2,7 @@ import '../css/mobile.css'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {HashRouter as Router} from 'react-router-dom'
-import registerServiceWorker from '../../registerServiceWorker'
+import {register} from 'register-service-worker'
 import {LocationStateProvider} from './contexts/locationState/LocationStateProvider'
 import App from './App'
 import {SecurityProvider} from './contexts/security/SecurityProvider'
@@ -24,4 +24,6 @@ ReactDOM.render(
   document.querySelector('#root')
 )
 
-registerServiceWorker()
+if (process.env.NODE_ENV === 'production') {
+  register(`${process.env.PUBLIC_URL}/service-worker.js`)
+}
