@@ -1,27 +1,28 @@
 dialog {
-    border: none;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-    padding: 0;
+  border: none !important;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  color: white !important;
+  padding: 0 !important;
 }
 
 .my-dialog {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .my-dialog > * {
-    display: flex;
-    padding: 5px;
+  display: flex;
+  padding: 5px;
 }
 
 .my-dialog__header {
-    justify-content: center;
+  justify-content: center;
 }
 
 .my-dialog__footer {
-    justify-content: flex-end;
+  justify-content: flex-end;
 }
 
 .my-dialog__close-button {
-    margin-left: auto;
+  margin-left: auto;
 }

@@ -15,17 +15,17 @@
     "audit:high": "npm audit --audit-level=high"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "5.14.0",
-    "@jaames/iro": "5.1.9",
+    "@fortawesome/fontawesome-free": "5.15.1",
+    "@jaames/iro": "5.2.3",
     "classnames": "2.2.6",
-    "dialog-polyfill": "0.5.1",
+    "dialog-polyfill": "0.5.3",
     "prop-types": "15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-hotkeys-hook": "2.3.1",
+    "react-hotkeys-hook": "2.4.0",
     "react-router": "5.2.0",
     "react-router-dom": "5.2.0",
-    "use-debounce": "4.0.0"
+    "use-debounce": "5.0.1"
   },
   "devDependencies": {
     "@babel/core": "7.12.3",

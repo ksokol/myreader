@@ -12,7 +12,7 @@ function sanitizeValue(value) {
 
 export function SearchInput(props) {
   const [currentValue, setCurrentValue] = useState(sanitizeValue(props.value))
-  const [onChange] = useDebouncedCallback(inputValue => {
+  const debounced = useDebouncedCallback(inputValue => {
     props.onChange && props.onChange(inputValue.trim() === '' ? undefined : inputValue)
   }, 250)
 
@@ -34,7 +34,7 @@ export function SearchInput(props) {
         value={currentValue}
         onChange={({target: {value}}) => {
           setCurrentValue(value)
-          onChange(value)
+          debounced.callback(value)
         }}
       />
     </div>
