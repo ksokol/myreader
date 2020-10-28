@@ -81,17 +81,6 @@ module.exports = function() {
         'css-loader'
       ]
     }, {
-      // ASSET LOADER
-      // Reference: https://github.com/webpack/file-loader
-      // Rename the file using the asset hash
-      // Pass along the updated reference to your code
-      test: /\.(png|jpg|jpeg|gif|woff|woff2|ttf|eot)$/,
-      query: {
-        publicPath: '../',
-        outputPath: 'app/'
-      },
-      loader: 'file-loader'
-    }, {
       // HTML LOADER
       // Reference: https://github.com/webpack/raw-loader
       test: /\.html$/,
