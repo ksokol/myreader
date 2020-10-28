@@ -61,6 +61,8 @@
     "unicorn/no-null":  "off",
     "unicorn/no-fn-reference-in-iterator": "warn",
     "unicorn/no-reduce": "off",
-    "jest-dom/prefer-focus": "warn"
+    "jest-dom/prefer-focus": "warn",
+    "unicorn/consistent-function-scoping": "warn",
+    "unicorn/explicit-length-check": "warn"
   }
 }
