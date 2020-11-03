@@ -1,5 +1,5 @@
 import React from 'react'
-import {Chips} from '../..'
+import {Chips} from '../../Chips/Chips'
 import PropTypes from 'prop-types'
 import {subscriptionExclusionsApi as api} from '../../../api'
 import {toast} from '../../Toast'

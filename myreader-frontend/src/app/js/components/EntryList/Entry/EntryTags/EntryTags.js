@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Chips} from '../../..'
+import {Chips} from '../../../Chips/Chips'
 
 export function EntryTags({tags, onChange}) {
 

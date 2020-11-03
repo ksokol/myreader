@@ -1,302 +1,264 @@
 import React from 'react'
-import {act} from 'react-dom/test-utils'
-import {mount} from 'enzyme'
+import {Router} from 'react-router'
+import {createMemoryHistory} from 'history'
+import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
+import {entry1, entry2, entry3, entry4} from '../../shared/test-utils'
 import {BookmarkListPage} from './BookmarkListPage'
-import {flushPromises, rejected, resolved} from '../../shared/test-utils'
-import {entryApi} from '../../api'
-import {toast} from '../../components/Toast'
-import {useHistory, useSearchParams} from '../../hooks/router'
-import {useEntries} from '../../hooks/entries'
-import {useSettings} from '../../contexts/settings'
+import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
+import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 
-/* eslint-disable react/prop-types, react/display-name */
-jest.mock('../../components/EntryList/EntryList', () => ({
-  EntryList: () => null
-}))
+jest.unmock('react-router')
+jest.unmock('react-router-dom')
 
-jest.mock('../../components/ListLayout/ListLayout', () => ({
-  ListLayout: ({actionPanel, listPanel}) => <div>{actionPanel}{listPanel}</div>
-}))
-
-jest.mock('../../contexts/settings', () => ({
-  useSettings: jest.fn().mockReturnValue({
-    pageSize: 2
-  })
-}))
-
-jest.mock('../../api', () => ({
-  entryApi: {}
-}))
-
-jest.mock('../../components/Toast', () => ({
-  toast: jest.fn()
-}))
-
-jest.mock('../../hooks/router', () => {
-  const push = jest.fn()
-  const reload = jest.fn()
-
-  return {
-    useSearchParams: jest.fn().mockReturnValue({
-      entryTagEqual: 'expected tag',
-      q: 'expectedQ'
-    }),
-    useHistory: () => ({
-      push,
-      reload,
-    })
-  }
-})
-
-jest.mock('../../components', () => ({
-  IconButton: ({children}) => <div>{children}</div>,
-}))
-
-jest.mock('../../hooks/entries', () => {
-  return {
-    useEntries: jest.fn()
-  }
-})
-/* eslint-enable */
-
-const expectedTag = 'expected tag'
 const expectedQ = 'expectedQ'
+const expectedError = 'expected error'
 
 describe('BookmarkListPage', () => {
 
-  let props
+  let history
 
-  const createWrapper = async (onMount = resolved(['tag3', 'tag4'])) => {
-    let wrapper
-
+  const renderComponent = async () => {
     await act(async () => {
-      entryApi.fetchEntryTags = onMount
-
-      wrapper = mount(<BookmarkListPage {...props} />)
-      await flushPromises()
-      wrapper.update()
+      render(
+        <Router history={history}>
+          <LocationStateProvider>
+            <SettingsProvider>
+              <BookmarkListPage />
+            </SettingsProvider>
+          </LocationStateProvider>
+        </Router>
+      )
     })
-    wrapper.mount()
-    wrapper.update()
-
-    return wrapper
   }
 
-  beforeEach(() => {
-    toast.mockClear()
-    useEntries.mockReturnValue({
-      fetchEntries: jest.fn(),
-      clearEntries: jest.fn(),
+  beforeEach(async () => {
+    history = createMemoryHistory()
+
+    localStorage.setItem('myreader-settings', '{"pageSize": 2, "showUnseenEntries": false}')
+
+    fetch.jsonResponseOnce(['expected tag1', 'expected tag2'])
+    fetch.jsonResponseOnce({
+      content: [{...entry1}, {...entry2}],
+      links: [{
+        rel: 'next',
+        href: 'http://localhost/test?nextpage'
+      }],
     })
-
-    props = {
-      searchParams: {
-        entryTagEqual: expectedTag,
-        q: expectedQ
-      },
-      historyReplace: jest.fn(),
-      locationStateStamp: 0,
-    }
   })
 
-  it('should pass expected props to chips component on mount when call to entryApi.fetchEntryTags succeeded', async () => {
-    const wrapper = await createWrapper()
+  it('should render expected entry tags as chips', async () => {
+    await renderComponent()
 
-    expect(wrapper.find('Chips').props()).toEqual(expect.objectContaining({
-      values: ['tag3', 'tag4'],
-      selected: expectedTag
-    }))
+    expect(screen.getAllByRole('chip')[0]).toHaveTextContent('expected tag1')
+    expect(screen.getAllByRole('chip')[1]).toHaveTextContent('expected tag2')
   })
 
-  it('should trigger toast when call to entryApi.fetchEntryTags failed', async () => {
-    await createWrapper(rejected({data: 'expected error'}))
+  it('should render expected entry tag as selected chip', async () => {
+    history = createMemoryHistory()
+    await act(async () => {
+      history.push({search: 'entryTagEqual=expected tag2'})
+    })
+    await renderComponent()
 
-    expect(toast).toHaveBeenCalledWith('expected error', {error: true})
+    expect(screen.getAllByRole('chip')[0]).not.toHaveClass('my-chip--selected')
+    expect(screen.getAllByRole('chip')[1]).toHaveClass('my-chip--selected')
+  })
+
+  it('should fetch entry tags', async () => {
+    await renderComponent()
+
+    expect(fetch.first()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries/availableTags'
+    })
   })
 
   it('should fetch entries with seenEqual set to "*"', async () => {
-    await createWrapper()
-
-    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
-      query: {
-        entryTagEqual: expectedTag,
-        q: expectedQ,
-        seenEqual: '*',
-        size: 2
-      }
-    })
-  })
-
-  it('should fetch entries with prop "searchParam.entryTagEqual" undefined', async () => {
-    useSearchParams.mockReturnValueOnce({
-      q: expectedQ,
-    })
-    await createWrapper()
-
-    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
-      query: {
-        q: expectedQ,
-        seenEqual: '',
-        size: 2
-      }
-    })
-  })
-
-  it('should pass expected props to entry list component', async () => {
-    const expected = {
-      entries: [{uuid: '1'}, {uuid: '2'}],
-      links: {a: 'b'},
-      loading: true,
-      fetchEntries: jest.fn(),
-      clearEntries: jest.fn(),
-      changeEntry: jest.fn(),
-      onLoadMore: jest.fn()
-    }
-    useEntries.mockReturnValue(expected)
-    const wrapper = await createWrapper()
-
-    expect(wrapper.find('EntryList').props()).toEqual({
-      entries: [{uuid: '1'}, {uuid: '2'}],
-      links: {a: 'b'},
-      loading: true,
-      onChangeEntry: expected.changeEntry,
-      onLoadMore: expected.fetchEntries,
-    })
-  })
-
-  it('should return expected prop from Chips prop function "renderItem"', async () => {
-    const wrapper = await createWrapper()
-
-    expect(wrapper.find('Chips').props().renderItem('tag').props).toEqual(expect.objectContaining({
-      to: {
-        pathname: '/app/bookmark',
-        search: '?entryTagEqual=tag'
-      }
-    }))
-  })
-
-  it('should trigger entryApi.fetchEntryTags on mount', async () => {
-    await createWrapper()
-
-    expect(entryApi.fetchEntryTags).toHaveBeenCalled()
-  })
-
-  it('should pass expected props to search input component', async () => {
-    const wrapper = await createWrapper()
-
-    expect(wrapper.find('SearchInput').prop('value')).toEqual(expectedQ)
-  })
-
-  it('should trigger history push when search input value changed', async () => {
-    const wrapper = await createWrapper()
-
-    wrapper.find('SearchInput').props().onChange('changed q')
-    wrapper.mount()
-    wrapper.update()
-
-    expect(useHistory().push).toHaveBeenCalledWith({
-      searchParams: {
-        entryTagEqual: expectedTag,
-        q: 'changed q'
-      }
-    })
-  })
-
-  it('should trigger history push when search params and search input value changed', async (done) => {
-    jest.useRealTimers()
-    const wrapper = await createWrapper()
-
-    useSearchParams.mockReturnValueOnce({
-      entryTagEqual: 'b',
-    })
-    wrapper.mount()
-
-    wrapper.find('input[name="search-input"]').simulate('change', {
-      target: {
-        value: 'changed q'
-      }
-    })
-
-    setTimeout(() => {
-      expect(useEntries().clearEntries).toHaveBeenCalledWith()
-      expect(useHistory().push).toHaveBeenCalledWith({
-        searchParams: {
-          entryTagEqual: 'b',
-          q: 'changed q'
-        }
-      })
-      done()
-    }, 250)
-  })
-
-  it('should trigger history reload when refresh icon button clicked', async () => {
-    const wrapper = await createWrapper()
-
+    history = createMemoryHistory()
     await act(async () => {
-      await wrapper.find('[type="redo"]').props().onClick()
+      history.push({search: 'entryTagEqual=expectedTag'})
+    })
+    await renderComponent()
+
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?entryTagEqual=expectedTag&seenEqual=*&size=2'
+    })
+  })
+
+  it('should fetch entries with seenEqual set to empty string', async () => {
+    await renderComponent()
+
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?seenEqual=&size=2'
+    })
+  })
+
+  it('should fetch entries for given search', async () => {
+    history = createMemoryHistory()
+    await act(async () => {
+      history.push({search: `q=${expectedQ}`})
+    })
+    await renderComponent()
+
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: `api/2/subscriptionEntries?q=${expectedQ}&seenEqual=&size=2`
+    })
+  })
+
+  it('should render entries', async () => {
+    fetch.jsonResponseOnce({content: [{...entry2}], links: [],})
+    await renderComponent()
+
+    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+  })
+
+  it('should fetch entries for selected entry tag', async () => {
+    fetch.jsonResponseOnce({content: [{...entry2}], links: [],})
+    await renderComponent()
+
+    await act(async () => fireEvent.click(screen.getByText('expected tag1')))
+
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&entryTagEqual=expected tag1'
+    })
+  })
+
+  it('should pass search value to search input', async () => {
+    await act(async () => {
+      history.push({
+        search: `q=${expectedQ}`
+      })
+    })
+    await renderComponent()
+
+    expect(screen.getByRole('search')).toHaveValue(expectedQ)
+  })
+
+  it('should render entries for given search', async () => {
+    await renderComponent()
+
+    expect(screen.queryByTitle('title1')).toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+    expect(screen.queryByTitle('title3')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title4')).not.toBeInTheDocument()
+
+    fetch.jsonResponseOnce({content: [{...entry3}, {...entry4}], links: [],})
+    await act(async () => fireEvent.change(screen.getByRole('search'), {target: {value: 'changed q'}}))
+
+    await waitFor(() => {
+      return expect(fetch.mostRecent()).toMatchGetRequest({
+        url: 'api/2/subscriptionEntries?q=changed+q&seenEqual=&size=2',
+      })
+    }, {
+      timeout: 1050,
+      interval: 1
     })
 
-    expect(useHistory().reload).toHaveBeenCalled()
+    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title3')).toBeInTheDocument()
+    expect(screen.queryByTitle('title4')).toBeInTheDocument()
+  })
+
+  it('should load next page', async () => {
+    await renderComponent()
+
+    fetch.jsonResponse({content: [{...entry3}, {...entry4}], links: [],})
+    await act(async () => fireEvent.click(screen.getByRole('more')))
+
+    expect(screen.queryByTitle('title1')).toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+    expect(screen.queryByTitle('title3')).toBeInTheDocument()
+    expect(screen.queryByTitle('title4')).toBeInTheDocument()
+    expect(screen.queryByRole('more')).not.toBeInTheDocument()
+  })
+
+  it('should show empty page when loading', async () => {
+    fetch.mockReset()
+    fetch.responsePending()
+    await renderComponent()
+
+    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+    expect(screen.queryByRole('more')).not.toBeInTheDocument()
+  })
+
+  it('should disable more button when loading', async () => {
+    await renderComponent()
+
+    fetch.responsePending()
+    await act(async () => fireEvent.click(screen.getByRole('more')))
+
+    expect(screen.queryByRole('more')).toBeDisabled()
+  })
+
+  it('should enable more button when loading failed', async () => {
+    await renderComponent()
+    expect(screen.queryByRole('more')).toBeEnabled()
+
+    fetch.rejectResponse({data: expectedError})
+    await act(async () => fireEvent.click(screen.getByRole('more')))
+
+    expect(screen.queryByRole('more')).toBeEnabled()
   })
 
   it('should reload content on page when refresh icon button clicked', async () => {
-    const wrapper = await createWrapper()
-    useEntries().fetchEntries.mockClear()
 
-    await act(async () => {
-      wrapper.find('[type="redo"]').props().onClick()
-    })
+    await renderComponent()
 
-    expect(useEntries().clearEntries).toHaveBeenCalledWith()
-    expect(entryApi.fetchEntryTags).toHaveBeenCalled()
-    expect(useEntries().fetchEntries).toHaveBeenCalledWith({
-      query: {
-        entryTagEqual: expectedTag,
-        q: expectedQ,
-        seenEqual: '*',
-        size: 2,
-      }
+    fetch.jsonResponseOnce(['expected tag1', 'expected tag2'])
+    fetch.jsonResponseOnce({content: [{...entry2}, {...entry3}], links: [],})
+    await act(async () => fireEvent.click(screen.getByRole('refresh')))
+
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?seenEqual=&size=2',
     })
-    expect(useHistory().reload).toHaveBeenCalledWith()
+    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+    expect(screen.queryByTitle('title3')).toBeInTheDocument()
+  })
+
+  it('should render entries', async () => {
+    await renderComponent()
+
+    expect(screen.queryByTitle('title1')).toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).toBeInTheDocument()
   })
 
   it('should not fetch entries again if query does not changed', async () => {
-    const fetchEntries = jest.fn()
-    useEntries.mockReturnValue({
-      fetchEntries,
-      clearEntries: jest.fn(),
-    })
-    const wrapper = await createWrapper()
-    wrapper.mount()
+    await renderComponent()
 
-    expect(fetchEntries).toHaveBeenCalledTimes(1)
+    await act(async () => fireEvent.change(screen.getByRole('search'), {target: {value: 'expectedQ'}}))
+
+    expect(fetch.requestCount()).toEqual(2)
   })
 
-  it('should fetch entries again if query or settings changed', async () => {
-    const fetchEntries = jest.fn()
-    useEntries.mockReturnValue({
-      fetchEntries,
-      clearEntries: jest.fn(),
-    })
-    const wrapper = await createWrapper()
-    wrapper.mount()
+  it('should show an error message if entry tags could not be fetched', async () => {
+    fetch.mockReset()
+    fetch.rejectResponse({data: expectedError})
+    fetch.jsonResponseOnce({content: []})
+    await renderComponent()
 
-    useSearchParams.mockReturnValueOnce({
-      entryTagEqual: expectedTag,
-      q: 'changed q',
-    })
-    wrapper.mount()
+    expect(screen.getByRole('dialog-error-message')).toHaveTextContent(expectedError)
+  })
 
-    useSearchParams.mockReturnValueOnce({
-      q: expectedQ,
-    })
-    wrapper.mount()
+  it('should show an error message if entries could not be fetched', async () => {
+    fetch.mockReset()
+    fetch.jsonResponseOnce([])
+    fetch.rejectResponse({data: `${expectedError}2`})
+    await renderComponent()
 
-    useSettings.mockReturnValueOnce({
-      pageSize: 10,
-    })
-    wrapper.mount()
+    expect(screen.getByRole('dialog-error-message')).toHaveTextContent(expectedError)
+  })
 
-    expect(fetchEntries).toHaveBeenCalledTimes(4)
+  it('should show error messages if read flag could not be set for multiple entries', async () => {
+    await renderComponent()
+
+    fetch.rejectResponse({data: expectedError})
+    await act(async () => fireEvent.click(screen.getAllByRole('check')[0]))
+    fetch.rejectResponse({data: expectedError})
+    await act(async () => fireEvent.click(screen.getAllByRole('check')[1]))
+
+    expect(screen.getAllByRole('dialog-error-message')[0]).toHaveTextContent(expectedError)
+    expect(screen.getAllByRole('dialog-error-message')[1]).toHaveTextContent(expectedError)
   })
 })

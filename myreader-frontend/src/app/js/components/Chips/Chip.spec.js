@@ -1,6 +1,6 @@
-import Chip from './Chip'
 import React from 'react'
 import {shallow} from 'enzyme'
+import {Chip} from './Chip'
 import {IconButton} from '..'
 
 describe('Chip', () => {

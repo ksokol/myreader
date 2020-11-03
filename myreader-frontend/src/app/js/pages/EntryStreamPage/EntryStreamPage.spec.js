@@ -31,6 +31,7 @@ async function pressArrowRight() {
 
 const entry1Url = 'api/2/subscriptionEntries/1'
 const entry2Url = 'api/2/subscriptionEntries/2'
+const expectedError = 'expected error'
 
 describe('EntryStreamPage', () => {
 
@@ -385,6 +386,16 @@ describe('EntryStreamPage', () => {
     expect(screen.queryByRole('more')).toBeDisabled()
   })
 
+  it('should enable more button when loading failed', async () => {
+    await renderComponent()
+    expect(screen.queryByRole('more')).toBeEnabled()
+
+    fetch.rejectResponse({data: expectedError})
+    await act(async () => fireEvent.click(screen.getByRole('more')))
+
+    expect(screen.queryByRole('more')).toBeEnabled()
+  })
+
   it('should reload content on page when refresh icon button clicked', async () => {
     await renderComponent()
 
@@ -437,5 +448,38 @@ describe('EntryStreamPage', () => {
     await act(async () => fireEvent.change(screen.getByRole('search'), {target: {value: 'expectedQ'}}))
 
     expect(fetch.requestCount()).toEqual(1)
+  })
+
+  it('should show an error message if entries could not be fetched', async () => {
+    fetch.rejectResponse({data: expectedError})
+    await renderComponent()
+
+    expect(screen.getByRole('dialog-error-message')).toHaveTextContent(expectedError)
+  })
+
+  it('should show error messages if read flag could not be set for multiple entries', async () => {
+    await renderComponent()
+
+    fetch.rejectResponse({data: expectedError})
+    await act(async () => fireEvent.click(screen.getAllByRole('check')[0]))
+    fetch.rejectResponse({data: expectedError})
+    await act(async () => fireEvent.click(screen.getAllByRole('check')[1]))
+
+    expect(screen.getAllByRole('dialog-error-message')[0]).toHaveTextContent(expectedError)
+    expect(screen.getAllByRole('dialog-error-message')[1]).toHaveTextContent(expectedError)
+  })
+
+  it('should show error messages if read flag could not be toggled for multiple entries', async () => {
+    await renderComponent()
+
+    fetch.rejectResponse({data: expectedError})
+    await clickButtonNext()
+    fetch.rejectResponse({data: expectedError})
+    await pressEscape()
+    fetch.rejectResponse({data: expectedError})
+    await pressEscape()
+
+    expect(screen.getAllByRole('dialog-error-message')[0]).toHaveTextContent(expectedError)
+    expect(screen.getAllByRole('dialog-error-message')[1]).toHaveTextContent(expectedError)
   })
 })

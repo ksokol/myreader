@@ -1,20 +1,18 @@
 import './BookmarkListPage.css'
-import React, {useCallback, useEffect, useState, useMemo} from 'react'
+import React, {useEffect, useMemo} from 'react'
 import {Link} from 'react-router-dom'
 import {Chips} from '../../components/Chips/Chips'
 import {EntryList} from '../../components/EntryList/EntryList'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
 import {BOOKMARK_URL} from '../../constants'
-import {entryApi} from '../../api'
 import {toast} from '../../components/Toast'
 import {useSettings} from '../../contexts/settings'
-import {IconButton} from '../../components'
+import IconButton from '../../components/Buttons/IconButton/IconButton'
 import {useHistory, useSearchParams} from '../../hooks/router'
 import {SearchInput} from '../../components/SearchInput/SearchInput'
 import {useEntries} from '../../hooks/entries'
 
 export function BookmarkListPage() {
-  const [entryTags, setEntryTags] = useState([])
   const {pageSize} = useSettings()
   const searchParams = useSearchParams()
   const {push, reload} = useHistory()
@@ -26,20 +24,16 @@ export function BookmarkListPage() {
 
   const {
     entries,
+    entryTags,
     links,
     loading,
+    lastError,
     fetchEntries,
+    fetchEntryTags,
     changeEntry,
-    clearEntries
+    clearEntries,
+    clearEntryTags,
   } = useEntries()
-
-  const fetchEntryTags = useCallback(async () => {
-    try {
-      setEntryTags(await entryApi.fetchEntryTags())
-    } catch (error) {
-      toast(error.data, {error: true})
-    }
-  }, [])
 
   const onChange = value => {
     push({
@@ -52,22 +46,29 @@ export function BookmarkListPage() {
 
   const refresh = () => {
     clearEntries()
+    clearEntryTags()
     fetchEntryTags()
     fetchEntries({query})
     reload()
   }
 
   useEffect(() => {
-    fetchEntries({query})
-  }, [fetchEntries, query])
-
-  useEffect(() => {
     fetchEntryTags()
   }, [fetchEntryTags])
 
   useEffect(() => {
+    fetchEntries({query})
+  }, [fetchEntries, query])
+
+  useEffect(() => {
     clearEntries()
   }, [clearEntries, searchParams])
+
+  useEffect(() => {
+    if (lastError) {
+      toast(lastError.data, {error: true})
+    }
+  }, [lastError])
 
   const actionPanel =
     <React.Fragment>
@@ -77,6 +78,7 @@ export function BookmarkListPage() {
       />
       <IconButton
         type='redo'
+        role='refresh'
         onClick={refresh}
       />
     </React.Fragment>

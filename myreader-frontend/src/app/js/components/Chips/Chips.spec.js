@@ -1,7 +1,7 @@
 import React from 'react'
 import {shallow} from 'enzyme'
 import {Chips} from './Chips'
-import Chip from './Chip'
+import {Chip} from './Chip'
 
 const expectedValue = 'expected value'
 

@@ -130,6 +130,10 @@ fetch.mostRecent = () => {
   return fetch.mock.calls[fetch.requestCount() - 1][0]
 }
 
+fetch.first = () => {
+  return fetch.mock.calls[0][0]
+}
+
 fetch.jsonResponse = object => {
   fetch.mockResponse(JSON.stringify(object), {headers: {'content-type': 'application/json'}})
 }

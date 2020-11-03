@@ -8,6 +8,7 @@ import {useHistory, useSearchParams} from '../../hooks/router'
 import {SearchInput} from '../../components/SearchInput/SearchInput'
 import {EntryList} from '../../components/EntryList/EntryList'
 import {useEntries} from '../../hooks/entries'
+import {toast} from '../../components/Toast'
 
 export function EntryStreamPage() {
   const {pageSize: size, showUnseenEntries} = useSettings()
@@ -24,6 +25,7 @@ export function EntryStreamPage() {
     entries,
     links,
     loading,
+    lastError,
     fetchEntries,
     changeEntry,
     setSeenFlag,
@@ -84,6 +86,12 @@ export function EntryStreamPage() {
   useEffect(() => {
     clearEntries()
   }, [clearEntries, searchParams])
+
+  useEffect(() => {
+    if (lastError) {
+      toast(lastError.data, {error: true})
+    }
+  }, [lastError])
 
   return (
     <ListLayout

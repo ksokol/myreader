@@ -19,6 +19,7 @@ module.exports = {
       statements: 98,
     }
   },
+  coverageReporters: ['lcov', 'html'],
   testResultsProcessor: 'jest-sonar-reporter',
   timers: 'fake',
   testURL: 'http://localhost:8080',

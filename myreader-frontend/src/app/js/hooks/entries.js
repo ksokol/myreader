@@ -1,6 +1,5 @@
 import {useCallback, useEffect, useReducer} from 'react'
 import {entryApi} from '../api'
-import {toast} from '../components/Toast'
 
 function reducer(state, action) {
   switch(action.type) {
@@ -35,6 +34,12 @@ function reducer(state, action) {
       links: action.links
     }
   }
+  case 'add_entry_tags': {
+    return {
+      ...state,
+      entryTags: action.entryTags,
+    }
+  }
   case 'update_entry': {
     return {
       ...state,
@@ -45,12 +50,20 @@ function reducer(state, action) {
     return {
       ...state,
       entries: [],
+      entryTags: state.entryTags,
       links: {}
+    }
+  }
+  case 'clear_entry_tags': {
+    return {
+      ...state,
+      entryTags: [],
     }
   }
   case 'loading': {
     return {
       ...state,
+      error: null,
       loading: true,
     }
   }
@@ -58,6 +71,12 @@ function reducer(state, action) {
     return {
       ...state,
       loading: false,
+    }
+  }
+  case 'error': {
+    return {
+      ...state,
+      lastError: action.error,
     }
   }
   default: {
@@ -69,9 +88,11 @@ function reducer(state, action) {
 export function useEntries() {
   const [state, dispatch] = useReducer(reducer, {
     loading: false,
+    lastError: null,
     toggle: [],
     flag: [],
     entries: [],
+    entryTags: [],
     links: {},
   })
 
@@ -82,7 +103,7 @@ export function useEntries() {
       const response = await entryApi.fetchEntries(link)
       dispatch({type: 'add_entries', ...response})
     } catch (error) {
-      toast(error.data, {error: true})
+      dispatch({type: 'error', error})
     } finally {
       dispatch({type: 'loaded'})
     }
@@ -94,9 +115,18 @@ export function useEntries() {
       const newEntry = await entryApi.updateEntry({...entry, context: {oldValue}})
       dispatch({type: 'update_entry', entry: newEntry})
     } catch (error) {
-      toast(error.data, {error: true})
+      dispatch({type: 'error', error})
     }
   }, [state.entries])
+
+  const fetchEntryTags = useCallback(async () => {
+    try {
+      const entryTags = await entryApi.fetchEntryTags()
+      dispatch({type: 'add_entry_tags', entryTags})
+    } catch (error) {
+      dispatch({type: 'error', error})
+    }
+  }, [])
 
   useEffect(() => {
     async function run(entry) {
@@ -105,7 +135,7 @@ export function useEntries() {
         const newEntry = await entryApi.updateEntry({...entry, seen: !entry.seen, context: {oldValue}})
         dispatch({type: 'update_entry', entry: newEntry})
       } catch (error) {
-        toast(error.data, {error: true})
+        dispatch({type: 'error', error})
       }
     }
 
@@ -127,7 +157,7 @@ export function useEntries() {
         const newEntry = await entryApi.updateEntry({...entry, context: {oldValue}})
         dispatch({type: 'update_entry', entry: newEntry})
       } catch (error) {
-        toast(error.data, {error: true})
+        dispatch({type: 'error', error})
       }
     }
 
@@ -139,7 +169,7 @@ export function useEntries() {
       }
       dispatch({type: 'remove_flag', uuid})
     }
-  }, [state.flag, state.entries])
+  }, [state.entries, state.flag])
 
   const setSeenFlag = useCallback(async entryUuid => {
     dispatch({type: 'add_flag', uuid: entryUuid})
@@ -153,14 +183,22 @@ export function useEntries() {
     dispatch({type: 'clear_entries'})
   }, [])
 
+  const clearEntryTags = useCallback(() => {
+    dispatch({type: 'clear_entryTags'})
+  }, [])
+
   return {
     entries: state.entries,
+    entryTags: state.entryTags,
     links: state.links,
     loading: state.loading,
+    lastError: state.lastError,
     fetchEntries,
+    fetchEntryTags,
     changeEntry,
     setSeenFlag,
     toggleSeenFlag,
     clearEntries,
+    clearEntryTags,
   }
 }

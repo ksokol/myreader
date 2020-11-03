@@ -1,7 +1,7 @@
 import './Chips.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import Chip from './Chip'
+import {Chip} from './Chip'
 import {Input} from '../Input/Input'
 
 export class Chips extends React.Component {
