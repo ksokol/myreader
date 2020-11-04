@@ -15,13 +15,13 @@ describe('LoginForm', () => {
   })
 
   it('should pass expected props to email input component', () => {
-    expect(createWrapper().find('[type="email"]').props()).toContainObject({
+    expect(createWrapper().find('[type="email"]').props()).toEqual(expect.objectContaining({
       name: 'username',
       label: 'Email',
       value: '',
       autoComplete: 'email',
       disabled: false
-    })
+    }))
   })
 
   it('should update email input prop "value" when input changed', () => {
@@ -32,13 +32,13 @@ describe('LoginForm', () => {
   })
 
   it('should pass expected props to password input component', () => {
-    expect(createWrapper().find('[type="password"]').props()).toContainObject({
+    expect(createWrapper().find('[type="password"]').props()).toEqual(expect.objectContaining({
       name: 'password',
       label: 'Password',
       value: '',
       autoComplete: 'current-password',
       disabled: false
-    })
+    }))
   })
 
   it('should update password input prop "value" when input changed', () => {
@@ -49,10 +49,7 @@ describe('LoginForm', () => {
   })
 
   it('should pass expected props to login button component', () => {
-    expect(createWrapper().find('Button').props()).toContainObject({
-      type: 'submit',
-      disabled: false
-    })
+    expect(createWrapper().find('Button').prop('disabled')).toEqual(false)
   })
 
   it('should trigger prop function "onLogin" when login button clicked', () => {

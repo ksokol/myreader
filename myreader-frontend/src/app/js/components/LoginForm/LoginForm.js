@@ -69,7 +69,6 @@ export default class LoginForm extends React.Component {
         </div>
 
         <Button
-          type='submit'
           onClick={() => onLogin({username, password})}
           disabled={loginPending}>
           Login
