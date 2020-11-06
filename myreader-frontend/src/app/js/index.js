@@ -23,6 +23,4 @@ ReactDOM.render(
   document.querySelector('#root')
 )
 
-if (process.env.NODE_ENV === 'production') {
-  register(`${process.env.PUBLIC_URL}/service-worker.js`)
-}
+register('./service-worker.js')

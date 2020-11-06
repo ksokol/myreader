@@ -1,5 +1,4 @@
 const path = require('path')
-const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
@@ -14,11 +13,8 @@ const isReport = ENV === 'report'
 const isProd = ENV === 'build' || isReport
 const isServed = ENV === 'server'
 
-const environment = isTest ? 'test' : isServed ? 'development' : 'production'
-
 const BACKEND_PORT = 19340
 const BACKEND_CONTEXT = 'myreader'
-const PUBLIC_URL = environment === 'production' ? `/${BACKEND_CONTEXT}` : ''
 
 module.exports = function() {
   const config = {}
@@ -40,7 +36,7 @@ module.exports = function() {
     path: path.resolve('./dist'),
     filename: isProd ? 'app/[name].[contenthash].js' : '[name].bundle.js',
     chunkFilename: isProd ? 'app/[name].[contenthash].js' : '[name].bundle.js',
-    publicPath: `${PUBLIC_URL}/`
+    publicPath: ''
   }
 
   config.optimization = {
@@ -101,16 +97,8 @@ module.exports = function() {
     }]
   }
 
-  /**
-   * Reference: http://webpack.github.io/docs/configuration.html#plugins
-   * List: http://webpack.github.io/docs/list-of-plugins.html
-   */
   config.plugins = [
     new BundleAnalyzerPlugin({analyzerMode: isReport ? 'server' : 'disabled'}),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(environment),
-      'process.env.PUBLIC_URL': JSON.stringify(PUBLIC_URL)
-    })
   ]
 
   if (!isTest) {
@@ -135,7 +123,7 @@ module.exports = function() {
   if (isProd) {
     config.plugins.push(
       new WebpackPwaManifest({
-        filename: 'app/manifest.[hash].json',
+        filename: 'manifest.[hash].json',
         includeDirectory: true,
         name: 'MyReader',
         short_name: 'MyReader',
@@ -144,8 +132,6 @@ module.exports = function() {
         theme_color: '#3f51b5',
         orientation: 'any',
         display: 'standalone',
-        start_url: `${PUBLIC_URL}/`,
-        scope: `${PUBLIC_URL}/`,
         icons: [
           {
             src: path.resolve('./src/app/img/favicon.png'),
@@ -159,9 +145,8 @@ module.exports = function() {
         clientsClaim: true,
         skipWaiting: true,
         inlineWorkboxRuntime: false,
-        navigateFallback: `${PUBLIC_URL}/`,
         cleanupOutdatedCaches: true,
-        offlineGoogleAnalytics: false
+        offlineGoogleAnalytics: false,
       })
     )
   }
