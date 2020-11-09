@@ -83,3 +83,7 @@ export function toMatchPatchRequest(actual, expected) {
 export function toMatchPostRequest(actual, expected) {
   return toMatchRequest.bind(this)(actual, {...expected, method: 'POST'})
 }
+
+export function toMatchDeleteRequest(actual, expected) {
+  return toMatchRequest.bind(this)(actual, {...expected, method: 'DELETE'})
+}

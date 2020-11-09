@@ -220,7 +220,6 @@ describe('custom matcher', () => {
     })
   })
 
-
   describe('toMatchPostRequest', () => {
 
     it('should match', () => {
@@ -303,6 +302,32 @@ describe('custom matcher', () => {
           body: {
             a: 'b'
           }
+        })
+        testFail()
+      } catch {
+        // ignore
+      }
+    })
+  })
+
+  describe('toMatchDeleteRequest', () => {
+
+    it('should match', () => {
+      expect({
+        method: 'DELETE',
+        url: 'some/url',
+      }).toMatchDeleteRequest({
+        url: 'some/url',
+      })
+    })
+
+    it('should not match', () => {
+      try {
+        expect({
+          method: 'POST',
+          url: 'some/url',
+        }).toMatchDeleteRequest({
+          url: 'some/url'
         })
         testFail()
       } catch {
