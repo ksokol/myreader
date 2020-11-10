@@ -1,232 +1,257 @@
 import React from 'react'
-import {mount} from 'enzyme'
+import {render, fireEvent, screen, act} from '@testing-library/react'
+import {Router, Route, Switch} from 'react-router-dom'
+import {createMemoryHistory} from 'history'
 import SubscriptionEditPage from './SubscriptionEditPage'
-import {SUBSCRIPTIONS_URL} from '../../constants'
-import {subscriptionApi, subscriptionTagsApi} from '../../api'
-import {toast} from '../../components/Toast'
-import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
+import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
 
-/* eslint-disable react/prop-types */
-jest.mock('../../components', () => ({
-  SubscriptionEditForm: () => null
-}))
-
-jest.mock('../../contexts/locationState/withLocationState', () => ({
-  withLocationState: Component => Component
-}))
-
-jest.mock('../../api', () => ({
-  subscriptionApi: {},
-  subscriptionTagsApi: {}
-}))
-
-jest.mock('../../components/Toast', () => ({
-  toast: jest.fn()
-}))
-/* eslint-enable */
+jest.unmock('react-router')
+jest.unmock('react-router-dom')
 
 const expectedError = 'expectedError'
+const subscription = {
+  uuid: '1',
+  title: 'expected title',
+  origin: 'http:/example.com',
+  feedTag: {name: 'tag1'}
+}
+const subscriptionTags = {
+  links: [],
+  content: []
+}
+const exclusions = {
+  content: []
+}
 
 describe('SubscriptionEditPage', () => {
 
-  let props
+  let history
 
-  const createWrapper = async ({subscription, tags} = {subscription: resolved(), tags: resolved()}) => {
-    subscriptionApi.fetchSubscription = subscription
-    subscriptionTagsApi.fetchSubscriptionTags = tags
-    const wrapper = mount(<SubscriptionEditPage {...props} />)
-    await flushPromises()
-    wrapper.update()
-    return wrapper
+  const renderComponent = async () => {
+    await act(async () => {
+      render(
+        <Router history={history}>
+          <LocationStateProvider>
+            <Switch>
+              <Route
+                exact={true}
+                path='/:uuid'
+                component={SubscriptionEditPage}
+              />
+            </Switch>
+          </LocationStateProvider>
+        </Router>
+      )
+    })
   }
 
   beforeEach(() => {
-    toast.mockClear()
+    history = createMemoryHistory()
+    history.push({pathname: '1'})
 
-    props = {
-      params: {
-        uuid: 'uuid1'
-      },
-      historyReplace: jest.fn(),
-      historyReload: jest.fn()
-    }
+    fetch.jsonResponseOnce(subscription)
+    fetch.jsonResponseOnce(subscriptionTags)
+    fetch.jsonResponseOnce(exclusions)
   })
 
-  it('should not render component when call to subscriptionApi.fetchSubscription is pending', async () => {
-    const wrapper = await createWrapper({subscription: pending()})
+  it('should not render subscription edit form if subscription is still loading', async () => {
+    fetch.resetMocks()
+    fetch.responsePending()
+    await renderComponent()
 
-    expect(wrapper.find('SubscriptionEditForm').exists()).toEqual(false)
+    expect(screen.queryByRole('input')).not.toBeInTheDocument()
+    expect(screen.queryByText('Save')).not.toBeInTheDocument()
+    expect(screen.queryByText('Delete')).not.toBeInTheDocument()
+    expect(screen.queryByRole('validations')).not.toBeInTheDocument()
   })
 
-  it('should render component when call to subscriptionApi.fetchSubscription succeeded', async () => {
-    const wrapper = await createWrapper()
+  it('should fetch subscription tags and subscription for given uuid', async () => {
+    await renderComponent()
 
-    expect(wrapper.find('SubscriptionEditForm').exists()).toEqual(true)
-  })
-
-  it('should call subscriptionApi.saveSubscription when prop function "saveSubscriptionEditForm" triggered', async () => {
-    subscriptionApi.saveSubscription = pending()
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({a: 'b', c: 'd'})
-
-    expect(subscriptionApi.saveSubscription).toHaveBeenCalledWith({
-      a: 'b',
-      c: 'd'
+    expect(fetch.first()).toMatchGetRequest({
+      url: 'api/2/subscriptions/1'
+    })
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/exclusions/1/pattern'
     })
   })
 
-  it('should set prop "changePending" to true when subscriptionApi.saveSubscription is pending', async () => {
-    subscriptionApi.saveSubscription = pending()
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should render subscription edit form', async () => {
+    await renderComponent()
 
-    expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(true)
+    expect(screen.queryByDisplayValue('expected title')).toBeInTheDocument()
+    expect(screen.queryByDisplayValue('http:/example.com')).toBeInTheDocument()
+    expect(screen.queryByDisplayValue('tag1')).toBeInTheDocument()
+    expect(screen.getByText('Save')).toBeEnabled()
+    expect(screen.getByText('Delete')).toBeEnabled()
+    expect(screen.queryByRole('title-validation')).not.toBeInTheDocument()
   })
 
-  it('should set prop "changePending" to false when subscriptionApi.saveSubscription finished', async () => {
-    subscriptionApi.saveSubscription = resolved({})
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should save subscription', async () => {
+    await renderComponent()
 
-    expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(false)
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+
+    expect(fetch.mostRecent()).toMatchPatchRequest({
+      url: 'api/2/subscriptions/1',
+      body: {
+        uuid: '1',
+        title: 'expected title',
+        origin: 'http:/example.com',
+        feedTag: {name: 'tag1'},
+      },
+    })
   })
 
-  it('should trigger toast when subscriptionApi.saveSubscription succeeded', async() => {
-    subscriptionApi.saveSubscription = resolved({})
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should disable save and delete buttons if subscription is still saving', async () => {
+    await renderComponent()
 
-    expect(toast).toHaveBeenCalledWith('Subscription saved')
+    fetch.responsePending()
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+
+    expect(screen.getByText('Save')).toBeDisabled()
+    expect(screen.getByText('Delete')).toBeDisabled()
   })
 
-  it('should trigger prop function "historyReload" when subscriptionApi.saveSubscription succeeded', async() => {
-    subscriptionApi.saveSubscription = resolved({})
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should enable save and delete buttons if subscription is saved', async () => {
+    await renderComponent()
 
-    expect(props.historyReload).toHaveBeenCalled()
+    fetch.jsonResponseOnce(subscription)
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+
+    expect(screen.getByText('Save')).toBeEnabled()
+    expect(screen.getByText('Delete')).toBeEnabled()
   })
 
-  it('should pass state "validations" to feed edit page when subscriptionApi.saveSubscription failed with HTTP 400', async() => {
-    subscriptionApi.saveSubscription = rejected({status: 400, data: {errors: ['error']}})
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should show message if subscription is saved', async() => {
+    await renderComponent()
 
-    expect(wrapper.find('SubscriptionEditForm').prop('validations')).toEqual(['error'])
+    fetch.jsonResponseOnce(subscription)
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+
+    expect(screen.queryByRole('dialog-info-message')).toHaveTextContent('Subscription saved')
   })
 
-  it('should not pass state "validations" to feed edit page when subscriptionApi.saveSubscription failed with HTTP !== 400', async() => {
-    subscriptionApi.saveSubscription = rejected({status: 401, fieldErrors: ['error']})
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
-    await flushPromises()
-    wrapper.update()
+  it('should reload if subscription has been saved', async() => {
+    await renderComponent()
 
-    expect(wrapper.find('SubscriptionEditForm').prop('validations')).toEqual([])
+    fetch.jsonResponseOnce(subscription)
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/1')
   })
 
-  it('should clear state "validations" when subscriptionApi.saveSubscription called again', async () => {
-    subscriptionApi.saveSubscription = rejected({status: 400, data: {fieldErrors: ['error']}})
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
-    await flushPromises()
-    wrapper.update()
-    subscriptionApi.saveSubscription = pending()
-    wrapper.find('SubscriptionEditForm').props().saveSubscriptionEditForm({})
-    wrapper.update()
+  it('should show validation message', async() => {
+    await renderComponent()
 
-    expect(wrapper.find('SubscriptionEditForm').prop('validations')).toEqual([])
+    fetch.rejectResponse({status: 400, data: {errors: [{field: 'title', defaultMessage: expectedError}]}})
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+
+    expect(screen.queryByRole('title-validation')).toHaveTextContent(expectedError)
   })
 
-  it('should call subscriptionApi.deleteSubscription when prop function "deleteSubscription" triggered', async () => {
-    subscriptionApi.deleteSubscription = resolved()
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription('uuid1')
+  it('should remove validation message if subscription should be saved again', async () => {
+    await renderComponent()
 
-    expect(subscriptionApi.deleteSubscription).toHaveBeenCalledWith('uuid1')
+    fetch.jsonResponseOnce(subscription)
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+    fetch.responsePending()
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+
+    expect(screen.queryByRole('title-validation')).not.toBeInTheDocument()
   })
 
-  it('should set prop "changePending" to true when prop function "deleteSubscription" called', async () => {
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription('1')
-    wrapper.update()
+  it('should show message when saving failed with an error', async() => {
+    await renderComponent()
 
-    expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(true)
+    fetch.rejectResponse({status: 500, data: expectedError})
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+
+    expect(screen.queryByRole('title-validation')).not.toBeInTheDocument()
+    expect(screen.queryByRole('dialog-error-message')).toHaveTextContent(expectedError)
   })
 
-  it('should not change state prop "changePending" when call to subscriptionApi.deleteSubscription failed', async () => {
-    subscriptionApi.deleteSubscription = rejected()
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription()
-    await flushPromises()
-    wrapper.update()
+  it('should remove subscription', async () => {
+    await renderComponent()
+    fetch.resetMocks()
 
-    expect(wrapper.find('SubscriptionEditForm').prop('changePending')).toEqual(false)
+    fetch.jsonResponseOnce({status: 204})
+    await act(async () => fireEvent.click(screen.getByText('Delete')))
+    await act(async () => fireEvent.click(screen.getByText('Yes')))
+
+    expect(fetch.first()).toMatchDeleteRequest({
+      url: 'api/2/subscriptions/1'
+    })
   })
 
-  it('should trigger prop function "props.showErrorNotification" when call to subscriptionApi.deleteSubscription failed', async () => {
-    subscriptionApi.deleteSubscription = rejected({data: 'expected error'})
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription()
-    await flushPromises()
-    wrapper.update()
+  it('should disable save and delete buttons if subscription is still removing', async () => {
+    await renderComponent()
 
-    expect(toast).toHaveBeenCalledWith('expected error', {error: true})
+    fetch.responsePending()
+    await act(async () => fireEvent.click(screen.getByText('Delete')))
+    await act(async () => fireEvent.click(screen.getByText('Yes')))
+
+    expect(screen.getByText('Save')).toBeDisabled()
+    expect(screen.getByText('Delete')).toBeDisabled()
   })
 
-  it('should trigger prop function "showSuccessNotification" when call to subscriptionApi.deleteSubscription succeeded', async () => {
-    subscriptionApi.deleteSubscription = resolved()
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription()
-    await flushPromises()
-    wrapper.update()
+  it('should enable save and delete buttons if subscription could not be removed', async () => {
+    await renderComponent()
 
-    expect(toast).toHaveBeenCalledWith('Subscription deleted')
+    fetch.rejectResponse({status: 500})
+    await act(async () => fireEvent.click(screen.getByText('Delete')))
+    await act(async () => fireEvent.click(screen.getByText('Yes')))
+
+    expect(screen.getByText('Save')).toBeEnabled()
+    expect(screen.getByText('Delete')).toBeEnabled()
   })
 
-  it('should change and reload location when call to subscriptionApi.deleteSubscription succeeded', async () => {
-    subscriptionApi.deleteSubscription = resolved()
-    const wrapper = await createWrapper()
-    wrapper.find('SubscriptionEditForm').props().deleteSubscription()
-    await flushPromises()
-    wrapper.update()
+  it('should redirect to subscription list page if subscription has been removed', async () => {
+    await renderComponent()
 
-    expect(props.historyReplace).toHaveBeenCalledWith({pathname: SUBSCRIPTIONS_URL})
-    expect(props.historyReload).toHaveBeenCalled()
+    fetch.jsonResponseOnce({status: 204})
+    await act(async () => fireEvent.click(screen.getByText('Delete')))
+    await act(async () => fireEvent.click(screen.getByText('Yes')))
+
+    expect(history.action).toEqual('REPLACE')
+    expect(history.location.pathname).toEqual('/app/subscriptions')
   })
 
-  it('should call subscriptionApi.fetchSubscription and subscriptionTagsApi.fetchSubscriptionTags when mounted', async () => {
-    await createWrapper()
+  it('should show message if subscription has been deleted', async () => {
+    await renderComponent()
 
-    expect(subscriptionApi.fetchSubscription).toHaveBeenCalledWith('uuid1')
-    expect(subscriptionTagsApi.fetchSubscriptionTags).toHaveBeenCalled()
+    fetch.jsonResponseOnce({status: 204})
+    await act(async () => fireEvent.click(screen.getByText('Delete')))
+    await act(async () => fireEvent.click(screen.getByText('Yes')))
+
+    expect(screen.queryByRole('dialog-info-message')).toHaveTextContent('Subscription deleted')
   })
 
-  it('should show toast when call to subscriptionApi.fetchSubscription failed on mount', async () => {
-    await createWrapper({subscription: rejected({data: expectedError})})
+  it('should show message if subscription could not be fetched', async () => {
+    fetch.resetMocks()
+    fetch.rejectResponse({status: 500, data: expectedError})
+    await renderComponent()
 
-    expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
+    expect(screen.queryByRole('dialog-error-message')).toHaveTextContent(expectedError)
   })
 
-  it('should show toast when call to subscriptionApi.fetchSubscriptionTags failed on mount', async () => {
-    await createWrapper({subscription: resolved(), tags: rejected({data: expectedError})})
+  it('should show message if subscription tags could not be fetched', async () => {
+    fetch.resetMocks()
+    fetch.jsonResponseOnce(subscription)
+    fetch.rejectResponse({status: 500, data: expectedError})
+    await renderComponent()
 
-    expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
+    expect(screen.queryByRole('dialog-error-message')).toHaveTextContent(expectedError)
   })
 
-  it('should pass tags to component when call too subscriptionApi.fetchSubscriptionTags succeeded', async () => {
-    const wrapper = await createWrapper({subscription: resolved(), tags: resolved({content: 'expected tags'})})
+  it('should show message if subscription exclusions could not be fetched', async () => {
+    fetch.resetMocks()
+    fetch.jsonResponseOnce(subscription)
+    fetch.jsonResponseOnce(subscriptionTags)
+    fetch.rejectResponse({status: 500, data: expectedError})
+    await renderComponent()
 
-    expect(wrapper.find('SubscriptionEditForm').prop('subscriptionTags')).toEqual('expected tags')
+    expect(screen.queryByRole('dialog-error-message')).toHaveTextContent(expectedError)
   })
 })
