@@ -8,8 +8,8 @@ jest.unmock('react-router')
 
 const expectedUrl = 'expected url'
 const expectedError = 'expected error'
-
 const dialogErrorMessageRole = 'dialog-error-message'
+
 describe('SubscribePage', () => {
 
   let history
@@ -83,7 +83,7 @@ describe('SubscribePage', () => {
     await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(screen.getByRole('validations')).toHaveTextContent(expectedError)
+    expect(screen.getByRole('origin-validation')).toHaveTextContent(expectedError)
     expect(screen.queryByRole(dialogErrorMessageRole)).not.toBeInTheDocument()
   })
 
@@ -148,7 +148,7 @@ describe('SubscribePage', () => {
     await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(screen.getByRole('validations')).toHaveTextContent(expectedError)
+    expect(screen.getByRole('origin-validation')).toHaveTextContent(expectedError)
     await waitFor(() => expect(screen.queryByRole(dialogErrorMessageRole)).not.toBeInTheDocument())
   })
 })

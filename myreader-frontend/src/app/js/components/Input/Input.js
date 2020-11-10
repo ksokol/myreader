@@ -132,14 +132,17 @@ export class Input extends React.Component {
         />
 
         {fieldValidation ? (
-          <div className='my-input__validations' role='validations'>
+          <div
+            className='my-input__validations'
+            role={`${this.id()}-validation`}
+          >
             <span
               key={fieldValidation}
             >
               {fieldValidation}
             </span>
-          </div>) : null
-        }
+          </div>
+        ) : null}
       </div>
     )
   }

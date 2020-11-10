@@ -2,12 +2,12 @@ import React from 'react'
 import {render, fireEvent, screen, act} from '@testing-library/react'
 import {Router, Route, Switch} from 'react-router-dom'
 import {createMemoryHistory} from 'history'
-import FeedEditPage from './FeedEditPage'
-import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
+import {FeedEditPage} from './FeedEditPage'
 
 jest.unmock('react-router')
 jest.unmock('react-router-dom')
 
+const feed = {uuid: '1', title: 'expected title', url: 'http:/example.com'}
 describe('FeedEditPage', () => {
 
   let history
@@ -16,11 +16,13 @@ describe('FeedEditPage', () => {
     await act(async () => {
       render(
         <Router history={history}>
-          <LocationStateProvider>
-            <Switch>
-              <Route path='/:uuid' component={FeedEditPage} />
-            </Switch>
-          </LocationStateProvider>
+          <Switch>
+            <Route
+              exact={true}
+              path='/:uuid'
+              component={FeedEditPage}
+            />
+          </Switch>
         </Router>
       )
     })
@@ -29,9 +31,12 @@ describe('FeedEditPage', () => {
   beforeEach(() => {
     history = createMemoryHistory()
     history.push({pathname: '1'})
+
+    fetch.jsonResponseOnce(feed)
   })
 
   it('should not render feed edit form if feed is still loading', async () => {
+    fetch.resetMocks()
     fetch.responsePending()
     await renderComponent()
 
@@ -42,6 +47,7 @@ describe('FeedEditPage', () => {
   })
 
   it('should fetch feed for given uuid', async () => {
+    fetch.resetMocks()
     fetch.responsePending()
     await renderComponent()
 
@@ -51,20 +57,19 @@ describe('FeedEditPage', () => {
   })
 
   it('should render feed edit form', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
     expect(screen.queryByDisplayValue('expected title')).toBeInTheDocument()
     expect(screen.queryByDisplayValue('http:/example.com')).toBeInTheDocument()
     expect(screen.getByText('Save')).toBeEnabled()
     expect(screen.getByText('Delete')).toBeEnabled()
-    expect(screen.queryByRole('validations')).not.toBeInTheDocument()
+    expect(screen.queryByRole('title-validation')).not.toBeInTheDocument()
   })
 
   it('should save feed', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
-    fireEvent.click(screen.getByText('Save'))
+
+    await act(async () => fireEvent.click(screen.getByText('Save')))
 
     expect(fetch.mostRecent()).toMatchPatchRequest({
       url: 'api/2/feeds/1',
@@ -78,7 +83,6 @@ describe('FeedEditPage', () => {
   })
 
   it('should disable save and delete buttons if feed is still saving', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
     fetch.responsePending()
@@ -89,10 +93,9 @@ describe('FeedEditPage', () => {
   })
 
   it('should enable save and delete buttons if feed is saved', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
+    fetch.jsonResponseOnce(feed)
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
     expect(screen.getByText('Save')).toBeEnabled()
@@ -100,27 +103,24 @@ describe('FeedEditPage', () => {
   })
 
   it('should show message if feed is saved', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
+    fetch.jsonResponseOnce(feed)
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
     expect(screen.queryByRole('dialog-info-message')).toHaveTextContent('Feed saved')
   })
 
   it('should show validation message', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
     fetch.rejectResponse({status: 400, data: {errors: [{field: 'title', defaultMessage: 'expected error'}]}})
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(screen.queryByRole('validations')).toHaveTextContent('expected error')
+    expect(screen.queryByRole('title-validation')).toHaveTextContent('expected error')
   })
 
   it('should remove validation message if feed should be saved again', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
     fetch.rejectResponse({status: 400, data: {errors: [{field: 'title', defaultMessage: 'expected error'}]}})
@@ -128,48 +128,48 @@ describe('FeedEditPage', () => {
     fetch.responsePending()
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(screen.queryByRole('validations')).not.toBeInTheDocument()
+    expect(screen.queryByRole('title-validation')).not.toBeInTheDocument()
   })
 
   it('should show message when saving failed with an error', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
+
     fetch.rejectResponse({status: 500, data: 'expected error'})
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(screen.queryByRole('validations')).not.toBeInTheDocument()
+    expect(screen.queryByRole('title-validation')).not.toBeInTheDocument()
     expect(screen.queryByRole('dialog-error-message')).toHaveTextContent('expected error')
   })
 
   it('should remove feed', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
+    fetch.resetMocks()
 
-    fireEvent.click(screen.getByText('Delete'))
-    fireEvent.click(screen.getByText('Yes'))
+    fetch.jsonResponseOnce({status: 204})
+    await act(async () => fireEvent.click(screen.getByText('Delete')))
+    await act(async () => fireEvent.click(screen.getByText('Yes')))
 
-    expect(fetch.mostRecent()).toMatchDeleteRequest({
+    expect(fetch.first()).toMatchDeleteRequest({
       url: 'api/2/feeds/1'
     })
   })
 
   it('should disable save and delete buttons if feed is still removing', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
-    fireEvent.click(screen.getByText('Delete'))
-    fireEvent.click(screen.getByText('Yes'))
+    fetch.responsePending()
+    await act(async () => fireEvent.click(screen.getByText('Delete')))
+    await act(async () => fireEvent.click(screen.getByText('Yes')))
 
     expect(screen.getByText('Save')).toBeDisabled()
     expect(screen.getByText('Delete')).toBeDisabled()
   })
 
   it('should enable save and delete buttons if feed could not be removed', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
     fetch.rejectResponse({status: 500})
-    fireEvent.click(screen.getByText('Delete'))
+    await act(async () => fireEvent.click(screen.getByText('Delete')))
     await act(async () => fireEvent.click(screen.getByText('Yes')))
 
     expect(screen.getByText('Save')).toBeEnabled()
@@ -177,11 +177,10 @@ describe('FeedEditPage', () => {
   })
 
   it('should redirect to feed list page if feed has been removed', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
     fetch.jsonResponseOnce({status: 204})
-    fireEvent.click(screen.getByText('Delete'))
+    await act(async () => fireEvent.click(screen.getByText('Delete')))
     await act(async () => fireEvent.click(screen.getByText('Yes')))
 
     expect(history.action).toEqual('REPLACE')
@@ -189,7 +188,6 @@ describe('FeedEditPage', () => {
   })
 
   it('should show message if feed could not be removed with an HTTP 409 error', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
     fetch.rejectResponse({status: 409})
@@ -200,7 +198,6 @@ describe('FeedEditPage', () => {
   })
 
   it('should show message if feed could not be removed with an HTTP !== 409 error', async () => {
-    fetch.jsonResponseOnce({uuid: '1', title: 'expected title', url: 'http:/example.com'})
     await renderComponent()
 
     fetch.rejectResponse({status: 400, data: 'expected error'})

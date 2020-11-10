@@ -240,7 +240,7 @@ describe('Input', () => {
 
   it('should render last validation for prop "name"', () => {
     expect(createComponent().find('.my-input__validations').html())
-      .toEqual('<div class="my-input__validations" role="validations"><span>expectedMessage2</span></div>')
+      .toEqual('<div class="my-input__validations" role="expectedId-validation"><span>expectedMessage2</span></div>')
   })
 
   it('should not render last validation when prop "validations" is undefined', () => {
@@ -256,7 +256,7 @@ describe('Input', () => {
     ]
 
     expect(createComponent().find('.my-input__validations').html())
-      .toEqual('<div class="my-input__validations" role="validations"><span>expectedMessage1</span></div>')
+      .toEqual('<div class="my-input__validations" role="expectedId-validation"><span>expectedMessage1</span></div>')
   })
 
   it('should clear validations when input changed', () => {
@@ -287,6 +287,6 @@ describe('Input', () => {
     wrapper.setProps({validations: [...props.validations]})
 
     expect(wrapper.find('.my-input__validations').html())
-      .toEqual('<div class="my-input__validations" role="validations"><span>expectedMessage2</span></div>')
+      .toEqual('<div class="my-input__validations" role="expectedId-validation"><span>expectedMessage2</span></div>')
   })
 })

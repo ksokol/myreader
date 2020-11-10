@@ -1,89 +1,57 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, {useEffect} from 'react'
+import {useParams, useHistory} from 'react-router-dom'
 import {FeedEditForm} from '../../components/FeedEditForm/FeedEditForm'
-import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {ADMIN_FEEDS_URL} from '../../constants'
-import {feedApi} from '../../api'
 import {toast} from '../../components/Toast'
+import {useFeed} from './feeds'
 
-class FeedEditPage extends React.Component {
+export function FeedEditPage() {
+  const {uuid} = useParams()
+  const history = useHistory()
 
-  static propTypes = {
-    params: PropTypes.shape({
-      uuid: PropTypes.string.isRequired
-    }).isRequired,
-    historyReplace: PropTypes.func.isRequired
-  }
+  const {
+    feed,
+    loading,
+    updated,
+    deleted,
+    validations,
+    lastError,
+    loadFeed,
+    saveFeed,
+    deleteFeed,
+  } = useFeed()
 
-  state = {
-    feed: null,
-    changePending: false,
-    validations: []
-  }
-
-  componentDidMount = async () => await this.loadFeed(this.props.params.uuid)
-
-  loadFeed = async uuid => {
-    try {
-      const feed = await feedApi.fetchFeed(uuid)
-      this.setState({feed})
-    } catch({data}) {
-      toast(data, {error: true})
+  useEffect(() => {
+    if (uuid) {
+      loadFeed(uuid)
     }
-  }
+  }, [loadFeed, uuid])
 
-  onSaveFeed = async feed => {
-    this.setState({changePending: true, validations: []})
+  useEffect(() => {
+    if (lastError) {
+      toast(lastError.data, {error: true})
+    }
+  }, [lastError])
 
-    try {
-      await feedApi.saveFeed(feed)
+  useEffect(() => {
+    if (updated) {
       toast('Feed saved')
-    } catch (error) {
-      if (error.status === 400) {
-        this.setState({
-          validations: error.data.errors
-        })
-      } else {
-        toast(error.data, {error: true})
-      }
-    } finally {
-      this.setState({changePending: false})
     }
-  }
+  }, [updated])
 
-  onDeleteFeed = async uuid => {
-    this.setState({changePending: true})
-
-    try {
-      await feedApi.deleteFeed(uuid)
-      this.props.historyReplace({pathname: ADMIN_FEEDS_URL})
-    } catch (error) {
-      this.setState({changePending: false})
-      if (error.status === 409) {
-        toast('Can not delete. Feed has subscriptions', {error: true})
-      } else {
-        toast(error.data, {error: true})
-      }
+  useEffect(() => {
+    if (deleted) {
+      history.replace({pathname: ADMIN_FEEDS_URL})
     }
-  }
+  }, [deleted, history])
 
-  render() {
-    const {
-      feed,
-      changePending,
-      validations
-    } = this.state
-
-    return feed ? (
-      <FeedEditForm
-        data={feed}
-        changePending={changePending}
-        validations={validations}
-        onSaveFormData={this.onSaveFeed}
-        onRemove={this.onDeleteFeed}
-      />
-    ) : null
-  }
+  return feed ? (
+    <FeedEditForm
+      data={feed}
+      changePending={loading}
+      validations={validations}
+      onSaveFormData={saveFeed}
+      onRemove={deleteFeed}
+    />
+  ) : null
 }
-
-export default withLocationState(FeedEditPage)
