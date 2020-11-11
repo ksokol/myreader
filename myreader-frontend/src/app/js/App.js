@@ -1,7 +1,6 @@
 import './App.css'
 import React from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
-import {SubscriptionEditPage} from './pages'
 import {secured} from './components'
 import {
   ADMIN_FEED_URL,
@@ -32,6 +31,7 @@ import {LogoutPage} from './pages/LogoutPage/LogoutPage'
 import {BookmarkListPage} from './pages/BookmarkListPage/BookmarkListPage'
 import {SubscribePage} from './pages/SubscribePage/SubscribePage'
 import {FeedEditPage} from './pages/FeedEditPage/FeedEditPage'
+import {SubscriptionEditPage} from './pages/SubscriptionEditPage/SubscriptionEditPage'
 
 const withSidenav = () => (
   <SubscriptionProvider>

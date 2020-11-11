@@ -2,7 +2,7 @@ import React from 'react'
 import {render, fireEvent, screen, act} from '@testing-library/react'
 import {Router, Route, Switch} from 'react-router-dom'
 import {createMemoryHistory} from 'history'
-import SubscriptionEditPage from './SubscriptionEditPage'
+import {SubscriptionEditPage} from './SubscriptionEditPage'
 import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
 
 jest.unmock('react-router')
@@ -22,6 +22,26 @@ const subscriptionTags = {
 const exclusions = {
   content: []
 }
+
+// TODO remove me
+jest.mock('../../hooks/router', () => {
+  const actual = jest.requireActual('../../hooks/router')
+  const reload = jest.fn()
+
+  return {
+    ...actual,
+    useHistory: jest.fn(() => {
+      const {useHistory} = actual
+      return {
+        ...useHistory(),
+        reload,
+      }
+    }),
+    mock: {
+      reload
+    }
+  }
+})
 
 describe('SubscriptionEditPage', () => {
 
@@ -133,13 +153,13 @@ describe('SubscriptionEditPage', () => {
   })
 
   it('should reload if subscription has been saved', async() => {
+    const {reload} = jest.requireMock('../../hooks/router').mock
     await renderComponent()
 
     fetch.jsonResponseOnce(subscription)
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual('/1')
+    expect(reload).toHaveBeenCalledWith()
   })
 
   it('should show validation message', async() => {
@@ -183,6 +203,17 @@ describe('SubscriptionEditPage', () => {
     expect(fetch.first()).toMatchDeleteRequest({
       url: 'api/2/subscriptions/1'
     })
+  })
+
+  it('should reload if subscription has been removed', async() => {
+    const {reload} = jest.requireMock('../../hooks/router').mock
+    await renderComponent()
+
+    fetch.jsonResponseOnce({status: 204})
+    await act(async () => fireEvent.click(screen.getByText('Delete')))
+    await act(async () => fireEvent.click(screen.getByText('Yes')))
+
+    expect(reload).toHaveBeenCalledWith()
   })
 
   it('should disable save and delete buttons if subscription is still removing', async () => {

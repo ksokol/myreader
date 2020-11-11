@@ -1,95 +1,66 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, {useEffect} from 'react'
+import {useParams} from 'react-router-dom'
 import {SubscriptionEditForm} from '../../components'
-import {withLocationState} from '../../contexts/locationState/withLocationState'
 import {SUBSCRIPTIONS_URL} from '../../constants'
-import {subscriptionApi, subscriptionTagsApi} from '../../api'
 import {toast} from '../../components/Toast'
+import {useSubscription} from './subscription'
+import {useHistory} from '../../hooks/router'
 
-class SubscriptionEditPage extends React.Component {
+export function SubscriptionEditPage() {
+  const {uuid} = useParams()
+  const {
+    reload,
+    replace
+  } = useHistory()
 
-  static propTypes = {
-    params: PropTypes.shape({
-      uuid: PropTypes.string.isRequired
-    }).isRequired,
-    historyReplace: PropTypes.func.isRequired,
-    historyReload: PropTypes.func.isRequired
-  }
+  const {
+    subscription,
+    subscriptionTags,
+    loading,
+    updated,
+    deleted,
+    validations,
+    lastError,
+    loadSubscription,
+    saveSubscription,
+    deleteSubscription,
+  } = useSubscription()
 
-  state = {
-    subscription: null,
-    changePending: false,
-    validations: []
-  }
-
-  componentDidMount = async () => {
-    const {uuid} = this.props.params
-
-    try {
-      const subscription = await subscriptionApi.fetchSubscription(uuid)
-      const {content: subscriptionTags} = await subscriptionTagsApi.fetchSubscriptionTags()
-      this.setState({subscription, subscriptionTags})
-    } catch ({data}) {
-      toast(data, {error: true})
+  useEffect(() => {
+    if (uuid) {
+      loadSubscription(uuid)
     }
-  }
+  }, [loadSubscription, uuid])
 
-  pendingEnd = () => this.setState({changePending: false})
+  useEffect(() => {
+    if (lastError) {
+      toast(lastError.data, {error: true})
+    }
+  }, [lastError])
 
-  onSaveSubscription = async subscription => {
-    try {
-      this.setState({
-        changePending: true,
-        validations: []
-      })
-      await subscriptionApi.saveSubscription(subscription)
+  useEffect(() => {
+    if (updated) {
+      reload()
       toast('Subscription saved')
-      this.props.historyReload()
-    } catch (error) {
-      if (error.status === 400) {
-        this.setState({validations: error.data.errors})
-      } else {
-        toast(error.data, {error: true})
-      }
-    } finally {
-      this.pendingEnd()
     }
-  }
+  }, [reload, updated])
 
-  onDeleteSubscription = async uuid => {
-    this.setState({changePending: true})
-
-    try {
-      await subscriptionApi.deleteSubscription(uuid)
+  useEffect(() => {
+    if (deleted) {
       toast('Subscription deleted')
-      this.props.historyReplace({pathname: SUBSCRIPTIONS_URL})
-      this.props.historyReload()
-    } catch ({data}) {
-      this.pendingEnd()
-      toast(data, {error: true})
+      reload()
+      replace({pathname: SUBSCRIPTIONS_URL})
     }
-  }
+  }, [deleted, reload, replace])
 
-  render() {
-    const {
-      subscription,
-      subscriptionTags,
-      changePending,
-      validations
-    } = this.state
-
-    return subscription ? (
-      <SubscriptionEditForm
-        {...this.props}
-        data={subscription}
-        subscriptionTags={subscriptionTags}
-        changePending={changePending}
-        validations={validations}
-        saveSubscriptionEditForm={this.onSaveSubscription}
-        deleteSubscription={this.onDeleteSubscription}
-      />
-    ) : null
-  }
+  return subscription ? (
+    <SubscriptionEditForm
+      data={subscription}
+      subscriptionTags={subscriptionTags}
+      changePending={loading}
+      validations={validations}
+      saveSubscriptionEditForm={saveSubscription}
+      deleteSubscription={deleteSubscription}
+    />
+  ) : null
 }
-
-export default withLocationState(SubscriptionEditPage)
