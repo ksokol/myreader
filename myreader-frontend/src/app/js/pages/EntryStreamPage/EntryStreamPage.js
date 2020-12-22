@@ -50,9 +50,11 @@ export function EntryStreamPage() {
   }
 
   const refresh = () => {
-    clearEntries()
-    fetchEntries({query})
-    reload()
+    if (!loading) {
+      clearEntries()
+      fetchEntries({query})
+      reload()
+    }
   }
 
   useHotkeys('right', () => {

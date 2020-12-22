@@ -411,6 +411,24 @@ describe('EntryStreamPage', () => {
     expect(screen.queryByRole('focus')).not.toBeInTheDocument()
   })
 
+  it('should reload content on page once if refresh icon button clicked twice', async () => {
+    await renderComponent()
+    fetch.resetMocks()
+
+    fetch.responsePending()
+    act(() => {
+      fireEvent.click(screen.getByRole('refresh'))
+    })
+    act(() => {
+      fireEvent.click(screen.getByRole('refresh'))
+    })
+
+    expect(fetch.requestCount()).toEqual(1)
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ&feedTagEqual=a',
+    })
+  })
+
   it('should reset focus when refreshing entries', async () => {
     await renderComponent()
 

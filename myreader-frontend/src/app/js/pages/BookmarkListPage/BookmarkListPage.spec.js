@@ -202,7 +202,6 @@ describe('BookmarkListPage', () => {
   })
 
   it('should reload content on page when refresh icon button clicked', async () => {
-
     await renderComponent()
 
     fetch.jsonResponseOnce(['expected tag1', 'expected tag2'])
@@ -215,6 +214,27 @@ describe('BookmarkListPage', () => {
     expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
     expect(screen.queryByTitle('title3')).toBeInTheDocument()
+  })
+
+  it('should reload content on page once if refresh icon button clicked twice', async () => {
+    await renderComponent()
+    fetch.resetMocks()
+    fetch.responsePending()
+    fetch.responsePending()
+    act(() => {
+      fireEvent.click(screen.getByRole('refresh'))
+    })
+    act(() => {
+      fireEvent.click(screen.getByRole('refresh'))
+    })
+
+    expect(fetch.requestCount()).toEqual(2)
+    expect(fetch.first()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries/availableTags',
+    })
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?seenEqual=&size=2',
+    })
   })
 
   it('should render entries', async () => {

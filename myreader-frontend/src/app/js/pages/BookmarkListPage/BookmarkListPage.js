@@ -45,11 +45,13 @@ export function BookmarkListPage() {
   }
 
   const refresh = () => {
-    clearEntries()
-    clearEntryTags()
-    fetchEntryTags()
-    fetchEntries({query})
-    reload()
+    if (!loading) {
+      clearEntries()
+      clearEntryTags()
+      fetchEntryTags()
+      fetchEntries({query})
+      reload()
+    }
   }
 
   useEffect(() => {
