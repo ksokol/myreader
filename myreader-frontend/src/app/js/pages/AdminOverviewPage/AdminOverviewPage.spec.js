@@ -1,88 +1,87 @@
 import React from 'react'
-import {mount} from 'enzyme'
+import {act, render, fireEvent, waitFor, screen} from '@testing-library/react'
 import {AdminOverviewPage} from './AdminOverviewPage'
-import {adminApi} from '../../api'
-import {toast} from '../../components/Toast'
-import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
-
-/* eslint-disable react/prop-types */
-jest.mock('../../components/AdminOverview/AdminOverview', () => ({
-  AdminOverview: () => null
-}))
-
-jest.mock('../../api', () => ({
-  adminApi: {}
-}))
-
-jest.mock('../../components/Toast', () => ({
-  toast: jest.fn()
-}))
-/* eslint-enable */
-
-jest.useRealTimers()
-
-const expectedError = 'expected value'
 
 describe('AdminOverviewPage', () => {
 
-  const createWrapper = async (onMount = resolved({a: 'b', c: 'd'})) => {
-    adminApi.fetchApplicationInfo = onMount
-    const wrapper = mount(<AdminOverviewPage />)
-    await flushPromises()
-    wrapper.update()
-    return wrapper
+  const renderComponent = () => {
+    render(<AdminOverviewPage />)
   }
 
-  beforeEach(() => {
-    toast.mockClear()
-  })
-
-  it('should trigger adminApi.fetchApplicationInfo when mounted', async () => {
-    await createWrapper()
-
-    expect(adminApi.fetchApplicationInfo).toHaveBeenCalled()
-  })
-
   it('should pass applicationInfo to admin overview component when adminApi.fetchApplicationInfo succeeded', async () => {
-    const wrapper = await createWrapper()
+    const spy = jest.spyOn(Date, 'now')
+    spy.mockReturnValue(new Date('2020-12-06T16:30:00.000Z').getTime())
 
-    expect(wrapper.find('AdminOverview').prop('applicationInfo')).toEqual({
-      a: 'b',
-      c: 'd'
+    fetch.jsonResponse({
+      git: {
+        branch: 'expectedBranch',
+        commit: {
+          id: 'expectedCommitId',
+        },
+      },
+      build: {
+        version: 'expectedVersion',
+        time: '2020-12-05T12:30:00.000Z',
+      }
+    })
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('application-info')).toHaveTextContent('expectedBranch')
+      expect(screen.queryByTestId('application-info')).toHaveTextContent('expectedCommitId')
+      expect(screen.queryByTestId('application-info')).toHaveTextContent('expectedVersion')
+      expect(screen.queryByTestId('application-info')).toHaveTextContent('1 day ago')
     })
   })
 
-  it('should trigger toast when adminApi.fetchApplicationInfo failed', async () => {
-    await createWrapper(rejected('some error'))
+  it('should not render application info component when prop "applicationInfo" is undefined', async () => {
+    fetch.responsePending()
+    renderComponent()
 
-    expect(toast).toHaveBeenCalledWith('Application info is missing')
+    await waitFor(() => expect(screen.queryByRole('application-info')).not.toBeInTheDocument())
+  })
+
+  it('should not render application info component when prop "applicationInfo" is an empty object', async () => {
+    fetch.responsePending({})
+    renderComponent()
+
+    await waitFor(() => expect(screen.queryByRole('application-info')).not.toBeInTheDocument())
+  })
+
+  it('should trigger toast when adminApi.fetchApplicationInfo failed', async () => {
+    fetch.rejectResponse()
+    renderComponent()
+
+    await waitFor(() => expect(screen.getByRole('dialog-info-message')).toHaveTextContent('Application info is missing'))
   })
 
   it('should call adminApi.rebuildSearchIndex when prop function "rebuildSearchIndex" triggered', async () => {
-    adminApi.rebuildSearchIndex = pending()
-    const wrapper = await createWrapper()
-    wrapper.find('AdminOverview').props().rebuildSearchIndex()
+    renderComponent()
+    await act(async () => {
+      await fireEvent.click(screen.getByText('Refresh index'))
+    })
 
-    expect(adminApi.rebuildSearchIndex).toHaveBeenCalledWith()
+    expect(fetch.mostRecent()).toMatchPutRequest({
+      url: 'api/2/processing',
+      body: {
+        process: 'indexSyncJob'
+      },
+    })
   })
 
   it('should trigger toast when adminApi.rebuildSearchIndex succeeded', async () => {
-    adminApi.rebuildSearchIndex = resolved()
-    const wrapper = await createWrapper()
-    wrapper.find('AdminOverview').props().rebuildSearchIndex()
-    await flushPromises()
-    wrapper.update()
+    renderComponent()
+    fetch.mockResponse()
+    fireEvent.click(screen.getByText('Refresh index'))
 
-    expect(toast).toHaveBeenCalledWith('Indexing started')
+    await waitFor(() => expect(screen.getByRole('dialog-info-message')).toHaveTextContent('Indexing started'))
   })
 
   it('should trigger toast when adminApi.rebuildSearchIndex failed', async () => {
-    adminApi.rebuildSearchIndex = rejected(expectedError)
-    const wrapper = await createWrapper()
-    wrapper.find('AdminOverview').props().rebuildSearchIndex()
-    await flushPromises()
-    wrapper.update()
+    renderComponent()
+    fetch.rejectResponse('expected error')
+    fireEvent.click(screen.getByText('Refresh index'))
 
-    expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
+    await waitFor(() => expect(screen.getByRole('dialog-error-message')).toHaveTextContent('expected error'))
   })
 })

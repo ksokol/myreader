@@ -1,38 +1,71 @@
-import React from 'react'
-import {AdminOverview} from '../../components/AdminOverview/AdminOverview'
+import React, {useCallback, useEffect, useState} from 'react'
 import {adminApi} from '../../api'
 import {toast} from '../../components/Toast'
+import {Button} from '../../components/Buttons'
+import TimeAgo from '../../components/TimeAgo/TimeAgo'
 
-export class AdminOverviewPage extends React.Component {
+export function AdminOverviewPage() {
+  const [applicationInfo, setApplicationInfo] = useState(null)
 
-  state = {
-    applicationInfo: null
-  }
-
-  componentDidMount = async () => {
-    try {
-      const applicationInfo = await adminApi.fetchApplicationInfo()
-      this.setState({applicationInfo})
-    } catch {
-      toast('Application info is missing')
+  useEffect(() => {
+    async function run() {
+      try {
+        setApplicationInfo(await adminApi.fetchApplicationInfo())
+      } catch {
+        toast('Application info is missing')
+      }
     }
-  }
+    run()
+  }, [])
 
-  rebuildSearchIndex = async () => {
+  const rebuildSearchIndex = useCallback(async () => {
     try {
       await adminApi.rebuildSearchIndex()
       toast('Indexing started')
     } catch (error) {
       toast(error, {error: true})
     }
-  }
+  }, [])
 
-  render() {
-    return (
-      <AdminOverview
-        rebuildSearchIndex={this.rebuildSearchIndex}
-        applicationInfo={this.state.applicationInfo}
-      />
-    )
-  }
+  return (
+    <section
+      className='p-2.5'
+    >
+      <h4>Maintenance</h4>
+
+      <Button
+        onClick={rebuildSearchIndex}
+        primary>
+          Refresh index
+      </Button>
+
+      {applicationInfo ? (
+        <React.Fragment>
+          <h4>Application info</h4>
+          <table data-testid='application-info'>
+            <tbody>
+              <tr>
+                <td>Branch</td>
+                <td>{applicationInfo.branch}</td>
+              </tr>
+              <tr>
+                <td>Commit ID</td>
+                <td>{applicationInfo.commitId}</td>
+              </tr>
+              <tr>
+                <td>Version</td>
+                <td>{applicationInfo.version}</td>
+              </tr>
+              <tr>
+                <td>Build Time</td>
+                <td>
+                  <TimeAgo date={applicationInfo.buildTime}/>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </React.Fragment>
+      ) : null}
+    </section>
+  )
 }

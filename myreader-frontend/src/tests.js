@@ -9,6 +9,7 @@ import {
   toMatchPatchRequest,
   toMatchPostRequest,
   toMatchDeleteRequest,
+  toMatchPutRequest,
 } from './app/js/shared/custom-matcher'
 
 configure({adapter: new Adapter()})
@@ -16,9 +17,17 @@ configure({adapter: new Adapter()})
 afterEach(() => {
   localStorage.clear()
   act(() => jest.runOnlyPendingTimers())
+  jest.restoreAllMocks()
 })
 
-expect.extend({toContainObject, toMatchPatchRequest, toMatchGetRequest, toMatchPostRequest, toMatchDeleteRequest})
+expect.extend({
+  toContainObject,
+  toMatchPatchRequest,
+  toMatchGetRequest,
+  toMatchPostRequest,
+  toMatchDeleteRequest,
+  toMatchPutRequest,
+})
 
 Element.prototype.scrollIntoView = jest.fn()
 

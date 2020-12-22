@@ -73,3 +73,7 @@ input {
 .no-underline {
     text-decoration: none;
 }
+
+.p-2\.5 {
+  padding: 0.625rem;
+}

@@ -56,7 +56,7 @@ describe('custom matcher', () => {
           nested: {prop2: 'value'
           }
         })
-        fail('unexpected match')
+        testFail()
       } catch {
         // ignore
       }
@@ -328,6 +328,96 @@ describe('custom matcher', () => {
           url: 'some/url',
         }).toMatchDeleteRequest({
           url: 'some/url'
+        })
+        testFail()
+      } catch {
+        // ignore
+      }
+    })
+  })
+
+  describe('toMatchPutRequest', () => {
+
+    it('should match', () => {
+      expect({
+        method: 'PUT',
+        url: 'some/url',
+      }).toMatchPutRequest({
+        url: 'some/url',
+      })
+    })
+
+    it('should match with body', () => {
+      expect({
+        method: 'PUT',
+        url: 'some/url',
+        body: JSON.stringify({
+          a: 'b',
+        }),
+      }).toMatchPutRequest({
+        url: 'some/url',
+        body: {
+          a: 'b',
+        }
+      })
+    })
+
+    it('should not match when url is empty', () => {
+      try {
+        expect({
+          method: 'PUT',
+          url: 'some/url',
+        }).toMatchPutRequest({
+          url: ''
+        })
+        testFail()
+      } catch {
+        // ignore
+      }
+    })
+
+    it('should not match when search is not equal', () => {
+      try {
+        expect({
+          method: 'PUT',
+          url: 'some/url?a=b',
+        }).toMatchPutRequest({
+          url: 'some/url'
+        })
+        testFail()
+      } catch {
+        // ignore
+      }
+    })
+
+    it('should not match when method is not equal', () => {
+      try {
+        expect({
+          method: 'GET',
+          url: 'some/url',
+        }).toMatchPutRequest({
+          url: 'some/url'
+        })
+        testFail()
+      } catch {
+        // ignore
+      }
+    })
+
+    it('should not match when body is not equal', () => {
+      try {
+        expect({
+          method: 'PUT',
+          url: 'some/url',
+          body: JSON.stringify({
+            a: 'b',
+            c: 'd',
+          }),
+        }).toMatchPutRequest({
+          url: 'some/url',
+          body: {
+            a: 'b'
+          }
         })
         testFail()
       } catch {
