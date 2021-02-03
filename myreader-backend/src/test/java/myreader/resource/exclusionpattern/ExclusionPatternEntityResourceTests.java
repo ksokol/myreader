@@ -1,64 +1,71 @@
 package myreader.resource.exclusionpattern;
 
-import myreader.test.TestConstants;
+import myreader.entity.ExclusionPattern;
+import myreader.entity.Feed;
+import myreader.entity.Subscription;
+import myreader.test.ClearDb;
+import myreader.test.TestUser;
+import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.is;
+import javax.transaction.Transactional;
+
+import static myreader.test.TestUser.USER4;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-@Sql("classpath:test-data.sql")
+@AutoConfigureTestEntityManager
+@Transactional
+@ClearDb
 @SpringBootTest
 @WithTestProperties
-public class ExclusionPatternEntityResourceTests {
+@WithAuthenticatedUser(TestUser.USER4)
+class ExclusionPatternEntityResourceTests {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Test
-    @WithMockUser(TestConstants.USER1)
-    public void testEntityResourceForUser1JsonStructureEquality() throws Exception {
-        mockMvc.perform(get("/api/2/exclusions/1/pattern/0"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.uuid", is("0")))
-                .andExpect(jsonPath("$.hitCount", is(1)))
-                .andExpect(jsonPath("$.pattern", is("user1_subscription1_pattern1")));
-    }
+  @Autowired
+  private TestEntityManager em;
 
-    @Test
-    @WithMockUser(TestConstants.USER2)
-    public void testEntityResourceForUser2NotFound() throws Exception {
-        mockMvc.perform(get("/api/2/exclusions/1/pattern/0"))
-                .andExpect(status().isNotFound());
-    }
+  private Subscription subscription;
+  private ExclusionPattern exclusionPattern;
 
-    @Test
-    @WithMockUser(TestConstants.USER114)
-    public void testDelete() throws Exception {
-        mockMvc.perform(get("/api/2/exclusions/1102/pattern/8"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("uuid", is("8")));
+  @BeforeEach
+  void beforeEach() {
+    var user = em.persist(USER4.toUser());
+    var feed = em.persist(new Feed("http://example.com", "feed title"));
 
-        mockMvc.perform(delete("/api/2/exclusions/1102/pattern/8"))
-                .andExpect(status().isOk());
+    subscription = em.persist(new Subscription(user, feed));
+    exclusionPattern = em.persist(new ExclusionPattern("test", subscription));
+  }
 
-        mockMvc.perform(get("/api/2/exclusions/1102/pattern/8"))
-                .andExpect(status().isNotFound());
-    }
+  @Test
+  void shouldDelete() throws Exception {
+     mockMvc.perform(delete("/api/2/exclusions/{subscriptionId}/pattern/{patternId}", subscription.getId(), exclusionPattern.getId()))
+      .andExpect(status().isOk());
+
+    assertThat(em.getEntityManager().createQuery("from ExclusionPattern").getResultList()).isEmpty();
+  }
+
+  @Test
+  void shouldReturnNotFound() throws Exception {
+    mockMvc.perform(delete("/api/2/exclusions/{subscriptionId}/pattern/{patternId}", subscription.getId(), 999L))
+      .andExpect(status().isNotFound());
+
+    assertThat(em.getEntityManager().createQuery("from ExclusionPattern").getResultList()).isNotEmpty();
+  }
 }

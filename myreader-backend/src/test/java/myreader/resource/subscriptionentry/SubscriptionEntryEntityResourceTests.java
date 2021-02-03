@@ -1,154 +1,124 @@
 package myreader.resource.subscriptionentry;
 
+import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionTag;
-import myreader.repository.SubscriptionEntryRepository;
+import myreader.test.ClearDb;
 import myreader.test.TestUser;
 import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.hamcrest.MockitoHamcrest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
+import javax.transaction.Transactional;
 import java.util.Date;
-import java.util.Optional;
+import java.util.Set;
 
+import static myreader.test.TestUser.USER4;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
+@AutoConfigureTestEntityManager
+@Transactional
+@ClearDb
 @SpringBootTest
 @WithAuthenticatedUser(TestUser.USER4)
 @WithTestProperties
-public class SubscriptionEntryEntityResourceTests {
+class SubscriptionEntryEntityResourceTests {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @MockBean
-    private SubscriptionEntryRepository subscriptionEntryRepository;
+  @Autowired
+  private TestEntityManager em;
 
-    @Before
-    public void before() {
-        SubscriptionEntry se = new SubscriptionEntry();
-        se.setId(1014L);
-        se.setTags(Collections.singleton("tag3"));
-        se.setSeen(true);
-        se.setCreatedAt(new Date(1000));
+  private Subscription subscription;
+  private SubscriptionEntry subscriptionEntry;
 
-        FeedEntry fe = new FeedEntry();
-        fe.setTitle("Bliki: TellDontAsk");
-        fe.setContent("content");
-        fe.setUrl("http://martinfowler.com/bliki/TellDontAsk.html");
-        se.setFeedEntry(fe);
+  @BeforeEach
+  void before() {
+    var user = em.persist(USER4.toUser());
+    var feed = em.persist(new Feed("http://example.com", "feed title"));
 
-        Subscription subscription1 = new Subscription();
-        se.setSubscription(subscription1);
-        subscription1.setId(1100L);
-        subscription1.setTitle("user112_subscription1");
+    var feedEntry = new FeedEntry(feed);
+    feedEntry.setTitle("Bliki: TellDontAsk");
+    feedEntry.setContent("content");
+    feedEntry.setUrl("http://martinfowler.com/bliki/TellDontAsk.html");
+    feedEntry = em.persist(feedEntry);
 
-        SubscriptionTag st1 = new SubscriptionTag();
-        subscription1.setSubscriptionTag(st1);
-        st1.setColor("#777");
-        st1.setName("tag1");
+    subscription = new Subscription(user, feed);
+    subscription.setTitle("user112_subscription1");
+    subscription = em.persist(subscription);
 
-        given(subscriptionEntryRepository.findByIdAndUserId(1014L, TestUser.USER4.id))
-                .willReturn(Optional.of(se));
-    }
+    subscriptionEntry = new SubscriptionEntry(subscription, feedEntry);
+    subscriptionEntry.setTags(Set.of("tag3"));
+    subscriptionEntry.setSeen(true);
+    subscriptionEntry.setCreatedAt(new Date(1000));
+    subscriptionEntry.setFeedEntry(feedEntry);
+    subscriptionEntry = em.persist(subscriptionEntry);
 
-    @Test
-    public void shouldReturnExpectedJsonStructure() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptionEntries/1014"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.uuid", is("1014")))
-                .andExpect(jsonPath("$.title", is("Bliki: TellDontAsk")))
-                .andExpect(jsonPath("$.feedTitle", is("user112_subscription1")))
-                .andExpect(jsonPath("$.tags", contains("tag3")))
-                .andExpect(jsonPath("$.content", is("content")))
-                .andExpect(jsonPath("$.seen", is(true)))
-                .andExpect(jsonPath("$.feedTag", is("tag1")))
-                .andExpect(jsonPath("$.feedTagColor", is("#777")))
-                .andExpect(jsonPath("$.feedUuid", is("1100")))
-                .andExpect(jsonPath("$.origin", is("http://martinfowler.com/bliki/TellDontAsk.html")))
-                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+00:00")));
-    }
+    var subscriptionTag = new SubscriptionTag("tag1", user);
+    subscription.setSubscriptionTag(subscriptionTag);
+    subscriptionTag.setColor("#777");
+    em.persist(subscriptionTag);
+  }
 
-    @Test
-    public void shouldReturnNotFound() throws Exception {
-        mockMvc.perform(get("/api/2/subscriptionEntries/1001"))
-                .andExpect(status().isNotFound());
-    }
+  @Test
+  void shouldOnlyChangeTag() throws Exception {
+    mockMvc.perform(patch("/api/2/subscriptionEntries/{id}", subscriptionEntry.getId())
+      .with(jsonBody("{'tags': ['tag-patched']}")))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.uuid").value(subscriptionEntry.getId().toString()))
+      .andExpect(jsonPath("$.title").value("Bliki: TellDontAsk"))
+      .andExpect(jsonPath("$.feedTitle").value("user112_subscription1"))
+      .andExpect(jsonPath("$.tags").value("tag-patched"))
+      .andExpect(jsonPath("$.content").value("content"))
+      .andExpect(jsonPath("$.seen").value(true))
+      .andExpect(jsonPath("$.feedTag").value("tag1"))
+      .andExpect(jsonPath("$.feedTagColor").value("#777"))
+      .andExpect(jsonPath("$.feedUuid").value(subscription.getId().toString()))
+      .andExpect(jsonPath("$.origin").value("http://martinfowler.com/bliki/TellDontAsk.html"))
+      .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:01.000+00:00"));
 
-    @Test
-    public void shouldOnlyChangeTag() throws Exception {
-        mockMvc.perform(patch("/api/2/subscriptionEntries/1014")
-                .with(jsonBody("{'tags': ['tag-patched']}")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.uuid", is("1014")))
-                .andExpect(jsonPath("$.title", is("Bliki: TellDontAsk")))
-                .andExpect(jsonPath("$.feedTitle", is("user112_subscription1")))
-                .andExpect(jsonPath("$.tags", contains("tag-patched")))
-                .andExpect(jsonPath("$.content", is("content")))
-                .andExpect(jsonPath("$.seen", is(true)))
-                .andExpect(jsonPath("$.feedTag", is("tag1")))
-                .andExpect(jsonPath("$.feedTagColor", is("#777")))
-                .andExpect(jsonPath("$.feedUuid", is("1100")))
-                .andExpect(jsonPath("$.origin", is("http://martinfowler.com/bliki/TellDontAsk.html")))
-                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+00:00")));
+    assertThat(em.find(SubscriptionEntry.class, subscriptionEntry.getId()))
+      .hasFieldOrPropertyWithValue("seen", true)
+      .hasFieldOrPropertyWithValue("tags", Set.of("tag-patched"));
+  }
 
-        verify(subscriptionEntryRepository).save(MockitoHamcrest.argThat(
-                allOf(
-                        hasProperty("id", is(1014L)),
-                        hasProperty("tags", contains("tag-patched")),
-                        hasProperty("seen", is(true))
-                )));
-    }
+  @Test
+  void shouldChangeTagAndSeenFlag() throws Exception {
+    mockMvc.perform(patch("/api/2/subscriptionEntries/{id}", subscriptionEntry.getId())
+      .with(jsonBody("{'tags': ['tag-patched'], 'seen': false}")))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.uuid").value(subscriptionEntry.getId().toString()))
+      .andExpect(jsonPath("$.title").value("Bliki: TellDontAsk"))
+      .andExpect(jsonPath("$.feedTitle").value("user112_subscription1"))
+      .andExpect(jsonPath("$.tags").value("tag-patched"))
+      .andExpect(jsonPath("$.content").value("content"))
+      .andExpect(jsonPath("$.seen").value(false))
+      .andExpect(jsonPath("$.feedTag").value("tag1"))
+      .andExpect(jsonPath("$.feedTagColor").value("#777"))
+      .andExpect(jsonPath("$.feedUuid").value(subscription.getId().toString()))
+      .andExpect(jsonPath("$.origin").value("http://martinfowler.com/bliki/TellDontAsk.html"))
+      .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:01.000+00:00"));
 
-    @Test
-    public void shouldChangeTagAndSeenFlag() throws Exception {
-        mockMvc.perform(patch("/api/2/subscriptionEntries/1014")
-                .with(jsonBody("{'tags': ['tag-patched'], 'seen': false}")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.uuid", is("1014")))
-                .andExpect(jsonPath("$.title", is("Bliki: TellDontAsk")))
-                .andExpect(jsonPath("$.feedTitle", is("user112_subscription1")))
-                .andExpect(jsonPath("$.tags", contains("tag-patched")))
-                .andExpect(jsonPath("$.content", is("content")))
-                .andExpect(jsonPath("$.seen", is(false)))
-                .andExpect(jsonPath("$.feedTag", is("tag1")))
-                .andExpect(jsonPath("$.feedTagColor", is("#777")))
-                .andExpect(jsonPath("$.feedUuid", is("1100")))
-                .andExpect(jsonPath("$.origin", is("http://martinfowler.com/bliki/TellDontAsk.html")))
-                .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:01.000+00:00")));
-
-        verify(subscriptionEntryRepository).save(MockitoHamcrest.argThat(
-                allOf(
-                        hasProperty("id", is(1014L)),
-                        hasProperty("tags", contains("tag-patched")),
-                        hasProperty("seen", is(false))
-                )));
-    }
+    assertThat(em.find(SubscriptionEntry.class, subscriptionEntry.getId()))
+      .hasFieldOrPropertyWithValue("seen", false)
+      .hasFieldOrPropertyWithValue("tags", Set.of("tag-patched"));
+  }
 }

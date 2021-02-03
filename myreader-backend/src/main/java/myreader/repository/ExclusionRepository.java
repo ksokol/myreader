@@ -1,31 +1,18 @@
 package myreader.repository;
 
 import myreader.entity.ExclusionPattern;
-import myreader.entity.ExclusionSet;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
-/**
- * TODO: add current user to queries
- *
- * @author Kamill Sokol
- */
 public interface ExclusionRepository extends PagingAndSortingRepository<ExclusionPattern, Long> {
 
-    @Query("select new myreader.entity.ExclusionSet(count(ep.id), sum(coalesce(ep.hitCount, 0)), s.id) from Subscription s left join s.exclusions ep where s.id = ?1 and s.user.email = ?#{principal.username} group by s")
-    ExclusionSet findSetByCurrentUser(Long subscriptionId);
-
-    @Query("select new myreader.entity.ExclusionSet(count(ep.id), sum(coalesce(ep.hitCount, 0)), s.id) from Subscription s left join s.exclusions ep where s.user.email = ?#{principal.username} group by s")
-    Page<ExclusionSet> findAllSetsByUser(Pageable pageable);
-
-    @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.id = ?1 and ep.subscription.id = ?2 and ep.subscription.user.email = ?#{principal.username}")
-    ExclusionPattern findByIdAndSubscriptionIdAndCurrentUser(Long id, Long subscriptionId);
+    @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.id = ?1 and ep.subscription.id = ?2 and ep.subscription.user.id = ?3")
+    Optional<ExclusionPattern> findByIdAndSubscriptionIdAndCurrentUser(Long id, Long subscriptionId, Long userId);
 
     @Query("select ep from ExclusionPattern ep join fetch ep.subscription where ep.subscription.id = ?1 and ep.pattern = ?2")
     ExclusionPattern findBySubscriptionIdAndPattern(Long subscriptionId, String pattern);

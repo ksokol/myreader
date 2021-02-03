@@ -5,261 +5,241 @@ import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-import myreader.entity.SubscriptionTag;
-import myreader.repository.SubscriptionEntryRepository;
+import myreader.entity.User;
+import myreader.test.ClearDb;
 import myreader.test.TestUser;
 import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.hibernate.search.jpa.Search;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.TreeSet;
+import java.util.Set;
 
-import static myreader.test.CustomMockMvcResultMatchers.validation;
-import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.emptyIterable;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static myreader.test.TestUser.USER1;
+import static myreader.test.TestUser.USER4;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
+@AutoConfigureTestEntityManager
+@Transactional(propagation = Propagation.SUPPORTS)
+@ClearDb
 @SpringBootTest
-@WithAuthenticatedUser(TestUser.USER4)
 @WithTestProperties
-public class SubscriptionEntryCollectionResourceTests {
+class SubscriptionEntryCollectionResourceTests {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @MockBean
-    private SubscriptionEntryRepository subscriptionEntryRepository;
+  @Autowired
+  private TestEntityManager em;
 
-    private SubscriptionEntry se1;
-    private SubscriptionEntry se2;
-    private SubscriptionEntry se3;
+  @Autowired
+  private TransactionTemplate tx;
 
-    @Before
-    public void setUp() {
-        SubscriptionTag subscriptionTag1 = new SubscriptionTag();
-        subscriptionTag1.setName("subscriptiontag name");
-        subscriptionTag1.setColor("#111111");
+  private User user1;
+  private User user2;
+  private Subscription user1Subscription;
+  private Subscription user2Subscription;
+  private SubscriptionEntry user1SubscriptionEntry2;
+  private SubscriptionEntry user1SubscriptionEntry3;
+  private SubscriptionEntry user1SubscriptionEntry4;
+  private SubscriptionEntry user2SubscriptionEntry;
 
-        Subscription subscription1 = new Subscription();
-        subscription1.setId(1L);
-        subscription1.setTitle("user4_subscription1");
-        subscription1.setFeed(new Feed());
-        subscription1.setSubscriptionTag(subscriptionTag1);
+  @BeforeEach
+  void setUp() {
+    tx.execute(status -> {
+      user1 = em.persist(USER1.toUser());
+      user2 = em.persist(USER4.toUser());
 
-        FeedEntry fe1 = new FeedEntry();
-        fe1.setTitle("Livelocks from wait/notify");
-        fe1.setContent("content");
-        fe1.setUrl("http://www.javaspecialists.eu/archive/Issue213.html");
+      var feed1 = em.persist(new Feed("irrelevant", "irrelevant"));
+      var feed2 = em.persist(new Feed("irrelevant", "irrelevant"));
 
-        se1 = new SubscriptionEntry(subscription1, fe1);
-        se1.setId(1018L);
-        se1.setSeen(true);
-        se1.setTags(Collections.singleton("tag8Tag9"));
-        se1.setCreatedAt(new Date(1000));
+      user1Subscription = new Subscription(user1, feed1);
+      user1Subscription.setTitle("user1 subscription1");
+      user1Subscription = em.persist(user1Subscription);
 
-        Subscription subscription2 = new Subscription();
-        subscription2.setId(2L);
-        subscription2.setTitle("user4_subscription1");
+      user2Subscription = new Subscription(user2, feed2);
+      user2Subscription.setTitle("user2 subscription1");
+      user2Subscription = em.persist(user2Subscription);
 
-        FeedEntry fe2 = new FeedEntry();
-        fe2.setTitle("Throwing Exceptions from Fields");
-        fe2.setContent("content");
-        fe2.setUrl("http://www.javaspecialists.eu/archive/Issue208.html");
+      var feedEntry1 = new FeedEntry(feed1);
+      feedEntry1.setTitle("some entry1 title");
+      feedEntry1.setContent("some entry1 content");
+      feedEntry1 = em.persistAndFlush(feedEntry1);
 
-        se2 = new SubscriptionEntry(subscription2, fe2);
-        se2.setId(1019L);
-        se2.setSeen(true);
-        se2.setTags(Collections.singleton("otherTag"));
-        se2.setTags(new TreeSet<>(Arrays.asList("tag6", "tag7")));
-        se2.setCreatedAt(new Date(2000));
+      var feedEntry2 = new FeedEntry(feed1);
+      feedEntry2.setTitle("some entry2 title");
+      feedEntry2.setContent("some entry2 content");
+      feedEntry2.setUrl("http://example.com/feedentry2");
+      feedEntry2 = em.persistAndFlush(feedEntry2);
 
-        Subscription subscription3 = new Subscription();
-        subscription3.setId(3L);
+      var feedEntry3 = new FeedEntry(feed1);
+      feedEntry3.setTitle("some entry3 title");
+      feedEntry3.setContent("some entry3 content");
+      feedEntry3 = em.persistAndFlush(feedEntry3);
 
-        se3 = new SubscriptionEntry(subscription3, new FeedEntry());
-        se3.setId(1020L);
+      var feedEntry4 = new FeedEntry(feed1);
+      feedEntry4.setTitle("some entry4 title");
+      feedEntry4.setContent("some entry4 content");
+      feedEntry4.setUrl("http://example.com/feedentry4");
+      feedEntry4.setCreatedAt(new Date(1000));
+      feedEntry4 = em.persistAndFlush(feedEntry4);
+
+      var subscriptionEntry1 = new SubscriptionEntry(user1Subscription, feedEntry1);
+      subscriptionEntry1.setTags(Set.of("tag1", "tag2", "tag3"));
+      subscriptionEntry1.setSeen(true);
+      subscriptionEntry1.setCreatedAt(new Date(1000));
+
+      var subscriptionEntry2 = new SubscriptionEntry(user2Subscription, feedEntry2);
+      subscriptionEntry2.setTags(Set.of("tag2-tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9"));
+      subscriptionEntry2.setCreatedAt(new Date(2000));
+
+      var subscriptionEntry4 = new SubscriptionEntry(user1Subscription, feedEntry4);
+      subscriptionEntry4.setCreatedAt(new Date(4000));
+
+      em.persistAndFlush(subscriptionEntry1);
+      user1SubscriptionEntry2 = em.persistAndFlush(new SubscriptionEntry(user1Subscription, feedEntry2));
+      user1SubscriptionEntry3 = em.persistAndFlush(new SubscriptionEntry(user1Subscription, feedEntry3));
+      user1SubscriptionEntry4 = em.persistAndFlush(subscriptionEntry4);
+      user2SubscriptionEntry = em.persistAndFlush(subscriptionEntry2);
+      return null;
+    });
+
+    tx.execute(s -> {
+      try {
+        Search.getFullTextEntityManager(em.getEntityManager()).createIndexer().startAndWait();
+      } catch (InterruptedException exception) {
+        throw new AssertionError(exception);
+      }
+      return null;
+    });
+  }
+
+  @Test
+  @WithAuthenticatedUser(TestUser.USER1)
+  void shouldReturnEntriesForUser1() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries?size=3"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("links[?(@.rel=='self')].href").value("http://localhost/api/2/subscriptionEntries?size=3"))
+      .andExpect(jsonPath("links[?(@.rel=='next')].href").value("http://localhost/api/2/subscriptionEntries?size=3&next=" + user1SubscriptionEntry2.getId()))
+      .andExpect(jsonPath("$.content.length()").value(3))
+      .andExpect(jsonPath("$.content[0].uuid").value(user1SubscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[0].title").value("some entry4 title"))
+      .andExpect(jsonPath("$.content[0].feedTitle").value("user1 subscription1"))
+      .andExpect(jsonPath("$.content[0].tags").isEmpty())
+      .andExpect(jsonPath("$.content[0].content").value("some entry4 content"))
+      .andExpect(jsonPath("$.content[0].seen").value(false))
+      .andExpect(jsonPath("$.content[0].feedTag").doesNotExist())
+      .andExpect(jsonPath("$.content[0].feedTagColor").doesNotExist())
+      .andExpect(jsonPath("$.content[0].feedUuid").value(user1Subscription.getId().toString()))
+      .andExpect(jsonPath("$.content[0].origin").value("http://example.com/feedentry4"))
+      .andExpect(jsonPath("$.content[0].createdAt").value("1970-01-01T00:00:04.000+00:00"))
+      .andExpect(jsonPath("$.content[1].uuid").value(user1SubscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[2].uuid").value(user1SubscriptionEntry2.getId().toString()))
+      .andExpect(jsonPath("$.page").isEmpty());
+  }
+
+  @Test
+  @WithAuthenticatedUser(TestUser.USER4)
+  void shouldReturnEntriesForUser4() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content[0].uuid").value(user2SubscriptionEntry.getId().toString()))
+      .andExpect(jsonPath("$.content[0].title").value("some entry2 title"))
+      .andExpect(jsonPath("$.content[0].feedTitle").value("user2 subscription1"))
+      .andExpect(jsonPath("$.content[0].tags").value(list("tag2-tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9")))
+      .andExpect(jsonPath("$.content[0].content").value("some entry2 content"))
+      .andExpect(jsonPath("$.content[0].seen").value(false))
+      .andExpect(jsonPath("$.content[0].feedTag").doesNotExist())
+      .andExpect(jsonPath("$.content[0].feedTagColor").doesNotExist())
+      .andExpect(jsonPath("$.content[0].feedUuid").value(user2Subscription.getId().toString()))
+      .andExpect(jsonPath("$.content[0].origin").value("http://example.com/feedentry2"))
+      .andExpect(jsonPath("$.content[0].createdAt").value("1970-01-01T00:00:02.000+00:00"))
+      .andExpect(jsonPath("$.content.length()").value(1))
+      .andExpect(jsonPath("$.page").isEmpty());
+  }
+
+  @Test
+  @WithAuthenticatedUser(TestUser.USER1)
+  void searchWithPageSizeOne() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries?size=1"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(1))
+      .andExpect(jsonPath("$.content[0].uuid").value(user1SubscriptionEntry4.getId().toString()));
+  }
+
+  @Test
+  @WithAuthenticatedUser(TestUser.USER1)
+  void searchSubscriptionEntryByTitle() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries?q=entry4"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(1))
+      .andExpect(jsonPath("$.content[0].uuid").value(user1SubscriptionEntry4.getId().toString()));
+  }
+
+  @Test
+  @WithAuthenticatedUser(TestUser.USER1)
+  void shouldPaginate() throws Exception {
+    var firstResponse = mockMvc.perform(get("/api/2/subscriptionEntries?size=2"))
+      .andExpect(jsonPath("links[?(@.rel=='next')].href").value("http://localhost/api/2/subscriptionEntries?size=2&next=" + user1SubscriptionEntry3.getId()))
+      .andExpect(jsonPath("content[0].uuid").value(user1SubscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("content[1].uuid").value(user1SubscriptionEntry3.getId().toString()))
+      .andReturn();
+
+    mockMvc.perform(get(nextPage(firstResponse)))
+      .andExpect(jsonPath("links[?(@.rel=='self')].href").value("http://localhost/api/2/subscriptionEntries?size=2"))
+      .andExpect(jsonPath("links[?(@.rel=='self')].next").doesNotExist())
+      .andExpect(jsonPath("content[0].uuid").value(user1SubscriptionEntry2.getId().toString()));
+  }
+
+  @Test
+  @WithAuthenticatedUser(TestUser.USER1)
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
+  void shouldFindTagsForUser1() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries/availableTags"))
+      .andExpect(jsonPath("$").value(list("tag1", "tag2", "tag3")));
+  }
+
+  @Test
+  @WithAuthenticatedUser(TestUser.USER4)
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
+  void shouldFindTagsForGivenUser4() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries/availableTags"))
+      .andExpect(jsonPath("$").value(list("tag2-tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9")));
+  }
+
+  private String nextPage(MvcResult mvcResult) throws IOException {
+    List<String> nextHrefs = JsonPath.read(mvcResult.getResponse().getContentAsString(), "$.links[?(@.rel=='next')].href");
+    if (nextHrefs.size() == 0) {
+      throw new AssertionError("href with rel next not found");
     }
+    return nextHrefs.get(0);
+  }
 
-    @Test
-    public void shouldReturnExpectedJsonStructure() throws Exception {
-        Slice<SubscriptionEntry> sliceOne = new SliceImpl<>(Arrays.asList(se1, se2), Pageable.unpaged(), true);
-        given(subscriptionEntryRepository.findBy(anyInt(), any(), any(), any(), any(), any(), any(), anyLong())).willReturn(sliceOne);
-
-        mockMvc.perform(get("/api/2/subscriptionEntries"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("links[?(@.rel=='self')].href", everyItem(endsWith("/api/2/subscriptionEntries"))))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", everyItem(endsWith("/api/2/subscriptionEntries?next=1019"))))
-                .andExpect(jsonPath("$.content[0].uuid", is("1018")))
-                .andExpect(jsonPath("$.content[0].title", is("Livelocks from wait/notify")))
-                .andExpect(jsonPath("$.content[0].feedTitle", is("user4_subscription1")))
-                .andExpect(jsonPath("$.content[0].tags", contains("tag8Tag9")))
-                .andExpect(jsonPath("$.content[0].content", is("content")))
-                .andExpect(jsonPath("$.content[0].seen", is(true)))
-                .andExpect(jsonPath("$.content[0].feedTag", is("subscriptiontag name")))
-                .andExpect(jsonPath("$.content[0].feedTagColor", is("#111111")))
-                .andExpect(jsonPath("$.content[0].feedUuid", is("1")))
-                .andExpect(jsonPath("$.content[0].origin", is("http://www.javaspecialists.eu/archive/Issue213.html")))
-                .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:01.000+00:00")))
-                .andExpect(jsonPath("$.content[1].uuid", is("1019")))
-                .andExpect(jsonPath("$.content[1].title", is("Throwing Exceptions from Fields")))
-                .andExpect(jsonPath("$.content[1].feedTitle", is("user4_subscription1")))
-                .andExpect(jsonPath("$.content[1].tags", contains("tag6", "tag7")))
-                .andExpect(jsonPath("$.content[1].content", is("content")))
-                .andExpect(jsonPath("$.content[1].seen", is(true)))
-                .andExpect(jsonPath("$.content[1].feedTag", nullValue()))
-                .andExpect(jsonPath("$.content[1].feedTagColor", nullValue()))
-                .andExpect(jsonPath("$.content[1].feedUuid", is("2")))
-                .andExpect(jsonPath("$.content[1].origin", is("http://www.javaspecialists.eu/archive/Issue208.html")))
-                .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:02.000+00:00")))
-                .andExpect(jsonPath("$.page", nullValue()));
-    }
-
-    @Test
-    public void shouldPaginate() throws Exception {
-        Slice<SubscriptionEntry> sliceOne = new SliceImpl<>(Arrays.asList(se1, se2), Pageable.unpaged(), true);
-        given(subscriptionEntryRepository.findBy(2, null, null, null, null, null, null, TestUser.USER4.id))
-                .willReturn(sliceOne);
-
-        MvcResult firstResponse = mockMvc.perform(get("/api/2/subscriptionEntries?size=2"))
-                .andExpect(jsonPath("links[?(@.rel=='self')].href", everyItem(endsWith("/api/2/subscriptionEntries?size=2"))))
-                .andExpect(jsonPath("content[0].uuid", is("1018")))
-                .andExpect(jsonPath("content[1].uuid", is("1019")))
-                .andReturn();
-
-        Slice<SubscriptionEntry> sliceTwo = new SliceImpl<>(Collections.singletonList(se3), Pageable.unpaged(), false);
-        given(subscriptionEntryRepository.findBy(2, null, null, null, null, null, 1019L, TestUser.USER4.id))
-                .willReturn(sliceTwo);
-
-        mockMvc.perform(get(nextPage(firstResponse)))
-                .andExpect(jsonPath("links[?(@.rel=='self')].href", everyItem(endsWith("/api/2/subscriptionEntries?size=2"))))
-                .andExpect(jsonPath("links[?(@.rel=='next')].href", is(empty())))
-                .andExpect(jsonPath("content[0].uuid", is("1020")));
-    }
-
-    @Test
-    public void shouldSearchWithGivenQueryParameters() throws Exception {
-        given(subscriptionEntryRepository.findBy(anyInt(), any(), any(), any(), any(), any(), any(), anyLong()))
-                .willReturn(new SliceImpl<>(Collections.emptyList(), Pageable.unpaged(), false));
-
-        mockMvc.perform(
-                get("/api/2/subscriptionEntries?q=l*&size=1&feedUuidEqual=2&feedTagEqual=expectedTag&entryTagEqual=expectedEntryTag&seenEqual=true&next=100")
-        );
-
-        verify(subscriptionEntryRepository).findBy(
-                1, "l*", "2", "expectedTag", "expectedEntryTag", "true", 100L, TestUser.USER4.id
-        );
-    }
-
-    @Test
-    public void shouldDoNothingWhenPatchRequestContainsNoPatchableEntries() throws Exception {
-        mockMvc.perform(patch("/api/2/subscriptionEntries")
-                .with(jsonBody("{'content' : []}")))
-                .andExpect(jsonPath("content", emptyIterable()));
-    }
-
-    @Test
-    public void shouldPatchSeenAndTagInMultipleEntries() throws Exception {
-        given(subscriptionEntryRepository.findByIdAndUserId(1018L, TestUser.USER4.id)).willReturn(Optional.of(se1));
-        given(subscriptionEntryRepository.findByIdAndUserId(1019L, TestUser.USER4.id)).willReturn(Optional.of(se2));
-        given(subscriptionEntryRepository.save(se1)).willReturn(se1);
-        given(subscriptionEntryRepository.save(se2)).willReturn(se2);
-
-        mockMvc.perform(patch("/api/2/subscriptionEntries")
-                .with(jsonBody("{'content': [{'uuid': '1018', 'seen': false}, {'uuid': '1019', 'tags': ['expectedTag']}]}")))
-                .andExpect(jsonPath("content[0].tags", is(Collections.emptyList())))
-                .andExpect(jsonPath("content[1].tags", contains("expectedTag")))
-                .andExpect(jsonPath("content[0].seen", is(false)))
-                .andExpect(jsonPath("content[1].seen", is(true)));
-
-        verify(subscriptionEntryRepository).save(argThat(
-                allOf(
-                        hasProperty("id", is(1018L)),
-                        hasProperty("seen", is(false)),
-                        hasProperty("tags", nullValue())
-                )));
-        verify(subscriptionEntryRepository).save(argThat(
-                allOf(
-                        hasProperty("id", is(1019L)),
-                        hasProperty("seen", is(true)),
-                        hasProperty("tags", contains("expectedTag"))
-                )));
-    }
-
-    @Test
-    public void shouldRejectPatchRequestWhenContentPropertyIsAbsent() throws Exception {
-        mockMvc.perform(patch("/api/2/subscriptionEntries")
-                .with(jsonBody("{}")))
-                .andExpect(status().isBadRequest())
-                .andExpect(validation().onField("content", is("may not be null")));
-    }
-
-    @Test
-    public void shouldRejectPatchRequestWhenUuidContainsAnInvalidValue() throws Exception {
-        mockMvc.perform(patch("/api/2/subscriptionEntries")
-                .with(jsonBody("{'content':[{'uuid': 'digits-on1y'}, {'uuid': '0'}, {'uuid': '100'}, {'uuid': '-1'}, {'uuid': '2147483648'}]}")))
-                .andExpect(status().isBadRequest())
-                .andExpect(validation().onField("content[0].uuid", is("numeric value out of bounds (<2147483647 digits>.<0 digits> expected)")))
-                .andExpect(validation().absentField("content[1].uuid"))
-                .andExpect(validation().absentField("content[2].uuid"))
-                .andExpect(validation().onField("content[3].uuid", is("numeric value out of bounds (<2147483647 digits>.<0 digits> expected)")))
-                .andExpect(validation().onField("content[4].uuid", is("numeric value out of bounds (<2147483647 digits>.<0 digits> expected)")));
-    }
-
-    @Test
-    public void shouldReturnAllEntryTags() throws Exception {
-        given(subscriptionEntryRepository.findDistinctTagsByUserId(TestUser.USER4.id))
-                .willReturn(new TreeSet<>(Arrays.asList("tag1", "tag2")));
-
-        mockMvc.perform(get("/api/2/subscriptionEntries/availableTags"))
-                .andExpect(jsonPath("$", hasItems("tag1", "tag2")));
-    }
-
-    private String nextPage(MvcResult mvcResult) throws IOException {
-        List<String> nextHrefs = JsonPath.read(mvcResult.getResponse().getContentAsString(), "$.links[?(@.rel=='next')].href");
-        if (nextHrefs.size() == 0) {
-            throw new AssertionError("href with rel next not found");
-        }
-        return nextHrefs.get(0);
-    }
+  private List<String> list(String...values) {
+    List<String> valueList = new ArrayList<>();
+    Collections.addAll(valueList, values);
+    return valueList;
+  }
 }

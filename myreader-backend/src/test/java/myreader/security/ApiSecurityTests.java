@@ -122,7 +122,7 @@ class ApiSecurityTests {
       .andReturn()
       .getResponse().getCookie("remember-me");
 
-    mockMvc.perform(get(API_2)
+    mockMvc.perform(get(API_2 + "/sub")
       .cookie(rememberMeCookie))
       .andExpect(status().isOk());
   }

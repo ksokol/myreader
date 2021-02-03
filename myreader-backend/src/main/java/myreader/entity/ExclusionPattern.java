@@ -9,14 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
 
-/**
- * @author Kamill Sokol
- */
 @Access(AccessType.PROPERTY)
 @Entity
 @Table(name = "exclusion_pattern")
@@ -31,12 +29,14 @@ public class ExclusionPattern {
     /**
      * Default constructor for Hibernate.
      */
-    public ExclusionPattern() {
-        //TODO
-        this.createdAt = new Date();
-    }
+    public ExclusionPattern() {}
 
-    @Id
+  public ExclusionPattern(String pattern, Subscription subscription) {
+    this.pattern = pattern;
+    this.subscription = subscription;
+  }
+
+  @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
@@ -83,4 +83,11 @@ public class ExclusionPattern {
     public void setSubscription(Subscription subscription) {
         this.subscription = subscription;
     }
+
+  @PrePersist
+  public void onCreate() {
+    if (this.createdAt == null) {
+      this.createdAt = new Date();
+    }
+  }
 }

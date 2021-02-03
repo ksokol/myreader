@@ -22,7 +22,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 import static myreader.test.TestUser.USER1;
 import static myreader.test.TestUser.USER4;
@@ -36,7 +35,6 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 @ExtendWith(SpringExtension.class)
 @Transactional(propagation = Propagation.SUPPORTS)
@@ -112,32 +110,6 @@ class SubscriptionEntryRepositoryTests {
         });
     }
 
-    @Test
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    void shouldFindTagsForGivenUser() {
-        var actualTagsForUser1 = subscriptionEntryRepository.findDistinctTagsByUserId(user1.getId());
-        assertThat(actualTagsForUser1, contains("tag1", "tag2", "tag3"));
-
-        Set<String> actualTagsForUser2 = subscriptionEntryRepository.findDistinctTagsByUserId(user2.getId());
-        assertThat(actualTagsForUser2, contains("tag2-tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9"));
-    }
-
-    @Test
-    void shouldSearchForGivenUser() {
-        givenQuery(null, null, null, null, null, null, 100, user1.getId());
-        assertThat(slice.getContent(), hasItem(hasProperty("id", is(user1SubscriptionEntry1.getId()))));
-        assertThat(slice.getContent(), not(hasItem(hasProperty("id", is(user2SubscriptionEntry.getId())))));
-
-        givenQuery(null, null, null, null, null, null, 100, user2.getId());
-        assertThat(slice.getContent(), hasItem(hasProperty("id", is(user2SubscriptionEntry.getId()))));
-        assertThat(slice.getContent(), not(hasItem(hasProperty("id", is(user1SubscriptionEntry1.getId())))));
-    }
-
-    @Test
-    void searchWithPageSizeOne() {
-        givenQuery(null, null, null, null, null, null, 1, user1.getId());
-        assertThat(slice.getContent(), everyItem(hasProperty("id", is(user1SubscriptionEntry4.getId()))));
-    }
 
     @Test
     void searchSubscriptionEntryByTitle() {

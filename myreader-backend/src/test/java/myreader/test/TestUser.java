@@ -6,8 +6,8 @@ public enum TestUser {
 
     ADMIN(0L, "admin@localhost", "ROLE_ADMIN"),
     USER1(1L, TestConstants.USER1, "ROLE_USER"),
-    USER2(2L, TestConstants.USER2, "ROLE_USER"),
-    USER4(4L, TestConstants.USER4, "ROLE_USER");
+    USER2(2L, "user2@localhost", "ROLE_USER"),
+    USER4(4L, "user4@localhost", "ROLE_USER");
 
     public final long id;
     public final String email;
