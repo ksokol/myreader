@@ -32,7 +32,7 @@ describe('security context', () => {
   beforeEach(() => {
     api.addInterceptor.mockClear()
     localStorage.clear()
-    localStorage.setItem(STORAGE_KEY, '{"roles": ["ADMIN", "USER"]}')
+    localStorage.setItem(STORAGE_KEY, '{"authorized": true}')
   })
 
   afterEach(() => {
@@ -42,28 +42,14 @@ describe('security context', () => {
   it('should contain expected context values in child component', () => {
     expect(createWrapper().html()).toEqual(JSON.stringify({
       authorized: true,
-      isAdmin: true,
-      roles: ['ADMIN', 'USER']
-    }))
-  })
-
-  it('should set prop "isAdmin" to false and prop "roles" when "doAuthorize" triggered', () => {
-    const wrapper = createWrapper()
-    wrapper.instance().doAuthorize(['SOME_ROLE'])
-    wrapper.update()
-
-    expect(wrapper.html()).toEqual(JSON.stringify({
-      authorized: true,
-      isAdmin: false,
-      roles: ['SOME_ROLE']
     }))
   })
 
   it('should persist roles to local storage when "doAuthorize" triggered', () => {
-    createWrapper().instance().doAuthorize(['SOME_ROLE'])
+    createWrapper().instance().doAuthorize()
 
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY))).toEqual({
-      roles: ['SOME_ROLE']
+      authorized: true
     })
   })
 
@@ -74,8 +60,6 @@ describe('security context', () => {
 
     expect(wrapper.html()).toEqual(JSON.stringify({
       authorized: false,
-      isAdmin: false,
-      roles: []
     }))
   })
 
@@ -83,7 +67,7 @@ describe('security context', () => {
     createWrapper().instance().doUnAuthorize()
 
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY))).toEqual({
-      roles: []
+      authorized: false,
     })
   })
 
@@ -95,8 +79,6 @@ describe('security context', () => {
 
     expect(wrapper.html()).toEqual(JSON.stringify({
       authorized: false,
-      isAdmin: false,
-      roles: []
     }))
   })
 
@@ -108,8 +90,6 @@ describe('security context', () => {
 
     expect(wrapper.html()).toEqual(JSON.stringify({
       authorized: true,
-      isAdmin: true,
-      roles: ['ADMIN', 'USER']
     }))
   })
 

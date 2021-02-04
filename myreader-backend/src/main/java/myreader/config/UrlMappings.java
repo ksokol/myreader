@@ -2,7 +2,6 @@ package myreader.config;
 
 public enum UrlMappings {
 
-  LOGOUT("logout"),
   LOGIN_PROCESSING("check"),
   LANDING_PAGE(""),
   API_2("api/2"),
@@ -18,7 +17,4 @@ public enum UrlMappings {
     return mapping;
   }
 
-  public String path(String path) {
-    return mapping + "/" + path;
-  }
 }

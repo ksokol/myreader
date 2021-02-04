@@ -1,6 +1,5 @@
 package myreader.config;
 
-import myreader.security.CustomAuthenticationSuccessHandler;
 import myreader.security.UserRepositoryUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,14 +11,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Objects;
 
-import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT;
 import static myreader.config.UrlMappings.API_2;
 import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 
@@ -50,21 +47,18 @@ public class SecurityConfig {
   @Configuration
   class LoginSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final AuthenticationSuccessHandler authenticationSuccessHandler = new CustomAuthenticationSuccessHandler();
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
       http
         .formLogin().loginPage("/")
         .loginProcessingUrl(LOGIN_PROCESSING.mapping()).permitAll()
-        .successHandler(authenticationSuccessHandler)
+        .successHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT))
         .failureHandler((request, response, exception) -> response.setStatus(HttpServletResponse.SC_BAD_REQUEST))
         .and()
         .rememberMe().key(rememberMeKey).alwaysRemember(true)
         .and()
-        .logout().logoutSuccessHandler((request, response, authentication) -> response.setStatus(SC_NO_CONTENT))
+        .logout().logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT))
         .permitAll()
-        .deleteCookies("JSESSIONID")
         .and()
         .authorizeRequests().antMatchers("/**").permitAll()
         .and()
@@ -79,11 +73,8 @@ public class SecurityConfig {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
       http
         .antMatcher(API_2.mapping() + "/**")
-        .authorizeRequests().antMatchers(API_2.path("processing"), API_2.path("feeds") + "/**").hasRole("ADMIN")
-        .and()
         .authorizeRequests().anyRequest().authenticated()
         .and()
         .rememberMe().key(rememberMeKey)

@@ -46,22 +46,4 @@ describe('AuthenticationApi', () => {
       'username=expected+username&password=expected+password'
     )
   })
-
-  it('should return expected response when GET login succeeded', async () => {
-    exchange.mockResolvedValueOnce({
-      roles: ['ROLE1', 'ROLE2']
-    })
-
-    await expect(authenticationApi.login()).resolves.toEqual({
-      roles: ['ROLE1', 'ROLE2']
-    })
-  })
-
-  it('should return expected response when GET login succeeded without any roles attached', async () => {
-    exchange.mockResolvedValueOnce({
-      roles: []
-    })
-
-    await expect(authenticationApi.login()).resolves.toEqual({roles: []})
-  })
 })

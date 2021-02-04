@@ -15,7 +15,6 @@ import {
 } from '../../constants'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 import {useSettings} from '../../contexts/settings'
-import {useSecurity} from '../../contexts/security'
 
 const Navigation = props => {
   const {
@@ -23,7 +22,6 @@ const Navigation = props => {
     onClick
   } = props
 
-  const {isAdmin} = useSecurity()
   const {showUnseenEntries} = useSettings()
 
   const filteredSubscriptions = subscriptions.filter(it => showUnseenEntries ? it.unseen > 0 : true)
@@ -57,20 +55,18 @@ const Navigation = props => {
             to={SETTINGS_URL}
             onClick={onClick}
           />,
-          isAdmin ? [
-            <NavigationItem
-              key='admin'
-              title='Admin'
-              to={ADMIN_OVERVIEW_URL}
-              onClick={onClick}
-            />,
-            <NavigationItem
-              key='feeds'
-              title='Feeds'
-              to={ADMIN_FEEDS_URL}
-              onClick={onClick}
-            />
-          ] : null,
+          <NavigationItem
+            key='admin'
+            title='Admin'
+            to={ADMIN_OVERVIEW_URL}
+            onClick={onClick}
+          />,
+          <NavigationItem
+            key='feeds'
+            title='Feeds'
+            to={ADMIN_FEEDS_URL}
+            onClick={onClick}
+          />,
           <NavigationItem
             key='add subscription'
             className='my-navigation__item--blue'

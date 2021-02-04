@@ -12,7 +12,6 @@ import {
 } from '../../constants'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 import {useSettings} from '../../contexts/settings'
-import {useSecurity} from '../../contexts/security'
 
 /* eslint-disable react/prop-types */
 jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => ({
@@ -21,10 +20,6 @@ jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => ({
 
 jest.mock('../../contexts/settings', () => ({
   useSettings: jest.fn()
-}))
-
-jest.mock('../../contexts/security', () => ({
-  useSecurity: jest.fn()
 }))
 /* eslint-enable */
 
@@ -71,10 +66,6 @@ describe('Navigation', () => {
       showUnseenEntries: false,
     })
 
-    useSecurity.mockReturnValue({
-      isAdmin: false
-    })
-
     props = {
       onClick: jest.fn()
     }
@@ -88,28 +79,10 @@ describe('Navigation', () => {
     }
   })
 
-  it('should render user navigation', () => {
+  it('should render navigation labels', () => {
     const page = createWrapper()
 
     expect(page.navigationItemLabels).toEqual([
-      'all',
-      'group 1',
-      'group 2',
-      'subscription 3',
-      'Subscriptions',
-      'Bookmarks',
-      'Settings',
-      'Add subscription',
-      'Logout'
-    ])
-  })
-
-  it('should render admin navigation', () => {
-    useSecurity.mockReturnValue({
-      isAdmin: true
-    })
-
-    expect(createWrapper().navigationItemLabels).toEqual([
       'all',
       'group 1',
       'group 2',
@@ -124,21 +97,7 @@ describe('Navigation', () => {
     ])
   })
 
-  it('should render expected routes for user', () => {
-    expect(createWrapper().navigationItemRoute).toEqual([
-      SUBSCRIPTIONS_URL,
-      BOOKMARK_URL,
-      SETTINGS_URL,
-      SUBSCRIPTION_ADD_URL,
-      LOGOUT_URL
-    ])
-  })
-
-  it('should render expected routes for admin', () => {
-    useSecurity.mockReturnValue({
-      isAdmin: true
-    })
-
+  it('should render expected routes', () => {
     expect(createWrapper().navigationItemRoute).toEqual([
       SUBSCRIPTIONS_URL,
       BOOKMARK_URL,
@@ -154,34 +113,14 @@ describe('Navigation', () => {
     const wrapper = createWrapper()
     wrapper.navigationItems.forEach(item => item.invoke('onClick')())
 
-    expect(props.onClick).toHaveBeenCalledTimes(9)
+    expect(props.onClick).toHaveBeenCalledTimes(11)
   })
 
-  it('should render user navigation with subscriptions.unseen > 0', () => {
+  it('should render navigation with subscriptions.unseen > 0', () => {
     useSettings.mockReturnValue({showUnseenEntries: true})
     const page = createWrapper()
 
     expect(page.navigationItemLabels).toEqual([
-      'all',
-      'group 1',
-      'group 2',
-      'Subscriptions',
-      'Bookmarks',
-      'Settings',
-      'Add subscription',
-      'Logout'
-    ])
-  })
-
-  it('should render admin navigation with subscriptions.unseen > 0', () => {
-    useSettings.mockReturnValue({
-      showUnseenEntries: true,
-    })
-    useSecurity.mockReturnValue({
-      isAdmin: true
-    })
-
-    expect(createWrapper().navigationItemLabels).toEqual([
       'all',
       'group 1',
       'group 2',

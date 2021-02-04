@@ -7,16 +7,16 @@ delete from fetch_error;
 delete from feed;
 delete from user;
 
-insert into user(user_id,user_email,user_password,user_role) values (0,'admin@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_ADMIN');
-insert into user(user_id,user_email,user_password,user_role) values (1,'user1@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (2,'user2@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (3,'user3@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (4,'user4@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (101,'user101@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (103,'user103@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (104,'user104@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (105,'user105@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
-insert into user(user_id,user_email,user_password,user_role) values (113,'user113@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da','ROLE_USER');
+insert into user(user_id,user_email,user_password) values (0,'admin@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da');
+insert into user(user_id,user_email,user_password) values (1,'user1@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da');
+insert into user(user_id,user_email,user_password) values (2,'user2@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da');
+insert into user(user_id,user_email,user_password) values (3,'user3@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da');
+insert into user(user_id,user_email,user_password) values (4,'user4@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da');
+insert into user(user_id,user_email,user_password) values (101,'user101@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da');
+insert into user(user_id,user_email,user_password) values (103,'user103@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da');
+insert into user(user_id,user_email,user_password) values (104,'user104@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da');
+insert into user(user_id,user_email,user_password) values (105,'user105@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da');
+insert into user(user_id,user_email,user_password) values (113,'user113@localhost','{MD5}cfcd208495d565ef66e7dff9f98764da');
 
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (0,'The Java Posse','http://feeds.feedburner.com/javaposse','Thu, 27 Mar 2014 13:23:32 GMT',282,to_timestamp('2011-04-15 22:20:46','YYYY-MM-DD HH:MI:SS'));
 INSERT INTO feed (feed_id,feed_title,feed_url,feed_last_modified,feed_fetched,feed_created_at) VALUES (1,'dzone.com: latest front page','http://feeds.dzone.com/dzone/frontpage','Thu, 27 Mar 2014 14:11:00 GMT',30167,to_timestamp('2011-04-15 22:20:46','YYYY-MM-DD HH:MI:SS'));

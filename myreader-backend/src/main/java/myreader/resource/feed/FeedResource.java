@@ -17,7 +17,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,88 +31,83 @@ import org.springframework.web.server.ResponseStatusException;
 import static myreader.resource.ResourceConstants.FEED;
 import static myreader.resource.ResourceConstants.FEED_FETCH_ERROR;
 
-/**
- * @author Kamill Sokol
- */
 @RestController
 public class FeedResource {
 
-    private final PagedResourcesAssembler<FetchError> pagedResourcesAssembler;
-    private final RepresentationModelAssembler<Feed, FeedGetResponse> assembler;
-    private final RepresentationModelAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler;
-    private final FetchErrorRepository fetchErrorRepository;
-    private final FeedRepository feedRepository;
-    private final SubscriptionRepository subscriptionRepository;
-    private final FeedService feedService;
+  private final PagedResourcesAssembler<FetchError> pagedResourcesAssembler;
+  private final RepresentationModelAssembler<Feed, FeedGetResponse> assembler;
+  private final RepresentationModelAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler;
+  private final FetchErrorRepository fetchErrorRepository;
+  private final FeedRepository feedRepository;
+  private final SubscriptionRepository subscriptionRepository;
+  private final FeedService feedService;
 
-    public FeedResource(
-            PagedResourcesAssembler<FetchError> pagedResourcesAssembler,
-            RepresentationModelAssembler<Feed, FeedGetResponse> assembler,
-            RepresentationModelAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler,
-            FeedRepository feedRepository,
-            FetchErrorRepository fetchErrorRepository,
-            SubscriptionRepository subscriptionRepository,
-            FeedService feedService) {
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
-        this.assembler = assembler;
-        this.fetchErrorAssembler = fetchErrorAssembler;
-        this.feedRepository = feedRepository;
-        this.fetchErrorRepository = fetchErrorRepository;
-        this.subscriptionRepository = subscriptionRepository;
-        this.feedService = feedService;
+  public FeedResource(
+    PagedResourcesAssembler<FetchError> pagedResourcesAssembler,
+    RepresentationModelAssembler<Feed, FeedGetResponse> assembler,
+    RepresentationModelAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler,
+    FeedRepository feedRepository,
+    FetchErrorRepository fetchErrorRepository,
+    SubscriptionRepository subscriptionRepository,
+    FeedService feedService) {
+    this.pagedResourcesAssembler = pagedResourcesAssembler;
+    this.assembler = assembler;
+    this.fetchErrorAssembler = fetchErrorAssembler;
+    this.feedRepository = feedRepository;
+    this.fetchErrorRepository = fetchErrorRepository;
+    this.subscriptionRepository = subscriptionRepository;
+    this.feedService = feedService;
+  }
+
+  @InitBinder
+  protected void binder(WebDataBinder binder) {
+    binder.addValidators(new FeedPatchRequestValidator(feedService));
+  }
+
+  @GetMapping(FEED)
+  public FeedGetResponse get(@PathVariable("id") Long id) {
+    return feedRepository.findById(id)
+      .map(assembler::toModel)
+      .orElseGet(FeedGetResponse::new);
+  }
+
+  @DeleteMapping(FEED)
+  public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    int count = subscriptionRepository.countByFeedId(id);
+
+    if (count > 0) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
-    @InitBinder
-    protected void binder(WebDataBinder binder) {
-        binder.addValidators(new FeedPatchRequestValidator(feedService));
+    if (!feedRepository.existsById(id)) {
+      return ResponseEntity.notFound().build();
     }
 
-    @GetMapping(FEED)
-    public FeedGetResponse get(@PathVariable("id") Long id) {
-        return feedRepository.findById(id)
-                .map(assembler::toModel)
-                .orElseGet(FeedGetResponse::new);
-    }
+    feedRepository.deleteById(id);
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping(FEED)
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        int count = subscriptionRepository.countByFeedId(id);
+    return ResponseEntity.noContent().build();
+  }
 
-        if (count > 0) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+  @PatchMapping(FEED)
+  public FeedGetResponse patch(@PathVariable("id") Long id, @Validated @RequestBody FeedPatchRequest request) {
+    Feed feed = findOrThrowException(id);
 
-        if (!feedRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
+    feed.setUrl(request.getUrl());
+    feed.setTitle(request.getTitle());
 
-        feedRepository.deleteById(id);
+    feedRepository.save(feed);
+    return get(id);
+  }
 
-        return ResponseEntity.noContent().build();
-    }
+  @GetMapping(FEED_FETCH_ERROR)
+  public PagedModel<FetchErrorGetResponse> getFetchError(@PathVariable("id") Long id, Pageable pageable) {
+    Page<FetchError> page = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(id, pageable);
+    return pagedResourcesAssembler.toModel(page, fetchErrorAssembler);
+  }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PatchMapping(FEED)
-    public FeedGetResponse patch(@PathVariable("id") Long id, @Validated @RequestBody FeedPatchRequest request) {
-        Feed feed = findOrThrowException(id);
-
-        feed.setUrl(request.getUrl());
-        feed.setTitle(request.getTitle());
-
-        feedRepository.save(feed);
-        return get(id);
-    }
-
-    @GetMapping(FEED_FETCH_ERROR)
-    public PagedModel<FetchErrorGetResponse> getFetchError(@PathVariable("id") Long id, Pageable pageable) {
-        Page<FetchError> page = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(id, pageable);
-        return pagedResourcesAssembler.toModel(page, fetchErrorAssembler);
-    }
-
-    private Feed findOrThrowException(Long id) {
-        return feedRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
+  private Feed findOrThrowException(Long id) {
+    return feedRepository
+      .findById(id)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+  }
 }

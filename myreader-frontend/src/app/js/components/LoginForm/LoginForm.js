@@ -41,6 +41,10 @@ export default class LoginForm extends React.Component {
     return (
       <form
         className='my-login-form'
+        onSubmit={(event) => {
+          event.preventDefault()
+          onLogin({username, password})
+        }}
       >
         <Input
           type='email'
@@ -69,7 +73,7 @@ export default class LoginForm extends React.Component {
         </div>
 
         <Button
-          onClick={() => onLogin({username, password})}
+          type='submit'
           disabled={loginPending}>
           Login
         </Button>

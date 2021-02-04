@@ -1,7 +1,6 @@
 import './App.css'
 import React from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
-import {secured} from './components'
 import {
   ADMIN_FEED_URL,
   ADMIN_FEEDS_URL,
@@ -11,8 +10,6 @@ import {
   ENTRIES_URL,
   LOGIN_URL,
   LOGOUT_URL,
-  ROLE_ADMIN,
-  ROLE_USER,
   SETTINGS_URL,
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTION_URL,
@@ -32,6 +29,7 @@ import {BookmarkListPage} from './pages/BookmarkListPage/BookmarkListPage'
 import {SubscribePage} from './pages/SubscribePage/SubscribePage'
 import {FeedEditPage} from './pages/FeedEditPage/FeedEditPage'
 import {SubscriptionEditPage} from './pages/SubscriptionEditPage/SubscriptionEditPage'
+import {Secured} from './components/Secured/Secured'
 
 const withSidenav = () => (
   <SubscriptionProvider>
@@ -57,7 +55,7 @@ const App = () => {
       <Switch>
         <Route exact={true} path={LOGIN_URL} component={LoginPage}/>
         <Route exact={true} path={LOGOUT_URL} component={LogoutPage}/>
-        <Route path={APP_URL} component={secured(withSidenav, [ROLE_USER, ROLE_ADMIN])}/>
+        <Route path={APP_URL} component={() => Secured(withSidenav)}/>
         <Redirect to={LOGIN_URL} />
       </Switch>
       <LoadingBar />

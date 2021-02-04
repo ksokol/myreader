@@ -150,6 +150,6 @@ describe('LoginPage', () => {
     wrapper.mount()
     wrapper.update()
 
-    expect(doAuthorize).toHaveBeenCalledWith(['USER'])
+    expect(doAuthorize).toHaveBeenCalledWith()
   })
 })

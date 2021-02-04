@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import SecurityContext from './SecurityContext'
 import {getLastSecurityState, setLastSecurityState} from './security'
 import {api} from '../../api'
-import {ROLE_ADMIN} from '../../constants'
 
 export class SecurityProvider extends React.Component {
 
@@ -25,9 +24,9 @@ export class SecurityProvider extends React.Component {
     api.removeInterceptor(this)
   }
 
-  doAuthorize = roles => this.updateStateAndLocalStorage({roles})
+  doAuthorize = () => this.updateStateAndLocalStorage({authorized: true})
 
-  doUnAuthorize = () => this.updateStateAndLocalStorage({})
+  doUnAuthorize = () => this.updateStateAndLocalStorage({authorized: false})
 
   onError = (request, error) => {
     if (error.status === 401) {
@@ -35,16 +34,14 @@ export class SecurityProvider extends React.Component {
     }
   }
 
-  updateStateAndLocalStorage = ({roles = []}) => {
-    setLastSecurityState({roles})
-    this.setState(this.deriveStateFromRoles({roles}))
+  updateStateAndLocalStorage = ({authorized}) => {
+    setLastSecurityState({authorized})
+    this.setState(this.deriveStateFromRoles({authorized}))
   }
 
-  deriveStateFromRoles = ({roles = []}) => {
+  deriveStateFromRoles = ({authorized}) => {
     return {
-      authorized: roles.length > 0,
-      isAdmin: roles.includes(ROLE_ADMIN),
-      roles
+      authorized,
     }
   }
 
@@ -54,8 +51,6 @@ export class SecurityProvider extends React.Component {
     } = this.props
 
     const {
-      isAdmin,
-      roles,
       authorized
     } = this.state
 
@@ -63,8 +58,6 @@ export class SecurityProvider extends React.Component {
       <SecurityContext.Provider
         value={{
           authorized,
-          isAdmin,
-          roles,
           doAuthorize: this.doAuthorize,
           doUnAuthorize: this.doUnAuthorize
         }}

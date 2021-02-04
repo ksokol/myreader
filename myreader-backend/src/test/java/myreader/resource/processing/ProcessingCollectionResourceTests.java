@@ -19,33 +19,30 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@WithAuthenticatedUser(TestUser.ADMIN)
+@WithAuthenticatedUser(TestUser.USER1)
 @WithTestProperties
 public class ProcessingCollectionResourceTests {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Test
-    public void shouldRejectInvalidProcessingRequest() throws Exception {
-        mockMvc.perform(put("/api/2/processing")
-                .with(jsonBody("{}")))
-                .andExpect(status().isBadRequest())
-                .andExpect(validation().onField("process", is("process does not exists")));
-    }
+  @Test
+  public void shouldRejectInvalidProcessingRequest() throws Exception {
+    mockMvc.perform(put("/api/2/processing")
+      .with(jsonBody("{}")))
+      .andExpect(status().isBadRequest())
+      .andExpect(validation().onField("process", is("process does not exists")));
+  }
 
-    @Test
-    public void shouldAcceptValidProcessingRequest() throws Exception {
-        mockMvc.perform(put("/api/2/processing")
-                .with(jsonBody("{'process': 'indexSyncJob'}")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("done", is(oneOf(true, false))))
-                .andExpect(jsonPath("cancelled", is(false)));
-    }
+  @Test
+  public void shouldAcceptValidProcessingRequest() throws Exception {
+    mockMvc.perform(put("/api/2/processing")
+      .with(jsonBody("{'process': 'indexSyncJob'}")))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("done", is(oneOf(true, false))))
+      .andExpect(jsonPath("cancelled", is(false)));
+  }
 }

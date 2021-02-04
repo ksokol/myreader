@@ -5,7 +5,6 @@ import myreader.resource.processing.beans.ProcessingPutRequestValidator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -18,30 +17,26 @@ import java.util.concurrent.Future;
 
 import static myreader.resource.ResourceConstants.PROCESSING;
 
-/**
- * @author Kamill Sokol
- */
-@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
 public class ProcessingCollectionResource {
 
-    private final ApplicationContext applicationContext;
+  private final ApplicationContext applicationContext;
 
-    public ProcessingCollectionResource(final ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
+  public ProcessingCollectionResource(final ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
+  }
 
-    @InitBinder
-    public void binder(WebDataBinder binder) {
-        binder.addValidators(new ProcessingPutRequestValidator(applicationContext));
-    }
+  @InitBinder
+  public void binder(WebDataBinder binder) {
+    binder.addValidators(new ProcessingPutRequestValidator(applicationContext));
+  }
 
-    @Transactional
-    @Async("applicationTaskExecutor")
-    @PutMapping(PROCESSING)
-    public Future<Void> runProcess(@Validated @RequestBody ProcessingPutRequest request) {
-        final Runnable runnable = applicationContext.getBean(request.getProcess(), Runnable.class);
-        runnable.run();
-        return new AsyncResult<>(null);
-    }
+  @Transactional
+  @Async("applicationTaskExecutor")
+  @PutMapping(PROCESSING)
+  public Future<Void> runProcess(@Validated @RequestBody ProcessingPutRequest request) {
+    final Runnable runnable = applicationContext.getBean(request.getProcess(), Runnable.class);
+    runnable.run();
+    return new AsyncResult<>(null);
+  }
 }

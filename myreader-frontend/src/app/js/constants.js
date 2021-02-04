@@ -26,9 +26,6 @@ export const SUBSCRIPTION_TAGS = `${API_2}/subscriptionTags`
 export const STORAGE_SETTINGS_KEY = 'myreader-settings'
 export const STORAGE_SECURITY_KEY = 'myreader-security'
 
-export const ROLE_ADMIN = 'ADMIN'
-export const ROLE_USER = 'USER'
-
 export const supportedBreakpoints = () => {
   return {
     phone: '(max-width: 599px)',

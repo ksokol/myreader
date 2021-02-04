@@ -1,12 +1,12 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {mount} from 'enzyme'
 import LoginForm from './LoginForm'
 
 describe('LoginForm', () => {
 
   let props
 
-  const createWrapper = () => shallow(<LoginForm {...props} />)
+  const createWrapper = () => mount(<LoginForm {...props} />)
 
   beforeEach(() => {
     props = {
@@ -15,7 +15,7 @@ describe('LoginForm', () => {
   })
 
   it('should pass expected props to email input component', () => {
-    expect(createWrapper().find('[type="email"]').props()).toEqual(expect.objectContaining({
+    expect(createWrapper().find('Input[type="email"]').props()).toEqual(expect.objectContaining({
       name: 'username',
       label: 'Email',
       value: '',
@@ -26,13 +26,14 @@ describe('LoginForm', () => {
 
   it('should update email input prop "value" when input changed', () => {
     const wrapper = createWrapper()
-    wrapper.find('[type="email"]').props().onChange({target: {value: 'expected username'}})
-
-    expect(wrapper.find('[type="email"]').prop('value')).toEqual('expected username')
+    wrapper.find('Input[type="email"]').props().onChange({target: {value: 'expected username'}})
+    wrapper.update()
+    
+    expect(wrapper.find('Input[type="email"]').prop('value')).toEqual('expected username')
   })
 
   it('should pass expected props to password input component', () => {
-    expect(createWrapper().find('[type="password"]').props()).toEqual(expect.objectContaining({
+    expect(createWrapper().find('Input[type="password"]').props()).toEqual(expect.objectContaining({
       name: 'password',
       label: 'Password',
       value: '',
@@ -43,20 +44,21 @@ describe('LoginForm', () => {
 
   it('should update password input prop "value" when input changed', () => {
     const wrapper = createWrapper()
-    wrapper.find('[type="password"]').props().onChange({target: {value: 'expected password'}})
+    wrapper.find('Input[type="password"]').props().onChange({target: {value: 'expected password'}})
+    wrapper.update()
 
-    expect(wrapper.find('[type="password"]').prop('value')).toEqual('expected password')
+    expect(wrapper.find('Input[type="password"]').prop('value')).toEqual('expected password')
   })
 
   it('should pass expected props to login button component', () => {
     expect(createWrapper().find('Button').prop('disabled')).toEqual(false)
   })
 
-  it('should trigger prop function "onLogin" when login button clicked', () => {
+  it('should trigger prop function "onLogin" if form submitted', () => {
     const wrapper = createWrapper()
-    wrapper.find('[type="email"]').props().onChange({target: {value: 'expected username'}})
-    wrapper.find('[type="password"]').props().onChange({target: {value: 'expected password'}})
-    wrapper.find('Button').props().onClick()
+    wrapper.find('Input[type="email"]').props().onChange({target: {value: 'expected username'}})
+    wrapper.find('Input[type="password"]').props().onChange({target: {value: 'expected password'}})
+    wrapper.find('form').simulate('submit')
 
     expect(props.onLogin).toHaveBeenCalledWith({
       username: 'expected username',
@@ -68,8 +70,8 @@ describe('LoginForm', () => {
     props.loginPending = true
     const wrapper = createWrapper()
 
-    expect(wrapper.find('[type="email"]').prop('disabled')).toEqual(true)
-    expect(wrapper.find('[type="password"]').prop('disabled')).toEqual(true)
+    expect(wrapper.find('Input[type="email"]').prop('disabled')).toEqual(true)
+    expect(wrapper.find('Input[type="password"]').prop('disabled')).toEqual(true)
     expect(wrapper.find('Button').prop('disabled')).toEqual(true)
   })
 

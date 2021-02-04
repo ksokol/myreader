@@ -24,7 +24,6 @@ public class User {
 
     private Long id;
     private String email;
-    private String role;
     private String password;
     private Set<Subscription> subscriptions;
 
@@ -55,11 +54,6 @@ public class User {
         this.email = email;
     }
 
-    @Column(name = "user_role")
-    public String getRole() {
-        return role;
-    }
-
     @Column(name = "user_password")
     public String getPassword() {
         return password;
@@ -67,10 +61,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     @ContainedIn

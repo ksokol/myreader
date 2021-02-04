@@ -12,13 +12,13 @@ export function LoginPage() {
   })
   const {doAuthorize, authorized} = useSecurity()
 
-  const onSuccess = roles => {
+  const onSuccess = () => {
     setState({
       loginPending: false,
       loginFailed: false
     })
 
-    doAuthorize(roles)
+    doAuthorize()
   }
 
   const onLogin = async ({username, password}) => {
@@ -28,15 +28,15 @@ export function LoginPage() {
     })
 
     try {
-      const {roles} = await authenticationApi.login(username, password)
+      await authenticationApi.login(username, password)
       setState({
-        loginPending: false
+        loginPending: false,
       })
-      onSuccess(roles)
+      onSuccess()
     } catch {
       setState({
         loginFailed: true,
-        loginPending: false
+        loginPending: false,
       })
     }
   }
