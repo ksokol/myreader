@@ -1,4 +1,4 @@
-import {isBoolean, isDate, isDefined, isObject, isString, isValidDate, isValuePresent, toArray} from './utils'
+import {isBoolean, isDefined, isObject, isString, isValidDate, isValuePresent, toArray} from './utils'
 
 describe('shared utils', () => {
 
@@ -99,37 +99,6 @@ describe('shared utils', () => {
 
     it('true when parameter is of type boolean and value is false', () => {
       expect(isBoolean(false)).toBe(true)
-    })
-  })
-
-  describe('isDate() should return', () => {
-
-    it('false when parameter is undefined', () => {
-      expect(isDate()).toBe(false)
-    })
-
-    it('false when parameter is null', () => {
-      expect(isDate(null)).toBe(false)
-    })
-
-    it('false when parameter is of type string', () => {
-      expect(isDate('true')).toBe(false)
-    })
-
-    it('false when parameter is of type boolean', () => {
-      expect(isDate(true)).toBe(false)
-    })
-
-    it('false when parameter is of type array', () => {
-      expect(isDate([2018, 2, 17, 12, 0, 0, 0])).toBe(false)
-    })
-
-    it('false when parameter is of type object', () => {
-      expect(isDate({})).toBe(false)
-    })
-
-    it('true when parameter is of type Date', () => {
-      expect(isDate(new Date())).toBe(true)
     })
   })
 

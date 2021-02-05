@@ -1,11 +1,6 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import formatTimeAgo from './formatTimeAgo'
+import {useMemo} from 'react'
+import {formatTimeAgo} from './formatTimeAgo'
 
-const TimeAgo = React.memo(({date}) => formatTimeAgo(date))
-
-TimeAgo.propTypes = {
-  date: PropTypes.string.isRequired
+export function TimeAgo({date}) {
+  return useMemo(() => formatTimeAgo(date), [date])
 }
-
-export default TimeAgo

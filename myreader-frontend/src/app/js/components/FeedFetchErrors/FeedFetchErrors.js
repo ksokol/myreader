@@ -1,7 +1,7 @@
 import './FeedFetchErrors.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import TimeAgo from '../../components/TimeAgo/TimeAgo'
+import {TimeAgo} from '../TimeAgo/TimeAgo'
 import {Button} from '../../components/Buttons'
 import IntersectionObserver from '../../components/IntersectionObserver/IntersectionObserver'
 import {feedApi} from '../../api'

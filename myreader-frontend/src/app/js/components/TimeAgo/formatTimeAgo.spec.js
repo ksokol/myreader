@@ -1,4 +1,4 @@
-import formatTimeAgo from './formatTimeAgo'
+import {formatTimeAgo} from './formatTimeAgo'
 
 const givenDate = (now, date = '2018-01-01T00:00:00Z') => {
   jest.spyOn(Date, 'now').mockImplementation(() => new Date(now))
@@ -11,16 +11,16 @@ describe('formatTimeAgo', () => {
     expect(givenDate('2018-01-01T00:00:00Z', null)).toEqual('sometime')
   })
 
-  it('should format to "sometime" when given date is in the future', () => {
-    expect(givenDate('2018-01-01T00:00:00Z', '2018-01-01T00:00:00.001Z')).toEqual('sometime')
+  it('should format to "in 1 second" when given date is in the future', () => {
+    expect(givenDate('2018-01-01T00:00:00Z', '2018-01-01T00:00:00.001Z')).toEqual('in 1 second')
   })
 
-  it('should format to "just now"', () => {
-    expect(givenDate('2018-01-01T00:00:00Z')).toEqual('just now')
+  it('should format to "1 second ago"', () => {
+    expect(givenDate('2018-01-01T00:00:00Z')).toEqual('1 second ago')
   })
 
-  it('should format to "just now" ignoring milliseconds', () => {
-    expect(givenDate('2018-01-01T00:00:00.999Z')).toEqual('just now')
+  it('should format to "1 second ago" ignoring milliseconds', () => {
+    expect(givenDate('2018-01-01T00:00:00.999Z')).toEqual('1 second ago')
   })
 
   it('should format to "1 second ago"', () => {
@@ -87,8 +87,8 @@ describe('formatTimeAgo', () => {
     expect(givenDate('2018-01-29T00:00:00Z')).toEqual('4 weeks ago')
   })
 
-  it('should format to "4 weeks ago" on last second of week', () => {
-    expect(givenDate('2018-02-04T23:59:59Z')).toEqual('4 weeks ago')
+  it('should format to "1 month ago" on last second of week', () => {
+    expect(givenDate('2018-02-04T23:59:59Z')).toEqual('1 month ago')
   })
 
   it('should format to "1 month ago"', () => {
@@ -99,16 +99,16 @@ describe('formatTimeAgo', () => {
     expect(givenDate('2018-02-28T23:59:59Z')).toEqual('1 month ago')
   })
 
-  it('should format to "2 months ago"', () => {
-    expect(givenDate('2018-03-01T00:00:00Z')).toEqual('2 months ago')
+  it('should format to "1 month ago"', () => {
+    expect(givenDate('2018-03-01T00:00:00Z')).toEqual('1 month ago')
   })
 
   it('should format to "10 months ago"', () => {
     expect(givenDate('2018-11-30T23:59:59Z')).toEqual('10 months ago')
   })
 
-  it('should format to "11 months ago"', () => {
-    expect(givenDate('2018-12-01T00:00:00Z')).toEqual('11 months ago')
+  it('should format to "10 months ago"', () => {
+    expect(givenDate('2018-12-01T00:00:00Z')).toEqual('10 months ago')
   })
 
   it('should format to "11 months ago" on last second of month', () => {
@@ -127,11 +127,15 @@ describe('formatTimeAgo', () => {
     expect(givenDate('2020-01-01T00:00:00Z')).toEqual('2 years ago')
   })
 
-  it('should format to "2 years ago" on last second of year', () => {
-    expect(givenDate('2020-12-31T23:59:59Z')).toEqual('2 years ago')
+  it('should format to "3 years ago" on last second of year', () => {
+    expect(givenDate('2020-12-31T23:59:59Z')).toEqual('3 years ago')
   })
 
   it('should format to "3 years ago"', () => {
     expect(givenDate('2021-01-01T00:00:00Z')).toEqual('3 years ago')
+  })
+
+  it('should format to "in 1 year"', () => {
+    expect(givenDate('2021-02-05T08:02:27.685+00:00', '2022-12-25T08:02:27.685Z')).toEqual('in 1 year')
   })
 })

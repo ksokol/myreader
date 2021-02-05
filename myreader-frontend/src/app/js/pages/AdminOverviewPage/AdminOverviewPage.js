@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import {adminApi} from '../../api'
 import {toast} from '../../components/Toast'
 import {Button} from '../../components/Buttons'
-import TimeAgo from '../../components/TimeAgo/TimeAgo'
+import {TimeAgo} from '../../components/TimeAgo/TimeAgo'
 
 export function AdminOverviewPage() {
   const [applicationInfo, setApplicationInfo] = useState(null)

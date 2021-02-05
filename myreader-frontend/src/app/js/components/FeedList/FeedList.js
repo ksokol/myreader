@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import {generatePath} from 'react-router'
 import {Link} from 'react-router-dom'
 import {Icon} from '../Icon/Icon'
-import TimeAgo from '../TimeAgo/TimeAgo'
+import {TimeAgo} from '../TimeAgo/TimeAgo'
 import {ADMIN_FEED_URL} from '../../constants'
 import {useSearchParams} from '../../hooks/router'
 

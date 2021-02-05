@@ -8,7 +8,7 @@ import {IconButton} from '../../components/Buttons'
 import {useHistory, useSearchParams} from '../../hooks/router'
 import {Link} from 'react-router-dom'
 import {SUBSCRIPTION_URL} from '../../constants'
-import TimeAgo from '../../components/TimeAgo/TimeAgo'
+import {TimeAgo} from '../../components/TimeAgo/TimeAgo'
 
 function filterSubscriptions({title}, q = '') {
   return title.toLowerCase().includes(q.toLowerCase())

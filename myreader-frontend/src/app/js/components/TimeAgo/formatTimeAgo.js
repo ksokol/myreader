@@ -1,68 +1,54 @@
-import {isDate, isValidDate} from '../../shared/utils'
+import {isValidDate} from '../../shared/utils'
 
-const formatter = new Intl.RelativeTimeFormat('en', {style: 'long'})
+/*
+ * based on https://github.com/hustcc/timeago.js/tree/7ebf670ec3d47af66b175225eb675354d12951c2
+ */
 
-const DEFAULT_VALUE = 'sometime'
-const ONE_MINUTE = 60
-const ONE_HOUR = ONE_MINUTE * 60
-const ONE_DAY = ONE_HOUR * 24
-const ONE_WEEK = ONE_DAY * 7
-const FIVE_WEEKS = ONE_WEEK * 5
+const timeUnits = [
+  60, // 60 seconds in 1 min
+  60, // 60 mins in 1 hour
+  24, // 24 hours in 1 day
+  7, // 7 days in 1 week
+  365 / 7 / 12, // 4.345238095238096 weeks in 1 month
+  12, // 12 months in 1 year
+]
 
-function formatValue(value, divisor, unit) {
-  return formatter.format(Math.floor(value / divisor) * -1, unit)
+const labels = ['second', 'minute', 'hour', 'day', 'week', 'month', 'year']
+
+function format(seconds, unitOfTime, inThePast) {
+  let unit = labels[Math.floor(unitOfTime / 2)]
+  seconds = unitOfTime === 0 ? 1 : seconds
+  unit += seconds > 1 ? 's' : ''
+
+  return inThePast ? `${seconds} ${unit} ago` : `in ${seconds} ${unit}`
 }
 
-function format(left, right, fn, unit) {
-  const leftValue = fn.call(left)
-  const rightValue = fn.call(right)
-  return rightValue < leftValue
-    ? formatter.format(rightValue - leftValue, unit)
-    : null
+function formatSeconds(seconds, inThePast) {
+  let unitOfTime = 0
+
+  for (; seconds >= timeUnits[unitOfTime] && unitOfTime < timeUnits.length; unitOfTime++) {
+    seconds /= timeUnits[unitOfTime]
+  }
+
+  seconds = Math.floor(seconds)
+  unitOfTime *= 2
+
+  if (seconds > (unitOfTime === 0 ? 9 : 1)) {
+    unitOfTime += 1
+  }
+
+  return format(seconds, unitOfTime, inThePast)
 }
 
-export default function formatTimeAgo(value) {
-  if (!isValidDate(value)) {
-    return DEFAULT_VALUE
+function differenceInSeconds(date) {
+  const nowInMilliseconds = Date.now()
+  return (nowInMilliseconds - new Date(date).getTime()) / 1000
+}
+
+export function formatTimeAgo(date) {
+  if (!isValidDate(date)) {
+    return 'sometime'
   }
-
-  const dateToFormat = (isDate(value) ? value : new Date(value))
-  const dateToFormatTimestamp = dateToFormat.getTime()
-  const nowTimestamp = Date.now()
-
-  if (nowTimestamp < dateToFormatTimestamp) {
-    return DEFAULT_VALUE
-  }
-
-  const diff = (nowTimestamp - dateToFormatTimestamp) / 1000
-
-  if (diff < 1) {
-    return 'just now'
-  }
-
-  if (diff < ONE_MINUTE) {
-    return formatValue(diff, 1, 'second')
-  }
-
-  if (diff < ONE_HOUR) {
-    return formatValue(diff, ONE_MINUTE, 'minute')
-  }
-
-  if (diff < ONE_DAY) {
-    return formatValue(diff, ONE_HOUR, 'hour')
-  }
-
-  if (diff < ONE_WEEK) {
-    return formatValue(diff, ONE_DAY, 'day')
-  }
-
-  if (diff < FIVE_WEEKS) {
-    return formatValue(diff, ONE_WEEK, 'week')
-  }
-
-  const nowDate = new Date(nowTimestamp)
-  return (
-    format(nowDate, dateToFormat, Date.prototype.getUTCFullYear, 'year') ||
-    format(nowDate, dateToFormat, Date.prototype.getUTCMonth, 'month')
-  )
+  const seconds = differenceInSeconds(date)
+  return formatSeconds(Math.abs(seconds), seconds >= 0)
 }

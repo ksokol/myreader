@@ -6,7 +6,7 @@ export const isObject = value => value !== null && typeof value === 'object'
 
 export const isBoolean = value => typeof value === 'boolean'
 
-export const isDate = value => value instanceof Date
+const isDate = value => value instanceof Date
 
 export const toArray = value => {
   if (value) {

@@ -1,7 +1,8 @@
 import './EntryTitle.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {TimeAgo, Badge} from '../../..'
+import {Badge} from '../../..'
+import {TimeAgo} from '../../../TimeAgo/TimeAgo'
 
 export const EntryTitle = props => {
   const {
@@ -15,15 +16,15 @@ export const EntryTitle = props => {
 
   return [
     <a key="title"
-       className="my-entry-title__title"
-       href={origin}
-       target="_blank"
-       rel="noopener noreferrer">{title}
+      className="my-entry-title__title"
+      href={origin}
+      target="_blank"
+      rel="noopener noreferrer">{title}
     </a>,
     <div key="subtitle" className="my-entry-title__subtitle">
       <span><TimeAgo date={createdAt}/> on {feedTitle}</span>
       {feedTag && <Badge text={feedTag} color={feedTagColor} />}
-  </div>
+    </div>
   ]
 }
 

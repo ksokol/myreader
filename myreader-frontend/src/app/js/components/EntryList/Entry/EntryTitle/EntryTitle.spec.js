@@ -1,7 +1,8 @@
 import React from 'react'
 import {EntryTitle} from './EntryTitle'
-import {TimeAgo, Badge} from '../../..'
+import {Badge} from '../../..'
 import {shallow} from 'enzyme'
+import {TimeAgo} from '../../../TimeAgo/TimeAgo'
 
 describe('EntryTitle', () => {
 
