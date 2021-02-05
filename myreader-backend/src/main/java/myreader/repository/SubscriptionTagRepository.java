@@ -9,13 +9,13 @@ import java.util.Optional;
 
 public interface SubscriptionTagRepository extends CrudRepository<SubscriptionTag, Long> {
 
-  @Query("select st from SubscriptionTag st where st.name = ?1 and st.user.id = ?2")
+  @Query("select st from SubscriptionTag st where st.name = ?1 and st.id = any (select s.subscriptionTag.id from Subscription s where s.user.id = ?2)")
   Optional<SubscriptionTag> findByTagAndUserId(String tag, long userId);
 
-  @Query("select st from SubscriptionTag st where st.id = ?1 and st.user.id = ?2")
+  @Query("select st from SubscriptionTag st where st.id = ?1 and st.id = any (select s.subscriptionTag.id from Subscription s where s.user.id = ?2)")
   Optional<SubscriptionTag> findByIdAndUserId(long id, long userId);
 
-  @Query("select st from SubscriptionTag st where st.user.id = ?1 order by st.name")
+  @Query("select st from SubscriptionTag st where st.id = any (select s.subscriptionTag.id from Subscription s where s.user.id = ?1 ) order by st.name")
   List<SubscriptionTag> findAllByUserId(long userId);
 
   @Query("select count(s) from Subscription s where s.subscriptionTag.id = ?1")

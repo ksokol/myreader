@@ -72,10 +72,13 @@ class SubscriptionEntryEntityResourceTests {
     subscriptionEntry.setFeedEntry(feedEntry);
     subscriptionEntry = em.persist(subscriptionEntry);
 
-    var subscriptionTag = new SubscriptionTag("tag1", user);
-    subscription.setSubscriptionTag(subscriptionTag);
+    var subscriptionTag = new SubscriptionTag("tag1", subscription);
     subscriptionTag.setColor("#777");
-    em.persist(subscriptionTag);
+    subscriptionTag = em.persist(subscriptionTag);
+    subscriptionEntry = em.persist(subscriptionEntry);
+
+    subscription.setSubscriptionTag(subscriptionTag);
+    subscription = em.persist(subscription);
   }
 
   @Test

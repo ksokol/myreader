@@ -11,19 +11,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-/**
- * @author Kamill Sokol
- */
 @Access(AccessType.PROPERTY)
 @Entity
 @Table(name = "user_feed_tag")
@@ -32,7 +28,6 @@ public class SubscriptionTag {
     private Long id;
     private String name;
     private String color;
-    private User user;
     private Set<Subscription> subscriptions;
     private Date createdAt;
 
@@ -41,10 +36,16 @@ public class SubscriptionTag {
      */
     public SubscriptionTag() {}
 
-    public SubscriptionTag(String name, User user) {
+    public SubscriptionTag(String name) {
         this.name = Objects.requireNonNull(name, "name is null");
-        this.user = Objects.requireNonNull(user, "user is null");
     }
+
+  public SubscriptionTag(String name, Subscription subscription) {
+    this.name = Objects.requireNonNull(name, "name is null");
+    Objects.requireNonNull(name, "subscription is null");
+    subscriptions = new HashSet<>();
+    subscriptions.add(subscription);
+  }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -76,16 +77,6 @@ public class SubscriptionTag {
         this.color = color;
     }
 
-    @JoinColumn(name = "user_feed_tag_user_id")
-    @ManyToOne(optional = false)
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     @ContainedIn
     @OneToMany(mappedBy = "subscriptionTag")
     public Set<Subscription> getSubscriptions() {
@@ -110,4 +101,21 @@ public class SubscriptionTag {
             this.createdAt = new Date(createdAt.getTime());
         }
     }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    SubscriptionTag that = (SubscriptionTag) other;
+    return Objects.equals(id, that.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
 }

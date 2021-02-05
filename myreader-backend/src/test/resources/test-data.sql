@@ -49,18 +49,18 @@ INSERT INTO entry (entry_id,entry_feed_id,entry_title,entry_guid,entry_url,entry
 INSERT INTO entry (entry_id,entry_feed_id,entry_title,entry_guid,entry_url,entry_content,entry_created_at) values (1008,8,'Keynote from Goto Amsterdam','tag:martinfowler.com,2013-09-04:Keynote-from-Goto-Amsterdam','http://www.youtube.com/watch?v=TgdFA72crHM','content',to_timestamp('2013-09-04 04:04:17','YYYY-MM-DD HH:MI:SS'));
 INSERT INTO entry (entry_id,entry_feed_id,entry_title,entry_guid,entry_url,entry_content,entry_created_at) values (1009,8,'Bliki: TellDontAsk','http://martinfowler.com/bliki/TellDontAsk.html','http://martinfowler.com/bliki/TellDontAsk.html','content',to_timestamp('2013-09-05 05:05:17','YYYY-MM-DD HH:MI:SS'));
 
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (1,'tag1',1,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (2,'tag2',1,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (3,'tag3',1,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (4,'tag1',2,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (5,'tag2',2,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (6,'tag.with.dots',3,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (7,'tagWith/Forward',3,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (8,'tag1',103,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (9,'tag1',104,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (10,'tag1',105,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (18,'tag1',113,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
-INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_user_id,user_feed_tag_created_at) VALUES (22,'tag1',4,to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (1,'tag1',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (2,'tag2',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (3,'tag3',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (4,'tag1',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (5,'tag2',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (6,'tag.with.dots',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (7,'tagWith/Forward',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (8,'tag1',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (9,'tag1',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (10,'tag1',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (18,'tag1',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
+INSERT INTO user_feed_tag (user_feed_tag_id,user_feed_tag_name,user_feed_tag_created_at) VALUES (22,'tag1',to_timestamp('2011-05-15 19:20:46','YYYY-MM-DD HH:MI:SS'));
 
 INSERT INTO user_feed (user_feed_id,user_feed_title,user_feed_user_feed_tag_id,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (1,'user1_subscription1',1,1,15,to_timestamp('2011-04-15 19:20:46','YYYY-MM-DD HH:MI:SS'),0);
 INSERT INTO user_feed (user_feed_id,user_feed_title,user_feed_user_feed_tag_id,user_feed_user_id,user_feed_sum,user_feed_created_at,user_feed_feed_id) VALUES (2,'user1_subscription2',1,1,10,to_timestamp('2011-04-15 19:20:46','YYYY-MM-DD HH:MI:SS'),1);

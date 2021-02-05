@@ -61,18 +61,18 @@ class SubscriptionEntityResourceTests {
     user = em.persist(USER4.toUser());
     feed = em.persistFlushFind(new Feed("http://example.com", "feed title"));
 
-    subscriptionTag = new SubscriptionTag("subscriptiontag name", user);
-    subscriptionTag.setColor("#111111");
-    subscriptionTag.setCreatedAt(new Date(1000));
-    subscriptionTag = em.persist(subscriptionTag);
-
     subscription1 = new Subscription(user, feed);
     subscription1.setTitle("expected title");
-    subscription1.setSubscriptionTag(subscriptionTag);
     subscription1.setFetchCount(15);
     subscription1.setUnseen(10);
     subscription1.setCreatedAt(new Date(2000));
     subscription1 = em.persist(subscription1);
+
+    subscriptionTag = new SubscriptionTag("subscriptiontag name", subscription1);
+    subscriptionTag.setColor("#111111");
+    subscriptionTag.setCreatedAt(new Date(1000));
+    subscriptionTag = em.persist(subscriptionTag);
+    subscription1.setSubscriptionTag(subscriptionTag);
   }
 
   @Test
@@ -162,7 +162,7 @@ class SubscriptionEntityResourceTests {
   }
 
   @Test
-  void shouldCreateNewSubscriptionTagIfNameChanged() throws Exception {
+  void shouldCreateNewSubscriptionTagAndDeleteOrphanedOneIfNameChanged() throws Exception {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription1.getId())
       .with(jsonBody("{'title': 'expected title', 'feedTag': {'name':'changed name', 'color': '#222222'}}")))
       .andExpect(status().isOk())
@@ -172,9 +172,8 @@ class SubscriptionEntityResourceTests {
       .andExpect(jsonPath("feedTag.color", is("#222222")));
 
     assertThat(em.getEntityManager().createQuery("from SubscriptionTag", SubscriptionTag.class).getResultList())
-      .hasSize(2)
+      .hasSize(1)
       .extracting("name", "color")
-      .contains(tuple("subscriptiontag name", "#111111"))
       .contains(tuple("changed name", "#222222"));
   }
 

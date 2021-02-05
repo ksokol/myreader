@@ -94,7 +94,11 @@ public class SubscriptionEntityResource {
 
       var subscriptionTag = subscriptionTagRepository
         .findByTagAndUserId(name, authenticatedUser.getId())
-        .orElse(new SubscriptionTag(name, subscription.getUser()));
+        .orElse(new SubscriptionTag(name, subscription));
+
+      if (!subscriptionTag.equals(subscription.getSubscriptionTag())) {
+          deleteOrphanedSubscriptionTag(subscription);
+      }
 
       if (feedTag.getColor() != null) {
         subscriptionTag.setColor(feedTag.getColor());
@@ -104,15 +108,19 @@ public class SubscriptionEntityResource {
       subscription.setSubscriptionTag(subscriptionTag);
       subscriptionRepository.save(subscription);
     } else {
-      var subscriptionTag = subscription.getSubscriptionTag();
-      subscription.setSubscriptionTag(null);
-      subscriptionRepository.save(subscription);
-
-      if (subscriptionTag != null && subscriptionTagRepository.countBySubscriptions(subscriptionTag.getId()) == 0) {
-        subscriptionTagRepository.delete(subscriptionTag);
-      }
+      deleteOrphanedSubscriptionTag(subscription);
     }
 
     return get(id, authenticatedUser);
+  }
+
+  private void deleteOrphanedSubscriptionTag(Subscription subscription) {
+    var subscriptionTag = subscription.getSubscriptionTag();
+    subscription.setSubscriptionTag(null);
+    subscriptionRepository.save(subscription);
+
+    if (subscriptionTag != null && subscriptionTagRepository.countBySubscriptions(subscriptionTag.getId()) == 0) {
+      subscriptionTagRepository.delete(subscriptionTag);
+    }
   }
 }
