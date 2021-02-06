@@ -159,14 +159,6 @@ class SubscriptionEntryCollectionResourceTests {
   }
 
   @Test
-  void searchSubscriptionEntryByTitle() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?q=entry4"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(1))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()));
-  }
-
-  @Test
   void shouldPaginate() throws Exception {
     var firstResponse = mockMvc.perform(get("/api/2/subscriptionEntries?size=2"))
       .andExpect(jsonPath("links[?(@.rel=='next')].href").value("http://localhost/api/2/subscriptionEntries?size=2&next=" + subscriptionEntry3.getId()))

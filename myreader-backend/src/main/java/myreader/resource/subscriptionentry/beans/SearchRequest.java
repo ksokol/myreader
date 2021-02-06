@@ -1,73 +1,61 @@
 package myreader.resource.subscriptionentry.beans;
 
-/**
- * @author Kamill Sokol
- */
 public class SearchRequest {
 
-    private static final int DEFAULT_SIZE = 10;
+  private static final int DEFAULT_SIZE = 10;
 
-    private String q;
-    private String feedUuidEqual;
-    private String seenEqual;
-    private String feedTagEqual;
-    private String entryTagEqual;
-    private int size;
-    private Long next;
+  private String feedUuidEqual;
+  private String seenEqual;
+  private String feedTagEqual;
+  private String entryTagEqual;
+  private int size;
+  private Long next;
 
-    public String getQ() {
-        return q;
-    }
+  public String getFeedUuidEqual() {
+    return feedUuidEqual;
+  }
 
-    public void setQ(String q) {
-        this.q = q;
-    }
+  public void setFeedUuidEqual(String feedUuidEqual) {
+    this.feedUuidEqual = feedUuidEqual;
+  }
 
-    public String getFeedUuidEqual() {
-        return feedUuidEqual;
-    }
+  public String getSeenEqual() {
+    return seenEqual;
+  }
 
-    public void setFeedUuidEqual(String feedUuidEqual) {
-        this.feedUuidEqual = feedUuidEqual;
-    }
+  public void setSeenEqual(String seenEqual) {
+    this.seenEqual = seenEqual;
+  }
 
-    public String getSeenEqual() {
-        return seenEqual;
-    }
+  public String getFeedTagEqual() {
+    return feedTagEqual;
+  }
 
-    public void setSeenEqual(String seenEqual) {
-        this.seenEqual = seenEqual;
-    }
+  public void setFeedTagEqual(String feedTagEqual) {
+    this.feedTagEqual = feedTagEqual;
+  }
 
-    public String getFeedTagEqual() {
-        return feedTagEqual;
-    }
+  public String getEntryTagEqual() {
+    return entryTagEqual;
+  }
 
-    public void setFeedTagEqual(String feedTagEqual) {
-        this.feedTagEqual = feedTagEqual;
-    }
+  public void setEntryTagEqual(String entryTagEqual) {
+    this.entryTagEqual = entryTagEqual;
+  }
 
-    public String getEntryTagEqual() {
-        return entryTagEqual;
-    }
+  public int getSize() {
+    return size > 0 ? size : DEFAULT_SIZE;
+  }
 
-    public void setEntryTagEqual(String entryTagEqual) {
-        this.entryTagEqual = entryTagEqual;
-    }
+  public void setSize(int size) {
+    this.size = size;
+  }
 
-    public int getSize() {
-        return size > 0 ? size : DEFAULT_SIZE;
-    }
+  public Long getNext() {
+    return next;
+  }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public Long getNext() {
-        return next;
-    }
-
-    public void setNext(Long next) {
-        this.next = next;
-    }
+  public void setNext(Long next) {
+    this.next = next;
+  }
 }

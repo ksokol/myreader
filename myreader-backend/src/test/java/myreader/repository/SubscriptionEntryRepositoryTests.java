@@ -101,99 +101,72 @@ class SubscriptionEntryRepositoryTests {
   }
 
   @Test
-  void searchSubscriptionEntryByTitle() {
-    givenQuery("entry title", null, null, null, null, 10);
-    assertThat(slice.getContent(), everyItem(hasProperty("id", is(subscriptionEntry1.getId()))));
-  }
-
-  @Test
-  void searchSubscriptionEntryByContent() {
-    givenQuery("entry content", null, null, null, null, 10);
-    assertThat(slice.getContent(), everyItem(hasProperty("id", is(subscriptionEntry1.getId()))));
-  }
-
-  @Test
   void searchPaginated() {
-    givenQuery(null, null, null, null, null, 10);
+    givenQuery(null, null, null, null, 10);
     assertThat(slice.getNumberOfElements(), is(4));
 
-    givenQuery(null, null, null, null, null, 1);
+    givenQuery(null, null, null, null, 1);
     assertThat(slice.getContent().get(0).getId(), is(subscriptionEntry4.getId()));
     assertThat(slice.hasNext(), is(true));
 
-    givenQuery(null, null, null, null, subscriptionEntry4.getId(), 1);
+    givenQuery(null, null, null, subscriptionEntry4.getId(), 1);
     assertThat(slice.getContent().get(0).getId(), is(subscriptionEntry3.getId()));
     assertThat(slice.hasNext(), is(true));
   }
 
   @Test
   void searchNextPage() {
-    givenQuery(null, null, null, null, 1582801646000L, 1);
+    givenQuery(null, null, null, 1582801646000L, 1);
     assertThat(slice.getContent(), everyItem(hasProperty("id", is(subscriptionEntry4.getId()))));
     assertThat(slice.hasNext(), is(true));
   }
 
   @Test
-  void searchSubscriptionEntryByTag() {
-    givenQuery("tag2", null, null, null, null, 10);
-    assertThat(slice.getContent(), contains(hasProperty("id", is(subscriptionEntry1.getId()))));
-  }
-
-  @Test
   void seenEqualFalse() {
-    givenQuery(null, null, null, "false", null, 10);
+    givenQuery(null, null, "false", null, 10);
     assertThat(slice.getContent(), hasSize(3));
   }
 
   @Test
   void seenEqualTrue() {
-    givenQuery(null, null, null, "true", null, 10);
+    givenQuery(null, null, "true", null, 10);
     assertThat(slice.getContent(), hasSize(1));
   }
 
   @Test
   void seenEqualWildcard() {
-    givenQuery(null, null, null, "*", null, 10);
+    givenQuery(null, null, "*", null, 10);
     assertThat(slice.getContent(), hasSize(4));
   }
 
   @Test
   void feedUuidEqual14() {
-    givenQuery(null, subscription1.getId().toString(), null, null, null, 10);
+    givenQuery(subscription1.getId().toString(), null, null, null, 10);
     assertThat(slice.getContent(), hasSize(4));
   }
 
   @Test
   void feedUuidEqual9114() {
-    givenQuery(null, "9114", null, null, null, 10);
+    givenQuery("9114", null, null, null, 10);
     assertThat(slice.getContent(), hasSize(0));
   }
 
   @Test
   void feedTagEqualUnknown() {
-    givenQuery(null, null, "unknown", null, null, 10);
+    givenQuery(null, "unknown", null, null, 10);
     assertThat(slice.getContent(), hasSize(0));
   }
 
   @Test
   void feedTagEqualTag1() {
-    givenQuery(null, null, "tag1", null, null, 10);
+    givenQuery(null, "tag1", null, null, 10);
     assertThat(slice.getContent(), everyItem(hasProperty("id", is(subscriptionEntry1.getId()))));
-  }
-
-  @Test
-  void shouldAppendAsteriskToSearchParameterWhenSearchParameterDoesNotEndWithAsterisk() {
-    givenQuery("entry", null, null, "*", null, 10);
-    assertThat(slice.getContent(), hasSize(4));
-
-    givenQuery("entry*", null, null, "*", null, 10);
-    assertThat(slice.getContent(), hasSize(4));
   }
 
   @Test
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   void shouldPaginateWithChangingSeenValues() {
-    tx.execute(s -> givenQuery(null, null, null, "false", null, 2));
+    tx.execute(s -> givenQuery(null, null, "false", null, 2));
 
     assertThat(slice.getContent(), hasItems(
       allOf(hasProperty("id", is(subscriptionEntry4.getId())), hasProperty("seen", is(false))),
@@ -206,7 +179,7 @@ class SubscriptionEntryRepositoryTests {
       return em.persistFlushFind(subscriptionEntry);
     });
 
-    tx.execute(s -> givenQuery(null, null, null, null, null, 10));
+    tx.execute(s -> givenQuery(null, null, null, null, 10));
     assertThat(slice.getContent(), hasItems(
       allOf(hasProperty("id", is(subscriptionEntry4.getId())), hasProperty("seen", is(true))),
       allOf(hasProperty("id", is(subscriptionEntry3.getId())), hasProperty("seen", is(false))),
@@ -214,7 +187,7 @@ class SubscriptionEntryRepositoryTests {
       allOf(hasProperty("id", is(subscriptionEntry1.getId())), hasProperty("seen", is(true)))
     ));
 
-    tx.execute(s -> givenQuery(null, null, null, "false", subscriptionEntry4.getId(), 2));
+    tx.execute(s -> givenQuery(null, null, "false", subscriptionEntry4.getId(), 2));
     assertThat(slice.getContent(), contains(
       hasProperty("id", is(subscriptionEntry3.getId())),
       hasProperty("id", is(subscriptionEntry2.getId())))
@@ -226,7 +199,7 @@ class SubscriptionEntryRepositoryTests {
       return em.persistFlushFind(subscriptionEntry);
     });
 
-    tx.execute(s -> givenQuery(null, null, null, null, null, 10));
+    tx.execute(s -> givenQuery(null, null, null, null, 10));
     assertThat(slice.getContent(), hasItems(
       allOf(hasProperty("id", is(subscriptionEntry4.getId())), hasProperty("seen", is(true))),
       allOf(hasProperty("id", is(subscriptionEntry3.getId())), hasProperty("seen", is(false))),
@@ -234,14 +207,13 @@ class SubscriptionEntryRepositoryTests {
       allOf(hasProperty("id", is(subscriptionEntry1.getId())), hasProperty("seen", is(true)))
     ));
 
-    tx.execute(s -> givenQuery(null, null, null, "false", subscriptionEntry2.getId(), 2));
+    tx.execute(s -> givenQuery(null, null, "false", subscriptionEntry2.getId(), 2));
     assertThat(slice.getContent(), emptyIterable());
   }
 
-  private Slice<SubscriptionEntry> givenQuery(String q, String feedId, String feedTagEqual, String seen, Long next, int size) {
+  private Slice<SubscriptionEntry> givenQuery(String feedId, String feedTagEqual, String seen, Long next, int size) {
     slice = subscriptionEntryRepository.findBy(
       size,
-      q,
       feedId,
       feedTagEqual,
       null,

@@ -38,7 +38,6 @@ public class SubscriptionEntryCollectionResource {
   public PagedModel<SubscriptionEntryGetResponse> get(SearchRequest searchRequest) {
     var slicedEntries = subscriptionEntryRepository.findBy(
       searchRequest.getSize(),
-      searchRequest.getQ(),
       searchRequest.getFeedUuidEqual(),
       searchRequest.getFeedTagEqual(),
       searchRequest.getEntryTagEqual(),

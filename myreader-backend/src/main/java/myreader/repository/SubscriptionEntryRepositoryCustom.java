@@ -7,7 +7,6 @@ public interface SubscriptionEntryRepositoryCustom {
 
   Slice<SubscriptionEntry> findBy(
     int size,
-    String q,
     String feedId,
     String feedTagEqual,
     String entryTagEqual,

@@ -22,14 +22,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.lucene.search.NumericRangeQuery.newLongRange;
 
 @Component
 public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryRepositoryCustom {
 
-  private static final String CONTENT = "feedEntry.content";
-  private static final String TITLE = "feedEntry.title";
   private static final String TAGS = "tags";
   private static final String SUBSCRIPTION_ID = "subscription.subscriptionId";
   private static final String SEEN = "seen";
@@ -45,7 +42,6 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
   @Override
   public Slice<SubscriptionEntry> findBy(
     int size,
-    String q,
     String feedId,
     String feedTagEqual,
     String entryTagEqual,
@@ -55,7 +51,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     int sizePlusOne = size + 1;
     FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
     QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(SubscriptionEntry.class).get();
-    Query query = createQuery(q, queryBuilder);
+    Query query = createQuery(queryBuilder);
     BooleanQuery.Builder builder = new BooleanQuery.Builder();
 
     builder.add(query, Occur.MUST);
@@ -79,20 +75,8 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     return new SliceImpl<>(limit, Pageable.unpaged(), resultList.size() == sizePlusOne);
   }
 
-  private Query createQuery(String q, QueryBuilder queryBuilder) {
-    Query query;
-
-    if (isNotEmpty(q)) {
-      String searchToken = q.endsWith("*") ? q : q + "*";
-      query = queryBuilder.bool()
-        .should(queryBuilder.keyword().wildcard().onField(CONTENT).matching(searchToken).createQuery())
-        .should(queryBuilder.keyword().wildcard().onField(TITLE).matching(searchToken).createQuery())
-        .should(queryBuilder.keyword().wildcard().onField(TAGS).matching(searchToken).createQuery())
-        .createQuery();
-    } else {
-      query = queryBuilder.bool().must(queryBuilder.all().createQuery()).createQuery();
-    }
-    return query;
+  private Query createQuery(QueryBuilder queryBuilder) {
+    return queryBuilder.bool().must(queryBuilder.all().createQuery()).createQuery();
   }
 
   private void addSeenFilter(String seenValue, BooleanQuery.Builder builder) {
