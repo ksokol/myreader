@@ -1,9 +1,7 @@
 package myreader.resource.exclusionpattern;
 
 import myreader.repository.ExclusionRepository;
-import myreader.security.AuthenticatedUser;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,11 +21,10 @@ public class ExclusionPatternEntityResource {
   @DeleteMapping(EXCLUSIONS_SUBSCRIPTION_PATTERN)
   public void delete(
     @PathVariable("patternId") Long patternId,
-    @PathVariable("subscriptionId") Long subscriptionId,
-    @AuthenticationPrincipal AuthenticatedUser authenticatedUser
+    @PathVariable("subscriptionId") Long subscriptionId
   ) {
     var pattern = exclusionRepository
-      .findByIdAndSubscriptionIdAndCurrentUser(patternId, subscriptionId, authenticatedUser.getId())
+      .findByIdAndSubscriptionId(patternId, subscriptionId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     exclusionRepository.deleteById(pattern.getId());

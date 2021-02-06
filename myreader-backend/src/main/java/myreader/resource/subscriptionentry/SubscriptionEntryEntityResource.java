@@ -5,10 +5,8 @@ import myreader.repository.SubscriptionEntryRepository;
 import myreader.resource.ResourceConstants;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
-import myreader.security.AuthenticatedUser;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,11 +32,10 @@ public class SubscriptionEntryEntityResource {
   @PatchMapping
   public SubscriptionEntryGetResponse patch(
     @PathVariable("id") Long id,
-    @RequestBody SubscriptionEntryPatchRequest request,
-    @AuthenticationPrincipal AuthenticatedUser authenticatedUser
+    @RequestBody SubscriptionEntryPatchRequest request
   ) {
     var subscriptionEntry = subscriptionEntryRepository
-      .findByIdAndUserId(id, authenticatedUser.getId())
+      .findById(id)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     if (request.getSeen() != null) {

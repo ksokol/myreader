@@ -4,12 +4,10 @@ import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.resource.subscriptionentry.beans.SearchRequest;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import myreader.security.AuthenticatedUser;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -37,10 +35,7 @@ public class SubscriptionEntryCollectionResource {
   }
 
   @GetMapping(SUBSCRIPTION_ENTRIES)
-  public PagedModel<SubscriptionEntryGetResponse> get(
-    SearchRequest searchRequest,
-    @AuthenticationPrincipal AuthenticatedUser authenticatedUser
-  ) {
+  public PagedModel<SubscriptionEntryGetResponse> get(SearchRequest searchRequest) {
     var slicedEntries = subscriptionEntryRepository.findBy(
       searchRequest.getSize(),
       searchRequest.getQ(),
@@ -48,8 +43,7 @@ public class SubscriptionEntryCollectionResource {
       searchRequest.getFeedTagEqual(),
       searchRequest.getEntryTagEqual(),
       searchRequest.getSeenEqual(),
-      searchRequest.getNext(),
-      authenticatedUser.getId()
+      searchRequest.getNext()
     ).map(assembler::toModel);
 
     var builder = ServletUriComponentsBuilder.fromCurrentRequest().replaceQueryParam("next", Collections.emptyList());
@@ -65,7 +59,7 @@ public class SubscriptionEntryCollectionResource {
   }
 
   @GetMapping(SUBSCRIPTION_ENTRIES_AVAILABLE_TAGS)
-  public Set<String> tags(@AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-    return subscriptionEntryRepository.findDistinctTagsByUserId(authenticatedUser.getId());
+  public Set<String> tags() {
+    return subscriptionEntryRepository.findDistinctTags();
   }
 }

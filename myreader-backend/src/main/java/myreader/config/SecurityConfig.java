@@ -1,6 +1,5 @@
 package myreader.config;
 
-import myreader.security.UserRepositoryUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -9,12 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Objects;
 
 import static myreader.config.UrlMappings.API_2;
@@ -23,12 +22,15 @@ import static myreader.config.UrlMappings.LOGIN_PROCESSING;
 @Configuration
 public class SecurityConfig {
 
-  private final UserRepositoryUserDetailsService userRepositoryUserDetailsService;
   private final String rememberMeKey;
+  private final String userPassword;
 
-  public SecurityConfig(UserRepositoryUserDetailsService userRepositoryUserDetailsService, @Value("${remember-me.key}") String rememberMeKey) {
-    this.userRepositoryUserDetailsService = Objects.requireNonNull(userRepositoryUserDetailsService, "userRepositoryUserDetailsService is null");
+  public SecurityConfig(
+    @Value("${remember-me.key}") String rememberMeKey,
+    @Value("${user.password.bcrypt}") String userPassword
+  ) {
     this.rememberMeKey = Objects.requireNonNull(rememberMeKey, "rememberMeKey is null");
+    this.userPassword = Objects.requireNonNull(userPassword, "userPassword is null");
   }
 
   @Order(101)
@@ -38,8 +40,8 @@ public class SecurityConfig {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
       auth
-        .userDetailsService(userRepositoryUserDetailsService)
-        .passwordEncoder(new DelegatingPasswordEncoder("MD5", Map.of("MD5", new MessageDigestPasswordEncoder("MD5"))));
+        .userDetailsService(username -> new User("user", userPassword, true, true, true, true, Collections.emptyList()))
+        .passwordEncoder(new BCryptPasswordEncoder());
     }
   }
 

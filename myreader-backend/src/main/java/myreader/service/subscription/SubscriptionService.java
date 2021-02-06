@@ -1,10 +1,7 @@
 package myreader.service.subscription;
 
-import myreader.entity.Feed;
 import myreader.entity.Subscription;
-import myreader.entity.User;
 import myreader.repository.SubscriptionRepository;
-import myreader.repository.UserRepository;
 import myreader.service.feed.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,45 +12,38 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
-/**
- * @author Kamill Sokol
- */
 @Service
 public class SubscriptionService {
 
-    private final SubscriptionRepository subscriptionRepository;
-    private final UserRepository userRepository;
-    private final FeedService feedService;
-    private final Clock clock;
+  private final SubscriptionRepository subscriptionRepository;
+  private final FeedService feedService;
+  private final Clock clock;
 
-    @Autowired
-    public SubscriptionService(SubscriptionRepository subscriptionRepository, UserRepository userRepository, FeedService feedService, Clock clock) {
-        this.subscriptionRepository = subscriptionRepository;
-        this.userRepository = userRepository;
-        this.feedService = feedService;
-        this.clock = clock;
+  @Autowired
+  public SubscriptionService(SubscriptionRepository subscriptionRepository, FeedService feedService, Clock clock) {
+    this.subscriptionRepository = subscriptionRepository;
+    this.feedService = feedService;
+    this.clock = clock;
+  }
+
+  @Transactional
+  public Subscription subscribe(String url) {
+    var check = subscriptionRepository.findByFeedUrl(url);
+
+    if (check.isPresent()) {
+      throw new SubscriptionExistException();
     }
 
-    @Transactional
-    public Subscription subscribe(String username, String url) {
-        Subscription check = subscriptionRepository.findByUserEmailAndFeedUrl(username, url);
+    var feed = feedService.findByUrl(url);
 
-        if(check != null) {
-            throw new SubscriptionExistException();
-        }
+    var subscription = new Subscription();
+    subscription.setTitle(feed.getTitle());
+    subscription.setFeed(feed);
+    subscription.setCreatedAt(now());
+    return subscriptionRepository.save(subscription);
+  }
 
-        Feed feed = feedService.findByUrl(url);
-        User user = userRepository.findByEmail(username);
-
-        Subscription subscription = new Subscription();
-        subscription.setTitle(feed.getTitle());
-        subscription.setFeed(feed);
-        subscription.setUser(user);
-        subscription.setCreatedAt(now());
-        return subscriptionRepository.save(subscription);
-    }
-
-    private Date now() {
-        return Date.from(LocalDateTime.now(clock).toInstant(ZoneOffset.UTC));
-    }
+  private Date now() {
+    return Date.from(LocalDateTime.now(clock).toInstant(ZoneOffset.UTC));
+  }
 }

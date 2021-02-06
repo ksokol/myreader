@@ -11,30 +11,28 @@ import java.util.Optional;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
-    @Query(value =
-            "select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.user.id = ?2 " +
-            "and (select count(1) from SubscriptionEntry se where se.subscription.id = s.id and se.seen = false) > ?1 " +
-            "order by s.createdAt desc"
-    )
-    List<Subscription> findAllByUnseenGreaterThanAndUserId(long unseenCount, long userId);
+  @Query(value =
+    "select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where " +
+      "(select count(1) from SubscriptionEntry se where se.subscription.id = s.id and se.seen = false) > ?1 " +
+      "order by s.createdAt desc"
+  )
+  List<Subscription> findAllByUnseenGreaterThan(long unseenCount);
 
-    @Query("select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.id = ?1 and s.user.id = ?2")
-    Optional<Subscription> findByIdAndUserId(Long id, long userId);
+  @Override
+  @Query("select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.id = ?1")
+  Optional<Subscription> findById(Long id);
 
-    @Query("select s from Subscription s where s.user.id = ?2 and s.feed.url = ?1")
-    Optional<Subscription> findByFeedUrlAndUserId(String url, long userId);
+  Optional<Subscription> findByFeedUrl(String url);
 
-    Subscription findByUserEmailAndFeedUrl(String email, String url);
+  @Transactional
+  @Query("update Subscription set lastFeedEntryId = ?1 where id = ?2")
+  @Modifying
+  void updateLastFeedEntryId(Long feedEntryId, Long subscriptionId);
 
-    @Transactional
-    @Query("update Subscription set lastFeedEntryId = ?1 where id = ?2")
-    @Modifying
-    void updateLastFeedEntryId(Long feedEntryId, Long subscriptionId);
+  @Transactional
+  @Query("update Subscription set lastFeedEntryId = ?1, fetchCount = fetchCount + 1 where id = ?2")
+  @Modifying
+  void updateLastFeedEntryIdAndIncrementFetchCount(Long feedEntryId, Long subscriptionId);
 
-    @Transactional
-    @Query("update Subscription set lastFeedEntryId = ?1, fetchCount = fetchCount + 1 where id = ?2")
-    @Modifying
-    void updateLastFeedEntryIdAndIncrementFetchCount(Long feedEntryId, Long subscriptionId);
-
-    int countByFeedId(Long id);
+  int countByFeedId(Long id);
 }

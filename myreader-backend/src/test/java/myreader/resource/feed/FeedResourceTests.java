@@ -6,8 +6,6 @@ import myreader.repository.FeedRepository;
 import myreader.repository.FetchErrorRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.feed.FeedService;
-import myreader.test.TestUser;
-import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -47,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@WithAuthenticatedUser(TestUser.USER1)
+@WithMockUser
 @WithTestProperties
 public class FeedResourceTests {
 

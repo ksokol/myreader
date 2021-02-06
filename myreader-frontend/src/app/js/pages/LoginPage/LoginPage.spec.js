@@ -52,13 +52,10 @@ describe('LoginPage', () => {
     const wrapper = await createWrapper()
 
     await act(async () => {
-      await wrapper.find('LoginForm').props().onLogin({
-        username: 'expected-username',
-        password: 'expected-password'
-      })
+      await wrapper.find('LoginForm').props().onLogin('expected-password')
     })
 
-    expect(authenticationApi.login).toHaveBeenCalledWith('expected-username', 'expected-password')
+    expect(authenticationApi.login).toHaveBeenCalledWith('expected-password')
   })
 
   it('should not redirect to entries page when user is not authorized', async () => {

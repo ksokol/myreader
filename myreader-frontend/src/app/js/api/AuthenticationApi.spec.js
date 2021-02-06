@@ -33,7 +33,7 @@ describe('AuthenticationApi', () => {
 
   it('should call GET login endpoint', () => {
     exchange.mockResolvedValueOnce({})
-    authenticationApi.login('expected username', 'expected password')
+    authenticationApi.login('expected password')
 
     expect(exchange).toHaveBeenCalledWith(expect.objectContaining({
       method: 'POST',
@@ -43,7 +43,7 @@ describe('AuthenticationApi', () => {
       }
     }))
     expect(exchange.mock.calls[0][0].body.toString()).toEqual(
-      'username=expected+username&password=expected+password'
+      'password=expected+password'
     )
   })
 })

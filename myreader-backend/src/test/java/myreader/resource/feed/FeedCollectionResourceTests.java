@@ -4,8 +4,6 @@ import myreader.entity.Feed;
 import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 import myreader.test.ClearDb;
-import myreader.test.TestUser;
-import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @ClearDb
 @SpringBootTest
+@WithMockUser
 @WithTestProperties
 class FeedCollectionResourceTests {
 
@@ -45,8 +45,6 @@ class FeedCollectionResourceTests {
 
   @BeforeEach
   void before() {
-    var user = em.persist(TestUser.USER4.toUser());
-
     feed1 = new Feed("http://localhost", "expected title1");
     feed1.setTitle("expected title1");
     feed1.setUrl("http://url1");
@@ -55,7 +53,7 @@ class FeedCollectionResourceTests {
     feed1.setCreatedAt(new Date(1000));
     feed1.setFetchErrors(Set.of(new FetchError()));
     feed1 = em.persist(feed1);
-    em.persist(new Subscription(user, feed1));
+    em.persist(new Subscription(feed1));
 
     var fetchError1 = new FetchError();
     fetchError1.setFeed(feed1);
@@ -68,10 +66,9 @@ class FeedCollectionResourceTests {
     feed2.setFetched(20);
     feed2.setCreatedAt(new Date(2000));
     feed2 = em.persist(feed2);
-    em.persist(new Subscription(user, feed2));
+    em.persist(new Subscription(feed2));
   }
 
-  @WithAuthenticatedUser(TestUser.USER4)
   @Test
   void shouldReturnFeedsSortedByCreatedAtDescending() throws Exception {
     mockMvc.perform(get("/api/2/feeds"))

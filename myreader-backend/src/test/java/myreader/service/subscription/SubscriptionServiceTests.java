@@ -2,9 +2,7 @@ package myreader.service.subscription;
 
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
-import myreader.entity.User;
 import myreader.repository.SubscriptionRepository;
-import myreader.repository.UserRepository;
 import myreader.service.feed.FeedService;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +14,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,62 +25,54 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
-/**
- * @author Kamill Sokol
- */
 @RunWith(MockitoJUnitRunner.class)
 public class SubscriptionServiceTests {
 
-    private static final String USERNAME = "usernamne";
-    private static final String FEED_URL = "feed url";
+  private static final String FEED_URL = "feed url";
 
-    private SubscriptionService subscriptionService;
-    private SubscriptionRepository subscriptionRepository = mock(SubscriptionRepository.class);
-    private UserRepository userRepository = mock(UserRepository.class);
-    private FeedService feedService = mock(FeedService.class);
-    private Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
+  private SubscriptionService subscriptionService;
+  private final SubscriptionRepository subscriptionRepository = mock(SubscriptionRepository.class);
+  private final FeedService feedService = mock(FeedService.class);
+  private final Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
 
-    @Before
-    public void setUp() {
-        subscriptionService = new SubscriptionService(subscriptionRepository, userRepository, feedService, clock);
-    }
+  @Before
+  public void setUp() {
+    subscriptionService = new SubscriptionService(subscriptionRepository, feedService, clock);
+  }
 
-    @Test(expected = SubscriptionExistException.class)
-    public void shouldRejectSubscriptionWhenSubscriptionAlreadyExists() {
-        given(subscriptionRepository.findByUserEmailAndFeedUrl(USERNAME, FEED_URL)).willReturn(new Subscription());
+  @Test(expected = SubscriptionExistException.class)
+  public void shouldRejectSubscriptionWhenSubscriptionAlreadyExists() {
+    given(subscriptionRepository.findByFeedUrl(FEED_URL)).willReturn(Optional.of(new Subscription()));
 
-        subscriptionService.subscribe(USERNAME, FEED_URL);
-    }
+    subscriptionService.subscribe(FEED_URL);
+  }
 
-    @Test
-    public void shouldAcceptNewSubscription() {
-        User user = new User("user@localhost");
-        Feed feed = new Feed("title", "url");
-        feed.setTitle("expected feed title");
+  @Test
+  public void shouldAcceptNewSubscription() {
+    Feed feed = new Feed("title", "url");
+    feed.setTitle("expected feed title");
 
-        given(feedService.findByUrl(FEED_URL)).willReturn(feed);
-        given(userRepository.findByEmail(USERNAME)).willReturn(user);
+    given(feedService.findByUrl(FEED_URL)).willReturn(feed);
 
-        subscriptionService.subscribe(USERNAME, FEED_URL);
+    subscriptionService.subscribe(FEED_URL);
 
-        verify(subscriptionRepository).save(argThat(allOf(
-                hasProperty("title", is("expected feed title")),
-                hasProperty("feed", is(feed)),
-                hasProperty("user", is(user)),
-                hasProperty("createdAt", is(Date.from(Instant.EPOCH)))
-        )));
-    }
+    verify(subscriptionRepository).save(argThat(allOf(
+      hasProperty("title", is("expected feed title")),
+      hasProperty("feed", is(feed)),
+      hasProperty("createdAt", is(Date.from(Instant.EPOCH)))
+    )));
+  }
 
-    @Test
-    public void shouldReturnNewSubscription() {
-        given(feedService.findByUrl(FEED_URL)).willReturn(new Feed("title", "url"));
+  @Test
+  public void shouldReturnNewSubscription() {
+    given(feedService.findByUrl(FEED_URL)).willReturn(new Feed("title", "url"));
 
-        Subscription expectedSubscription = new Subscription();
-        given(subscriptionRepository.save(Mockito.any(Subscription.class))).willReturn(expectedSubscription);
+    Subscription expectedSubscription = new Subscription();
+    given(subscriptionRepository.save(Mockito.any(Subscription.class))).willReturn(expectedSubscription);
 
-        Subscription actualSubscription = subscriptionService.subscribe(USERNAME, FEED_URL);
+    Subscription actualSubscription = subscriptionService.subscribe(FEED_URL);
 
-        assertThat(actualSubscription, is(expectedSubscription));
-    }
+    assertThat(actualSubscription, is(expectedSubscription));
+  }
 
 }

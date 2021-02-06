@@ -3,9 +3,7 @@ package myreader.resource.subscription;
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionTag;
-import myreader.entity.User;
 import myreader.test.ClearDb;
-import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,7 +21,6 @@ import javax.transaction.Transactional;
 import java.util.Date;
 
 import static myreader.test.CustomMockMvcResultMatchers.validation;
-import static myreader.test.TestUser.USER4;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -41,8 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @ClearDb
 @SpringBootTest
+@WithMockUser
 @WithTestProperties
-@WithAuthenticatedUser(USER4)
 class SubscriptionEntityResourceTests {
 
   @Autowired
@@ -51,17 +49,15 @@ class SubscriptionEntityResourceTests {
   @Autowired
   private TestEntityManager em;
 
-  private User user;
   private Feed feed;
   private Subscription subscription1;
   private SubscriptionTag subscriptionTag;
 
   @BeforeEach
   void setUp() {
-    user = em.persist(USER4.toUser());
     feed = em.persistFlushFind(new Feed("http://example.com", "feed title"));
 
-    subscription1 = new Subscription(user, feed);
+    subscription1 = new Subscription(feed);
     subscription1.setTitle("expected title");
     subscription1.setFetchCount(15);
     subscription1.setUnseen(10);
@@ -109,7 +105,7 @@ class SubscriptionEntityResourceTests {
 
   @Test
   void shouldNotDeleteSubscriptionTagIfUsedInAnotherSubscription() throws Exception {
-    var subscription2 = new Subscription(user, feed);
+    var subscription2 = new Subscription(feed);
     subscription2.setTitle("expected title2");
     subscription2.setSubscriptionTag(subscriptionTag);
     em.persist(subscription2);
@@ -179,7 +175,7 @@ class SubscriptionEntityResourceTests {
 
   @Test
   void shouldNotDeleteSubscriptionTagIfNotOrphanedAfterPatch() throws Exception {
-    var subscription2 = new Subscription(user, feed);
+    var subscription2 = new Subscription(feed);
     subscription2.setTitle("title");
     subscription2.setSubscriptionTag(subscriptionTag);
     em.persist(subscription2);

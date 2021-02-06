@@ -8,10 +8,8 @@ import myreader.resource.ResourceConstants;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import myreader.resource.subscription.beans.SubscriptionPatchRequestValidator;
-import myreader.security.AuthenticatedUser;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
@@ -48,24 +46,18 @@ public class SubscriptionEntityResource {
   }
 
   @GetMapping(ResourceConstants.SUBSCRIPTION)
-  public SubscriptionGetResponse get(
-    @PathVariable("id") Long id,
-    @AuthenticationPrincipal AuthenticatedUser authenticatedUser
-  ) {
+  public SubscriptionGetResponse get(@PathVariable("id") Long id) {
     return subscriptionRepository
-      .findByIdAndUserId(id, authenticatedUser.getId())
+      .findById(id)
       .map(assembler::toModel)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
   }
 
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @DeleteMapping(ResourceConstants.SUBSCRIPTION)
-  public void delete(
-    @PathVariable("id") Long id,
-    @AuthenticationPrincipal AuthenticatedUser authenticatedUser
-  ) {
+  public void delete(@PathVariable("id") Long id) {
     var subscription = subscriptionRepository
-      .findByIdAndUserId(id, authenticatedUser.getId())
+      .findById(id)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     subscriptionRepository.delete(subscription);
@@ -80,11 +72,10 @@ public class SubscriptionEntityResource {
   @PatchMapping(ResourceConstants.SUBSCRIPTION)
   public SubscriptionGetResponse patch(
     @PathVariable("id") Long id,
-    @Validated @RequestBody SubscriptionPatchRequest request,
-    @AuthenticationPrincipal AuthenticatedUser authenticatedUser
+    @Validated @RequestBody SubscriptionPatchRequest request
   ) {
     var subscription = subscriptionRepository
-      .findByIdAndUserId(id, authenticatedUser.getId())
+      .findById(id)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     subscription.setTitle(request.getTitle());
 
@@ -93,7 +84,7 @@ public class SubscriptionEntityResource {
       var name = feedTag.getName();
 
       var subscriptionTag = subscriptionTagRepository
-        .findByTagAndUserId(name, authenticatedUser.getId())
+        .findByTag(name)
         .orElse(new SubscriptionTag(name, subscription));
 
       if (!subscriptionTag.equals(subscription.getSubscriptionTag())) {
@@ -111,7 +102,7 @@ public class SubscriptionEntityResource {
       deleteOrphanedSubscriptionTag(subscription);
     }
 
-    return get(id, authenticatedUser);
+    return get(id);
   }
 
   private void deleteOrphanedSubscriptionTag(Subscription subscription) {

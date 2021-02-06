@@ -4,7 +4,6 @@ import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.repository.FeedRepository;
 import myreader.test.ClearDb;
-import myreader.test.TestUser;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,29 +28,28 @@ import static org.hamcrest.Matchers.nullValue;
 @WithTestProperties
 class FeedPurgeJobTests {
 
-    @Autowired
-    private TestEntityManager em;
+  @Autowired
+  private TestEntityManager em;
 
-    @Autowired
-    private FeedRepository feedRepository;
+  @Autowired
+  private FeedRepository feedRepository;
 
-    private FeedPurgeJob job;
+  private FeedPurgeJob job;
 
-    @BeforeEach
-    public void setUp() {
-        job = new FeedPurgeJob(feedRepository);
-    }
+  @BeforeEach
+  public void setUp() {
+    job = new FeedPurgeJob(feedRepository);
+  }
 
-    @Test
-    void shouldDeleteFeedsWithoutSubscription() {
-        var user = em.persist(TestUser.USER4.toUser());
-        var feed1 = em.persist(new Feed("http://localhost", "expected title1"));
-        var feed2 =  em.persist(new Feed("http://localhost", "expected title2"));
-        em.persist(new Subscription(user, feed2));
+  @Test
+  void shouldDeleteFeedsWithoutSubscription() {
+    var feed1 = em.persist(new Feed("http://localhost", "expected title1"));
+    var feed2 = em.persist(new Feed("http://localhost", "expected title2"));
+    em.persist(new Subscription(feed2));
 
-        job.work();
+    job.work();
 
-        assertThat(em.find(Feed.class, feed1.getId()), nullValue());
-        assertThat(em.find(Feed.class, feed2.getId()), is(feed2));
-    }
+    assertThat(em.find(Feed.class, feed1.getId()), nullValue());
+    assertThat(em.find(Feed.class, feed2.getId()), is(feed2));
+  }
 }

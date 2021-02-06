@@ -3,11 +3,8 @@ package myreader.resource.subscriptiontag;
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionTag;
-import myreader.entity.User;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.SubscriptionTagRepository;
-import myreader.test.TestUser;
-import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-@WithAuthenticatedUser(TestUser.USER1)
+@WithMockUser
 @WithTestProperties
 public class SubscriptionTagEntityResourceTests {
 
@@ -48,7 +46,7 @@ public class SubscriptionTagEntityResourceTests {
 
   @Test
   public void shouldReturn404WhenSubscriptionTagIsNotFound() throws Exception {
-    given(subscriptionTagRepository.findByIdAndUserId(1, TestUser.USER1.id)).willReturn(Optional.empty());
+    given(subscriptionTagRepository.findById(1L)).willReturn(Optional.empty());
 
     mockMvc.perform(patch("/api/2/subscriptionTags/1")
       .with(jsonBody("{'name': 'expected name', 'color': '#111'}")))
@@ -57,14 +55,14 @@ public class SubscriptionTagEntityResourceTests {
 
   @Test
   public void shouldPatchWhenSubscriptionTagIsFound() throws Exception {
-    Subscription subscription = new Subscription(new User(TestUser.USER1.email), new Feed());
+    Subscription subscription = new Subscription(new Feed());
     subscription.setId(2L);
 
     SubscriptionTag subscriptionTag = new SubscriptionTag("name", subscription);
     subscriptionTag.setId(1L);
     subscriptionTag.setCreatedAt(new Date(1000));
 
-    given(subscriptionTagRepository.findByIdAndUserId(1, TestUser.USER1.id)).willReturn(Optional.of(subscriptionTag));
+    given(subscriptionTagRepository.findById(1L)).willReturn(Optional.of(subscriptionTag));
     given(subscriptionTagRepository.save(subscriptionTag)).willReturn(subscriptionTag);
 
     mockMvc.perform(patch("/api/2/subscriptionTags/1")
@@ -78,7 +76,7 @@ public class SubscriptionTagEntityResourceTests {
 
   @Test
   public void shouldReturnSubscriptionTagFromSubscriptionResource() throws Exception {
-    Subscription subscription = new Subscription(new User(TestUser.USER1.email), new Feed());
+    Subscription subscription = new Subscription(new Feed());
     subscription.setId(2L);
 
     SubscriptionTag subscriptionTag = new SubscriptionTag("expected name", subscription);
@@ -87,7 +85,7 @@ public class SubscriptionTagEntityResourceTests {
     subscriptionTag.setCreatedAt(new Date(1000));
     subscription.setSubscriptionTag(subscriptionTag);
 
-    given(subscriptionRepository.findByIdAndUserId(2L, TestUser.USER1.id)).willReturn(Optional.of(subscription));
+    given(subscriptionRepository.findById(2L)).willReturn(Optional.of(subscription));
 
     mockMvc.perform(get("/api/2/subscriptions/2"))
       .andExpect(jsonPath("$.feedTag.uuid", is("1")))

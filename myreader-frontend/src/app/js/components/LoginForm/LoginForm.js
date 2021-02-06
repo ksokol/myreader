@@ -2,7 +2,7 @@ import './LoginForm.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {Button} from '../../components/Buttons'
-import {Input} from '../../components/Input/Input'
+import {Input} from '../Input/Input'
 
 export default class LoginForm extends React.Component {
 
@@ -21,14 +21,12 @@ export default class LoginForm extends React.Component {
     super(props)
 
     this.state = {
-      username: '',
       password: ''
     }
   }
 
   render() {
     const {
-      username,
       password
     } = this.state
 
@@ -43,19 +41,9 @@ export default class LoginForm extends React.Component {
         className='my-login-form'
         onSubmit={(event) => {
           event.preventDefault()
-          onLogin({username, password})
+          onLogin(password)
         }}
       >
-        <Input
-          type='email'
-          name='username'
-          label='Email'
-          value={username}
-          autoComplete='email'
-          onChange={({target: {value}}) => this.setState({username: value})}
-          disabled={loginPending}
-        />
-
         <Input
           type='password'
           name='password'
@@ -69,7 +57,7 @@ export default class LoginForm extends React.Component {
         <div
           className='my-login-form__message'
         >
-          {loginFailed && <span>Username or password wrong</span>}
+          {loginFailed && <span>password wrong</span>}
         </div>
 
         <Button

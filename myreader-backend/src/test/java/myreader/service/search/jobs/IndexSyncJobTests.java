@@ -5,7 +5,6 @@ import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.test.ClearDb;
-import myreader.test.TestUser;
 import myreader.test.WithTestProperties;
 import org.hibernate.search.jpa.Search;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,53 +32,52 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 @WithTestProperties
 class IndexSyncJobTests {
 
-    @Autowired
-    private IndexSyncJob job;
+  @Autowired
+  private IndexSyncJob job;
 
-    @Autowired
-    private EntityManager em;
+  @Autowired
+  private EntityManager em;
 
-    @Autowired
-    private TestEntityManager testEntityManager;
+  @Autowired
+  private TestEntityManager testEntityManager;
 
-    @Autowired
-    private TransactionTemplate tx;
+  @Autowired
+  private TransactionTemplate tx;
 
-    private FeedEntry feedEntry;
-    private Subscription subscription;
+  private FeedEntry feedEntry;
+  private Subscription subscription;
 
-    @BeforeEach
-    void before() {
-        tx.execute(status -> {
-            var user = testEntityManager.persist(TestUser.USER4.toUser());
-            var feed = testEntityManager.persist(new Feed("http://example.com", "expected feed title"));
-            feedEntry = testEntityManager.persist(new FeedEntry(feed));
-            subscription = testEntityManager.persist(new Subscription(user, feed));
-            return null;
-        });
-    }
+  @BeforeEach
+  void before() {
+    tx.execute(status -> {
+      var feed = testEntityManager.persist(new Feed("http://example.com", "expected feed title"));
+      feedEntry = testEntityManager.persist(new FeedEntry(feed));
+      subscription = testEntityManager.persist(new Subscription(feed));
+      return null;
+    });
+  }
 
-    @Test
-    void testReindexAllSubscriptionEntries() throws InterruptedException {
-        job.work();
+  @Test
+  void testReindexAllSubscriptionEntries() throws InterruptedException {
+    job.work();
 
-        var countBefore = indexedEntryCount();
+    var countBefore = indexedEntryCount();
 
-        addAnSubscriptionEntry();
-        addAnSubscriptionEntry();
-        addAnSubscriptionEntry();
+    addAnSubscriptionEntry();
+    addAnSubscriptionEntry();
+    addAnSubscriptionEntry();
 
-        job.work();
+    job.work();
 
-        assertThat(indexedEntryCount(), is(countBefore + 3));
-    }
+    assertThat(indexedEntryCount(), is(countBefore + 3));
+  }
 
-    private int indexedEntryCount() {
-        var fullTextEm = Search.getFullTextEntityManager(em);
-        return fullTextEm.getSearchFactory().getStatistics().getNumberOfIndexedEntities(SubscriptionEntry.class.getName());
-    }
+  private int indexedEntryCount() {
+    var fullTextEm = Search.getFullTextEntityManager(em);
+    return fullTextEm.getSearchFactory().getStatistics().getNumberOfIndexedEntities(SubscriptionEntry.class.getName());
+  }
 
-    private void addAnSubscriptionEntry() {
-        tx.execute(s -> testEntityManager.persist(new SubscriptionEntry(subscription, feedEntry)));
-    }
+  private void addAnSubscriptionEntry() {
+    tx.execute(s -> testEntityManager.persist(new SubscriptionEntry(subscription, feedEntry)));
+  }
 }

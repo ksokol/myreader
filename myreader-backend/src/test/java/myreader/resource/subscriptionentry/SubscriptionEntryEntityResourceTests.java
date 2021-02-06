@@ -6,8 +6,6 @@ import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionTag;
 import myreader.test.ClearDb;
-import myreader.test.TestUser;
-import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,7 +23,6 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Set;
 
-import static myreader.test.TestUser.USER4;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -37,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @ClearDb
 @SpringBootTest
-@WithAuthenticatedUser(TestUser.USER4)
+@WithMockUser
 @WithTestProperties
 class SubscriptionEntryEntityResourceTests {
 
@@ -52,7 +50,6 @@ class SubscriptionEntryEntityResourceTests {
 
   @BeforeEach
   void before() {
-    var user = em.persist(USER4.toUser());
     var feed = em.persist(new Feed("http://example.com", "feed title"));
 
     var feedEntry = new FeedEntry(feed);
@@ -61,7 +58,7 @@ class SubscriptionEntryEntityResourceTests {
     feedEntry.setUrl("http://martinfowler.com/bliki/TellDontAsk.html");
     feedEntry = em.persist(feedEntry);
 
-    subscription = new Subscription(user, feed);
+    subscription = new Subscription(feed);
     subscription.setTitle("user112_subscription1");
     subscription = em.persist(subscription);
 

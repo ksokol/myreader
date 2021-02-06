@@ -34,7 +34,6 @@ public class Subscription {
 
     private Long id;
     private String title;
-    private User user;
     private int fetchCount;
     private int unseen;
     private Date createdAt;
@@ -50,8 +49,7 @@ public class Subscription {
      */
     public Subscription() {}
 
-    public Subscription(User user, Feed feed) {
-        this.user = user;
+    public Subscription(Feed feed) {
         this.feed = feed;
     }
 
@@ -109,17 +107,6 @@ public class Subscription {
         if(createdAt != null) {
             this.createdAt = new Date(createdAt.getTime());
         }
-    }
-
-    @IndexedEmbedded
-    @JoinColumn(name = "user_feed_user_id")
-    @ManyToOne(optional = false)
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)

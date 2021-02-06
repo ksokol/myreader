@@ -3,9 +3,7 @@ package myreader.repository;
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionTag;
-import myreader.entity.User;
 import myreader.test.ClearDb;
-import myreader.test.TestUser;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
@@ -36,22 +33,17 @@ class SubscriptionTagRepositoryTests {
   @Autowired
   private TestEntityManager em;
 
-  private User user1;
-  private User user2;
   private SubscriptionTag subscriptionTag1;
   private SubscriptionTag subscriptionTag3;
 
   @BeforeEach
   void setUp() {
-    user1 = em.persist(TestUser.USER1.toUser());
-    user2 = em.persist(TestUser.USER4.toUser());
-
     var feed1 = em.persist(new Feed("irrelevant", "irrelevant"));
     var feed2 = em.persist(new Feed("irrelevant", "irrelevant"));
 
-    var subscription1 = em.persist(new Subscription(user1, feed1));
-    var subscription2 = em.persist(new Subscription(user1, feed2));
-    var subscription3 = em.persist(new Subscription(user2, feed1));
+    var subscription1 = em.persist(new Subscription(feed1));
+    var subscription2 = em.persist(new Subscription(feed2));
+    var subscription3 = em.persist(new Subscription(feed1));
 
     subscriptionTag1 = new SubscriptionTag("b-tag", subscription1);
     subscriptionTag1.setColor("#111111");
@@ -77,83 +69,47 @@ class SubscriptionTagRepositoryTests {
   }
 
   @Test
-  void shouldFindByTagAndUserIdForUser1() {
+  void shouldFindByTag() {
     var subscriptionTag = subscriptionTagRepository
-      .findByTagAndUserId(subscriptionTag1.getName(), user1.getId())
-      .orElseThrow(AssertionError::new);
-
-    assertThat(subscriptionTag, hasProperty("name", is("b-tag")));
-  }
-
-  @Test
-  void shouldFindByTagAndUserIdForUser2() {
-    var subscriptionTag = subscriptionTagRepository
-      .findByTagAndUserId(subscriptionTag3.getName(), user2.getId())
+      .findByTag(subscriptionTag3.getName())
       .orElseThrow(AssertionError::new);
 
     assertThat(subscriptionTag, hasProperty("name", is("tag3")));
   }
 
   @Test
-  void shouldNotFindByTagAndUserIdForUser2() {
+  void shouldNotFindByTag() {
     var subscriptionTag = subscriptionTagRepository
-      .findByTagAndUserId(subscriptionTag1.getName(), user2.getId());
+      .findByTag("unknown");
 
     assertThat(subscriptionTag.isPresent(), is(false));
   }
 
   @Test
-  void shouldFindByIdAndUserIdForUser1() {
+  void shouldFindById() {
     var subscriptionTag = subscriptionTagRepository
-      .findByIdAndUserId(subscriptionTag1.getId(), user1.getId())
+      .findById(subscriptionTag1.getId())
       .orElseThrow(AssertionError::new);
 
     assertThat(subscriptionTag, hasProperty("name", is("b-tag")));
   }
 
   @Test
-  void shouldFindByIdAndUserIdForUser2() {
+  void shouldNotFindById() {
     var subscriptionTag = subscriptionTagRepository
-      .findByIdAndUserId(subscriptionTag3.getId(), user2.getId())
-      .orElseThrow(AssertionError::new);
-
-    assertThat(subscriptionTag, hasProperty("name", is("tag3")));
-  }
-
-  @Test
-  void shouldNotFindByIdAndUserIdForUser2() {
-    var subscriptionTag = subscriptionTagRepository
-      .findByIdAndUserId(subscriptionTag1.getId(), user2.getId());
+      .findById(999L);
 
     assertThat(subscriptionTag.isPresent(), is(false));
   }
 
   @Test
-  void findAllByUserOne() {
-    var actual = subscriptionTagRepository.findAllByUserId(user1.getId());
+  void findAll() {
+    var actual = subscriptionTagRepository.findAll();
 
     assertThat(actual, containsInAnyOrder(
       allOf(hasProperty("name", is("b-tag")), hasProperty("color", is("#111111"))),
-      allOf(hasProperty("name", is("a-tag")), hasProperty("color", is("#222222")))
-    ));
-  }
-
-  @Test
-  void findAllByUserTwo() {
-    var actual = subscriptionTagRepository.findAllByUserId(user2.getId());
-
-    assertThat(actual, containsInAnyOrder(
+      allOf(hasProperty("name", is("a-tag")), hasProperty("color", is("#222222"))),
       allOf(hasProperty("name", is("tag3")), hasProperty("color", is("#333333")))
-    ));
-  }
-
-  @Test
-  void findAllByUserIdOrderedByName() {
-    var actual = subscriptionTagRepository.findAllByUserId(user1.getId());
-
-    assertThat(actual, contains(
-      hasProperty("name", is("a-tag")),
-      hasProperty("name", is("b-tag"))
     ));
   }
 }

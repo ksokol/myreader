@@ -21,14 +21,14 @@ export function LoginPage() {
     doAuthorize()
   }
 
-  const onLogin = async ({username, password}) => {
+  const onLogin = async password => {
     setState({
       loginPending: true,
       loginFailed: false
     })
 
     try {
-      await authenticationApi.login(username, password)
+      await authenticationApi.login(password)
       setState({
         loginPending: false,
       })

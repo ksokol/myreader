@@ -4,8 +4,6 @@ import myreader.entity.ExclusionPattern;
 import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.test.ClearDb;
-import myreader.test.TestUser;
-import myreader.test.WithAuthenticatedUser;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,12 +13,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
 
-import static myreader.test.TestUser.USER4;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,8 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @ClearDb
 @SpringBootTest
+@WithMockUser
 @WithTestProperties
-@WithAuthenticatedUser(TestUser.USER4)
 class ExclusionPatternEntityResourceTests {
 
   @Autowired
@@ -46,10 +44,9 @@ class ExclusionPatternEntityResourceTests {
 
   @BeforeEach
   void beforeEach() {
-    var user = em.persist(USER4.toUser());
     var feed = em.persist(new Feed("http://example.com", "feed title"));
 
-    subscription = em.persist(new Subscription(user, feed));
+    subscription = em.persist(new Subscription(feed));
     exclusionPattern = em.persist(new ExclusionPattern("test", subscription));
   }
 

@@ -3,9 +3,8 @@ import {Api} from './Api'
 
 export class AuthenticationApi extends Api {
 
-  login = (username, password) => {
+  login = password => {
     const searchParams = new URLSearchParams()
-    searchParams.set('username', username)
     searchParams.set('password', password)
 
     return this.request({
