@@ -1,25 +1,32 @@
 .my-subscription-list-page {
-    padding: 0 16px;
+  padding: 0 16px;
 }
 
 .my-subscription-list-page__item {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-    cursor: pointer;
-    padding: 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  padding: 16px 0;
 }
 
 .my-subscription-list-page__item-heading {
-    color: #000000;
-    letter-spacing: 0.01em;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  color: #000000;
+  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .my-subscription-list-page__item > span {
-    color: rgba(0, 0, 0, 0.54);
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    line-height: 1.6em;
-    margin: 0;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.6em;
+  margin: 0;
+}
+
+
+.my-subscription-list-search-input {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 400px;
 }

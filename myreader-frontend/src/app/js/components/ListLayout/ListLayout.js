@@ -1,6 +1,16 @@
 import './ListLayout.css'
 import React from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
+
+function ActionPanelPortal({children}) {
+  const portal = document.querySelector('#portal-header')
+
+  return portal ? ReactDOM.createPortal(
+    children,
+    portal
+  ) : null
+}
 
 export function ListLayout({
   className,
@@ -11,11 +21,7 @@ export function ListLayout({
     <div
       className={`my-list-layout ${className}`}
     >
-      <div
-        className='my-list-layout__action-panel'
-      >
-        {actionPanel}
-      </div>
+      <ActionPanelPortal>{actionPanel}</ActionPanelPortal>
       <div
         className='my-list-layout__list-panel'
       >

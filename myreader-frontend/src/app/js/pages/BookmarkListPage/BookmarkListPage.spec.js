@@ -1,7 +1,7 @@
 import React from 'react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
-import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
+import {render, fireEvent, screen, act} from '@testing-library/react'
 import {entry1, entry2, entry3, entry4} from '../../shared/test-utils'
 import {BookmarkListPage} from './BookmarkListPage'
 import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
@@ -10,7 +10,6 @@ import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 jest.unmock('react-router')
 jest.unmock('react-router-dom')
 
-const expectedQ = 'expectedQ'
 const expectedError = 'expected error'
 
 describe('BookmarkListPage', () => {
@@ -20,13 +19,16 @@ describe('BookmarkListPage', () => {
   const renderComponent = async () => {
     await act(async () => {
       render(
-        <Router history={history}>
-          <LocationStateProvider>
-            <SettingsProvider>
-              <BookmarkListPage />
-            </SettingsProvider>
-          </LocationStateProvider>
-        </Router>
+        <>
+          <div id='portal-header' />
+          <Router history={history}>
+            <LocationStateProvider>
+              <SettingsProvider>
+                <BookmarkListPage />
+              </SettingsProvider>
+            </LocationStateProvider>
+          </Router>
+        </>
       )
     })
   }
@@ -92,18 +94,6 @@ describe('BookmarkListPage', () => {
     })
   })
 
-  it('should fetch entries for given search', async () => {
-    history = createMemoryHistory()
-    await act(async () => {
-      history.push({search: `q=${expectedQ}`})
-    })
-    await renderComponent()
-
-    expect(fetch.mostRecent()).toMatchGetRequest({
-      url: `api/2/subscriptionEntries?q=${expectedQ}&seenEqual=&size=2`
-    })
-  })
-
   it('should render entries', async () => {
     fetch.jsonResponseOnce({content: [{...entry2}], links: [],})
     await renderComponent()
@@ -120,43 +110,6 @@ describe('BookmarkListPage', () => {
     expect(fetch.mostRecent()).toMatchGetRequest({
       url: 'api/2/subscriptionEntries?size=2&seenEqual=*&entryTagEqual=expected tag1'
     })
-  })
-
-  it('should pass search value to search input', async () => {
-    await act(async () => {
-      history.push({
-        search: `q=${expectedQ}`
-      })
-    })
-    await renderComponent()
-
-    expect(screen.getByRole('search')).toHaveValue(expectedQ)
-  })
-
-  it('should render entries for given search', async () => {
-    await renderComponent()
-
-    expect(screen.queryByTitle('title1')).toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).toBeInTheDocument()
-    expect(screen.queryByTitle('title3')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title4')).not.toBeInTheDocument()
-
-    fetch.jsonResponseOnce({content: [{...entry3}, {...entry4}], links: [],})
-    await act(async () => fireEvent.change(screen.getByRole('search'), {target: {value: 'changed q'}}))
-
-    await waitFor(() => {
-      return expect(fetch.mostRecent()).toMatchGetRequest({
-        url: 'api/2/subscriptionEntries?q=changed+q&seenEqual=&size=2',
-      })
-    }, {
-      timeout: 1050,
-      interval: 1
-    })
-
-    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title3')).toBeInTheDocument()
-    expect(screen.queryByTitle('title4')).toBeInTheDocument()
   })
 
   it('should load next page', async () => {
@@ -242,14 +195,6 @@ describe('BookmarkListPage', () => {
 
     expect(screen.queryByTitle('title1')).toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
-  })
-
-  it('should not fetch entries again if query does not changed', async () => {
-    await renderComponent()
-
-    await act(async () => fireEvent.change(screen.getByRole('search'), {target: {value: 'expectedQ'}}))
-
-    expect(fetch.requestCount()).toEqual(2)
   })
 
   it('should show an error message if entry tags could not be fetched', async () => {

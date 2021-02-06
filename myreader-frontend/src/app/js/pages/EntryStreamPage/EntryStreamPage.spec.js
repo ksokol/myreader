@@ -1,7 +1,7 @@
 import React from 'react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
-import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
+import {render, fireEvent, screen, act} from '@testing-library/react'
 import {EntryStreamPage} from './EntryStreamPage'
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
@@ -40,13 +40,16 @@ describe('EntryStreamPage', () => {
   const renderComponent = async () => {
     await act(async () => {
       render(
-        <Router history={history}>
-          <LocationStateProvider>
-            <SettingsProvider>
-              <EntryStreamPage />
-            </SettingsProvider>
-          </LocationStateProvider>
-        </Router>
+        <>
+          <div id='portal-header' />
+          <Router history={history}>
+            <LocationStateProvider>
+              <SettingsProvider>
+                <EntryStreamPage />
+              </SettingsProvider>
+            </LocationStateProvider>
+          </Router>
+        </>
       )
     })
   }
@@ -56,7 +59,7 @@ describe('EntryStreamPage', () => {
 
     await act(async () => {
       history.push({
-        search: 'feedTagEqual=a&q=expectedQ'
+        search: 'feedTagEqual=a'
       })
     })
 
@@ -75,7 +78,7 @@ describe('EntryStreamPage', () => {
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ&feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&feedTagEqual=a',
     })
   })
 
@@ -83,13 +86,13 @@ describe('EntryStreamPage', () => {
     history = createMemoryHistory()
     await act(async () => {
       history.push({
-        search: 'q=expectedQ&seenEqual=true'
+        search: 'seenEqual=true'
       })
     })
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&seenEqual=true&q=expectedQ',
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=true',
     })
   })
 
@@ -97,12 +100,12 @@ describe('EntryStreamPage', () => {
     await renderComponent()
     await act(async () => {
       history.push({
-        search: 'q=expectedQ&seenEqual=true&feedTagEqual=a'
+        search: 'seenEqual=true&feedTagEqual=a'
       })
     })
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&feedTagEqual=a&seenEqual=true&q=expectedQ',
+      url: 'api/2/subscriptionEntries?size=2&feedTagEqual=a&seenEqual=true',
     })
   })
 
@@ -323,38 +326,6 @@ describe('EntryStreamPage', () => {
     })
   })
 
-  it('should pass expected props to search input component', async () => {
-    await renderComponent()
-
-    expect(screen.getByRole('search')).toHaveValue('expectedQ')
-  })
-
-  it('should show entries for given search', async () => {
-    await renderComponent()
-
-    expect(screen.queryByTitle('title1')).toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).toBeInTheDocument()
-    expect(screen.queryByTitle('title3')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title4')).not.toBeInTheDocument()
-
-    fetch.jsonResponse({content: [{...entry3}, {...entry4}], links: [],})
-    await act(async () => fireEvent.change(screen.getByRole('search'), {target: {value: 'changed q'}}))
-
-    await waitFor(() => {
-      return expect(fetch.mostRecent()).toMatchGetRequest({
-        url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=changed q&feedTagEqual=a',
-      })
-    }, {
-      timeout: 1050,
-      interval: 1
-    })
-
-    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title3')).toBeInTheDocument()
-    expect(screen.queryByTitle('title4')).toBeInTheDocument()
-  })
-
   it('should load next page', async () => {
     await renderComponent()
 
@@ -403,7 +374,7 @@ describe('EntryStreamPage', () => {
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ&feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&feedTagEqual=a',
     })
     expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
@@ -425,7 +396,7 @@ describe('EntryStreamPage', () => {
 
     expect(fetch.requestCount()).toEqual(1)
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&q=expectedQ&feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&feedTagEqual=a',
     })
   })
 
@@ -458,14 +429,6 @@ describe('EntryStreamPage', () => {
 
     expect(screen.queryByTitle('title1')).toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
-  })
-
-  it('should not fetch entries again if query does not changed', async () => {
-    await renderComponent()
-
-    await act(async () => fireEvent.change(screen.getByRole('search'), {target: {value: 'expectedQ'}}))
-
-    expect(fetch.requestCount()).toEqual(1)
   })
 
   it('should show an error message if entries could not be fetched', async () => {

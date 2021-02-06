@@ -9,13 +9,12 @@ import {toast} from '../../components/Toast'
 import {useSettings} from '../../contexts/settings'
 import IconButton from '../../components/Buttons/IconButton/IconButton'
 import {useHistory, useSearchParams} from '../../hooks/router'
-import {SearchInput} from '../../components/SearchInput/SearchInput'
 import {useEntries} from '../../hooks/entries'
 
 export function BookmarkListPage() {
   const {pageSize} = useSettings()
   const searchParams = useSearchParams()
-  const {push, reload} = useHistory()
+  const {reload} = useHistory()
 
   const query = useMemo(() => {
     const seenEqual = searchParams.entryTagEqual ? '*' : ''
@@ -34,15 +33,6 @@ export function BookmarkListPage() {
     clearEntries,
     clearEntryTags,
   } = useEntries()
-
-  const onChange = value => {
-    push({
-      searchParams: {
-        ...searchParams,
-        q: value,
-      }
-    })
-  }
 
   const refresh = () => {
     if (!loading) {
@@ -72,23 +62,17 @@ export function BookmarkListPage() {
     }
   }, [lastError])
 
-  const actionPanel =
-    <React.Fragment>
-      <SearchInput
-        onChange={onChange}
-        value={searchParams.q}
-      />
-      <IconButton
-        type='redo'
-        role='refresh'
-        onClick={refresh}
-      />
-    </React.Fragment>
-
   return (
     <ListLayout
       className='my-bookmark-list'
-      actionPanel={actionPanel}
+      actionPanel={
+        <IconButton
+          type='redo'
+          role='refresh'
+          inverse={true}
+          onClick={refresh}
+        />
+      }
       listPanel={
         <React.Fragment>
           <Chips

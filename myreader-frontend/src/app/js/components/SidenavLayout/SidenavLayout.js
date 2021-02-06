@@ -88,6 +88,7 @@ export function SidenavLayout({children}) {
             inverse
           />
         )}
+        <div id='portal-header' />
       </header>
 
       <nav

@@ -5,7 +5,6 @@ import {useAutofocusEntry} from './useAutofocusEntry'
 import {useSettings} from '../../contexts/settings'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
 import {useHistory, useSearchParams} from '../../hooks/router'
-import {SearchInput} from '../../components/SearchInput/SearchInput'
 import {EntryList} from '../../components/EntryList/EntryList'
 import {useEntries} from '../../hooks/entries'
 import {toast} from '../../components/Toast'
@@ -13,7 +12,7 @@ import {toast} from '../../components/Toast'
 export function EntryStreamPage() {
   const {pageSize: size, showUnseenEntries} = useSettings()
   const searchParams = useSearchParams()
-  const {push, reload} = useHistory()
+  const {reload} = useHistory()
 
   const query = useMemo(() => {
     const showAll = showUnseenEntries === true ? false : '*'
@@ -39,15 +38,6 @@ export function EntryStreamPage() {
     focusNext,
     focusPrevious,
   } = useAutofocusEntry()
-
-  const onChange = q => {
-    push({
-      searchParams: {
-        ...searchParams,
-        q
-      }
-    })
-  }
 
   const refresh = () => {
     if (!loading) {
@@ -99,25 +89,22 @@ export function EntryStreamPage() {
     <ListLayout
       actionPanel={
         <>
-          <SearchInput
-            onChange={onChange}
-            value={searchParams.q}
-          />
           <IconButton
-            className='hidden-phone hidden-tablet'
             type='chevron-left'
             role='previous'
+            inverse={true}
             onClick={focusPrevious}
           />
           <IconButton
-            className='hidden-phone hidden-tablet'
             type='chevron-right'
             role='next'
+            inverse={true}
             onClick={focusNext}
           />
           <IconButton
             type='redo'
             role='refresh'
+            inverse={true}
             onClick={refresh}
           />
         </>

@@ -33,12 +33,15 @@ export const SubscriptionListPage = () => {
           actionPanel={
             <>
               <SearchInput
+                className='my-subscription-list-search-input'
                 onChange={onChange}
+                inverse={true}
                 value={searchParams.q}
               />
               <IconButton
                 type='redo'
                 role='refresh'
+                inverse={true}
                 onClick={reload}
               />
             </>

@@ -1,47 +1,39 @@
 import './SearchInput.css'
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-import {useDebouncedCallback} from 'use-debounce'
 import {Icon} from '../Icon/Icon'
 import {Input} from '../Input/Input'
 import {isValuePresent} from '../../shared/utils'
 
-function sanitizeValue(value) {
-  return isValuePresent(value) ? value : ''
-}
-
 export function SearchInput(props) {
-  const [currentValue, setCurrentValue] = useState(sanitizeValue(props.value))
-  const debounced = useDebouncedCallback(inputValue => {
-    props.onChange && props.onChange(inputValue.trim() === '' ? undefined : inputValue)
-  }, 250)
-
-  useEffect(() => {
-    setCurrentValue(sanitizeValue(props.value))
-  }, [props.value])
-
   return (
     <div
-      className='my-search-input'
+      className={`my-search-input ${props.className}`}
     >
       <Icon
         type='search'
+        inverse={props.inverse}
       />
       <Input
-        className='my-search-input__input'
+        className={`my-search-input__input ${props.inverse ? 'my-search-input__input--inverse' : ''}`}
         name='search-input'
         role='search'
-        value={currentValue}
+        value={isValuePresent(props.value) ? props.value : ''}
         onChange={({target: {value}}) => {
-          setCurrentValue(value)
-          debounced.callback(value)
+          props.onChange && props.onChange(value.trim() === '' ? undefined : value)
         }}
       />
     </div>
   )
 }
 
+SearchInput.defaultProps = {
+  className: '',
+}
+
 SearchInput.propTypes = {
+  className: PropTypes.string,
   value: PropTypes.string,
+  inverse: PropTypes.bool,
   onChange: PropTypes.func,
 }
