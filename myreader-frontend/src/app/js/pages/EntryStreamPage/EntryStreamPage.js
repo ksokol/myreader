@@ -90,12 +90,14 @@ export function EntryStreamPage() {
       actionPanel={
         <>
           <IconButton
+            className='hidden-phone hidden-tablet'
             type='chevron-left'
             role='previous'
             inverse={true}
             onClick={focusPrevious}
           />
           <IconButton
+            className='hidden-phone hidden-tablet'
             type='chevron-right'
             role='next'
             inverse={true}

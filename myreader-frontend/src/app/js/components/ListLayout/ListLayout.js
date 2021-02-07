@@ -19,7 +19,7 @@ export function ListLayout({
 }) {
   return (
     <div
-      className={`my-list-layout ${className}`}
+      className={`my-list-layout ${className ? className : ''}`}
     >
       <ActionPanelPortal>{actionPanel}</ActionPanelPortal>
       <div
