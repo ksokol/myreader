@@ -12,7 +12,7 @@ const expectedError = 'expectedError'
 const subscription = {
   uuid: '1',
   title: 'expected title',
-  origin: 'http:/example.com',
+  origin: 'http://example.com',
   feedTag: {name: 'tag1'}
 }
 const subscriptionTags = {
@@ -100,7 +100,7 @@ describe('SubscriptionEditPage', () => {
     await renderComponent()
 
     expect(screen.queryByDisplayValue('expected title')).toBeInTheDocument()
-    expect(screen.queryByDisplayValue('http:/example.com')).toBeInTheDocument()
+    expect(screen.queryByDisplayValue('http://example.com')).toBeInTheDocument()
     expect(screen.queryByDisplayValue('tag1')).toBeInTheDocument()
     expect(screen.getByText('Save')).toBeEnabled()
     expect(screen.getByText('Delete')).toBeEnabled()
@@ -110,15 +110,18 @@ describe('SubscriptionEditPage', () => {
   it('should save subscription', async () => {
     await renderComponent()
 
+    fireEvent.change(screen.queryByDisplayValue('expected title'), {target: {value: 'changed title'}})
+    fireEvent.change(screen.queryByDisplayValue('http://example.com'), {target: {value: 'changed origin'}})
+    fireEvent.change(screen.queryByDisplayValue('tag1'), {target: {value: 'changed tag'}})
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
     expect(fetch.mostRecent()).toMatchPatchRequest({
       url: 'api/2/subscriptions/1',
       body: {
         uuid: '1',
-        title: 'expected title',
-        origin: 'http:/example.com',
-        feedTag: {name: 'tag1'},
+        title: 'changed title',
+        origin: 'changed origin',
+        feedTag: {name: 'changed tag'},
       },
     })
   })
@@ -162,13 +165,22 @@ describe('SubscriptionEditPage', () => {
     expect(reload).toHaveBeenCalledWith()
   })
 
-  it('should show validation message', async() => {
+  it('should show url validation message', async() => {
     await renderComponent()
 
     fetch.rejectResponse({status: 400, data: {errors: [{field: 'title', defaultMessage: expectedError}]}})
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
     expect(screen.queryByRole('title-validation')).toHaveTextContent(expectedError)
+  })
+
+  it('should show origin validation message', async() => {
+    await renderComponent()
+
+    fetch.rejectResponse({status: 400, data: {errors: [{field: 'origin', defaultMessage: expectedError}]}})
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+
+    expect(screen.queryByRole('origin-validation')).toHaveTextContent(expectedError)
   })
 
   it('should remove validation message if subscription should be saved again', async () => {

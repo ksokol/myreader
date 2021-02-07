@@ -4,7 +4,6 @@ import myreader.entity.Feed;
 import myreader.entity.FetchError;
 import myreader.repository.FeedRepository;
 import myreader.repository.FetchErrorRepository;
-import myreader.repository.SubscriptionRepository;
 import myreader.service.feed.FeedService;
 import myreader.test.WithTestProperties;
 import org.junit.Before;
@@ -24,22 +23,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
-import static myreader.test.CustomMockMvcResultMatchers.validation;
-import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,9 +52,6 @@ public class FeedResourceTests {
 
   @MockBean
   private FetchErrorRepository fetchErrorRepository;
-
-  @MockBean
-  private SubscriptionRepository subscriptionRepository;
 
   private Feed feed1;
 
@@ -128,91 +116,5 @@ public class FeedResourceTests {
       .andExpect(jsonPath("$.fetched", nullValue()))
       .andExpect(jsonPath("$.hasErrors", is(false)))
       .andExpect(jsonPath("$.createdAt", nullValue()));
-  }
-
-  @Test
-  public void shouldRejectDeletionWhenFeedHasSubscription() throws Exception {
-    given(subscriptionRepository.countByFeedId(feed1.getId())).willReturn(1);
-
-    mockMvc.perform(delete("/api/2/feeds/{id}", feed1.getId()))
-      .andExpect(status().isConflict());
-  }
-
-  @Test
-  public void shouldRejectDeletionWhenFeedDoesNotExist() throws Exception {
-    mockMvc.perform(delete("/api/2/feeds/199"))
-      .andExpect(status().isNotFound());
-  }
-
-  @Test
-  public void shouldDeleteFeed() throws Exception {
-    given(feedRepository.existsById(feed1.getId())).willReturn(true);
-
-    mockMvc.perform(delete("/api/2/feeds/{id}", feed1.getId()))
-      .andExpect(status().isNoContent());
-  }
-
-  @Test
-  public void shouldValidatePatchRequestAbsentTitleAndUrlProperty() throws Exception {
-    mockMvc.perform(patch("/api/2/feeds/999")
-      .with(jsonBody("{}")))
-      .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("title", is("may not be empty")))
-      .andExpect(validation().onField("url", is("must begin with http(s)://")));
-  }
-
-  @Test
-  public void shouldValidatePatchRequestEmptyTitle() throws Exception {
-    mockMvc.perform(patch("/api/2/feeds/999")
-      .with(jsonBody("{'title': ''}")))
-      .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("title", is("may not be empty")));
-  }
-
-  @Test
-  public void shouldValidatePatchRequestAbsentUrlProperty() throws Exception {
-    mockMvc.perform(patch("/api/2/feeds/999")
-      .with(jsonBody("{'title': 'some title'}")))
-      .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("url", is("must begin with http(s)://")));
-  }
-
-  @Test
-  public void shouldValidatePatchRequestInvalidUrl() throws Exception {
-    mockMvc.perform(patch("/api/2/feeds/999")
-      .with(jsonBody("{'title': 'some title', 'url': 'invalid'}")))
-      .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("url", is("must begin with http(s)://")));
-  }
-
-  @Test
-  public void shouldValidatePatchRequestInvalidFeedUrl() throws Exception {
-    given(feedService.valid("http://example.local")).willReturn(false);
-
-    mockMvc.perform(patch("/api/2/feeds/999")
-      .with(jsonBody("{'title': 'some title', 'url': 'http://example.local'}")))
-      .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("url", is("invalid syndication feed")));
-  }
-
-  @Test
-  public void shouldUpdateFeed() throws Exception {
-    mockMvc.perform(patch("/api/2/feeds/{id}", feed1.getId())
-      .with(jsonBody("{'title': 'expected title', 'url': 'http://feeds.feedburner.com/javaposse'}")))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("url", is("http://feeds.feedburner.com/javaposse")))
-      .andExpect(jsonPath("title", is("expected title")));
-
-    verify(feedRepository).save(argThat(allOf(
-      hasProperty("url", is("http://feeds.feedburner.com/javaposse")),
-      hasProperty("title", is("expected title"))
-    )));
-  }
-
-  @Test
-  public void shouldReturnWithNotFoundWhenPatchingUnknownFeed() throws Exception {
-    mockMvc.perform(patch("/api/2/feeds/999")
-      .with(jsonBody("{'title': 'expected title', 'url': 'http://feeds.feedburner.com/javaposse'}")))
-      .andExpect(status().isNotFound());
   }
 }

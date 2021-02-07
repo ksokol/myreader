@@ -93,19 +93,6 @@ class SubscriptionRepositoryTests {
   }
 
   @Test
-  void shouldReturnZeroWhenCountingByUnknownFeedId() {
-    assertThat(subscriptionRepository.countByFeedId(999L), is(0));
-  }
-
-  @Test
-  void shouldReturnOneWhenCountingByFeedWithSubscription() {
-    var feed = testEntityManager.persist(new Feed("http://url1", "feed1"));
-    testEntityManager.persistAndFlush(new Subscription(feed));
-
-    assertThat(subscriptionRepository.countByFeedId(feed.getId()), is(1));
-  }
-
-  @Test
   void shouldRecalculateSubscriptionUnseenCount() {
     assertThat(subscription1.getUnseen(), is(2));
   }

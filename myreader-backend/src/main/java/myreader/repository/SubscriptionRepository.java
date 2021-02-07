@@ -33,6 +33,4 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
   @Query("update Subscription set lastFeedEntryId = ?1, fetchCount = fetchCount + 1 where id = ?2")
   @Modifying
   void updateLastFeedEntryIdAndIncrementFetchCount(Long feedEntryId, Long subscriptionId);
-
-  int countByFeedId(Long id);
 }

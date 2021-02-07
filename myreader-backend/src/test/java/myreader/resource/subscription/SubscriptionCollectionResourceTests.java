@@ -147,6 +147,9 @@ public class SubscriptionCollectionResourceTests {
 
   @Test
   public void shouldRejectPostRequestWhenSubscriptionAlreadyExistsForGivenOrigin() throws Exception {
+    given(feedService.valid("http://feeds.feedburner.com/javaposse"))
+      .willReturn(true);
+
     given(subscriptionRepository.findByFeedUrl("http://feeds.feedburner.com/javaposse"))
       .willReturn(Optional.of(subscription1));
 

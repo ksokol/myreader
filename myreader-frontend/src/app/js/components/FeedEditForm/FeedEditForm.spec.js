@@ -34,7 +34,6 @@ describe('FeedEditForm', () => {
       value: 'title 1',
       label: 'Title',
       disabled: true,
-      validations: [{field: 'title', defaultMessage: 'validation message'}]
     })
   })
 
@@ -45,7 +44,6 @@ describe('FeedEditForm', () => {
       value: 'url 1',
       label: 'Url',
       disabled: true,
-      validations: [{field: 'title', defaultMessage: 'validation message'}]
     })
   })
 
@@ -53,35 +51,5 @@ describe('FeedEditForm', () => {
     expect(createWrapper().find('FeedFetchErrors').props()).toEqual({
       uuid: 'uuid 1',
     })
-  })
-
-  it('should pass expected props to primary button component', () => {
-    expect(createWrapper().find('[primary=true]').props()).toContainObject({
-      disabled: true,
-      children: 'Save'
-    })
-  })
-
-  it('should trigger prop function "onSaveFormData" when primary button clicked', () => {
-    createWrapper().find('[primary=true]').props().onClick()
-
-    expect(props.onSaveFormData).toHaveBeenCalledWith({
-      uuid: 'uuid 1',
-      title: 'title 1',
-      url: 'url 1'
-    })
-  })
-
-  it('should pass expected props to caution button component', () => {
-    expect(createWrapper().find('[caution=true]').props()).toContainObject({
-      disabled: true,
-      children: 'Delete'
-    })
-  })
-
-  it('should trigger prop function "onRemoveSubscription" when caution button clicked', () => {
-    createWrapper().find('[caution=true]').props().onClick()
-
-    expect(props.onRemove).toHaveBeenCalledWith('uuid 1')
   })
 })

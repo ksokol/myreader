@@ -2,12 +2,14 @@ package myreader.resource.subscription;
 
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionTag;
+import myreader.repository.FeedRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.repository.SubscriptionTagRepository;
 import myreader.resource.ResourceConstants;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import myreader.resource.subscription.beans.SubscriptionPatchRequestValidator;
+import myreader.service.feed.FeedService;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,21 +30,26 @@ public class SubscriptionEntityResource {
 
   private final SubscriptionRepository subscriptionRepository;
   private final SubscriptionTagRepository subscriptionTagRepository;
+  private final FeedService feedService;
+  private final FeedRepository feedRepository;
   private final RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler;
 
   public SubscriptionEntityResource(
     RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler,
     SubscriptionTagRepository subscriptionTagRepository,
-    SubscriptionRepository subscriptionRepository
+    SubscriptionRepository subscriptionRepository,
+    FeedService feedService, FeedRepository feedRepository
   ) {
     this.assembler = assembler;
     this.subscriptionRepository = subscriptionRepository;
     this.subscriptionTagRepository = subscriptionTagRepository;
+    this.feedService = feedService;
+    this.feedRepository = feedRepository;
   }
 
   @InitBinder
   public void binder(WebDataBinder binder) {
-    binder.addValidators(new SubscriptionPatchRequestValidator());
+    binder.addValidators(new SubscriptionPatchRequestValidator(feedService));
   }
 
   @GetMapping(ResourceConstants.SUBSCRIPTION)
@@ -66,6 +73,8 @@ public class SubscriptionEntityResource {
     if (subscriptionTag != null && subscriptionTagRepository.countBySubscriptions(subscriptionTag.getId()) == 0) {
       subscriptionTagRepository.delete(subscriptionTag);
     }
+
+    feedRepository.delete(subscription.getFeed());
   }
 
   @Transactional
@@ -78,6 +87,7 @@ public class SubscriptionEntityResource {
       .findById(id)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     subscription.setTitle(request.getTitle());
+    subscription.getFeed().setUrl(request.getOrigin());
 
     if (request.getFeedTag() != null) {
       var feedTag = request.getFeedTag();

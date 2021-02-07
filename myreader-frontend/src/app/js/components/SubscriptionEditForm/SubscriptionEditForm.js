@@ -31,6 +31,7 @@ class SubscriptionEditForm extends React.Component {
 
   state = {
     title: this.props.data.title,
+    origin: this.props.data.origin,
     name: this.props.data.feedTag.name
   }
 
@@ -38,6 +39,7 @@ class SubscriptionEditForm extends React.Component {
     this.props.saveSubscriptionEditForm({
       ...this.props.data,
       title: this.state.title,
+      origin: this.state.origin,
       feedTag: {
         ...this.props.data.feedTag,
         name: this.state.name
@@ -56,6 +58,7 @@ class SubscriptionEditForm extends React.Component {
 
     const {
       title,
+      origin,
       name
     } = this.state
 
@@ -77,13 +80,15 @@ class SubscriptionEditForm extends React.Component {
         >
           <Input
             name='origin'
-            value={data.origin}
+            value={origin}
             label='Url'
-            disabled={true}
+            disabled={changePending}
+            validations={validations}
+            onChange={({target: {value}}) => this.setState({origin: value})}
           />
 
           <a
-            href={data.origin}
+            href={origin}
             target='_blank'
             rel='noopener noreferrer'
           >
