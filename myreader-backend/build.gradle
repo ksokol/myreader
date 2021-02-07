@@ -22,7 +22,6 @@ def commonsLang3Version = '3.8.1'
 def commonsIoVersion = '2.6'
 def commonsTextVersion = '1.6'
 def htmlSanitizerVersion = '20190610.1'
-def hibernateSearchVersion = '5.11.7.Final'
 
 dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -31,7 +30,6 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
   implementation 'org.springframework.boot:spring-boot-starter-hateoas'
   implementation 'org.springframework.security:spring-security-data'
-  compile group: 'org.hibernate', name: 'hibernate-search-orm', version: hibernateSearchVersion
   compile group: 'org.hsqldb', name: 'hsqldb'
   compile group: 'org.flywaydb', name: 'flyway-core'
   compile group: 'com.rometools', name: 'rome', version: romeToolsVersion

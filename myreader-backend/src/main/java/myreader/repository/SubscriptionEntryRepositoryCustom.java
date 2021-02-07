@@ -10,7 +10,7 @@ public interface SubscriptionEntryRepositoryCustom {
     String feedId,
     String feedTagEqual,
     String entryTagEqual,
-    String seen,
+    Boolean seen,
     Long next
   );
 }

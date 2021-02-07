@@ -74,7 +74,7 @@ describe('BookmarkListPage', () => {
     })
   })
 
-  it('should fetch entries with seenEqual set to "*"', async () => {
+  it('should fetch entries without seenEqual', async () => {
     history = createMemoryHistory()
     await act(async () => {
       history.push({search: 'entryTagEqual=expectedTag'})
@@ -82,15 +82,15 @@ describe('BookmarkListPage', () => {
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?entryTagEqual=expectedTag&seenEqual=*&size=2'
+      url: 'api/2/subscriptionEntries?entryTagEqual=expectedTag&size=2'
     })
   })
 
-  it('should fetch entries with seenEqual set to empty string', async () => {
+  it('should fetch entries with seenEqual set to true', async () => {
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?seenEqual=&size=2'
+      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true&size=2'
     })
   })
 
@@ -108,7 +108,7 @@ describe('BookmarkListPage', () => {
     await act(async () => fireEvent.click(screen.getByText('expected tag1')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&entryTagEqual=expected tag1'
+      url: 'api/2/subscriptionEntries?size=2&entryTagEqual=expected tag1'
     })
   })
 
@@ -162,7 +162,7 @@ describe('BookmarkListPage', () => {
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?seenEqual=&size=2',
+      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true&size=2',
     })
     expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
@@ -186,7 +186,7 @@ describe('BookmarkListPage', () => {
       url: 'api/2/subscriptionEntries/availableTags',
     })
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?seenEqual=&size=2',
+      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true&size=2',
     })
   })
 

@@ -1,37 +1,20 @@
 package myreader.repository;
 
 import myreader.entity.SubscriptionEntry;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.TermQuery;
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.FullTextQuery;
-import org.hibernate.search.jpa.Search;
-import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
-import java.util.List;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.apache.lucene.search.NumericRangeQuery.newLongRange;
-
 @Component
 public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryRepositoryCustom {
-
-  private static final String TAGS = "tags";
-  private static final String SUBSCRIPTION_ID = "subscription.subscriptionId";
-  private static final String SEEN = "seen";
-  private static final String SUBSCRIPTION_TAG = "subscription.subscriptionTag.tag";
-  private static final String ID = "id";
 
   private final EntityManager em;
 
@@ -45,53 +28,49 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     String feedId,
     String feedTagEqual,
     String entryTagEqual,
-    String seen,
+    Boolean seen,
     Long next
   ) {
-    int sizePlusOne = size + 1;
-    FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
-    QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(SubscriptionEntry.class).get();
-    Query query = createQuery(queryBuilder);
-    BooleanQuery.Builder builder = new BooleanQuery.Builder();
+    var sizePlusOne = size + 1;
+    var cb = em.getCriteriaBuilder();
+    var cq = cb.createQuery(SubscriptionEntry.class);
+    var root = cq.from(SubscriptionEntry.class);
+    var predicates = new ArrayList<Predicate>();
 
-    builder.add(query, Occur.MUST);
-    addFilter(SUBSCRIPTION_ID, feedId, builder);
-    addFilter(SUBSCRIPTION_TAG, feedTagEqual, builder);
-    addFilter(TAGS, entryTagEqual, builder);
-    addSeenFilter(seen, builder);
-    addPagination(next, builder);
+    cq.distinct(true);
+    root.join("tags", JoinType.LEFT);
 
-    FullTextQuery fullTextQuery = fullTextEntityManager.createFullTextQuery(builder.build(), SubscriptionEntry.class);
-    fullTextQuery.setSort(new Sort(new SortField(ID, SortField.Type.LONG, true)));
-    fullTextQuery.setMaxResults(sizePlusOne);
+    if (entryTagEqual != null) {
+      predicates.add(cb.equal(root.join("tags"), entryTagEqual));
+    }
 
-    @SuppressWarnings("unchecked")
-    List<SubscriptionEntry> resultList = fullTextQuery.getResultList();
+    if (feedId != null) {
+      predicates.add(cb.equal(root.get("subscription").get("id"), feedId));
+    }
 
-    List<SubscriptionEntry> limit = resultList.stream()
+    if (feedTagEqual != null) {
+      predicates.add(cb.equal(root.get("subscription").get("subscriptionTag").get("name"), feedTagEqual));
+    }
+
+    if (seen != null) {
+      predicates.add(cb.equal(root.get("seen"), seen));
+    }
+
+    if (next != null) {
+      predicates.add(cb.lessThan(root.get("id"), next));
+    }
+
+    cq.where(predicates.toArray(new Predicate[] {}));
+    cq.orderBy(cb.desc(root.get("id")));
+
+    var query = em.createQuery(cq);
+    query.setMaxResults(sizePlusOne);
+
+    var resultList = query.getResultList();
+    var limit = resultList.stream()
       .limit(size)
       .collect(Collectors.toList());
 
     return new SliceImpl<>(limit, Pageable.unpaged(), resultList.size() == sizePlusOne);
-  }
-
-  private Query createQuery(QueryBuilder queryBuilder) {
-    return queryBuilder.bool().must(queryBuilder.all().createQuery()).createQuery();
-  }
-
-  private void addSeenFilter(String seenValue, BooleanQuery.Builder builder) {
-    if (seenValue != null && !"*".equals(seenValue)) {
-      builder.add(new TermQuery(new Term(SEEN, seenValue)), Occur.FILTER);
-    }
-  }
-
-  private void addFilter(String fieldName, Object fieldValue, BooleanQuery.Builder builder) {
-    if (fieldValue != null) {
-      builder.add(new TermQuery(new Term(fieldName, fieldValue.toString())), Occur.FILTER);
-    }
-  }
-
-  private void addPagination(Long next, BooleanQuery.Builder builder) {
-    builder.add(newLongRange(ID, 0L, next == null ? Long.valueOf(Long.MAX_VALUE) : next, true, false), Occur.FILTER);
   }
 }

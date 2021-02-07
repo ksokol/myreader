@@ -1,5 +1,5 @@
 import {AdminApi} from './AdminApi'
-import {PROCESSING, INFO} from '../constants'
+import {INFO} from '../constants'
 import {exchange} from './exchange'
 
 jest.mock('./exchange', () => ({
@@ -13,25 +13,6 @@ describe('AdminApi', () => {
   beforeEach(() => {
     exchange.mockClear()
     adminApi = new AdminApi()
-  })
-
-  it('should call PUT processing endpoint', () => {
-    exchange.mockResolvedValueOnce({})
-    adminApi.rebuildSearchIndex()
-
-    expect(exchange).toHaveBeenCalledWith({
-      body: {
-        process: 'indexSyncJob'
-      },
-      method: 'PUT',
-      url: PROCESSING
-    })
-  })
-
-  it('should return expected response when PUT processing succeeded', async () => {
-    exchange.mockResolvedValueOnce({})
-
-    await expect(adminApi.rebuildSearchIndex()).resolves.toEqual({})
   })
 
   it('should call info endpoint', () => {

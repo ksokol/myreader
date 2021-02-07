@@ -1,5 +1,5 @@
 import React from 'react'
-import {act, render, fireEvent, waitFor, screen} from '@testing-library/react'
+import {render, waitFor, screen} from '@testing-library/react'
 import {AdminOverviewPage} from './AdminOverviewPage'
 
 describe('AdminOverviewPage', () => {
@@ -53,35 +53,5 @@ describe('AdminOverviewPage', () => {
     renderComponent()
 
     await waitFor(() => expect(screen.getByRole('dialog-info-message')).toHaveTextContent('Application info is missing'))
-  })
-
-  it('should call adminApi.rebuildSearchIndex when prop function "rebuildSearchIndex" triggered', async () => {
-    renderComponent()
-    await act(async () => {
-      await fireEvent.click(screen.getByText('Refresh index'))
-    })
-
-    expect(fetch.mostRecent()).toMatchPutRequest({
-      url: 'api/2/processing',
-      body: {
-        process: 'indexSyncJob'
-      },
-    })
-  })
-
-  it('should trigger toast when adminApi.rebuildSearchIndex succeeded', async () => {
-    renderComponent()
-    fetch.mockResponse()
-    fireEvent.click(screen.getByText('Refresh index'))
-
-    await waitFor(() => expect(screen.getByRole('dialog-info-message')).toHaveTextContent('Indexing started'))
-  })
-
-  it('should trigger toast when adminApi.rebuildSearchIndex failed', async () => {
-    renderComponent()
-    fetch.rejectResponse('expected error')
-    fireEvent.click(screen.getByText('Refresh index'))
-
-    await waitFor(() => expect(screen.getByRole('dialog-error-message')).toHaveTextContent('expected error'))
   })
 })

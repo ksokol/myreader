@@ -5,12 +5,13 @@ import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
+import myreader.entity.SubscriptionTag;
 import myreader.test.ClearDb;
 import myreader.test.WithTestProperties;
-import org.hibernate.search.jpa.Search;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -20,17 +21,17 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestEntityManager
-@Transactional(propagation = Propagation.SUPPORTS)
+@Transactional
 @ClearDb
 @SpringBootTest
 @WithMockUser
@@ -51,9 +52,6 @@ class SubscriptionEntryCollectionResourceTests {
   @Autowired
   private TestEntityManager em;
 
-  @Autowired
-  private TransactionTemplate tx;
-
   private Subscription subscription1;
   private Subscription subscription2;
   private SubscriptionEntry subscriptionEntry1;
@@ -63,68 +61,61 @@ class SubscriptionEntryCollectionResourceTests {
 
   @BeforeEach
   void setUp() {
-    tx.execute(status -> {
-      var feed1 = em.persist(new Feed("irrelevant", "irrelevant"));
-      var feed2 = em.persist(new Feed("irrelevant", "irrelevant"));
+    var feed1 = em.persist(new Feed("irrelevant", "irrelevant"));
+    var feed2 = em.persist(new Feed("irrelevant", "irrelevant"));
 
-      subscription1 = new Subscription(feed1);
-      subscription1.setTitle("user1 subscription1");
-      subscription1 = em.persist(subscription1);
+    subscription1 = new Subscription(feed1);
+    subscription1.setTitle("user1 subscription1");
+    subscription1 = em.persist(subscription1);
 
-      subscription2 = new Subscription(feed2);
-      subscription2.setTitle("user2 subscription1");
-      subscription2 = em.persist(subscription2);
+    subscription2 = new Subscription(feed2);
+    subscription2.setTitle("user2 subscription1");
+    subscription2 = em.persist(subscription2);
 
-      var feedEntry1 = new FeedEntry(feed1);
-      feedEntry1.setTitle("some entry1 title");
-      feedEntry1.setContent("some entry1 content");
-      feedEntry1 = em.persistAndFlush(feedEntry1);
+    var subscriptionTag2 = new SubscriptionTag("subscription tag", subscription2);
+    subscriptionTag2 = em.persist(subscriptionTag2);
+    subscription2.setSubscriptionTag(subscriptionTag2);
+    subscription2 = em.persist(subscription2);
 
-      var feedEntry2 = new FeedEntry(feed1);
-      feedEntry2.setTitle("some entry2 title");
-      feedEntry2.setContent("some entry2 content");
-      feedEntry2.setUrl("http://example.com/feedentry2");
-      feedEntry2 = em.persistAndFlush(feedEntry2);
+    var feedEntry1 = new FeedEntry(feed1);
+    feedEntry1.setTitle("some entry1 title");
+    feedEntry1.setContent("some entry1 content");
+    feedEntry1 = em.persistAndFlush(feedEntry1);
 
-      var feedEntry3 = new FeedEntry(feed1);
-      feedEntry3.setTitle("some entry3 title");
-      feedEntry3.setContent("some entry3 content");
-      feedEntry3 = em.persistAndFlush(feedEntry3);
+    var feedEntry2 = new FeedEntry(feed1);
+    feedEntry2.setTitle("some entry2 title");
+    feedEntry2.setContent("some entry2 content");
+    feedEntry2.setUrl("http://example.com/feedentry2");
+    feedEntry2 = em.persistAndFlush(feedEntry2);
 
-      var feedEntry4 = new FeedEntry(feed1);
-      feedEntry4.setTitle("some entry4 title");
-      feedEntry4.setContent("some entry4 content");
-      feedEntry4.setUrl("http://example.com/feedentry4");
-      feedEntry4.setCreatedAt(new Date(1000));
-      feedEntry4 = em.persistAndFlush(feedEntry4);
+    var feedEntry3 = new FeedEntry(feed1);
+    feedEntry3.setTitle("some entry3 title");
+    feedEntry3.setContent("some entry3 content");
+    feedEntry3 = em.persistAndFlush(feedEntry3);
 
-      subscriptionEntry1 = new SubscriptionEntry(subscription1, feedEntry1);
-      subscriptionEntry1.setTags(Set.of("tag1", "tag2", "tag3"));
-      subscriptionEntry1.setSeen(true);
-      subscriptionEntry1.setCreatedAt(new Date(1000));
+    var feedEntry4 = new FeedEntry(feed1);
+    feedEntry4.setTitle("some entry4 title");
+    feedEntry4.setContent("some entry4 content");
+    feedEntry4.setUrl("http://example.com/feedentry4");
+    feedEntry4.setCreatedAt(new Date(1000));
+    feedEntry4 = em.persistAndFlush(feedEntry4);
 
-      subscriptionEntry2 = new SubscriptionEntry(subscription2, feedEntry2);
-      subscriptionEntry2.setTags(Set.of("tag2-tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9"));
-      subscriptionEntry2.setCreatedAt(new Date(2000));
+    subscriptionEntry1 = new SubscriptionEntry(subscription1, feedEntry1);
+    subscriptionEntry1.setTags(Set.of("tag1", "tag2", "tag3"));
+    subscriptionEntry1.setSeen(true);
+    subscriptionEntry1.setCreatedAt(new Date(1000));
 
-      subscriptionEntry4 = new SubscriptionEntry(subscription1, feedEntry4);
-      subscriptionEntry4.setCreatedAt(new Date(4000));
+    subscriptionEntry2 = new SubscriptionEntry(subscription2, feedEntry2);
+    subscriptionEntry2.setTags(Set.of("tag2-tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9"));
+    subscriptionEntry2.setCreatedAt(new Date(2000));
 
-      subscriptionEntry1 = em.persistAndFlush(subscriptionEntry1);
-      subscriptionEntry2 = em.persistAndFlush(subscriptionEntry2);
-      subscriptionEntry3 = em.persistAndFlush(new SubscriptionEntry(subscription1, feedEntry3));
-      subscriptionEntry4 = em.persistAndFlush(subscriptionEntry4);
-      return null;
-    });
+    subscriptionEntry4 = new SubscriptionEntry(subscription1, feedEntry4);
+    subscriptionEntry4.setCreatedAt(new Date(4000));
 
-    tx.execute(s -> {
-      try {
-        Search.getFullTextEntityManager(em.getEntityManager()).createIndexer().startAndWait();
-      } catch (InterruptedException exception) {
-        throw new AssertionError(exception);
-      }
-      return null;
-    });
+    subscriptionEntry1 = em.persistAndFlush(subscriptionEntry1);
+    subscriptionEntry2 = em.persistAndFlush(subscriptionEntry2);
+    subscriptionEntry3 = em.persistAndFlush(new SubscriptionEntry(subscription1, feedEntry3));
+    subscriptionEntry4 = em.persistAndFlush(subscriptionEntry4);
   }
 
   @Test
@@ -173,7 +164,6 @@ class SubscriptionEntryCollectionResourceTests {
   }
 
   @Test
-  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   void shouldFindTags() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries/availableTags"))
       .andExpect(jsonPath("$").value(list("tag1", "tag2", "tag2-tag3", "tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9")));
@@ -228,6 +218,120 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
   }
 
+  @Test
+  void feedUuidEqualSubscription1() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries?feedUuidEqual={id}", subscription1.getId()))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(3))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry1.getId().toString()));
+  }
+
+  @Test
+  void feedUuidEqualSubscription2() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries?feedUuidEqual={id}", subscription2.getId()))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(1))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
+  }
+
+  @Test
+  void seenEqualFalse() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=true"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(1))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry1.getId().toString()));
+  }
+
+  @Test
+  void seenEqualWildcard() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(3))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry2.getId().toString()));
+  }
+
+  @Test
+  void shouldValidateSeenEqual() throws Exception {
+      mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=invalid"))
+        .andExpect(status().isBadRequest())
+        .andExpect(result -> {
+          String actual = Optional.ofNullable(result.getResolvedException()).orElseThrow(AssertionFailedError::new).getMessage();
+          assertEquals("seenEqual is not of type boolean", actual);
+        });
+  }
+
+  @Test
+  void feedTagEqual() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries?feedTagEqual=subscription tag"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(1))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
+  }
+
+  @Test
+  void feedTagEqualUnknown() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries?feedTagEqual=unknown"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(0));
+  }
+
+  @Test
+  void shouldPaginateWithChangingSeenValues() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptionEntries?size=2&seenEqual=false"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(2))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[0].seen").value(false))
+      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[1].seen").value(false));
+
+    subscriptionEntry4 = em.find(SubscriptionEntry.class, subscriptionEntry4.getId());
+    subscriptionEntry4.setSeen(true);
+    em.persistFlushFind(subscriptionEntry4);
+
+    mockMvc.perform(get("/api/2/subscriptionEntries?size=10"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(4))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[0].seen").value(true))
+      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[1].seen").value(false))
+      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry2.getId().toString()))
+      .andExpect(jsonPath("$.content[2].seen").value(false))
+      .andExpect(jsonPath("$.content[3].uuid").value(subscriptionEntry1.getId().toString()))
+      .andExpect(jsonPath("$.content[3].seen").value(true));
+
+    mockMvc.perform(get("/api/2/subscriptionEntries?size=2&next={id}&seenEqual=false", subscriptionEntry4.getId()))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(2))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry2.getId().toString()));
+
+    subscriptionEntry2 = em.find(SubscriptionEntry.class, subscriptionEntry2.getId());
+    subscriptionEntry2.setSeen(true);
+    em.persistFlushFind(subscriptionEntry2);
+
+    mockMvc.perform(get("/api/2/subscriptionEntries?size=10"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(4))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[0].seen").value(true))
+      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[1].seen").value(false))
+      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry2.getId().toString()))
+      .andExpect(jsonPath("$.content[2].seen").value(true))
+      .andExpect(jsonPath("$.content[3].uuid").value(subscriptionEntry1.getId().toString()))
+      .andExpect(jsonPath("$.content[3].seen").value(true));
+
+    mockMvc.perform(get("/api/2/subscriptionEntries?size=2&next={id}&seenEqual=false", subscriptionEntry2.getId()))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(0));
+  }
+
   private String nextPage(MvcResult mvcResult) throws IOException {
     List<String> nextHrefs = JsonPath.read(mvcResult.getResponse().getContentAsString(), "$.links[?(@.rel=='next')].href");
     if (nextHrefs.size() == 0) {
@@ -236,7 +340,7 @@ class SubscriptionEntryCollectionResourceTests {
     return nextHrefs.get(0);
   }
 
-  private List<String> list(String...values) {
+  private List<String> list(String... values) {
     List<String> valueList = new ArrayList<>();
     Collections.addAll(valueList, values);
     return valueList;

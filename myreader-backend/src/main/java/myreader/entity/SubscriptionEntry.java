@@ -1,13 +1,5 @@
 package myreader.entity;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.NumericField;
-import org.hibernate.search.annotations.SortableField;
-
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CollectionTable;
@@ -27,7 +19,6 @@ import java.util.Date;
 import java.util.Set;
 
 @Access(AccessType.PROPERTY)
-@Indexed
 @Entity
 @Table(name = "user_feed_entry")
 public class SubscriptionEntry {
@@ -50,9 +41,6 @@ public class SubscriptionEntry {
     this.feedEntry = feedEntry;
   }
 
-  @DocumentId
-  @NumericField(precisionStep = 0)
-  @SortableField
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_feed_entry_id")
@@ -64,7 +52,6 @@ public class SubscriptionEntry {
     this.id = id;
   }
 
-  @Field
   @Column(name = "user_feed_entry_is_read")
   public boolean isSeen() {
     return seen;
@@ -74,8 +61,6 @@ public class SubscriptionEntry {
     this.seen = seen;
   }
 
-  @Field(analyze = Analyze.NO)
-  @IndexedEmbedded
   @Column(columnDefinition = "VARCHAR(32)", name = "tag")
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(
@@ -90,7 +75,6 @@ public class SubscriptionEntry {
     this.tags = tags;
   }
 
-  @IndexedEmbedded
   @ManyToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn(name = "user_feed_entry_user_feed_id")
   public Subscription getSubscription() {

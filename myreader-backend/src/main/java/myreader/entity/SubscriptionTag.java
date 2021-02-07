@@ -1,9 +1,5 @@
 package myreader.entity;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Field;
-
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
@@ -25,20 +21,21 @@ import java.util.Set;
 @Table(name = "user_feed_tag")
 public class SubscriptionTag {
 
-    private Long id;
-    private String name;
-    private String color;
-    private Set<Subscription> subscriptions;
-    private Date createdAt;
+  private Long id;
+  private String name;
+  private String color;
+  private Set<Subscription> subscriptions;
+  private Date createdAt;
 
-    /**
-     * Default constructor for Hibernate.
-     */
-    public SubscriptionTag() {}
+  /**
+   * Default constructor for Hibernate.
+   */
+  public SubscriptionTag() {
+  }
 
-    public SubscriptionTag(String name) {
-        this.name = Objects.requireNonNull(name, "name is null");
-    }
+  public SubscriptionTag(String name) {
+    this.name = Objects.requireNonNull(name, "name is null");
+  }
 
   public SubscriptionTag(String name, Subscription subscription) {
     this.name = Objects.requireNonNull(name, "name is null");
@@ -47,60 +44,58 @@ public class SubscriptionTag {
     subscriptions.add(subscription);
   }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_feed_tag_id")
-    public Long getId() {
-        return id;
-    }
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "user_feed_tag_id")
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    @Field(name = "tag", analyze = Analyze.NO)
-    @Column(name = "user_feed_tag_name", nullable = false)
-    public String getName() {
-        return name;
-    }
+  @Column(name = "user_feed_tag_name", nullable = false)
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    @Column(name = "user_feed_tag_color")
-    public String getColor() {
-        return color;
-    }
+  @Column(name = "user_feed_tag_color")
+  public String getColor() {
+    return color;
+  }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
+  public void setColor(String color) {
+    this.color = color;
+  }
 
-    @ContainedIn
-    @OneToMany(mappedBy = "subscriptionTag")
-    public Set<Subscription> getSubscriptions() {
-        return subscriptions;
-    }
+  @OneToMany(mappedBy = "subscriptionTag")
+  public Set<Subscription> getSubscriptions() {
+    return subscriptions;
+  }
 
-    public void setSubscriptions(Set<Subscription> subscriptions) {
-        this.subscriptions = subscriptions;
-    }
+  public void setSubscriptions(Set<Subscription> subscriptions) {
+    this.subscriptions = subscriptions;
+  }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "user_feed_tag_created_at")
-    public Date getCreatedAt() {
-        if (createdAt != null) {
-            return new Date(createdAt.getTime());
-        }
-        return new Date();
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "user_feed_tag_created_at")
+  public Date getCreatedAt() {
+    if (createdAt != null) {
+      return new Date(createdAt.getTime());
     }
+    return new Date();
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        if (createdAt != null) {
-            this.createdAt = new Date(createdAt.getTime());
-        }
+  public void setCreatedAt(Date createdAt) {
+    if (createdAt != null) {
+      this.createdAt = new Date(createdAt.getTime());
     }
+  }
 
   @Override
   public boolean equals(Object other) {

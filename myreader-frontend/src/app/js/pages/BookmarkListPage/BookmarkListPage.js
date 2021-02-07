@@ -17,8 +17,9 @@ export function BookmarkListPage() {
   const {reload} = useHistory()
 
   const query = useMemo(() => {
-    const seenEqual = searchParams.entryTagEqual ? '*' : ''
-    return {...searchParams, seenEqual, size: pageSize}
+    const seenEqual = searchParams.entryTagEqual ? undefined : true
+    const entryTagEqual = searchParams.entryTagEqual ? searchParams.entryTagEqual : ''
+    return {...searchParams, seenEqual, entryTagEqual, size: pageSize}
   }, [searchParams, pageSize])
 
   const {

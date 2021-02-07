@@ -1,7 +1,6 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {adminApi} from '../../api'
 import {toast} from '../../components/Toast'
-import {Button} from '../../components/Buttons'
 import {TimeAgo} from '../../components/TimeAgo/TimeAgo'
 
 export function AdminOverviewPage() {
@@ -18,27 +17,10 @@ export function AdminOverviewPage() {
     run()
   }, [])
 
-  const rebuildSearchIndex = useCallback(async () => {
-    try {
-      await adminApi.rebuildSearchIndex()
-      toast('Indexing started')
-    } catch (error) {
-      toast(error, {error: true})
-    }
-  }, [])
-
   return (
     <section
       className='p-2.5'
     >
-      <h4>Maintenance</h4>
-
-      <Button
-        onClick={rebuildSearchIndex}
-        primary>
-          Refresh index
-      </Button>
-
       {applicationInfo ? (
         <React.Fragment>
           <h4>Application info</h4>

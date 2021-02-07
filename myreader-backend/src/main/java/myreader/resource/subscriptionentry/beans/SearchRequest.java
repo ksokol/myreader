@@ -5,7 +5,7 @@ public class SearchRequest {
   private static final int DEFAULT_SIZE = 10;
 
   private String feedUuidEqual;
-  private String seenEqual;
+  private Boolean seenEqual;
   private String feedTagEqual;
   private String entryTagEqual;
   private int size;
@@ -19,11 +19,11 @@ public class SearchRequest {
     this.feedUuidEqual = feedUuidEqual;
   }
 
-  public String getSeenEqual() {
+  public Boolean getSeenEqual() {
     return seenEqual;
   }
 
-  public void setSeenEqual(String seenEqual) {
+  public void setSeenEqual(Boolean seenEqual) {
     this.seenEqual = seenEqual;
   }
 

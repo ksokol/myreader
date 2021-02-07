@@ -15,7 +15,7 @@ export function EntryStreamPage() {
   const {reload} = useHistory()
 
   const query = useMemo(() => {
-    const showAll = showUnseenEntries === true ? false : '*'
+    const showAll = showUnseenEntries === true ? false : undefined
     const seenEqual = searchParams.seenEqual === undefined ? showAll : searchParams.seenEqual
     return {...searchParams, seenEqual, size}
   }, [searchParams, showUnseenEntries, size])

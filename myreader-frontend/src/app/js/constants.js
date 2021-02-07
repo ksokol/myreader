@@ -16,7 +16,6 @@ export const LOGIN = 'check'
 export const LOGOUT = 'logout'
 export const FEEDS = `${API_2}/feeds`
 export const INFO = 'info'
-export const PROCESSING = `${API_2}/processing`
 export const ENTRY_AVAILABLE_TAGS = `${API_2}/subscriptionEntries/availableTags`
 export const SUBSCRIPTIONS = `${API_2}/subscriptions`
 export const SUBSCRIPTION_ENTRIES = `${API_2}/subscriptionEntries`

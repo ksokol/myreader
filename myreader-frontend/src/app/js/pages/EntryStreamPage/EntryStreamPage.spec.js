@@ -74,11 +74,11 @@ describe('EntryStreamPage', () => {
     })
   })
 
-  it('should fetch entries with seenEqual set to "*" and prop "showUnseenEntries" set to false', async () => {
+  it('should fetch entries without seenEqual if showUnseenEntries is set to false', async () => {
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?size=2&feedTagEqual=a',
     })
   })
 
@@ -374,7 +374,7 @@ describe('EntryStreamPage', () => {
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?size=2&feedTagEqual=a',
     })
     expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
@@ -396,7 +396,7 @@ describe('EntryStreamPage', () => {
 
     expect(fetch.requestCount()).toEqual(1)
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&seenEqual=*&feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?size=2&feedTagEqual=a',
     })
   })
 

@@ -1,4 +1,4 @@
-import {INFO, PROCESSING} from '../constants'
+import {INFO} from '../constants'
 import {Api} from './Api'
 
 const defaultText = 'not available'
@@ -27,14 +27,6 @@ function toApplicationInfo(raw = {}) {
 }
 
 export class AdminApi extends Api {
-
-  rebuildSearchIndex = () => {
-    return this.request({
-      url: PROCESSING,
-      method: 'PUT',
-      body: {process: 'indexSyncJob'}
-    })
-  }
 
   fetchApplicationInfo = () => {
     return this.request({
