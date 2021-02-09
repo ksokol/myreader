@@ -12,17 +12,17 @@ import java.util.Optional;
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
   @Query(value =
-    "select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where " +
+    "select s from Subscription s left join fetch s.subscriptionTag where " +
       "(select count(1) from SubscriptionEntry se where se.subscription.id = s.id and se.seen = false) > ?1 " +
       "order by s.createdAt desc"
   )
   List<Subscription> findAllByUnseenGreaterThan(long unseenCount);
 
   @Override
-  @Query("select s from Subscription s join fetch s.feed left join fetch s.subscriptionTag where s.id = ?1")
+  @Query("select s from Subscription s left join fetch s.subscriptionTag where s.id = ?1")
   Optional<Subscription> findById(Long id);
 
-  Optional<Subscription> findByFeedUrl(String url);
+  Optional<Subscription> findByUrl(String url);
 
   @Transactional
   @Query("update Subscription set lastFeedEntryId = ?1 where id = ?2")

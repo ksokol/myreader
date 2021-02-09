@@ -1,10 +1,8 @@
 package myreader.repository;
 
-import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-import myreader.test.ClearDb;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +22,6 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 
 @ExtendWith(SpringExtension.class)
-@ClearDb
 @DataJpaTest(showSql = false)
 @WithTestProperties
 class SubscriptionRepositoryTests {
@@ -37,27 +34,23 @@ class SubscriptionRepositoryTests {
   @Autowired
   private TestEntityManager testEntityManager;
 
-  private Feed feed;
   private Subscription subscription1;
   private Subscription subscription2;
 
   @BeforeEach
   void before() {
-    feed = testEntityManager.persist(new Feed("http://example1.com", "expected feed title1"));
-    var feed2 = testEntityManager.persist(new Feed("http://example2.com", "expected feed title2"));
-
-    subscription1 = new Subscription(feed);
+    subscription1 = new Subscription("http://example1.com", "expected feed title1");
     subscription1.setTitle("expected title1");
     subscription1.setCreatedAt(new Date(1000));
     subscription1 = testEntityManager.persistFlushFind(subscription1);
 
-    subscription2 = new Subscription(feed2);
+    subscription2 = new Subscription("http://example2.com", "expected feed title2");
     subscription2.setTitle("expected title2");
     subscription2.setCreatedAt(new Date(2000));
     subscription2 = testEntityManager.persistFlushFind(subscription2);
 
-    var fe1 = testEntityManager.persistFlushFind(new FeedEntry(subscription1.getFeed()));
-    var fe2 = testEntityManager.persistFlushFind(new FeedEntry(subscription1.getFeed()));
+    var fe1 = testEntityManager.persistFlushFind(new FeedEntry(subscription1));
+    var fe2 = testEntityManager.persistFlushFind(new FeedEntry(subscription1));
 
     var subscriptionEntry1 = new SubscriptionEntry(subscription1, fe1);
     var subscriptionEntry2 = new SubscriptionEntry(subscription1, fe2);
@@ -108,7 +101,7 @@ class SubscriptionRepositoryTests {
 
   @Test
   void shouldFindById() {
-    var subscription2 = new Subscription(feed);
+    var subscription2 = new Subscription("url", "title");
     subscription2.setTitle("expected title2");
     subscription2 = testEntityManager.persistFlushFind(subscription2);
 
@@ -154,14 +147,14 @@ class SubscriptionRepositoryTests {
 
   @Test
   void shouldNotFindByUnknownFeedUrl() {
-    var actual = subscriptionRepository.findByFeedUrl("unknown");
+    var actual = subscriptionRepository.findByUrl("unknown");
 
     assertThat(actual.isPresent(), is(false));
   }
 
   @Test
   void shouldFindByFeedUrl() {
-    var actual = subscriptionRepository.findByFeedUrl(feed.getUrl())
+    var actual = subscriptionRepository.findByUrl("http://example1.com")
       .orElseThrow(AssertionError::new);
 
     assertThat(actual, hasProperty("id", is(subscription1.getId())));

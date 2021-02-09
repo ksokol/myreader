@@ -1,8 +1,9 @@
 import {SUBSCRIPTIONS} from '../constants'
 import {isString} from '../shared/utils'
 import {Api} from './Api'
+import {extractLinks, toUrlString} from './links'
 
-export function toSubscription(raw = {}) {
+function toSubscription(raw = {}) {
   if (raw.feedTag === null || typeof raw.feedTag === 'undefined') {
     raw.feedTag = {
       uuid: undefined,
@@ -13,7 +14,7 @@ export function toSubscription(raw = {}) {
   return raw
 }
 
-export function toSubscriptions(raw = {}) {
+function toSubscriptions(raw = {}) {
   return raw.content.map(toSubscription)
 }
 
@@ -23,6 +24,23 @@ function toBody(subscription) {
     clone.feedTag = null
   }
   return clone
+}
+
+function toFeedFetchFailure(raw = {}) {
+  return {
+    uuid: raw.uuid,
+    message: raw.message,
+    createdAt: raw.createdAt
+  }
+}
+
+function toFeedFetchFailures(raw) {
+  const links = extractLinks(raw.links)
+  const failures = raw.content.map(it => toFeedFetchFailure(it))
+  return {
+    failures,
+    links
+  }
 }
 
 export class SubscriptionApi extends Api {
@@ -62,5 +80,16 @@ export class SubscriptionApi extends Api {
       url: SUBSCRIPTIONS,
       method: 'GET',
     }).then(toSubscriptions)
+  }
+
+  fetchFeedFetchErrors = uuidOrLink => {
+    const url = typeof uuidOrLink === 'object'
+      ? toUrlString(uuidOrLink)
+      : `${SUBSCRIPTIONS}/${uuidOrLink}/fetchError`
+
+    return this.request({
+      url,
+      method: 'GET'
+    }).then(toFeedFetchFailures)
   }
 }

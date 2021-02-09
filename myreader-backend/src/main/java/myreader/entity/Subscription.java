@@ -28,14 +28,20 @@ public class Subscription {
 
   private Long id;
   private String title;
-  private int fetchCount;
+  private String url;
   private int unseen;
   private Date createdAt;
-  private Feed feed;
   private Long lastFeedEntryId;
+  private int fetchCount;
+  private String lastModified;
+  private Integer fetched = 0;
+  private Integer resultSizePerFetch;
   private Set<SubscriptionEntry> subscriptionEntries;
+  private Set<FeedEntry> entries;
   private Set<ExclusionPattern> exclusions;
   private SubscriptionTag subscriptionTag;
+  private long fetchErrorCount;
+  private Set<FetchError> fetchErrors;
   private long version;
 
   /**
@@ -44,8 +50,9 @@ public class Subscription {
   public Subscription() {
   }
 
-  public Subscription(Feed feed) {
-    this.feed = feed;
+  public Subscription(String url, String title) {
+    this.url = url;
+    this.title = title;
   }
 
   @Id
@@ -68,6 +75,15 @@ public class Subscription {
     this.title = title;
   }
 
+  @Column(columnDefinition = "VARCHAR(1000)", name = "url")
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
   @Column(name = "user_feed_sum")
   public int getFetchCount() {
     return fetchCount;
@@ -77,8 +93,37 @@ public class Subscription {
     this.fetchCount = fetchCount;
   }
 
-  @Formula("(select count(ufe.user_feed_entry_id) from user_feed_entry ufe " +
-    "where ufe.user_feed_entry_user_feed_id = user_feed_id and ufe.user_feed_entry_is_read = 0)")
+  @Column(name = "last_modified", columnDefinition = "VARCHAR(255)")
+  public String getLastModified() {
+    return lastModified;
+  }
+
+  public void setLastModified(String lastModified) {
+    this.lastModified = lastModified;
+  }
+
+  @Column(name = "fetched")
+  public Integer getFetched() {
+    return fetched;
+  }
+
+  public void setFetched(Integer fetched) {
+    this.fetched = fetched;
+  }
+
+  @Column(name = "result_size_per_fetch")
+  public Integer getResultSizePerFetch() {
+    return resultSizePerFetch == null ? Integer.valueOf(1000) : resultSizePerFetch;
+  }
+
+  public void setResultSizePerFetch(Integer resultSizePerFetch) {
+    this.resultSizePerFetch = resultSizePerFetch;
+  }
+
+  @Formula(
+    "(select count(ufe.user_feed_entry_id) from user_feed_entry ufe " +
+    "where ufe.user_feed_entry_user_feed_id = user_feed_id and ufe.user_feed_entry_is_read = 0)"
+  )
   public int getUnseen() {
     return unseen;
   }
@@ -100,16 +145,6 @@ public class Subscription {
     if (createdAt != null) {
       this.createdAt = new Date(createdAt.getTime());
     }
-  }
-
-  @ManyToOne(optional = false, fetch = FetchType.EAGER)
-  @JoinColumn(name = "user_feed_feed_id", nullable = false, updatable = false)
-  public Feed getFeed() {
-    return feed;
-  }
-
-  public void setFeed(Feed feed) {
-    this.feed = feed;
   }
 
   @Column(name = "last_feed_entry")
@@ -139,6 +174,15 @@ public class Subscription {
     this.subscriptionEntries = subscriptionEntries;
   }
 
+  @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
+  public Set<FeedEntry> getEntries() {
+    return entries;
+  }
+
+  public void setEntries(Set<FeedEntry> entries) {
+    this.entries = entries;
+  }
+
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "user_feed_user_feed_tag_id")
   public SubscriptionTag getSubscriptionTag() {
@@ -147,6 +191,26 @@ public class Subscription {
 
   public void setSubscriptionTag(SubscriptionTag subscriptionTag) {
     this.subscriptionTag = subscriptionTag;
+  }
+
+  @Formula(
+    "(select count(fe.fetch_error_id) from fetch_error fe where fe.fetch_error_subscription_id = user_feed_id)"
+  )
+  public long getFetchErrorCount() {
+    return fetchErrorCount;
+  }
+
+  public void setFetchErrorCount(long fetchErrorCount) {
+    this.fetchErrorCount = fetchErrorCount;
+  }
+
+  @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
+  public Set<FetchError> getFetchErrors() {
+    return fetchErrors;
+  }
+
+  public void setFetchErrors(Set<FetchError> fetchErrors) {
+    this.fetchErrors = fetchErrors;
   }
 
   @Column(columnDefinition = "INT DEFAULT 0", precision = 0)

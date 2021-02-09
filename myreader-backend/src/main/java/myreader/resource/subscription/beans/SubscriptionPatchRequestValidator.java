@@ -1,16 +1,20 @@
 package myreader.resource.subscription.beans;
 
-import myreader.service.feed.FeedService;
+import myreader.service.subscription.SubscriptionService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.Objects;
+
 public class SubscriptionPatchRequestValidator implements Validator {
 
-  private final UrlValidator urlValidator;
+  private static final String FIELD_NAME = "origin";
 
-  public SubscriptionPatchRequestValidator(FeedService feedService) {
-    urlValidator = new UrlValidator(feedService);
+  private final SubscriptionService subscriptionService;
+
+  public SubscriptionPatchRequestValidator(SubscriptionService subscriptionService) {
+    this.subscriptionService = Objects.requireNonNull(subscriptionService, "subscriptionService is null");
   }
 
   @Override
@@ -27,7 +31,9 @@ public class SubscriptionPatchRequestValidator implements Validator {
       errors.rejectValue("title", "NotBlank.title", "may not be empty");
     }
 
-    urlValidator.validate(request.getOrigin(), errors);
+    if (!subscriptionService.valid(request.getOrigin())) {
+      errors.rejectValue(FIELD_NAME, "ValidSyndication.url", "invalid syndication feed");
+    }
 
     SubscriptionPatchRequest.FeedTag feedTag = request.getFeedTag();
     if (feedTag != null) {

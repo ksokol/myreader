@@ -44,7 +44,7 @@ public class EntryPurgerTests {
 
     @Test
     public void shouldNotDeleteEntriesWhenNoErasableEntriesAvailable() {
-        given(feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(feedId, retainDate, pageRequest))
+        given(feedEntryRepository.findErasableEntryIdsBySubscriptionIdAndCreatedAtEarlierThanRetainDate(feedId, retainDate, pageRequest))
                 .willReturn(withElements().withTotal(0));
 
         purger.purge(feedId, retainDate);
@@ -54,7 +54,7 @@ public class EntryPurgerTests {
 
     @Test
     public void shouldDeleteAllErasableEntries() {
-        given(feedEntryRepository.findErasableEntryIdsByFeedIdAndCreatedAtEarlierThanRetainDate(feedId, retainDate, pageRequest))
+        given(feedEntryRepository.findErasableEntryIdsBySubscriptionIdAndCreatedAtEarlierThanRetainDate(feedId, retainDate, pageRequest))
                 .willReturn(withElements(1L, 2L).withTotal(3))
                 .willReturn(withElements(3L).withTotal(3))
                 .willReturn(withElements().withTotal(3));

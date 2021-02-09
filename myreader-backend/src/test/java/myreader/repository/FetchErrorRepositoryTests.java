@@ -1,152 +1,75 @@
 package myreader.repository;
 
-import myreader.entity.Feed;
 import myreader.entity.FetchError;
+import myreader.entity.Subscription;
 import myreader.test.WithTestProperties;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
 import static java.time.LocalDateTime.now;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest(showSql = false)
 @WithTestProperties
-public class FetchErrorRepositoryTests {
+class FetchErrorRepositoryTests {
 
-    @Autowired
-    private FetchErrorRepository fetchErrorRepository;
+  @Autowired
+  private FetchErrorRepository fetchErrorRepository;
 
-    @Autowired
-    private TestEntityManager em;
+  @Autowired
+  private TestEntityManager em;
 
-    @Test
-    public void shouldDeleteEntriesWhenDateIsOlderThanNow() {
-        createEntry(now().minusDays(1));
+  @Test
+  void shouldDeleteEntriesWhenDateIsOlderThanNow() {
+    createEntry(now().minusDays(1));
 
-        assertThat(fetchErrorRepository.retainFetchErrorBefore(new Date()), is(1));
-    }
+    assertThat(fetchErrorRepository.retainFetchErrorBefore(new Date())).isOne();
+  }
 
-    @Test
-    public void shouldNotDeleteEntriesWhenDateIsNewerThanNow() {
-        createEntry(now().plusDays(1));
+  @Test
+  void shouldNotDeleteEntriesWhenDateIsNewerThanNow() {
+    createEntry(now().plusDays(1));
 
-        assertThat(fetchErrorRepository.retainFetchErrorBefore(new Date()), is(0));
-    }
+    assertThat(fetchErrorRepository.retainFetchErrorBefore(new Date())).isZero();
+  }
 
-    @Test
-    public void shouldOnlyDeleteEntriesThatAreOlderThanNow() {
-        createEntry(now().minusDays(1));
-        FetchError entry = createEntry(now().plusDays(1));
+  @Test
+  void shouldOnlyDeleteEntriesThatAreOlderThanNow() {
+    createEntry(now().minusDays(1));
+    var entry = createEntry(now().plusDays(1));
 
-        fetchErrorRepository.retainFetchErrorBefore(new Date());
+    fetchErrorRepository.retainFetchErrorBefore(new Date());
 
-        assertThat(fetchErrorRepository.findAll(), hasSize(1));
-        assertThat(fetchErrorRepository.findById(entry.getId()).orElseThrow(AssertionError::new), notNullValue());
-    }
+    assertThat(fetchErrorRepository.findAll()).hasSize(1);
+    assertThat(fetchErrorRepository.findById(entry.getId()).orElseThrow(AssertionError::new)).isNotNull();
+  }
 
-    @Test
-    public void shouldBindByFeedId() {
-        Feed feed = createFeed();
-        FetchError entry = createEntry(feed);
-        createEntry(createFeed());
+  private FetchError createEntry(LocalDateTime localDateTime) {
+    return createEntry(localDateTime, createSubscription());
+  }
 
-        Page<FetchError> result = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), PageRequest.of(0, 5));
+  private FetchError createEntry(LocalDateTime localDateTime, Subscription subscription) {
+    var date = Date.from(localDateTime.toInstant(ZoneOffset.UTC));
+    var fetchError = new FetchError();
 
-        assertThat(result.getContent(), contains(entry));
-    }
+    fetchError.setSubscription(subscription);
+    fetchError.setMessage("message");
+    fetchError.setCreatedAt(date);
 
-    @Test
-    public void shouldFindByFeedIdPage() {
-        Feed feed = createFeed();
-        createEntry(feed);
-        createEntry(feed);
-        createEntry(feed);
-        createEntry(createFeed());
+    return em.persist(fetchError);
+  }
 
-        Page<FetchError> result = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), PageRequest.of(0, 2));
-
-        assertThat(result.getTotalPages(), is(2));
-        assertThat(result.getTotalElements(), is(3L));
-    }
-
-    @Test
-    public void shouldFindByFeedIdOrderByCreatedAtDesc() {
-        Feed feed = createFeed();
-        LocalDateTime yesterday = now().minusDays(1);
-        LocalDateTime tomorrow = now().plusDays(1);
-        LocalDateTime now = now();
-
-        createEntry(yesterday, feed);
-        createEntry(tomorrow, feed);
-        createEntry(now, feed);
-
-        Page<FetchError> result = fetchErrorRepository.findByFeedIdOrderByCreatedAtDesc(feed.getId(), PageRequest.of(0, 5));
-
-        assertThat(result.getContent(), contains(
-                hasProperty("createdAt", is(toDate(tomorrow))),
-                hasProperty("createdAt", is(toDate(now))),
-                hasProperty("createdAt", is(toDate(yesterday)))
-        ));
-    }
-
-    @Test
-    public void shouldCountByFeedId() {
-        Feed feed = createFeed();
-        createEntry(now(), feed);
-        createEntry(now().minusMinutes(15), feed);
-
-        int expectedCount = fetchErrorRepository.countByFeedId(feed.getId());
-
-        assertThat(expectedCount, is(2));
-    }
-
-    private FetchError createEntry(Feed feed) {
-        return createEntry(now(), feed);
-    }
-
-    private FetchError createEntry(LocalDateTime localDateTime) {
-        return createEntry(localDateTime, createFeed());
-    }
-
-    private FetchError createEntry(LocalDateTime localDateTime, Feed feed) {
-        Date date = Date.from(localDateTime.toInstant(ZoneOffset.UTC));
-
-        FetchError fetchError = new FetchError();
-        fetchError.setFeed(feed);
-        fetchError.setMessage("message");
-        fetchError.setCreatedAt(date);
-
-        em.persist(fetchError);
-        return fetchError;
-    }
-
-    private Feed createFeed() {
-        Feed feed = new Feed("title", "url");
-        em.persist(feed);
-
-        return feed;
-    }
-
-    private Date toDate(LocalDateTime localDateTime) {
-        return Date.from(localDateTime.toInstant(ZoneOffset.UTC));
-    }
+  private Subscription createSubscription() {
+    var subscription = new Subscription("url", "title");
+    return em.persist(subscription);
+  }
 }

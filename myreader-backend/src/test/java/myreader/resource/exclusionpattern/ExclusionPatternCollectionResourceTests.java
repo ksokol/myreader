@@ -1,7 +1,6 @@
 package myreader.resource.exclusionpattern;
 
 import myreader.entity.ExclusionPattern;
-import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.repository.ExclusionRepository;
 import myreader.repository.SubscriptionRepository;
@@ -57,7 +56,7 @@ public class ExclusionPatternCollectionResourceTests {
 
   @Before
   public void setUp() {
-    subscription = new Subscription(new Feed("http://localhost", "title"));
+    subscription = new Subscription("http://localhost", "title");
     subscription.setId(1L);
     given(subscriptionRepository.findById(109L))
       .willReturn(Optional.of(subscription));

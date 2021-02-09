@@ -9,6 +9,7 @@ import {useHistory, useSearchParams} from '../../hooks/router'
 import {Link} from 'react-router-dom'
 import {SUBSCRIPTION_URL} from '../../constants'
 import {TimeAgo} from '../../components/TimeAgo/TimeAgo'
+import {Icon} from '../../components/Icon/Icon'
 
 function filterSubscriptions({title}, q = '') {
   return title.toLowerCase().includes(q.toLowerCase())
@@ -65,6 +66,7 @@ export const SubscriptionListPage = () => {
                       {subscription.title}
                     </Link>
                     <span>
+                      {subscription.fetchErrorCount > 0 && <Icon type='exclamation-triangle' />}
                       <TimeAgo
                         date={subscription.createdAt}
                       />

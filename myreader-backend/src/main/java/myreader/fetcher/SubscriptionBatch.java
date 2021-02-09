@@ -1,67 +1,72 @@
 package myreader.fetcher;
 
-import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.fetcher.persistence.FetchResult;
-import myreader.fetcher.persistence.FetcherEntry;
 import myreader.repository.FeedEntryRepository;
-import myreader.repository.FeedRepository;
-import myreader.service.time.TimeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import myreader.repository.SubscriptionRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author Kamill Sokol
- */
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
+
 @Component
 public class SubscriptionBatch {
 
-    private final FeedRepository feedRepository;
-    private final FeedEntryRepository feedEntryRepository;
-    private final TimeService timeService;
+  private final SubscriptionRepository subscriptionRepository;
+  private final FeedEntryRepository feedEntryRepository;
+  private final Clock clock;
 
-    @Autowired
-    public SubscriptionBatch(FeedRepository feedRepository, FeedEntryRepository feedEntryRepository, TimeService timeService) {
-        this.feedRepository = feedRepository;
-        this.feedEntryRepository = feedEntryRepository;
-        this.timeService = timeService;
-    }
+  public SubscriptionBatch(
+    SubscriptionRepository subscriptionRepository,
+    FeedEntryRepository feedEntryRepository,
+    Clock clock) {
+    this.subscriptionRepository = subscriptionRepository;
+    this.feedEntryRepository = feedEntryRepository;
+    this.clock = clock;
+  }
 
-    @Transactional
-    public void updateUserSubscriptions(FetchResult fetchResult) {
-        final Feed feed = feedRepository.findByUrl(fetchResult.getUrl());
+  @Transactional
+  public void updateUserSubscriptions(FetchResult fetchResult) {
+    subscriptionRepository.findByUrl(fetchResult.getUrl()).ifPresent(subscription -> {
+      var newCount = 0;
 
-        if (feed == null) {
-            return;
+      for (var dto : fetchResult.getEntries()) {
+        var result = feedEntryRepository.countByTitleOrGuidOrUrlAndSubscriptionId(
+          dto.getTitle(),
+          dto.getGuid(),
+          dto.getUrl(),
+          subscription.getId()
+        );
+
+        if (result == 0) {
+          var feedEntry = new FeedEntry(subscription);
+          feedEntry.setContent(dto.getContent());
+          feedEntry.setGuid(dto.getGuid());
+          feedEntry.setTitle(dto.getTitle());
+          feedEntry.setUrl(dto.getUrl());
+          feedEntry.setCreatedAt(now());
+
+          feedEntryRepository.save(feedEntry);
+
+          newCount++;
         }
+      }
 
-        int newCount = 0;
+      subscription.setLastModified(fetchResult.getLastModified());
+      subscription.setFetched(subscription.getFetched() + newCount);
 
-        for (FetcherEntry dto : fetchResult.getEntries()) {
-            int result = feedEntryRepository.countByTitleOrGuidOrUrlAndFeedId(dto.getTitle(), dto.getGuid(), dto.getUrl(), feed.getId());
+      if (fetchResult.getResultSizePerFetch() > 0) {
+        subscription.setResultSizePerFetch(fetchResult.getResultSizePerFetch());
+      }
 
-            if (result == 0) {
-                FeedEntry feedEntry = new FeedEntry(feed);
-                feedEntry.setContent(dto.getContent());
-                feedEntry.setGuid(dto.getGuid());
-                feedEntry.setTitle(dto.getTitle());
-                feedEntry.setUrl(dto.getUrl());
-                feedEntry.setCreatedAt(timeService.getCurrentTime());
+      subscriptionRepository.save(subscription);
+    });
+  }
 
-                feedEntryRepository.save(feedEntry);
-
-                newCount++;
-            }
-        }
-
-        feed.setLastModified(fetchResult.getLastModified());
-        feed.setFetched(feed.getFetched() + newCount);
-
-        if(fetchResult.getResultSizePerFetch() > 0) {
-            feed.setResultSizePerFetch(fetchResult.getResultSizePerFetch());
-        }
-
-        feedRepository.save(feed);
-    }
+  private Date now() {
+    return Date.from(LocalDateTime.now(clock).toInstant(ZoneOffset.UTC));
+  }
 }

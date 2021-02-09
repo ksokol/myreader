@@ -1,6 +1,5 @@
 package myreader.fetcher;
 
-import myreader.entity.ExclusionPattern;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
@@ -8,88 +7,110 @@ import myreader.repository.ExclusionRepository;
 import myreader.repository.FeedEntryRepository;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
-import myreader.service.time.TimeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 
-/**
- * @author Kamill Sokol
- */
 @Component
 public class SubscriptionEntryBatch {
 
-    private final FeedEntryRepository feedEntryRepository;
-    private final SubscriptionRepository subscriptionRepository;
-    private final SubscriptionEntryRepository subscriptionEntryRepository;
-    private final ExclusionRepository exclusionRepository;
-    private final TimeService timeService;
-    private ExclusionChecker exclusionChecker = new ExclusionChecker();
+  private final ExclusionChecker exclusionChecker = new ExclusionChecker();
 
-    @Autowired
-    public SubscriptionEntryBatch(FeedEntryRepository feedEntryRepository, SubscriptionRepository subscriptionRepository, SubscriptionEntryRepository subscriptionEntryRepository, ExclusionRepository exclusionRepository, TimeService timeService) {
-        this.feedEntryRepository = feedEntryRepository;
-        this.subscriptionRepository = subscriptionRepository;
-        this.subscriptionEntryRepository = subscriptionEntryRepository;
-        this.exclusionRepository = exclusionRepository;
-        this.timeService = timeService;
-    }
+  private final FeedEntryRepository feedEntryRepository;
+  private final SubscriptionRepository subscriptionRepository;
+  private final SubscriptionEntryRepository subscriptionEntryRepository;
+  private final ExclusionRepository exclusionRepository;
+  private final Clock clock;
 
-    public void updateUserSubscriptionEntries() {
-        List<Subscription> subscriptions = subscriptionRepository.findAll();
+  public SubscriptionEntryBatch(
+    FeedEntryRepository feedEntryRepository,
+    SubscriptionRepository subscriptionRepository,
+    SubscriptionEntryRepository subscriptionEntryRepository,
+    ExclusionRepository exclusionRepository,
+    Clock clock
+  ) {
+    this.feedEntryRepository = feedEntryRepository;
+    this.subscriptionRepository = subscriptionRepository;
+    this.subscriptionEntryRepository = subscriptionEntryRepository;
+    this.exclusionRepository = exclusionRepository;
+    this.clock = clock;
+  }
 
-        for (Subscription subscription : subscriptions) {
-            Slice<FeedEntry> slice;
+  public void updateUserSubscriptionEntries() {
+    var subscriptions = subscriptionRepository.findAll();
 
-            if(subscription.getLastFeedEntryId() == null) {
-                slice = feedEntryRepository.findByFeedId(subscription.getFeed().getId(), PageRequest.of(0, 10));
-            } else {
-                slice = feedEntryRepository.findByGreaterThanFeedEntryId(subscription.getLastFeedEntryId(), subscription.getFeed().getId(), PageRequest.of(0, 10));
-            }
+    for (var subscription : subscriptions) {
+      Slice<FeedEntry> slice;
 
-            do {
-                for (FeedEntry entry : slice.getContent()) {
-                    process(subscription, entry);
-                }
+      if (subscription.getLastFeedEntryId() == null) {
+        slice = feedEntryRepository.findBySubscriptionId(
+          subscription.getId(),
+          PageRequest.of(0, 10)
+        );
+      } else {
+        slice = feedEntryRepository.findByGreaterThanFeedEntryId(
+          subscription.getLastFeedEntryId(),
+          subscription.getId(),
+          PageRequest.of(0, 10)
+        );
+      }
 
-                if(slice.hasNext()) {
-                    slice = feedEntryRepository.findByGreaterThanFeedEntryId(subscription.getLastFeedEntryId(), subscription.getFeed().getId(), slice.nextPageable());
-                }
-            } while(slice.hasNext());
-        }
-    }
-
-    @Transactional
-    public void process(Subscription subscription, FeedEntry feedEntry) {
-        if(subscriptionEntryRepository.contains(feedEntry.getId(), subscription.getId())) {
-            subscriptionRepository.updateLastFeedEntryId(feedEntry.getId(), subscription.getId());
-            return;
-        }
-
-        List<ExclusionPattern> exclusions = exclusionRepository.findBySubscriptionId(subscription.getId());
-
-        for (ExclusionPattern exclusionPattern : exclusions) {
-            final boolean excluded = exclusionChecker.isExcluded(exclusionPattern.getPattern(), feedEntry.getTitle(), feedEntry.getContent(), feedEntry.getUrl());
-
-            if(excluded) {
-                exclusionRepository.incrementHitCount(exclusionPattern.getId());
-                subscriptionRepository.updateLastFeedEntryId(feedEntry.getId(), subscription.getId());
-                return;
-            }
+      do {
+        for (var entry : slice.getContent()) {
+          process(subscription, entry);
         }
 
-        SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
-        subscriptionEntry.setFeedEntry(feedEntry);
-        subscriptionEntry.setSubscription(subscription);
-        subscriptionEntry.setCreatedAt(timeService.getCurrentTime());
-
-        subscriptionEntryRepository.save(subscriptionEntry);
-
-        subscriptionRepository.updateLastFeedEntryIdAndIncrementFetchCount(feedEntry.getId(), subscription.getId());
-
+        if (slice.hasNext()) {
+          slice = feedEntryRepository.findByGreaterThanFeedEntryId(
+            subscription.getLastFeedEntryId(),
+            subscription.getId(),
+            slice.nextPageable()
+          );
+        }
+      } while (slice.hasNext());
     }
+  }
+
+  @Transactional
+  public void process(Subscription subscription, FeedEntry feedEntry) {
+    if (subscriptionEntryRepository.contains(feedEntry.getId(), subscription.getId())) {
+      subscriptionRepository.updateLastFeedEntryId(feedEntry.getId(), subscription.getId());
+      return;
+    }
+
+    var exclusions = exclusionRepository.findBySubscriptionId(subscription.getId());
+
+    for (var exclusionPattern : exclusions) {
+      final boolean excluded = exclusionChecker.isExcluded(
+        exclusionPattern.getPattern(),
+        feedEntry.getTitle(),
+        feedEntry.getContent(),
+        feedEntry.getUrl()
+      );
+
+      if (excluded) {
+        exclusionRepository.incrementHitCount(exclusionPattern.getId());
+        subscriptionRepository.updateLastFeedEntryId(feedEntry.getId(), subscription.getId());
+        return;
+      }
+    }
+
+    var subscriptionEntry = new SubscriptionEntry();
+    subscriptionEntry.setFeedEntry(feedEntry);
+    subscriptionEntry.setSubscription(subscription);
+    subscriptionEntry.setCreatedAt(now());
+
+    subscriptionEntryRepository.save(subscriptionEntry);
+    subscriptionRepository.updateLastFeedEntryIdAndIncrementFetchCount(feedEntry.getId(), subscription.getId());
+  }
+
+  private Date now() {
+    return Date.from(LocalDateTime.now(clock).toInstant(ZoneOffset.UTC));
+  }
 }

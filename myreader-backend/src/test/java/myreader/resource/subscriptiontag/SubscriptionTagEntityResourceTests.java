@@ -1,6 +1,5 @@
 package myreader.resource.subscriptiontag;
 
-import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionTag;
 import myreader.repository.SubscriptionRepository;
@@ -55,7 +54,7 @@ public class SubscriptionTagEntityResourceTests {
 
   @Test
   public void shouldPatchWhenSubscriptionTagIsFound() throws Exception {
-    Subscription subscription = new Subscription(new Feed());
+    Subscription subscription = new Subscription("url", "title");
     subscription.setId(2L);
 
     SubscriptionTag subscriptionTag = new SubscriptionTag("name", subscription);
@@ -76,7 +75,7 @@ public class SubscriptionTagEntityResourceTests {
 
   @Test
   public void shouldReturnSubscriptionTagFromSubscriptionResource() throws Exception {
-    Subscription subscription = new Subscription(new Feed());
+    Subscription subscription = new Subscription("url", "title");
     subscription.setId(2L);
 
     SubscriptionTag subscriptionTag = new SubscriptionTag("expected name", subscription);

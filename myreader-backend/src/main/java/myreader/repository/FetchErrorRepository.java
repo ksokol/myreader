@@ -10,17 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
-/**
- * @author Kamill Sokol
- */
 public interface FetchErrorRepository extends JpaRepository<FetchError, Long> {
 
-    @Transactional
-    @Modifying
-    @Query("delete from FetchError where createdAt < ?1")
-    int retainFetchErrorBefore(Date retainDate);
+  @Transactional
+  @Modifying
+  @Query("delete from FetchError where createdAt < ?1")
+  int retainFetchErrorBefore(Date retainDate);
 
-    Page<FetchError> findByFeedIdOrderByCreatedAtDesc(Long feedId, Pageable pageable);
-
-    int countByFeedId(Long feedId);
+  Page<FetchError> findBySubscriptionIdOrderByCreatedAtDesc(Long subscriptionId, Pageable pageable);
 }

@@ -1,13 +1,13 @@
-import './FeedFetchErrors.css'
+import './SubscriptionFetchErrors.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {TimeAgo} from '../TimeAgo/TimeAgo'
-import {Button} from '../../components/Buttons'
-import IntersectionObserver from '../../components/IntersectionObserver/IntersectionObserver'
-import {feedApi} from '../../api'
+import {TimeAgo} from '../../TimeAgo/TimeAgo'
+import {Button} from '../../Buttons'
+import IntersectionObserver from '../../IntersectionObserver/IntersectionObserver'
+import {subscriptionApi} from '../../../api'
 
 const Failure = props => (
-  <div className='my-feed-fetch-errors__item'>
+  <div className='my-subscription-fetch-errors__item'>
     <span>{props.message}</span>
     <span><TimeAgo date={props.createdAt}/></span>
   </div>
@@ -18,7 +18,7 @@ Failure.propTypes = {
   createdAt: PropTypes.string.isRequired
 }
 
-export class FeedFetchErrors extends React.Component {
+export class SubscriptionFetchErrors extends React.Component {
 
   static propTypes = {
     uuid: PropTypes.string.isRequired
@@ -50,7 +50,7 @@ export class FeedFetchErrors extends React.Component {
     })
 
     try {
-      const {failures, links} = await feedApi.fetchFeedFetchErrors(this.state.links.next)
+      const {failures, links} = await subscriptionApi.fetchFeedFetchErrors(this.state.links.next)
       this.setState({
         failures: [...this.state.failures, ...failures],
         links
@@ -70,7 +70,7 @@ export class FeedFetchErrors extends React.Component {
     const hasNextPage = !!this.state.links.next
 
     return (
-      <div className='my-feed-fetch-errors'>
+      <div className='my-subscription-fetch-errors'>
         {this.state.failures.length > 0 ? [
           failuresCopy.map(item => <Failure key={item.uuid} {...item} />),
 
@@ -84,7 +84,7 @@ export class FeedFetchErrors extends React.Component {
 
           hasNextPage && (
             <Button key='load-more'
-              className='my-feed-fetch-errors__load-more'
+              className='my-subscription-fetch-errors__load-more'
               disabled={this.state.loading}
               onClick={this.fetchFailures}>
               Load More

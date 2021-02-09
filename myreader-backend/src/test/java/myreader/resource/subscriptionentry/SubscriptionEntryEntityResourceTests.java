@@ -1,11 +1,9 @@
 package myreader.resource.subscriptionentry;
 
-import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionTag;
-import myreader.test.ClearDb;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestEntityManager
 @Transactional
-@ClearDb
 @SpringBootTest
 @WithMockUser
 @WithTestProperties
@@ -50,17 +47,15 @@ class SubscriptionEntryEntityResourceTests {
 
   @BeforeEach
   void before() {
-    var feed = em.persist(new Feed("http://example.com", "feed title"));
+    subscription = new Subscription("http://example.com", "feed title");
+    subscription.setTitle("user112_subscription1");
+    subscription = em.persist(subscription);
 
-    var feedEntry = new FeedEntry(feed);
+    var feedEntry = new FeedEntry(subscription);
     feedEntry.setTitle("Bliki: TellDontAsk");
     feedEntry.setContent("content");
     feedEntry.setUrl("http://martinfowler.com/bliki/TellDontAsk.html");
     feedEntry = em.persist(feedEntry);
-
-    subscription = new Subscription(feed);
-    subscription.setTitle("user112_subscription1");
-    subscription = em.persist(subscription);
 
     subscriptionEntry = new SubscriptionEntry(subscription, feedEntry);
     subscriptionEntry.setTags(Set.of("tag3"));

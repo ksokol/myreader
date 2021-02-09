@@ -126,6 +126,10 @@ fetch.requestCount = () => {
   return fetch.mock.calls.length
 }
 
+fetch.nthRequest = (index) => {
+  return fetch.mock.calls[fetch.requestCount() - index][0]
+}
+
 fetch.mostRecent = () => {
   return fetch.mock.calls[fetch.requestCount() - 1][0]
 }

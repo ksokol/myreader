@@ -2,8 +2,6 @@ import './App.css'
 import React from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import {
-  ADMIN_FEED_URL,
-  ADMIN_FEEDS_URL,
   ADMIN_OVERVIEW_URL,
   APP_URL,
   BOOKMARK_URL,
@@ -16,7 +14,6 @@ import {
   SUBSCRIPTIONS_URL
 } from './constants'
 import {AdminOverviewPage} from './pages/AdminOverviewPage/AdminOverviewPage'
-import {FeedListPage} from './pages/FeedListPage/FeedListPage'
 import {SettingsPage} from './pages/SettingsPage/SettingsPage'
 import {EntryStreamPage} from './pages/EntryStreamPage/EntryStreamPage'
 import {SidenavLayout} from './components/SidenavLayout/SidenavLayout'
@@ -27,7 +24,6 @@ import {LoginPage} from './pages/LoginPage/LoginPage'
 import {LogoutPage} from './pages/LogoutPage/LogoutPage'
 import {BookmarkListPage} from './pages/BookmarkListPage/BookmarkListPage'
 import {SubscribePage} from './pages/SubscribePage/SubscribePage'
-import {FeedEditPage} from './pages/FeedEditPage/FeedEditPage'
 import {SubscriptionEditPage} from './pages/SubscriptionEditPage/SubscriptionEditPage'
 import {Secured} from './components/Secured/Secured'
 
@@ -42,8 +38,6 @@ const withSidenav = () => (
         <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>
         <Route exact={true} path={SETTINGS_URL} component={SettingsPage}/>
         <Route exact={true} path={ADMIN_OVERVIEW_URL} component={AdminOverviewPage}/>
-        <Route exact={true} path={ADMIN_FEEDS_URL} component={FeedListPage}/>
-        <Route exact={true} path={ADMIN_FEED_URL} component={FeedEditPage}/>
       </Switch>
     </SidenavLayout>
   </SubscriptionProvider>

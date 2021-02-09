@@ -32,7 +32,7 @@ import java.util.List;
 public class FeedEntry {
 
   private Long id;
-  private Feed feed;
+  private Subscription subscription;
   private String title;
   private String guid;
   private String url;
@@ -46,8 +46,8 @@ public class FeedEntry {
   public FeedEntry() {
   }
 
-  public FeedEntry(Feed feed) {
-    this.feed = feed;
+  public FeedEntry(Subscription subscription) {
+    this.subscription = subscription;
   }
 
   @Id
@@ -61,14 +61,14 @@ public class FeedEntry {
     this.id = id;
   }
 
-  @JoinColumn(name = "entry_feed_id")
+  @JoinColumn(name = "entry_subscription_id")
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  public Feed getFeed() {
-    return feed;
+  public Subscription getSubscription() {
+    return subscription;
   }
 
-  public void setFeed(Feed feed) {
-    this.feed = feed;
+  public void setSubscription(Subscription subscription) {
+    this.subscription = subscription;
   }
 
   @Column(columnDefinition = "VARCHAR(1000)", name = "entry_title")

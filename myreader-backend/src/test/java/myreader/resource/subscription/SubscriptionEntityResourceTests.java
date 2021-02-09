@@ -1,10 +1,11 @@
 package myreader.resource.subscription;
 
-import myreader.entity.Feed;
+import myreader.entity.FeedEntry;
+import myreader.entity.FetchError;
 import myreader.entity.Subscription;
+import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionTag;
-import myreader.service.feed.FeedService;
-import myreader.test.ClearDb;
+import myreader.service.subscription.SubscriptionService;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,8 +28,6 @@ import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,7 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestEntityManager
 @Transactional
-@ClearDb
 @SpringBootTest
 @WithMockUser
 @WithTestProperties
@@ -52,18 +50,15 @@ class SubscriptionEntityResourceTests {
   @Autowired
   private TestEntityManager em;
 
-  @MockBean
-  private FeedService feedService;
+  @SpyBean
+  private SubscriptionService subscriptionService;
 
-  private Feed feed;
   private Subscription subscription;
   private SubscriptionTag subscriptionTag;
 
   @BeforeEach
   void setUp() {
-    feed = em.persistFlushFind(new Feed("http://example.com", "feed title"));
-
-    subscription = new Subscription(feed);
+    subscription = new Subscription("http://example.com", "feed title");
     subscription.setTitle("expected title");
     subscription.setFetchCount(15);
     subscription.setUnseen(10);
@@ -76,23 +71,37 @@ class SubscriptionEntityResourceTests {
     subscriptionTag = em.persist(subscriptionTag);
     subscription.setSubscriptionTag(subscriptionTag);
 
-    given(feedService.valid("http://example.com")).willReturn(true);
+    var fetchError1 = new FetchError(subscription, "message 1");
+    fetchError1.setCreatedAt(new Date(1000));
+    em.persist(fetchError1);
+
+    var fetchError2 = new FetchError(subscription, "message 2");
+    fetchError2.setCreatedAt(new Date(2000));
+    em.persist(fetchError2);
+
+    var feedEntry = em.persist(new FeedEntry(subscription));
+    em.persistAndFlush(new SubscriptionEntry(subscription, feedEntry));
+
+    given(subscriptionService.valid("http://example.com")).willReturn(true);
+
+    em.clear();
   }
 
   @Test
   void shouldReturnResponse() throws Exception {
     mockMvc.perform(get("/api/2/subscriptions/{id}", subscription.getId()))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.uuid", is(subscription.getId().toString())))
-      .andExpect(jsonPath("$.title", is("expected title")))
-      .andExpect(jsonPath("$.sum", is(15)))
-      .andExpect(jsonPath("$.unseen", is(10)))
-      .andExpect(jsonPath("$.origin", is("http://example.com")))
-      .andExpect(jsonPath("$.feedTag.uuid", is(subscriptionTag.getId().toString())))
-      .andExpect(jsonPath("$.feedTag.name", is("subscriptiontag name")))
-      .andExpect(jsonPath("$.feedTag.color", is("#111111")))
-      .andExpect(jsonPath("$.feedTag.createdAt", is("1970-01-01T00:00:01.000+00:00")))
-      .andExpect(jsonPath("$.createdAt", is("1970-01-01T00:00:02.000+00:00")));
+      .andExpect(jsonPath("$.uuid").value(subscription.getId().toString()))
+      .andExpect(jsonPath("$.title").value("expected title"))
+      .andExpect(jsonPath("$.sum").value(15))
+      .andExpect(jsonPath("$.unseen").value(1))
+      .andExpect(jsonPath("$.origin").value("http://example.com"))
+      .andExpect(jsonPath("$.fetchErrorCount").value(2))
+      .andExpect(jsonPath("$.feedTag.uuid").value(subscriptionTag.getId().toString()))
+      .andExpect(jsonPath("$.feedTag.name").value("subscriptiontag name"))
+      .andExpect(jsonPath("$.feedTag.color").value("#111111"))
+      .andExpect(jsonPath("$.feedTag.createdAt").value("1970-01-01T00:00:01.000+00:00"))
+      .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:02.000+00:00"));
   }
 
   @Test
@@ -101,7 +110,6 @@ class SubscriptionEntityResourceTests {
       .andExpect(status().isNoContent());
 
     assertThat(em.find(Subscription.class, subscription.getId())).isNull();
-    assertThat(em.find(Feed.class, feed.getId())).isNull();
   }
 
   @Test
@@ -114,7 +122,7 @@ class SubscriptionEntityResourceTests {
 
   @Test
   void shouldNotDeleteSubscriptionTagIfUsedInAnotherSubscription() throws Exception {
-    var subscription2 = new Subscription(feed);
+    var subscription2 = new Subscription("url", "title");
     subscription2.setTitle("expected title2");
     subscription2.setSubscriptionTag(subscriptionTag);
     em.persist(subscription2);
@@ -134,21 +142,21 @@ class SubscriptionEntityResourceTests {
 
   @Test
   void shouldPatchSubscriptionTitleAndOriginAndColor() throws Exception {
-    given(feedService.valid("http://other.com"))
+    given(subscriptionService.valid("http://other.com"))
       .willReturn(true);
 
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'title': 'changed title', 'origin': 'http://other.com', 'feedTag': {'name': 'subscriptiontag name', 'color': '#222222'}}")))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("title", is("changed title")))
-      .andExpect(jsonPath("origin", is("http://other.com")))
-      .andExpect(jsonPath("feedTag.uuid", is(subscriptionTag.getId().toString())))
-      .andExpect(jsonPath("feedTag.name", is("subscriptiontag name")))
-      .andExpect(jsonPath("feedTag.color", is("#222222")));
+      .andExpect(jsonPath("title").value("changed title"))
+      .andExpect(jsonPath("origin").value("http://other.com"))
+      .andExpect(jsonPath("feedTag.uuid").value(subscriptionTag.getId().toString()))
+      .andExpect(jsonPath("feedTag.name").value("subscriptiontag name"))
+      .andExpect(jsonPath("feedTag.color").value("#222222"));
 
     assertThat(em.find(Subscription.class, subscription.getId()))
       .hasFieldOrPropertyWithValue("title", "changed title")
-      .hasFieldOrPropertyWithValue("feed.url", "http://other.com");
+      .hasFieldOrPropertyWithValue("url", "http://other.com");
     assertThat(em.find(SubscriptionTag.class, subscriptionTag.getId()))
       .hasFieldOrPropertyWithValue("name", "subscriptiontag name")
       .hasFieldOrPropertyWithValue("color", "#222222");
@@ -159,10 +167,10 @@ class SubscriptionEntityResourceTests {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'title': 'expected title', 'origin': 'http://example.com', 'feedTag': {'name': 'subscriptiontag name'}}")))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("title", is("expected title")))
-      .andExpect(jsonPath("feedTag.uuid", is(subscriptionTag.getId().toString())))
-      .andExpect(jsonPath("feedTag.name", is("subscriptiontag name")))
-      .andExpect(jsonPath("feedTag.color", is("#111111")));
+      .andExpect(jsonPath("title").value("expected title"))
+      .andExpect(jsonPath("feedTag.uuid").value(subscriptionTag.getId().toString()))
+      .andExpect(jsonPath("feedTag.name").value("subscriptiontag name"))
+      .andExpect(jsonPath("feedTag.color").value("#111111"));
 
     assertThat(em.find(Subscription.class, subscription.getId()))
       .hasFieldOrPropertyWithValue("title", "expected title");
@@ -176,10 +184,10 @@ class SubscriptionEntityResourceTests {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'title': 'expected title', 'origin': 'http://example.com', 'feedTag': {'name':'changed name', 'color': '#222222'}}")))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("title", is("expected title")))
-      .andExpect(jsonPath("feedTag.uuid", is(not(subscriptionTag.getId().toString()))))
-      .andExpect(jsonPath("feedTag.name", is("changed name")))
-      .andExpect(jsonPath("feedTag.color", is("#222222")));
+      .andExpect(jsonPath("title").value("expected title"))
+      .andExpect(jsonPath("feedTag.uuid").value(subscriptionTag.getId() + 1))
+      .andExpect(jsonPath("feedTag.name").value("changed name"))
+      .andExpect(jsonPath("feedTag.color").value("#222222"));
 
     assertThat(em.getEntityManager().createQuery("from SubscriptionTag", SubscriptionTag.class).getResultList())
       .hasSize(1)
@@ -189,7 +197,7 @@ class SubscriptionEntityResourceTests {
 
   @Test
   void shouldNotDeleteSubscriptionTagIfNotOrphanedAfterPatch() throws Exception {
-    var subscription2 = new Subscription(feed);
+    var subscription2 = new Subscription("url", "title");
     subscription2.setTitle("title");
     subscription2.setSubscriptionTag(subscriptionTag);
     em.persist(subscription2);
@@ -197,9 +205,9 @@ class SubscriptionEntityResourceTests {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'title': 'expected title', 'origin': 'http://example.com'}")))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("title", is("expected title")))
-      .andExpect(jsonPath("origin", is("http://example.com")))
-      .andExpect(jsonPath("feedTag", nullValue()));
+      .andExpect(jsonPath("title").value("expected title"))
+      .andExpect(jsonPath("origin").value("http://example.com"))
+      .andExpect(jsonPath("feedTag").isEmpty());
 
     assertThat(em.find(SubscriptionTag.class, subscriptionTag.getId())).isNotNull();
   }
@@ -209,9 +217,9 @@ class SubscriptionEntityResourceTests {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'title': 'expected title', 'origin': 'http://example.com'}")))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("title", is("expected title")))
-      .andExpect(jsonPath("origin", is("http://example.com")))
-      .andExpect(jsonPath("feedTag", nullValue()));
+      .andExpect(jsonPath("title").value("expected title"))
+      .andExpect(jsonPath("origin").value("http://example.com"))
+      .andExpect(jsonPath("feedTag").isEmpty());
 
     assertThat(em.find(SubscriptionTag.class, subscriptionTag.getId())).isNull();
   }
@@ -221,9 +229,8 @@ class SubscriptionEntityResourceTests {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'feedTag': {}}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("title", is("may not be empty")))
-      .andExpect(validation().onField("origin", is("must begin with http(s)://")))
-      .andExpect(validation().onField("feedTag.name", is("may not be empty")));
+      .andExpect(validation().onField("title").value("may not be empty"))
+      .andExpect(validation().onField("feedTag.name").value("may not be empty"));
   }
 
   @Test
@@ -231,7 +238,7 @@ class SubscriptionEntityResourceTests {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'title': ' ', 'origin': 'http://example.com'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("title", is("may not be empty")));
+      .andExpect(validation().onField("title").value("may not be empty"));
   }
 
   @Test
@@ -239,7 +246,7 @@ class SubscriptionEntityResourceTests {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'title': 'irrelevant', 'feedTag': {'name': ' '}}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("feedTag.name", is("may not be empty")));
+      .andExpect(validation().onField("feedTag.name").value("may not be empty"));
   }
 
   @Test
@@ -247,17 +254,39 @@ class SubscriptionEntityResourceTests {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'title': 'some title'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("origin", is("must begin with http(s)://")));
+      .andExpect(validation().onField("origin").value("invalid syndication feed"));
   }
 
   @Test
   void shouldValidatePatchRequestInvalidOrigin() throws Exception {
-    given(feedService.valid("http://example.local"))
+    given(subscriptionService.valid("http://example.local"))
       .willReturn(false);
 
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'title': 'some title', 'origin': 'http://example.local'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("origin", is("invalid syndication feed")));
+      .andExpect(validation().onField("origin").value("invalid syndication feed"));
+  }
+
+  @Test
+  void shouldReturnFetchErrors() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptions/{id}/fetchError", subscription.getId()))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()", is(2)))
+      .andExpect(jsonPath("$.content[0].message", is("message 2")))
+      .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:02.000+00:00")))
+      .andExpect(jsonPath("$.content[1].message", is("message 1")))
+      .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:01.000+00:00")))
+      .andExpect(jsonPath("$.page.totalElements", is(2)));
+  }
+
+  @Test
+  void shouldNotReturnFetchErrorsIfSubscriptionContainsNoErrors() throws Exception {
+    var subscription2 = em.persist(new Subscription("http://other.com", "irrelevant"));
+
+    mockMvc.perform(get("/api/2/subscriptions/{id}/fetchError", subscription2.getId()))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()", is(0)))
+      .andExpect(jsonPath("$.page.totalElements", is(0)));
   }
 }

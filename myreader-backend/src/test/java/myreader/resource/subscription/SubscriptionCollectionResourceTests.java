@@ -1,205 +1,193 @@
 package myreader.resource.subscription;
 
-import myreader.entity.Feed;
+import myreader.entity.FeedEntry;
+import myreader.entity.FetchError;
 import myreader.entity.Subscription;
+import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionTag;
-import myreader.repository.SubscriptionRepository;
-import myreader.service.feed.FeedService;
-import myreader.service.subscription.SubscriptionService;
+import myreader.fetcher.FeedParseException;
+import myreader.fetcher.FeedParser;
+import myreader.fetcher.persistence.FetchResult;
 import myreader.test.WithTestProperties;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
+import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
+@AutoConfigureTestEntityManager
+@Transactional
 @SpringBootTest
 @WithMockUser
 @WithTestProperties
-public class SubscriptionCollectionResourceTests {
+class SubscriptionCollectionResourceTests {
 
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
-  private SubscriptionService subscriptionService;
+  @Autowired
+  private TestEntityManager em;
 
   @MockBean
-  private SubscriptionRepository subscriptionRepository;
-
-  @MockBean
-  private FeedService feedService;
+  private FeedParser feedParser;
 
   private Subscription subscription1;
   private Subscription subscription2;
+  private SubscriptionTag subscriptionTag1;
+  private SubscriptionTag subscriptionTag2;
 
-  @Before
-  public void setUp() {
-    Feed feed1 = new Feed();
-    feed1.setUrl("http://feeds.feedburner.com/javaposse");
-
-    subscription1 = new Subscription(feed1);
-    subscription1.setId(1104L);
+  @BeforeEach
+  void setUp() {
+    subscription1 = new Subscription("http://feed1", "feed1");
     subscription1.setTitle("user102_subscription1");
     subscription1.setFetchCount(10);
-    subscription1.setUnseen(5);
     subscription1.setCreatedAt(new Date(2000));
+    subscription1 = em.persist(subscription1);
 
-    SubscriptionTag subscriptionTag1 = new SubscriptionTag("tag1", subscription1);
-    subscriptionTag1.setId(21L);
+    subscriptionTag1 = new SubscriptionTag("tag1", subscription1);
     subscriptionTag1.setCreatedAt(new Date(1000));
-
+    subscriptionTag1 = em.persist(subscriptionTag1);
     subscription1.setSubscriptionTag(subscriptionTag1);
 
-    Feed feed2 = new Feed();
-    feed2.setUrl("http://use-the-index-luke.com/blog/feed");
+    em.persist(new FetchError(subscription1, "message 1"));
+    em.persist(new FetchError(subscription1, "message 2"));
 
-    subscription2 = new Subscription(feed2);
-    subscription2.setId(1105L);
+    subscription2 = new Subscription("http://feed2", "feed2");
     subscription2.setTitle("user102_subscription2");
     subscription2.setFetchCount(20);
-    subscription2.setUnseen(0);
-    subscription2.setUnseen(0);
     subscription2.setCreatedAt(new Date(4000));
+    subscription2 = em.persistAndFlush(subscription2);
 
-    SubscriptionTag subscriptionTag2 = new SubscriptionTag("tag2", subscription2);
-    subscriptionTag2.setId(22L);
+    subscriptionTag2 = new SubscriptionTag("tag2", subscription2);
     subscriptionTag2.setColor("#ffffff");
     subscriptionTag2.setCreatedAt(new Date(3000));
-
     subscription2.setSubscriptionTag(subscriptionTag2);
+    subscriptionTag2 = em.persistAndFlush(subscriptionTag2);
+
+    var feedEntry = em.persist(new FeedEntry(subscription2));
+    var subscriptionEntry2 = new SubscriptionEntry(subscription2, feedEntry);
+    subscriptionEntry2.setSeen(false);
+    em.persistAndFlush(subscriptionEntry2);
+
+    em.clear();
   }
 
   @Test
-  public void shouldReturnExpectedJsonStructure() throws Exception {
-    given(subscriptionRepository.findAllByUnseenGreaterThan(-1))
-      .willReturn(Arrays.asList(subscription1, subscription2));
-
+  void shouldReturnExpectedJsonStructure() throws Exception {
     mockMvc.perform(get("/api/2/subscriptions"))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content[0].uuid", is("1104")))
-      .andExpect(jsonPath("$.content[0].title", is("user102_subscription1")))
-      .andExpect(jsonPath("$.content[0].sum", is(10)))
-      .andExpect(jsonPath("$.content[0].unseen", is(5)))
-      .andExpect(jsonPath("$.content[0].origin", is("http://feeds.feedburner.com/javaposse")))
-      .andExpect(jsonPath("$.content[0].feedTag.uuid", is("21")))
-      .andExpect(jsonPath("$.content[0].feedTag.name", is("tag1")))
-      .andExpect(jsonPath("$.content[0].feedTag.color", nullValue()))
-      .andExpect(jsonPath("$.content[0].feedTag.createdAt", is("1970-01-01T00:00:01.000+00:00")))
-      .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:02.000+00:00")))
-      .andExpect(jsonPath("$.content[1].uuid", is("1105")))
-      .andExpect(jsonPath("$.content[1].title", is("user102_subscription2")))
-      .andExpect(jsonPath("$.content[1].sum", is(20)))
-      .andExpect(jsonPath("$.content[1].unseen", is(0)))
-      .andExpect(jsonPath("$.content[1].origin", is("http://use-the-index-luke.com/blog/feed")))
-      .andExpect(jsonPath("$.content[1].feedTag.uuid", is("22")))
-      .andExpect(jsonPath("$.content[1].feedTag.name", is("tag2")))
-      .andExpect(jsonPath("$.content[1].feedTag.color", is("#ffffff")))
-      .andExpect(jsonPath("$.content[1].feedTag.createdAt", is("1970-01-01T00:00:03.000+00:00")))
-      .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:04.000+00:00")));
+      .andExpect(jsonPath("$.content.length()").value(2))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscription2.getId().toString()))
+      .andExpect(jsonPath("$.content[0].title").value("user102_subscription2"))
+      .andExpect(jsonPath("$.content[0].sum").value(20))
+      .andExpect(jsonPath("$.content[0].unseen").value(1))
+      .andExpect(jsonPath("$.content[0].origin").value("http://feed2"))
+      .andExpect(jsonPath("$.content[0].fetchErrorCount").value(0))
+      .andExpect(jsonPath("$.content[0].feedTag.uuid").value(subscriptionTag2.getId().toString()))
+      .andExpect(jsonPath("$.content[0].feedTag.name").value(subscriptionTag2.getName()))
+      .andExpect(jsonPath("$.content[0].feedTag.color").value(subscriptionTag2.getColor()))
+      .andExpect(jsonPath("$.content[0].feedTag.createdAt").value("1970-01-01T00:00:03.000+00:00"))
+      .andExpect(jsonPath("$.content[0].createdAt").value("1970-01-01T00:00:04.000+00:00"))
+      .andExpect(jsonPath("$.content[1].uuid").value(subscription1.getId().toString()))
+      .andExpect(jsonPath("$.content[1].title").value("user102_subscription1"))
+      .andExpect(jsonPath("$.content[1].sum").value(10))
+      .andExpect(jsonPath("$.content[1].unseen").value(0))
+      .andExpect(jsonPath("$.content[1].origin").value("http://feed1"))
+      .andExpect(jsonPath("$.content[1].fetchErrorCount").value(2))
+      .andExpect(jsonPath("$.content[1].feedTag.uuid").value(subscriptionTag1.getId().toString()))
+      .andExpect(jsonPath("$.content[1].feedTag.name").value(subscriptionTag1.getName()))
+      .andExpect(jsonPath("$.content[1].feedTag.color").value(subscriptionTag1.getColor()))
+      .andExpect(jsonPath("$.content[1].feedTag.createdAt").value("1970-01-01T00:00:01.000+00:00"))
+      .andExpect(jsonPath("$.content[1].createdAt").value("1970-01-01T00:00:02.000+00:00"));
   }
 
   @Test
-  public void shouldPassQueryParameterUnseenGreaterThanToFinderMethod() throws Exception {
+  void shouldPassQueryParameterUnseenGreaterThanToFinderMethod() throws Exception {
     mockMvc.perform(get("/api/2/subscriptions?unseenGreaterThan=10"))
-      .andExpect(status().isOk());
-
-    verify(subscriptionRepository).findAllByUnseenGreaterThan(10);
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(0));
   }
 
   @Test
-  public void shouldRejectPostRequestWhenOriginIsMissing() throws Exception {
+  void shouldRejectPostRequestWhenOriginIsMissing() throws Exception {
     mockMvc.perform(post("/api/2/subscriptions")
       .with(jsonBody("{}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("origin", is("must begin with http(s)://")));
+      .andExpect(validation().onField("origin").value("invalid syndication feed"));
   }
 
   @Test
-  public void shouldRejectPostRequestWhenOriginContainsAnInvalidUrl() throws Exception {
+  void shouldRejectPostRequestWhenOriginContainsAnInvalidUrl() throws Exception {
     mockMvc.perform(post("/api/2/subscriptions")
       .with(jsonBody("{'url':'invalid url'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("origin", is("must begin with http(s)://")));
+      .andExpect(validation().onField("origin").value("invalid syndication feed"));
   }
 
   @Test
-  public void shouldRejectPostRequestWhenSubscriptionAlreadyExistsForGivenOrigin() throws Exception {
-    given(feedService.valid("http://feeds.feedburner.com/javaposse"))
-      .willReturn(true);
-
-    given(subscriptionRepository.findByFeedUrl("http://feeds.feedburner.com/javaposse"))
-      .willReturn(Optional.of(subscription1));
-
+  void shouldRejectPostRequestWhenSubscriptionAlreadyExistsForGivenOrigin() throws Exception {
     mockMvc.perform(post("/api/2/subscriptions")
-      .with(jsonBody("{'origin' : 'http://feeds.feedburner.com/javaposse'}")))
+      .with(jsonBody("{'origin' : 'http://feed1'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("origin", is("subscription exists")));
+      .andExpect(validation().onField("origin").value("subscription exists"));
   }
 
   @Test
-  public void shouldRejectPostRequestWhenOriginIsAnInvalidSyndication() throws Exception {
-    String url = "http://martinfowler.com/feed.atom";
+  void shouldRejectPostRequestWhenOriginIsAnInvalidSyndication() throws Exception {
+    var url = "http://invalid";
 
-    given(subscriptionRepository.findByFeedUrl(url))
-      .willReturn(Optional.empty());
-    given(feedService.valid(url)).willReturn(false);
+    given(feedParser.parse(url))
+      .willThrow(new FeedParseException());
 
     mockMvc.perform(post("/api/2/subscriptions")
       .with(jsonBody("{'origin' : '" + url + "'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("origin", is("invalid syndication feed")));
+      .andExpect(validation().onField("origin").value("invalid syndication feed"));
   }
 
   @Test
-  public void shouldCreateNewSubscriptionForOrigin() throws Exception {
-    String url = "http://use-the-index-luke.com/blog/feed";
+  void shouldCreateNewSubscriptionForOrigin() throws Exception {
+    var url = "http://feed3";
+    var title = "expected title";
+    var nextId = subscription2.getId() + 1;
 
-    Feed feed = new Feed("irrelevant", "irrelevant");
-    feed.setUrl(url);
-    Subscription subscription = new Subscription(feed);
-    subscription.setId(9999L);
-    subscription.setTitle("expected title");
-    subscription.setCreatedAt(new Date(1000));
+    given(feedParser.parse(url))
+      .willReturn(Optional.of(new FetchResult(List.of(), null, title, url, 10)));
 
-    given(subscriptionRepository.findByFeedUrl(url))
-      .willReturn(Optional.empty());
-    given(feedService.valid(url))
-      .willReturn(true);
-    given(subscriptionService.subscribe(url))
-      .willReturn(subscription);
+    mockMvc.perform(get("/api/2/subscriptions/{id}", nextId))
+      .andExpect(status().isNotFound());
 
     mockMvc.perform(post("/api/2/subscriptions")
       .with(jsonBody("{'origin': '" + url + "'}")))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("uuid", is("9999")))
-      .andExpect(jsonPath("title", is("expected title")))
-      .andExpect(jsonPath("sum", is(0)))
-      .andExpect(jsonPath("unseen", is(0)))
-      .andExpect(jsonPath("origin", is(url)))
-      .andExpect(jsonPath("feedTag", nullValue()))
-      .andExpect(jsonPath("createdAt", is("1970-01-01T00:00:01.000+00:00")));
+      .andExpect(jsonPath("uuid").value(nextId));
+
+    mockMvc.perform(get("/api/2/subscriptions/{id}", nextId))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.uuid").value(nextId))
+      .andExpect(jsonPath("$.title").value(title))
+      .andExpect(jsonPath("$.origin").value(url));
   }
 }

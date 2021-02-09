@@ -1,9 +1,7 @@
 package myreader.resource.exclusionpattern;
 
 import myreader.entity.ExclusionPattern;
-import myreader.entity.Feed;
 import myreader.entity.Subscription;
-import myreader.test.ClearDb;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestEntityManager
 @Transactional
-@ClearDb
 @SpringBootTest
 @WithMockUser
 @WithTestProperties
@@ -44,9 +41,7 @@ class ExclusionPatternEntityResourceTests {
 
   @BeforeEach
   void beforeEach() {
-    var feed = em.persist(new Feed("http://example.com", "feed title"));
-
-    subscription = em.persist(new Subscription(feed));
+    subscription = em.persist(new Subscription("http://example.com", "feed title"));
     exclusionPattern = em.persist(new ExclusionPattern("test", subscription));
   }
 

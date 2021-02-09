@@ -1,12 +1,10 @@
 package myreader.resource.subscriptionentry;
 
 import com.jayway.jsonpath.JsonPath;
-import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionTag;
-import myreader.test.ClearDb;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestEntityManager
 @Transactional
-@ClearDb
 @SpringBootTest
 @WithMockUser
 @WithTestProperties
@@ -61,14 +58,11 @@ class SubscriptionEntryCollectionResourceTests {
 
   @BeforeEach
   void setUp() {
-    var feed1 = em.persist(new Feed("irrelevant", "irrelevant"));
-    var feed2 = em.persist(new Feed("irrelevant", "irrelevant"));
-
-    subscription1 = new Subscription(feed1);
+    subscription1 = new Subscription("irrelevant", "irrelevant");
     subscription1.setTitle("user1 subscription1");
     subscription1 = em.persist(subscription1);
 
-    subscription2 = new Subscription(feed2);
+    subscription2 = new Subscription("irrelevant", "irrelevant");
     subscription2.setTitle("user2 subscription1");
     subscription2 = em.persist(subscription2);
 
@@ -77,23 +71,23 @@ class SubscriptionEntryCollectionResourceTests {
     subscription2.setSubscriptionTag(subscriptionTag2);
     subscription2 = em.persist(subscription2);
 
-    var feedEntry1 = new FeedEntry(feed1);
+    var feedEntry1 = new FeedEntry(subscription1);
     feedEntry1.setTitle("some entry1 title");
     feedEntry1.setContent("some entry1 content");
     feedEntry1 = em.persistAndFlush(feedEntry1);
 
-    var feedEntry2 = new FeedEntry(feed1);
+    var feedEntry2 = new FeedEntry(subscription1);
     feedEntry2.setTitle("some entry2 title");
     feedEntry2.setContent("some entry2 content");
     feedEntry2.setUrl("http://example.com/feedentry2");
     feedEntry2 = em.persistAndFlush(feedEntry2);
 
-    var feedEntry3 = new FeedEntry(feed1);
+    var feedEntry3 = new FeedEntry(subscription1);
     feedEntry3.setTitle("some entry3 title");
     feedEntry3.setContent("some entry3 content");
     feedEntry3 = em.persistAndFlush(feedEntry3);
 
-    var feedEntry4 = new FeedEntry(feed1);
+    var feedEntry4 = new FeedEntry(subscription1);
     feedEntry4.setTitle("some entry4 title");
     feedEntry4.setContent("some entry4 content");
     feedEntry4.setUrl("http://example.com/feedentry4");

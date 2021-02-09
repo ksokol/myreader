@@ -1,135 +1,263 @@
 package myreader.fetcher;
 
-import myreader.entity.Feed;
 import myreader.entity.FeedEntry;
+import myreader.entity.Subscription;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
-import myreader.repository.FeedEntryRepository;
-import myreader.repository.FeedRepository;
-import myreader.service.time.TimeService;
 import myreader.test.WithTestProperties;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static java.util.stream.StreamSupport.stream;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.List;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(SpringRunner.class)
-@DataJpaTest(showSql = false, includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SubscriptionBatch.class))
-@Sql("classpath:test-data.sql")
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(SpringExtension.class)
+@DataJpaTest(
+  showSql = false,
+  includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {SubscriptionBatch.class, SubscriptionBatchTests.TestConfig.class})
+)
 @WithTestProperties
-public class SubscriptionBatchTests {
+class SubscriptionBatchTests {
 
-    private static final String KNOWN_FEED_URL = "http://feeds.feedburner.com/javaposse";
-    private static final String ENTRY_TITLE = "Party time";
-    private static final String ENTRY_GUID = "http://Use-The-Index-Luke.com";
-    private static final String ENTRY_URL = "http://Use-The-Index-Luke.com/blog/2013-03/Party-Time";
+  private static final String ENTRY_TITLE = "title1";
+  private static final String ENTRY_GUID = "guid1";
+  private static final String ENTRY_URL = "http://entry1";
 
-    @Autowired
-    private SubscriptionBatch subscriptionBatch;
+  private Subscription subscription1;
+  private Subscription subscription2;
+  private FeedEntry feedEntry1;
+  private FeedEntry feedEntry12;
 
-    @Autowired
-    private FeedRepository feedRepository;
+  @Autowired
+  private TestEntityManager em;
 
-    @Autowired
-    private FeedEntryRepository feedEntryRepository;
+  @Autowired
+  private SubscriptionBatch subscriptionBatch;
 
-    @MockBean
-    private TimeService timeService;
+  @BeforeEach
+  void setUp() {
+    subscription1 = new Subscription("http://url1", "title1");
+    subscription1.setFetched(1);
+    subscription1 = em.persist(subscription1);
 
-    @Test
-    public void shouldNotSaveFeedEntryWhenRFeedIsUnknown() {
-        long expectedCount = stream(feedEntryRepository.findAll().spliterator(), false).count();
+    feedEntry1 = new FeedEntry(subscription1);
+    feedEntry1.setTitle(ENTRY_TITLE);
+    feedEntry1.setGuid(ENTRY_GUID);
+    feedEntry1.setUrl(ENTRY_URL);
+    feedEntry1 = em.persist(feedEntry1);
 
-        subscriptionBatch.updateUserSubscriptions(new FetchResult("unknown feed"));
+    subscription2 = new Subscription("http://url2", "title1");
+    subscription2.setFetched(1);
+    subscription2 = em.persist(subscription2);
 
-        assertThat(stream(feedEntryRepository.findAll().spliterator(), false).count(), is(expectedCount));
+    feedEntry12 = new FeedEntry(subscription2);
+    feedEntry12.setTitle(ENTRY_TITLE + "12");
+    feedEntry12.setGuid(ENTRY_GUID + "12");
+    feedEntry12.setUrl(ENTRY_URL + "12");
+    feedEntry12 = em.persist(feedEntry12);
+  }
+
+  @Test
+  void shouldNotSaveFeedEntryWhenFeedIsUnknown() {
+    subscriptionBatch.updateUserSubscriptions(new FetchResult("http://unknown"));
+
+    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+      .extracting("id")
+      .contains(feedEntry1.getId(), feedEntry12.getId());
+  }
+
+  @Test
+  void shouldNotSaveFeedEntryWhenResultIsEmpty() {
+    subscriptionBatch.updateUserSubscriptions(new FetchResult(List.of(), "last modified", "title", "http://unknown", 0));
+
+    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+      .extracting("id")
+      .contains(feedEntry1.getId(), feedEntry12.getId());
+  }
+
+  @Test
+  void shouldNotSaveFeedEntryWhenOnlyTitleChanged() {
+    subscriptionBatch.updateUserSubscriptions(
+      new FetchResult(List.of(newTitle()), "last modified", "title", subscription1.getUrl(), 0)
+    );
+
+    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+      .extracting("id")
+      .contains(feedEntry1.getId(), feedEntry12.getId());
+  }
+
+  @Test
+  void shouldNotSaveFeedEntryWhenOnlyGuidChanged() {
+    subscriptionBatch.updateUserSubscriptions(
+      new FetchResult(List.of(newGuid()), "last modified", "title", subscription1.getUrl(), 0)
+    );
+
+    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+      .extracting("id")
+      .contains(feedEntry1.getId(), feedEntry12.getId());
+  }
+
+  @Test
+  void shouldNotSaveFeedEntryWhenOnlyUrlChanged() {
+    subscriptionBatch.updateUserSubscriptions(
+      new FetchResult(List.of(newUrl()), "last modified", "title", subscription1.getUrl(), 0)
+    );
+
+    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+      .extracting("id")
+      .contains(feedEntry1.getId(), feedEntry12.getId());
+  }
+
+  @Test
+  void shouldSaveFeedEntry() {
+    subscriptionBatch.updateUserSubscriptions(
+      new FetchResult(List.of(newEntry()), "last modified", "title", subscription1.getUrl(), 0)
+    );
+
+    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+      .extracting("id")
+      .contains(feedEntry1.getId(), feedEntry12.getId(), feedEntry12.getId() + 1);
+  }
+
+  @Test
+  void shouldNotIncrementFetchedCountWhenNoNewFeedEntryArrived() {
+    subscriptionBatch.updateUserSubscriptions(
+      new FetchResult(List.of(existing()), "last modified", "title", subscription1.getUrl(), 0)
+    );
+
+    assertThat(em.find(Subscription.class, subscription1.getId()))
+      .hasFieldOrPropertyWithValue("lastModified", "last modified")
+      .hasFieldOrPropertyWithValue("fetched", 1);
+
+    assertThat(em.find(Subscription.class, subscription2.getId()))
+      .hasFieldOrPropertyWithValue("lastModified", null)
+      .hasFieldOrPropertyWithValue("fetched", 1);
+  }
+
+  @Test
+  void shouldIncrementFetchedCountWhenOnlyTitleChanged() {
+    subscriptionBatch.updateUserSubscriptions(
+      new FetchResult(List.of(newTitle()), "last modified", "title", subscription1.getUrl(), 0)
+    );
+
+    assertThat(em.find(Subscription.class, subscription1.getId()))
+      .hasFieldOrPropertyWithValue("lastModified", "last modified")
+      .hasFieldOrPropertyWithValue("fetched", 1);
+
+    assertThat(em.find(Subscription.class, subscription2.getId()))
+      .hasFieldOrPropertyWithValue("lastModified", null)
+      .hasFieldOrPropertyWithValue("fetched", 1);
+  }
+
+  @Test
+  void shouldIncrementFetchedCountWhenOnlyGuidChanged() {
+    subscriptionBatch.updateUserSubscriptions(
+      new FetchResult(List.of(newGuid()), "last modified", "title", subscription1.getUrl(), 0)
+    );
+
+    assertThat(em.find(Subscription.class, subscription1.getId()))
+      .hasFieldOrPropertyWithValue("lastModified", "last modified")
+      .hasFieldOrPropertyWithValue("fetched", 1);
+
+    assertThat(em.find(Subscription.class, subscription2.getId()))
+      .hasFieldOrPropertyWithValue("lastModified", null)
+      .hasFieldOrPropertyWithValue("fetched", 1);
+  }
+
+  @Test
+  void shouldIncrementFetchedCountWhenOnlyUrlChanged() {
+    subscriptionBatch.updateUserSubscriptions(
+      new FetchResult(List.of(newUrl()), "last modified", "title", subscription1.getUrl(), 0)
+    );
+
+    assertThat(em.find(Subscription.class, subscription1.getId()))
+      .hasFieldOrPropertyWithValue("lastModified", "last modified")
+      .hasFieldOrPropertyWithValue("fetched", 1);
+
+    assertThat(em.find(Subscription.class, subscription2.getId()))
+      .hasFieldOrPropertyWithValue("lastModified", null)
+      .hasFieldOrPropertyWithValue("fetched", 1);
+  }
+
+  @Test
+  void shouldIncrementFetchedCountWhenNewEntryArrived() {
+    subscriptionBatch.updateUserSubscriptions(
+      new FetchResult(List.of(newEntry()), "last modified", "title", subscription1.getUrl(), 0)
+    );
+
+    assertThat(em.find(Subscription.class, subscription1.getId()))
+      .hasFieldOrPropertyWithValue("lastModified", "last modified")
+      .hasFieldOrPropertyWithValue("fetched", 2);
+
+    assertThat(em.find(Subscription.class, subscription2.getId()))
+      .hasFieldOrPropertyWithValue("lastModified", null)
+      .hasFieldOrPropertyWithValue("fetched", 1);
+  }
+
+  @Test
+  void shouldUpdateResultSizePerFetchWhenCountIsGreaterThanZero() {
+    subscriptionBatch.updateUserSubscriptions(new FetchResult(List.of(), null, null, subscription1.getUrl(), 10));
+
+    assertThat(em.find(Subscription.class, subscription1.getId()))
+      .hasFieldOrPropertyWithValue("resultSizePerFetch", 10);
+  }
+
+  @Test
+  void shouldNotUpdateResultSizePerFetchWhenCountIsZero() {
+    subscriptionBatch.updateUserSubscriptions(new FetchResult(List.of(), null, null, subscription1.getUrl(), 0));
+
+    assertThat(em.find(Subscription.class, subscription1.getId()))
+      .hasFieldOrPropertyWithValue("resultSizePerFetch", 1000);
+  }
+
+  @TestConfiguration
+  static class TestConfig {
+
+    @Bean
+    Clock clock() {
+      return Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
     }
+  }
 
-    @Test
-    public void shouldNotSaveFeedEntryWhenResultIsEmpty() {
-        long expectedCount = stream(feedEntryRepository.findAll().spliterator(), false).count();
+  private FetcherEntry newTitle() {
+    return fetcherEntry("new title", ENTRY_GUID, ENTRY_URL);
+  }
 
-        subscriptionBatch.updateUserSubscriptions(new FetchResult(emptyList(), "last modified", "title", "unknown feed url", 0));
+  private FetcherEntry newGuid() {
+    return fetcherEntry(ENTRY_TITLE, "new guid", ENTRY_URL);
+  }
 
-        assertThat(stream(feedEntryRepository.findAll().spliterator(), false).count(), is(expectedCount));
-    }
+  private FetcherEntry newUrl() {
+    return fetcherEntry(ENTRY_TITLE, ENTRY_GUID, "new url");
+  }
 
-    @Test
-    public void shouldNotIncrementFetchedCountWhenNoNewFeedEntrySaved() {
-        FetcherEntry fetcherEntry = createFetcherEntry();
+  private FetcherEntry existing() {
+    return fetcherEntry(ENTRY_TITLE, ENTRY_GUID, ENTRY_URL);
+  }
 
-        FeedEntry feedEntry = new FeedEntry(feedRepository.findByUrl(KNOWN_FEED_URL));
-        feedEntry.setGuid(fetcherEntry.getGuid());
-        feedEntry.setTitle(fetcherEntry.getTitle());
-        feedEntry.setUrl(fetcherEntry.getUrl());
-        feedEntryRepository.save(feedEntry);
+  private FetcherEntry newEntry() {
+    return fetcherEntry("new title", "new guid", "new url");
+  }
 
-        subscriptionBatch.updateUserSubscriptions(new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL, 0));
-
-        Feed feed = feedRepository.findByUrl(KNOWN_FEED_URL);
-
-        assertThat(feed.getLastModified(), is("last modified"));
-        assertThat(feed.getFetched(), is(282));
-    }
-
-    @Test
-    public void shouldIncrementFetchedCountWhenNewFeedEntrySaved() {
-        FetcherEntry fetcherEntry = createFetcherEntry();
-
-        fetcherEntry.setTitle("new title");
-        fetcherEntry.setGuid("new guid");
-        fetcherEntry.setUrl("new url");
-
-        FetchResult fetchResult = new FetchResult(singletonList(fetcherEntry), "last modified", "title", KNOWN_FEED_URL, 0);
-
-        subscriptionBatch.updateUserSubscriptions(fetchResult);
-
-        Feed feed = feedRepository.findByUrl(KNOWN_FEED_URL);
-
-        assertThat(feed.getLastModified(), is("last modified"));
-        assertThat(feed.getFetched(), is(283));
-    }
-
-    @Test
-    public void shouldUpdateResultSizePerFetchWhenCountIsGreaterThanZero() {
-        FetchResult fetchResult = new FetchResult(emptyList(), null, null, KNOWN_FEED_URL, 10);
-
-        subscriptionBatch.updateUserSubscriptions(fetchResult);
-        Feed feed = feedRepository.findByUrl(KNOWN_FEED_URL);
-
-        assertThat(feed.getResultSizePerFetch(), is(10));
-    }
-
-    @Test
-    public void shouldNotUpdateResultSizePerFetchWhenCountIsZero() {
-        FetchResult fetchResult = new FetchResult(emptyList(), null, null, KNOWN_FEED_URL, 0);
-
-        subscriptionBatch.updateUserSubscriptions(fetchResult);
-        Feed feed = feedRepository.findByUrl(KNOWN_FEED_URL);
-
-        assertThat(feed.getResultSizePerFetch(), is(1000));
-    }
-
-    private FetcherEntry createFetcherEntry() {
-        FetcherEntry fetcherEntry = new FetcherEntry();
-        fetcherEntry.setTitle(ENTRY_TITLE);
-        fetcherEntry.setGuid(ENTRY_GUID);
-        fetcherEntry.setUrl(ENTRY_URL);
-        fetcherEntry.setFeedUrl(KNOWN_FEED_URL);
-        return fetcherEntry;
-    }
+  private FetcherEntry fetcherEntry(String title, String guid, String url) {
+    var fetcherEntry = new FetcherEntry();
+    fetcherEntry.setTitle(title);
+    fetcherEntry.setGuid(guid);
+    fetcherEntry.setUrl(url);
+    fetcherEntry.setFeedUrl(subscription1.getUrl());
+    return fetcherEntry;
+  }
 }

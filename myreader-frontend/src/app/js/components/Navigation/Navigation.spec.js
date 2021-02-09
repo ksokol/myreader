@@ -3,7 +3,6 @@ import {mount} from 'enzyme'
 import Navigation from './Navigation'
 import NavigationItem from './NavigationItem'
 import {
-  ADMIN_FEEDS_URL,
   ADMIN_OVERVIEW_URL,
   BOOKMARK_URL, LOGOUT_URL,
   SETTINGS_URL,
@@ -91,7 +90,6 @@ describe('Navigation', () => {
       'Bookmarks',
       'Settings',
       'Admin',
-      'Feeds',
       'Add subscription',
       'Logout'
     ])
@@ -103,7 +101,6 @@ describe('Navigation', () => {
       BOOKMARK_URL,
       SETTINGS_URL,
       ADMIN_OVERVIEW_URL,
-      ADMIN_FEEDS_URL,
       SUBSCRIPTION_ADD_URL,
       LOGOUT_URL
     ])
@@ -113,7 +110,7 @@ describe('Navigation', () => {
     const wrapper = createWrapper()
     wrapper.navigationItems.forEach(item => item.invoke('onClick')())
 
-    expect(props.onClick).toHaveBeenCalledTimes(11)
+    expect(props.onClick).toHaveBeenCalledTimes(10)
   })
 
   it('should render navigation with subscriptions.unseen > 0', () => {
@@ -128,7 +125,6 @@ describe('Navigation', () => {
       'Bookmarks',
       'Settings',
       'Admin',
-      'Feeds',
       'Add subscription',
       'Logout'
     ])

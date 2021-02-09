@@ -104,4 +104,10 @@ describe('SubscriptionEditForm', () => {
 
     expect(props.deleteSubscription).toHaveBeenCalledWith('uuid1')
   })
+
+  it('should pass expected props to subscription fetch errors component', () => {
+    expect(createWrapper().find('SubscriptionFetchErrors').props()).toEqual({
+      uuid: 'uuid1',
+    })
+  })
 })

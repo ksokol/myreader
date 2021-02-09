@@ -1,22 +1,22 @@
 package myreader.resource.subscription.beans;
 
 import myreader.repository.SubscriptionRepository;
-import myreader.service.feed.FeedService;
+import myreader.service.subscription.SubscriptionService;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import static java.util.Objects.requireNonNull;
+import java.util.Objects;
 
 public class SubscribePostRequestValidator implements Validator {
 
   private static final String FIELD_NAME = "origin";
 
   private final SubscriptionRepository subscriptionRepository;
-  private final UrlValidator urlValidator;
+  private final SubscriptionService subscriptionService;
 
-  public SubscribePostRequestValidator(SubscriptionRepository subscriptionRepository, FeedService feedService) {
-    this.subscriptionRepository = requireNonNull(subscriptionRepository, "subscriptionRepository is null");
-    urlValidator = new UrlValidator(requireNonNull(feedService, "feedService is null"));
+  public SubscribePostRequestValidator(SubscriptionRepository subscriptionRepository, SubscriptionService subscriptionService) {
+    this.subscriptionRepository = Objects.requireNonNull(subscriptionRepository, "subscriptionRepository is null");
+    this.subscriptionService = Objects.requireNonNull(subscriptionService, "subscriptionService is null");
   }
 
   @Override
@@ -29,9 +29,11 @@ public class SubscribePostRequestValidator implements Validator {
     SubscribePostRequest request = (SubscribePostRequest) target;
     String origin = request.getOrigin();
 
-    urlValidator.validate(request.getOrigin(), errors);
+    if (!subscriptionService.valid(origin)) {
+      errors.rejectValue(FIELD_NAME, "ValidSyndication.url", "invalid syndication feed");
+    }
 
-    if (subscriptionRepository.findByFeedUrl(origin).isPresent()) {
+    if (subscriptionRepository.findByUrl(origin).isPresent()) {
       errors.rejectValue(FIELD_NAME, "UniqueSubscription.origin", "subscription exists");
     }
   }

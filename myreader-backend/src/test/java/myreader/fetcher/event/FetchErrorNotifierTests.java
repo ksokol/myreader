@@ -1,16 +1,17 @@
 package myreader.fetcher.event;
 
-import myreader.entity.Feed;
 import myreader.entity.FetchError;
-import myreader.repository.FeedRepository;
+import myreader.entity.Subscription;
 import myreader.repository.FetchErrorRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import myreader.repository.SubscriptionRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasProperty;
@@ -23,47 +24,43 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
-/**
- * @since 2016-09
- */
-@RunWith(MockitoJUnitRunner.class)
-public class FetchErrorNotifierTests {
+@ExtendWith(MockitoExtension.class)
+class FetchErrorNotifierTests {
 
-    @InjectMocks
-    private FetchErrorNotifier notifier;
+  @InjectMocks
+  private FetchErrorNotifier notifier;
 
-    @Mock
-    private FeedRepository feedRepository;
+  @Mock
+  private SubscriptionRepository subscriptionRepository;
 
-    @Mock
-    private FetchErrorRepository fetchErrorRepository;
+  @Mock
+  private FetchErrorRepository fetchErrorRepository;
 
-    @Test
-    public void shouldNotPersistEventWhenFeedIsUnknown() {
-        given(feedRepository.findByUrl("url")).willReturn(null);
+  @Test
+  void shouldNotPersistEventWhenFeedIsUnknown() {
+    given(subscriptionRepository.findByUrl("url")).willReturn(Optional.empty());
 
-        notifier.processFetchErrorEvent(new FetchErrorEvent("url", "irrelevant"));
+    notifier.processFetchErrorEvent(new FetchErrorEvent("url", "irrelevant"));
 
-        verify(feedRepository).findByUrl("url");
-        verify(fetchErrorRepository, never()).save(any(FetchError.class));
-    }
+    verify(fetchErrorRepository, never()).save(any(FetchError.class));
+  }
 
-    @Test
-    public void shouldPersistEvent() {
-        Feed feed = new Feed("title", "url");
+  @Test
+  void shouldPersistEvent() {
+    Subscription subscription = new Subscription("url", "title");
 
-        given(feedRepository.findByUrl("url")).willReturn(feed);
+    given(subscriptionRepository.findByUrl("url")).willReturn(Optional.of(subscription));
 
-        notifier.processFetchErrorEvent(new FetchErrorEvent("url", "errorMessage"));
+    notifier.processFetchErrorEvent(new FetchErrorEvent("url", "errorMessage"));
 
-        verify(fetchErrorRepository).save(argThat(
-                allOf(
-                        hasProperty("id", nullValue()),
-                        hasProperty("feed", is(feed)),
-                        hasProperty("message", is("errorMessage")),
-                        hasProperty("createdAt", instanceOf(Date.class))
-                ))
-        );
-    }
+    verify(fetchErrorRepository).save(argThat(
+      allOf(
+        hasProperty("id", nullValue()),
+        hasProperty("subscription", is(subscription)),
+        hasProperty("message", is("errorMessage")),
+        hasProperty("createdAt", instanceOf(Date.class))
+      ))
+    );
+  }
 
 }

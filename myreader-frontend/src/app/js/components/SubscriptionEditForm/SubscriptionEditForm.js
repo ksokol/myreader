@@ -6,6 +6,7 @@ import {Button, ConfirmButton} from '../Buttons'
 import {Icon} from '../Icon/Icon'
 import {Input} from '../Input/Input'
 import {SubscriptionExclusions} from './SubscriptionExclusions/SubscriptionExclusions'
+import {SubscriptionFetchErrors} from './SubscriptionFetchErrors/SubscriptionFetchErrors'
 
 class SubscriptionEditForm extends React.Component {
 
@@ -63,77 +64,88 @@ class SubscriptionEditForm extends React.Component {
     } = this.state
 
     return (
-      <form
-        className='my-subscription-edit-form'
-      >
-        <Input
-          name='title'
-          value={title}
-          label='Title'
-          disabled={changePending}
-          validations={validations}
-          onChange={({target: {value}}) => this.setState({title: value})}
-        />
-
-        <div
-          className='my-subscription-edit-form__origin'
+      <>
+        <form
+          className='my-subscription-edit-form'
         >
           <Input
-            name='origin'
-            value={origin}
-            label='Url'
+            name='title'
+            value={title}
+            label='Title'
             disabled={changePending}
             validations={validations}
-            onChange={({target: {value}}) => this.setState({origin: value})}
+            onChange={({target: {value}}) => this.setState({title: value})}
           />
 
-          <a
-            href={origin}
-            target='_blank'
-            rel='noopener noreferrer'
+          <div
+            className='my-subscription-edit-form__origin'
           >
-            <Icon
-              type='link'
+            <Input
+              name='origin'
+              value={origin}
+              label='Url'
+              disabled={changePending}
+              validations={validations}
+              onChange={({target: {value}}) => this.setState({origin: value})}
             />
-          </a>
-        </div>
 
-        <AutocompleteInput
-          name='tag'
-          label='Tag'
-          disabled={changePending}
-          value={name}
-          values={subscriptionTags.map(it => it.name)}
-          onSelect={name => this.setState({name})}
-        />
+            <a
+              href={origin}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <Icon
+                type='link'
+              />
+            </a>
+          </div>
 
+          <AutocompleteInput
+            name='tag'
+            label='Tag'
+            disabled={changePending}
+            value={name}
+            values={subscriptionTags.map(it => it.name)}
+            onSelect={name => this.setState({name})}
+          />
+
+          <h2
+            className='my-subscription-edit-form__pattern-title'>
+            Patterns to ignore
+          </h2>
+
+          <SubscriptionExclusions
+            subscription={data}
+          />
+
+          <div
+            className='my-subscription-edit-form__buttons'
+          >
+            <Button
+              disabled={changePending}
+              onClick={this.onSaveSubscription}
+              primary>
+              Save
+            </Button>
+
+            <ConfirmButton
+              disabled={changePending}
+              onClick={() => deleteSubscription(data.uuid)}
+              caution>
+              Delete
+            </ConfirmButton>
+          </div>
+
+        </form>
         <h2
-          className='my-subscription-edit-form__pattern-title'>
-          Patterns to ignore
-        </h2>
-
-        <SubscriptionExclusions
-          subscription={data}
-        />
-
-        <div
-          className='my-subscription-edit-form__buttons'
+          className='my-subscription-edit-form__fetch-error-title'
         >
-          <Button
-            disabled={changePending}
-            onClick={this.onSaveSubscription}
-            primary>
-            Save
-          </Button>
-
-          <ConfirmButton
-            disabled={changePending}
-            onClick={() => deleteSubscription(data.uuid)}
-            caution>
-            Delete
-          </ConfirmButton>
-        </div>
-      </form>
+          Fetch errors
+        </h2>
+        <SubscriptionFetchErrors
+          uuid={data.uuid}
+        />
+      </>
     )
   }
 }

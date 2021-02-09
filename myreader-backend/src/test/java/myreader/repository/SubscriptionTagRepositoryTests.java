@@ -1,9 +1,7 @@
 package myreader.repository;
 
-import myreader.entity.Feed;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionTag;
-import myreader.test.ClearDb;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +20,6 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 
 @ExtendWith(SpringExtension.class)
-@ClearDb
 @DataJpaTest(showSql = false)
 @WithTestProperties
 class SubscriptionTagRepositoryTests {
@@ -38,12 +35,9 @@ class SubscriptionTagRepositoryTests {
 
   @BeforeEach
   void setUp() {
-    var feed1 = em.persist(new Feed("irrelevant", "irrelevant"));
-    var feed2 = em.persist(new Feed("irrelevant", "irrelevant"));
-
-    var subscription1 = em.persist(new Subscription(feed1));
-    var subscription2 = em.persist(new Subscription(feed2));
-    var subscription3 = em.persist(new Subscription(feed1));
+    var subscription1 = em.persist(new Subscription("irrelevant", "irrelevant"));
+    var subscription2 = em.persist(new Subscription("irrelevant", "irrelevant"));
+    var subscription3 = em.persist(new Subscription("irrelevant", "irrelevant"));
 
     subscriptionTag1 = new SubscriptionTag("b-tag", subscription1);
     subscriptionTag1.setColor("#111111");

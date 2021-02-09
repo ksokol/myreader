@@ -19,6 +19,9 @@ const subscriptionTags = {
   links: [],
   content: []
 }
+const fetchErrors = {
+  content: []
+}
 const exclusions = {
   content: []
 }
@@ -71,6 +74,7 @@ describe('SubscriptionEditPage', () => {
 
     fetch.jsonResponseOnce(subscription)
     fetch.jsonResponseOnce(subscriptionTags)
+    fetch.jsonResponseOnce(fetchErrors)
     fetch.jsonResponseOnce(exclusions)
   })
 
@@ -85,13 +89,16 @@ describe('SubscriptionEditPage', () => {
     expect(screen.queryByRole('validations')).not.toBeInTheDocument()
   })
 
-  it('should fetch subscription tags and subscription for given uuid', async () => {
+  it('should fetch subscription tags, fetch errors and subscription for given uuid', async () => {
     await renderComponent()
 
     expect(fetch.first()).toMatchGetRequest({
       url: 'api/2/subscriptions/1'
     })
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.nthRequest(1)).toMatchGetRequest({
+      url: 'api/2/subscriptions/1/fetchError'
+    })
+    expect(fetch.nthRequest(2)).toMatchGetRequest({
       url: 'api/2/exclusions/1/pattern'
     })
   })

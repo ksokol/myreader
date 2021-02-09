@@ -35,8 +35,8 @@ describe('SubscriptionListPage', () => {
 
     fetch.jsonResponseOnce({
       content: [
-        {uuid: '1', title: 'title1', createdAt: 'createdAt1'},
-        {uuid: '2', title: 'title2', createdAt: 'createdAt2'},
+        {uuid: '1', title: 'title1', createdAt: 'createdAt1', fetchErrorCount: 42},
+        {uuid: '2', title: 'title2', createdAt: 'createdAt2', fetchErrorCount: 0},
       ]
     })
   })

@@ -1,41 +1,35 @@
 package myreader.fetcher.jobs;
 
-import myreader.entity.Feed;
 import myreader.fetcher.jobs.purge.EntryPurger;
 import myreader.fetcher.jobs.purge.RetainDateDeterminer;
-import myreader.repository.FeedRepository;
+import myreader.repository.SubscriptionRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
-/**
- * @author Kamill Sokol
- */
 @Component
 @ConditionalOnTaskEnabled
 public class EntryPurgeJob extends BaseJob {
 
-    private final FeedRepository feedRepository;
-    private final EntryPurger entryPurger;
-    private final RetainDateDeterminer determiner;
+  private final SubscriptionRepository subscriptionRepository;
+  private final EntryPurger entryPurger;
+  private final RetainDateDeterminer determiner;
 
-    public EntryPurgeJob(FeedRepository feedRepository, EntryPurger entryPurger, RetainDateDeterminer determiner) {
-        super("entryPurgeJob");
-        this.feedRepository = feedRepository;
-        this.entryPurger = entryPurger;
-        this.determiner = determiner;
+  public EntryPurgeJob(SubscriptionRepository subscriptionRepository, EntryPurger entryPurger, RetainDateDeterminer determiner) {
+    super("entryPurgeJob");
+    this.subscriptionRepository = subscriptionRepository;
+    this.entryPurger = entryPurger;
+    this.determiner = determiner;
+  }
+
+  @Scheduled(cron = "0 33 3 * * *")
+  @Override
+  public void work() {
+    var subscriptions = subscriptionRepository.findAll();
+
+    for (var subscription : subscriptions) {
+      getLog().info("start cleaning old entries from feed '{} ({})'", subscription.getTitle(), subscription.getId());
+      determiner.determine(subscription).ifPresent(retainDate -> entryPurger.purge(subscription.getId(), retainDate));
+      getLog().info("finished cleaning old entries from feed '{} ({})'", subscription.getTitle(), subscription.getId());
     }
-
-    @Scheduled(cron = "0 33 3 * * *")
-    @Override
-    public void work() {
-        List<Feed> feeds = feedRepository.findAll();
-
-        for (Feed feed : feeds) {
-            getLog().info("start cleaning old entries from feed '{} ({})'", feed.getTitle(), feed.getId());
-            determiner.determine(feed).ifPresent(retainDate -> entryPurger.purge(feed.getId(), retainDate));
-            getLog().info("finished cleaning old entries from feed '{} ({})'", feed.getTitle(), feed.getId());
-        }
-    }
+  }
 }
