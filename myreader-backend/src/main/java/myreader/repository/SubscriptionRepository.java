@@ -25,12 +25,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
   Optional<Subscription> findByUrl(String url);
 
   @Transactional
-  @Query("update Subscription set lastFeedEntryId = ?1 where id = ?2")
+  @Query("update Subscription set fetchCount = fetchCount + 1 where id = ?1")
   @Modifying
-  void updateLastFeedEntryId(Long feedEntryId, Long subscriptionId);
-
-  @Transactional
-  @Query("update Subscription set lastFeedEntryId = ?1, fetchCount = fetchCount + 1 where id = ?2")
-  @Modifying
-  void updateLastFeedEntryIdAndIncrementFetchCount(Long feedEntryId, Long subscriptionId);
+  void incrementFetchCount(Long subscriptionId);
 }

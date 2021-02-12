@@ -1,6 +1,5 @@
 package myreader.resource.subscriptionentry;
 
-import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionTag;
@@ -51,17 +50,13 @@ class SubscriptionEntryEntityResourceTests {
     subscription.setTitle("user112_subscription1");
     subscription = em.persist(subscription);
 
-    var feedEntry = new FeedEntry(subscription);
-    feedEntry.setTitle("Bliki: TellDontAsk");
-    feedEntry.setContent("content");
-    feedEntry.setUrl("http://martinfowler.com/bliki/TellDontAsk.html");
-    feedEntry = em.persist(feedEntry);
-
-    subscriptionEntry = new SubscriptionEntry(subscription, feedEntry);
+    subscriptionEntry = new SubscriptionEntry(subscription);
+    subscriptionEntry.setTitle("Bliki: TellDontAsk");
+    subscriptionEntry.setContent("content");
+    subscriptionEntry.setUrl("http://martinfowler.com/bliki/TellDontAsk.html");
     subscriptionEntry.setTags(Set.of("tag3"));
     subscriptionEntry.setSeen(true);
     subscriptionEntry.setCreatedAt(new Date(1000));
-    subscriptionEntry.setFeedEntry(feedEntry);
     subscriptionEntry = em.persist(subscriptionEntry);
 
     var subscriptionTag = new SubscriptionTag("tag1", subscription);

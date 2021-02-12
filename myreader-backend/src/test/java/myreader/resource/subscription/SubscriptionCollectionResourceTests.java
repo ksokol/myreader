@@ -1,6 +1,5 @@
 package myreader.resource.subscription;
 
-import myreader.entity.FeedEntry;
 import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
@@ -86,8 +85,7 @@ class SubscriptionCollectionResourceTests {
     subscription2.setSubscriptionTag(subscriptionTag2);
     subscriptionTag2 = em.persistAndFlush(subscriptionTag2);
 
-    var feedEntry = em.persist(new FeedEntry(subscription2));
-    var subscriptionEntry2 = new SubscriptionEntry(subscription2, feedEntry);
+    var subscriptionEntry2 = new SubscriptionEntry(subscription2);
     subscriptionEntry2.setSeen(false);
     em.persistAndFlush(subscriptionEntry2);
 

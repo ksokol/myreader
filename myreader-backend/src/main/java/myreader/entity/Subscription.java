@@ -31,13 +31,11 @@ public class Subscription {
   private String url;
   private int unseen;
   private Date createdAt;
-  private Long lastFeedEntryId;
   private int fetchCount;
   private String lastModified;
   private Integer fetched = 0;
   private Integer resultSizePerFetch;
   private Set<SubscriptionEntry> subscriptionEntries;
-  private Set<FeedEntry> entries;
   private Set<ExclusionPattern> exclusions;
   private SubscriptionTag subscriptionTag;
   private long fetchErrorCount;
@@ -147,15 +145,6 @@ public class Subscription {
     }
   }
 
-  @Column(name = "last_feed_entry")
-  public Long getLastFeedEntryId() {
-    return lastFeedEntryId;
-  }
-
-  public void setLastFeedEntryId(Long lastFeedEntryId) {
-    this.lastFeedEntryId = lastFeedEntryId;
-  }
-
   @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
   public Set<ExclusionPattern> getExclusions() {
     return exclusions;
@@ -172,15 +161,6 @@ public class Subscription {
 
   public void setSubscriptionEntries(Set<SubscriptionEntry> subscriptionEntries) {
     this.subscriptionEntries = subscriptionEntries;
-  }
-
-  @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
-  public Set<FeedEntry> getEntries() {
-    return entries;
-  }
-
-  public void setEntries(Set<FeedEntry> entries) {
-    this.entries = entries;
   }
 
   @ManyToOne(fetch = FetchType.EAGER)

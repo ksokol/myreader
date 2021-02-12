@@ -1,56 +1,43 @@
 package myreader.fetcher;
 
-import myreader.entity.FeedEntry;
 import myreader.fetcher.persistence.FetchResult;
-import myreader.repository.FeedEntryRepository;
+import myreader.repository.SubscriptionEntryRepository;
 import myreader.repository.SubscriptionRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
 
 @Component
 public class SubscriptionBatch {
 
   private final SubscriptionRepository subscriptionRepository;
-  private final FeedEntryRepository feedEntryRepository;
-  private final Clock clock;
+  private final SubscriptionEntryRepository subscriptionEntryRepository;
+  private final SubscriptionEntryBatch subscriptionEntryBatch;
 
   public SubscriptionBatch(
     SubscriptionRepository subscriptionRepository,
-    FeedEntryRepository feedEntryRepository,
-    Clock clock) {
+    SubscriptionEntryRepository subscriptionEntryRepository,
+    SubscriptionEntryBatch subscriptionEntryBatch
+  ) {
     this.subscriptionRepository = subscriptionRepository;
-    this.feedEntryRepository = feedEntryRepository;
-    this.clock = clock;
+    this.subscriptionEntryRepository = subscriptionEntryRepository;
+    this.subscriptionEntryBatch = subscriptionEntryBatch;
   }
 
   @Transactional
-  public void updateUserSubscriptions(FetchResult fetchResult) {
+  public void update(FetchResult fetchResult) {
     subscriptionRepository.findByUrl(fetchResult.getUrl()).ifPresent(subscription -> {
       var newCount = 0;
 
-      for (var dto : fetchResult.getEntries()) {
-        var result = feedEntryRepository.countByTitleOrGuidOrUrlAndSubscriptionId(
-          dto.getTitle(),
-          dto.getGuid(),
-          dto.getUrl(),
+      for (var fetcherEntry : fetchResult.getEntries()) {
+        var result = subscriptionEntryRepository.countByTitleOrGuidOrUrlAndSubscriptionId(
+          fetcherEntry.getTitle(),
+          fetcherEntry.getGuid(),
+          fetcherEntry.getUrl(),
           subscription.getId()
         );
 
         if (result == 0) {
-          var feedEntry = new FeedEntry(subscription);
-          feedEntry.setContent(dto.getContent());
-          feedEntry.setGuid(dto.getGuid());
-          feedEntry.setTitle(dto.getTitle());
-          feedEntry.setUrl(dto.getUrl());
-          feedEntry.setCreatedAt(now());
-
-          feedEntryRepository.save(feedEntry);
-
+          subscriptionEntryBatch.update(subscription, fetcherEntry);
           newCount++;
         }
       }
@@ -64,9 +51,5 @@ public class SubscriptionBatch {
 
       subscriptionRepository.save(subscription);
     });
-  }
-
-  private Date now() {
-    return Date.from(LocalDateTime.now(clock).toInstant(ZoneOffset.UTC));
   }
 }

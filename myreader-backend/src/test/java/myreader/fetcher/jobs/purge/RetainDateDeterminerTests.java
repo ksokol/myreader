@@ -1,8 +1,8 @@
 package myreader.fetcher.jobs.purge;
 
-import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
-import myreader.repository.FeedEntryRepository;
+import myreader.entity.SubscriptionEntry;
+import myreader.repository.SubscriptionEntryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,13 +24,13 @@ class RetainDateDeterminerTests {
   private RetainDateDeterminer determiner;
 
   @Mock
-  private FeedEntryRepository feedEntryRepository;
+  private SubscriptionEntryRepository subscriptionEntryRepository;
 
   private Subscription subscription;
 
   @BeforeEach
   void setUp() {
-    determiner = new RetainDateDeterminer(feedEntryRepository, 2);
+    determiner = new RetainDateDeterminer(subscriptionEntryRepository, 2);
     subscription = new Subscription("url", "title");
     subscription.setId(1L);
     subscription.setResultSizePerFetch(5);
@@ -38,7 +38,7 @@ class RetainDateDeterminerTests {
 
   @Test
   void shouldNotDetermineRetainDateWhenEntryCountIsBelowThreshold() {
-    given(feedEntryRepository.countBySubscriptionId(1L))
+    given(subscriptionEntryRepository.countBySubscriptionId(1L))
       .willReturn(1L);
 
     assertThat(determiner.determine(subscription))
@@ -47,7 +47,7 @@ class RetainDateDeterminerTests {
 
   @Test
   void shouldNotDetermineRetainDateWhenEntryCountIsEqualToThreshold() {
-    given(feedEntryRepository.countBySubscriptionId(1L))
+    given(subscriptionEntryRepository.countBySubscriptionId(1L))
       .willReturn(5L);
 
     assertThat(determiner.determine(subscription))
@@ -56,9 +56,9 @@ class RetainDateDeterminerTests {
 
   @Test
   void shouldNotDetermineRetainDateWhenNoEntriesReturnedFromRepositoryQuery() {
-    given(feedEntryRepository.countBySubscriptionId(1L))
+    given(subscriptionEntryRepository.countBySubscriptionId(1L))
       .willReturn(20L);
-    given(feedEntryRepository.findBySubscriptionIdOrderByCreatedAtDesc(1L, PageRequest.of(0, 5)))
+    given(subscriptionEntryRepository.findBySubscriptionIdOrderByCreatedAtDesc(1L, PageRequest.of(0, 5)))
       .willReturn(new PageImpl<>(createEntries(0)));
 
     assertThat(determiner.determine(subscription))
@@ -67,9 +67,9 @@ class RetainDateDeterminerTests {
 
   @Test
   void shouldDetermineRetainDate() {
-    given(feedEntryRepository.countBySubscriptionId(1L))
+    given(subscriptionEntryRepository.countBySubscriptionId(1L))
       .willReturn(20L);
-    given(feedEntryRepository.findBySubscriptionIdOrderByCreatedAtDesc(1L, PageRequest.of(0, 5)))
+    given(subscriptionEntryRepository.findBySubscriptionIdOrderByCreatedAtDesc(1L, PageRequest.of(0, 5)))
       .willReturn(new PageImpl<>(createEntries(5)));
 
     assertThat(determiner.determine(this.subscription))
@@ -77,13 +77,13 @@ class RetainDateDeterminerTests {
       .hasValue(new Date(5000));
   }
 
-  private List<FeedEntry> createEntries(int index) {
-    List<FeedEntry> entries = new ArrayList<>(index);
+  private List<SubscriptionEntry> createEntries(int index) {
+    List<SubscriptionEntry> entries = new ArrayList<>(index);
     var subscription = new Subscription("url", "feed");
     for (int i = 0; i < index; i++) {
-      var feedEntry = new FeedEntry(subscription);
-      feedEntry.setCreatedAt(new Date(index * 1000L));
-      entries.add(feedEntry);
+      var subscriptionEntry = new SubscriptionEntry(subscription);
+      subscriptionEntry.setCreatedAt(new Date(index * 1000L));
+      entries.add(subscriptionEntry);
     }
     return entries;
   }

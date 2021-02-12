@@ -36,7 +36,7 @@ public class SyndFetcherJobTests {
     @Test
     public void shouldNotThrowAnException() {
         when(queueMock.take()).thenReturn(new FetchResult("url1"), new FetchResult("url2"), null);
-        doThrow(new RuntimeException()).when(serviceMock).updateUserSubscriptions(any(FetchResult.class));
+        doThrow(new RuntimeException()).when(serviceMock).update(any(FetchResult.class));
 
         try {
             job.run();
@@ -45,7 +45,7 @@ public class SyndFetcherJobTests {
         }
 
         verify(queueMock, times(3)).take();
-        verify(serviceMock, times(2)).updateUserSubscriptions(any(FetchResult.class));
+        verify(serviceMock, times(2)).update(any(FetchResult.class));
     }
 
     @Test
@@ -56,6 +56,6 @@ public class SyndFetcherJobTests {
         job.run();
 
         verify(queueMock, times(1)).take();
-        verify(serviceMock, never()).updateUserSubscriptions(any(FetchResult.class));
+        verify(serviceMock, never()).update(any(FetchResult.class));
     }
 }

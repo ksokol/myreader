@@ -33,7 +33,7 @@ public class SyndFetcherJob extends BaseJob {
 
         while (fetchResult != null && isAlive()) {
             try {
-                subscriptionBatchService.updateUserSubscriptions(fetchResult);
+                subscriptionBatchService.update(fetchResult);
             } catch(Exception e) {
                 getLog().error("error during subscription update for {}", fetchResult.getUrl(), e);
             }

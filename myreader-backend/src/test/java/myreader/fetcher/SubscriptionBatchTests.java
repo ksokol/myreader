@@ -1,7 +1,7 @@
 package myreader.fetcher;
 
-import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
+import myreader.entity.SubscriptionEntry;
 import myreader.fetcher.persistence.FetchResult;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.test.WithTestProperties;
@@ -9,26 +9,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@DataJpaTest(
-  showSql = false,
-  includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {SubscriptionBatch.class, SubscriptionBatchTests.TestConfig.class})
-)
+@AutoConfigureTestEntityManager
+@Transactional
+@SpringBootTest
 @WithTestProperties
 class SubscriptionBatchTests {
 
@@ -38,8 +32,8 @@ class SubscriptionBatchTests {
 
   private Subscription subscription1;
   private Subscription subscription2;
-  private FeedEntry feedEntry1;
-  private FeedEntry feedEntry12;
+  private SubscriptionEntry feedEntry1;
+  private SubscriptionEntry feedEntry12;
 
   @Autowired
   private TestEntityManager em;
@@ -51,9 +45,10 @@ class SubscriptionBatchTests {
   void setUp() {
     subscription1 = new Subscription("http://url1", "title1");
     subscription1.setFetched(1);
+    subscription1.setFetchCount(1);
     subscription1 = em.persist(subscription1);
 
-    feedEntry1 = new FeedEntry(subscription1);
+    feedEntry1 = new SubscriptionEntry(subscription1);
     feedEntry1.setTitle(ENTRY_TITLE);
     feedEntry1.setGuid(ENTRY_GUID);
     feedEntry1.setUrl(ENTRY_URL);
@@ -61,9 +56,10 @@ class SubscriptionBatchTests {
 
     subscription2 = new Subscription("http://url2", "title1");
     subscription2.setFetched(1);
+    subscription2.setFetchCount(1);
     subscription2 = em.persist(subscription2);
 
-    feedEntry12 = new FeedEntry(subscription2);
+    feedEntry12 = new SubscriptionEntry(subscription2);
     feedEntry12.setTitle(ENTRY_TITLE + "12");
     feedEntry12.setGuid(ENTRY_GUID + "12");
     feedEntry12.setUrl(ENTRY_URL + "12");
@@ -72,69 +68,71 @@ class SubscriptionBatchTests {
 
   @Test
   void shouldNotSaveFeedEntryWhenFeedIsUnknown() {
-    subscriptionBatch.updateUserSubscriptions(new FetchResult("http://unknown"));
+    subscriptionBatch.update(new FetchResult("http://unknown"));
 
-    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
       .extracting("id")
       .contains(feedEntry1.getId(), feedEntry12.getId());
   }
 
   @Test
   void shouldNotSaveFeedEntryWhenResultIsEmpty() {
-    subscriptionBatch.updateUserSubscriptions(new FetchResult(List.of(), "last modified", "title", "http://unknown", 0));
+    subscriptionBatch.update(
+      new FetchResult(List.of(), "last modified", "title", "http://unknown", 0)
+    );
 
-    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
       .extracting("id")
       .contains(feedEntry1.getId(), feedEntry12.getId());
   }
 
   @Test
   void shouldNotSaveFeedEntryWhenOnlyTitleChanged() {
-    subscriptionBatch.updateUserSubscriptions(
+    subscriptionBatch.update(
       new FetchResult(List.of(newTitle()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
       .extracting("id")
       .contains(feedEntry1.getId(), feedEntry12.getId());
   }
 
   @Test
   void shouldNotSaveFeedEntryWhenOnlyGuidChanged() {
-    subscriptionBatch.updateUserSubscriptions(
+    subscriptionBatch.update(
       new FetchResult(List.of(newGuid()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
       .extracting("id")
       .contains(feedEntry1.getId(), feedEntry12.getId());
   }
 
   @Test
   void shouldNotSaveFeedEntryWhenOnlyUrlChanged() {
-    subscriptionBatch.updateUserSubscriptions(
+    subscriptionBatch.update(
       new FetchResult(List.of(newUrl()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
       .extracting("id")
       .contains(feedEntry1.getId(), feedEntry12.getId());
   }
 
   @Test
   void shouldSaveFeedEntry() {
-    subscriptionBatch.updateUserSubscriptions(
+    subscriptionBatch.update(
       new FetchResult(List.of(newEntry()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.getEntityManager().createQuery("select fe from FeedEntry fe", FeedEntry.class).getResultList())
+    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
       .extracting("id")
       .contains(feedEntry1.getId(), feedEntry12.getId(), feedEntry12.getId() + 1);
   }
 
   @Test
   void shouldNotIncrementFetchedCountWhenNoNewFeedEntryArrived() {
-    subscriptionBatch.updateUserSubscriptions(
+    subscriptionBatch.update(
       new FetchResult(List.of(existing()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
@@ -145,11 +143,12 @@ class SubscriptionBatchTests {
     assertThat(em.find(Subscription.class, subscription2.getId()))
       .hasFieldOrPropertyWithValue("lastModified", null)
       .hasFieldOrPropertyWithValue("fetched", 1);
+
   }
 
   @Test
-  void shouldIncrementFetchedCountWhenOnlyTitleChanged() {
-    subscriptionBatch.updateUserSubscriptions(
+  void shouldNotIncrementFetchedCountWhenOnlyTitleChanged() {
+    subscriptionBatch.update(
       new FetchResult(List.of(newTitle()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
@@ -163,8 +162,8 @@ class SubscriptionBatchTests {
   }
 
   @Test
-  void shouldIncrementFetchedCountWhenOnlyGuidChanged() {
-    subscriptionBatch.updateUserSubscriptions(
+  void shouldNotIncrementFetchedCountWhenOnlyGuidChanged() {
+    subscriptionBatch.update(
       new FetchResult(List.of(newGuid()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
@@ -178,8 +177,8 @@ class SubscriptionBatchTests {
   }
 
   @Test
-  void shouldIncrementFetchedCountWhenOnlyUrlChanged() {
-    subscriptionBatch.updateUserSubscriptions(
+  void shouldNotIncrementFetchedCountWhenOnlyUrlChanged() {
+    subscriptionBatch.update(
       new FetchResult(List.of(newUrl()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
@@ -194,7 +193,7 @@ class SubscriptionBatchTests {
 
   @Test
   void shouldIncrementFetchedCountWhenNewEntryArrived() {
-    subscriptionBatch.updateUserSubscriptions(
+    subscriptionBatch.update(
       new FetchResult(List.of(newEntry()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
@@ -209,7 +208,9 @@ class SubscriptionBatchTests {
 
   @Test
   void shouldUpdateResultSizePerFetchWhenCountIsGreaterThanZero() {
-    subscriptionBatch.updateUserSubscriptions(new FetchResult(List.of(), null, null, subscription1.getUrl(), 10));
+    subscriptionBatch.update(
+      new FetchResult(List.of(), null, null, subscription1.getUrl(), 10)
+    );
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("resultSizePerFetch", 10);
@@ -217,19 +218,12 @@ class SubscriptionBatchTests {
 
   @Test
   void shouldNotUpdateResultSizePerFetchWhenCountIsZero() {
-    subscriptionBatch.updateUserSubscriptions(new FetchResult(List.of(), null, null, subscription1.getUrl(), 0));
+    subscriptionBatch.update(
+      new FetchResult(List.of(), null, null, subscription1.getUrl(), 0)
+    );
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("resultSizePerFetch", 1000);
-  }
-
-  @TestConfiguration
-  static class TestConfig {
-
-    @Bean
-    Clock clock() {
-      return Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
-    }
   }
 
   private FetcherEntry newTitle() {

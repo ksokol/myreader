@@ -1,6 +1,5 @@
 package myreader.repository;
 
-import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.test.WithTestProperties;
@@ -26,8 +25,6 @@ import static org.hamcrest.Matchers.is;
 @WithTestProperties
 class SubscriptionRepositoryTests {
 
-  private static final long FEED_ENTRY_ID = 1L;
-
   @Autowired
   private SubscriptionRepository subscriptionRepository;
 
@@ -49,11 +46,8 @@ class SubscriptionRepositoryTests {
     subscription2.setCreatedAt(new Date(2000));
     subscription2 = testEntityManager.persistFlushFind(subscription2);
 
-    var fe1 = testEntityManager.persistFlushFind(new FeedEntry(subscription1));
-    var fe2 = testEntityManager.persistFlushFind(new FeedEntry(subscription1));
-
-    var subscriptionEntry1 = new SubscriptionEntry(subscription1, fe1);
-    var subscriptionEntry2 = new SubscriptionEntry(subscription1, fe2);
+    var subscriptionEntry1 = testEntityManager.persistFlushFind(new SubscriptionEntry(subscription1));
+    var subscriptionEntry2 = testEntityManager.persistFlushFind(new SubscriptionEntry(subscription1));
 
     subscriptionEntry1.setSeen(false);
     subscriptionEntry2.setSeen(false);
@@ -61,28 +55,6 @@ class SubscriptionRepositoryTests {
     testEntityManager.persistAndFlush(subscriptionEntry1);
     testEntityManager.persistAndFlush(subscriptionEntry2);
     subscription1 = testEntityManager.refresh(subscription1);
-  }
-
-  @Test
-  void updateLastFeedEntry() {
-    subscriptionRepository.updateLastFeedEntryId(FEED_ENTRY_ID, subscription1.getId());
-    testEntityManager.clear();
-
-    assertThat(
-      testEntityManager.find(Subscription.class, subscription1.getId()),
-      hasProperty("lastFeedEntryId", is(FEED_ENTRY_ID))
-    );
-  }
-
-  @Test
-  void updateLastFeedEntryIdAndIncrementFetchCount() {
-    subscriptionRepository.updateLastFeedEntryIdAndIncrementFetchCount(FEED_ENTRY_ID, subscription1.getId());
-    testEntityManager.clear();
-
-    var actual = testEntityManager.find(Subscription.class, subscription1.getId());
-
-    assertThat(actual, hasProperty("lastFeedEntryId", is(FEED_ENTRY_ID)));
-    assertThat(actual, hasProperty("fetchCount", is(1)));
   }
 
   @Test

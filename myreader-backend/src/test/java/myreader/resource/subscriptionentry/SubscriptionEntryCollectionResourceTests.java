@@ -1,7 +1,6 @@
 package myreader.resource.subscriptionentry;
 
 import com.jayway.jsonpath.JsonPath;
-import myreader.entity.FeedEntry;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.entity.SubscriptionTag;
@@ -71,44 +70,32 @@ class SubscriptionEntryCollectionResourceTests {
     subscription2.setSubscriptionTag(subscriptionTag2);
     subscription2 = em.persist(subscription2);
 
-    var feedEntry1 = new FeedEntry(subscription1);
-    feedEntry1.setTitle("some entry1 title");
-    feedEntry1.setContent("some entry1 content");
-    feedEntry1 = em.persistAndFlush(feedEntry1);
-
-    var feedEntry2 = new FeedEntry(subscription1);
-    feedEntry2.setTitle("some entry2 title");
-    feedEntry2.setContent("some entry2 content");
-    feedEntry2.setUrl("http://example.com/feedentry2");
-    feedEntry2 = em.persistAndFlush(feedEntry2);
-
-    var feedEntry3 = new FeedEntry(subscription1);
-    feedEntry3.setTitle("some entry3 title");
-    feedEntry3.setContent("some entry3 content");
-    feedEntry3 = em.persistAndFlush(feedEntry3);
-
-    var feedEntry4 = new FeedEntry(subscription1);
-    feedEntry4.setTitle("some entry4 title");
-    feedEntry4.setContent("some entry4 content");
-    feedEntry4.setUrl("http://example.com/feedentry4");
-    feedEntry4.setCreatedAt(new Date(1000));
-    feedEntry4 = em.persistAndFlush(feedEntry4);
-
-    subscriptionEntry1 = new SubscriptionEntry(subscription1, feedEntry1);
+    subscriptionEntry1 = new SubscriptionEntry(subscription1);
+    subscriptionEntry1.setTitle("some entry1 title");
+    subscriptionEntry1.setContent("some entry1 content");
     subscriptionEntry1.setTags(Set.of("tag1", "tag2", "tag3"));
     subscriptionEntry1.setSeen(true);
     subscriptionEntry1.setCreatedAt(new Date(1000));
+    subscriptionEntry1 = em.persistAndFlush(subscriptionEntry1);
 
-    subscriptionEntry2 = new SubscriptionEntry(subscription2, feedEntry2);
+    subscriptionEntry2 = new SubscriptionEntry(subscription2);
+    subscriptionEntry2.setTitle("some entry2 title");
+    subscriptionEntry2.setContent("some entry2 content");
+    subscriptionEntry2.setUrl("http://example.com/feedentry2");
     subscriptionEntry2.setTags(Set.of("tag2-tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9"));
     subscriptionEntry2.setCreatedAt(new Date(2000));
-
-    subscriptionEntry4 = new SubscriptionEntry(subscription1, feedEntry4);
-    subscriptionEntry4.setCreatedAt(new Date(4000));
-
-    subscriptionEntry1 = em.persistAndFlush(subscriptionEntry1);
     subscriptionEntry2 = em.persistAndFlush(subscriptionEntry2);
-    subscriptionEntry3 = em.persistAndFlush(new SubscriptionEntry(subscription1, feedEntry3));
+
+    subscriptionEntry3 = new SubscriptionEntry(subscription1);
+    subscriptionEntry3.setTitle("some entry3 title");
+    subscriptionEntry3.setContent("some entry3 content");
+    subscriptionEntry3 = em.persistAndFlush(subscriptionEntry3);
+
+    subscriptionEntry4 = new SubscriptionEntry(subscription1);
+    subscriptionEntry4.setTitle("some entry4 title");
+    subscriptionEntry4.setContent("some entry4 content");
+    subscriptionEntry4.setUrl("http://example.com/feedentry4");
+    subscriptionEntry4.setCreatedAt(new Date(4000));
     subscriptionEntry4 = em.persistAndFlush(subscriptionEntry4);
   }
 

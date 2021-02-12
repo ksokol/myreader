@@ -1,6 +1,5 @@
 package myreader.resource.subscription;
 
-import myreader.entity.FeedEntry;
 import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
@@ -79,10 +78,10 @@ class SubscriptionEntityResourceTests {
     fetchError2.setCreatedAt(new Date(2000));
     em.persist(fetchError2);
 
-    var feedEntry = em.persist(new FeedEntry(subscription));
-    em.persistAndFlush(new SubscriptionEntry(subscription, feedEntry));
+    em.persistAndFlush(new SubscriptionEntry(subscription));
 
-    given(subscriptionService.valid("http://example.com")).willReturn(true);
+    given(subscriptionService.valid("http://example.com"))
+      .willReturn(true);
 
     em.clear();
   }
@@ -189,7 +188,7 @@ class SubscriptionEntityResourceTests {
       .andExpect(jsonPath("feedTag.name").value("changed name"))
       .andExpect(jsonPath("feedTag.color").value("#222222"));
 
-    assertThat(em.getEntityManager().createQuery("from SubscriptionTag", SubscriptionTag.class).getResultList())
+    assertThat(em.getEntityManager().createQuery("select st from SubscriptionTag st", SubscriptionTag.class).getResultList())
       .hasSize(1)
       .extracting("name", "color")
       .contains(tuple("changed name", "#222222"));
