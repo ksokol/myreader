@@ -3,9 +3,7 @@ package myreader.config;
 public enum UrlMappings {
 
   LOGIN_PROCESSING("check"),
-  LANDING_PAGE(""),
-  API_2("api/2"),
-  INFO("info");
+  API_2("api/2");
 
   private final String mapping;
 

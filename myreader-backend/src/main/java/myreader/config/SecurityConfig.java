@@ -85,21 +85,4 @@ public class SecurityConfig {
         .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }
   }
-
-  @Order(98)
-  @Configuration
-  class ActuatorSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-      http
-        .antMatcher(UrlMappings.INFO.mapping())
-        .authorizeRequests().antMatchers(UrlMappings.INFO.mapping()).authenticated()
-        .and()
-        .rememberMe().key(rememberMeKey)
-        .and()
-        .csrf().disable()
-        .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-    }
-  }
 }

@@ -16,7 +16,7 @@ const isServed = ENV === 'server'
 const BACKEND_PORT = 19340
 const BACKEND_CONTEXT = 'myreader'
 
-module.exports = function() {
+module.exports = function(env) {
   const config = {}
 
   config.mode = isProd ? 'production' : 'development'
@@ -64,11 +64,6 @@ module.exports = function() {
     config.devtool = 'inline-source-map'
   }
 
-  /**
-   * Reference: http://webpack.github.io/docs/configuration.html#module-loaders
-   * List: http://webpack.github.io/docs/list-of-loaders.html
-   * This handles most of the magic responsible for converting modules
-   */
   config.module = {
     rules: [{
       test: /\.css$/,
@@ -76,12 +71,6 @@ module.exports = function() {
         MiniCssExtractPlugin.loader,
         'css-loader'
       ]
-    }, {
-      // HTML LOADER
-      // Reference: https://github.com/webpack/raw-loader
-      test: /\.html$/,
-      exclude: /node_modules/,
-      use: 'raw-loader'
     }, {
       test: /\.svg$/,
       loader: 'svg-url-loader'
@@ -109,7 +98,11 @@ module.exports = function() {
         favicon: './src/app/img/favicon.ico',
         minify: {
           collapseWhitespace: true
-        }
+        },
+        templateParameters: {
+          'version': env?.version || 'unknown',
+          'commit': env?.commitId || 'unknown',
+        },
       }),
 
       new MiniCssExtractPlugin({
@@ -169,4 +162,4 @@ module.exports = function() {
   }
 
   return config
-}()
+}

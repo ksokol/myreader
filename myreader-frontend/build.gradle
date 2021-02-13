@@ -34,7 +34,8 @@ task build(type: NpmTask, dependsOn: [npmInstall, test], overwrite: true) {
   inputs.files files('src', 'webpack.config.js', '.babelrc')
   outputs.dir file('dist')
 
-  args = ['run', 'build']
+  def commitId = 'git rev-parse --verify --short HEAD'.execute().text.trim()
+  args = ['run', 'build', '--', '--env', "version=$project.version", '--env', "commitId=$commitId"]
 }
 
 clean {

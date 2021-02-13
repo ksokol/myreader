@@ -87,27 +87,6 @@ class ApiSecurityTests {
       .andExpect(status().isOk());
   }
 
-  @Test
-  @WithAnonymousUser
-  void shouldRejectAccessToActuatorInfoEndpointsIfUserIsAnonymous() throws Exception {
-    mockMvc.perform(get("/info"))
-      .andExpect(status().isUnauthorized());
-  }
-
-  @Test
-  @WithMockUser
-  void shouldGrantAccessToActuatorInfoEndpointsIfUserIsAuthenticated() throws Exception {
-    mockMvc.perform(get("/info"))
-      .andExpect(status().isOk());
-  }
-
-  @Test
-  @WithAnonymousUser
-  void shouldGrantAccessToActuatorHealthEndpointsIfUserIsAnonymous() throws Exception {
-    mockMvc.perform(get("/health"))
-      .andExpect(status().isOk());
-  }
-
   @Configuration
   static class TestConfiguration {
 
