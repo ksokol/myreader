@@ -65,7 +65,6 @@ export function BookmarkListPage() {
 
   return (
     <ListLayout
-      className='my-bookmark-list'
       actionPanel={
         <IconButton
           type='redo'
