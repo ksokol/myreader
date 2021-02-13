@@ -60,6 +60,8 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
       predicates.add(cb.lessThan(root.get("id"), next));
     }
 
+    predicates.add(cb.equal(root.get("excluded"), false));
+
     cq.where(predicates.toArray(new Predicate[] {}));
     cq.orderBy(cb.desc(root.get("id")));
 

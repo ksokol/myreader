@@ -31,9 +31,10 @@ public class SubscriptionEntryBatch {
   @Transactional
   public void update(Subscription subscription, FetcherEntry fetcherEntry) {
     var exclusions = exclusionRepository.findBySubscriptionId(subscription.getId());
+    var excluded = false;
 
     for (var exclusionPattern : exclusions) {
-      var excluded = exclusionChecker.isExcluded(
+      excluded = exclusionChecker.isExcluded(
         exclusionPattern.getPattern(),
         fetcherEntry.getTitle(),
         fetcherEntry.getContent(),
@@ -42,7 +43,7 @@ public class SubscriptionEntryBatch {
 
       if (excluded) {
         exclusionRepository.incrementHitCount(exclusionPattern.getId());
-        return;
+        break;
       }
     }
 
@@ -51,8 +52,12 @@ public class SubscriptionEntryBatch {
     subscriptionEntry.setGuid(fetcherEntry.getGuid());
     subscriptionEntry.setTitle(fetcherEntry.getTitle());
     subscriptionEntry.setUrl(fetcherEntry.getUrl());
+    subscriptionEntry.setExcluded(excluded);
 
     subscriptionEntryRepository.save(subscriptionEntry);
-    subscriptionRepository.incrementFetchCount(subscription.getId());
+
+    if (!excluded) {
+      subscriptionRepository.incrementFetchCount(subscription.getId());
+    }
   }
 }

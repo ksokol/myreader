@@ -313,6 +313,24 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content.length()").value(0));
   }
 
+  @Test
+  void shouldnotReturnExcludedEntries() throws Exception {
+    var subscriptionEntry5 = new SubscriptionEntry(subscription1);
+    subscriptionEntry5.setTitle("some entry5 title");
+    subscriptionEntry5.setContent("some entry5 content");
+    subscriptionEntry5.setUrl("http://example.com/feedentry5");
+    subscriptionEntry5.setExcluded(true);
+    subscriptionEntry5.setCreatedAt(new Date(5000));
+    em.persistAndFlush(subscriptionEntry5);
+
+    mockMvc.perform(get("/api/2/subscriptionEntries?size=3"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(3))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry2.getId().toString()));
+  }
+
   private String nextPage(MvcResult mvcResult) throws IOException {
     List<String> nextHrefs = JsonPath.read(mvcResult.getResponse().getContentAsString(), "$.links[?(@.rel=='next')].href");
     if (nextHrefs.size() == 0) {

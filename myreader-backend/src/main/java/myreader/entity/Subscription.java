@@ -120,7 +120,8 @@ public class Subscription {
 
   @Formula(
     "(select count(ufe.user_feed_entry_id) from user_feed_entry ufe " +
-    "where ufe.user_feed_entry_user_feed_id = user_feed_id and ufe.user_feed_entry_is_read = 0)"
+    "where ufe.user_feed_entry_user_feed_id = user_feed_id and ufe.user_feed_entry_is_read = 0 " +
+    "and ufe.excluded = false)"
   )
   public int getUnseen() {
     return unseen;

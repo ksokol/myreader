@@ -2,6 +2,7 @@ package myreader.fetcher;
 
 import myreader.entity.ExclusionPattern;
 import myreader.entity.Subscription;
+import myreader.entity.SubscriptionEntry;
 import myreader.fetcher.persistence.FetcherEntry;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,11 +56,11 @@ class SubscriptionEntryBatchTests {
     subscriptionEntryBatch.update(subscription1, fetcherEntry());
     em.clear();
 
-    assertThat(em.find(Subscription.class, subscription1.getId()).getSubscriptionEntries())
-      .hasSize(1);
+    assertThat(findEntry(subscription1))
+      .hasFieldOrPropertyWithValue("excluded", false);
 
-    assertThat(em.find(Subscription.class, subscription2.getId()).getSubscriptionEntries())
-      .isEmpty();
+    assertThat(findEntry(subscription2))
+      .isNull();
   }
 
   @Test
@@ -123,8 +125,8 @@ class SubscriptionEntryBatchTests {
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("unseen", 0)
       .hasFieldOrPropertyWithValue("fetchCount", 0);
-    assertThat(em.find(Subscription.class, subscription1.getId()).getSubscriptionEntries())
-      .isEmpty();
+    assertThat(findEntry(subscription1))
+      .hasFieldOrPropertyWithValue("excluded", true);
   }
 
   @Test
@@ -139,8 +141,8 @@ class SubscriptionEntryBatchTests {
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("unseen", 0)
       .hasFieldOrPropertyWithValue("fetchCount", 0);
-    assertThat(em.find(Subscription.class, subscription1.getId()).getSubscriptionEntries())
-      .isEmpty();
+    assertThat(findEntry(subscription1))
+      .hasFieldOrPropertyWithValue("excluded", true);
   }
 
   @Test
@@ -155,8 +157,18 @@ class SubscriptionEntryBatchTests {
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("unseen", 0)
       .hasFieldOrPropertyWithValue("fetchCount", 0);
-    assertThat(em.find(Subscription.class, subscription1.getId()).getSubscriptionEntries())
-      .isEmpty();
+    assertThat(findEntry(subscription1))
+      .hasFieldOrPropertyWithValue("excluded", true);
+  }
+
+  private SubscriptionEntry findEntry(Subscription subscription) {
+    TypedQuery<SubscriptionEntry> query = em.getEntityManager().createQuery(
+      "select e from SubscriptionEntry e where e.subscription.id = ?1", SubscriptionEntry.class
+    );
+    query.setParameter(1, subscription.getId());
+
+    var resultList = query.getResultList();
+    return resultList.size() == 1 ? resultList.get(0) : null;
   }
 
   private FetcherEntry fetcherEntry() {

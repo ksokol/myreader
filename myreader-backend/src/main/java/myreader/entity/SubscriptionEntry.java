@@ -38,6 +38,7 @@ public class SubscriptionEntry {
   private String url;
   private String content;
   private boolean seen;
+  private boolean excluded;
   private Set<String> tags;
   private Subscription subscription;
   private Date createdAt;
@@ -106,6 +107,15 @@ public class SubscriptionEntry {
 
   public void setSeen(boolean seen) {
     this.seen = seen;
+  }
+
+  @Column(name = "excluded")
+  public boolean isExcluded() {
+    return excluded;
+  }
+
+  public void setExcluded(boolean excluded) {
+    this.excluded = excluded;
   }
 
   @Column(columnDefinition = "VARCHAR(32)", name = "tag")
