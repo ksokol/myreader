@@ -181,12 +181,11 @@ class SubscriptionEntityResourceTests {
   void shouldReturnFetchErrors() throws Exception {
     mockMvc.perform(get("/api/2/subscriptions/{id}/fetchError", subscription.getId()))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()", is(2)))
-      .andExpect(jsonPath("$.content[0].message", is("message 2")))
-      .andExpect(jsonPath("$.content[0].createdAt", is("1970-01-01T00:00:02.000+00:00")))
-      .andExpect(jsonPath("$.content[1].message", is("message 1")))
-      .andExpect(jsonPath("$.content[1].createdAt", is("1970-01-01T00:00:01.000+00:00")))
-      .andExpect(jsonPath("$.page.totalElements", is(2)));
+      .andExpect(jsonPath("$.length()", is(2)))
+      .andExpect(jsonPath("$.[0].message", is("message 2")))
+      .andExpect(jsonPath("$.[0].createdAt", is("1970-01-01T00:00:02.000+00:00")))
+      .andExpect(jsonPath("$.[1].message", is("message 1")))
+      .andExpect(jsonPath("$.[1].createdAt", is("1970-01-01T00:00:01.000+00:00")));
   }
 
   @Test
@@ -195,7 +194,6 @@ class SubscriptionEntityResourceTests {
 
     mockMvc.perform(get("/api/2/subscriptions/{id}/fetchError", subscription2.getId()))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()", is(0)))
-      .andExpect(jsonPath("$.page.totalElements", is(0)));
+      .andExpect(jsonPath("$.length()", is(0)));
   }
 }

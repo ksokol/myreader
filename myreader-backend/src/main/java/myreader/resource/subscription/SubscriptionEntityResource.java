@@ -10,9 +10,6 @@ import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import myreader.resource.subscription.beans.SubscriptionPatchRequestValidator;
 import myreader.service.subscription.SubscriptionService;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +24,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static myreader.resource.ResourceConstants.FEED_FETCH_ERROR;
 
 @RestController
@@ -37,22 +37,19 @@ public class SubscriptionEntityResource {
   private final RepresentationModelAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler;
   private final FetchErrorRepository fetchErrorRepository;
   private final RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler;
-  private final PagedResourcesAssembler<FetchError> pagedResourcesAssembler;
 
   public SubscriptionEntityResource(
     RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler,
     SubscriptionRepository subscriptionRepository,
     SubscriptionService subscriptionService,
     RepresentationModelAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler,
-    FetchErrorRepository fetchErrorRepository,
-    PagedResourcesAssembler<FetchError> pagedResourcesAssembler
+    FetchErrorRepository fetchErrorRepository
   ) {
     this.assembler = assembler;
     this.subscriptionRepository = subscriptionRepository;
     this.subscriptionService = subscriptionService;
     this.fetchErrorAssembler = fetchErrorAssembler;
     this.fetchErrorRepository = fetchErrorRepository;
-    this.pagedResourcesAssembler = pagedResourcesAssembler;
   }
 
   @InitBinder
@@ -97,8 +94,9 @@ public class SubscriptionEntityResource {
   }
 
   @GetMapping(FEED_FETCH_ERROR)
-  public PagedModel<FetchErrorGetResponse> getFetchError(@PathVariable("id") Long id, Pageable pageable) {
-    var page = fetchErrorRepository.findBySubscriptionIdOrderByCreatedAtDesc(id, pageable);
-    return pagedResourcesAssembler.toModel(page, fetchErrorAssembler);
+  public List<FetchErrorGetResponse> getFetchError(@PathVariable("id") Long id) {
+    return fetchErrorRepository.findAllBySubscriptionIdOrderByCreatedAtDesc(id).stream()
+      .map(fetchErrorAssembler::toModel)
+      .collect(Collectors.toList());
   }
 }

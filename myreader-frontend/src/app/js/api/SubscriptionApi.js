@@ -1,26 +1,8 @@
 import {SUBSCRIPTIONS} from '../constants'
 import {Api} from './Api'
-import {extractLinks, toUrlString} from './links'
 
 function toSubscriptions(raw = {}) {
   return raw.content
-}
-
-function toFeedFetchFailure(raw = {}) {
-  return {
-    uuid: raw.uuid,
-    message: raw.message,
-    createdAt: raw.createdAt
-  }
-}
-
-function toFeedFetchFailures(raw) {
-  const links = extractLinks(raw.links)
-  const failures = raw.content.map(it => toFeedFetchFailure(it))
-  return {
-    failures,
-    links
-  }
 }
 
 export class SubscriptionApi extends Api {
@@ -62,14 +44,10 @@ export class SubscriptionApi extends Api {
     }).then(toSubscriptions)
   }
 
-  fetchFeedFetchErrors = uuidOrLink => {
-    const url = typeof uuidOrLink === 'object'
-      ? toUrlString(uuidOrLink)
-      : `${SUBSCRIPTIONS}/${uuidOrLink}/fetchError`
-
+  fetchFeedFetchErrors = uuid => {
     return this.request({
-      url,
+      url: `${SUBSCRIPTIONS}/${uuid}/fetchError`,
       method: 'GET'
-    }).then(toFeedFetchFailures)
+    })
   }
 }

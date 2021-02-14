@@ -72,34 +72,15 @@ describe('SubscriptionApi', () => {
     })
   })
 
-  it('should GET feed errors for uuid1 with proper url derived from object', () => {
-    exchange.mockResolvedValueOnce({content: []})
-    subscriptionApi.fetchFeedFetchErrors({path: `${SUBSCRIPTIONS}/uuid2/fetchError`})
-
-    expect(exchange).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${SUBSCRIPTIONS}/uuid2/fetchError`
-    })
-  })
-
   it('should return expected response when GET feeds error for uuid1 succeeded', async () => {
-    exchange.mockResolvedValueOnce({
-      content: [
-        {uuid: 'uuid1', message: 'message1', createdAt: 'createdAt1'},
-        {uuid: 'uuid2', message: 'message2', createdAt: 'createdAt2'},
-      ],
-      links: [
-        {rel: 'self', href: 'self href?a=b'},
-        {rel: 'next', href: 'next href'}
-      ]
-    })
+    exchange.mockResolvedValueOnce([
+      {uuid: 'uuid1', message: 'message1', createdAt: 'createdAt1'},
+      {uuid: 'uuid2', message: 'message2', createdAt: 'createdAt2'},
+    ])
 
-    await expect(subscriptionApi.fetchFeedFetchErrors('uuid1')).resolves.toEqual({
-      links: {next: {path: 'next href', query: {}}, self: {path: 'self href', query: {a: 'b'}}},
-      failures: [
-        {uuid: 'uuid1', message: 'message1', createdAt: 'createdAt1'},
-        {uuid: 'uuid2', message: 'message2', createdAt: 'createdAt2'}
-      ]
-    })
+    await expect(subscriptionApi.fetchFeedFetchErrors('uuid1')).resolves.toEqual([
+      {uuid: 'uuid1', message: 'message1', createdAt: 'createdAt1'},
+      {uuid: 'uuid2', message: 'message2', createdAt: 'createdAt2'}
+    ])
   })
 })
