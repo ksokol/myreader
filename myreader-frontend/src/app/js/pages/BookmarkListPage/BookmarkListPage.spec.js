@@ -36,7 +36,7 @@ describe('BookmarkListPage', () => {
   beforeEach(async () => {
     history = createMemoryHistory()
 
-    localStorage.setItem('myreader-settings', '{"pageSize": 2, "showUnseenEntries": false}')
+    localStorage.setItem('myreader-settings', '{"showUnseenEntries": false}')
 
     fetch.jsonResponseOnce(['expected tag1', 'expected tag2'])
     fetch.jsonResponseOnce({
@@ -82,7 +82,7 @@ describe('BookmarkListPage', () => {
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?entryTagEqual=expectedTag&size=2'
+      url: 'api/2/subscriptionEntries?entryTagEqual=expectedTag'
     })
   })
 
@@ -90,7 +90,7 @@ describe('BookmarkListPage', () => {
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true&size=2'
+      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true'
     })
   })
 
@@ -108,7 +108,7 @@ describe('BookmarkListPage', () => {
     await act(async () => fireEvent.click(screen.getByText('expected tag1')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&entryTagEqual=expected tag1'
+      url: 'api/2/subscriptionEntries?entryTagEqual=expected tag1'
     })
   })
 
@@ -162,7 +162,7 @@ describe('BookmarkListPage', () => {
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true&size=2',
+      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true',
     })
     expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
@@ -186,7 +186,7 @@ describe('BookmarkListPage', () => {
       url: 'api/2/subscriptionEntries/availableTags',
     })
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true&size=2',
+      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true',
     })
   })
 

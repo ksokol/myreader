@@ -12,7 +12,6 @@ function TestComponent() {
 describe('settings context', () => {
 
   const storedValues = {
-    pageSize: 20,
     showUnseenEntries: false,
     showEntryDetails: false,
   }
@@ -32,24 +31,7 @@ describe('settings context', () => {
   it('should contain expected context values in child component', () => {
     expect(createWrapper().html()).toEqual(JSON.stringify({
       ...storedValues,
-      pageSize: 20,
     }))
-  })
-
-  it('should trigger setPageSize function in settings context provider', () => {
-    const value = 30
-    const wrapper = createWrapper()
-
-    wrapper.instance().setPageSize(value)
-    wrapper.update()
-
-    const expectedValues = JSON.stringify({
-      ...storedValues,
-      pageSize: value,
-    })
-
-    expect(localStorage.getItem(storageKey)).toEqual(expectedValues)
-    expect(wrapper.html()).toEqual(expectedValues)
   })
 
   it('should trigger setShowEntryDetails function in settings context provider', () => {

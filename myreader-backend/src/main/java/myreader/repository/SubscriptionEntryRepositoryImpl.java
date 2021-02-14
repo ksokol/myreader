@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 @Component
 public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryRepositoryCustom {
 
+  private static final int DEFAULT_SIZE = 10;
+
   private final EntityManager em;
 
   public SubscriptionEntryRepositoryImpl(EntityManager em) {
@@ -24,14 +26,13 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
   @Override
   public Slice<SubscriptionEntry> findBy(
-    int size,
     String feedId,
     String feedTagEqual,
     String entryTagEqual,
     Boolean seen,
     Long next
   ) {
-    var sizePlusOne = size + 1;
+    var sizePlusOne = DEFAULT_SIZE + 1;
     var cb = em.getCriteriaBuilder();
     var cq = cb.createQuery(SubscriptionEntry.class);
     var root = cq.from(SubscriptionEntry.class);
@@ -70,7 +71,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
     var resultList = query.getResultList();
     var limit = resultList.stream()
-      .limit(size)
+      .limit(DEFAULT_SIZE)
       .collect(Collectors.toList());
 
     return new SliceImpl<>(limit, Pageable.unpaged(), resultList.size() == sizePlusOne);

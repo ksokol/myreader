@@ -63,7 +63,7 @@ describe('EntryStreamPage', () => {
       })
     })
 
-    localStorage.setItem('myreader-settings', '{"pageSize": 2, "showUnseenEntries": false}')
+    localStorage.setItem('myreader-settings', '{"showUnseenEntries": false}')
 
     fetch.jsonResponse({
       content: [{...entry1}, {...entry2}],
@@ -78,7 +78,7 @@ describe('EntryStreamPage', () => {
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?feedTagEqual=a',
     })
   })
 
@@ -92,7 +92,7 @@ describe('EntryStreamPage', () => {
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&seenEqual=true',
+      url: 'api/2/subscriptionEntries?seenEqual=true',
     })
   })
 
@@ -105,7 +105,7 @@ describe('EntryStreamPage', () => {
     })
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&feedTagEqual=a&seenEqual=true',
+      url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=true',
     })
   })
 
@@ -374,7 +374,7 @@ describe('EntryStreamPage', () => {
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?feedTagEqual=a',
     })
     expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
@@ -396,7 +396,7 @@ describe('EntryStreamPage', () => {
 
     expect(fetch.requestCount()).toEqual(1)
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?size=2&feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?feedTagEqual=a',
     })
   })
 

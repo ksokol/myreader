@@ -53,6 +53,15 @@ class SubscriptionEntryCollectionResourceTests {
   private SubscriptionEntry subscriptionEntry2;
   private SubscriptionEntry subscriptionEntry3;
   private SubscriptionEntry subscriptionEntry4;
+  private SubscriptionEntry subscriptionEntry6;
+  private SubscriptionEntry subscriptionEntry7;
+  private SubscriptionEntry subscriptionEntry8;
+  private SubscriptionEntry subscriptionEntry9;
+  private SubscriptionEntry subscriptionEntry10;
+  private SubscriptionEntry subscriptionEntry11;
+  private SubscriptionEntry subscriptionEntry12;
+
+  private int counter = 1;
 
   @BeforeEach
   void setUp() {
@@ -65,78 +74,69 @@ class SubscriptionEntryCollectionResourceTests {
     subscription2.setTag("subscription tag");
     subscription2 = em.persist(subscription2);
 
-    subscriptionEntry1 = new SubscriptionEntry(subscription1);
-    subscriptionEntry1.setTitle("some entry1 title");
-    subscriptionEntry1.setContent("some entry1 content");
+    subscriptionEntry1 = createEntry(subscription1);
     subscriptionEntry1.setTags(Set.of("tag1", "tag2", "tag3"));
     subscriptionEntry1.setSeen(true);
-    subscriptionEntry1.setCreatedAt(new Date(1000));
-    subscriptionEntry1 = em.persistAndFlush(subscriptionEntry1);
 
-    subscriptionEntry2 = new SubscriptionEntry(subscription2);
-    subscriptionEntry2.setTitle("some entry2 title");
-    subscriptionEntry2.setContent("some entry2 content");
-    subscriptionEntry2.setUrl("http://example.com/feedentry2");
+    subscriptionEntry2 = createEntry(subscription2);
     subscriptionEntry2.setTags(Set.of("tag2-tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9"));
-    subscriptionEntry2.setCreatedAt(new Date(2000));
-    subscriptionEntry2 = em.persistAndFlush(subscriptionEntry2);
 
-    subscriptionEntry3 = new SubscriptionEntry(subscription1);
-    subscriptionEntry3.setTitle("some entry3 title");
-    subscriptionEntry3.setContent("some entry3 content");
-    subscriptionEntry3 = em.persistAndFlush(subscriptionEntry3);
+    subscriptionEntry3 = createEntry(subscription1);
+    subscriptionEntry4 = createEntry(subscription1);
 
-    subscriptionEntry4 = new SubscriptionEntry(subscription1);
-    subscriptionEntry4.setTitle("some entry4 title");
-    subscriptionEntry4.setContent("some entry4 content");
-    subscriptionEntry4.setUrl("http://example.com/feedentry4");
-    subscriptionEntry4.setCreatedAt(new Date(4000));
-    subscriptionEntry4 = em.persistAndFlush(subscriptionEntry4);
+    var subscriptionEntry5 = createEntry(subscription1);
+    subscriptionEntry5.setExcluded(true);
+
+    subscriptionEntry6 = createEntry(subscription1);
+    subscriptionEntry7 = createEntry(subscription1);
+    subscriptionEntry8 = createEntry(subscription1);
+    subscriptionEntry9 = createEntry(subscription1);
+    subscriptionEntry10 = createEntry(subscription1);
+    subscriptionEntry11 = createEntry(subscription1);
+    subscriptionEntry12 = createEntry(subscription1);
   }
 
   @Test
   void shouldReturnEntries() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?size=3"))
+    mockMvc.perform(get("/api/2/subscriptionEntries"))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("links[?(@.rel=='self')].href").value("http://localhost/api/2/subscriptionEntries?size=3"))
-      .andExpect(jsonPath("links[?(@.rel=='next')].href").value("http://localhost/api/2/subscriptionEntries?size=3&next=" + subscriptionEntry2.getId()))
-      .andExpect(jsonPath("$.content.length()").value(3))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
-      .andExpect(jsonPath("$.content[0].title").value("some entry4 title"))
-      .andExpect(jsonPath("$.content[0].feedTitle").value("user1 subscription1"))
-      .andExpect(jsonPath("$.content[0].tags").isEmpty())
-      .andExpect(jsonPath("$.content[0].content").value("some entry4 content"))
-      .andExpect(jsonPath("$.content[0].seen").value(false))
-      .andExpect(jsonPath("$.content[0].feedTag").isEmpty())
-      .andExpect(jsonPath("$.content[0].feedTagColor").isEmpty())
-      .andExpect(jsonPath("$.content[0].feedUuid").value(subscription1.getId().toString()))
-      .andExpect(jsonPath("$.content[0].origin").value("http://example.com/feedentry4"))
-      .andExpect(jsonPath("$.content[0].createdAt").value("1970-01-01T00:00:04.000+00:00"))
-      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
-      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry2.getId().toString()))
-      .andExpect(jsonPath("$.page").isEmpty());
-  }
-
-  @Test
-  void searchWithPageSizeOne() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?size=1"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(1))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()));
+      .andExpect(jsonPath("links[?(@.rel=='next')].href").value("http://localhost/api/2/subscriptionEntries?next=" + subscriptionEntry2.getId()))
+      .andExpect(jsonPath("$.content.length()").value(10))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
+      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry11.getId().toString()))
+      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry10.getId().toString()))
+      .andExpect(jsonPath("$.content[3].uuid").value(subscriptionEntry9.getId().toString()))
+      .andExpect(jsonPath("$.content[4].uuid").value(subscriptionEntry8.getId().toString()))
+      .andExpect(jsonPath("$.content[5].uuid").value(subscriptionEntry7.getId().toString()))
+      .andExpect(jsonPath("$.content[6].uuid").value(subscriptionEntry6.getId().toString()))
+      .andExpect(jsonPath("$.content[7].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[7].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[7].title").value("some entry4 title"))
+      .andExpect(jsonPath("$.content[7].feedTitle").value("user1 subscription1"))
+      .andExpect(jsonPath("$.content[7].tags").isEmpty())
+      .andExpect(jsonPath("$.content[7].content").value("some entry4 content"))
+      .andExpect(jsonPath("$.content[7].seen").value(false))
+      .andExpect(jsonPath("$.content[7].feedTag").isEmpty())
+      .andExpect(jsonPath("$.content[7].feedTagColor").isEmpty())
+      .andExpect(jsonPath("$.content[7].feedUuid").value(subscription1.getId().toString()))
+      .andExpect(jsonPath("$.content[7].origin").value("http://example.com/feedentry4"))
+      .andExpect(jsonPath("$.content[7].createdAt").value("1970-01-01T00:00:04.000+00:00"))
+      .andExpect(jsonPath("$.content[8].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[9].uuid").value(subscriptionEntry2.getId().toString()));
   }
 
   @Test
   void shouldPaginate() throws Exception {
-    var firstResponse = mockMvc.perform(get("/api/2/subscriptionEntries?size=2"))
-      .andExpect(jsonPath("links[?(@.rel=='next')].href").value("http://localhost/api/2/subscriptionEntries?size=2&next=" + subscriptionEntry3.getId()))
-      .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry4.getId().toString()))
-      .andExpect(jsonPath("content[1].uuid").value(subscriptionEntry3.getId().toString()))
+    var firstResponse = mockMvc.perform(get("/api/2/subscriptionEntries"))
+      .andExpect(jsonPath("links[?(@.rel=='next')].href").value("http://localhost/api/2/subscriptionEntries?next=" + subscriptionEntry2.getId()))
+      .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry12.getId().toString()))
+      .andExpect(jsonPath("content[9].uuid").value(subscriptionEntry2.getId().toString()))
       .andReturn();
 
     mockMvc.perform(get(nextPage(firstResponse)))
-      .andExpect(jsonPath("links[?(@.rel=='self')].href").value("http://localhost/api/2/subscriptionEntries?size=2"))
+      .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("links[?(@.rel=='self')].next").doesNotExist())
-      .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry2.getId().toString()));
+      .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry1.getId().toString()));
   }
 
   @Test
@@ -195,16 +195,6 @@ class SubscriptionEntryCollectionResourceTests {
   }
 
   @Test
-  void feedUuidEqualSubscription1() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?feedUuidEqual={id}", subscription1.getId()))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(3))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
-      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
-      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry1.getId().toString()));
-  }
-
-  @Test
   void feedUuidEqualSubscription2() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?feedUuidEqual={id}", subscription2.getId()))
       .andExpect(status().isOk())
@@ -213,7 +203,7 @@ class SubscriptionEntryCollectionResourceTests {
   }
 
   @Test
-  void seenEqualFalse() throws Exception {
+  void seenEqualsTrue() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=true"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.content.length()").value(1))
@@ -221,13 +211,12 @@ class SubscriptionEntryCollectionResourceTests {
   }
 
   @Test
-  void seenEqualWildcard() throws Exception {
+  void seenEqualsFalse() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false"))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(3))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
-      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
-      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry2.getId().toString()));
+      .andExpect(jsonPath("$.content.length()").value(10))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
+      .andExpect(jsonPath("$.content[9].uuid").value(subscriptionEntry2.getId().toString()));
   }
 
   @Test
@@ -257,31 +246,32 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void shouldPaginateWithChangingSeenValues() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?size=2&seenEqual=false"))
+    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false"))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(2))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content.length()").value(10))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
       .andExpect(jsonPath("$.content[0].seen").value(false))
-      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
-      .andExpect(jsonPath("$.content[1].seen").value(false));
+      .andExpect(jsonPath("$.content[7].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[7].seen").value(false))
+      .andExpect(jsonPath("$.content[8].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[8].seen").value(false));
 
     subscriptionEntry4 = em.find(SubscriptionEntry.class, subscriptionEntry4.getId());
     subscriptionEntry4.setSeen(true);
-    em.persistFlushFind(subscriptionEntry4);
 
-    mockMvc.perform(get("/api/2/subscriptionEntries?size=10"))
+    mockMvc.perform(get("/api/2/subscriptionEntries"))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(4))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
-      .andExpect(jsonPath("$.content[0].seen").value(true))
-      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
-      .andExpect(jsonPath("$.content[1].seen").value(false))
-      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry2.getId().toString()))
-      .andExpect(jsonPath("$.content[2].seen").value(false))
-      .andExpect(jsonPath("$.content[3].uuid").value(subscriptionEntry1.getId().toString()))
-      .andExpect(jsonPath("$.content[3].seen").value(true));
+      .andExpect(jsonPath("$.content.length()").value(10))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
+      .andExpect(jsonPath("$.content[0].seen").value(false))
+      .andExpect(jsonPath("$.content[7].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[7].seen").value(true))
+      .andExpect(jsonPath("$.content[8].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[8].seen").value(false))
+      .andExpect(jsonPath("$.content[9].uuid").value(subscriptionEntry2.getId().toString()))
+      .andExpect(jsonPath("$.content[9].seen").value(false));
 
-    mockMvc.perform(get("/api/2/subscriptionEntries?size=2&next={id}&seenEqual=false", subscriptionEntry4.getId()))
+    mockMvc.perform(get("/api/2/subscriptionEntries?next={id}&seenEqual=false", subscriptionEntry4.getId()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.content.length()").value(2))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry3.getId().toString()))
@@ -289,41 +279,32 @@ class SubscriptionEntryCollectionResourceTests {
 
     subscriptionEntry2 = em.find(SubscriptionEntry.class, subscriptionEntry2.getId());
     subscriptionEntry2.setSeen(true);
-    em.persistFlushFind(subscriptionEntry2);
 
-    mockMvc.perform(get("/api/2/subscriptionEntries?size=10"))
+    mockMvc.perform(get("/api/2/subscriptionEntries"))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(4))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
-      .andExpect(jsonPath("$.content[0].seen").value(true))
-      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
-      .andExpect(jsonPath("$.content[1].seen").value(false))
-      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry2.getId().toString()))
-      .andExpect(jsonPath("$.content[2].seen").value(true))
-      .andExpect(jsonPath("$.content[3].uuid").value(subscriptionEntry1.getId().toString()))
-      .andExpect(jsonPath("$.content[3].seen").value(true));
+      .andExpect(jsonPath("$.content.length()").value(10))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
+      .andExpect(jsonPath("$.content[0].seen").value(false))
+      .andExpect(jsonPath("$.content[7].uuid").value(subscriptionEntry4.getId().toString()))
+      .andExpect(jsonPath("$.content[7].seen").value(true))
+      .andExpect(jsonPath("$.content[8].uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.content[8].seen").value(false))
+      .andExpect(jsonPath("$.content[9].uuid").value(subscriptionEntry2.getId().toString()))
+      .andExpect(jsonPath("$.content[9].seen").value(true));
 
-    mockMvc.perform(get("/api/2/subscriptionEntries?size=2&next={id}&seenEqual=false", subscriptionEntry2.getId()))
+    mockMvc.perform(get("/api/2/subscriptionEntries?next={id}&seenEqual=false", subscriptionEntry2.getId()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.content.length()").value(0));
   }
 
-  @Test
-  void shouldnotReturnExcludedEntries() throws Exception {
-    var subscriptionEntry5 = new SubscriptionEntry(subscription1);
-    subscriptionEntry5.setTitle("some entry5 title");
-    subscriptionEntry5.setContent("some entry5 content");
-    subscriptionEntry5.setUrl("http://example.com/feedentry5");
-    subscriptionEntry5.setExcluded(true);
-    subscriptionEntry5.setCreatedAt(new Date(5000));
-    em.persistAndFlush(subscriptionEntry5);
-
-    mockMvc.perform(get("/api/2/subscriptionEntries?size=3"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(3))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry4.getId().toString()))
-      .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry3.getId().toString()))
-      .andExpect(jsonPath("$.content[2].uuid").value(subscriptionEntry2.getId().toString()));
+  private SubscriptionEntry createEntry(Subscription subscription) {
+    var subscriptionEntry = new SubscriptionEntry(subscription);
+    subscriptionEntry.setTitle(String.format("some entry%d title", counter));
+    subscriptionEntry.setContent(String.format("some entry%d content", counter));
+    subscriptionEntry.setUrl(String.format("http://example.com/feedentry%d", counter));
+    subscriptionEntry.setCreatedAt(new Date(counter * 1000L));
+    counter += 1;
+    return em.persistAndFlush(subscriptionEntry);
   }
 
   private String nextPage(MvcResult mvcResult) throws IOException {

@@ -10,15 +10,15 @@ import {useEntries} from '../../hooks/entries'
 import {toast} from '../../components/Toast'
 
 export function EntryStreamPage() {
-  const {pageSize: size, showUnseenEntries} = useSettings()
+  const {showUnseenEntries} = useSettings()
   const searchParams = useSearchParams()
   const {reload} = useHistory()
 
   const query = useMemo(() => {
     const showAll = showUnseenEntries === true ? false : undefined
     const seenEqual = searchParams.seenEqual === undefined ? showAll : searchParams.seenEqual
-    return {...searchParams, seenEqual, size}
-  }, [searchParams, showUnseenEntries, size])
+    return {...searchParams, seenEqual}
+  }, [searchParams, showUnseenEntries])
 
   const {
     entries,

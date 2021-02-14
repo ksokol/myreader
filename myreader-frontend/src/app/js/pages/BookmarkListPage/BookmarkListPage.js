@@ -6,21 +6,19 @@ import {EntryList} from '../../components/EntryList/EntryList'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
 import {BOOKMARK_URL} from '../../constants'
 import {toast} from '../../components/Toast'
-import {useSettings} from '../../contexts/settings'
 import IconButton from '../../components/Buttons/IconButton/IconButton'
 import {useHistory, useSearchParams} from '../../hooks/router'
 import {useEntries} from '../../hooks/entries'
 
 export function BookmarkListPage() {
-  const {pageSize} = useSettings()
   const searchParams = useSearchParams()
   const {reload} = useHistory()
 
   const query = useMemo(() => {
     const seenEqual = searchParams.entryTagEqual ? undefined : true
     const entryTagEqual = searchParams.entryTagEqual ? searchParams.entryTagEqual : ''
-    return {...searchParams, seenEqual, entryTagEqual, size: pageSize}
-  }, [searchParams, pageSize])
+    return {...searchParams, seenEqual, entryTagEqual}
+  }, [searchParams])
 
   const {
     entries,

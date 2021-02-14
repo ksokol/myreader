@@ -43,11 +43,6 @@ public class SearchRequestHandlerMethodArgumentResolver implements HandlerMethod
       searchRequest.setNext(Long.parseLong(nextParam));
     }
 
-    var sizeParam = webRequest.getParameter("size");
-    if (sizeParam != null && sizeParam.matches("\\d+")) {
-      searchRequest.setSize(Integer.parseInt(sizeParam));
-    }
-
     return searchRequest;
   }
 }
