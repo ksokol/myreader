@@ -2,6 +2,7 @@ import React from 'react'
 import {render, fireEvent, screen, act} from '@testing-library/react'
 import {Router, Route, Switch} from 'react-router-dom'
 import {createMemoryHistory} from 'history'
+import iro from '@jaames/iro'
 import {SubscriptionEditPage} from './SubscriptionEditPage'
 import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
 
@@ -13,12 +14,10 @@ const subscription = {
   uuid: '1',
   title: 'expected title',
   origin: 'http://example.com',
-  feedTag: {name: 'tag1'}
+  tag: 'tag1',
+  color: '#FF11FF',
 }
-const subscriptionTags = {
-  links: [],
-  content: []
-}
+const subscriptionTags = []
 const fetchErrors = {
   content: []
 }
@@ -120,6 +119,13 @@ describe('SubscriptionEditPage', () => {
     fireEvent.change(screen.queryByDisplayValue('expected title'), {target: {value: 'changed title'}})
     fireEvent.change(screen.queryByDisplayValue('http://example.com'), {target: {value: 'changed origin'}})
     fireEvent.change(screen.queryByDisplayValue('tag1'), {target: {value: 'changed tag'}})
+
+    fireEvent.click(screen.queryByRole('color-picker-button'))
+    expect(screen.getByText('use')).toBeInTheDocument()
+    act(() => iro.mock.onChange('#DDDDDD'))
+    fireEvent.click(screen.getByText('use'))
+    expect(screen.queryByText('use')).not.toBeInTheDocument()
+
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
     expect(fetch.mostRecent()).toMatchPatchRequest({
@@ -128,7 +134,8 @@ describe('SubscriptionEditPage', () => {
         uuid: '1',
         title: 'changed title',
         origin: 'changed origin',
-        feedTag: {name: 'changed tag'},
+        tag: 'changed tag',
+        color: '#DDDDDD',
       },
     })
   })

@@ -3,7 +3,6 @@ package myreader.resource.subscription;
 import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-import myreader.entity.SubscriptionTag;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
@@ -54,36 +53,26 @@ class SubscriptionCollectionResourceTests {
 
   private Subscription subscription1;
   private Subscription subscription2;
-  private SubscriptionTag subscriptionTag1;
-  private SubscriptionTag subscriptionTag2;
 
   @BeforeEach
   void setUp() {
     subscription1 = new Subscription("http://feed1", "feed1");
     subscription1.setTitle("user102_subscription1");
+    subscription1.setTag("tag1");
     subscription1.setFetchCount(10);
     subscription1.setCreatedAt(new Date(2000));
     subscription1 = em.persist(subscription1);
-
-    subscriptionTag1 = new SubscriptionTag("tag1", subscription1);
-    subscriptionTag1.setCreatedAt(new Date(1000));
-    subscriptionTag1 = em.persist(subscriptionTag1);
-    subscription1.setSubscriptionTag(subscriptionTag1);
 
     em.persist(new FetchError(subscription1, "message 1"));
     em.persist(new FetchError(subscription1, "message 2"));
 
     subscription2 = new Subscription("http://feed2", "feed2");
     subscription2.setTitle("user102_subscription2");
+    subscription2.setTag("tag2");
+    subscription2.setColor("#111111");
     subscription2.setFetchCount(20);
     subscription2.setCreatedAt(new Date(4000));
     subscription2 = em.persistAndFlush(subscription2);
-
-    subscriptionTag2 = new SubscriptionTag("tag2", subscription2);
-    subscriptionTag2.setColor("#ffffff");
-    subscriptionTag2.setCreatedAt(new Date(3000));
-    subscription2.setSubscriptionTag(subscriptionTag2);
-    subscriptionTag2 = em.persistAndFlush(subscriptionTag2);
 
     var subscriptionEntry2 = new SubscriptionEntry(subscription2);
     subscriptionEntry2.setSeen(false);
@@ -103,10 +92,8 @@ class SubscriptionCollectionResourceTests {
       .andExpect(jsonPath("$.content[0].unseen").value(1))
       .andExpect(jsonPath("$.content[0].origin").value("http://feed2"))
       .andExpect(jsonPath("$.content[0].fetchErrorCount").value(0))
-      .andExpect(jsonPath("$.content[0].feedTag.uuid").value(subscriptionTag2.getId().toString()))
-      .andExpect(jsonPath("$.content[0].feedTag.name").value(subscriptionTag2.getName()))
-      .andExpect(jsonPath("$.content[0].feedTag.color").value(subscriptionTag2.getColor()))
-      .andExpect(jsonPath("$.content[0].feedTag.createdAt").value("1970-01-01T00:00:03.000+00:00"))
+      .andExpect(jsonPath("$.content[0].tag").value("tag2"))
+      .andExpect(jsonPath("$.content[0].color").value("#111111"))
       .andExpect(jsonPath("$.content[0].createdAt").value("1970-01-01T00:00:04.000+00:00"))
       .andExpect(jsonPath("$.content[1].uuid").value(subscription1.getId().toString()))
       .andExpect(jsonPath("$.content[1].title").value("user102_subscription1"))
@@ -114,10 +101,8 @@ class SubscriptionCollectionResourceTests {
       .andExpect(jsonPath("$.content[1].unseen").value(0))
       .andExpect(jsonPath("$.content[1].origin").value("http://feed1"))
       .andExpect(jsonPath("$.content[1].fetchErrorCount").value(2))
-      .andExpect(jsonPath("$.content[1].feedTag.uuid").value(subscriptionTag1.getId().toString()))
-      .andExpect(jsonPath("$.content[1].feedTag.name").value(subscriptionTag1.getName()))
-      .andExpect(jsonPath("$.content[1].feedTag.color").value(subscriptionTag1.getColor()))
-      .andExpect(jsonPath("$.content[1].feedTag.createdAt").value("1970-01-01T00:00:01.000+00:00"))
+      .andExpect(jsonPath("$.content[1].tag").value("tag1"))
+      .andExpect(jsonPath("$.content[1].color").isEmpty())
       .andExpect(jsonPath("$.content[1].createdAt").value("1970-01-01T00:00:02.000+00:00"));
   }
 

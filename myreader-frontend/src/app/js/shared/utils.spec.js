@@ -1,4 +1,4 @@
-import {isBoolean, isDefined, isObject, isString, isValidDate, isValuePresent, toArray} from './utils'
+import {isBoolean, isDefined, isObject, isValidDate, isValuePresent, toArray} from './utils'
 
 describe('shared utils', () => {
 
@@ -14,41 +14,6 @@ describe('shared utils', () => {
 
     it('true when given parameter is null', () => {
       expect(isDefined(null)).toEqual(true)
-    })
-  })
-
-  describe('isString() should return', () => {
-
-    it('false when given parameter is a number', () => {
-      expect(isString(1)).toEqual(false)
-    })
-
-    it('false when given parameter is undefined', () => {
-      expect(isString()).toEqual(false)
-    })
-
-    it('false when given parameter is null', () => {
-      expect(isString(null)).toEqual(false)
-    })
-
-    it('false when given parameter is a function', () => {
-      expect(isString(() => {})).toEqual(false)
-    })
-
-    it('false when given parameter is an array', () => {
-      expect(isString(() => {})).toEqual(false)
-    })
-
-    it('false when given parameter is an object', () => {
-      expect(isString({})).toEqual(false)
-    })
-
-    it('false when given parameter is a date', () => {
-      expect(isString(new Date())).toEqual(false)
-    })
-
-    it('true when given parameter is a string', () => {
-      expect(isString('a')).toEqual(true)
     })
   })
 

@@ -7,6 +7,7 @@ import {Icon} from '../Icon/Icon'
 import {Input} from '../Input/Input'
 import {SubscriptionExclusions} from './SubscriptionExclusions/SubscriptionExclusions'
 import {SubscriptionFetchErrors} from './SubscriptionFetchErrors/SubscriptionFetchErrors'
+import {SubscriptionColorPicker} from './SubscriptionColorPicker/SubscriptionColorPicker'
 
 class SubscriptionEditForm extends React.Component {
 
@@ -15,15 +16,12 @@ class SubscriptionEditForm extends React.Component {
       uuid: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
       origin: PropTypes.string.isRequired,
-      feedTag: PropTypes.shape({
-        name: PropTypes.string
-      })
+      tag: PropTypes.string,
+      color: PropTypes.string,
     }),
     subscriptionTags: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string.isRequired
-      })
-    ),
+      PropTypes.string
+    ).isRequired,
     validations: PropTypes.any,
     changePending: PropTypes.bool.isRequired,
     saveSubscriptionEditForm: PropTypes.func.isRequired,
@@ -33,7 +31,9 @@ class SubscriptionEditForm extends React.Component {
   state = {
     title: this.props.data.title,
     origin: this.props.data.origin,
-    name: this.props.data.feedTag.name
+    tag: this.props.data.tag,
+    color: this.props.data.color,
+    showDialog: false,
   }
 
   onSaveSubscription = () => {
@@ -41,10 +41,8 @@ class SubscriptionEditForm extends React.Component {
       ...this.props.data,
       title: this.state.title,
       origin: this.state.origin,
-      feedTag: {
-        ...this.props.data.feedTag,
-        name: this.state.name
-      }
+      tag: this.state.tag,
+      color: this.state.color,
     })
   }
 
@@ -54,13 +52,15 @@ class SubscriptionEditForm extends React.Component {
       subscriptionTags,
       validations,
       changePending,
-      deleteSubscription
+      deleteSubscription,
     } = this.props
 
     const {
       title,
       origin,
-      name
+      tag,
+      color,
+      showDialog,
     } = this.state
 
     return (
@@ -78,7 +78,7 @@ class SubscriptionEditForm extends React.Component {
           />
 
           <div
-            className='my-subscription-edit-form__origin'
+            className='my-subscription-edit-form__row'
           >
             <Input
               name='origin'
@@ -100,14 +100,32 @@ class SubscriptionEditForm extends React.Component {
             </a>
           </div>
 
-          <AutocompleteInput
-            name='tag'
-            label='Tag'
-            disabled={changePending}
-            value={name}
-            values={subscriptionTags.map(it => it.name)}
-            onSelect={name => this.setState({name})}
-          />
+          <div
+            className='my-subscription-edit-form__row'
+          >
+            <AutocompleteInput
+              name='tag'
+              label='Tag'
+              disabled={changePending}
+              value={tag}
+              values={subscriptionTags}
+              onSelect={tag => this.setState({tag})}
+            />
+            <button
+              className='my-subscription-edit-form__color'
+              style={{backgroundColor: color}}
+              type='button'
+              role='color-picker-button'
+              onClick={() => this.setState({showDialog: true})}
+            />
+            {showDialog && (
+              <SubscriptionColorPicker
+                color={color}
+                onSelect={color => this.setState({color})}
+                onClose={() => this.setState({showDialog: false})}
+              />
+            )}
+          </div>
 
           <h2
             className='my-subscription-edit-form__pattern-title'>

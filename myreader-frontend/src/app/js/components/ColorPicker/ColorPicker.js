@@ -29,7 +29,7 @@ class ColorPicker extends React.Component {
   }
 
   render() {
-    return <div ref={this.myRef} />
+    return <div role='color-picker' ref={this.myRef} />
   }
 }
 

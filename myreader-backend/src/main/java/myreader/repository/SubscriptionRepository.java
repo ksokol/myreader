@@ -8,19 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
   @Query(value =
-    "select s from Subscription s left join fetch s.subscriptionTag where " +
+    "select s from Subscription s where " +
       "(select count(1) from SubscriptionEntry se where se.subscription.id = s.id and se.seen = false) > ?1 " +
       "order by s.createdAt desc"
   )
   List<Subscription> findAllByUnseenGreaterThan(long unseenCount);
-
-  @Override
-  @Query("select s from Subscription s left join fetch s.subscriptionTag where s.id = ?1")
-  Optional<Subscription> findById(Long id);
 
   Optional<Subscription> findByUrl(String url);
 
@@ -28,4 +25,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
   @Query("update Subscription set fetchCount = fetchCount + 1 where id = ?1")
   @Modifying
   void incrementFetchCount(Long subscriptionId);
+
+  @Query("select distinct s.tag from Subscription s where s.tag is not null")
+  Set<String> findDistinctTags();
 }

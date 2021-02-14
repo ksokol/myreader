@@ -77,8 +77,8 @@ describe('SubscriptionNavigationItem', () => {
   const createWrapper = () => new SubscriptionNavigationItemWrapper(props)
 
   beforeEach(() => {
-    subscriptions1 = {title: 'subscription 1', uuid: 'uuid1', unseen: 1, feedTag: {name: 'tag'}}
-    subscriptions2 = {title: 'subscription 2', uuid: 'uuid2', unseen: 0, feedTag: {name: 'tag'}}
+    subscriptions1 = {title: 'subscription 1', uuid: 'uuid1', unseen: 1, tag: 'tag'}
+    subscriptions2 = {title: 'subscription 2', uuid: 'uuid2', unseen: 0, tag: 'tag'}
 
     props = {
       item: {

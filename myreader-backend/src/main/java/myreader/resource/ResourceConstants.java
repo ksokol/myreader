@@ -19,7 +19,7 @@ public final class ResourceConstants {
   public static final String SUBSCRIPTION_ENTRIES_AVAILABLE_TAGS = SUBSCRIPTION_ENTRIES + "/availableTags";
   public static final String SUBSCRIPTION_ENTRY = SUBSCRIPTION_ENTRIES + "/" + ID_VARIABLE;
 
-  public static final String SUBSCRIPTION_TAGS = API + "/subscriptionTags/" + ID_VARIABLE;
+  public static final String SUBSCRIPTION_TAGS = API + "/subscriptionTags";
 
   public static final String EXCLUSIONS = API + "/exclusions";
   public static final String EXCLUSIONS_SUBSCRIPTION_PATTERN = EXCLUSIONS + "/{subscriptionId}/pattern/{patternId}";

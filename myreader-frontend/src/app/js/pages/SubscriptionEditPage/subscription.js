@@ -82,7 +82,7 @@ export function useSubscription() {
 
     try {
       const subscription = await subscriptionApi.fetchSubscription(uuid)
-      const {content: subscriptionTags} = await subscriptionTagsApi.fetchSubscriptionTags()
+      const subscriptionTags = await subscriptionTagsApi.fetchSubscriptionTags()
       dispatch({type: 'set_subscription', subscription, subscriptionTags})
     } catch(error) {
       dispatch({type: 'error', error})

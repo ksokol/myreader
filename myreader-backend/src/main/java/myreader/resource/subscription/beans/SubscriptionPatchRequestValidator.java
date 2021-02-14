@@ -6,10 +6,12 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class SubscriptionPatchRequestValidator implements Validator {
 
   private static final String FIELD_NAME = "origin";
+  private static final Pattern COLOR_PATTERN = Pattern.compile("^#(?:[0-9a-fA-F]{3}){1,2}$");
 
   private final SubscriptionService subscriptionService;
 
@@ -35,12 +37,9 @@ public class SubscriptionPatchRequestValidator implements Validator {
       errors.rejectValue(FIELD_NAME, "ValidSyndication.url", "invalid syndication feed");
     }
 
-    SubscriptionPatchRequest.FeedTag feedTag = request.getFeedTag();
-    if (feedTag != null) {
-      String feedTagName = feedTag.getName();
-      if (StringUtils.isBlank(feedTagName)) {
-        errors.rejectValue("feedTag.name", "NotBlank.feedTag.name", "may not be empty");
-      }
+    String color = request.getColor();
+    if (color != null && !COLOR_PATTERN.matcher(color).matches()) {
+      errors.rejectValue("color", "Pattern.color", "not a RGB hex code");
     }
   }
 }

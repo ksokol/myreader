@@ -1,29 +1,9 @@
 import {SUBSCRIPTIONS} from '../constants'
-import {isString} from '../shared/utils'
 import {Api} from './Api'
 import {extractLinks, toUrlString} from './links'
 
-function toSubscription(raw = {}) {
-  if (raw.feedTag === null || typeof raw.feedTag === 'undefined') {
-    raw.feedTag = {
-      uuid: undefined,
-      name: undefined,
-      color: undefined
-    }
-  }
-  return raw
-}
-
 function toSubscriptions(raw = {}) {
-  return raw.content.map(toSubscription)
-}
-
-function toBody(subscription) {
-  const clone = {...subscription}
-  if (!clone.feedTag || !isString(clone.feedTag.name)) {
-    clone.feedTag = null
-  }
-  return clone
+  return raw.content
 }
 
 function toFeedFetchFailure(raw = {}) {
@@ -64,7 +44,7 @@ export class SubscriptionApi extends Api {
     return this.request({
       url: `${SUBSCRIPTIONS}/${subscription.uuid}`,
       method: 'PATCH',
-      body: toBody(subscription),
+      body: subscription,
     })
   }
 
@@ -72,7 +52,7 @@ export class SubscriptionApi extends Api {
     return this.request({
       url: `${SUBSCRIPTIONS}/${uuid}`,
       method: 'GET',
-    }).then(toSubscription)
+    })
   }
 
   fetchSubscriptions = () => {

@@ -23,7 +23,7 @@ function sortByTitle(left, right) {
 }
 
 function sortIntoBucket(buckets, subscription) {
-  const tag = subscription.feedTag.name
+  const tag = subscription.tag
   const bucket = buckets[tag] || {
     key: tag,
     title: tag,
@@ -49,11 +49,11 @@ function addKeyToSubscription(subscription) {
 }
 
 function tagIsAbsent(subscription) {
-  return !subscription.feedTag.name
+  return !subscription.tag
 }
 
 function tagIsPresent(subscription) {
-  return subscription.feedTag.name
+  return subscription.tag
 }
 
 function createBucketsByTag(subscriptions) {

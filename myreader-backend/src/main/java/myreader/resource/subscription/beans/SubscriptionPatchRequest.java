@@ -4,7 +4,8 @@ public class SubscriptionPatchRequest {
 
   private String title;
   private String origin;
-  private FeedTag feedTag;
+  private String tag;
+  private String color;
 
   public String getTitle() {
     return title;
@@ -22,29 +23,12 @@ public class SubscriptionPatchRequest {
     this.origin = origin;
   }
 
-  public FeedTag getFeedTag() {
-    return feedTag;
-  }
-
-  public void setFeedTag(FeedTag feedTag) {
-    this.feedTag = feedTag;
-  }
-
-  public static class FeedTag {
-
-    private String name;
-    private String color;
-
-    public FeedTag() {
-      // required by Jackson
+  public String getTag() {
+    return tag;
     }
 
-    public String getName() {
-      return name;
-    }
-
-    public void setName(String name) {
-      this.name = name;
+  public void setTag(String tag) {
+    this.tag = tag;
     }
 
     public String getColor() {
@@ -55,4 +39,3 @@ public class SubscriptionPatchRequest {
       this.color = color;
     }
   }
-}

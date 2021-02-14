@@ -60,8 +60,8 @@ export function SubscriptionNavigationItem(props) {
       >
         {item.subscriptions.map(subscription => (
           <NavigationItem
-            selected={isSelected(searchParams, subscription.feedTag.name, subscription.uuid)}
-            to={generateEntriesPath(subscription.feedTag.name, subscription.uuid)}
+            selected={isSelected(searchParams, subscription.tag, subscription.uuid)}
+            to={generateEntriesPath(subscription.tag, subscription.uuid)}
             onClick={onClick}
             key={subscription.uuid}
             title={subscription.title}
@@ -83,10 +83,7 @@ SubscriptionNavigationItem.propTypes = {
       PropTypes.shape({
         uuid: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
-        feedTag: PropTypes.shape({
-          uuid: PropTypes.string,
-          name: PropTypes.string
-        }).isRequired
+        tag: PropTypes.string,
       }).isRequired
     )
   }).isRequired,

@@ -7,10 +7,6 @@ import {useSettings} from '../../contexts/settings'
 jest.mock('../../contexts/settings', () => ({
   useSettings: jest.fn()
 }))
-
-jest.mock('../../components/SubscriptionTags/SubscriptionTags', () => ({
-  SubscriptionTags: () => null
-}))
 /* eslint-enable */
 
 describe('SettingsPage', () => {
@@ -64,9 +60,5 @@ describe('SettingsPage', () => {
   it('should trigger setShowUnseenEntries with changed showEntryDetails option', () => {
     createWrapper().find('Option').at(1).props().onSelect(true)
     expect(setShowUnseenEntries).toHaveBeenCalledWith(true)
-  })
-
-  it('should contain subscription tags component', () => {
-    expect(createWrapper().find('SubscriptionTags').exists()).toEqual(true)
   })
 })

@@ -49,7 +49,7 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     }
 
     if (feedTagEqual != null) {
-      predicates.add(cb.equal(root.get("subscription").get("subscriptionTag").get("name"), feedTagEqual));
+      predicates.add(cb.equal(root.get("subscription").get("tag"), feedTagEqual));
     }
 
     if (seen != null) {

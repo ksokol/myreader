@@ -23,17 +23,8 @@ public class SubscriptionGetResponseAssemblerSupport extends RepresentationModel
     target.setTitle(source.getTitle());
     target.setUnseen(source.getUnseen());
     target.setFetchErrorCount(source.getFetchErrorCount());
-
-    if (source.getSubscriptionTag() != null) {
-      var subscriptionTag = source.getSubscriptionTag();
-      var feedTag = new SubscriptionGetResponse.FeedTag();
-
-      target.setFeedTag(feedTag);
-      feedTag.setUuid(subscriptionTag.getId().toString());
-      feedTag.setName(subscriptionTag.getName());
-      feedTag.setColor(subscriptionTag.getColor());
-      feedTag.setCreatedAt(subscriptionTag.getCreatedAt());
-    }
+    target.setTag(source.getTag());
+    target.setColor(source.getColor());
 
     return target;
   }

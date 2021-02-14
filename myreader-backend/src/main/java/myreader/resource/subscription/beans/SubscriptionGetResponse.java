@@ -8,7 +8,8 @@ public class SubscriptionGetResponse extends RepresentationModel<SubscriptionGet
 
   private String uuid;
   private String title;
-  private FeedTag feedTag;
+  private String tag;
+  private String color;
   private int sum;
   private long unseen;
   private String origin;
@@ -31,12 +32,20 @@ public class SubscriptionGetResponse extends RepresentationModel<SubscriptionGet
     this.title = title;
   }
 
-  public FeedTag getFeedTag() {
-    return feedTag;
+  public String getTag() {
+    return tag;
   }
 
-  public void setFeedTag(FeedTag feedTag) {
-    this.feedTag = feedTag;
+  public void setTag(String tag) {
+    this.tag = tag;
+  }
+
+  public String getColor() {
+    return color;
+  }
+
+  public void setColor(String color) {
+    this.color = color;
   }
 
   public int getSum() {
@@ -87,57 +96,5 @@ public class SubscriptionGetResponse extends RepresentationModel<SubscriptionGet
   @Override
   public int hashCode() {
     return super.hashCode();
-  }
-
-  public static class FeedTag extends RepresentationModel<FeedTag> {
-
-    private String uuid;
-    private String name;
-    private String color;
-    private Date createdAt;
-
-    public String getUuid() {
-      return uuid;
-    }
-
-    public void setUuid(String uuid) {
-      this.uuid = uuid;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
-
-    public String getColor() {
-      return color;
-    }
-
-    public void setColor(String color) {
-      this.color = color;
-    }
-
-    public Date getCreatedAt() {
-      return new Date(createdAt.getTime());
-    }
-
-    public void setCreatedAt(Date createdAt) {
-      if (createdAt != null) {
-        this.createdAt = new Date(createdAt.getTime());
-      }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-      return super.hashCode();
-    }
   }
 }

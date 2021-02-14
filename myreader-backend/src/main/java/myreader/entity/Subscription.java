@@ -7,12 +7,9 @@ import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -30,6 +27,8 @@ public class Subscription {
   private String title;
   private String url;
   private int unseen;
+  private String tag;
+  private String color;
   private Date createdAt;
   private int fetchCount;
   private String lastModified;
@@ -37,7 +36,6 @@ public class Subscription {
   private Integer resultSizePerFetch;
   private Set<SubscriptionEntry> subscriptionEntries;
   private Set<ExclusionPattern> exclusions;
-  private SubscriptionTag subscriptionTag;
   private long fetchErrorCount;
   private Set<FetchError> fetchErrors;
   private long version;
@@ -131,6 +129,24 @@ public class Subscription {
     this.unseen = unseen;
   }
 
+  @Column(name = "tag")
+  public String getTag() {
+    return tag;
+  }
+
+  public void setTag(String tag) {
+    this.tag = tag;
+  }
+
+  @Column(name = "color")
+  public String getColor() {
+    return color;
+  }
+
+  public void setColor(String color) {
+    this.color = color;
+  }
+
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "user_feed_created_at")
   public Date getCreatedAt() {
@@ -164,16 +180,6 @@ public class Subscription {
     this.subscriptionEntries = subscriptionEntries;
   }
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "user_feed_user_feed_tag_id")
-  public SubscriptionTag getSubscriptionTag() {
-    return subscriptionTag;
-  }
-
-  public void setSubscriptionTag(SubscriptionTag subscriptionTag) {
-    this.subscriptionTag = subscriptionTag;
-  }
-
   @Formula(
     "(select count(fe.fetch_error_id) from fetch_error fe where fe.fetch_error_subscription_id = user_feed_id)"
   )
@@ -194,7 +200,7 @@ public class Subscription {
     this.fetchErrors = fetchErrors;
   }
 
-  @Column(columnDefinition = "INT DEFAULT 0", precision = 0)
+  @Column(columnDefinition = "INT DEFAULT 0")
   @Version
   public long getVersion() {
     return version;

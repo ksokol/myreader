@@ -14,6 +14,10 @@ import {
 
 configure({adapter: new Adapter()})
 
+beforeAll(() => {
+  window.HTMLDialogElement = undefined
+})
+
 afterEach(() => {
   localStorage.clear()
   act(() => jest.runOnlyPendingTimers())

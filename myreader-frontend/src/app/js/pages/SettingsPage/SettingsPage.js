@@ -1,7 +1,6 @@
 import './SettingsPage.css'
 import React from 'react'
 import Option from '../../components/Option/Option'
-import {SubscriptionTags} from '../../components/SubscriptionTags/SubscriptionTags'
 import {useSettings} from '../../contexts/settings'
 
 const pageSizeOptions = [10, 20, 30]
@@ -53,13 +52,6 @@ export const SettingsPage = () => {
           options={entryDetailsOptions}
           onSelect={setShowEntryDetails}
         />
-      </div>
-
-      <div
-        className='my-settings__item'
-      >
-        <label>Subscription Tags</label>
-        <SubscriptionTags />
       </div>
     </div>
   )

@@ -3,7 +3,6 @@ package myreader.resource.subscription;
 import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-import myreader.entity.SubscriptionTag;
 import myreader.service.subscription.SubscriptionService;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +24,6 @@ import java.util.Date;
 import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.groups.Tuple.tuple;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -53,22 +51,17 @@ class SubscriptionEntityResourceTests {
   private SubscriptionService subscriptionService;
 
   private Subscription subscription;
-  private SubscriptionTag subscriptionTag;
 
   @BeforeEach
   void setUp() {
     subscription = new Subscription("http://example.com", "feed title");
     subscription.setTitle("expected title");
+    subscription.setTag("subscriptiontag name");
+    subscription.setColor("#111111");
     subscription.setFetchCount(15);
     subscription.setUnseen(10);
     subscription.setCreatedAt(new Date(2000));
     subscription = em.persist(subscription);
-
-    subscriptionTag = new SubscriptionTag("subscriptiontag name", subscription);
-    subscriptionTag.setColor("#111111");
-    subscriptionTag.setCreatedAt(new Date(1000));
-    subscriptionTag = em.persist(subscriptionTag);
-    subscription.setSubscriptionTag(subscriptionTag);
 
     var fetchError1 = new FetchError(subscription, "message 1");
     fetchError1.setCreatedAt(new Date(1000));
@@ -96,10 +89,8 @@ class SubscriptionEntityResourceTests {
       .andExpect(jsonPath("$.unseen").value(1))
       .andExpect(jsonPath("$.origin").value("http://example.com"))
       .andExpect(jsonPath("$.fetchErrorCount").value(2))
-      .andExpect(jsonPath("$.feedTag.uuid").value(subscriptionTag.getId().toString()))
-      .andExpect(jsonPath("$.feedTag.name").value("subscriptiontag name"))
-      .andExpect(jsonPath("$.feedTag.color").value("#111111"))
-      .andExpect(jsonPath("$.feedTag.createdAt").value("1970-01-01T00:00:01.000+00:00"))
+      .andExpect(jsonPath("$.tag").value("subscriptiontag name"))
+      .andExpect(jsonPath("$.color").value("#111111"))
       .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:02.000+00:00"));
   }
 
@@ -109,27 +100,6 @@ class SubscriptionEntityResourceTests {
       .andExpect(status().isNoContent());
 
     assertThat(em.find(Subscription.class, subscription.getId())).isNull();
-  }
-
-  @Test
-  void shouldDeleteSubscriptionTagIfOrphaned() throws Exception {
-    mockMvc.perform(delete("/api/2/subscriptions/{id}", subscription.getId()))
-      .andExpect(status().isNoContent());
-
-    assertThat(em.find(SubscriptionTag.class, subscriptionTag.getId())).isNull();
-  }
-
-  @Test
-  void shouldNotDeleteSubscriptionTagIfUsedInAnotherSubscription() throws Exception {
-    var subscription2 = new Subscription("url", "title");
-    subscription2.setTitle("expected title2");
-    subscription2.setSubscriptionTag(subscriptionTag);
-    em.persist(subscription2);
-
-    mockMvc.perform(delete("/api/2/subscriptions/{id}", subscription.getId()))
-      .andExpect(status().isNoContent());
-
-    assertThat(em.find(SubscriptionTag.class, subscriptionTag.getId())).isNotNull();
   }
 
   @Test
@@ -145,91 +115,31 @@ class SubscriptionEntityResourceTests {
       .willReturn(true);
 
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
-      .with(jsonBody("{'title': 'changed title', 'origin': 'http://other.com', 'feedTag': {'name': 'subscriptiontag name', 'color': '#222222'}}")))
+      .with(jsonBody("{'title': 'changed title', 'origin': 'http://other.com', 'tag': 'subscriptiontag name', 'color': '#222222'}")))
       .andExpect(status().isOk())
       .andExpect(jsonPath("title").value("changed title"))
       .andExpect(jsonPath("origin").value("http://other.com"))
-      .andExpect(jsonPath("feedTag.uuid").value(subscriptionTag.getId().toString()))
-      .andExpect(jsonPath("feedTag.name").value("subscriptiontag name"))
-      .andExpect(jsonPath("feedTag.color").value("#222222"));
-
-    assertThat(em.find(Subscription.class, subscription.getId()))
-      .hasFieldOrPropertyWithValue("title", "changed title")
-      .hasFieldOrPropertyWithValue("url", "http://other.com");
-    assertThat(em.find(SubscriptionTag.class, subscriptionTag.getId()))
-      .hasFieldOrPropertyWithValue("name", "subscriptiontag name")
-      .hasFieldOrPropertyWithValue("color", "#222222");
+      .andExpect(jsonPath("tag").value("subscriptiontag name"))
+      .andExpect(jsonPath("color").value("#222222"));
   }
 
   @Test
   void shouldNotPatchIfNothingChanged() throws Exception {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
-      .with(jsonBody("{'title': 'expected title', 'origin': 'http://example.com', 'feedTag': {'name': 'subscriptiontag name'}}")))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("title").value("expected title"))
-      .andExpect(jsonPath("feedTag.uuid").value(subscriptionTag.getId().toString()))
-      .andExpect(jsonPath("feedTag.name").value("subscriptiontag name"))
-      .andExpect(jsonPath("feedTag.color").value("#111111"));
-
-    assertThat(em.find(Subscription.class, subscription.getId()))
-      .hasFieldOrPropertyWithValue("title", "expected title");
-    assertThat(em.find(SubscriptionTag.class, subscriptionTag.getId()))
-      .hasFieldOrPropertyWithValue("name", "subscriptiontag name")
-      .hasFieldOrPropertyWithValue("color", "#111111");
-  }
-
-  @Test
-  void shouldCreateNewSubscriptionTagAndDeleteOrphanedOneIfNameChanged() throws Exception {
-    mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
-      .with(jsonBody("{'title': 'expected title', 'origin': 'http://example.com', 'feedTag': {'name':'changed name', 'color': '#222222'}}")))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("title").value("expected title"))
-      .andExpect(jsonPath("feedTag.uuid").value(subscriptionTag.getId() + 1))
-      .andExpect(jsonPath("feedTag.name").value("changed name"))
-      .andExpect(jsonPath("feedTag.color").value("#222222"));
-
-    assertThat(em.getEntityManager().createQuery("select st from SubscriptionTag st", SubscriptionTag.class).getResultList())
-      .hasSize(1)
-      .extracting("name", "color")
-      .contains(tuple("changed name", "#222222"));
-  }
-
-  @Test
-  void shouldNotDeleteSubscriptionTagIfNotOrphanedAfterPatch() throws Exception {
-    var subscription2 = new Subscription("url", "title");
-    subscription2.setTitle("title");
-    subscription2.setSubscriptionTag(subscriptionTag);
-    em.persist(subscription2);
-
-    mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
-      .with(jsonBody("{'title': 'expected title', 'origin': 'http://example.com'}")))
+      .with(jsonBody("{'title': 'expected title', 'origin': 'http://example.com', 'tag': 'subscriptiontag name', 'color': '#111111'}")))
       .andExpect(status().isOk())
       .andExpect(jsonPath("title").value("expected title"))
       .andExpect(jsonPath("origin").value("http://example.com"))
-      .andExpect(jsonPath("feedTag").isEmpty());
-
-    assertThat(em.find(SubscriptionTag.class, subscriptionTag.getId())).isNotNull();
+      .andExpect(jsonPath("tag").value("subscriptiontag name"))
+      .andExpect(jsonPath("color").value("#111111"));
   }
 
   @Test
-  void shouldDeleteSubscriptionTagIfOrphanedAfterPatch() throws Exception {
-    mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
-      .with(jsonBody("{'title': 'expected title', 'origin': 'http://example.com'}")))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("title").value("expected title"))
-      .andExpect(jsonPath("origin").value("http://example.com"))
-      .andExpect(jsonPath("feedTag").isEmpty());
-
-    assertThat(em.find(SubscriptionTag.class, subscriptionTag.getId())).isNull();
-  }
-
-  @Test
-  void shouldRejectPatchRequestWhenTitleAndOriginAndFeedTagNamePropertyAreAbsent() throws Exception {
+  void shouldRejectPatchRequestWhenTitleAndOriginPropertiesAreAbsent() throws Exception {
     mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
       .with(jsonBody("{'feedTag': {}}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("title").value("may not be empty"))
-      .andExpect(validation().onField("feedTag.name").value("may not be empty"));
+      .andExpect(validation().onField("title").value("may not be empty"));
   }
 
   @Test
@@ -238,14 +148,6 @@ class SubscriptionEntityResourceTests {
       .with(jsonBody("{'title': ' ', 'origin': 'http://example.com'}")))
       .andExpect(status().isBadRequest())
       .andExpect(validation().onField("title").value("may not be empty"));
-  }
-
-  @Test
-  void shouldValidateSubscriptionTagName() throws Exception {
-    mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
-      .with(jsonBody("{'title': 'irrelevant', 'feedTag': {'name': ' '}}")))
-      .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("feedTag.name").value("may not be empty"));
   }
 
   @Test
@@ -265,6 +167,14 @@ class SubscriptionEntityResourceTests {
       .with(jsonBody("{'title': 'some title', 'origin': 'http://example.local'}")))
       .andExpect(status().isBadRequest())
       .andExpect(validation().onField("origin").value("invalid syndication feed"));
+  }
+
+  @Test
+  void shouldValidatePatchRequestInvalidColor() throws Exception {
+    mockMvc.perform(patch("/api/2/subscriptions/{id}", subscription.getId())
+      .with(jsonBody("{'title': 'some title', 'origin': 'http://example.local', 'color': 'invalid'}")))
+      .andExpect(status().isBadRequest())
+      .andExpect(validation().onField("color").value("not a RGB hex code"));
   }
 
   @Test

@@ -1,11 +1,22 @@
+const on = jest.fn()
+const off = jest.fn()
+
+beforeEach(() => {
+  on.mockReset()
+  off.mockReset()
+})
+
 function ColorPicker(node, init) {
   return {
     ...init,
-    on: jest.fn(),
-    off: jest.fn()
+    on,
+    off
   }
 }
 
 export default {
-  ColorPicker
+  ColorPicker,
+  mock: {
+    onChange: hexString => on.mock.calls[0][1]({hexString}),
+  }
 }

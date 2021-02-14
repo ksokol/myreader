@@ -9,12 +9,4 @@ export class SubscriptionTagsApi extends Api {
       method: 'GET',
     })
   }
-
-  saveSubscriptionTag = subscriptionTag => {
-    return this.request({
-      url: `${SUBSCRIPTION_TAGS}/${subscriptionTag.uuid}`,
-      method: 'PATCH',
-      body: subscriptionTag,
-    })
-  }
 }

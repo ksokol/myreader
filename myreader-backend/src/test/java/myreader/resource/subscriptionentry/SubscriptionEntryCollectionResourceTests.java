@@ -3,7 +3,6 @@ package myreader.resource.subscriptionentry;
 import com.jayway.jsonpath.JsonPath;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-import myreader.entity.SubscriptionTag;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,11 +62,7 @@ class SubscriptionEntryCollectionResourceTests {
 
     subscription2 = new Subscription("irrelevant", "irrelevant");
     subscription2.setTitle("user2 subscription1");
-    subscription2 = em.persist(subscription2);
-
-    var subscriptionTag2 = new SubscriptionTag("subscription tag", subscription2);
-    subscriptionTag2 = em.persist(subscriptionTag2);
-    subscription2.setSubscriptionTag(subscriptionTag2);
+    subscription2.setTag("subscription tag");
     subscription2 = em.persist(subscription2);
 
     subscriptionEntry1 = new SubscriptionEntry(subscription1);
@@ -112,8 +107,8 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content[0].tags").isEmpty())
       .andExpect(jsonPath("$.content[0].content").value("some entry4 content"))
       .andExpect(jsonPath("$.content[0].seen").value(false))
-      .andExpect(jsonPath("$.content[0].feedTag").doesNotExist())
-      .andExpect(jsonPath("$.content[0].feedTagColor").doesNotExist())
+      .andExpect(jsonPath("$.content[0].feedTag").isEmpty())
+      .andExpect(jsonPath("$.content[0].feedTagColor").isEmpty())
       .andExpect(jsonPath("$.content[0].feedUuid").value(subscription1.getId().toString()))
       .andExpect(jsonPath("$.content[0].origin").value("http://example.com/feedentry4"))
       .andExpect(jsonPath("$.content[0].createdAt").value("1970-01-01T00:00:04.000+00:00"))

@@ -2,7 +2,6 @@ package myreader.resource.subscriptionentry;
 
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-import myreader.entity.SubscriptionTag;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +47,8 @@ class SubscriptionEntryEntityResourceTests {
   void before() {
     subscription = new Subscription("http://example.com", "feed title");
     subscription.setTitle("user112_subscription1");
+    subscription.setTag("tag1");
+    subscription.setColor("#777");
     subscription = em.persist(subscription);
 
     subscriptionEntry = new SubscriptionEntry(subscription);
@@ -58,14 +59,6 @@ class SubscriptionEntryEntityResourceTests {
     subscriptionEntry.setSeen(true);
     subscriptionEntry.setCreatedAt(new Date(1000));
     subscriptionEntry = em.persist(subscriptionEntry);
-
-    var subscriptionTag = new SubscriptionTag("tag1", subscription);
-    subscriptionTag.setColor("#777");
-    subscriptionTag = em.persist(subscriptionTag);
-    subscriptionEntry = em.persist(subscriptionEntry);
-
-    subscription.setSubscriptionTag(subscriptionTag);
-    subscription = em.persist(subscription);
   }
 
   @Test

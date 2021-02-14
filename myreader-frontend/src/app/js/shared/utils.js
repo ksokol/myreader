@@ -1,6 +1,6 @@
 export const isDefined = value => typeof value !== 'undefined'
 
-export const isString = value => value !== null && typeof value === 'string'
+const isString = value => value !== null && typeof value === 'string'
 
 export const isObject = value => value !== null && typeof value === 'object'
 

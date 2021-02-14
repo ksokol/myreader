@@ -4,12 +4,12 @@
   padding: 10px;
 }
 
-.my-subscription-edit-form__origin {
+.my-subscription-edit-form__row {
   display: flex;
   align-items: center;
 }
 
-.my-subscription-edit-form__origin > .my-input {
+.my-subscription-edit-form__row > .my-input {
   flex-grow: 1;
 }
 
@@ -27,4 +27,13 @@
 .my-subscription-edit-form__buttons {
   display: flex;
   justify-content: flex-end;
+}
+
+.my-subscription-edit-form__color {
+  border: none;
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  cursor: pointer;
 }
