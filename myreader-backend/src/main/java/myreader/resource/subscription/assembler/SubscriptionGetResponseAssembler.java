@@ -2,17 +2,11 @@ package myreader.resource.subscription.assembler;
 
 import myreader.entity.Subscription;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
-import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SubscriptionGetResponseAssemblerSupport extends RepresentationModelAssemblerSupport<Subscription, SubscriptionGetResponse> {
+public class SubscriptionGetResponseAssembler {
 
-  public SubscriptionGetResponseAssemblerSupport() {
-    super(Subscription.class, SubscriptionGetResponse.class);
-  }
-
-  @Override
   public SubscriptionGetResponse toModel(Subscription source) {
     var target = new SubscriptionGetResponse();
 

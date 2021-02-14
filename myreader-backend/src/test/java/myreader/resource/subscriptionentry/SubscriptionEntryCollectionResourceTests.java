@@ -100,7 +100,7 @@ class SubscriptionEntryCollectionResourceTests {
   void shouldReturnEntries() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries"))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("links[?(@.rel=='next')].href").value("http://localhost/api/2/subscriptionEntries?next=" + subscriptionEntry2.getId()))
+      .andExpect(jsonPath("$.next").value("http://localhost/api/2/subscriptionEntries?next=" + subscriptionEntry2.getId()))
       .andExpect(jsonPath("$.content.length()").value(10))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
       .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry11.getId().toString()))
@@ -128,7 +128,7 @@ class SubscriptionEntryCollectionResourceTests {
   @Test
   void shouldPaginate() throws Exception {
     var firstResponse = mockMvc.perform(get("/api/2/subscriptionEntries"))
-      .andExpect(jsonPath("links[?(@.rel=='next')].href").value("http://localhost/api/2/subscriptionEntries?next=" + subscriptionEntry2.getId()))
+      .andExpect(jsonPath("next").value("http://localhost/api/2/subscriptionEntries?next=" + subscriptionEntry2.getId()))
       .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry12.getId().toString()))
       .andExpect(jsonPath("content[9].uuid").value(subscriptionEntry2.getId().toString()))
       .andReturn();
@@ -308,11 +308,11 @@ class SubscriptionEntryCollectionResourceTests {
   }
 
   private String nextPage(MvcResult mvcResult) throws IOException {
-    List<String> nextHrefs = JsonPath.read(mvcResult.getResponse().getContentAsString(), "$.links[?(@.rel=='next')].href");
-    if (nextHrefs.size() == 0) {
-      throw new AssertionError("href with rel next not found");
+    String nextHref = JsonPath.read(mvcResult.getResponse().getContentAsString(), "next");
+    if (nextHref == null) {
+      throw new AssertionError("next not found");
     }
-    return nextHrefs.get(0);
+    return nextHref;
   }
 
   private List<String> list(String... values) {

@@ -1,10 +1,8 @@
 package myreader.resource.subscription.beans;
 
-import org.springframework.hateoas.RepresentationModel;
-
 import java.util.Date;
 
-public class SubscriptionGetResponse extends RepresentationModel<SubscriptionGetResponse> {
+public class SubscriptionGetResponse {
 
   private String uuid;
   private String title;
@@ -86,15 +84,5 @@ public class SubscriptionGetResponse extends RepresentationModel<SubscriptionGet
 
   public void setCreatedAt(Date createdAt) {
     this.createdAt = new Date(createdAt.getTime());
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    return super.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
   }
 }

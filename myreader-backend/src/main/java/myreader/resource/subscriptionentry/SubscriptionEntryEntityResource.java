@@ -1,11 +1,10 @@
 package myreader.resource.subscriptionentry;
 
-import myreader.entity.SubscriptionEntry;
 import myreader.repository.SubscriptionEntryRepository;
 import myreader.resource.ResourceConstants;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryPatchRequest;
-import org.springframework.hateoas.server.RepresentationModelAssembler;
+import myreader.resource.subscriptionentry.converter.SubscriptionEntryGetResponseConverter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,10 +18,10 @@ import org.springframework.web.server.ResponseStatusException;
 public class SubscriptionEntryEntityResource {
 
   private final SubscriptionEntryRepository subscriptionEntryRepository;
-  private final RepresentationModelAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler;
+  private final SubscriptionEntryGetResponseConverter assembler;
 
   public SubscriptionEntryEntityResource(
-    RepresentationModelAssembler<SubscriptionEntry, SubscriptionEntryGetResponse> assembler,
+    SubscriptionEntryGetResponseConverter assembler,
     SubscriptionEntryRepository subscriptionEntryRepository
   ) {
     this.assembler = assembler;

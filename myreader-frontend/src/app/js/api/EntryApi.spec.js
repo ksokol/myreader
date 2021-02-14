@@ -57,10 +57,7 @@ describe('EntryApi', () => {
         {uuid: '1'},
         {uuid: '2'}
       ],
-      links: [
-        {rel: 'next', href: '/path?next=1'},
-        {rel: 'previous', href: '/path'}
-      ]
+      next: '/path?next=1',
     })
 
     await expect(entryApi.fetchEntries({})).resolves.toEqual({
@@ -72,10 +69,6 @@ describe('EntryApi', () => {
         next: {
           path: '/path',
           query: {next: '1'}
-        },
-        previous: {
-          path: '/path',
-          query: {}
         }
       }
     })

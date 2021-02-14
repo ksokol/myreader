@@ -1,11 +1,17 @@
 import {ENTRY_AVAILABLE_TAGS, SUBSCRIPTION_ENTRIES} from '../constants'
-import {extractLinks, toUrlString} from './links'
+import {toLink, toUrlString} from './links'
 import {Api} from './Api'
 
 function toEntries(raw = {}) {
+  const links = {}
+
+  if (raw.next) {
+    links.next = toLink(raw.next)
+  }
+
   return {
     entries: raw.content,
-    links: extractLinks(raw.links)
+    links,
   }
 }
 

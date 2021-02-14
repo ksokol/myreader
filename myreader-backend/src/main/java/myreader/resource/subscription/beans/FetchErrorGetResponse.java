@@ -1,10 +1,8 @@
 package myreader.resource.subscription.beans;
 
-import org.springframework.hateoas.RepresentationModel;
-
 import java.util.Date;
 
-public class FetchErrorGetResponse extends RepresentationModel<FetchErrorGetResponse> {
+public class FetchErrorGetResponse {
 
   private String uuid;
   private String message;
@@ -32,15 +30,5 @@ public class FetchErrorGetResponse extends RepresentationModel<FetchErrorGetResp
 
   public void setCreatedAt(Date createdAt) {
     this.createdAt = new Date(createdAt.getTime());
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    return super.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
   }
 }

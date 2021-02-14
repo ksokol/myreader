@@ -1,16 +1,15 @@
 package myreader.resource.subscription;
 
-import myreader.entity.FetchError;
-import myreader.entity.Subscription;
 import myreader.repository.FetchErrorRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.resource.ResourceConstants;
+import myreader.resource.subscription.assembler.FetchErrorGetResponseAssembler;
+import myreader.resource.subscription.assembler.SubscriptionGetResponseAssembler;
 import myreader.resource.subscription.beans.FetchErrorGetResponse;
 import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.resource.subscription.beans.SubscriptionPatchRequest;
 import myreader.resource.subscription.beans.SubscriptionPatchRequestValidator;
 import myreader.service.subscription.SubscriptionService;
-import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
@@ -34,15 +33,15 @@ public class SubscriptionEntityResource {
 
   private final SubscriptionRepository subscriptionRepository;
   private final SubscriptionService subscriptionService;
-  private final RepresentationModelAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler;
+  private final FetchErrorGetResponseAssembler fetchErrorAssembler;
   private final FetchErrorRepository fetchErrorRepository;
-  private final RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler;
+  private final SubscriptionGetResponseAssembler assembler;
 
   public SubscriptionEntityResource(
-    RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler,
+    SubscriptionGetResponseAssembler assembler,
     SubscriptionRepository subscriptionRepository,
     SubscriptionService subscriptionService,
-    RepresentationModelAssembler<FetchError, FetchErrorGetResponse> fetchErrorAssembler,
+    FetchErrorGetResponseAssembler fetchErrorAssembler,
     FetchErrorRepository fetchErrorRepository
   ) {
     this.assembler = assembler;

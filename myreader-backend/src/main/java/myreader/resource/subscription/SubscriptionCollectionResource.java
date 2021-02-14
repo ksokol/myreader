@@ -1,14 +1,12 @@
 package myreader.resource.subscription;
 
-import myreader.entity.Subscription;
 import myreader.repository.SubscriptionRepository;
 import myreader.resource.ResourceConstants;
+import myreader.resource.subscription.assembler.SubscriptionGetResponseAssembler;
 import myreader.resource.subscription.beans.SubscribePostRequest;
 import myreader.resource.subscription.beans.SubscribePostRequestValidator;
-import myreader.resource.subscription.beans.SubscriptionGetResponse;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,11 +25,11 @@ public class SubscriptionCollectionResource {
 
   private final SubscriptionService subscriptionService;
   private final SubscriptionRepository subscriptionRepository;
-  private final RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler;
+  private final SubscriptionGetResponseAssembler assembler;
 
   @Autowired
   public SubscriptionCollectionResource(
-    RepresentationModelAssembler<Subscription, SubscriptionGetResponse> assembler,
+    SubscriptionGetResponseAssembler assembler,
     SubscriptionService subscriptionService,
     SubscriptionRepository subscriptionRepository
   ) {

@@ -1,15 +1,9 @@
 package myreader.resource.subscriptionentry.beans;
 
-import org.springframework.hateoas.RepresentationModel;
-
 import java.util.Date;
 import java.util.Set;
 
-/**
- * @author Kamill Sokol
- */
-@SuppressWarnings("PMD.UselessOverridingMethod")
-public class SubscriptionEntryGetResponse extends RepresentationModel<SubscriptionEntryGetResponse> {
+public class SubscriptionEntryGetResponse {
 
     private String uuid;
     private String title;
@@ -109,15 +103,5 @@ public class SubscriptionEntryGetResponse extends RepresentationModel<Subscripti
 
     public void setCreatedAt(final Date createdAt) {
         this.createdAt = new Date(createdAt.getTime());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 }

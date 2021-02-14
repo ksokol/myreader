@@ -41,10 +41,7 @@ describe('BookmarkListPage', () => {
     fetch.jsonResponseOnce(['expected tag1', 'expected tag2'])
     fetch.jsonResponseOnce({
       content: [{...entry1}, {...entry2}],
-      links: [{
-        rel: 'next',
-        href: 'http://localhost/test?nextpage'
-      }],
+      next: 'http://localhost/test?nextpage',
     })
   })
 
@@ -95,14 +92,14 @@ describe('BookmarkListPage', () => {
   })
 
   it('should render entries', async () => {
-    fetch.jsonResponseOnce({content: [{...entry2}], links: [],})
+    fetch.jsonResponseOnce({content: [{...entry2}], next: null,})
     await renderComponent()
 
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
   })
 
   it('should fetch entries for selected entry tag', async () => {
-    fetch.jsonResponseOnce({content: [{...entry2}], links: [],})
+    fetch.jsonResponseOnce({content: [{...entry2}], next: null,})
     await renderComponent()
 
     await act(async () => fireEvent.click(screen.getByText('expected tag1')))
@@ -115,7 +112,7 @@ describe('BookmarkListPage', () => {
   it('should load next page', async () => {
     await renderComponent()
 
-    fetch.jsonResponse({content: [{...entry3}, {...entry4}], links: [],})
+    fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null,})
     await act(async () => fireEvent.click(screen.getByRole('more')))
 
     expect(screen.queryByTitle('title1')).toBeInTheDocument()
@@ -158,7 +155,7 @@ describe('BookmarkListPage', () => {
     await renderComponent()
 
     fetch.jsonResponseOnce(['expected tag1', 'expected tag2'])
-    fetch.jsonResponseOnce({content: [{...entry2}, {...entry3}], links: [],})
+    fetch.jsonResponseOnce({content: [{...entry2}, {...entry3}], next: null,})
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({

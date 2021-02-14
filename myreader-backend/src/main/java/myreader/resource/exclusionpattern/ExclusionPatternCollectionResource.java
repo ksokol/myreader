@@ -4,10 +4,10 @@ import myreader.entity.ExclusionPattern;
 import myreader.repository.ExclusionRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.resource.ResourceConstants;
+import myreader.resource.exclusionpattern.assembler.ExclusionPatternGetResponseAssembler;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternGetResponse;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternPostRequest;
 import myreader.resource.exclusionpattern.beans.ExclusionPatternPostRequestValidator;
-import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
@@ -28,12 +28,12 @@ import static java.util.stream.Collectors.toList;
 @RestController
 public class ExclusionPatternCollectionResource {
 
-  private final RepresentationModelAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler;
+  private final ExclusionPatternGetResponseAssembler assembler;
   private final ExclusionRepository exclusionRepository;
   private final SubscriptionRepository subscriptionRepository;
 
   public ExclusionPatternCollectionResource(
-    RepresentationModelAssembler<ExclusionPattern, ExclusionPatternGetResponse> assembler,
+    ExclusionPatternGetResponseAssembler assembler,
     ExclusionRepository exclusionRepository,
     SubscriptionRepository subscriptionRepository
   ) {

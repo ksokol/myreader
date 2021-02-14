@@ -67,10 +67,7 @@ describe('EntryStreamPage', () => {
 
     fetch.jsonResponse({
       content: [{...entry1}, {...entry2}],
-      links: [{
-        rel: 'next',
-        href: 'http://localhost/test?nextpage'
-      }],
+      next: 'http://localhost/test?nextpage',
     })
   })
 
@@ -329,7 +326,7 @@ describe('EntryStreamPage', () => {
   it('should load next page', async () => {
     await renderComponent()
 
-    fetch.jsonResponse({content: [{...entry3}, {...entry4}], links: [],})
+    fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null,})
     await act(async () => fireEvent.click(screen.getByRole('more')))
 
     expect(screen.queryByTitle('title1')).toBeInTheDocument()
@@ -370,7 +367,7 @@ describe('EntryStreamPage', () => {
   it('should reload content on page when refresh icon button clicked', async () => {
     await renderComponent()
 
-    fetch.jsonResponse({content: [{...entry2}, {...entry3}], links: [],})
+    fetch.jsonResponse({content: [{...entry2}, {...entry3}], next: null,})
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({
@@ -406,7 +403,7 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponseOnce({...entry1, seen: true})
     await clickButtonNext()
 
-    fetch.jsonResponse({content: [{...entry1}, {...entry2}], links: [],})
+    fetch.jsonResponse({content: [{...entry1}, {...entry2}], next: null,})
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(screen.queryByRole('focus')).not.toBeInTheDocument()
@@ -418,7 +415,7 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponseOnce({...entry1, seen: true})
     await clickButtonNext()
 
-    fetch.jsonResponse({content: [{...entry3}, {...entry4}], links: [],})
+    fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null,})
     await act(async () => fireEvent.click(screen.getByRole('more')))
 
     expect(screen.queryByRole('focus')).toHaveTextContent('title1')

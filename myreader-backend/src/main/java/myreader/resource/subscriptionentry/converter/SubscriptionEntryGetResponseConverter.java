@@ -2,20 +2,14 @@ package myreader.resource.subscriptionentry.converter;
 
 import myreader.entity.SubscriptionEntry;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
-import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 import java.util.TreeSet;
 
 @Component
-public class SubscriptionEntryGetResponseConverter extends RepresentationModelAssemblerSupport<SubscriptionEntry, SubscriptionEntryGetResponse> {
+public class SubscriptionEntryGetResponseConverter {
 
-  public SubscriptionEntryGetResponseConverter() {
-    super(SubscriptionEntry.class, SubscriptionEntryGetResponse.class);
-  }
-
-  @Override
   public SubscriptionEntryGetResponse toModel(final SubscriptionEntry source) {
     var target = new SubscriptionEntryGetResponse();
 
