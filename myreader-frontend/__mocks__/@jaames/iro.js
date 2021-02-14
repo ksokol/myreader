@@ -9,6 +9,7 @@ beforeEach(() => {
 function ColorPicker(node, init) {
   return {
     ...init,
+    color: {},
     on,
     off
   }

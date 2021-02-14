@@ -1,45 +1,36 @@
-import React from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import PropTypes from 'prop-types'
 import iro from '@jaames/iro'
-import {noop} from '../../shared/utils'
 
 const changeEventName = 'color:change'
 
-class ColorPicker extends React.Component {
+export function ColorPicker({color, onChange}) {
+  const nodeRef = useRef()
+  const colorPickerRef = useRef()
 
-  constructor(props) {
-    super(props)
+  const onChangeListener = useCallback(({hexString}) => {
+    onChange && onChange(hexString)
+  }, [onChange])
 
-    this.myRef = React.createRef()
-    this.onChange = this.onChange.bind(this)
-  }
+  useEffect(() => {
+    colorPickerRef.current = new iro.ColorPicker(nodeRef.current)
+    colorPickerRef.current.on(changeEventName, onChangeListener)
+    return () => colorPickerRef.current.off(changeEventName, onChangeListener)
+  }, [onChangeListener])
 
-  componentDidMount() {
-    const color = this.props.color || '#FFF'
-    this.colorPicker = new iro.ColorPicker(this.myRef.current, {color})
-    this.colorPicker.on(changeEventName, this.onChange)
-  }
+  useEffect(() => {
+    colorPickerRef.current.color.hexString = color || '#FFFFFF'
+  }, [color])
 
-  componentWillUnmount() {
-    this.colorPicker.off(changeEventName, this.onChange)
-  }
-
-  onChange(color) {
-    this.props.onChange(color.hexString)
-  }
-
-  render() {
-    return <div role='color-picker' ref={this.myRef} />
-  }
+  return (
+    <div
+      role='color-picker'
+      ref={nodeRef}
+    />
+  )
 }
 
 ColorPicker.propTypes = {
   color: PropTypes.string,
   onChange: PropTypes.func
 }
-
-ColorPicker.defaultProps = {
-  onChange: noop
-}
-
-export default ColorPicker

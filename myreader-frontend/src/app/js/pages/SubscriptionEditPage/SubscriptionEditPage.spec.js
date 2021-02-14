@@ -10,13 +10,6 @@ jest.unmock('react-router')
 jest.unmock('react-router-dom')
 
 const expectedError = 'expectedError'
-const subscription = {
-  uuid: '1',
-  title: 'expected title',
-  origin: 'http://example.com',
-  tag: 'tag1',
-  color: '#FF11FF',
-}
 const subscriptionTags = []
 const fetchErrors = {
   content: []
@@ -47,7 +40,7 @@ jest.mock('../../hooks/router', () => {
 
 describe('SubscriptionEditPage', () => {
 
-  let history
+  let history, subscription
 
   const renderComponent = async () => {
     await act(async () => {
@@ -68,6 +61,14 @@ describe('SubscriptionEditPage', () => {
   }
 
   beforeEach(() => {
+    subscription = {
+      uuid: '1',
+      title: 'expected title',
+      origin: 'http://example.com',
+      tag: 'tag1',
+      color: '#FF11FF',
+    }
+
     history = createMemoryHistory()
     history.push({pathname: '1'})
 
@@ -310,5 +311,28 @@ describe('SubscriptionEditPage', () => {
     await renderComponent()
 
     expect(screen.queryByRole('dialog-error-message')).toHaveTextContent(expectedError)
+  })
+
+  it('should reset color', async () => {
+    await renderComponent()
+
+    fireEvent.click(screen.queryByRole('color-picker-button'))
+    expect(screen.getByText('use')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('reset'))
+    fireEvent.click(screen.getByText('use'))
+    expect(screen.queryByText('use')).not.toBeInTheDocument()
+
+    await act(async () => fireEvent.click(screen.getByText('Save')))
+
+    expect(fetch.mostRecent()).toMatchPatchRequest({
+      url: 'api/2/subscriptions/1',
+      body: {
+        uuid: '1',
+        title: 'expected title',
+        origin: 'http://example.com',
+        tag: 'tag1',
+        color: null,
+      },
+    })
   })
 })
