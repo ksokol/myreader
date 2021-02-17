@@ -3,6 +3,8 @@ package myreader.repository;
 import myreader.entity.SubscriptionEntry;
 import org.springframework.data.domain.Slice;
 
+import java.util.Set;
+
 public interface SubscriptionEntryRepositoryCustom {
 
   Slice<SubscriptionEntry> findBy(
@@ -12,4 +14,7 @@ public interface SubscriptionEntryRepositoryCustom {
     Boolean seen,
     Long next
   );
+
+  Set<String> findDistinctTags();
+
 }

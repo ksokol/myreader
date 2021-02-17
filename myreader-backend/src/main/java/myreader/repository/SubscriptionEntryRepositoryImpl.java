@@ -7,10 +7,14 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,47 +37,71 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     Long next
   ) {
     var sizePlusOne = DEFAULT_SIZE + 1;
-    var cb = em.getCriteriaBuilder();
-    var cq = cb.createQuery(SubscriptionEntry.class);
-    var root = cq.from(SubscriptionEntry.class);
-    var predicates = new ArrayList<Predicate>();
+    var predicates = new ArrayList<String>();
+    var params = new HashMap<String, Object>();
 
-    cq.distinct(true);
-    root.join("tags", JoinType.LEFT);
+    var sql = new StringBuilder(300);
+    sql.append("select ufe.* from user_feed_entry ufe join user_feed uf on uf.user_feed_id = ufe.user_feed_entry_user_feed_id");
 
     if (entryTagEqual != null) {
-      predicates.add(cb.equal(root.join("tags"), entryTagEqual));
+      predicates.add("position_array(:entryTagEqual in ufe.tags) > 0");
+      params.put("entryTagEqual", entryTagEqual);
     }
 
     if (feedId != null) {
-      predicates.add(cb.equal(root.get("subscription").get("id"), feedId));
+      predicates.add("ufe.user_feed_entry_user_feed_id = :feedId");
+      params.put("feedId", feedId);
     }
 
     if (feedTagEqual != null) {
-      predicates.add(cb.equal(root.get("subscription").get("tag"), feedTagEqual));
+      predicates.add("uf.tag = :feedTagEqual");
+      params.put("feedTagEqual", feedTagEqual);
     }
 
     if (seen != null) {
-      predicates.add(cb.equal(root.get("seen"), seen));
+      predicates.add("ufe.user_feed_entry_is_read = :seen");
+      params.put("seen", seen);
     }
 
     if (next != null) {
-      predicates.add(cb.lessThan(root.get("id"), next));
+      predicates.add("ufe.user_feed_entry_id < :next");
+      params.put("next", next);
     }
 
-    predicates.add(cb.equal(root.get("excluded"), false));
+    predicates.add("ufe.excluded = false");
 
-    cq.where(predicates.toArray(new Predicate[] {}));
-    cq.orderBy(cb.desc(root.get("id")));
+    for (int i = 0; i < predicates.size(); i++) {
+      sql.append(i > 0 ? " and " : " where ").append(predicates.get(i));
+    }
 
-    var query = em.createQuery(cq);
+    sql.append(" order by ufe.user_feed_entry_id desc");
+
+    Query query = em.createNativeQuery(sql.toString(), SubscriptionEntry.class);
+    for (Map.Entry<String, Object> entry : params.entrySet()) {
+      query.setParameter(entry.getKey(), entry.getValue());
+    }
+
     query.setMaxResults(sizePlusOne);
 
-    var resultList = query.getResultList();
+    @SuppressWarnings("unchecked")
+    List<SubscriptionEntry> resultList = query.getResultList();
     var limit = resultList.stream()
       .limit(DEFAULT_SIZE)
       .collect(Collectors.toList());
 
     return new SliceImpl<>(limit, Pageable.unpaged(), resultList.size() == sizePlusOne);
+  }
+
+  @Override
+  public Set<String> findDistinctTags() {
+    var query = em.createQuery("select se from SubscriptionEntry se where se.tags is not null", SubscriptionEntry.class);
+    var resultList = query.getResultList();
+    Set<String> tags = new TreeSet<>();
+
+    for (var entry : resultList) {
+      tags.addAll(entry.getTags());
+    }
+
+    return tags;
   }
 }

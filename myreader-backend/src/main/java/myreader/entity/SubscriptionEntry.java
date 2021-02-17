@@ -1,10 +1,12 @@
 package myreader.entity;
 
+import myreader.hibernate.SetArrayType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -29,6 +31,10 @@ import java.util.Set;
     @Index(name = "guid_idx", columnList = "guid"),
     @Index(name = "url_idx", columnList = "url")
   }
+)
+@TypeDef(
+  name = "set-array",
+  typeClass = SetArrayType.class
 )
 public class SubscriptionEntry {
 
@@ -118,12 +124,8 @@ public class SubscriptionEntry {
     this.excluded = excluded;
   }
 
-  @Column(columnDefinition = "VARCHAR(32)", name = "tag")
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(
-    name = "user_feed_entry_tags",
-    joinColumns = @JoinColumn(name = "user_feed_entry_id", referencedColumnName = "user_feed_entry_id")
-  )
+  @Type(type = "set-array")
+  @Column(columnDefinition = "VARCHAR(100) ARRAY", name = "tags")
   public Set<String> getTags() {
     return tags;
   }

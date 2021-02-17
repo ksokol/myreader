@@ -26,7 +26,7 @@ public class EntryPurger {
     log.info("retaining feed entries after {} for feed {}", retainAfterDate, feedId);
 
     var pageRequest = PageRequest.of(0, pageSize);
-    var feedEntries = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(
+    var feedEntries = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(
       feedId,
       retainAfterDate,
       pageRequest
@@ -39,7 +39,7 @@ public class EntryPurger {
         subscriptionEntryRepository.deleteById(feedEntry);
       }
 
-      feedEntries = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(
+      feedEntries = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(
         feedId,
         retainAfterDate,
         pageRequest

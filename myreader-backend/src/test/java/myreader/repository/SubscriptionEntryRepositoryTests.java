@@ -71,7 +71,7 @@ class SubscriptionEntryRepositoryTests {
   void shouldNotReturnFeedEntryIdWhenSubscriptionEntryIsNotRead() {
     persistedEntry(subscription1);
 
-    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(
+    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(
       subscription1.getId(),
       toDate(now().plusDays(1)),
       PageRequest.of(0, 2));
@@ -85,7 +85,7 @@ class SubscriptionEntryRepositoryTests {
     var entry = persistedEntry(subscription1);
     entry.setTags(Collections.singleton("not null"));
 
-    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(
+    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(
       subscription1.getId(),
       toDate(now().plusDays(1)),
       PageRequest.of(0, 2));
@@ -100,7 +100,7 @@ class SubscriptionEntryRepositoryTests {
     entry.setTags(Set.of("some tag"));
     entry.setSeen(true);
 
-    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(
+    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(
       subscription1.getId(),
       toDate(now().plusDays(1)),
       PageRequest.of(0, 2));
@@ -114,7 +114,7 @@ class SubscriptionEntryRepositoryTests {
     var entry = persistedEntry(subscription1);
     entry.setSeen(true);
 
-    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(
+    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(
       subscription1.getId(),
       toDate(now().plusDays(1)),
       PageRequest.of(0, 2));
@@ -130,7 +130,7 @@ class SubscriptionEntryRepositoryTests {
     entry1.setSeen(true);
     entry2.setSeen(true);
 
-    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(
+    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(
       subscription1.getId(),
       toDate(now().plusDays(1)),
       PageRequest.of(0, 2));
@@ -145,7 +145,7 @@ class SubscriptionEntryRepositoryTests {
     var entry2 = persistedEntry(subscription1);
     entry2.setSeen(true);
 
-    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(
+    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(
       subscription1.getId(),
       toDate(now().plusDays(1)),
       PageRequest.of(0, 2));
@@ -159,7 +159,7 @@ class SubscriptionEntryRepositoryTests {
     var entry = persistedEntry(subscription1);
     entry.setSeen(true);
 
-    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(
+    var actual = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(
       subscription1.getId(),
       toDate(now().minusDays(1)),
       PageRequest.of(0, 2));

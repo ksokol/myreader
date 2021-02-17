@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.Set;
 
 import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
@@ -59,7 +60,6 @@ class SubscriptionEntityResourceTests {
     subscription.setTag("subscriptiontag name");
     subscription.setColor("#111111");
     subscription.setFetchCount(15);
-    subscription.setUnseen(10);
     subscription.setCreatedAt(new Date(2000));
     subscription = em.persist(subscription);
 
@@ -71,7 +71,9 @@ class SubscriptionEntityResourceTests {
     fetchError2.setCreatedAt(new Date(2000));
     em.persist(fetchError2);
 
-    em.persistAndFlush(new SubscriptionEntry(subscription));
+    var entry = new SubscriptionEntry(subscription);
+    entry.setTags(Set.of("tag1", "tag2"));
+    em.persist(entry);
 
     given(subscriptionService.valid("http://example.com"))
       .willReturn(true);

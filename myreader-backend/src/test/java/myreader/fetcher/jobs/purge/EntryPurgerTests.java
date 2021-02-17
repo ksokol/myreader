@@ -39,7 +39,7 @@ class EntryPurgerTests {
 
   @Test
   void shouldNotDeleteEntriesWhenNoErasableEntriesAvailable() {
-    given(subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(feedId, retainDate, pageRequest))
+    given(subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(feedId, retainDate, pageRequest))
       .willReturn(withPage(0));
 
     purger.purge(feedId, retainDate);
@@ -49,7 +49,7 @@ class EntryPurgerTests {
 
   @Test
   void shouldDeleteAllErasableEntries() {
-    given(subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsNotEmptyAndCreatedAt(feedId, retainDate, pageRequest))
+    given(subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(feedId, retainDate, pageRequest))
       .willReturn(withPage(3, 1L, 2L))
       .willReturn(withPage(3, 3L))
       .willReturn(withPage(3));
