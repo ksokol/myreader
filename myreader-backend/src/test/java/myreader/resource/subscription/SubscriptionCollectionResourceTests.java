@@ -59,7 +59,7 @@ class SubscriptionCollectionResourceTests {
     subscription1 = new Subscription("http://feed1", "feed1");
     subscription1.setTitle("user102_subscription1");
     subscription1.setTag("tag1");
-    subscription1.setFetchCount(10);
+    subscription1.setAcceptedFetchCount(10);
     subscription1.setCreatedAt(new Date(2000));
     subscription1 = em.persist(subscription1);
 
@@ -70,7 +70,7 @@ class SubscriptionCollectionResourceTests {
     subscription2.setTitle("user102_subscription2");
     subscription2.setTag("tag2");
     subscription2.setColor("#111111");
-    subscription2.setFetchCount(20);
+    subscription2.setAcceptedFetchCount(20);
     subscription2.setCreatedAt(new Date(4000));
     subscription2 = em.persistAndFlush(subscription2);
 

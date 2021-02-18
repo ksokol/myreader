@@ -43,7 +43,7 @@ public class SubscriptionBatch {
       }
 
       subscription.setLastModified(fetchResult.getLastModified());
-      subscription.setFetched(subscription.getFetched() + newCount);
+      subscription.setOverallFetchCount(subscription.getOverallFetchCount() + newCount);
 
       if (fetchResult.getResultSizePerFetch() > 0) {
         subscription.setResultSizePerFetch(fetchResult.getResultSizePerFetch());

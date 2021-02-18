@@ -6,14 +6,12 @@ import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
@@ -25,7 +23,7 @@ import java.util.Set;
 @Access(AccessType.PROPERTY)
 @Entity
 @Table(
-  name = "user_feed_entry",
+  name = "subscription_entry",
   indexes = {
     @Index(name = "title_idx", columnList = "title"),
     @Index(name = "guid_idx", columnList = "guid"),
@@ -61,7 +59,6 @@ public class SubscriptionEntry {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "user_feed_entry_id")
   public Long getId() {
     return id;
   }
@@ -70,7 +67,6 @@ public class SubscriptionEntry {
     this.id = id;
   }
 
-  @Column(columnDefinition = "VARCHAR(1000)", name = "title")
   public String getTitle() {
     return title;
   }
@@ -79,7 +75,6 @@ public class SubscriptionEntry {
     this.title = title;
   }
 
-  @Column(columnDefinition = "VARCHAR(1000)", name = "guid")
   public String getGuid() {
     return guid;
   }
@@ -88,7 +83,6 @@ public class SubscriptionEntry {
     this.guid = guid;
   }
 
-  @Column(columnDefinition = "VARCHAR(1000)", name = "url")
   public String getUrl() {
     return url;
   }
@@ -97,7 +91,6 @@ public class SubscriptionEntry {
     this.url = url;
   }
 
-  @Column(columnDefinition = "LONGVARCHAR", name = "content")
   public String getContent() {
     return content;
   }
@@ -106,7 +99,6 @@ public class SubscriptionEntry {
     this.content = content;
   }
 
-  @Column(name = "user_feed_entry_is_read")
   public boolean isSeen() {
     return seen;
   }
@@ -115,7 +107,6 @@ public class SubscriptionEntry {
     this.seen = seen;
   }
 
-  @Column(name = "excluded")
   public boolean isExcluded() {
     return excluded;
   }
@@ -125,7 +116,6 @@ public class SubscriptionEntry {
   }
 
   @Type(type = "set-array")
-  @Column(columnDefinition = "VARCHAR(100) ARRAY", name = "tags")
   public Set<String> getTags() {
     return tags;
   }
@@ -135,7 +125,6 @@ public class SubscriptionEntry {
   }
 
   @ManyToOne(optional = false, fetch = FetchType.EAGER)
-  @JoinColumn(name = "user_feed_entry_user_feed_id")
   public Subscription getSubscription() {
     return subscription;
   }
@@ -145,7 +134,6 @@ public class SubscriptionEntry {
   }
 
   @Temporal(TemporalType.TIMESTAMP)
-  @Column(name = "user_feed_entry_created_at")
   public Date getCreatedAt() {
     if (createdAt != null) {
       return new Date(createdAt.getTime());

@@ -41,40 +41,40 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
     var params = new HashMap<String, Object>();
 
     var sql = new StringBuilder(300);
-    sql.append("select ufe.* from user_feed_entry ufe join user_feed uf on uf.user_feed_id = ufe.user_feed_entry_user_feed_id");
+    sql.append("select se.* from subscription_entry se join subscription s on s.id = se.subscription_id");
 
     if (entryTagEqual != null) {
-      predicates.add("position_array(:entryTagEqual in ufe.tags) > 0");
+      predicates.add("position_array(:entryTagEqual in se.tags) > 0");
       params.put("entryTagEqual", entryTagEqual);
     }
 
     if (feedId != null) {
-      predicates.add("ufe.user_feed_entry_user_feed_id = :feedId");
+      predicates.add("se.subscription_id = :feedId");
       params.put("feedId", feedId);
     }
 
     if (feedTagEqual != null) {
-      predicates.add("uf.tag = :feedTagEqual");
+      predicates.add("s.tag = :feedTagEqual");
       params.put("feedTagEqual", feedTagEqual);
     }
 
     if (seen != null) {
-      predicates.add("ufe.user_feed_entry_is_read = :seen");
+      predicates.add("se.seen = :seen");
       params.put("seen", seen);
     }
 
     if (next != null) {
-      predicates.add("ufe.user_feed_entry_id < :next");
+      predicates.add("se.id < :next");
       params.put("next", next);
     }
 
-    predicates.add("ufe.excluded = false");
+    predicates.add("se.excluded = false");
 
     for (int i = 0; i < predicates.size(); i++) {
       sql.append(i > 0 ? " and " : " where ").append(predicates.get(i));
     }
 
-    sql.append(" order by ufe.user_feed_entry_id desc");
+    sql.append(" order by se.id desc");
 
     Query query = em.createNativeQuery(sql.toString(), SubscriptionEntry.class);
     for (Map.Entry<String, Object> entry : params.entrySet()) {

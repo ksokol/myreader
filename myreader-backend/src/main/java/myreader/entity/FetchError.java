@@ -2,13 +2,11 @@ package myreader.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -38,7 +36,6 @@ public class FetchError {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "fetch_error_id")
   public Long getId() {
     return id;
   }
@@ -48,7 +45,6 @@ public class FetchError {
   }
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn(name = "fetch_error_subscription_id", nullable = false, updatable = false)
   public Subscription getSubscription() {
     return subscription;
   }
@@ -57,7 +53,6 @@ public class FetchError {
     this.subscription = subscription;
   }
 
-  @Column(columnDefinition = "VARCHAR(1000)", name = "fetch_error_message")
   public String getMessage() {
     return message;
   }
@@ -67,7 +62,6 @@ public class FetchError {
   }
 
   @Temporal(TemporalType.TIMESTAMP)
-  @Column(name = "fetch_error_created_at", nullable = false)
   public Date getCreatedAt() {
     if (createdAt != null) {
       return new Date(createdAt.getTime());

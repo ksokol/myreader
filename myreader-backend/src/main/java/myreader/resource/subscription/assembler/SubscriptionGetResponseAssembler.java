@@ -13,7 +13,7 @@ public class SubscriptionGetResponseAssembler {
     target.setUuid(source.getId().toString());
     target.setOrigin(source.getUrl());
     target.setCreatedAt(source.getCreatedAt());
-    target.setSum(source.getFetchCount());
+    target.setSum(source.getAcceptedFetchCount());
     target.setTitle(source.getTitle());
     target.setUnseen(source.getUnseen());
     target.setFetchErrorCount(source.getFetchErrorCount());

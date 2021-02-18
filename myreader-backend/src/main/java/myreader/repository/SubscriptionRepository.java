@@ -22,7 +22,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
   Optional<Subscription> findByUrl(String url);
 
   @Transactional
-  @Query("update Subscription set fetchCount = fetchCount + 1 where id = ?1")
+  @Query("update Subscription set acceptedFetchCount = acceptedFetchCount + 1 where id = ?1")
   @Modifying
   void incrementFetchCount(Long subscriptionId);
 

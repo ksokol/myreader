@@ -5,7 +5,6 @@ import org.hibernate.annotations.Formula;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,7 +19,7 @@ import java.util.Set;
 
 @Access(AccessType.PROPERTY)
 @Entity
-@Table(name = "user_feed")
+@Table(name = "subscription")
 public class Subscription {
 
   private Long id;
@@ -30,9 +29,9 @@ public class Subscription {
   private String tag;
   private String color;
   private Date createdAt;
-  private int fetchCount;
+  private int acceptedFetchCount;
   private String lastModified;
-  private Integer fetched = 0;
+  private Integer overallFetchCount;
   private Integer resultSizePerFetch;
   private Set<SubscriptionEntry> subscriptionEntries;
   private Set<ExclusionPattern> exclusions;
@@ -53,7 +52,6 @@ public class Subscription {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "user_feed_id")
   public Long getId() {
     return id;
   }
@@ -62,7 +60,6 @@ public class Subscription {
     this.id = id;
   }
 
-  @Column(name = "user_feed_title")
   public String getTitle() {
     return title;
   }
@@ -71,7 +68,6 @@ public class Subscription {
     this.title = title;
   }
 
-  @Column(columnDefinition = "VARCHAR(1000)", name = "url")
   public String getUrl() {
     return url;
   }
@@ -80,16 +76,14 @@ public class Subscription {
     this.url = url;
   }
 
-  @Column(name = "user_feed_sum")
-  public int getFetchCount() {
-    return fetchCount;
+  public int getAcceptedFetchCount() {
+    return acceptedFetchCount;
   }
 
-  public void setFetchCount(int fetchCount) {
-    this.fetchCount = fetchCount;
+  public void setAcceptedFetchCount(int acceptedFetchCount) {
+    this.acceptedFetchCount = acceptedFetchCount;
   }
 
-  @Column(name = "last_modified", columnDefinition = "VARCHAR(255)")
   public String getLastModified() {
     return lastModified;
   }
@@ -98,16 +92,14 @@ public class Subscription {
     this.lastModified = lastModified;
   }
 
-  @Column(name = "fetched")
-  public Integer getFetched() {
-    return fetched;
+  public Integer getOverallFetchCount() {
+    return overallFetchCount;
   }
 
-  public void setFetched(Integer fetched) {
-    this.fetched = fetched;
+  public void setOverallFetchCount(Integer overallFetchCount) {
+    this.overallFetchCount = overallFetchCount;
   }
 
-  @Column(name = "result_size_per_fetch")
   public Integer getResultSizePerFetch() {
     return resultSizePerFetch == null ? Integer.valueOf(1000) : resultSizePerFetch;
   }
@@ -117,9 +109,9 @@ public class Subscription {
   }
 
   @Formula(
-    "(select count(ufe.user_feed_entry_id) from user_feed_entry ufe " +
-    "where ufe.user_feed_entry_user_feed_id = user_feed_id and ufe.user_feed_entry_is_read = 0 " +
-    "and ufe.excluded = false)"
+    "(select count(se.id) from subscription_entry se " +
+    "where se.subscription_id = id and se.seen = false " +
+    "and se.excluded = false)"
   )
   public int getUnseen() {
     return unseen;
@@ -129,7 +121,6 @@ public class Subscription {
     this.unseen = unseen;
   }
 
-  @Column(name = "tag")
   public String getTag() {
     return tag;
   }
@@ -138,7 +129,6 @@ public class Subscription {
     this.tag = tag;
   }
 
-  @Column(name = "color")
   public String getColor() {
     return color;
   }
@@ -148,7 +138,6 @@ public class Subscription {
   }
 
   @Temporal(TemporalType.TIMESTAMP)
-  @Column(name = "user_feed_created_at")
   public Date getCreatedAt() {
     if (createdAt != null) {
       return new Date(createdAt.getTime());
@@ -180,9 +169,7 @@ public class Subscription {
     this.subscriptionEntries = subscriptionEntries;
   }
 
-  @Formula(
-    "(select count(fe.fetch_error_id) from fetch_error fe where fe.fetch_error_subscription_id = user_feed_id)"
-  )
+  @Formula("(select count(fe.id) from fetch_error fe where fe.subscription_id = id)")
   public long getFetchErrorCount() {
     return fetchErrorCount;
   }
@@ -200,7 +187,6 @@ public class Subscription {
     this.fetchErrors = fetchErrors;
   }
 
-  @Column(columnDefinition = "INT DEFAULT 0")
   @Version
   public long getVersion() {
     return version;

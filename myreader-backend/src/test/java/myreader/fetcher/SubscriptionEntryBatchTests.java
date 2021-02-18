@@ -48,7 +48,7 @@ class SubscriptionEntryBatchTests {
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("unseen", 1)
-      .hasFieldOrPropertyWithValue("fetchCount", 1);
+      .hasFieldOrPropertyWithValue("acceptedFetchCount", 1);
   }
 
   @Test
@@ -124,7 +124,7 @@ class SubscriptionEntryBatchTests {
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("unseen", 0)
-      .hasFieldOrPropertyWithValue("fetchCount", 0);
+      .hasFieldOrPropertyWithValue("acceptedFetchCount", 0);
     assertThat(findEntry(subscription1))
       .hasFieldOrPropertyWithValue("excluded", true);
   }
@@ -140,7 +140,7 @@ class SubscriptionEntryBatchTests {
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("unseen", 0)
-      .hasFieldOrPropertyWithValue("fetchCount", 0);
+      .hasFieldOrPropertyWithValue("acceptedFetchCount", 0);
     assertThat(findEntry(subscription1))
       .hasFieldOrPropertyWithValue("excluded", true);
   }
@@ -156,7 +156,7 @@ class SubscriptionEntryBatchTests {
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("unseen", 0)
-      .hasFieldOrPropertyWithValue("fetchCount", 0);
+      .hasFieldOrPropertyWithValue("acceptedFetchCount", 0);
     assertThat(findEntry(subscription1))
       .hasFieldOrPropertyWithValue("excluded", true);
   }

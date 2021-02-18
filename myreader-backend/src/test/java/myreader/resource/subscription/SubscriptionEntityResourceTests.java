@@ -59,7 +59,7 @@ class SubscriptionEntityResourceTests {
     subscription.setTitle("expected title");
     subscription.setTag("subscriptiontag name");
     subscription.setColor("#111111");
-    subscription.setFetchCount(15);
+    subscription.setAcceptedFetchCount(15);
     subscription.setCreatedAt(new Date(2000));
     subscription = em.persist(subscription);
 

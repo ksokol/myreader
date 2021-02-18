@@ -44,8 +44,8 @@ class SubscriptionBatchTests {
   @BeforeEach
   void setUp() {
     subscription1 = new Subscription("http://url1", "title1");
-    subscription1.setFetched(1);
-    subscription1.setFetchCount(1);
+    subscription1.setOverallFetchCount(1);
+    subscription1.setAcceptedFetchCount(1);
     subscription1 = em.persist(subscription1);
 
     feedEntry1 = new SubscriptionEntry(subscription1);
@@ -55,8 +55,8 @@ class SubscriptionBatchTests {
     feedEntry1 = em.persist(feedEntry1);
 
     subscription2 = new Subscription("http://url2", "title1");
-    subscription2.setFetched(1);
-    subscription2.setFetchCount(1);
+    subscription2.setOverallFetchCount(1);
+    subscription2.setAcceptedFetchCount(1);
     subscription2 = em.persist(subscription2);
 
     feedEntry12 = new SubscriptionEntry(subscription2);
@@ -138,12 +138,11 @@ class SubscriptionBatchTests {
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("lastModified", "last modified")
-      .hasFieldOrPropertyWithValue("fetched", 1);
+      .hasFieldOrPropertyWithValue("overallFetchCount", 1);
 
     assertThat(em.find(Subscription.class, subscription2.getId()))
       .hasFieldOrPropertyWithValue("lastModified", null)
-      .hasFieldOrPropertyWithValue("fetched", 1);
-
+      .hasFieldOrPropertyWithValue("overallFetchCount", 1);
   }
 
   @Test
@@ -154,11 +153,11 @@ class SubscriptionBatchTests {
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("lastModified", "last modified")
-      .hasFieldOrPropertyWithValue("fetched", 1);
+      .hasFieldOrPropertyWithValue("overallFetchCount", 1);
 
     assertThat(em.find(Subscription.class, subscription2.getId()))
       .hasFieldOrPropertyWithValue("lastModified", null)
-      .hasFieldOrPropertyWithValue("fetched", 1);
+      .hasFieldOrPropertyWithValue("overallFetchCount", 1);
   }
 
   @Test
@@ -169,11 +168,11 @@ class SubscriptionBatchTests {
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("lastModified", "last modified")
-      .hasFieldOrPropertyWithValue("fetched", 1);
+      .hasFieldOrPropertyWithValue("overallFetchCount", 1);
 
     assertThat(em.find(Subscription.class, subscription2.getId()))
       .hasFieldOrPropertyWithValue("lastModified", null)
-      .hasFieldOrPropertyWithValue("fetched", 1);
+      .hasFieldOrPropertyWithValue("overallFetchCount", 1);
   }
 
   @Test
@@ -184,11 +183,11 @@ class SubscriptionBatchTests {
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("lastModified", "last modified")
-      .hasFieldOrPropertyWithValue("fetched", 1);
+      .hasFieldOrPropertyWithValue("overallFetchCount", 1);
 
     assertThat(em.find(Subscription.class, subscription2.getId()))
       .hasFieldOrPropertyWithValue("lastModified", null)
-      .hasFieldOrPropertyWithValue("fetched", 1);
+      .hasFieldOrPropertyWithValue("overallFetchCount", 1);
   }
 
   @Test
@@ -199,11 +198,11 @@ class SubscriptionBatchTests {
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("lastModified", "last modified")
-      .hasFieldOrPropertyWithValue("fetched", 2);
+      .hasFieldOrPropertyWithValue("overallFetchCount", 2);
 
     assertThat(em.find(Subscription.class, subscription2.getId()))
       .hasFieldOrPropertyWithValue("lastModified", null)
-      .hasFieldOrPropertyWithValue("fetched", 1);
+      .hasFieldOrPropertyWithValue("overallFetchCount", 1);
   }
 
   @Test
