@@ -6,19 +6,24 @@ import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.jdbc.AutoConfigureDataJdbc;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.OffsetDateTime;
 import java.util.Date;
 
-import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest(showSql = false)
+@AutoConfigureDataJpa
+@AutoConfigureTestEntityManager
+@AutoConfigureDataJdbc
 @WithTestProperties
 class FetchErrorRepositoryTests {
 
@@ -28,24 +33,27 @@ class FetchErrorRepositoryTests {
   @Autowired
   private TestEntityManager em;
 
+  @Autowired
+  private JdbcAggregateOperations template;
+
   @Test
   void shouldDeleteEntriesWhenDateIsOlderThanNow() {
-    createEntry(now().minusDays(1));
+    createEntry(OffsetDateTime.now().minusDays(1));
 
     assertThat(fetchErrorRepository.retainFetchErrorBefore(new Date())).isOne();
   }
 
   @Test
   void shouldNotDeleteEntriesWhenDateIsNewerThanNow() {
-    createEntry(now().plusDays(1));
+    createEntry(OffsetDateTime.now().plusDays(1));
 
     assertThat(fetchErrorRepository.retainFetchErrorBefore(new Date())).isZero();
   }
 
   @Test
   void shouldOnlyDeleteEntriesThatAreOlderThanNow() {
-    createEntry(now().minusDays(1));
-    var entry = createEntry(now().plusDays(1));
+    createEntry(OffsetDateTime.now().minusDays(1));
+    var entry = createEntry(OffsetDateTime.now().plusDays(1));
 
     fetchErrorRepository.retainFetchErrorBefore(new Date());
 
@@ -53,23 +61,15 @@ class FetchErrorRepositoryTests {
     assertThat(fetchErrorRepository.findById(entry.getId()).orElseThrow(AssertionError::new)).isNotNull();
   }
 
-  private FetchError createEntry(LocalDateTime localDateTime) {
+  private FetchError createEntry(OffsetDateTime localDateTime) {
     return createEntry(localDateTime, createSubscription());
   }
 
-  private FetchError createEntry(LocalDateTime localDateTime, Subscription subscription) {
-    var date = Date.from(localDateTime.toInstant(ZoneOffset.UTC));
-    var fetchError = new FetchError();
-
-    fetchError.setSubscription(subscription);
-    fetchError.setMessage("message");
-    fetchError.setCreatedAt(date);
-
-    return em.persist(fetchError);
+  private FetchError createEntry(OffsetDateTime localDateTime, Subscription subscription) {
+    return template.save(new FetchError(subscription.getId(), "message", localDateTime));
   }
 
   private Subscription createSubscription() {
-    var subscription = new Subscription("url", "title");
-    return em.persist(subscription);
+    return em.persist(new Subscription("url", "title"));
   }
 }

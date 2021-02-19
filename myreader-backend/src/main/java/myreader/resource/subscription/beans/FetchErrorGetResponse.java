@@ -1,12 +1,12 @@
 package myreader.resource.subscription.beans;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 public class FetchErrorGetResponse {
 
   private String uuid;
   private String message;
-  private Date createdAt;
+  private OffsetDateTime createdAt;
 
   public String getUuid() {
     return uuid;
@@ -24,11 +24,11 @@ public class FetchErrorGetResponse {
     this.message = message;
   }
 
-  public Date getCreatedAt() {
-    return new Date(createdAt.getTime());
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
   }
 
-  public void setCreatedAt(Date createdAt) {
-    this.createdAt = new Date(createdAt.getTime());
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 }

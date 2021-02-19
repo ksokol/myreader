@@ -16,11 +16,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +52,9 @@ class SubscriptionCollectionResourceTests {
   @Autowired
   private TestEntityManager em;
 
+  @Autowired
+  private JdbcAggregateOperations template;
+
   @MockBean
   private FeedParser feedParser;
 
@@ -63,8 +70,8 @@ class SubscriptionCollectionResourceTests {
     subscription1.setCreatedAt(new Date(2000));
     subscription1 = em.persist(subscription1);
 
-    em.persist(new FetchError(subscription1, "message 1"));
-    em.persist(new FetchError(subscription1, "message 2"));
+    template.save(new FetchError(subscription1.getId(), "message 1", OffsetDateTime.ofInstant(Instant.ofEpochMilli(1000), ZoneOffset.UTC)));
+    template.save(new FetchError(subscription1.getId(), "message 2", OffsetDateTime.ofInstant(Instant.ofEpochMilli(2000), ZoneOffset.UTC)));
 
     subscription2 = new Subscription("http://feed2", "feed2");
     subscription2.setTitle("user102_subscription2");

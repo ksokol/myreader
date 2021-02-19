@@ -1,41 +1,26 @@
 package myreader.entity;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Access(AccessType.PROPERTY)
-@Entity
-@Table(name = "fetch_error")
+import java.time.OffsetDateTime;
+import java.util.Objects;
+
+@Table("FETCH_ERROR")
 public class FetchError {
 
   private Long id;
-  private Subscription subscription;
-  private String message;
-  private Date createdAt;
+  private final Long subscriptionId;
+  private final String message;
+  private final OffsetDateTime createdAt;
 
-  /**
-   * Default constructor for Hibernate.
-   */
-  public FetchError() {
-  }
-
-  public FetchError(Subscription subscription, String message) {
-    this.subscription = subscription;
+  public FetchError(Long subscriptionId, String message, OffsetDateTime createdAt) {
+    this.subscriptionId = Objects.requireNonNull(subscriptionId, "subscriptionId is null");
     this.message = message;
+    this.createdAt = Objects.requireNonNull(createdAt, "createdAt is null");
   }
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long getId() {
     return id;
   }
@@ -44,34 +29,15 @@ public class FetchError {
     this.id = id;
   }
 
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  public Subscription getSubscription() {
-    return subscription;
-  }
-
-  public void setSubscription(Subscription subscription) {
-    this.subscription = subscription;
+  public Long getSubscriptionId() {
+    return subscriptionId;
   }
 
   public String getMessage() {
     return message;
   }
 
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  @Temporal(TemporalType.TIMESTAMP)
-  public Date getCreatedAt() {
-    if (createdAt != null) {
-      return new Date(createdAt.getTime());
-    }
-    return new Date();
-  }
-
-  public void setCreatedAt(Date createdAt) {
-    if (createdAt != null) {
-      this.createdAt = new Date(createdAt.getTime());
-    }
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
   }
 }

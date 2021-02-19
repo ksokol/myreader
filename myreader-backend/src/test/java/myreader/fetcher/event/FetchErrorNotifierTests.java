@@ -2,65 +2,62 @@ package myreader.fetcher.event;
 
 import myreader.entity.FetchError;
 import myreader.entity.Subscription;
-import myreader.repository.FetchErrorRepository;
-import myreader.repository.SubscriptionRepository;
+import myreader.test.WithTestProperties;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Date;
-import java.util.Optional;
+import javax.transaction.Transactional;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static org.assertj.core.api.Assertions.as;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@AutoConfigureTestEntityManager
+@Transactional
+@SpringBootTest
+@WithTestProperties
 class FetchErrorNotifierTests {
 
-  @InjectMocks
+  @Autowired
+  private TestEntityManager em;
+
+  @Autowired
+  private JdbcAggregateOperations template;
+
+  @Autowired
   private FetchErrorNotifier notifier;
-
-  @Mock
-  private SubscriptionRepository subscriptionRepository;
-
-  @Mock
-  private FetchErrorRepository fetchErrorRepository;
 
   @Test
   void shouldNotPersistEventWhenFeedIsUnknown() {
-    given(subscriptionRepository.findByUrl("url")).willReturn(Optional.empty());
-
     notifier.processFetchErrorEvent(new FetchErrorEvent("url", "irrelevant"));
 
-    verify(fetchErrorRepository, never()).save(any(FetchError.class));
+    assertThat(template.count(FetchError.class))
+      .isZero();
   }
 
   @Test
   void shouldPersistEvent() {
-    Subscription subscription = new Subscription("url", "title");
+    var subscription = em.persist(new Subscription("url", "title"));
 
-    given(subscriptionRepository.findByUrl("url")).willReturn(Optional.of(subscription));
-
+    var timeRightBeforeCreation = OffsetDateTime.now();
     notifier.processFetchErrorEvent(new FetchErrorEvent("url", "errorMessage"));
 
-    verify(fetchErrorRepository).save(argThat(
-      allOf(
-        hasProperty("id", nullValue()),
-        hasProperty("subscription", is(subscription)),
-        hasProperty("message", is("errorMessage")),
-        hasProperty("createdAt", instanceOf(Date.class))
-      ))
-    );
+    assertThat(template.findAll(FetchError.class))
+      .hasSize(1)
+      .element(0)
+      .hasFieldOrPropertyWithValue("subscriptionId", subscription.getId())
+      .hasFieldOrPropertyWithValue("message", "errorMessage")
+      .extracting(FetchError::getCreatedAt, as(InstanceOfAssertFactories.OFFSET_DATE_TIME))
+      .isCloseTo(timeRightBeforeCreation, within(2, ChronoUnit.SECONDS));
   }
-
 }

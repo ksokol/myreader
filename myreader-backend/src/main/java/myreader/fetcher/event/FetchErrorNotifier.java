@@ -15,20 +15,16 @@ public class FetchErrorNotifier {
   private final FetchErrorRepository fetchErrorRepository;
 
   public FetchErrorNotifier(SubscriptionRepository subscriptionRepository, FetchErrorRepository fetchErrorRepository) {
-    Objects.requireNonNull(subscriptionRepository, "subscriptionRepository is null");
-    Objects.requireNonNull(fetchErrorRepository, "fetchErrorRepository is null");
-    this.subscriptionRepository = subscriptionRepository;
-    this.fetchErrorRepository = fetchErrorRepository;
+    this.subscriptionRepository = Objects.requireNonNull(subscriptionRepository, "subscriptionRepository is null");
+    this.fetchErrorRepository = Objects.requireNonNull(fetchErrorRepository, "fetchErrorRepository is null");
   }
 
   @EventListener
   public void processFetchErrorEvent(FetchErrorEvent event) {
-    subscriptionRepository.findByUrl(event.getFeedUrl()).ifPresent(subscription -> {
-      FetchError fetchError = new FetchError();
-      fetchError.setSubscription(subscription);
-      fetchError.setMessage(event.getErrorMessage());
-      fetchError.setCreatedAt(event.getCreatedAt());
-      fetchErrorRepository.save(fetchError);
-    });
+    subscriptionRepository.findByUrl(event.getFeedUrl())
+      .ifPresent(subscription ->
+        fetchErrorRepository.save(new FetchError(subscription.getId(), event.getErrorMessage(), event.getCreatedAt())
+        )
+      );
   }
 }

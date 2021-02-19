@@ -36,7 +36,6 @@ public class Subscription {
   private Set<SubscriptionEntry> subscriptionEntries;
   private Set<ExclusionPattern> exclusions;
   private long fetchErrorCount;
-  private Set<FetchError> fetchErrors;
   private long version;
 
   /**
@@ -176,15 +175,6 @@ public class Subscription {
 
   public void setFetchErrorCount(long fetchErrorCount) {
     this.fetchErrorCount = fetchErrorCount;
-  }
-
-  @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
-  public Set<FetchError> getFetchErrors() {
-    return fetchErrors;
-  }
-
-  public void setFetchErrors(Set<FetchError> fetchErrors) {
-    this.fetchErrors = fetchErrors;
   }
 
   @Version

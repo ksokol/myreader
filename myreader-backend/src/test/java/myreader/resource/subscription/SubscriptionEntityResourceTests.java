@@ -14,11 +14,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Set;
 
@@ -48,6 +52,9 @@ class SubscriptionEntityResourceTests {
   @Autowired
   private TestEntityManager em;
 
+  @Autowired
+  private JdbcAggregateOperations template;
+
   @SpyBean
   private SubscriptionService subscriptionService;
 
@@ -63,13 +70,8 @@ class SubscriptionEntityResourceTests {
     subscription.setCreatedAt(new Date(2000));
     subscription = em.persist(subscription);
 
-    var fetchError1 = new FetchError(subscription, "message 1");
-    fetchError1.setCreatedAt(new Date(1000));
-    em.persist(fetchError1);
-
-    var fetchError2 = new FetchError(subscription, "message 2");
-    fetchError2.setCreatedAt(new Date(2000));
-    em.persist(fetchError2);
+    template.save(new FetchError(subscription.getId(), "message 1", OffsetDateTime.ofInstant(Instant.ofEpochMilli(1000), ZoneOffset.UTC)));
+    template.save(new FetchError(subscription.getId(), "message 2", OffsetDateTime.ofInstant(Instant.ofEpochMilli(2000), ZoneOffset.UTC)));
 
     var entry = new SubscriptionEntry(subscription);
     entry.setTags(Set.of("tag1", "tag2"));
@@ -185,9 +187,9 @@ class SubscriptionEntityResourceTests {
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.length()", is(2)))
       .andExpect(jsonPath("$.[0].message", is("message 2")))
-      .andExpect(jsonPath("$.[0].createdAt", is("1970-01-01T00:00:02.000+00:00")))
+      .andExpect(jsonPath("$.[0].createdAt", is("1970-01-01T00:00:02Z")))
       .andExpect(jsonPath("$.[1].message", is("message 1")))
-      .andExpect(jsonPath("$.[1].createdAt", is("1970-01-01T00:00:01.000+00:00")));
+      .andExpect(jsonPath("$.[1].createdAt", is("1970-01-01T00:00:01Z")));
   }
 
   @Test
