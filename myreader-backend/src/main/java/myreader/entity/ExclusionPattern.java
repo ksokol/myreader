@@ -1,42 +1,28 @@
 package myreader.entity;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Access(AccessType.PROPERTY)
-@Entity
-@Table(name = "exclusion_pattern")
+import java.time.OffsetDateTime;
+import java.util.Objects;
+
+@Table("EXCLUSION_PATTERN")
 public class ExclusionPattern {
 
   private Long id;
-  private String pattern;
-  private int hitCount;
-  private Subscription subscription;
-  private Date createdAt;
+  private final String pattern;
+  private final Integer hitCount;
+  private final Long subscriptionId;
+  private final OffsetDateTime createdAt;
 
-  /**
-   * Default constructor for Hibernate.
-   */
-  public ExclusionPattern() {
-  }
-
-  public ExclusionPattern(String pattern, Subscription subscription) {
-    this.pattern = pattern;
-    this.subscription = subscription;
+  public ExclusionPattern(String pattern, Long subscriptionId, Integer hitCount, OffsetDateTime createdAt) {
+    this.pattern = Objects.requireNonNull(pattern, "pattern is null");
+    this.subscriptionId = Objects.requireNonNull(subscriptionId, "subscriptionId is null");
+    this.hitCount = Objects.requireNonNull(hitCount, "hitCount is null");
+    this.createdAt = Objects.requireNonNull(createdAt, "createdAt is null");
   }
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long getId() {
     return id;
   }
@@ -49,42 +35,15 @@ public class ExclusionPattern {
     return pattern;
   }
 
-  public void setPattern(String pattern) {
-    this.pattern = pattern;
-  }
-
-  public int getHitCount() {
+  public Integer getHitCount() {
     return hitCount;
   }
 
-  public void setHitCount(int hitCount) {
-    this.hitCount = hitCount;
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
   }
 
-  @Temporal(TemporalType.TIMESTAMP)
-  public Date getCreatedAt() {
-    return new Date(createdAt.getTime());
-  }
-
-  public void setCreatedAt(Date createdAt) {
-    if (createdAt != null) {
-      this.createdAt = new Date(createdAt.getTime());
-    }
-  }
-
-  @ManyToOne(optional = false)
-  public Subscription getSubscription() {
-    return subscription;
-  }
-
-  public void setSubscription(Subscription subscription) {
-    this.subscription = subscription;
-  }
-
-  @PrePersist
-  public void onCreate() {
-    if (this.createdAt == null) {
-      this.createdAt = new Date();
-    }
+  public Long getSubscriptionId() {
+    return subscriptionId;
   }
 }

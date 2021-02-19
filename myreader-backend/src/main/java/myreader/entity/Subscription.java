@@ -34,7 +34,6 @@ public class Subscription {
   private Integer overallFetchCount;
   private Integer resultSizePerFetch;
   private Set<SubscriptionEntry> subscriptionEntries;
-  private Set<ExclusionPattern> exclusions;
   private long fetchErrorCount;
   private long version;
 
@@ -148,15 +147,6 @@ public class Subscription {
     if (createdAt != null) {
       this.createdAt = new Date(createdAt.getTime());
     }
-  }
-
-  @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
-  public Set<ExclusionPattern> getExclusions() {
-    return exclusions;
-  }
-
-  public void setExclusions(Set<ExclusionPattern> exclusions) {
-    this.exclusions = exclusions;
   }
 
   @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)

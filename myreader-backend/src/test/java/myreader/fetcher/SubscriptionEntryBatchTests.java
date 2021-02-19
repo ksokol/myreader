@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,6 +36,9 @@ class SubscriptionEntryBatchTests {
 
   @Autowired
   private TestEntityManager em;
+
+  @Autowired
+  private JdbcAggregateOperations template;
 
   @BeforeEach
   void setUp() {
@@ -65,12 +70,11 @@ class SubscriptionEntryBatchTests {
 
   @Test
   void shouldNotUpdateSubscriptionExclusions() {
-    var exclusionPattern = em.persist(new ExclusionPattern("some pattern", subscription1));
+    var exclusionPattern = template.save(new ExclusionPattern("some pattern", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry());
-    em.clear();
 
-    assertThat(em.find(ExclusionPattern.class, exclusionPattern.getId()))
+    assertThat(template.findById(exclusionPattern.getId(), ExclusionPattern.class))
       .hasFieldOrPropertyWithValue("hitCount", 0);
   }
 
@@ -78,12 +82,11 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionExclusionsWhenExcludedPatternInTitleFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setTitle("fetcher title entry");
-    var exclusionPattern = em.persist(new ExclusionPattern(".*title.*", subscription1));
+    var exclusionPattern = template.save(new ExclusionPattern(".*title.*", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
-    em.clear();
 
-    assertThat(em.find(ExclusionPattern.class, exclusionPattern.getId()))
+    assertThat(template.findById(exclusionPattern.getId(), ExclusionPattern.class))
       .hasFieldOrPropertyWithValue("hitCount", 1);
   }
 
@@ -91,12 +94,11 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionExclusionsWhenExcludedPatternInUrlFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setUrl("fetcher url entry");
-    var exclusionPattern = em.persist(new ExclusionPattern(".*url.*", subscription1));
+    var exclusionPattern = template.save(new ExclusionPattern(".*url.*", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
-    em.clear();
 
-    assertThat(em.find(ExclusionPattern.class, exclusionPattern.getId()))
+    assertThat(template.findById(exclusionPattern.getId(), ExclusionPattern.class))
       .hasFieldOrPropertyWithValue("hitCount", 1);
   }
 
@@ -104,12 +106,11 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionExclusionsWhenExcludedPatternInContentFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setContent("fetcher content entry");
-    var exclusionPattern = em.persist(new ExclusionPattern(".*content.*", subscription1));
+    var exclusionPattern = template.save(new ExclusionPattern(".*content.*", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
-    em.clear();
 
-    assertThat(em.find(ExclusionPattern.class, exclusionPattern.getId()))
+    assertThat(template.findById(exclusionPattern.getId(), ExclusionPattern.class))
       .hasFieldOrPropertyWithValue("hitCount", 1);
   }
 
@@ -117,10 +118,9 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionWhenExcludedPatternInTitleFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setTitle("fetcher title entry");
-    em.persist(new ExclusionPattern(".*title.*", subscription1));
+    template.save(new ExclusionPattern(".*title.*", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
-    em.clear();
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("unseen", 0)
@@ -133,10 +133,9 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionWhenExcludedPatternInContentFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setTitle("fetcher content entry");
-    em.persist(new ExclusionPattern(".*content.*", subscription1));
+    template.save(new ExclusionPattern(".*content.*", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
-    em.clear();
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("unseen", 0)
@@ -149,10 +148,9 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionWhenExcludedPatternInUrlFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setUrl("fetcher url entry");
-    em.persist(new ExclusionPattern(".*url.*", subscription1));
+    template.save(new ExclusionPattern(".*url.*", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
-    em.clear();
 
     assertThat(em.find(Subscription.class, subscription1.getId()))
       .hasFieldOrPropertyWithValue("unseen", 0)

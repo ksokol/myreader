@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,10 +73,7 @@ public class ExclusionPatternCollectionResource {
     var exclusionPattern = exclusionRepository.findBySubscriptionIdAndPattern(subscription.getId(), request.getPattern());
 
     if (exclusionPattern == null) {
-      exclusionPattern = new ExclusionPattern();
-      exclusionPattern.setPattern(request.getPattern());
-      exclusionPattern.setSubscription(subscription);
-      exclusionPattern = exclusionRepository.save(exclusionPattern);
+      exclusionPattern = exclusionRepository.save(new ExclusionPattern(request.getPattern(), subscription.getId(), 0, OffsetDateTime.now()));
     }
 
     return assembler.toModel(exclusionPattern);

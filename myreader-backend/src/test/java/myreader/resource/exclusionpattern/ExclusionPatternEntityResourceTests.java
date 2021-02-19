@@ -11,11 +11,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
+
+import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -36,13 +39,16 @@ class ExclusionPatternEntityResourceTests {
   @Autowired
   private TestEntityManager em;
 
+  @Autowired
+  private JdbcAggregateOperations template;
+
   private Subscription subscription;
   private ExclusionPattern exclusionPattern;
 
   @BeforeEach
   void beforeEach() {
     subscription = em.persist(new Subscription("http://example.com", "feed title"));
-    exclusionPattern = em.persist(new ExclusionPattern("test", subscription));
+    exclusionPattern = template.save(new ExclusionPattern("test", subscription.getId(), 0, OffsetDateTime.now()));
   }
 
   @Test
@@ -50,7 +56,8 @@ class ExclusionPatternEntityResourceTests {
      mockMvc.perform(delete("/api/2/exclusions/{subscriptionId}/pattern/{patternId}", subscription.getId(), exclusionPattern.getId()))
       .andExpect(status().isOk());
 
-    assertThat(em.getEntityManager().createQuery("from ExclusionPattern").getResultList()).isEmpty();
+    assertThat(template.findAll(ExclusionPattern.class))
+      .isEmpty();
   }
 
   @Test
@@ -58,6 +65,7 @@ class ExclusionPatternEntityResourceTests {
     mockMvc.perform(delete("/api/2/exclusions/{subscriptionId}/pattern/{patternId}", subscription.getId(), 999L))
       .andExpect(status().isNotFound());
 
-    assertThat(em.getEntityManager().createQuery("from ExclusionPattern").getResultList()).isNotEmpty();
+    assertThat(template.findAll(ExclusionPattern.class))
+      .isNotEmpty();
   }
 }
