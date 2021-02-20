@@ -1,7 +1,5 @@
 package myreader.entity;
 
-import org.hibernate.annotations.Formula;
-
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
@@ -25,7 +23,6 @@ public class Subscription {
   private Long id;
   private String title;
   private String url;
-  private int unseen;
   private String tag;
   private String color;
   private Date createdAt;
@@ -34,7 +31,6 @@ public class Subscription {
   private Integer overallFetchCount;
   private Integer resultSizePerFetch;
   private Set<SubscriptionEntry> subscriptionEntries;
-  private long fetchErrorCount;
   private long version;
 
   /**
@@ -106,19 +102,6 @@ public class Subscription {
     this.resultSizePerFetch = resultSizePerFetch;
   }
 
-  @Formula(
-    "(select count(se.id) from subscription_entry se " +
-    "where se.subscription_id = id and se.seen = false " +
-    "and se.excluded = false)"
-  )
-  public int getUnseen() {
-    return unseen;
-  }
-
-  public void setUnseen(int unseen) {
-    this.unseen = unseen;
-  }
-
   public String getTag() {
     return tag;
   }
@@ -156,15 +139,6 @@ public class Subscription {
 
   public void setSubscriptionEntries(Set<SubscriptionEntry> subscriptionEntries) {
     this.subscriptionEntries = subscriptionEntries;
-  }
-
-  @Formula("(select count(fe.id) from fetch_error fe where fe.subscription_id = id)")
-  public long getFetchErrorCount() {
-    return fetchErrorCount;
-  }
-
-  public void setFetchErrorCount(long fetchErrorCount) {
-    this.fetchErrorCount = fetchErrorCount;
   }
 
   @Version

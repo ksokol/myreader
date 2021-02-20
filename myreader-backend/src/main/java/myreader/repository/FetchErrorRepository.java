@@ -19,4 +19,6 @@ public interface FetchErrorRepository extends CrudRepository<FetchError, Long> {
 
   @Query("select * from fetch_error where subscription_id = :id order by created_at desc")
   List<FetchError> findAllBySubscriptionIdOrderByCreatedAtDesc(@Param("id") Long subscriptionId);
+
+  long countBySubscriptionId(Long subscriptionId);
 }

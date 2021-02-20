@@ -114,10 +114,27 @@ class SubscriptionCollectionResourceTests {
   }
 
   @Test
-  void shouldPassQueryParameterUnseenGreaterThanToFinderMethod() throws Exception {
+  void shouldNotFindAnySubscriptionsWithUnseenGreaterThanTen() throws Exception {
     mockMvc.perform(get("/api/2/subscriptions?unseenGreaterThan=10"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.content.length()").value(0));
+  }
+
+  @Test
+  void shouldFindAnySubscriptionsWithUnseenGreaterThanMinusOne() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptions?unseenGreaterThan=-1"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(2))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscription2.getId().toString()))
+      .andExpect(jsonPath("$.content[1].uuid").value(subscription1.getId().toString()));
+  }
+
+  @Test
+  void shouldFindAnySubscriptionsWithUnseenGreaterThanZero() throws Exception {
+    mockMvc.perform(get("/api/2/subscriptions?unseenGreaterThan=0"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(1))
+      .andExpect(jsonPath("$.content[0].uuid").value(subscription2.getId().toString()));
   }
 
   @Test

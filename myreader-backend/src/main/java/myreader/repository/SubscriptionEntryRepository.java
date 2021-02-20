@@ -24,4 +24,7 @@ public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionE
 
   @Query("select se.id from SubscriptionEntry se where se.subscription.id = ?1 and se.tags is null and se.seen = true and se.createdAt < ?2")
   Page<Long> findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(Long id, Date retainDate, Pageable pageable);
+
+  @Query("select count(se) from SubscriptionEntry se where se.subscription.id = ?1 and se.seen = false and se.excluded = false")
+  long countUnseenBySubscriptionId(Long subscriptionId);
 }
