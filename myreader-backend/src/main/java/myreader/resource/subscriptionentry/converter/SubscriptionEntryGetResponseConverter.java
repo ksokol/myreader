@@ -35,7 +35,7 @@ public class SubscriptionEntryGetResponseConverter {
     target.setTitle(source.getTitle());
     target.setContent(source.getContent());
 
-    var subscription = subscriptionRepository.getOne(source.getSubscriptionId());
+    var subscription = subscriptionRepository.findById(source.getSubscriptionId()).orElseThrow();
     target.setFeedTitle(subscription.getTitle());
     target.setFeedUuid(subscription.getId().toString());
     target.setFeedTag(subscription.getTag());

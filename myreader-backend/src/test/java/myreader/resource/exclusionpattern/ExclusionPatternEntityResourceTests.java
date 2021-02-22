@@ -7,26 +7,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithMockUser
@@ -37,9 +34,6 @@ class ExclusionPatternEntityResourceTests {
   private MockMvc mockMvc;
 
   @Autowired
-  private TestEntityManager em;
-
-  @Autowired
   private JdbcAggregateOperations template;
 
   private Subscription subscription;
@@ -47,7 +41,17 @@ class ExclusionPatternEntityResourceTests {
 
   @BeforeEach
   void beforeEach() {
-    subscription = em.persist(new Subscription("http://example.com", "feed title"));
+    subscription = template.save(new Subscription(
+      "http://example.com",
+      "feed title",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000))
+    );
     exclusionPattern = template.save(new ExclusionPattern("test", subscription.getId(), 0, OffsetDateTime.now()));
   }
 

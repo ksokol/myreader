@@ -1,5 +1,6 @@
 package myreader.resource.subscription;
 
+import myreader.entity.ExclusionPattern;
 import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
@@ -9,8 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -18,15 +17,14 @@ import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.Set;
 
 import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -37,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithMockUser
@@ -46,9 +43,6 @@ class SubscriptionEntityResourceTests {
 
   @Autowired
   private MockMvc mockMvc;
-
-  @Autowired
-  private TestEntityManager em;
 
   @Autowired
   private JdbcAggregateOperations template;
@@ -60,13 +54,19 @@ class SubscriptionEntityResourceTests {
 
   @BeforeEach
   void setUp() {
-    subscription = new Subscription("http://example.com", "feed title");
-    subscription.setTitle("expected title");
-    subscription.setTag("subscriptiontag name");
-    subscription.setColor("#111111");
-    subscription.setAcceptedFetchCount(15);
-    subscription.setCreatedAt(new Date(2000));
-    subscription = em.persist(subscription);
+    subscription = template.save(new Subscription(
+      "http://example.com",
+      "expected title",
+      "subscriptiontag name",
+      "#111111",
+      15,
+      null,
+      0,
+      null,
+      ofEpochMilli(2000)
+    ));
+
+    template.save(new ExclusionPattern("pattern", subscription.getId(), 0, ofEpochMilli(1000)));
 
     template.save(new FetchError(subscription.getId(), "message 1", ofEpochMilli(1000)));
     template.save(new FetchError(subscription.getId(), "message 2", ofEpochMilli(2000)));
@@ -85,8 +85,6 @@ class SubscriptionEntityResourceTests {
 
     given(subscriptionService.valid("http://example.com"))
       .willReturn(true);
-
-    em.clear();
   }
 
   @Test
@@ -101,7 +99,7 @@ class SubscriptionEntityResourceTests {
       .andExpect(jsonPath("$.fetchErrorCount").value(2))
       .andExpect(jsonPath("$.tag").value("subscriptiontag name"))
       .andExpect(jsonPath("$.color").value("#111111"))
-      .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:02.000+00:00"));
+      .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:02Z"));
   }
 
   @Test
@@ -109,7 +107,7 @@ class SubscriptionEntityResourceTests {
     mockMvc.perform(delete("/api/2/subscriptions/{id}", subscription.getId()))
       .andExpect(status().isNoContent());
 
-    assertThat(em.find(Subscription.class, subscription.getId())).isNull();
+    assertThat(template.findById(subscription.getId(), Subscription.class)).isNull();
   }
 
   @Test
@@ -200,7 +198,17 @@ class SubscriptionEntityResourceTests {
 
   @Test
   void shouldNotReturnFetchErrorsIfSubscriptionContainsNoErrors() throws Exception {
-    var subscription2 = em.persist(new Subscription("http://other.com", "irrelevant"));
+    var subscription2 = template.save(new Subscription(
+      "http://other.com",
+      "irrelevant",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    ));
 
     mockMvc.perform(get("/api/2/subscriptions/{id}/fetchError", subscription2.getId()))
       .andExpect(status().isOk())

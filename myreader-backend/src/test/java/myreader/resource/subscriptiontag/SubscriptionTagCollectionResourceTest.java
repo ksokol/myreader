@@ -5,23 +5,21 @@ import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
-
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithMockUser
@@ -32,7 +30,7 @@ class SubscriptionTagCollectionResourceTest {
   private MockMvc mockMvc;
 
   @Autowired
-  private TestEntityManager em;
+  private JdbcAggregateOperations template;
 
   @Test
   void shouldFetchDistinctTags() throws Exception {
@@ -48,8 +46,18 @@ class SubscriptionTagCollectionResourceTest {
   }
 
   private void subscriptionWithTag(String tag) {
-    var subscription = new Subscription();
+    var subscription = new Subscription(
+      "url",
+      "title",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    );
     subscription.setTag(tag);
-    em.persist(subscription);
+    template.save(subscription);
   }
 }

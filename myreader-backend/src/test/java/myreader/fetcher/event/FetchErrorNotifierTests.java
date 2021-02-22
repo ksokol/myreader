@@ -7,29 +7,24 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 @ExtendWith(SpringExtension.class)
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithTestProperties
 class FetchErrorNotifierTests {
-
-  @Autowired
-  private TestEntityManager em;
 
   @Autowired
   private JdbcAggregateOperations template;
@@ -47,7 +42,17 @@ class FetchErrorNotifierTests {
 
   @Test
   void shouldPersistEvent() {
-    var subscription = em.persist(new Subscription("url", "title"));
+    var subscription = template.save(new Subscription(
+      "url",
+      "title",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    ));
 
     var timeRightBeforeCreation = OffsetDateTime.now();
     notifier.processFetchErrorEvent(new FetchErrorEvent("url", "errorMessage"));

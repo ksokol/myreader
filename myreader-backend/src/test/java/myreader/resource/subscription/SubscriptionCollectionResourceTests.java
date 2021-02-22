@@ -11,8 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,9 +18,8 @@ import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithMockUser
@@ -46,9 +42,6 @@ class SubscriptionCollectionResourceTests {
 
   @Autowired
   private MockMvc mockMvc;
-
-  @Autowired
-  private TestEntityManager em;
 
   @Autowired
   private JdbcAggregateOperations template;
@@ -61,23 +54,32 @@ class SubscriptionCollectionResourceTests {
 
   @BeforeEach
   void setUp() {
-    subscription1 = new Subscription("http://feed1", "feed1");
-    subscription1.setTitle("user102_subscription1");
-    subscription1.setTag("tag1");
-    subscription1.setAcceptedFetchCount(10);
-    subscription1.setCreatedAt(new Date(2000));
-    subscription1 = em.persist(subscription1);
+    subscription1 = template.save(new Subscription(
+      "http://feed1",
+      "user102_subscription1",
+      "tag1",
+      null,
+      10,
+      null,
+      0,
+      null,
+      ofEpochMilli(2000)
+    ));
 
     template.save(new FetchError(subscription1.getId(), "message 1", ofEpochMilli(1000)));
     template.save(new FetchError(subscription1.getId(), "message 2", ofEpochMilli(2000)));
 
-    subscription2 = new Subscription("http://feed2", "feed2");
-    subscription2.setTitle("user102_subscription2");
-    subscription2.setTag("tag2");
-    subscription2.setColor("#111111");
-    subscription2.setAcceptedFetchCount(20);
-    subscription2.setCreatedAt(new Date(4000));
-    subscription2 = em.persistAndFlush(subscription2);
+    subscription2 = template.save(new Subscription(
+      "http://feed2",
+      "user102_subscription2",
+      "tag2",
+      "#111111",
+      20,
+      null,
+      0,
+      null,
+      ofEpochMilli(4000)
+    ));
 
     template.save(new SubscriptionEntry(
       null,
@@ -105,7 +107,7 @@ class SubscriptionCollectionResourceTests {
       .andExpect(jsonPath("$.content[0].fetchErrorCount").value(0))
       .andExpect(jsonPath("$.content[0].tag").value("tag2"))
       .andExpect(jsonPath("$.content[0].color").value("#111111"))
-      .andExpect(jsonPath("$.content[0].createdAt").value("1970-01-01T00:00:04.000+00:00"))
+      .andExpect(jsonPath("$.content[0].createdAt").value("1970-01-01T00:00:04Z"))
       .andExpect(jsonPath("$.content[1].uuid").value(subscription1.getId().toString()))
       .andExpect(jsonPath("$.content[1].title").value("user102_subscription1"))
       .andExpect(jsonPath("$.content[1].sum").value(10))
@@ -114,7 +116,7 @@ class SubscriptionCollectionResourceTests {
       .andExpect(jsonPath("$.content[1].fetchErrorCount").value(2))
       .andExpect(jsonPath("$.content[1].tag").value("tag1"))
       .andExpect(jsonPath("$.content[1].color").isEmpty())
-      .andExpect(jsonPath("$.content[1].createdAt").value("1970-01-01T00:00:02.000+00:00"));
+      .andExpect(jsonPath("$.content[1].createdAt").value("1970-01-01T00:00:02Z"));
   }
 
   @Test

@@ -1,9 +1,9 @@
 package myreader.repository;
 
 import myreader.entity.Subscription;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jdbc.repository.query.Modifying;
+import org.springframework.data.jdbc.repository.query.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,23 +11,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
+public interface SubscriptionRepository extends CrudRepository<Subscription, Long> {
 
   @Query(value =
     "select s.* from subscription s where " +
       "(select count(1) from subscription_entry se where se.subscription_id = s.id and se.seen = false) > :unseenCount " +
-      "order by s.created_at desc",
-    nativeQuery = true
+      "order by s.created_at desc"
   )
   List<Subscription> findAllByUnseenGreaterThan(@Param("unseenCount") long unseenCount);
 
   Optional<Subscription> findByUrl(String url);
 
   @Transactional
-  @Query("update Subscription set acceptedFetchCount = acceptedFetchCount + 1 where id = ?1")
+  @Query("update subscription set accepted_fetch_count = accepted_fetch_count + 1 where id = :id")
   @Modifying
-  void incrementFetchCount(Long subscriptionId);
+  void incrementFetchCount(@Param("id") Long id);
 
-  @Query("select distinct s.tag from Subscription s where s.tag is not null")
+  @Query("select distinct tag from subscription where tag is not null")
   Set<String> findDistinctTags();
 }

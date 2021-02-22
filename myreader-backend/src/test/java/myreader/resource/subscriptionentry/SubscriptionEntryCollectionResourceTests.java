@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
@@ -37,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithMockUser
@@ -46,9 +43,6 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Autowired
   private MockMvc mockMvc;
-
-  @Autowired
-  private TestEntityManager em;
 
   @Autowired
   private JdbcAggregateOperations template;
@@ -74,14 +68,29 @@ class SubscriptionEntryCollectionResourceTests {
 
   @BeforeEach
   void setUp() {
-    subscription1 = new Subscription("irrelevant", "irrelevant");
-    subscription1.setTitle("user1 subscription1");
-    subscription1 = em.persist(subscription1);
+    subscription1 = template.save(new Subscription(
+      "irrelevant",
+      "user1 subscription1",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    ));
 
-    subscription2 = new Subscription("irrelevant", "irrelevant");
-    subscription2.setTitle("user2 subscription1");
-    subscription2.setTag("subscription tag");
-    subscription2 = em.persist(subscription2);
+    subscription2 = template.save(new Subscription(
+      "irrelevant",
+      "user2 subscription1",
+      "subscription tag",
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    ));
 
     subscriptionEntry1 = createEntry(subscription1);
     subscriptionEntry1.setTags(Set.of("tag1", "tag2", "tag3"));

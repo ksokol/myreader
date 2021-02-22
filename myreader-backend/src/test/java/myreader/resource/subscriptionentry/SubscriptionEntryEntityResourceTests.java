@@ -7,16 +7,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Set;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
@@ -28,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithMockUser
@@ -39,9 +36,6 @@ class SubscriptionEntryEntityResourceTests {
   private MockMvc mockMvc;
 
   @Autowired
-  private TestEntityManager em;
-
-  @Autowired
   private JdbcAggregateOperations template;
 
   private Subscription subscription;
@@ -49,11 +43,17 @@ class SubscriptionEntryEntityResourceTests {
 
   @BeforeEach
   void before() {
-    subscription = new Subscription("http://example.com", "feed title");
-    subscription.setTitle("user112_subscription1");
-    subscription.setTag("tag1");
-    subscription.setColor("#777");
-    subscription = em.persist(subscription);
+    subscription = template.save(new Subscription(
+      "http://example.com",
+      "user112_subscription1",
+      "tag1",
+      "#777",
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    ));
 
     subscriptionEntry = template.save(new SubscriptionEntry(
       "Bliki: TellDontAsk",

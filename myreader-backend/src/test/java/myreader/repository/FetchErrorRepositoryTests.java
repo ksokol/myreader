@@ -8,30 +8,25 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.AutoConfigureDataJdbc;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
 
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest(showSql = false)
 @AutoConfigureDataJpa
-@AutoConfigureTestEntityManager
 @AutoConfigureDataJdbc
 @WithTestProperties
 class FetchErrorRepositoryTests {
 
   @Autowired
   private FetchErrorRepository fetchErrorRepository;
-
-  @Autowired
-  private TestEntityManager em;
 
   @Autowired
   private JdbcAggregateOperations template;
@@ -70,6 +65,16 @@ class FetchErrorRepositoryTests {
   }
 
   private Subscription createSubscription() {
-    return em.persist(new Subscription("url", "title"));
+    return template.save(new Subscription(
+      "url",
+      "title",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    ));
   }
 }

@@ -9,22 +9,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithTestProperties
@@ -37,9 +35,6 @@ class SubscriptionEntryBatchTests {
   private SubscriptionEntryBatch subscriptionEntryBatch;
 
   @Autowired
-  private TestEntityManager em;
-
-  @Autowired
   private JdbcAggregateOperations template;
 
   @Autowired
@@ -47,23 +42,41 @@ class SubscriptionEntryBatchTests {
 
   @BeforeEach
   void setUp() {
-    subscription1 = em.persist(new Subscription("http://url1", "title1"));
-    subscription2 = em.persist(new Subscription("http://url2", "title1"));
+    subscription1 = template.save(new Subscription(
+      "http://url1",
+      "title1",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    ));
+    subscription2 = template.save(new Subscription(
+      "http://url2",
+      "title1",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    ));
   }
 
   @Test
   void shouldUpdateSubscription() {
     subscriptionEntryBatch.update(subscription1, fetcherEntry());
-    em.clear();
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("acceptedFetchCount", 1);
   }
 
   @Test
   void shouldUpdateSubscriptionEntries() {
     subscriptionEntryBatch.update(subscription1, fetcherEntry());
-    em.clear();
 
     assertThat(findEntry(subscription1))
       .hasFieldOrPropertyWithValue("excluded", false);
@@ -126,7 +139,7 @@ class SubscriptionEntryBatchTests {
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("acceptedFetchCount", 0);
     assertThat(findEntry(subscription1))
       .hasFieldOrPropertyWithValue("excluded", true);
@@ -140,7 +153,7 @@ class SubscriptionEntryBatchTests {
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("acceptedFetchCount", 0);
     assertThat(findEntry(subscription1))
       .hasFieldOrPropertyWithValue("excluded", true);
@@ -154,7 +167,7 @@ class SubscriptionEntryBatchTests {
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("acceptedFetchCount", 0);
     assertThat(findEntry(subscription1))
       .hasFieldOrPropertyWithValue("excluded", true);

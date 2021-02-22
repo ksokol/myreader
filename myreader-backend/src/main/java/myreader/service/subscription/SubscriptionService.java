@@ -9,10 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 @Component
@@ -24,16 +22,10 @@ public class SubscriptionService {
 
   private final SubscriptionRepository subscriptionRepository;
   private final FeedParser feedParser;
-  private final Clock clock;
 
-  public SubscriptionService(
-    SubscriptionRepository subscriptionRepository,
-    FeedParser feedParser,
-    Clock clock
-  ) {
-    this.subscriptionRepository = subscriptionRepository;
-    this.feedParser = feedParser;
-    this.clock = clock;
+  public SubscriptionService(SubscriptionRepository subscriptionRepository, FeedParser feedParser) {
+    this.subscriptionRepository = Objects.requireNonNull(subscriptionRepository, "subscriptionRepository is null");
+    this.feedParser = Objects.requireNonNull(feedParser, "feedParser is null");
   }
 
   @Transactional
@@ -45,9 +37,10 @@ public class SubscriptionService {
     }
 
     var parseResult = feedParser.parse(url).orElseThrow(IllegalArgumentException::new);
-    var subscription = new Subscription(url, parseResult.getTitle());
-    subscription.setCreatedAt(now());
-    return subscriptionRepository.save(subscription);
+
+    return subscriptionRepository.save(
+      new Subscription(url, parseResult.getTitle(), null, null, 0, null, 0, null, OffsetDateTime.now())
+    );
   }
 
   public boolean valid(String url) {
@@ -63,9 +56,5 @@ public class SubscriptionService {
     }
 
     return false;
-  }
-
-  private Date now() {
-    return Date.from(LocalDateTime.now(clock).toInstant(ZoneOffset.UTC));
   }
 }

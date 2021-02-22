@@ -7,21 +7,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Date;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithTestProperties
@@ -32,9 +29,6 @@ class RetainDateDeterminerTests {
   private JdbcAggregateOperations template;
 
   @Autowired
-  private TestEntityManager em;
-
-  @Autowired
   private RetainDateDeterminer determiner;
 
   private Subscription subscription1;
@@ -42,13 +36,29 @@ class RetainDateDeterminerTests {
 
   @BeforeEach
   void setUp() {
-    subscription1 = new Subscription("url1", "title1");
-    subscription1.setResultSizePerFetch(5);
-    subscription1 = em.persist(subscription1);
+    subscription1 = template.save(new Subscription(
+      "url1",
+      "title1",
+      null,
+      null,
+      0,
+      null,
+      0,
+      5,
+      ofEpochMilli(1000)
+    ));
 
-    subscription2 = new Subscription("url2", "title2");
-    subscription2.setResultSizePerFetch(5);
-    subscription2 = em.persist(subscription2);
+    subscription2 = template.save(new Subscription(
+      "url2",
+      "title2",
+      null,
+      null,
+      0,
+      null,
+      0,
+      5,
+      ofEpochMilli(1000)
+    ));
   }
 
   @Test

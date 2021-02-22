@@ -1,0 +1,44 @@
+alter table SUBSCRIPTION alter column CREATED_AT set not null;
+
+alter table SUBSCRIPTION alter column CREATED_AT set data type TIMESTAMP WITH TIME ZONE;
+
+alter table SUBSCRIPTION drop column VERSION;
+
+alter table SUBSCRIPTION_ENTRY add SUBSCRIPTION_ID_TMP BIGINT;
+
+update SUBSCRIPTION_ENTRY
+    set SUBSCRIPTION_ID_TMP = SUBSCRIPTION_ID;
+
+alter table SUBSCRIPTION_ENTRY drop column SUBSCRIPTION_ID;
+
+alter table SUBSCRIPTION_ENTRY add SUBSCRIPTION_ID BIGINT;
+
+update SUBSCRIPTION_ENTRY
+    set SUBSCRIPTION_ID = SUBSCRIPTION_ID_TMP;
+
+alter table SUBSCRIPTION_ENTRY drop column SUBSCRIPTION_ID_TMP;
+
+alter table SUBSCRIPTION_ENTRY
+    add constraint ENTRY__SUBSCRIPTION_ID_FK
+        foreign key (SUBSCRIPTION_ID) references SUBSCRIPTION
+            on delete cascade;
+
+
+alter table EXCLUSION_PATTERN add SUBSCRIPTION_ID_TMP BIGINT;
+
+update EXCLUSION_PATTERN
+    set SUBSCRIPTION_ID_TMP = SUBSCRIPTION_ID;
+
+alter table EXCLUSION_PATTERN drop column SUBSCRIPTION_ID;
+
+alter table EXCLUSION_PATTERN add SUBSCRIPTION_ID BIGINT;
+
+update EXCLUSION_PATTERN
+    set SUBSCRIPTION_ID = SUBSCRIPTION_ID_TMP;
+
+alter table EXCLUSION_PATTERN drop column SUBSCRIPTION_ID_TMP;
+
+alter table EXCLUSION_PATTERN
+    add constraint EXCLUSION_PATTERN__SUBSCRIPTION_ID_FK
+        foreign key (SUBSCRIPTION_ID) references SUBSCRIPTION
+            on delete cascade;

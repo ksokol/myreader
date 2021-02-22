@@ -25,8 +25,8 @@ def htmlSanitizerVersion = '20190610.1'
 dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'org.springframework.boot:spring-boot-starter-security'
-  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
   implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+  implementation 'org.springframework:spring-aspects'
   compile group: 'org.hsqldb', name: 'hsqldb'
   compile group: 'org.flywaydb', name: 'flyway-core'
   compile group: 'com.rometools', name: 'rome', version: romeToolsVersion

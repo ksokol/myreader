@@ -1,5 +1,6 @@
 package myreader.fetcher.jobs;
 
+import com.google.common.collect.Iterators;
 import myreader.entity.Subscription;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
@@ -29,7 +30,7 @@ public class FeedListFetcherJob extends BaseJob {
   public void work() {
     var feeds = subscriptionRepository.findAll();
     var iterator = feeds.iterator();
-    var size = feeds.size();
+    var size = Iterators.size(feeds.iterator());
     getLog().info("checking {} subscriptions", size);
 
     for (var i = 0; i < size && isAlive(); i++) {

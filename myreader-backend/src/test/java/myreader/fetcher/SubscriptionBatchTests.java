@@ -9,20 +9,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithTestProperties
@@ -38,9 +35,6 @@ class SubscriptionBatchTests {
   private SubscriptionEntry entry12;
 
   @Autowired
-  private TestEntityManager em;
-
-  @Autowired
   private JdbcAggregateOperations template;
 
   @Autowired
@@ -48,10 +42,17 @@ class SubscriptionBatchTests {
 
   @BeforeEach
   void setUp() {
-    subscription1 = new Subscription("http://url1", "title1");
-    subscription1.setOverallFetchCount(1);
-    subscription1.setAcceptedFetchCount(1);
-    subscription1 = em.persist(subscription1);
+    subscription1 = template.save(new Subscription(
+      "http://url1",
+      "title1",
+      null,
+      null,
+      1,
+      null,
+      1,
+      null,
+      ofEpochMilli(1000)
+    ));
 
     entry1 = template.save(new SubscriptionEntry(
       ENTRY_TITLE,
@@ -65,10 +66,17 @@ class SubscriptionBatchTests {
       ofEpochMilli(1000)
     ));
 
-    subscription2 = new Subscription("http://url2", "title1");
-    subscription2.setOverallFetchCount(1);
-    subscription2.setAcceptedFetchCount(1);
-    subscription2 = em.persist(subscription2);
+    subscription2 = template.save(new Subscription(
+      "http://url2",
+      "title1",
+      null,
+      null,
+      1,
+      null,
+      1,
+      null,
+      ofEpochMilli(1000)
+    ));
 
     entry12 = template.save(new SubscriptionEntry(
       ENTRY_TITLE + "12",
@@ -153,11 +161,11 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(existing()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("lastModified", "last modified")
       .hasFieldOrPropertyWithValue("overallFetchCount", 1);
 
-    assertThat(em.find(Subscription.class, subscription2.getId()))
+    assertThat(template.findById(subscription2.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("lastModified", null)
       .hasFieldOrPropertyWithValue("overallFetchCount", 1);
   }
@@ -168,11 +176,11 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(newTitle()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("lastModified", "last modified")
       .hasFieldOrPropertyWithValue("overallFetchCount", 1);
 
-    assertThat(em.find(Subscription.class, subscription2.getId()))
+    assertThat(template.findById(subscription2.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("lastModified", null)
       .hasFieldOrPropertyWithValue("overallFetchCount", 1);
   }
@@ -183,11 +191,11 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(newGuid()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("lastModified", "last modified")
       .hasFieldOrPropertyWithValue("overallFetchCount", 1);
 
-    assertThat(em.find(Subscription.class, subscription2.getId()))
+    assertThat(template.findById(subscription2.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("lastModified", null)
       .hasFieldOrPropertyWithValue("overallFetchCount", 1);
   }
@@ -198,11 +206,11 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(newUrl()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("lastModified", "last modified")
       .hasFieldOrPropertyWithValue("overallFetchCount", 1);
 
-    assertThat(em.find(Subscription.class, subscription2.getId()))
+    assertThat(template.findById(subscription2.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("lastModified", null)
       .hasFieldOrPropertyWithValue("overallFetchCount", 1);
   }
@@ -213,11 +221,11 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(newEntry()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("lastModified", "last modified")
       .hasFieldOrPropertyWithValue("overallFetchCount", 2);
 
-    assertThat(em.find(Subscription.class, subscription2.getId()))
+    assertThat(template.findById(subscription2.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("lastModified", null)
       .hasFieldOrPropertyWithValue("overallFetchCount", 1);
   }
@@ -228,7 +236,7 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(), null, null, subscription1.getUrl(), 10)
     );
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("resultSizePerFetch", 10);
   }
 
@@ -238,7 +246,7 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(), null, null, subscription1.getUrl(), 0)
     );
 
-    assertThat(em.find(Subscription.class, subscription1.getId()))
+    assertThat(template.findById(subscription1.getId(), Subscription.class))
       .hasFieldOrPropertyWithValue("resultSizePerFetch", 1000);
   }
 

@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -54,7 +55,17 @@ public class FeedListFetcherJobTests {
   @Test
   public void whenApplicationContextClosedEventThenAbort() {
     when(queueMock.getSize()).thenReturn(0);
-    when(subscriptionRepositoryMock.findAll()).thenReturn(singletonList(new Subscription(null, null)));
+    when(subscriptionRepositoryMock.findAll()).thenReturn(singletonList(new Subscription(
+      "url",
+      null,
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    )));
 
     job.onApplicationEvent(new ContextClosedEvent(mock(ApplicationContext.class)));
     job.run();
@@ -64,8 +75,7 @@ public class FeedListFetcherJobTests {
 
   @Test
   public void whenReturnsNoResultThenNeverAddToQueue() {
-    var feed = new Subscription(URL, null);
-    feed.setLastModified(LAST_MODIFIED);
+    var feed = new Subscription(URL, null, null, null, 0, LAST_MODIFIED, 0, null, ofEpochMilli(1000));
     var fetchResult = new FetchResult(URL);
 
     when(queueMock.getSize()).thenReturn(0);
@@ -79,8 +89,7 @@ public class FeedListFetcherJobTests {
 
   @Test
   public void whenReturnsResultThenAddToQueue() {
-    Subscription feed = new Subscription(URL, null);
-    feed.setLastModified(LAST_MODIFIED);
+    Subscription feed = new Subscription(URL, null, null, null, 0, LAST_MODIFIED, 0, null, ofEpochMilli(1000));
     var fetchResult = new FetchResult(null);
 
     when(queueMock.getSize()).thenReturn(0);

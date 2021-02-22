@@ -7,8 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
@@ -20,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 
 import static myreader.test.CustomMockMvcResultMatchers.validation;
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -29,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-@AutoConfigureTestEntityManager
 @Transactional
 @SpringBootTest
 @WithMockUser
@@ -40,9 +38,6 @@ class ExclusionPatternCollectionResourceTests {
   private MockMvc mockMvc;
 
   @Autowired
-  private TestEntityManager em;
-
-  @Autowired
   private JdbcAggregateOperations template;
 
   private Subscription subscription;
@@ -51,7 +46,17 @@ class ExclusionPatternCollectionResourceTests {
 
   @BeforeEach
   void setUp() {
-    subscription = em.persist(new Subscription("http://localhost", "title"));
+    subscription = template.save(new Subscription(
+      "http://localhost",
+      "title",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000))
+    );
 
     exclusionPattern1 = new ExclusionPattern("pattern1", subscription.getId(), 1, OffsetDateTime.now());
     exclusionPattern1 = template.save(exclusionPattern1);

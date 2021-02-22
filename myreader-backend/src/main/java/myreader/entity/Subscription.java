@@ -1,20 +1,12 @@
 package myreader.entity;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
-import java.util.Date;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Access(AccessType.PROPERTY)
-@Entity
-@Table(name = "subscription")
+import java.time.OffsetDateTime;
+import java.util.Objects;
+
+@Table("SUBSCRIPTION")
 public class Subscription {
 
   private Long id;
@@ -22,26 +14,35 @@ public class Subscription {
   private String url;
   private String tag;
   private String color;
-  private Date createdAt;
   private int acceptedFetchCount;
   private String lastModified;
-  private Integer overallFetchCount;
+  private int overallFetchCount;
   private Integer resultSizePerFetch;
-  private long version;
+  private final OffsetDateTime createdAt;
 
-  /**
-   * Default constructor for Hibernate.
-   */
-  public Subscription() {
-  }
-
-  public Subscription(String url, String title) {
-    this.url = url;
+  public Subscription(
+    String url,
+    String title,
+    String tag,
+    String color,
+    int acceptedFetchCount,
+    String lastModified,
+    Integer overallFetchCount,
+    Integer resultSizePerFetch,
+    OffsetDateTime createdAt
+  ) {
+    this.url = Objects.requireNonNull(url, "url is null");
     this.title = title;
+    this.tag = tag;
+    this.color = color;
+    this.acceptedFetchCount = acceptedFetchCount;
+    this.lastModified = lastModified;
+    this.overallFetchCount = Objects.requireNonNull(overallFetchCount, "overallFetchCount is null");
+    this.resultSizePerFetch = resultSizePerFetch;
+    this.createdAt = Objects.requireNonNull(createdAt, " is null");
   }
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long getId() {
     return id;
   }
@@ -114,26 +115,7 @@ public class Subscription {
     this.color = color;
   }
 
-  @Temporal(TemporalType.TIMESTAMP)
-  public Date getCreatedAt() {
-    if (createdAt != null) {
-      return new Date(createdAt.getTime());
-    }
-    return new Date();
-  }
-
-  public void setCreatedAt(Date createdAt) {
-    if (createdAt != null) {
-      this.createdAt = new Date(createdAt.getTime());
-    }
-  }
-
-  @Version
-  public long getVersion() {
-    return version;
-  }
-
-  public void setVersion(long version) {
-    this.version = version;
+  public OffsetDateTime getCreatedAt() {
+      return createdAt;
   }
 }

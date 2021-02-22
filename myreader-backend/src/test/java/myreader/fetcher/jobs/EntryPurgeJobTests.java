@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static java.util.Collections.singletonList;
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -42,7 +43,7 @@ class EntryPurgeJobTests {
   @BeforeEach
   void setUp() {
     retainDate = new Date();
-    subscription = new Subscription("url", "title");
+    subscription = new Subscription("url", "title", null, null, 0, null, 0, null, ofEpochMilli(1000));
     subscription.setId(1L);
   }
 
