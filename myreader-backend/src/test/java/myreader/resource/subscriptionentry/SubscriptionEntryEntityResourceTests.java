@@ -11,14 +11,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.Set;
 
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -40,6 +41,9 @@ class SubscriptionEntryEntityResourceTests {
   @Autowired
   private TestEntityManager em;
 
+  @Autowired
+  private JdbcAggregateOperations template;
+
   private Subscription subscription;
   private SubscriptionEntry subscriptionEntry;
 
@@ -51,14 +55,17 @@ class SubscriptionEntryEntityResourceTests {
     subscription.setColor("#777");
     subscription = em.persist(subscription);
 
-    subscriptionEntry = new SubscriptionEntry(subscription);
-    subscriptionEntry.setTitle("Bliki: TellDontAsk");
-    subscriptionEntry.setContent("content");
-    subscriptionEntry.setUrl("http://martinfowler.com/bliki/TellDontAsk.html");
-    subscriptionEntry.setTags(Set.of("tag3"));
-    subscriptionEntry.setSeen(true);
-    subscriptionEntry.setCreatedAt(new Date(1000));
-    subscriptionEntry = em.persist(subscriptionEntry);
+    subscriptionEntry = template.save(new SubscriptionEntry(
+      "Bliki: TellDontAsk",
+      "guid",
+      "http://martinfowler.com/bliki/TellDontAsk.html",
+      "content",
+      true,
+      false,
+      Set.of("tag3"),
+      subscription.getId(),
+      ofEpochMilli(1000)
+    ));
   }
 
   @Test
@@ -76,9 +83,9 @@ class SubscriptionEntryEntityResourceTests {
       .andExpect(jsonPath("$.feedTagColor").value("#777"))
       .andExpect(jsonPath("$.feedUuid").value(subscription.getId().toString()))
       .andExpect(jsonPath("$.origin").value("http://martinfowler.com/bliki/TellDontAsk.html"))
-      .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:01.000+00:00"));
+      .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:01Z"));
 
-    assertThat(em.find(SubscriptionEntry.class, subscriptionEntry.getId()))
+    assertThat(template.findById(subscriptionEntry.getId(), SubscriptionEntry.class))
       .hasFieldOrPropertyWithValue("seen", true)
       .hasFieldOrPropertyWithValue("tags", Set.of("tag-patched"));
   }
@@ -98,9 +105,9 @@ class SubscriptionEntryEntityResourceTests {
       .andExpect(jsonPath("$.feedTagColor").value("#777"))
       .andExpect(jsonPath("$.feedUuid").value(subscription.getId().toString()))
       .andExpect(jsonPath("$.origin").value("http://martinfowler.com/bliki/TellDontAsk.html"))
-      .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:01.000+00:00"));
+      .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:01Z"));
 
-    assertThat(em.find(SubscriptionEntry.class, subscriptionEntry.getId()))
+    assertThat(template.findById(subscriptionEntry.getId(), SubscriptionEntry.class))
       .hasFieldOrPropertyWithValue("seen", false)
       .hasFieldOrPropertyWithValue("tags", Set.of("tag-patched"));
   }

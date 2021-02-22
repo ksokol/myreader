@@ -9,6 +9,8 @@ import myreader.repository.SubscriptionRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+
 @Component
 public class SubscriptionEntryBatch {
 
@@ -47,12 +49,17 @@ public class SubscriptionEntryBatch {
       }
     }
 
-    var subscriptionEntry = new SubscriptionEntry(subscription);
-    subscriptionEntry.setContent(fetcherEntry.getContent());
-    subscriptionEntry.setGuid(fetcherEntry.getGuid());
-    subscriptionEntry.setTitle(fetcherEntry.getTitle());
-    subscriptionEntry.setUrl(fetcherEntry.getUrl());
-    subscriptionEntry.setExcluded(excluded);
+    var subscriptionEntry = new SubscriptionEntry(
+      fetcherEntry.getTitle(),
+      fetcherEntry.getGuid(),
+      fetcherEntry.getUrl(),
+      fetcherEntry.getContent(),
+      false,
+      excluded,
+      null,
+      subscription.getId(),
+      OffsetDateTime.now()
+    );
 
     subscriptionEntryRepository.save(subscriptionEntry);
 

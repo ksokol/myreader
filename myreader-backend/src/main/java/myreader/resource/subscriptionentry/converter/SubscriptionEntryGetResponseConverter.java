@@ -1,14 +1,22 @@
 package myreader.resource.subscriptionentry.converter;
 
 import myreader.entity.SubscriptionEntry;
+import myreader.repository.SubscriptionRepository;
 import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 @Component
 public class SubscriptionEntryGetResponseConverter {
+
+  private final SubscriptionRepository subscriptionRepository;
+
+  public SubscriptionEntryGetResponseConverter(SubscriptionRepository subscriptionRepository) {
+    this.subscriptionRepository = Objects.requireNonNull(subscriptionRepository, "subscriptionRepository is null");
+  }
 
   public SubscriptionEntryGetResponse toModel(final SubscriptionEntry source) {
     var target = new SubscriptionEntryGetResponse();
@@ -27,7 +35,7 @@ public class SubscriptionEntryGetResponseConverter {
     target.setTitle(source.getTitle());
     target.setContent(source.getContent());
 
-    var subscription = source.getSubscription();
+    var subscription = subscriptionRepository.getOne(source.getSubscriptionId());
     target.setFeedTitle(subscription.getTitle());
     target.setFeedUuid(subscription.getId().toString());
     target.setFeedTag(subscription.getTag());

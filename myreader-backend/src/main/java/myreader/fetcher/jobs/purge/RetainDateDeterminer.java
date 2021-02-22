@@ -5,10 +5,10 @@ import myreader.repository.SubscriptionEntryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -23,7 +23,7 @@ public class RetainDateDeterminer {
     SubscriptionEntryRepository subscriptionEntryRepository,
     @Value("${myreader.min-feed-threshold:50}") int minFeedThreshold
   ) {
-    this.subscriptionEntryRepository = subscriptionEntryRepository;
+    this.subscriptionEntryRepository = Objects.requireNonNull(subscriptionEntryRepository, "subscriptionEntryRepository is null");
     this.minFeedThreshold = minFeedThreshold;
   }
 
@@ -42,16 +42,16 @@ public class RetainDateDeterminer {
       return Optional.empty();
     }
 
-    var page = subscriptionEntryRepository.findBySubscriptionIdOrderByCreatedAtDesc(
+    var entries = subscriptionEntryRepository.findAllBySubscriptionIdOrderByCreatedAtDesc(
       subscription.getId(),
-      PageRequest.of(0, feedThreshold)
+      feedThreshold
     );
 
-    if (page.getTotalElements() == 0) {
+    if (entries.isEmpty()) {
       return Optional.empty();
     }
 
-    var lastFeedEntry = page.getContent().get(page.getContent().size() - 1);
-    return Optional.of(lastFeedEntry.getCreatedAt());
+    var lastFeedEntry = entries.get(entries.size() - 1);
+    return Optional.of(new Date(lastFeedEntry.getCreatedAt().toInstant().toEpochMilli()));
   }
 }

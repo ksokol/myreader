@@ -1,64 +1,49 @@
 package myreader.entity;
 
-import myreader.hibernate.SetArrayType;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.Set;
 
-@Access(AccessType.PROPERTY)
-@Entity
-@Table(
-  name = "subscription_entry",
-  indexes = {
-    @Index(name = "title_idx", columnList = "title"),
-    @Index(name = "guid_idx", columnList = "guid"),
-    @Index(name = "url_idx", columnList = "url")
-  }
-)
-@TypeDef(
-  name = "set-array",
-  typeClass = SetArrayType.class
-)
+@Table("SUBSCRIPTION_ENTRY")
 public class SubscriptionEntry {
 
   private Long id;
-  private String title;
-  private String guid;
-  private String url;
-  private String content;
+  private final String title;
+  private final String guid;
+  private final String url;
+  private final String content;
   private boolean seen;
-  private boolean excluded;
+  private final boolean excluded;
   private Set<String> tags;
-  private Subscription subscription;
-  private Date createdAt;
+  private final Long subscriptionId;
+  private final OffsetDateTime createdAt;
 
-  /**
-   * Default constructor for Hibernate.
-   */
-  public SubscriptionEntry() {
-  }
-
-  public SubscriptionEntry(Subscription subscription) {
-    this.subscription = subscription;
+  public SubscriptionEntry(
+    String title,
+    String guid,
+    String url,
+    String content,
+    boolean seen,
+    boolean excluded,
+    Set<String> tags,
+    Long subscriptionId,
+    OffsetDateTime createdAt
+  ) {
+    this.title = title;
+    this.guid = guid;
+    this.url = Objects.requireNonNull(url, "url is null");
+    this.content = content;
+    this.seen = seen;
+    this.excluded = excluded;
+    this.tags = tags != null ? Set.copyOf(tags) : null;
+    this.subscriptionId = Objects.requireNonNull(subscriptionId, "subscriptionId is null");
+    this.createdAt = Objects.requireNonNull(createdAt, "createdAt is null");
   }
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long getId() {
     return id;
   }
@@ -71,32 +56,16 @@ public class SubscriptionEntry {
     return title;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
   public String getGuid() {
     return guid;
-  }
-
-  public void setGuid(String guid) {
-    this.guid = guid;
   }
 
   public String getUrl() {
     return url;
   }
 
-  public void setUrl(String url) {
-    this.url = url;
-  }
-
   public String getContent() {
     return content;
-  }
-
-  public void setContent(String content) {
-    this.content = content;
   }
 
   public boolean isSeen() {
@@ -111,46 +80,19 @@ public class SubscriptionEntry {
     return excluded;
   }
 
-  public void setExcluded(boolean excluded) {
-    this.excluded = excluded;
-  }
-
-  @Type(type = "set-array")
   public Set<String> getTags() {
     return tags;
   }
 
   public void setTags(Set<String> tags) {
-    this.tags = tags;
+    this.tags = tags != null ? Set.copyOf(tags) : null;
   }
 
-  @ManyToOne(optional = false, fetch = FetchType.EAGER)
-  public Subscription getSubscription() {
-    return subscription;
+  public Long getSubscriptionId() {
+    return subscriptionId;
   }
 
-  public void setSubscription(Subscription subscription) {
-    this.subscription = subscription;
-  }
-
-  @Temporal(TemporalType.TIMESTAMP)
-  public Date getCreatedAt() {
-    if (createdAt != null) {
-      return new Date(createdAt.getTime());
-    }
-    return new Date();
-  }
-
-  public void setCreatedAt(Date createdAt) {
-    if (createdAt != null) {
-      this.createdAt = new Date(createdAt.getTime());
-    }
-  }
-
-  @PrePersist
-  private void onCreate() {
-    if (this.createdAt == null) {
-      this.createdAt = new Date();
-    }
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
   }
 }

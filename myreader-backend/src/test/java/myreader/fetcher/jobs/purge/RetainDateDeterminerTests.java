@@ -2,89 +2,104 @@ package myreader.fetcher.jobs.purge;
 
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
-import myreader.repository.SubscriptionEntryRepository;
+import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
+import javax.transaction.Transactional;
 import java.util.Date;
-import java.util.List;
 
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@AutoConfigureTestEntityManager
+@Transactional
+@SpringBootTest
+@WithTestProperties
+@TestPropertySource(properties = "myreader.min-feed-threshold=2")
 class RetainDateDeterminerTests {
 
+  @Autowired
+  private JdbcAggregateOperations template;
+
+  @Autowired
+  private TestEntityManager em;
+
+  @Autowired
   private RetainDateDeterminer determiner;
 
-  @Mock
-  private SubscriptionEntryRepository subscriptionEntryRepository;
-
-  private Subscription subscription;
+  private Subscription subscription1;
+  private Subscription subscription2;
 
   @BeforeEach
   void setUp() {
-    determiner = new RetainDateDeterminer(subscriptionEntryRepository, 2);
-    subscription = new Subscription("url", "title");
-    subscription.setId(1L);
-    subscription.setResultSizePerFetch(5);
+    subscription1 = new Subscription("url1", "title1");
+    subscription1.setResultSizePerFetch(5);
+    subscription1 = em.persist(subscription1);
+
+    subscription2 = new Subscription("url2", "title2");
+    subscription2.setResultSizePerFetch(5);
+    subscription2 = em.persist(subscription2);
   }
 
   @Test
   void shouldNotDetermineRetainDateWhenEntryCountIsBelowThreshold() {
-    given(subscriptionEntryRepository.countBySubscriptionId(1L))
-      .willReturn(1L);
+    createEntries(subscription1, 2);
 
-    assertThat(determiner.determine(subscription))
+    assertThat(determiner.determine(subscription1))
       .isNotPresent();
   }
 
   @Test
   void shouldNotDetermineRetainDateWhenEntryCountIsEqualToThreshold() {
-    given(subscriptionEntryRepository.countBySubscriptionId(1L))
-      .willReturn(5L);
+    createEntries(subscription1, 5);
 
-    assertThat(determiner.determine(subscription))
+    assertThat(determiner.determine(subscription1))
       .isNotPresent();
   }
 
   @Test
-  void shouldNotDetermineRetainDateWhenNoEntriesReturnedFromRepositoryQuery() {
-    given(subscriptionEntryRepository.countBySubscriptionId(1L))
-      .willReturn(20L);
-    given(subscriptionEntryRepository.findBySubscriptionIdOrderByCreatedAtDesc(1L, PageRequest.of(0, 5)))
-      .willReturn(new PageImpl<>(createEntries(0)));
+  void shouldDetermineRetainDateForSubscription1() {
+    createEntries(subscription1, 9);
+    createEntries(subscription2, 11);
 
-    assertThat(determiner.determine(subscription))
-      .isNotPresent();
-  }
-
-  @Test
-  void shouldDetermineRetainDate() {
-    given(subscriptionEntryRepository.countBySubscriptionId(1L))
-      .willReturn(20L);
-    given(subscriptionEntryRepository.findBySubscriptionIdOrderByCreatedAtDesc(1L, PageRequest.of(0, 5)))
-      .willReturn(new PageImpl<>(createEntries(5)));
-
-    assertThat(determiner.determine(this.subscription))
+    assertThat(determiner.determine(subscription1))
       .isPresent()
-      .hasValue(new Date(5000));
+      .hasValue(new Date(9000L));
   }
 
-  private List<SubscriptionEntry> createEntries(int index) {
-    List<SubscriptionEntry> entries = new ArrayList<>(index);
-    var subscription = new Subscription("url", "feed");
+  @Test
+  void shouldDetermineRetainDateForSubscription2() {
+    createEntries(subscription1, 9);
+    createEntries(subscription2, 11);
+
+    assertThat(determiner.determine(subscription2))
+      .isPresent()
+      .hasValue(new Date(11000L));
+  }
+
+  private void createEntries(Subscription subscription, int index) {
     for (int i = 0; i < index; i++) {
-      var subscriptionEntry = new SubscriptionEntry(subscription);
-      subscriptionEntry.setCreatedAt(new Date(index * 1000L));
-      entries.add(subscriptionEntry);
+      template.save(new SubscriptionEntry(
+        null,
+        null,
+        "url",
+        null,
+        false,
+        false,
+        null,
+        subscription.getId(),
+        ofEpochMilli(index * 1000L)
+        ));
     }
-    return entries;
   }
 }

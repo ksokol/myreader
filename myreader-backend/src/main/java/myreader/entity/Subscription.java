@@ -2,18 +2,15 @@ package myreader.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 import java.util.Date;
-import java.util.Set;
 
 @Access(AccessType.PROPERTY)
 @Entity
@@ -30,7 +27,6 @@ public class Subscription {
   private String lastModified;
   private Integer overallFetchCount;
   private Integer resultSizePerFetch;
-  private Set<SubscriptionEntry> subscriptionEntries;
   private long version;
 
   /**
@@ -130,15 +126,6 @@ public class Subscription {
     if (createdAt != null) {
       this.createdAt = new Date(createdAt.getTime());
     }
-  }
-
-  @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE)
-  public Set<SubscriptionEntry> getSubscriptionEntries() {
-    return subscriptionEntries;
-  }
-
-  public void setSubscriptionEntries(Set<SubscriptionEntry> subscriptionEntries) {
-    this.subscriptionEntries = subscriptionEntries;
   }
 
   @Version

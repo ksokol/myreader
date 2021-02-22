@@ -4,11 +4,12 @@ import myreader.entity.SubscriptionEntry;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,26 +23,22 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
   private static final int DEFAULT_SIZE = 10;
 
-  private final EntityManager em;
+  private final NamedParameterJdbcOperations jdbcTemplate;
+  private final JdbcAggregateOperations template;
 
-  public SubscriptionEntryRepositoryImpl(EntityManager em) {
-    this.em = Objects.requireNonNull(em, "em is null");
+  public SubscriptionEntryRepositoryImpl(NamedParameterJdbcOperations jdbcTemplate, JdbcAggregateOperations template) {
+    this.jdbcTemplate = Objects.requireNonNull(jdbcTemplate, "jdbcTemplate is null");
+    this.template = Objects.requireNonNull(template, "template is null");
   }
 
   @Override
-  public Slice<SubscriptionEntry> findBy(
-    String feedId,
-    String feedTagEqual,
-    String entryTagEqual,
-    Boolean seen,
-    Long next
-  ) {
+  public Slice<SubscriptionEntry> findBy(String feedId, String feedTagEqual, String entryTagEqual, Boolean seen, Long next) {
     var sizePlusOne = DEFAULT_SIZE + 1;
     var predicates = new ArrayList<String>();
     var params = new HashMap<String, Object>();
 
     var sql = new StringBuilder(300);
-    sql.append("select se.* from subscription_entry se join subscription s on s.id = se.subscription_id");
+    sql.append("select se.id from subscription_entry se join subscription s on s.id = se.subscription_id");
 
     if (entryTagEqual != null) {
       predicates.add("position_array(:entryTagEqual in se.tags) > 0");
@@ -74,18 +71,15 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
       sql.append(i > 0 ? " and " : " where ").append(predicates.get(i));
     }
 
-    sql.append(" order by se.id desc");
+    sql.append(" order by se.id desc limit ").append(sizePlusOne);
 
-    Query query = em.createNativeQuery(sql.toString(), SubscriptionEntry.class);
-    for (Map.Entry<String, Object> entry : params.entrySet()) {
-      query.setParameter(entry.getKey(), entry.getValue());
-    }
+    var ids = jdbcTemplate.queryForList(sql.toString(), params, Long.class);
+    List<SubscriptionEntry> resultList = new ArrayList<>();
+    template.findAllById(ids, SubscriptionEntry.class).iterator()
+      .forEachRemaining(resultList::add);
 
-    query.setMaxResults(sizePlusOne);
-
-    @SuppressWarnings("unchecked")
-    List<SubscriptionEntry> resultList = query.getResultList();
     var limit = resultList.stream()
+      .sorted(Comparator.comparingLong(SubscriptionEntry::getId).reversed())
       .limit(DEFAULT_SIZE)
       .collect(Collectors.toList());
 
@@ -94,13 +88,11 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
   @Override
   public Set<String> findDistinctTags() {
-    var query = em.createQuery("select se from SubscriptionEntry se where se.tags is not null", SubscriptionEntry.class);
-    var resultList = query.getResultList();
-    Set<String> tags = new TreeSet<>();
+    var ids = jdbcTemplate.queryForList("select distinct id from subscription_entry where tags is not null", Map.of(), Long.class);
 
-    for (var entry : resultList) {
-      tags.addAll(entry.getTags());
-    }
+    Set<String> tags = new TreeSet<>();
+    template.findAllById(ids, SubscriptionEntry.class).iterator()
+      .forEachRemaining(se -> tags.addAll(se.getTags()));
 
     return tags;
   }

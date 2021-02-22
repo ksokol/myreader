@@ -1,67 +1,154 @@
 package myreader.fetcher.jobs.purge;
 
-import myreader.repository.SubscriptionEntryRepository;
+import myreader.entity.Subscription;
+import myreader.entity.SubscriptionEntry;
+import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.transaction.Transactional;
+import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@AutoConfigureTestEntityManager
+@Transactional
+@SpringBootTest
+@WithTestProperties
+@TestPropertySource(properties = "myreader.min-feed-threshold=2")
 class EntryPurgerTests {
 
-  private EntryPurger purger;
-  private PageRequest pageRequest;
-  private Date retainDate;
-  private Long feedId;
+  @Autowired
+  private JdbcAggregateOperations template;
 
-  @Mock
-  private SubscriptionEntryRepository subscriptionEntryRepository;
+  @Autowired
+  private TestEntityManager em;
+
+  @Autowired
+  private EntryPurger purger;
+
+  private Subscription subscription1;
+  private Subscription subscription2;
 
   @BeforeEach
   void setUp() {
-    purger = new EntryPurger(subscriptionEntryRepository, 2);
-    pageRequest = PageRequest.of(0, 2);
-    retainDate = new Date();
-    feedId = 1L;
+    subscription1 = new Subscription("url1", "title1");
+    subscription1.setResultSizePerFetch(5);
+    subscription1 = em.persist(subscription1);
+
+    subscription2 = new Subscription("url2", "title2");
+    subscription2.setResultSizePerFetch(5);
+    subscription2 = em.persist(subscription2);
   }
 
   @Test
-  void shouldNotDeleteEntriesWhenNoErasableEntriesAvailable() {
-    given(subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(feedId, retainDate, pageRequest))
-      .willReturn(withPage(0));
+  void shouldNotDeleteEntriesIfUnseen() {
+    createEntry(ofEpochMilli(1000));
+    createEntry(ofEpochMilli(2000));
 
-    purger.purge(feedId, retainDate);
+    purger.purge(subscription1.getId(), new Date(5000));
 
-    verify(subscriptionEntryRepository, never()).deleteById(anyLong());
+    assertThat(template.count(SubscriptionEntry.class))
+      .isEqualTo(2);
   }
 
   @Test
-  void shouldDeleteAllErasableEntries() {
-    given(subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(feedId, retainDate, pageRequest))
-      .willReturn(withPage(3, 1L, 2L))
-      .willReturn(withPage(3, 3L))
-      .willReturn(withPage(3));
+  void shouldNotDeleteEntriesIfTaggedAndSeen() {
+    var subscriptionEntry1 = createEntry(ofEpochMilli(1000));
+    subscriptionEntry1.setSeen(true);
+    subscriptionEntry1.setTags(Collections.singleton("not null"));
+    template.save(subscriptionEntry1);
 
-    purger.purge(feedId, retainDate);
+    var subscriptionEntry2 = createEntry(ofEpochMilli(2000));
+    subscriptionEntry2.setSeen(true);
+    subscriptionEntry2.setTags(Collections.singleton("not null"));
+    template.save(subscriptionEntry2);
 
-    verify(subscriptionEntryRepository).deleteById(1L);
-    verify(subscriptionEntryRepository).deleteById(2L);
-    verify(subscriptionEntryRepository).deleteById(3L);
+    purger.purge(subscription1.getId(), new Date(5000));
+
+    assertThat(template.count(SubscriptionEntry.class))
+      .isEqualTo(2);
   }
 
-  private Page<Long> withPage(long totalElements, Long... ids) {
-    return new PageImpl<>(List.of(ids), PageRequest.of(0, 10), totalElements);
+  @Test
+  void shouldNotDeleteEntriesIfTagged() {
+    var subscriptionEntry1 = createEntry(ofEpochMilli(1000));
+    subscriptionEntry1.setTags(Collections.singleton("not null"));
+    template.save(subscriptionEntry1);
+
+    var subscriptionEntry2 = createEntry(ofEpochMilli(2000));
+    subscriptionEntry2.setTags(Collections.singleton("not null"));
+    template.save(subscriptionEntry2);
+
+    purger.purge(subscription1.getId(), new Date(5000));
+
+    assertThat(template.count(SubscriptionEntry.class))
+      .isEqualTo(2);
   }
+
+  @Test
+  void shouldNotDeleteEntriesFromSubscriptionIfRetainDateNotReached() {
+    var subscriptionEntry1 = createEntry(ofEpochMilli(10000));
+    subscriptionEntry1.setSeen(true);
+    template.save(subscriptionEntry1);
+
+    var subscriptionEntry2 = createEntry(ofEpochMilli(20000));
+    subscriptionEntry2.setSeen(true);
+    template.save(subscriptionEntry2);
+
+    purger.purge(subscription1.getId(), new Date(5000));
+
+    assertThat(template.count(SubscriptionEntry.class))
+      .isEqualTo(2L);
+  }
+
+  @Test
+  void shouldDeleteOldEntriesFromSubscription1() {
+    var subscriptionEntry1 = createEntry(ofEpochMilli(1000));
+    subscriptionEntry1.setSeen(true);
+    template.save(subscriptionEntry1);
+
+    var subscriptionEntry2 = createEntry(subscription2, ofEpochMilli(2000));
+    subscriptionEntry2.setSeen(true);
+    template.save(subscriptionEntry2);
+
+    purger.purge(subscription1.getId(), new Date(5000));
+
+    assertThat(template.findAll(SubscriptionEntry.class))
+      .hasSize(1)
+      .element(0)
+      .hasFieldOrPropertyWithValue("id", subscriptionEntry2.getId());
+  }
+
+  private SubscriptionEntry createEntry(OffsetDateTime createdAt) {
+    return createEntry(subscription1, createdAt);
+  }
+
+  private SubscriptionEntry createEntry(Subscription Subscription, OffsetDateTime createdAt) {
+    var subscriptionEntry1 = new SubscriptionEntry(
+      null,
+      null,
+      "url",
+      null,
+      false,
+      false,
+      null,
+      Subscription.getId(),
+      createdAt
+    );
+    return template.save(subscriptionEntry1);
+  }
+
 }

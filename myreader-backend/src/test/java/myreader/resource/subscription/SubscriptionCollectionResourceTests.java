@@ -22,14 +22,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import static myreader.test.CustomMockMvcResultMatchers.validation;
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -70,8 +68,8 @@ class SubscriptionCollectionResourceTests {
     subscription1.setCreatedAt(new Date(2000));
     subscription1 = em.persist(subscription1);
 
-    template.save(new FetchError(subscription1.getId(), "message 1", OffsetDateTime.ofInstant(Instant.ofEpochMilli(1000), ZoneOffset.UTC)));
-    template.save(new FetchError(subscription1.getId(), "message 2", OffsetDateTime.ofInstant(Instant.ofEpochMilli(2000), ZoneOffset.UTC)));
+    template.save(new FetchError(subscription1.getId(), "message 1", ofEpochMilli(1000)));
+    template.save(new FetchError(subscription1.getId(), "message 2", ofEpochMilli(2000)));
 
     subscription2 = new Subscription("http://feed2", "feed2");
     subscription2.setTitle("user102_subscription2");
@@ -81,11 +79,17 @@ class SubscriptionCollectionResourceTests {
     subscription2.setCreatedAt(new Date(4000));
     subscription2 = em.persistAndFlush(subscription2);
 
-    var subscriptionEntry2 = new SubscriptionEntry(subscription2);
-    subscriptionEntry2.setSeen(false);
-    em.persistAndFlush(subscriptionEntry2);
-
-    em.clear();
+    template.save(new SubscriptionEntry(
+      null,
+      null,
+      "url",
+      null,
+      false,
+      false,
+      null,
+      subscription2.getId(),
+      ofEpochMilli(1000)
+    ));
   }
 
   @Test

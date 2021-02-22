@@ -20,13 +20,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Set;
 
 import static myreader.test.CustomMockMvcResultMatchers.validation;
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -70,12 +68,20 @@ class SubscriptionEntityResourceTests {
     subscription.setCreatedAt(new Date(2000));
     subscription = em.persist(subscription);
 
-    template.save(new FetchError(subscription.getId(), "message 1", OffsetDateTime.ofInstant(Instant.ofEpochMilli(1000), ZoneOffset.UTC)));
-    template.save(new FetchError(subscription.getId(), "message 2", OffsetDateTime.ofInstant(Instant.ofEpochMilli(2000), ZoneOffset.UTC)));
+    template.save(new FetchError(subscription.getId(), "message 1", ofEpochMilli(1000)));
+    template.save(new FetchError(subscription.getId(), "message 2", ofEpochMilli(2000)));
 
-    var entry = new SubscriptionEntry(subscription);
-    entry.setTags(Set.of("tag1", "tag2"));
-    em.persist(entry);
+    template.save(new SubscriptionEntry(
+      null,
+      null,
+      "url",
+      null,
+      false,
+      false,
+      Set.of("tag1", "tag2"),
+      subscription.getId(),
+      ofEpochMilli(1000)
+    ));
 
     given(subscriptionService.valid("http://example.com"))
       .willReturn(true);

@@ -1,6 +1,6 @@
 package myreader.resource.subscriptionentry.beans;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 public class SubscriptionEntryGetResponse {
@@ -15,7 +15,7 @@ public class SubscriptionEntryGetResponse {
     private String origin;
     private String feedTag;
     private String feedTagColor;
-    private Date createdAt;
+    private OffsetDateTime createdAt;
 
     public String getUuid() {
         return uuid;
@@ -29,7 +29,7 @@ public class SubscriptionEntryGetResponse {
         return title;
     }
 
-    public void setTitle(final String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -37,7 +37,7 @@ public class SubscriptionEntryGetResponse {
         return feedTitle;
     }
 
-    public void setFeedTitle(final String feedTitle) {
+    public void setFeedTitle(String feedTitle) {
         this.feedTitle = feedTitle;
     }
 
@@ -45,7 +45,7 @@ public class SubscriptionEntryGetResponse {
         return feedUuid;
     }
 
-    public void setFeedUuid(final String feedUuid) {
+    public void setFeedUuid(String feedUuid) {
         this.feedUuid = feedUuid;
     }
 
@@ -53,7 +53,7 @@ public class SubscriptionEntryGetResponse {
         return tags;
     }
 
-    public void setTags(final Set<String> tags) {
+    public void setTags(Set<String> tags) {
         this.tags = tags;
     }
 
@@ -61,7 +61,7 @@ public class SubscriptionEntryGetResponse {
         return content;
     }
 
-    public void setContent(final String content) {
+    public void setContent(String content) {
         this.content = content;
     }
 
@@ -69,7 +69,7 @@ public class SubscriptionEntryGetResponse {
         return seen;
     }
 
-    public void setSeen(final boolean seen) {
+    public void setSeen(boolean seen) {
         this.seen = seen;
     }
 
@@ -77,7 +77,7 @@ public class SubscriptionEntryGetResponse {
         return origin;
     }
 
-    public void setOrigin(final String origin) {
+    public void setOrigin(String origin) {
         this.origin = origin;
     }
 
@@ -85,7 +85,7 @@ public class SubscriptionEntryGetResponse {
         return feedTag;
     }
 
-    public void setFeedTag(final String feedTag) {
+    public void setFeedTag(String feedTag) {
         this.feedTag = feedTag;
     }
 
@@ -97,11 +97,11 @@ public class SubscriptionEntryGetResponse {
         this.feedTagColor = feedTagColor;
     }
 
-    public Date getCreatedAt() {
-        return new Date(createdAt.getTime());
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedAt(final Date createdAt) {
-        this.createdAt = new Date(createdAt.getTime());
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

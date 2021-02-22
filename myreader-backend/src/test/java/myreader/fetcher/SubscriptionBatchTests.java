@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -32,11 +34,14 @@ class SubscriptionBatchTests {
 
   private Subscription subscription1;
   private Subscription subscription2;
-  private SubscriptionEntry feedEntry1;
-  private SubscriptionEntry feedEntry12;
+  private SubscriptionEntry entry1;
+  private SubscriptionEntry entry12;
 
   @Autowired
   private TestEntityManager em;
+
+  @Autowired
+  private JdbcAggregateOperations template;
 
   @Autowired
   private SubscriptionBatch subscriptionBatch;
@@ -48,31 +53,43 @@ class SubscriptionBatchTests {
     subscription1.setAcceptedFetchCount(1);
     subscription1 = em.persist(subscription1);
 
-    feedEntry1 = new SubscriptionEntry(subscription1);
-    feedEntry1.setTitle(ENTRY_TITLE);
-    feedEntry1.setGuid(ENTRY_GUID);
-    feedEntry1.setUrl(ENTRY_URL);
-    feedEntry1 = em.persist(feedEntry1);
+    entry1 = template.save(new SubscriptionEntry(
+      ENTRY_TITLE,
+      ENTRY_GUID,
+      ENTRY_URL,
+      null,
+      false,
+      false,
+      null,
+      subscription1.getId(),
+      ofEpochMilli(1000)
+    ));
 
     subscription2 = new Subscription("http://url2", "title1");
     subscription2.setOverallFetchCount(1);
     subscription2.setAcceptedFetchCount(1);
     subscription2 = em.persist(subscription2);
 
-    feedEntry12 = new SubscriptionEntry(subscription2);
-    feedEntry12.setTitle(ENTRY_TITLE + "12");
-    feedEntry12.setGuid(ENTRY_GUID + "12");
-    feedEntry12.setUrl(ENTRY_URL + "12");
-    feedEntry12 = em.persist(feedEntry12);
+    entry12 = template.save(new SubscriptionEntry(
+      ENTRY_TITLE + "12",
+      ENTRY_GUID + "12",
+      ENTRY_URL + "12",
+      null,
+      false,
+      false,
+      null,
+      subscription2.getId(),
+      ofEpochMilli(1000)
+    ));
   }
 
   @Test
   void shouldNotSaveFeedEntryWhenFeedIsUnknown() {
     subscriptionBatch.update(new FetchResult("http://unknown"));
 
-    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
+    assertThat(template.findAll(SubscriptionEntry.class))
       .extracting("id")
-      .contains(feedEntry1.getId(), feedEntry12.getId());
+      .contains(entry1.getId(), entry12.getId());
   }
 
   @Test
@@ -81,9 +98,9 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(), "last modified", "title", "http://unknown", 0)
     );
 
-    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
+    assertThat(template.findAll(SubscriptionEntry.class))
       .extracting("id")
-      .contains(feedEntry1.getId(), feedEntry12.getId());
+      .contains(entry1.getId(), entry12.getId());
   }
 
   @Test
@@ -92,9 +109,9 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(newTitle()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
+    assertThat(template.findAll(SubscriptionEntry.class))
       .extracting("id")
-      .contains(feedEntry1.getId(), feedEntry12.getId());
+      .contains(entry1.getId(), entry12.getId());
   }
 
   @Test
@@ -103,9 +120,9 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(newGuid()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
+    assertThat(template.findAll(SubscriptionEntry.class))
       .extracting("id")
-      .contains(feedEntry1.getId(), feedEntry12.getId());
+      .contains(entry1.getId(), entry12.getId());
   }
 
   @Test
@@ -114,9 +131,9 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(newUrl()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
+    assertThat(template.findAll(SubscriptionEntry.class))
       .extracting("id")
-      .contains(feedEntry1.getId(), feedEntry12.getId());
+      .contains(entry1.getId(), entry12.getId());
   }
 
   @Test
@@ -125,9 +142,9 @@ class SubscriptionBatchTests {
       new FetchResult(List.of(newEntry()), "last modified", "title", subscription1.getUrl(), 0)
     );
 
-    assertThat(em.getEntityManager().createQuery("select se from SubscriptionEntry se", SubscriptionEntry.class).getResultList())
+    assertThat(template.findAll(SubscriptionEntry.class))
       .extracting("id")
-      .contains(feedEntry1.getId(), feedEntry12.getId(), feedEntry12.getId() + 1);
+      .contains(entry1.getId(), entry12.getId(), entry12.getId() + 1);
   }
 
   @Test

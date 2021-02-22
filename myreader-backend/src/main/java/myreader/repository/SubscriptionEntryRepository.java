@@ -1,30 +1,36 @@
 package myreader.repository;
 
 import myreader.entity.SubscriptionEntry;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jdbc.repository.query.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
-public interface SubscriptionEntryRepository extends JpaRepository<SubscriptionEntry, Long>, SubscriptionEntryRepositoryCustom {
+public interface SubscriptionEntryRepository extends CrudRepository<SubscriptionEntry, Long>, SubscriptionEntryRepositoryCustom {
 
-  @Query("select se from SubscriptionEntry se join fetch se.subscription where se.id = ?1")
+  @Query("select * from subscription_entry where id = :id")
   @Override
-  Optional<SubscriptionEntry> findById(Long id);
+  Optional<SubscriptionEntry> findById(@Param("id") Long id);
 
-  @Query("select count(se) from SubscriptionEntry se where (se.title = ?1 or se.guid = ?2 or se.url = ?3) and se.subscription.id = ?4")
-  int countByTitleOrGuidOrUrlAndSubscriptionId(String title, String guid, String url, Long feedId);
+  @Query("select count(*) from subscription_entry where (title = :title or guid = :guid or url = :url) and subscription_id = :subscriptionId")
+  int countByTitleOrGuidOrUrlAndSubscriptionId(
+    @Param("title") String title,
+    @Param("guid") String guid,
+    @Param("url") String url,
+    @Param("subscriptionId") Long subscriptionId
+  );
 
-  long countBySubscriptionId(Long feedId);
+  long countBySubscriptionId(Long subscriptionId);
 
-  Page<SubscriptionEntry> findBySubscriptionIdOrderByCreatedAtDesc(Long feedId, Pageable pageable);
+  @Query("select * from subscription_entry where subscription_id = :subscriptionId order by created_at desc limit :limit")
+  List<SubscriptionEntry> findAllBySubscriptionIdOrderByCreatedAtDesc(@Param("subscriptionId") Long subscriptionId, @Param("limit") int limit);
 
-  @Query("select se.id from SubscriptionEntry se where se.subscription.id = ?1 and se.tags is null and se.seen = true and se.createdAt < ?2")
-  Page<Long> findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAt(Long id, Date retainDate, Pageable pageable);
+  @Query("select id from subscription_entry where subscription_id = :subscriptionId and tags is null and seen = true and created_at < :retainDate")
+  List<Long> findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAtIsLowerThan(@Param("subscriptionId") Long id, @Param("retainDate") Date retainDate);
 
-  @Query("select count(se) from SubscriptionEntry se where se.subscription.id = ?1 and se.seen = false and se.excluded = false")
-  long countUnseenBySubscriptionId(Long subscriptionId);
+  @Query("select count(*) from subscription_entry where subscription_id = :id and seen = false and excluded = false")
+  long countUnseenBySubscriptionId(@Param("id") Long subscriptionId);
 }

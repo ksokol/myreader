@@ -4,6 +4,7 @@ import myreader.entity.Subscription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -13,11 +14,12 @@ import java.util.Set;
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
   @Query(value =
-    "select s from Subscription s where " +
-      "(select count(1) from SubscriptionEntry se where se.subscription.id = s.id and se.seen = false) > ?1 " +
-      "order by s.createdAt desc"
+    "select s.* from subscription s where " +
+      "(select count(1) from subscription_entry se where se.subscription_id = s.id and se.seen = false) > :unseenCount " +
+      "order by s.created_at desc",
+    nativeQuery = true
   )
-  List<Subscription> findAllByUnseenGreaterThan(long unseenCount);
+  List<Subscription> findAllByUnseenGreaterThan(@Param("unseenCount") long unseenCount);
 
   Optional<Subscription> findByUrl(String url);
 

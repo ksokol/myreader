@@ -13,6 +13,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,11 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -47,6 +50,12 @@ class SubscriptionEntryCollectionResourceTests {
   @Autowired
   private TestEntityManager em;
 
+  @Autowired
+  private JdbcAggregateOperations template;
+
+  @Autowired
+  private NamedParameterJdbcOperations jdbcTemplate;
+
   private Subscription subscription1;
   private Subscription subscription2;
   private SubscriptionEntry subscriptionEntry1;
@@ -61,7 +70,7 @@ class SubscriptionEntryCollectionResourceTests {
   private SubscriptionEntry subscriptionEntry11;
   private SubscriptionEntry subscriptionEntry12;
 
-  private int counter = 1;
+  private int counter;
 
   @BeforeEach
   void setUp() {
@@ -77,15 +86,16 @@ class SubscriptionEntryCollectionResourceTests {
     subscriptionEntry1 = createEntry(subscription1);
     subscriptionEntry1.setTags(Set.of("tag1", "tag2", "tag3"));
     subscriptionEntry1.setSeen(true);
+    subscriptionEntry1 = template.save(subscriptionEntry1);
 
     subscriptionEntry2 = createEntry(subscription2);
     subscriptionEntry2.setTags(Set.of("tag2-tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9"));
+    subscriptionEntry2 = template.save(subscriptionEntry2);
 
     subscriptionEntry3 = createEntry(subscription1);
     subscriptionEntry4 = createEntry(subscription1);
 
-    var subscriptionEntry5 = createEntry(subscription1);
-    subscriptionEntry5.setExcluded(true);
+    createEntry(subscription1, true);
 
     subscriptionEntry6 = createEntry(subscription1);
     subscriptionEntry7 = createEntry(subscription1);
@@ -120,7 +130,7 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content[7].feedTagColor").isEmpty())
       .andExpect(jsonPath("$.content[7].feedUuid").value(subscription1.getId().toString()))
       .andExpect(jsonPath("$.content[7].origin").value("http://example.com/feedentry4"))
-      .andExpect(jsonPath("$.content[7].createdAt").value("1970-01-01T00:00:04.000+00:00"))
+      .andExpect(jsonPath("$.content[7].createdAt").value("1970-01-01T00:00:04Z"))
       .andExpect(jsonPath("$.content[8].uuid").value(subscriptionEntry3.getId().toString()))
       .andExpect(jsonPath("$.content[9].uuid").value(subscriptionEntry2.getId().toString()));
   }
@@ -256,8 +266,7 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content[8].uuid").value(subscriptionEntry3.getId().toString()))
       .andExpect(jsonPath("$.content[8].seen").value(false));
 
-    subscriptionEntry4 = em.find(SubscriptionEntry.class, subscriptionEntry4.getId());
-    subscriptionEntry4.setSeen(true);
+    jdbcTemplate.update("update subscription_entry set seen = true where id = :id", Map.of("id", subscriptionEntry4.getId()));
 
     mockMvc.perform(get("/api/2/subscriptionEntries"))
       .andExpect(status().isOk())
@@ -277,8 +286,7 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry3.getId().toString()))
       .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry2.getId().toString()));
 
-    subscriptionEntry2 = em.find(SubscriptionEntry.class, subscriptionEntry2.getId());
-    subscriptionEntry2.setSeen(true);
+    jdbcTemplate.update("update subscription_entry set seen = true where id = :id", Map.of("id", subscriptionEntry2.getId()));
 
     mockMvc.perform(get("/api/2/subscriptionEntries"))
       .andExpect(status().isOk())
@@ -298,13 +306,22 @@ class SubscriptionEntryCollectionResourceTests {
   }
 
   private SubscriptionEntry createEntry(Subscription subscription) {
-    var subscriptionEntry = new SubscriptionEntry(subscription);
-    subscriptionEntry.setTitle(String.format("some entry%d title", counter));
-    subscriptionEntry.setContent(String.format("some entry%d content", counter));
-    subscriptionEntry.setUrl(String.format("http://example.com/feedentry%d", counter));
-    subscriptionEntry.setCreatedAt(new Date(counter * 1000L));
+    return createEntry(subscription, false);
+  }
+
+  private SubscriptionEntry createEntry(Subscription subscription, boolean excluded) {
     counter += 1;
-    return em.persistAndFlush(subscriptionEntry);
+    return template.save(new SubscriptionEntry(
+      String.format("some entry%d title", counter),
+      null,
+      String.format("http://example.com/feedentry%d", counter),
+      String.format("some entry%d content", counter),
+      false,
+      excluded,
+      null,
+      subscription.getId(),
+      ofEpochMilli(counter * 1000L)
+    ));
   }
 
   private String nextPage(MvcResult mvcResult) throws IOException {
