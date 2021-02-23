@@ -5,7 +5,6 @@ import createSubscriptionNavigation from './SubscriptionNavigation/createSubscri
 import NavigationItem from './NavigationItem'
 import {SubscriptionNavigationItem} from './SubscriptionNavigation/SubscriptionNavigationItem'
 import {
-  ADMIN_OVERVIEW_URL,
   BOOKMARK_URL,
   LOGOUT_URL,
   SETTINGS_URL,
@@ -52,12 +51,6 @@ const Navigation = props => {
             key='settings'
             title='Settings'
             to={SETTINGS_URL}
-            onClick={onClick}
-          />,
-          <NavigationItem
-            key='admin'
-            title='Admin'
-            to={ADMIN_OVERVIEW_URL}
             onClick={onClick}
           />,
           <NavigationItem

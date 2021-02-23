@@ -49,13 +49,27 @@ function toMatchRequest(actual, expected) {
 
   if ('body' in expected) {
     const expectedBody = expected.body
-    const actualBody = JSON.parse(actual && actual.body || '')
+    const actualBody = actual.body instanceof URLSearchParams
+      ? actual.body.toString()
+      : JSON.parse(actual && actual.body || '')
 
     if (!isEqual(actualBody, expectedBody)) {
       actualValues.body = actualBody
       expectedValues.body = expectedBody
       pass = false
     }
+  }
+
+  if ('headers' in expected) {
+    const expectedHeaders = expected.headers
+
+    const actualHeaders = actual.headers
+    if (!isEqual(actual.headers, expectedHeaders)) {
+      actualValues.headers = actualHeaders
+      expectedValues.headers = expectedHeaders
+      pass = false
+    }
+
   }
 
   return {

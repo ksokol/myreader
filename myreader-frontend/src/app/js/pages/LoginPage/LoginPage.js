@@ -1,9 +1,14 @@
+import './LoginPage.css'
 import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom'
 import {LoginForm} from '../../components'
 import {ENTRIES_URL} from '../../constants'
 import {authenticationApi} from '../../api'
 import {useSecurity} from '../../contexts/security'
+
+function getAttribute(name) {
+  return document.querySelector('head').getAttribute(name)
+}
 
 export function LoginPage() {
   const [{loginPending, loginFailed}, setState] = useState({
@@ -46,10 +51,16 @@ export function LoginPage() {
       to={ENTRIES_URL}
     />
   ) : (
-    <LoginForm
-      loginPending={loginPending}
-      loginFailed={loginFailed}
-      onLogin={onLogin}
-    />
+    <div className='login-page'>
+      <LoginForm
+        loginPending={loginPending}
+        loginFailed={loginFailed}
+        onLogin={onLogin}
+      />
+      <div className='login-page__application-info'>
+        <span>{getAttribute('data-build-commit-id')}</span>
+        <span>{getAttribute('data-build-version')}</span>
+      </div>
+    </div>
   )
 }

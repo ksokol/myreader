@@ -141,7 +141,7 @@ describe('custom matcher', () => {
       })
     })
 
-    it('should match with body', () => {
+    it('should match with json body', () => {
       expect({
         method: 'PATCH',
         url: 'some/url',
@@ -153,6 +153,17 @@ describe('custom matcher', () => {
         body: {
           a: 'b',
         }
+      })
+    })
+
+    it('should match with URLSearchParams body', () => {
+      expect({
+        method: 'PATCH',
+        url: 'some/url',
+        body: new URLSearchParams('a=b'),
+      }).toMatchPatchRequest({
+        url: 'some/url',
+        body: 'a=b'
       })
     })
 
@@ -231,7 +242,7 @@ describe('custom matcher', () => {
       })
     })
 
-    it('should match with body', () => {
+    it('should match with JSON body', () => {
       expect({
         method: 'POST',
         url: 'some/url',
@@ -243,6 +254,17 @@ describe('custom matcher', () => {
         body: {
           a: 'b',
         }
+      })
+    })
+
+    it('should match with URLSearchParams body', () => {
+      expect({
+        method: 'POST',
+        url: 'some/url',
+        body: new URLSearchParams('a=b'),
+      }).toMatchPostRequest({
+        url: 'some/url',
+        body: 'a=b'
       })
     })
 

@@ -7,7 +7,6 @@ export const SUBSCRIPTION_URL = `${APP_URL}/subscriptions/:uuid`
 export const SUBSCRIPTIONS_URL = `${APP_URL}/subscriptions`
 export const SUBSCRIPTION_ADD_URL = `${APP_URL}/addSubscription`
 export const SETTINGS_URL = `${APP_URL}/settings`
-export const ADMIN_OVERVIEW_URL = `${APP_URL}/overview`
 
 export const API_2 = 'api/2'
 export const LOGIN = 'check'

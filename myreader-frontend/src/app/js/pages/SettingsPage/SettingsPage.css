@@ -7,3 +7,7 @@
 .my-settings > .my-settings__item + .my-settings__item {
     padding-top: 25px;
 }
+
+.my-settings__item + table {
+  padding-top: 20px;
+}

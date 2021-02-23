@@ -2,7 +2,6 @@ import './App.css'
 import React from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import {
-  ADMIN_OVERVIEW_URL,
   APP_URL,
   BOOKMARK_URL,
   ENTRIES_URL,
@@ -13,7 +12,6 @@ import {
   SUBSCRIPTION_URL,
   SUBSCRIPTIONS_URL
 } from './constants'
-import {AdminOverviewPage} from './pages/AdminOverviewPage/AdminOverviewPage'
 import {SettingsPage} from './pages/SettingsPage/SettingsPage'
 import {EntryStreamPage} from './pages/EntryStreamPage/EntryStreamPage'
 import {SidenavLayout} from './components/SidenavLayout/SidenavLayout'
@@ -37,7 +35,6 @@ const withSidenav = () => (
         <Route exact={true} path={SUBSCRIPTION_URL} component={SubscriptionEditPage}/>
         <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>
         <Route exact={true} path={SETTINGS_URL} component={SettingsPage}/>
-        <Route exact={true} path={ADMIN_OVERVIEW_URL} component={AdminOverviewPage}/>
       </Switch>
     </SidenavLayout>
   </SubscriptionProvider>

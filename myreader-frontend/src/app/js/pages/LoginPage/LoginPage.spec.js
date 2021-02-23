@@ -1,152 +1,104 @@
 import React from 'react'
+import {Router} from 'react-router'
+import {createMemoryHistory} from 'history'
+import {render, screen, fireEvent} from '@testing-library/react'
 import {act} from 'react-dom/test-utils'
-import {mount} from 'enzyme'
 import {LoginPage} from './LoginPage'
-import {authenticationApi} from '../../api'
-import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
-import {useSecurity} from '../../contexts/security'
+import {SecurityProvider} from '../../contexts/security/SecurityProvider'
 
-/* eslint-disable react/prop-types */
-jest.mock('../../components', () => ({
-  LoginForm: () => null
-}))
-
-jest.mock('../../api', () => ({
-  authenticationApi: {}
-}))
-
-jest.mock('../../contexts/security', () => ({
-  useSecurity: jest.fn()
-}))
-/* eslint-enable */
+jest.unmock('react-router')
 
 describe('LoginPage', () => {
 
-  let props
+  let history
 
-  const createWrapper = async (onMount = resolved({roles: ['USER']})) => {
-    authenticationApi.login = onMount
-    const wrapper = mount(<LoginPage {...props} />)
-    await flushPromises()
-    wrapper.update()
-    return wrapper
+  const renderComponent = () => {
+    render(
+      <Router history={history}>
+        <SecurityProvider>
+          <LoginPage />
+        </SecurityProvider>
+      </Router>
+    )
   }
 
   beforeEach(() => {
-    useSecurity.mockReturnValue({
-      authorized: false,
-      doAuthorize: jest.fn(),
+    history = createMemoryHistory()
+  })
+
+  it('should call authentication endpoint with given password', async () => {
+    renderComponent()
+
+    fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
+    await act(async () => fireEvent.click(screen.getByText('Login')))
+
+    expect(fetch.mostRecent()).toMatchPostRequest({
+      url: 'check',
+      body: 'password=expected+password',
+      headers: new Headers({
+        'content-type': 'application/x-www-form-urlencoded',
+        'x-requested-with': 'XMLHttpRequest'
+      })
     })
   })
 
-  it('should pass expected props to login form component', async () => {
-    const wrapper = await createWrapper()
+  it('should redirect if successfully authenticated', async () => {
+    renderComponent()
 
-    expect(wrapper.find('LoginForm').props()).toEqual(expect.objectContaining({
-      loginPending: false,
-      loginFailed: false
-    }))
+    fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
+    await act(async () => fireEvent.click(screen.getByText('Login')))
+
+    expect(history.action).toEqual('POP')
+    expect(history.location.pathname).toEqual('/')
   })
 
-  it('should call authenticationApi.login with given username and password when prop function "onLogin" called', async () => {
-    const wrapper = await createWrapper()
+  it('should redirect if user is already authorized', async () => {
+    localStorage.setItem('myreader-security', '{"authorized": true}')
+    renderComponent()
 
-    await act(async () => {
-      await wrapper.find('LoginForm').props().onLogin('expected-password')
-    })
-
-    expect(authenticationApi.login).toHaveBeenCalledWith('expected-password')
+    expect(history.action).toEqual('POP')
+    expect(history.location.pathname).toEqual('/')
   })
 
-  it('should not redirect to entries page when user is not authorized', async () => {
-    const wrapper = await createWrapper()
+  it('should disabled password input and login button if authentication request is still pending', async () => {
+    fetch.responsePending()
+    renderComponent()
 
-    expect(wrapper.find('Redirect').exists()).toEqual(false)
+    fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
+    await act(async () => fireEvent.click(screen.getByText('Login')))
+
+    expect(screen.getByLabelText('Password')).toBeDisabled()
+    expect(screen.getByText('Login')).toBeDisabled()
   })
 
-  it('should redirect to entries page when user is authorized', async () => {
-    useSecurity.mockReturnValue({
-      authorized: true
-    })
+  it('should show error message if password is wrong', async () => {
+    fetch.rejectResponse()
+    renderComponent()
 
-    const wrapper = await createWrapper()
+    fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
+    await act(async () => fireEvent.click(screen.getByText('Login')))
 
-    expect(wrapper.find('Redirect').prop('to')).toEqual('/app/entries')
+    expect(screen.getByText('password wrong')).toBeInTheDocument()
   })
 
-  it('should set prop "loginPending" to true when prop function "onLogin" called', async () => {
-    const wrapper = await createWrapper(pending())
-    act(() => {
-      wrapper.find('LoginForm').props().onLogin({})
-    })
-    wrapper.update()
+  it('should enable password input and login button if authentication request failed', async () => {
+    fetch.rejectResponse()
+    renderComponent()
 
-    expect(wrapper.find('LoginForm').props()).toEqual(expect.objectContaining({
-      loginPending: true,
-      loginFailed: false
-    }))
+    fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
+    await act(async () => fireEvent.click(screen.getByText('Login')))
+
+    expect(screen.getByLabelText('Password')).toBeEnabled()
+    expect(screen.getByText('Login')).toBeEnabled()
   })
 
-  it('should set prop "loginPending" to false when authenticationApi.login succeeded', async () => {
-    const wrapper = await createWrapper()
-    await act(async () => {
-      await wrapper.find('LoginForm').props().onLogin({})
-    })
-    await flushPromises()
-    wrapper.update()
+  it('should show version and commit id', () => {
+    document.head.dataset.buildVersion = 'expected version'
+    document.head.dataset.buildCommitId = 'expected commit id'
 
-    expect(wrapper.find('LoginForm').props()).toEqual(expect.objectContaining({
-      loginPending: false,
-      loginFailed: false
-    }))
-  })
+    renderComponent()
 
-  it('should not set prop "loginFailed" to true when authenticationApi.login succeeded', async () => {
-    const wrapper = await createWrapper(rejected())
-    await act(async () => {
-      await wrapper.find('LoginForm').props().onLogin({})
-    })
-    await flushPromises()
-    wrapper.update()
-
-    expect(wrapper.find('LoginForm').props()).toEqual(expect.objectContaining({
-      loginPending: false,
-      loginFailed: true
-    }))
-  })
-
-  it('should set prop "loginFailed" to true when authenticationApi.login failed', async () => {
-    const wrapper = await createWrapper(rejected())
-    authenticationApi.login = rejected()
-    await act(async () => {
-      await wrapper.find('LoginForm').props().onLogin({})
-    })
-    await flushPromises()
-    wrapper.update()
-
-    expect(wrapper.find('LoginForm').props()).toEqual(expect.objectContaining({
-      loginPending: false,
-      loginFailed: true
-    }))
-  })
-
-  it('should trigger prop function "doAuthorize" when login succeeded', async () => {
-    const doAuthorize = jest.fn()
-    useSecurity.mockReturnValue({
-      authorized: false,
-      doAuthorize,
-    })
-
-    const wrapper = await createWrapper()
-    act(() => {
-      wrapper.find('LoginForm').props().onLogin({})
-    })
-    await act(async () => {
-      await flushPromises()
-    })
-    wrapper.mount()
-    wrapper.update()
-
-    expect(doAuthorize).toHaveBeenCalledWith()
+    expect(screen.getByText('expected version')).toBeInTheDocument()
+    expect(screen.getByText('expected commit id')).toBeInTheDocument()
   })
 })
