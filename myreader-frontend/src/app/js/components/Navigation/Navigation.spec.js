@@ -1,128 +1,121 @@
 import React from 'react'
-import {mount} from 'enzyme'
-import Navigation from './Navigation'
-import NavigationItem from './NavigationItem'
-import {
-  BOOKMARK_URL, LOGOUT_URL,
-  SETTINGS_URL,
-  SUBSCRIPTION_ADD_URL,
-  SUBSCRIPTIONS_URL
-} from '../../constants'
-import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
-import {useSettings} from '../../contexts/settings'
+import {Router} from 'react-router'
+import {createMemoryHistory} from 'history'
+import {act, fireEvent, render, screen} from '@testing-library/react'
+import {Navigation} from './Navigation'
+import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
+import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 
-/* eslint-disable react/prop-types */
-jest.mock('./SubscriptionNavigation/SubscriptionNavigationItem', () => ({
-  SubscriptionNavigationItem: () => null
-}))
-
-jest.mock('../../contexts/settings', () => ({
-  useSettings: jest.fn()
-}))
-/* eslint-enable */
-
-class NavigationPage {
-
-  constructor(wrapper) {
-    this.wrapper = wrapper
-  }
-
-  get navigationItems() {
-    return this.wrapper.find('ul').children()
-  }
-
-  get navigationItemLabels() {
-    return this.navigationItems.reduce((acc, item) => {
-      if (item.type() === NavigationItem) {
-        return [...acc, item.prop('title')]
-      }
-      return [...acc, item.prop('item').title]
-    }, [])
-  }
-
-  get navigationItemRoute() {
-    return this.navigationItems.reduce((acc, item) => {
-      return item.prop('to') ? [...acc, item.prop('to')] : acc
-    }, [])
-  }
-}
+jest.unmock('react-router')
+jest.unmock('react-router-dom')
 
 describe('Navigation', () => {
 
-  let props, value
+  let props, history
 
-  const createWrapper = () => new NavigationPage(
-    mount(
-      <SubscriptionContext.Provider value={value}>
-        <Navigation {...props} />
-      </SubscriptionContext.Provider>
-    )
-  )
+  const renderComponent = async () => {
+    return await act(async () => {
+      return await render(
+        <Router history={history}>
+          <SettingsProvider>
+            <SubscriptionProvider>
+              <Navigation {...props} />
+            </SubscriptionProvider>
+          </SettingsProvider>
+        </Router>
+      )
+    })
+  }
 
   beforeEach(() => {
-    useSettings.mockReturnValue({
-      showUnseenEntries: false,
-    })
+    history = createMemoryHistory()
+
+    localStorage.setItem('myreader-settings', '{"showUnseenEntries": false}')
 
     props = {
       onClick: jest.fn()
     }
 
-    value = {
-      subscriptions: [
+    fetch.jsonResponse({
+      content: [
         {title: 'subscription 1', uuid: '1', tag: 'group 1', unseen: 2},
-        {title: 'subscription 2', uuid: '2', tag: 'group 2', unseen: 1},
+        {title: 'subscription 2', uuid: '2', tag: 'group 2', unseen: 0},
         {title: 'subscription 3', uuid: '3', tag: null, unseen: 0}
       ]
-    }
+    })
   })
 
-  it('should render navigation labels', () => {
-    const page = createWrapper()
+  it('should render navigation labels', async () => {
+    await renderComponent()
 
-    expect(page.navigationItemLabels).toEqual([
-      'all',
-      'group 1',
-      'group 2',
-      'subscription 3',
-      'Subscriptions',
-      'Bookmarks',
-      'Settings',
-      'Add subscription',
-      'Logout'
-    ])
+    expect(screen.getByText('all')).toBeInTheDocument()
+    expect(screen.getByText('group 1')).toBeInTheDocument()
+    expect(screen.getByText('group 2')).toBeInTheDocument()
+    expect(screen.getByText('subscription 3')).toBeInTheDocument()
+    expect(screen.getByText('Subscriptions')).toBeInTheDocument()
+    expect(screen.getByText('Settings')).toBeInTheDocument()
+    expect(screen.getByText('Add subscription')).toBeInTheDocument()
+    expect(screen.getByText('Logout')).toBeInTheDocument()
   })
 
-  it('should render expected routes', () => {
-    expect(createWrapper().navigationItemRoute).toEqual([
-      SUBSCRIPTIONS_URL,
-      BOOKMARK_URL,
-      SETTINGS_URL,
-      SUBSCRIPTION_ADD_URL,
-      LOGOUT_URL
-    ])
+  it('should navigate to route if clicked on navigation item', async () => {
+    await renderComponent()
+
+    fireEvent.click(screen.getByText('all'))
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/app/entries')
+    expect(history.location.search).toEqual('')
+
+    fireEvent.click(screen.getByText('group 1'))
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/app/entries')
+    expect(history.location.search).toEqual('?feedTagEqual=group 1')
+
+    fireEvent.click(screen.getByText('group 2'))
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/app/entries')
+    expect(history.location.search).toEqual('?feedTagEqual=group 2')
+
+    fireEvent.click(screen.getByText('subscription 3'))
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/app/entries')
+    expect(history.location.search).toEqual('?feedUuidEqual=3')
+
+    fireEvent.click(screen.getByText('Subscriptions'))
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/app/subscriptions')
+    expect(history.location.search).toEqual('')
+
+    fireEvent.click(screen.getByText('Settings'))
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/app/settings')
+    expect(history.location.search).toEqual('')
+    fireEvent.click(screen.getByText('Add subscription'))
+
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/app/addSubscription')
+    expect(history.location.search).toEqual('')
+    fireEvent.click(screen.getByText('Logout'))
+
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/app/logout')
+    expect(history.location.search).toEqual('')
+
+    expect(props.onClick).toHaveBeenCalledTimes(8)
   })
 
-  it('should trigger prop function "onClick" on each navigation item click', () => {
-    const wrapper = createWrapper()
-    wrapper.navigationItems.forEach(item => item.invoke('onClick')())
+  it('should render navigation items with subscriptions.unseen > 0', async () => {
+    localStorage.setItem('myreader-settings', '{"showUnseenEntries": true}')
 
-    expect(props.onClick).toHaveBeenCalledTimes(9)
-  })
+    await renderComponent()
 
-  it('should render navigation with subscriptions.unseen > 0', () => {
-    useSettings.mockReturnValue({showUnseenEntries: true})
-    const page = createWrapper()
-
-    expect(page.navigationItemLabels).toEqual([
-      'all',
-      'group 1',
-      'group 2',
-      'Subscriptions',
-      'Bookmarks',
-      'Settings',
-      'Add subscription',
-      'Logout'
-    ])
+    expect(screen.getByText('all')).toBeInTheDocument()
+    expect(screen.getByText('group 1')).toBeInTheDocument()
+    expect(screen.queryByText('group 2')).not.toBeInTheDocument()
+    expect(screen.queryByText('subscription 3')).not.toBeInTheDocument()
+    expect(screen.getByText('Subscriptions')).toBeInTheDocument()
+    expect(screen.getByText('Settings')).toBeInTheDocument()
+    expect(screen.getByText('Add subscription')).toBeInTheDocument()
+    expect(screen.getByText('Logout')).toBeInTheDocument()
   })
 })

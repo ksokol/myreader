@@ -1,7 +1,7 @@
 import './SubscriptionNavigationItem.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {NavigationItem} from '..'
+import NavigationItem from '../NavigationItem'
 import {ENTRIES_URL} from '../../../constants'
 import {useSearchParams} from '../../../hooks/router'
 

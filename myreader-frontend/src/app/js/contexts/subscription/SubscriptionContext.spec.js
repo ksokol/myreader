@@ -1,195 +1,200 @@
-import React from 'react'
-import {mount} from 'enzyme'
+import React, {useContext} from 'react'
+import {act, fireEvent, render, screen} from '@testing-library/react'
 import {SubscriptionProvider} from './SubscriptionProvider'
+import {api} from '../../api'
+import {SUBSCRIPTION_ENTRIES} from '../../constants'
 import SubscriptionContext from './SubscriptionContext'
-import {subscriptionApi} from '../../api'
-import {toast} from '../../components/Toast'
-import {flushPromises, rejected, resolved} from '../../shared/test-utils'
-import {SubscriptionProviderInterceptor} from './SubscriptionProviderInterceptor'
 
-/* eslint-disable react/prop-types */
-jest.mock('../locationState/withLocationState', () => ({
-  withLocationState: Component => Component
-}))
+function TestComponent() {
+  const {subscriptions, fetchSubscriptions} = useContext(SubscriptionContext)
 
-jest.mock('../../api', () => ({
-  subscriptionApi: {}
-}))
-
-jest.mock('../../components/Toast', () => ({
-  toast: jest.fn()
-}))
-
-jest.mock('./SubscriptionProviderInterceptor', () => ({
-  SubscriptionProviderInterceptor: jest.fn()
-}))
-/* eslint-enable */
-
-class TestComponent extends React.Component {
-  static contextType = SubscriptionContext
-  render = () => 'expected component'
+  return (
+    <>
+      <div role='fetch' onClick={fetchSubscriptions}/>
+      subscriptions: {JSON.stringify(subscriptions)}
+    </>
+  )
 }
 
 const expectedError = 'expected error'
 
 describe('subscription context', () => {
 
-  let props, subscriptions
+  let props
 
-  const createWrapper = async (onMount = resolved(subscriptions)) => {
-    subscriptionApi.fetchSubscriptions = onMount
-    const wrapper = mount(
+  const renderComponent = () => {
+    return render(
       <SubscriptionProvider {...props}>
-        <TestComponent />
+        <TestComponent/>
       </SubscriptionProvider>
     )
-    await flushPromises()
-    wrapper.update()
-    return wrapper
   }
 
   beforeEach(() => {
-    toast.mockClear()
-    SubscriptionProviderInterceptor.mockClear()
-    subscriptionApi.addInterceptor = jest.fn()
-    subscriptionApi.removeInterceptor = jest.fn()
-
-    subscriptions = [
-      {uuid: '1', unseen: 3},
-      {uuid: '2', unseen: 2}
-    ]
-
-    props = {
-      locationStateStamp: 0
-    }
+    fetch.jsonResponse({
+      content: [
+        {uuid: '1', unseen: 3},
+        {uuid: '2', unseen: 2}
+      ]
+    })
   })
 
   it('should render children', async () => {
-    const wrapper = await createWrapper()
-    expect(wrapper.find(TestComponent).html()).toEqual('expected component')
+    renderComponent()
+
+    expect(screen.getByText('subscriptions: []')).toBeInTheDocument()
   })
 
   it('should contain expected context values in child component when subscriptionApi.fetchSubscriptions succeeded', async () => {
-    const wrapper = await createWrapper()
+    renderComponent()
+    await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual({
-      subscriptions: [
-        {uuid: '1', unseen: 3},
-        {uuid: '2', unseen: 2}
+    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
+  })
+
+  it('should replace subscriptions if fethSubscriptions called again', async () => {
+    renderComponent()
+
+    await act(async () => fireEvent.click(screen.getByRole('fetch')))
+    fetch.jsonResponse({
+      content: [
+        {uuid: '3', unseen: 4}
       ]
     })
+
+    await act(async () => fireEvent.click(screen.getByRole('fetch')))
+
+    expect(screen.getByText('subscriptions: [{"uuid":"3","unseen":4}]')).toBeInTheDocument()
   })
 
   it('should contain empty context value in child component when subscriptionApi.fetchSubscriptions succeeded', async () => {
-    await createWrapper(rejected({data: expectedError}))
+    fetch.rejectResponse({data: expectedError})
 
-    expect(toast).toHaveBeenCalledWith('expected error', {error: true})
-  })
+    renderComponent()
+    await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-  it('should contain expected context values in child component when prop "locationStateStamp" changed and subscriptionApi.fetchSubscriptions succeeded', async () => {
-    const wrapper = await createWrapper()
-    subscriptionApi.fetchSubscriptions = resolved([{uuid: '3'}])
-    wrapper.setProps({locationStateStamp: 1})
-    await flushPromises()
-    wrapper.update()
-
-    expect(wrapper.find(TestComponent).instance().context).toEqual({
-      subscriptions: [
-        {uuid: '3'}
-      ]
-    })
+    expect(screen.getByRole('dialog-error-message')).toHaveTextContent(expectedError)
   })
 
   it('should contain expected context values in child component when prop "locationStateStamp" changed and subscriptionApi.fetchSubscriptions failed', async () => {
-    const wrapper = await createWrapper()
-    subscriptionApi.fetchSubscriptions = rejected(expectedError)
-    wrapper.setProps({locationStateStamp: 1})
-    await flushPromises()
-    wrapper.update()
+    renderComponent()
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual({
-      subscriptions: [
-        {uuid: '1', unseen: 3},
-        {uuid: '2', unseen: 2}
-      ]
-    })
-  })
+    await act(async () => fireEvent.click(screen.getByRole('fetch')))
+    fetch.rejectResponse({data: expectedError})
+    await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-  it('should trigger toast when prop "locationStateStamp" changed and subscriptionApi.fetchSubscriptions failed', async () => {
-    const wrapper = await createWrapper()
-    subscriptionApi.fetchSubscriptions = rejected({data: expectedError})
-    wrapper.setProps({locationStateStamp: 1})
-    await flushPromises()
-    wrapper.update()
-
-    expect(toast).toHaveBeenCalledWith(expectedError, {error: true})
+    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
   })
 
   it('should decrease subscription unseen count', async () => {
-    const wrapper = await createWrapper()
-    SubscriptionProviderInterceptor.mock.calls[0][0](
-      {feedUuid: '1', unseen: 3, seen: true},
-      {feedUuid: '1', unseen: 2, seen: false}
-    )
+    renderComponent()
+    await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual({
-      subscriptions: [
-        {uuid: '1', unseen: 2},
-        {uuid: '2', unseen: 2}
-      ]
+    fetch.jsonResponse({
+      uuid: '1',
+      feedUuid: '1',
+      seen: true
     })
+
+    await act(async () => {
+      return await api.request({
+        method: 'PATCH',
+        url: `${SUBSCRIPTION_ENTRIES}/10`,
+        body: {seen: true},
+        context: {
+          oldValue: {
+            uuid: '10',
+            feedUuid: '1',
+            seen: false
+          }
+        }
+      })
+    })
+
+    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":2},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
   })
 
   it('should increase subscription unseen count', async () => {
-    const wrapper = await createWrapper()
-    SubscriptionProviderInterceptor.mock.calls[0][0](
-      {feedUuid: '1', unseen: 3, seen: false},
-      {feedUuid: '1', unseen: 2, seen: true}
-    )
+    renderComponent()
+    await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual({
-      subscriptions: [
-        {uuid: '1', unseen: 4},
-        {uuid: '2', unseen: 2}
-      ]
+    fetch.jsonResponse({
+      uuid: '1',
+      feedUuid: '1',
+      seen: false
     })
+
+    await act(async () => {
+      return await api.request({
+        method: 'PATCH',
+        url: `${SUBSCRIPTION_ENTRIES}/10`,
+        body: {seen: true},
+        context: {
+          oldValue: {
+            uuid: '10',
+            feedUuid: '1',
+            seen: true
+          }
+        }
+      })
+    })
+
+    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":4},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
   })
 
   it('should do nothing when seen flag does not changed', async () => {
-    const wrapper = await createWrapper()
-    SubscriptionProviderInterceptor.mock.calls[0][0](
-      {feedUuid: '1', unseen: 3, seen: false},
-      {feedUuid: '1', unseen: 2, seen: false}
-    )
+    renderComponent()
+    await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual({
-      subscriptions: [
-        {uuid: '1', unseen: 3},
-        {uuid: '2', unseen: 2}
-      ]
+    fetch.jsonResponse({
+      uuid: '1',
+      feedUuid: '1',
+      seen: false
     })
+
+    await act(async () => {
+      return await api.request({
+        method: 'PATCH',
+        url: `${SUBSCRIPTION_ENTRIES}/10`,
+        body: {seen: true},
+        context: {
+          oldValue: {
+            uuid: '10',
+            feedUuid: '1',
+            seen: false
+          }
+        }
+      })
+    })
+
+    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
   })
 
   it('should do nothing when subscription is not available', async () => {
-    const wrapper = await createWrapper()
-    SubscriptionProviderInterceptor.mock.calls[0][0](
-      {feedUuid: '3', unseen: 3, seen: true},
-      {feedUuid: '3', unseen: 2, seen: false}
-    )
+    renderComponent()
+    await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(wrapper.find(TestComponent).instance().context).toEqual({
-      subscriptions: [
-        {uuid: '1', unseen: 3},
-        {uuid: '2', unseen: 2}
-      ]
+    fetch.jsonResponse({
+      uuid: '1',
+      feedUuid: '10',
+      seen: false
     })
+
+    await act(async () => {
+      return await api.request({
+        method: 'PATCH',
+        url: `${SUBSCRIPTION_ENTRIES}/10`,
+        body: {seen: true},
+        context: {
+          oldValue: {
+            uuid: '10',
+            feedUuid: '10',
+            seen: false
+          }
+        }
+      })
+    })
+
+    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
   })
-
-  it('should remove interceptor on unmount', async () => {
-    const wrapper = await createWrapper()
-    wrapper.unmount()
-
-    expect(subscriptionApi.removeInterceptor.mock.calls[0][0]).toBeInstanceOf(SubscriptionProviderInterceptor)
-  })
-
 })

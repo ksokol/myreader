@@ -4,7 +4,7 @@ import {Router, Route, Switch} from 'react-router-dom'
 import {createMemoryHistory} from 'history'
 import iro from '@jaames/iro'
 import {SubscriptionEditPage} from './SubscriptionEditPage'
-import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
+import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
 
 jest.unmock('react-router')
 jest.unmock('react-router-dom')
@@ -46,7 +46,7 @@ describe('SubscriptionEditPage', () => {
     await act(async () => {
       render(
         <Router history={history}>
-          <LocationStateProvider>
+          <SubscriptionProvider>
             <Switch>
               <Route
                 exact={true}
@@ -54,7 +54,7 @@ describe('SubscriptionEditPage', () => {
                 component={SubscriptionEditPage}
               />
             </Switch>
-          </LocationStateProvider>
+          </SubscriptionProvider>
         </Router>
       )
     })
@@ -129,7 +129,7 @@ describe('SubscriptionEditPage', () => {
 
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(fetch.mostRecent()).toMatchPatchRequest({
+    expect(fetch.nthRequest(2)).toMatchPatchRequest({
       url: 'api/2/subscriptions/1',
       body: {
         uuid: '1',
@@ -171,13 +171,14 @@ describe('SubscriptionEditPage', () => {
   })
 
   it('should reload if subscription has been saved', async() => {
-    const {reload} = jest.requireMock('../../hooks/router').mock
     await renderComponent()
 
     fetch.jsonResponseOnce(subscription)
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(reload).toHaveBeenCalledWith()
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptions'
+    })
   })
 
   it('should show url validation message', async() => {
@@ -233,14 +234,15 @@ describe('SubscriptionEditPage', () => {
   })
 
   it('should reload if subscription has been removed', async() => {
-    const {reload} = jest.requireMock('../../hooks/router').mock
     await renderComponent()
 
     fetch.jsonResponseOnce({status: 204})
     await act(async () => fireEvent.click(screen.getByText('Delete')))
     await act(async () => fireEvent.click(screen.getByText('Yes')))
 
-    expect(reload).toHaveBeenCalledWith()
+    expect(fetch.nthRequest(2)).toMatchDeleteRequest({
+      url: 'api/2/subscriptions/1'
+    })
   })
 
   it('should disable save and delete buttons if subscription is still removing', async () => {
@@ -324,7 +326,7 @@ describe('SubscriptionEditPage', () => {
 
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(fetch.mostRecent()).toMatchPatchRequest({
+    expect(fetch.nthRequest(2)).toMatchPatchRequest({
       url: 'api/2/subscriptions/1',
       body: {
         uuid: '1',

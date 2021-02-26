@@ -1,5 +1,5 @@
 import './Navigation.css'
-import React from 'react'
+import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import createSubscriptionNavigation from './SubscriptionNavigation/createSubscriptionNavigation'
 import NavigationItem from './NavigationItem'
@@ -11,14 +11,22 @@ import {
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
 } from '../../constants'
-import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 import {useSettings} from '../../contexts/settings'
+import {useSubscriptions} from '../../hooks/subscriptions'
 
-const Navigation = props => {
+export function Navigation(props) {
   const {
-    subscriptions,
     onClick
   } = props
+
+  const {
+    subscriptions,
+    fetchSubscriptions
+  } = useSubscriptions()
+
+  useEffect(() => {
+    fetchSubscriptions()
+  }, [fetchSubscriptions])
 
   const {showUnseenEntries} = useSettings()
 
@@ -74,16 +82,5 @@ const Navigation = props => {
 }
 
 Navigation.propTypes = {
-  subscriptions: PropTypes.arrayOf(PropTypes.any),
   onClick: PropTypes.func.isRequired
 }
-
-export default (
-  props => (
-    <SubscriptionContext.Consumer>
-      {({subscriptions}) => (
-        <Navigation {...props} subscriptions={subscriptions}/>
-      )}
-    </SubscriptionContext.Consumer>
-  )
-)

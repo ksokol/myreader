@@ -54,12 +54,6 @@ function reducer(state, action) {
       links: {}
     }
   }
-  case 'clear_entry_tags': {
-    return {
-      ...state,
-      entryTags: [],
-    }
-  }
   case 'loading': {
     return {
       ...state,
@@ -183,10 +177,6 @@ export function useEntries() {
     dispatch({type: 'clear_entries'})
   }, [])
 
-  const clearEntryTags = useCallback(() => {
-    dispatch({type: 'clear_entryTags'})
-  }, [])
-
   return {
     entries: state.entries,
     entryTags: state.entryTags,
@@ -199,6 +189,5 @@ export function useEntries() {
     setSeenFlag,
     toggleSeenFlag,
     clearEntries,
-    clearEntryTags,
   }
 }

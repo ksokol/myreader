@@ -7,12 +7,12 @@ import {ListLayout} from '../../components/ListLayout/ListLayout'
 import {BOOKMARK_URL} from '../../constants'
 import {toast} from '../../components/Toast'
 import IconButton from '../../components/Buttons/IconButton/IconButton'
-import {useHistory, useSearchParams} from '../../hooks/router'
+import {useSearchParams} from '../../hooks/router'
 import {useEntries} from '../../hooks/entries'
+import {useSubscriptions} from '../../hooks/subscriptions'
 
 export function BookmarkListPage() {
   const searchParams = useSearchParams()
-  const {reload} = useHistory()
 
   const query = useMemo(() => {
     const seenEqual = searchParams.entryTagEqual ? undefined : true
@@ -30,16 +30,18 @@ export function BookmarkListPage() {
     fetchEntryTags,
     changeEntry,
     clearEntries,
-    clearEntryTags,
   } = useEntries()
+
+  const {
+    fetchSubscriptions
+  } = useSubscriptions()
 
   const refresh = () => {
     if (!loading) {
       clearEntries()
-      clearEntryTags()
       fetchEntryTags()
       fetchEntries({query})
-      reload()
+      fetchSubscriptions()
     }
   }
 

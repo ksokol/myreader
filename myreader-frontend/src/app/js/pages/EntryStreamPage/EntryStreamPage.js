@@ -4,15 +4,15 @@ import {IconButton} from '../../components'
 import {useAutofocusEntry} from './useAutofocusEntry'
 import {useSettings} from '../../contexts/settings'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
-import {useHistory, useSearchParams} from '../../hooks/router'
+import {useSearchParams} from '../../hooks/router'
 import {EntryList} from '../../components/EntryList/EntryList'
 import {useEntries} from '../../hooks/entries'
 import {toast} from '../../components/Toast'
+import {useSubscriptions} from '../../hooks/subscriptions'
 
 export function EntryStreamPage() {
   const {showUnseenEntries} = useSettings()
   const searchParams = useSearchParams()
-  const {reload} = useHistory()
 
   const query = useMemo(() => {
     const showAll = showUnseenEntries === true ? false : undefined
@@ -33,6 +33,10 @@ export function EntryStreamPage() {
   } = useEntries()
 
   const {
+    fetchSubscriptions
+  } = useSubscriptions()
+
+  const {
     entryInFocusUuid,
     setEntries,
     focusNext,
@@ -43,7 +47,7 @@ export function EntryStreamPage() {
     if (!loading) {
       clearEntries()
       fetchEntries({query})
-      reload()
+      fetchSubscriptions()
     }
   }
 

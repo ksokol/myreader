@@ -7,6 +7,7 @@ import {LoginPage} from './LoginPage'
 import {SecurityProvider} from '../../contexts/security/SecurityProvider'
 
 jest.unmock('react-router')
+jest.unmock('react-router-dom')
 
 describe('LoginPage', () => {
 
@@ -48,16 +49,16 @@ describe('LoginPage', () => {
     fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
 
-    expect(history.action).toEqual('POP')
-    expect(history.location.pathname).toEqual('/')
+    expect(history.action).toEqual('REPLACE')
+    expect(history.location.pathname).toEqual('/app/entries')
   })
 
   it('should redirect if user is already authorized', async () => {
     localStorage.setItem('myreader-security', '{"authorized": true}')
     renderComponent()
 
-    expect(history.action).toEqual('POP')
-    expect(history.location.pathname).toEqual('/')
+    expect(history.action).toEqual('REPLACE')
+    expect(history.location.pathname).toEqual('/app/entries')
   })
 
   it('should disabled password input and login button if authentication request is still pending', async () => {

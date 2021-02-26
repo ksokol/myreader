@@ -2,13 +2,56 @@ import React from 'react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
 import {render, fireEvent, screen, act} from '@testing-library/react'
-import {entry1, entry2, entry3, entry4} from '../../shared/test-utils'
 import {BookmarkListPage} from './BookmarkListPage'
-import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
+import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
 
 jest.unmock('react-router')
 jest.unmock('react-router-dom')
+
+const entry1 = Object.freeze({
+  uuid: '1',
+  title: 'title1',
+  feedTitle: 'expected feedTitle1',
+  tags: ['expected tag1'],
+  origin: 'expected origin1',
+  seen: false,
+  createdAt: 'expected createdAt',
+  content: 'expected content1',
+})
+
+const entry2 = Object.freeze({
+  uuid: '2',
+  title: 'title2',
+  feedTitle: 'expected feedTitle2',
+  tags: ['expected tag2'],
+  origin: 'expected origin2',
+  seen: false,
+  createdAt: 'expected createdAt2',
+  content: 'expected content2',
+})
+
+const entry3 = Object.freeze({
+  uuid: '3',
+  title: 'title3',
+  feedTitle: 'expected feedTitle3',
+  tags: ['expected tag3'],
+  origin: 'expected origin3',
+  seen: false,
+  createdAt: 'expected createdAt3',
+  content: 'expected content3',
+})
+
+const entry4 = Object.freeze({
+  uuid: '4',
+  title: 'title4',
+  feedTitle: 'expected feedTitle4',
+  tags: ['expected tag4'],
+  origin: 'expected origin4',
+  seen: false,
+  createdAt: 'expected createdAt4',
+  content: 'expected content4',
+})
 
 const expectedError = 'expected error'
 
@@ -22,11 +65,11 @@ describe('BookmarkListPage', () => {
         <>
           <div id='portal-header' />
           <Router history={history}>
-            <LocationStateProvider>
+            <SubscriptionProvider>
               <SettingsProvider>
                 <BookmarkListPage />
               </SettingsProvider>
-            </LocationStateProvider>
+            </SubscriptionProvider>
           </Router>
         </>
       )
@@ -38,7 +81,7 @@ describe('BookmarkListPage', () => {
 
     localStorage.setItem('myreader-settings', '{"showUnseenEntries": false}')
 
-    fetch.jsonResponseOnce(['expected tag1', 'expected tag2'])
+    fetch.jsonResponseOnce(['expected tag1', 'expected tag2', 'expected tag3', 'expected tag4'])
     fetch.jsonResponseOnce({
       content: [{...entry1}, {...entry2}],
       next: 'http://localhost/test?nextpage',
@@ -48,8 +91,10 @@ describe('BookmarkListPage', () => {
   it('should render expected entry tags as chips', async () => {
     await renderComponent()
 
-    expect(screen.getAllByRole('chip')[0]).toHaveTextContent('expected tag1')
-    expect(screen.getAllByRole('chip')[1]).toHaveTextContent('expected tag2')
+    expect(screen.queryByText('expected tag1')).toBeInTheDocument()
+    expect(screen.queryByText('expected tag2')).toBeInTheDocument()
+    expect(screen.queryByText('expected tag3')).toBeInTheDocument()
+    expect(screen.queryByText('expected tag4')).toBeInTheDocument()
   })
 
   it('should render expected entry tag as selected chip', async () => {
@@ -154,16 +199,24 @@ describe('BookmarkListPage', () => {
   it('should reload content on page when refresh icon button clicked', async () => {
     await renderComponent()
 
-    fetch.jsonResponseOnce(['expected tag1', 'expected tag2'])
+    fetch.jsonResponseOnce(['expected tag5'])
     fetch.jsonResponseOnce({content: [{...entry2}, {...entry3}], next: null,})
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true',
+      url: 'api/2/subscriptions'
+    })
+    expect(fetch.nthRequest(2)).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true'
     })
     expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
     expect(screen.queryByTitle('title3')).toBeInTheDocument()
+    expect(screen.queryByText('expected tag1')).not.toBeInTheDocument()
+    expect(screen.queryByText('expected tag2')).not.toBeInTheDocument()
+    expect(screen.queryByText('expected tag3')).not.toBeInTheDocument()
+    expect(screen.queryByText('expected tag4')).not.toBeInTheDocument()
+    expect(screen.queryByText('expected tag5')).toBeInTheDocument()
   })
 
   it('should reload content on page once if refresh icon button clicked twice', async () => {
@@ -178,12 +231,15 @@ describe('BookmarkListPage', () => {
       fireEvent.click(screen.getByRole('refresh'))
     })
 
-    expect(fetch.requestCount()).toEqual(2)
-    expect(fetch.first()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries/availableTags',
-    })
+    expect(fetch.requestCount()).toEqual(3)
     expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptions'
+    })
+    expect(fetch.nthRequest(2)).toMatchGetRequest({
       url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true',
+    })
+    expect(fetch.nthRequest(3)).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries/availableTags',
     })
   })
 

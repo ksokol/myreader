@@ -3,12 +3,14 @@ import {mount} from 'enzyme'
 import {SidenavLayout} from './SidenavLayout'
 import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
 
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types, react/display-name */
 jest.mock('../Backdrop/Backdrop', () => ({
   Backdrop: () => null
 }))
 
-jest.mock('../Navigation/Navigation', () => props => <div className='navigation' {...props} />)
+jest.mock('../Navigation/Navigation', () => ({
+  Navigation: props => <div className='navigation' {...props} />
+}))
 
 jest.mock('../../contexts/mediaBreakpoint', () => ({
   useMediaBreakpoint: jest.fn()

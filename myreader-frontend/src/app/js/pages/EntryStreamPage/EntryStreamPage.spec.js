@@ -4,10 +4,53 @@ import {createMemoryHistory} from 'history'
 import {render, fireEvent, screen, act} from '@testing-library/react'
 import {EntryStreamPage} from './EntryStreamPage'
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
-import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
-import {entry1, entry2, entry3, entry4} from '../../shared/test-utils'
+import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
 
 jest.unmock('react-router')
+
+const entry1 = Object.freeze({
+  uuid: '1',
+  title: 'title1',
+  feedTitle: 'expected feedTitle1',
+  tags: ['expected tag1'],
+  origin: 'expected origin1',
+  seen: false,
+  createdAt: 'expected createdAt',
+  content: 'expected content1',
+})
+
+const entry2 = Object.freeze({
+  uuid: '2',
+  title: 'title2',
+  feedTitle: 'expected feedTitle2',
+  tags: ['expected tag2'],
+  origin: 'expected origin2',
+  seen: false,
+  createdAt: 'expected createdAt2',
+  content: 'expected content2',
+})
+
+const entry3 = Object.freeze({
+  uuid: '3',
+  title: 'title3',
+  feedTitle: 'expected feedTitle3',
+  tags: ['expected tag3'],
+  origin: 'expected origin3',
+  seen: false,
+  createdAt: 'expected createdAt3',
+  content: 'expected content3',
+})
+
+const entry4 = Object.freeze({
+  uuid: '4',
+  title: 'title4',
+  feedTitle: 'expected feedTitle4',
+  tags: ['expected tag4'],
+  origin: 'expected origin4',
+  seen: false,
+  createdAt: 'expected createdAt4',
+  content: 'expected content4',
+})
 
 async function clickButtonPrevious() {
   return act(async () => fireEvent.click(screen.getByRole('previous')))
@@ -41,13 +84,13 @@ describe('EntryStreamPage', () => {
     await act(async () => {
       render(
         <>
-          <div id='portal-header' />
+          <div id='portal-header'/>
           <Router history={history}>
-            <LocationStateProvider>
+            <SubscriptionProvider>
               <SettingsProvider>
-                <EntryStreamPage />
+                <EntryStreamPage/>
               </SettingsProvider>
-            </LocationStateProvider>
+            </SubscriptionProvider>
           </Router>
         </>
       )
@@ -67,7 +110,7 @@ describe('EntryStreamPage', () => {
 
     fetch.jsonResponse({
       content: [{...entry1}, {...entry2}],
-      next: 'http://localhost/test?nextpage',
+      next: 'http://localhost/test?nextpage'
     })
   })
 
@@ -75,7 +118,7 @@ describe('EntryStreamPage', () => {
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?feedTagEqual=a'
     })
   })
 
@@ -89,7 +132,7 @@ describe('EntryStreamPage', () => {
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?seenEqual=true',
+      url: 'api/2/subscriptionEntries?seenEqual=true'
     })
   })
 
@@ -102,7 +145,7 @@ describe('EntryStreamPage', () => {
     })
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=true',
+      url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=true'
     })
   })
 
@@ -119,8 +162,8 @@ describe('EntryStreamPage', () => {
         url: entry1Url,
         body: {
           seen: true,
-          tags: entry1.tags,
-        },
+          tags: entry1.tags
+        }
       })
 
       fetch.jsonResponseOnce({...entry2, seen: true})
@@ -131,8 +174,8 @@ describe('EntryStreamPage', () => {
         url: entry2Url,
         body: {
           seen: true,
-          tags: entry2.tags,
-        },
+          tags: entry2.tags
+        }
       })
     })
 
@@ -147,8 +190,8 @@ describe('EntryStreamPage', () => {
         url: entry1Url,
         body: {
           seen: true,
-          tags: entry1.tags,
-        },
+          tags: entry1.tags
+        }
       })
 
       fetch.jsonResponseOnce({...entry2, seen: true})
@@ -159,8 +202,8 @@ describe('EntryStreamPage', () => {
         url: entry2Url,
         body: {
           seen: true,
-          tags: entry2.tags,
-        },
+          tags: entry2.tags
+        }
       })
     })
 
@@ -256,8 +299,8 @@ describe('EntryStreamPage', () => {
         url: entry2Url,
         body: {
           seen: true,
-          tags: entry2.tags,
-        },
+          tags: entry2.tags
+        }
       })
     })
 
@@ -276,8 +319,8 @@ describe('EntryStreamPage', () => {
         url: entry2Url,
         body: {
           seen: true,
-          tags: entry2.tags,
-        },
+          tags: entry2.tags
+        }
       })
     })
   })
@@ -306,8 +349,8 @@ describe('EntryStreamPage', () => {
         url: entry1Url,
         body: {
           seen: false,
-          tags: ['expected tag1'],
-        },
+          tags: ['expected tag1']
+        }
       })
 
       fetch.jsonResponseOnce({...entry1, seen: true})
@@ -317,8 +360,8 @@ describe('EntryStreamPage', () => {
         url: entry1Url,
         body: {
           seen: true,
-          tags: ['expected tag1'],
-        },
+          tags: ['expected tag1']
+        }
       })
     })
   })
@@ -326,7 +369,7 @@ describe('EntryStreamPage', () => {
   it('should load next page', async () => {
     await renderComponent()
 
-    fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null,})
+    fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null})
     await act(async () => fireEvent.click(screen.getByRole('more')))
 
     expect(screen.queryByTitle('title1')).toBeInTheDocument()
@@ -367,11 +410,14 @@ describe('EntryStreamPage', () => {
   it('should reload content on page when refresh icon button clicked', async () => {
     await renderComponent()
 
-    fetch.jsonResponse({content: [{...entry2}, {...entry3}], next: null,})
+    fetch.jsonResponse({content: [{...entry2}, {...entry3}], next: null})
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?feedTagEqual=a',
+      url: 'api/2/subscriptions'
+    })
+    expect(fetch.nthRequest(2)).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?feedTagEqual=a'
     })
     expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
@@ -391,8 +437,11 @@ describe('EntryStreamPage', () => {
       fireEvent.click(screen.getByRole('refresh'))
     })
 
-    expect(fetch.requestCount()).toEqual(1)
+    expect(fetch.requestCount()).toEqual(2)
     expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptions'
+    })
+    expect(fetch.nthRequest(2)).toMatchGetRequest({
       url: 'api/2/subscriptionEntries?feedTagEqual=a',
     })
   })
@@ -403,7 +452,7 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponseOnce({...entry1, seen: true})
     await clickButtonNext()
 
-    fetch.jsonResponse({content: [{...entry1}, {...entry2}], next: null,})
+    fetch.jsonResponse({content: [{...entry1}, {...entry2}], next: null})
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
     expect(screen.queryByRole('focus')).not.toBeInTheDocument()
@@ -415,7 +464,7 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponseOnce({...entry1, seen: true})
     await clickButtonNext()
 
-    fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null,})
+    fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null})
     await act(async () => fireEvent.click(screen.getByRole('more')))
 
     expect(screen.queryByRole('focus')).toHaveTextContent('title1')

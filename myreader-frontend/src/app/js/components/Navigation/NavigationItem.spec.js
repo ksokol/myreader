@@ -1,5 +1,5 @@
 import React from 'react'
-import {NavigationItem} from '.'
+import NavigationItem from './NavigationItem'
 import {shallow} from 'enzyme'
 import {Badge} from '..'
 

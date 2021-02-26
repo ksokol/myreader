@@ -2,7 +2,7 @@ import './SidenavLayout.css'
 import React, {useEffect, useReducer} from 'react'
 import PropTypes from 'prop-types'
 import {IconButton} from '../Buttons'
-import Navigation from '../Navigation/Navigation'
+import {Navigation} from '../Navigation/Navigation'
 import {Backdrop} from '../Backdrop/Backdrop'
 import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
 

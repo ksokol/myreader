@@ -5,11 +5,11 @@ import {SUBSCRIPTIONS_URL} from '../../constants'
 import {toast} from '../../components/Toast'
 import {useSubscription} from './subscription'
 import {useHistory} from '../../hooks/router'
+import {useSubscriptions} from '../../hooks/subscriptions'
 
 export function SubscriptionEditPage() {
   const {uuid} = useParams()
   const {
-    reload,
     replace
   } = useHistory()
 
@@ -26,6 +26,10 @@ export function SubscriptionEditPage() {
     deleteSubscription,
   } = useSubscription()
 
+  const {
+    fetchSubscriptions
+  } = useSubscriptions()
+
   useEffect(() => {
     if (uuid) {
       loadSubscription(uuid)
@@ -40,18 +44,18 @@ export function SubscriptionEditPage() {
 
   useEffect(() => {
     if (updated) {
-      reload()
+      fetchSubscriptions()
       toast('Subscription saved')
     }
-  }, [reload, updated])
+  }, [fetchSubscriptions, updated])
 
   useEffect(() => {
     if (deleted) {
       toast('Subscription deleted')
-      reload()
+      fetchSubscriptions()
       replace({pathname: SUBSCRIPTIONS_URL})
     }
-  }, [deleted, reload, replace])
+  }, [deleted, fetchSubscriptions, replace])
 
   return subscription ? (
     <SubscriptionEditForm

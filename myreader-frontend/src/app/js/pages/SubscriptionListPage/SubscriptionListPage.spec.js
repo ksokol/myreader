@@ -1,13 +1,23 @@
-import React from 'react'
+import React, {useContext, useEffect} from 'react'
 import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
 import {SubscriptionListPage} from './SubscriptionListPage'
-import {LocationStateProvider} from '../../contexts/locationState/LocationStateProvider'
 import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
+import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 
 jest.unmock('react-router')
 jest.unmock('react-router-dom')
+
+function TestComponent({children}) {
+  const {fetchSubscriptions} = useContext(SubscriptionContext)
+
+  useEffect(() => {
+    fetchSubscriptions()
+  }, [fetchSubscriptions])
+
+  return children
+}
 
 describe('SubscriptionListPage', () => {
 
@@ -19,11 +29,11 @@ describe('SubscriptionListPage', () => {
         <>
           <div id='portal-header' />
           <Router history={history}>
-            <LocationStateProvider>
-              <SubscriptionProvider>
+            <SubscriptionProvider>
+              <TestComponent>
                 <SubscriptionListPage />
-              </SubscriptionProvider>
-            </LocationStateProvider>
+              </TestComponent>
+            </SubscriptionProvider>
           </Router>
         </>
       )
