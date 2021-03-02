@@ -66,10 +66,6 @@ input {
   flex-direction: column;
 }
 
-.w-full {
-  width: 100%;
-}
-
 .no-underline {
   text-decoration: none;
 }

@@ -1,4 +1,3 @@
-import './NavigationItem.css'
 import {Badge} from '..'
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -8,8 +7,8 @@ import {Link} from 'react-router-dom'
 
 const NavigationItem = props => {
   const classes = classNames(
-    'my-navigation-item',
-    {'my-navigation-item--selected': props.selected},
+    'my-navigation__item',
+    {'my-navigation__item--selected': props.selected},
     props.className
   )
 
@@ -18,7 +17,6 @@ const NavigationItem = props => {
       className={classes}
     >
       <Link
-        className="flex w-full no-underline"
         to={props.to}
         onClick={props.onClick}
       >

@@ -1,4 +1,3 @@
-import './SubscriptionNavigationItem.css'
 import React from 'react'
 import PropTypes from 'prop-types'
 import NavigationItem from '../NavigationItem'
@@ -56,7 +55,6 @@ export function SubscriptionNavigationItem(props) {
     isVisible(searchParams, item) && (
       <ul
         key='subscriptions'
-        className='my-subscription-navigation-item__subscriptions'
       >
         {item.subscriptions.map(subscription => (
           <NavigationItem
