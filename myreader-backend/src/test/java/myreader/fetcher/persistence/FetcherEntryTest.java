@@ -1,216 +1,195 @@
 package myreader.fetcher.persistence;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.matchesPattern;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author Kamill Sokol
- */
-public class FetcherEntryTest {
+class FetcherEntryTest {
 
-    @Test
-    public void shouldTrimLeadingAndTrailingWhitespaces() {
-        assertThat(fetchEntryWithTitle(" text text ").getTitle(), is("text text"));
-    }
+  @Test
+  void shouldTrimLeadingAndTrailingWhitespaces() {
+    assertThat(fetchEntryWithTitle(" text text ").getTitle())
+      .isEqualTo("text text");
+  }
 
-    @Test
-    public void shouldReplaceWhitespacesWithSingleBlank() {
-        assertThat(fetchEntryWithTitle("1  2 \n 3 \r\n 4 \t 5").getTitle(), is("1 2 3 4 5"));
-    }
+  @Test
+  void shouldReplaceWhitespacesWithSingleBlank() {
+    assertThat(fetchEntryWithTitle("1  2 \n 3 \r\n 4 \t 5").getTitle())
+      .isEqualTo("1 2 3 4 5");
+  }
 
-    @Test
-    public void shouldUnescapeHtmlEntities() {
-        assertThat(fetchEntryWithTitle("&amp; &gt; &lt;").getTitle(), is("& > <"));
-    }
+  @Test
+  void shouldUnescapeHtmlEntities() {
+    assertThat(fetchEntryWithTitle("&amp; &gt; &lt;").getTitle())
+      .isEqualTo("& > <");
+  }
 
-    @Test
-    public void shouldRemoveHtmlElements() {
-        assertThat(fetchEntryWithTitle("<div><strong>1</strong><b>2</b></div>").getTitle(), is("12"));
-    }
+  @Test
+  void shouldRemoveHtmlElements() {
+    assertThat(fetchEntryWithTitle("<div><strong>1</strong><b>2</b></div>").getTitle())
+      .isEqualTo("12");
+  }
 
-    @Test
-    public void shouldRemoveXhtmlElementsFromTitle() {
-        String raw = "<xhtml:div xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n" +
-                "    Less: <xhtml:em> &lt; </xhtml:em>\n" +
-                "  </xhtml:div>";
+  @Test
+  void shouldRemoveXhtmlElementsFromTitle() {
+    String raw = "<xhtml:div xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n" +
+      "    Less: <xhtml:em> &lt; </xhtml:em>\n" +
+      "  </xhtml:div>";
 
-        assertThat(fetchEntryWithTitle(raw).getTitle(), is("Less: <"));
-    }
+    assertThat(fetchEntryWithTitle(raw).getTitle())
+      .isEqualTo("Less: <");
+  }
 
-    @Test
-    public void shouldReturnEmptyTitleWhenValueIsNull() {
-        assertThat(fetchEntryWithTitle(null).getTitle(), is(EMPTY));
-    }
+  @Test
+  void shouldReturnEmptyTitleWhenValueIsNull() {
+    assertThat(fetchEntryWithTitle(null).getTitle())
+      .isEmpty();
+  }
 
-    @Test
-    public void shouldNotUnescapeHtmlEntities() {
-        assertThat(fetchEntryWithContent("&amp;").getContent(), is("&amp;"));
-    }
+  @Test
+  void shouldNotUnescapeHtmlEntities() {
+    assertThat(fetchEntryWithContent("&amp;").getContent())
+      .isEqualTo("&amp;");
+  }
 
-    @Test
-    public void shouldAllowHtmlElements() {
-        assertThat(
-                fetchEntryWithContent("<p>1</p><div>2</div><table></table>").getContent(),
-                is("<p>1</p><div>2</div><table></table>")
-        );
-    }
+  @Test
+  void shouldAllowHtmlElements() {
+    assertThat(fetchEntryWithContent("<p>1</p><div>2</div><table></table>").getContent())
+      .isEqualTo("<p>1</p><div>2</div><table></table>");
+  }
 
-    @Test
-    public void shouldRemoveHrefTagWithRelativeUrl() {
-        assertThat(fetchEntryWithContent("<a href=\"/test.html\">...</a>").getContent(), is("..."));
-    }
+  @Test
+  void shouldRemoveHrefTagWithRelativeUrl() {
+    assertThat(fetchEntryWithContent("<a href=\"/test.html\">...</a>").getContent())
+      .isEqualTo("...");
+  }
 
-    @Test
-    public void shouldAllowHrefWithAbsoluteInsecureUrl() {
-        assertThat(
-                fetchEntryWithContent("<a href=\"http://example.com/test.html\">...</a>").getContent(),
-                startsWith("<a href=\"http://example.com/test.html\"")
-        );
-    }
+  @Test
+  void shouldAllowHrefWithAbsoluteInsecureUrl() {
+    assertThat(fetchEntryWithContent("<a href=\"http://example.com/test.html\">...</a>").getContent())
+      .startsWith("<a href=\"http://example.com/test.html\"");
+  }
 
-    @Test
-    public void shouldAllowHrefWithAbsoluteSecureUrl() {
-        assertThat(
-                fetchEntryWithContent("<a href=\"https://example.com/test.html\">...</a>").getContent(),
-                startsWith("<a href=\"https://example.com/test.html\"")
-        );
-    }
+  @Test
+  void shouldAllowHrefWithAbsoluteSecureUrl() {
+    assertThat(fetchEntryWithContent("<a href=\"https://example.com/test.html\">...</a>").getContent())
+      .startsWith("<a href=\"https://example.com/test.html\"");
+  }
 
-    @Test
-    public void shouldAppendTargetAndRelAttributesToHref() {
-        assertThat(
-                fetchEntryWithContent("<a href=\"http://example.com/test.html\">...</a>").getContent(),
-                is("<a href=\"http://example.com/test.html\" target=\"_blank\" rel=\"noopener noreferrer\">...</a>")
-        );
-    }
+  @Test
+  void shouldAppendTargetAndRelAttributesToHref() {
+    assertThat(fetchEntryWithContent("<a href=\"http://example.com/test.html\">...</a>").getContent())
+      .isEqualTo("<a href=\"http://example.com/test.html\" target=\"_blank\" rel=\"noopener noreferrer\">...</a>");
+  }
 
-    @Test
-    public void shouldOverrideTargetAttributeOnHrefTag() {
-        assertThat(
-                fetchEntryWithContent("<a href=\"http://example.com/test.html\" target=\"other\">...</a>").getContent(),
-                is("<a href=\"http://example.com/test.html\" target=\"_blank\" rel=\"noopener noreferrer\">...</a>")
-        );
-    }
+  @Test
+  void shouldOverrideTargetAttributeOnHrefTag() {
+    assertThat(fetchEntryWithContent("<a href=\"http://example.com/test.html\" target=\"other\">...</a>").getContent())
+      .isEqualTo("<a href=\"http://example.com/test.html\" target=\"_blank\" rel=\"noopener noreferrer\">...</a>");
+  }
 
-    @Test
-    public void shouldOverrideRelAttributeOnHrefTag() {
-        assertThat(
-                fetchEntryWithContent("<a href=\"http://example.com/test.html\" rel=\"other\">...</a>").getContent(),
-                is("<a href=\"http://example.com/test.html\" target=\"_blank\" rel=\"noopener noreferrer\">...</a>")
-        );
-    }
+  @Test
+  void shouldOverrideRelAttributeOnHrefTag() {
+    assertThat(fetchEntryWithContent("<a href=\"http://example.com/test.html\" rel=\"other\">...</a>").getContent())
+      .isEqualTo("<a href=\"http://example.com/test.html\" target=\"_blank\" rel=\"noopener noreferrer\">...</a>");
+  }
 
-    @Test
-    public void shouldRemoveImageTagWithRelativeUrl() {
-        assertThat(fetchEntryWithContent("<img src=\"/example.com/test.html\"></a>").getContent(), is(""));
-    }
+  @Test
+  void shouldRemoveImageTagWithRelativeUrl() {
+    assertThat(fetchEntryWithContent("<img src=\"/example.com/test.html\"></a>").getContent())
+      .isEmpty();
+  }
 
-    @Test
-    public void shouldDisallowImageTagWithInsecureUrl() {
-        assertThat(
-                fetchEntryWithContent("<img src=\"http://example.com/test.html\"></img>").getContent(),
-                emptyString()
-        );
-    }
+  @Test
+  void shouldDisallowImageTagWithInsecureUrl() {
+    assertThat(fetchEntryWithContent("<img src=\"http://example.com/test.html\"></img>").getContent())
+      .isEmpty();
+  }
 
-    @Test
-    public void shouldRemoveWidthAndHeightAttributesFromImage() {
-        assertThat(
-                fetchEntryWithContent("<img width=\"800\" height=\"600\" alt=\"alt text\" src=\"https://example.com\"></img>").getContent(),
-                allOf(not(containsString("width")), not(containsString("height")))
-        );
-    }
+  @Test
+  void shouldRemoveWidthAndHeightAttributesFromImage() {
+    assertThat(fetchEntryWithContent("<img width=\"800\" height=\"600\" alt=\"alt text\" src=\"https://example.com\"></img>").getContent())
+      .doesNotContain("width", "height");
+  }
 
-    @Test
-    public void shouldAllowImageTagWithSecureUrl() {
-        assertThat(
-                fetchEntryWithContent("<img alt=\"alt text\" src=\"https://example.com/test.html\"></img>").getContent(),
-                containsString("src=\"https://example.com/test.html\" ")
-        );
-    }
+  @Test
+  void shouldAllowImageTagWithSecureUrl() {
+    assertThat(
+      fetchEntryWithContent("<img alt=\"alt text\" src=\"https://example.com/test.html\"></img>").getContent()
+    ).containsSequence("src=\"https://example.com/test.html\" ");
+  }
 
-    @Test
-    public void shouldRemoveJavascript() {
-        assertThat(fetchEntryWithContent("string <script>alert('')</script> string").getContent(), is("string  string"));
-    }
+  @Test
+  void shouldRemoveJavascript() {
+    assertThat(fetchEntryWithContent("string <script>alert('')</script> string").getContent())
+      .isEqualTo("string  string");
+  }
 
-    @Test
-    public void shouldReturnEmptyContentWhenValueIsNull() {
-        assertThat(fetchEntryWithContent(null).getContent(), is(EMPTY));
-    }
+  @Test
+  void shouldReturnEmptyContentWhenValueIsNull() {
+    assertThat(fetchEntryWithContent(null).getContent())
+      .isEmpty();
+  }
 
-    @Test
-    public void shouldRemoveXhtmlElementsFromContent() {
-        String raw = "<xhtml:div xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">Less: <xhtml:em> &lt; </xhtml:em></xhtml:div>";
+  @Test
+  void shouldRemoveXhtmlElementsFromContent() {
+    assertThat(fetchEntryWithContent("<xhtml:div xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">Less: <xhtml:em> &lt; </xhtml:em></xhtml:div>").getContent())
+      .isEqualTo("Less:  &lt; ");
+  }
 
-        assertThat(fetchEntryWithContent(raw).getContent(), is("Less:  &lt; "));
-    }
+  @Test
+  void shouldReplaceTab() {
+    String raw = "test\ttest1";
 
-    @Test
-    public void shouldRetainWhitespaces() {
-        String raw = "\ntest\ttest1\ntest2\ntest3  test4";
+    assertThat(fetchEntryWithContent(raw).getContent())
+      .isEqualTo("test    test1");
+  }
 
-        assertThat(fetchEntryWithContent(raw).getContent(), is("\ntest\ttest1\ntest2\ntest3  test4"));
-    }
+  @Test
+  void shouldAllowStyling() {
+    assertThat(fetchEntryWithContent("<h2 style=\"color:red\">1</h2><span style=\"color:red\">3</span><div style=\"color:red\">4</div>").getContent())
+      .isEqualTo("<h2 style=\"color:red\">1</h2><span style=\"color:red\">3</span><div style=\"color:red\">4</div>");
+  }
 
-    @Test
-    public void shouldAllowStyling() {
-        assertThat(
-                fetchEntryWithContent("<h2 style=\"color:red\">1</h2><span style=\"color:red\">3</span><div style=\"color:red\">4</div>").getContent(),
-                is("<h2 style=\"color:red\">1</h2><span style=\"color:red\">3</span><div style=\"color:red\">4</div>")
-        );
-    }
+  @Test
+  void shouldAllowStylingIgnoringWidthAndHeight() {
+    assertThat(fetchEntryWithContent("<h2 style=\"color:red; width:1px;height:2px\">1</h2>").getContent())
+      .isEqualTo("<h2 style=\"color:red\">1</h2>");
+  }
 
-    @Test
-    public void shouldAllowStylingIgnoringWidthAndHeight() {
-        assertThat(
-                fetchEntryWithContent("<h2 style=\"color:red; width:1px;height:2px\">1</h2>").getContent(),
-                is("<h2 style=\"color:red\">1</h2>")
-        );
-    }
+  @Test
+  void shouldAllowPreCodeAndFigureHtmlElements() {
+    assertThat(fetchEntryWithContent("<pre><code>text</code></pre><figure></figure>").getContent())
+      .isEqualTo("<pre><code>text</code></pre><figure></figure>");
+  }
 
-    @Test
-    public void shouldAllowPreCodeAndFigureHtmlElements() {
-        assertThat(
-                fetchEntryWithContent("<pre><code>text</code></pre><figure></figure>").getContent(),
-                is("<pre><code>text</code></pre><figure></figure>")
-        );
-    }
+  @Test
+  void shouldAppendLoadingAttributeToImg() {
+    assertThat(fetchEntryWithContent("<img src=\"https://example.com/test.html\">...</a>").getContent())
+      .containsSequence("loading=\"lazy\"");
+  }
 
-    @Test
-    public void shouldAppendLoadingAttributeToImg() {
-        assertThat(
-                fetchEntryWithContent("<img src=\"https://example.com/test.html\">...</a>").getContent(),
-                containsString("loading=\"lazy\"")
-        );
-    }
+  @Test
+  void shouldAppendLoadingAttributeToImgOnce() {
+    assertThat(fetchEntryWithContent("<img loading=\"lazy\" src=\"https://example.com/test.html\">...</a>").getContent())
+      .matches(".*(loading=\"lazy\"){1}.*");
+  }
 
-    @Test
-    public void shouldAppendLoadingAttributeToImgOnce() {
-        assertThat(
-                fetchEntryWithContent("<img loading=\"lazy\" src=\"https://example.com/test.html\">...</a>").getContent(),
-                matchesPattern(".*(loading=\"lazy\"){1}.*")
-        );
-    }
+  @Test
+  void shouldReplaceLineBreaks() {
+    assertThat(fetchEntryWithContent("text\r\ntext1\n\ntext2\ntext2").getContent())
+      .isEqualTo("text<br>text1<br><br>text2<br>text2");
+  }
 
-    private static FetcherEntry fetchEntryWithTitle(String title) {
-        FetcherEntry entry = new FetcherEntry();
-        entry.setTitle(title);
-        return entry;
-    }
+  private static FetcherEntry fetchEntryWithTitle(String title) {
+    FetcherEntry entry = new FetcherEntry();
+    entry.setTitle(title);
+    return entry;
+  }
 
-    private static FetcherEntry fetchEntryWithContent(String content) {
-        FetcherEntry entry = new FetcherEntry();
-        entry.setContent(content);
-        return entry;
-    }
+  private static FetcherEntry fetchEntryWithContent(String content) {
+    FetcherEntry entry = new FetcherEntry();
+    entry.setContent(content);
+    return entry;
+  }
 }
