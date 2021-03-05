@@ -1,24 +1,22 @@
 package myreader.fetcher;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class ExclusionChecker {
 
-    public boolean isExcluded(String exclusion, String... matchAgainst) {
-        final Pattern pattern = Pattern.compile(exclusion, Pattern.CASE_INSENSITIVE);
+  boolean isExcluded(String exclusion, String... matchAgainst) {
+    var pattern = Pattern.compile(exclusion, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-        for (String against : matchAgainst) {
-            if (against != null) {
-                Matcher matcher = pattern.matcher(against);
+    for (var against : matchAgainst) {
+      if (against != null) {
+        var matcher = pattern.matcher(against);
 
-                if (matcher.matches()) {
-                    return true;
-                }
-            }
+        if (matcher.matches()) {
+          return true;
         }
-
-        return false;
+      }
     }
 
+    return false;
+  }
 }

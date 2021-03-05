@@ -1,65 +1,58 @@
 package myreader.fetcher;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExclusionCheckerTest {
+class ExclusionCheckerTest {
 
-    private final ExclusionChecker exclusionChecker = new ExclusionChecker();
+  private static final ExclusionChecker exclusionChecker = new ExclusionChecker();
 
-    @Test
-    public void testPHPShouldBeExcludedDueToOccurenceInParam1() {
-        String param1 = "Free and Open Source PHP Wiki Scripts";
-        String param2 = "Unlike many of the Wiki software listed on this page, Dokuwiki does not require you to have MySQL or some other database system for it to work, since it stores its data in plain text files.";
+  @Test
+  void shouldExcludeKeywordInParam1() {
+    var param1 = "Free and Open Source PHP Wiki Scripts";
+    var param2 = "Unlike many of the Wiki software listed on this page, Dokuwiki does not require you to ...";
 
-        boolean isExcluded = exclusionChecker.isExcluded(".*php.*", param1, param2);
-        assertTrue(isExcluded);
-    }
+    assertThat(exclusionChecker.isExcluded(".*php.*", param1, param2))
+      .isTrue();
+  }
 
-    @Test
-    public void testPHPShouldBeExcludedDueToOccurenceInParam2() {
-        String param1 = "Free and Open Source Wiki Scripts";
-        String param2 = "Unlike many of the PHP Wiki software listed on this page, Dokuwiki does not require you to have MySQL or some other database system for it to work, since it stores its data in plain text files.";
+  @Test
+  void shouldExcludeKeywordInParam2() {
+    var param1 = "Free and Open Source Wiki Scripts";
+    var param2 = "Unlike many of the PHP Wiki software listed on this page, Dokuwiki does not require you to ...";
 
-        boolean isExcluded = exclusionChecker.isExcluded(".*php.*", param1, param2);
-        assertTrue(isExcluded);
-    }
+    assertThat(exclusionChecker.isExcluded(".*php.*", param1, param2))
+      .isTrue();
+  }
 
-    @Test
-    public void testWindows8ShouldBeExcluded() {
-        String param1 = "Windows 8: Making VirtualBox and Hyper-V Play Nice";
+  @Test
+  void shouldExcludeWithWhitespace() {
+    assertThat(exclusionChecker.isExcluded(".*windows 8.*", "Windows 8: Making VirtualBox and Hyper-V Play Nice"))
+      .isTrue();
 
-        boolean isExcluded = exclusionChecker.isExcluded(".*windows 8.*", param1);
-        assertTrue(isExcluded);
-    }
+    assertThat(exclusionChecker.isExcluded(".*windows\\ 8.*", "Windows 8: Making VirtualBox and Hyper-V Play Nice"))
+      .isTrue();
+  }
 
-    @Test
-    public void testWindowsPhone8ShouldBeExcluded() {
-        String param1 = "Simple Reverse Geocoding - Windows Phone 8 and MVVMLight";
+  @Test
+  void shouldNotExcludeKeywordWithWhitespace() {
+    assertThat(exclusionChecker.isExcluded(".*windows phone.*", "Simple Reverse Geocoding - Windows and MVVMLight Phone"))
+      .isFalse();
+  }
 
-        boolean isExcluded = exclusionChecker.isExcluded(".*windows phone.*", param1);
-        assertTrue(isExcluded);
+  @Test
+  void shouldNotFailOnNullParams() {
+    assertThat(exclusionChecker.isExcluded(".*windows phone.*"))
+      .isFalse();
 
-        isExcluded = exclusionChecker.isExcluded(".*windows\\ phone.*", param1);
-        assertTrue(isExcluded);
-    }
+    assertThat(exclusionChecker.isExcluded(".*windows phone.*", null, null))
+      .isFalse();
+  }
 
-    @Test
-    public void testWindowsPhoneShouldNotBeFoundInParam1() {
-        String param1 = "Simple Reverse Geocoding - Windows and MVVMLight Phone";
-
-        boolean isExcluded = exclusionChecker.isExcluded(".*windows phone.*", param1);
-        assertFalse(isExcluded);
-    }
-
-    @Test
-    public void testNullParams() {
-        boolean isExcluded = exclusionChecker.isExcluded(".*windows phone.*");
-        assertFalse(isExcluded);
-
-        isExcluded = exclusionChecker.isExcluded(".*windows phone.*", null, null);
-        assertFalse(isExcluded);
-    }
+  @Test
+  void shouldExcludeKeywordInMultilineString() {
+    assertThat(exclusionChecker.isExcluded(".*keyword.*", "line1 \r\nline2 keyword text\nline3"))
+      .isTrue();
+  }
 }
