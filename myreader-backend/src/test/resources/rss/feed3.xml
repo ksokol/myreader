@@ -1,39 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
-<channel>
-<title><![CDATA[vzbv - Verbraucherzentrale Bundesverband - RSS Feed - Urteile zum Verbraucherrecht]]></title>
-<description><![CDATA[vzbv - Verbraucherzentrale Bundesverband - Urteile zum Verbraucherrecht]]></description>
-<link>/</link>
-<item>
-<title>Pauschalreisen: 40 Prozent Anzahlung sind zu viel</title>
-<link>12583.htm</link>
-<description><![CDATA[28.11.2013 - <p>OLG Celle vom 28.11.2013 (11 U 279/12) – nicht rechtskräftig<br />         TUI Deutschland darf für Pauschalreisen nicht schon bei Vertragsabschluss 40 Prozent Anzahlung auf den Reisepreis verlangen. Das hat das Oberlandesgericht Celle nach einer Klage des Verbraucherzentrale Bundesverbands (vzbv) entschieden.</p><a class="simple" href="12583.htm" title="Pauschalreisen: 40 Prozent Anzahlung sind zu viel">... mehr</a>]]></description>
-<guid>12583.htm</guid>
-</item>
-<item>
-<title>Keine Kostenausgleichsvereinbarung zwischen Kunde und Versicherer im „Nettopolicenmodell“</title>
-<link>12465.htm</link>
-<description><![CDATA[19.09.2013 - <p>         <div></p>         <p>Urteil des OLG Karlsruhe vom 19.09.2013 (12 U 85/13)<br />         Eine Kostenausgleichsvereinbarung bei einer Nettopolice kann durch Umgehung gegen ein gesetzliches Verbot verstoßen und daher nichtig sein.</p>         <p></div>         </p><a class="simple" href="12465.htm" title="Keine Kostenausgleichsvereinbarung zwischen Kunde und Versicherer im „Nettopolicenmodell“">... mehr</a>]]></description>
-<guid>12465.htm</guid>
-</item>
-<item>
-<title>Kein Schadensersatz bei „Tauschempfehlung“ der Bank für Wertpapiere</title>
-<link>12335.htm</link>
-<description><![CDATA[19.09.2013 - Urteil des OLG Schleswig vom 19.09.2013 (5 U 34/13)<br />         Die Umschichtungsempfehlung im Rahmen einer Anlageberatung stellt an die beratende Bank keine gesteigerten Beratungspflichten.         <p> </p>         <p> </p><a class="simple" href="12335.htm" title="Kein Schadensersatz bei „Tauschempfehlung“ der Bank für Wertpapiere">... mehr</a>]]></description>
-<guid>12335.htm</guid>
-</item>
-<item>
-<title>Keine Leistung bei dauerhafter Berufs- oder Erwerbsunfähigkeit aus der Ratenschutz-Arbeitsunfähigkeitsversicherung</title>
-<link>12673.htm</link>
-<description><![CDATA[11.09.2013 - <p>         <div></p>         <p>Urteil des BGH vom 11.09.2013 (IV ZR 303/12)<br />         Es stellt weder eine Benachteiligung der Kunden dar noch ist eine Versicherungsklausel intransparent, wenn die Leistung aus einer Ratenschutz-Arbeitsunfähigkeitsversicherung ausgeschlossen ist, sofern der Versicherte dauerhaft erwerbs- oder arbeitsunfähig wird.</p>         <p></div>         </p><a class="simple" href="12673.htm" title="Keine Leistung bei dauerhafter Berufs- oder Erwerbsunfähigkeit aus der Ratenschutz-Arbeitsunfähigkeitsversicherung">... mehr</a>]]></description>
-<guid>12673.htm</guid>
-</item>
-<item>
-<title>Kein „Entgangener Gewinn“ ohne Plausibilitätsprüfung</title>
-<link>12539.htm</link>
-<description><![CDATA[26.07.2013 - <p>         <div></p>         <p>Urteil des OLG Frankfurt a.M. vom 26.07.2013 (23 U 165/12)<br />         Bei fehlerhafter Anlageberatung kann der Anleger entgangenen Gewinn nur dann beanspruchen, wenn seine Anlageform tatsächlich Gewinn abgeworfen hätte.</p>         <p></div>         </p><a class="simple" href="12539.htm" title="Kein „Entgangener Gewinn“ ohne Plausibilitätsprüfung">... mehr</a>]]></description>
-<guid>12539.htm</guid>
-</item>
-</channel>
+  <channel>
+    <title><![CDATA[vzbv - Verbraucherzentrale Bundesverband - RSS Feed - Urteile zum Verbraucherrecht]]></title>
+    <description><![CDATA[vzbv - Verbraucherzentrale Bundesverband - Urteile zum Verbraucherrecht]]></description>
+    <link>/</link>
+    <item>
+      <title>Keine Leistung bei dauerhafter Berufs- oder Erwerbsunfähigkeit aus der Ratenschutz-Arbeitsunfähigkeitsversicherung</title>
+      <link>12673.htm</link>
+      <description>
+        <![CDATA[11.09.2013 - <p>         <div></p>         <p>Urteil des BGH vom 11.09.2013 (IV ZR 303/12)<br />         Es stellt weder eine Benachteiligung der Kunden dar noch ist eine Versicherungsklausel intransparent, wenn die Leistung aus einer Ratenschutz-Arbeitsunfähigkeitsversicherung ausgeschlossen ist, sofern der Versicherte dauerhaft erwerbs- oder arbeitsunfähig wird.</p>         <p></div>         </p><a class="simple" href="12673.htm" title="Keine Leistung bei dauerhafter Berufs- oder Erwerbsunfähigkeit aus der Ratenschutz-Arbeitsunfähigkeitsversicherung">... mehr</a>]]></description>
+      <guid>12673.htm</guid>
+    </item>
+    <item>
+      <title>Kein „Entgangener Gewinn“ ohne Plausibilitätsprüfung</title>
+      <link>12539.htm</link>
+      <description>
+        <![CDATA[26.07.2013 - <p>         <div></p>         <p>Urteil des OLG Frankfurt a.M. vom 26.07.2013 (23 U 165/12)<br />         Bei fehlerhafter Anlageberatung kann der Anleger entgangenen Gewinn nur dann beanspruchen, wenn seine Anlageform tatsächlich Gewinn abgeworfen hätte.</p>         <p></div>         </p><a class="simple" href="12539.htm" title="Kein „Entgangener Gewinn“ ohne Plausibilitätsprüfung">... mehr</a>]]></description>
+      <guid>12539.htm</guid>
+    </item>
+  </channel>
 </rss>
 

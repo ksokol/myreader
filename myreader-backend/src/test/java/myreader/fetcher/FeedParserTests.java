@@ -1,34 +1,37 @@
 package myreader.fetcher;
 
 import junit.framework.AssertionFailedError;
-import myreader.fetcher.persistence.FetchResult;
-import myreader.fetcher.resttemplate.SyndicationRestTemplateConfiguration;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.hamcrest.MockitoHamcrest;
-import org.springframework.context.ApplicationEventPublisher;
+import myreader.entity.FetchError;
+import myreader.entity.Subscription;
+import myreader.test.WithTestProperties;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 
 import static junit.framework.TestCase.fail;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
+import static myreader.test.OffsetDateTimes.ofEpochMilli;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -40,181 +43,272 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-/**
- * @author Kamill Sokol
- */
-public class FeedParserTests {
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@WithTestProperties
+class FeedParserTests {
 
-    private static final String HTTP_EXAMPLE_COM = "http://example.com";
+  private static final String URL = "http://example.com";
 
-    private FeedParser parser;
-    private ApplicationEventPublisher eventPublisher;
-    private MockRestServiceServer mockServer;
+  private MockRestServiceServer mockServer;
 
-    @Before
-    public void beforeTest() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        RestTemplate syndicationRestTemplate = new SyndicationRestTemplateConfiguration().syndicationRestTemplate();
-        eventPublisher = mock(ApplicationEventPublisher.class);
-        mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
-        parser = new FeedParser(syndicationRestTemplate, eventPublisher);
+  @Autowired
+  private JdbcAggregateOperations template;
+
+  @Autowired
+  private RestTemplate syndicationRestTemplate;
+
+  @Autowired
+  private FeedParser parser;
+
+  private Subscription subscription;
+
+  @BeforeEach
+  void setUp() {
+    template.deleteAll(Subscription.class);
+    mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
+    subscription = template.save(new Subscription(
+      URL,
+      "title",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    ));
+  }
+
+  @AfterEach
+  public void cleanUp() {
+    template.deleteAll(Subscription.class);
+  }
+
+  @Test
+  void shouldHandleAtom() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withSuccess(new ClassPathResource("rss/feed1.xml"), TEXT_XML));
+
+    assertThat(parser.parse(URL).orElseThrow(AssertionFailedError::new))
+      .hasFieldOrPropertyWithValue("resultSizePerFetch", 2)
+      .extracting("entries").asList()
+      .extracting("url")
+      .containsExactly("http://www.heise.de/newsticker/meldung/1180071.html", "http://www.heise.de/newsticker/meldung/1180079.html");
+  }
+
+  @Test
+  void shouldHandleRss() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
+
+    assertThat(parser.parse(URL).orElseThrow(AssertionFailedError::new))
+      .hasFieldOrPropertyWithValue("resultSizePerFetch", 2)
+      .extracting("entries").asList()
+      .extracting("url")
+      .containsExactly("http://www.javaspecialists.eu/archive/Issue217.html", "http://www.javaspecialists.eu/archive/Issue217b.html");
+  }
+
+  @Test
+  void shouldSanitizeEntryUrl() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withSuccess(new ClassPathResource("rss/feed3.xml"), TEXT_XML));
+
+    assertThat(parser.parse(URL).orElseThrow(AssertionFailedError::new))
+      .extracting("entries").asList()
+      .extracting("url")
+      .containsExactly(URL + "/12539.htm", URL + "/12673.htm");
+  }
+
+  @Test
+  void shouldHandleAtomWithHtmlContent() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withSuccess(new ClassPathResource("rss/feed4.xml"), TEXT_XML));
+
+    assertThat(parser.parse(URL).orElseThrow(AssertionFailedError::new))
+      .extracting("entries").asList()
+      .element(0)
+      .extracting("content").asString()
+      .containsSequence(" Have a look through ");
+  }
+
+  @Test
+  void shouldHandleRssIgnoringAdditionalNamespaces() {
+    var url = URL + "/feed.atom";
+
+    mockServer.expect(requestTo(url)).andExpect(method(GET))
+      .andRespond(withSuccess(new ClassPathResource("rss/feed5.xml"), TEXT_XML));
+
+    assertThat(parser.parse(url).orElseThrow(AssertionFailedError::new))
+      .extracting("entries").asList()
+      .element(0)
+      .extracting("content").asString()
+      .containsSequence("<p><em>Ein Gastbeitrag von Erik W.</em></p>");
+  }
+
+  @Test
+  void shouldReturnEmptyOptionalWhenResourceIsNotModified() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andExpect(header("If-Modified-Since", is("lastModified")))
+      .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
+
+    assertThat(parser.parse(URL, "lastModified"))
+      .isNotPresent();
+  }
+
+  @Test
+  void shouldFakeUserAgent() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andExpect(header("User-Agent", startsWith("Mozilla")))
+      .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
+
+    parser.parse(URL, "lastModified");
+  }
+
+  @Test
+  void shouldFilterInvalidCharacters() throws IOException {
+    var classPathResource = new ClassPathResource("rss/feed7.xml");
+    var invalidXml = IOUtils.toString(classPathResource.getInputStream(), StandardCharsets.UTF_8);
+    assertThat(invalidXml)
+      .containsSequence("");
+
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withSuccess(classPathResource, TEXT_XML));
+
+    assertThat(parser.parse(URL).orElseThrow(AssertionFailedError::new))
+      .extracting("entries").asList()
+      .hasSizeGreaterThan(0);
+  }
+
+  @Test
+  void shouldExtractFromResponseWithTextPlainContentType() {
+    var url = URL + "/feed.rss";
+
+    mockServer.expect(requestTo(url)).andExpect(method(GET))
+      .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_PLAIN));
+
+    assertThat(parser.parse(url).orElseThrow(AssertionFailedError::new))
+      .extracting("entries").asList()
+      .hasSizeGreaterThan(0);
+  }
+
+  @Test
+  void shouldExtractFromResponseWithTextXmlContentType() {
+    var url = URL + "/feed.rss";
+
+    mockServer.expect(requestTo(url)).andExpect(method(GET))
+      .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_XML));
+
+    assertThat(parser.parse(url).orElseThrow(AssertionFailedError::new))
+      .extracting("entries").asList()
+      .hasSizeGreaterThan(0);
+  }
+
+  @Test
+  void shouldExtractFromResponseWithTextHtmlContentType() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_HTML));
+
+    assertThat(parser.parse(URL).orElseThrow(AssertionFailedError::new))
+      .extracting("entries").asList()
+      .hasSizeGreaterThan(0);
+  }
+
+  @Test
+  void shouldPublishEventIfServerRespondedWithError() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withServerError().body("test"));
+    var timeRightBeforeCreation = OffsetDateTime.now();
+
+    try {
+      parser.parse(URL);
+      fail("expected exception not thrown");
+    } catch (FeedParseException exception) {
+      await()
+        .atMost(Duration.ofSeconds(10))
+        .until(() -> template.count(FetchError.class) > 0);
+
+      assertThat(template.findAll(FetchError.class).iterator().next())
+        .satisfies(event -> {
+          assertThat(event.getSubscriptionId()).isEqualTo(subscription.getId());
+          assertThat(event.getMessage()).startsWith("500 Internal Server Error: [test]");
+          assertThat(event.getCreatedAt()).isCloseTo(timeRightBeforeCreation, within(2, ChronoUnit.SECONDS));
+        });
     }
+  }
 
-    @Test
-    public void testFeed1() {
-        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed1.xml"), TEXT_XML));
+  @Test
+  void shouldPublishEventIfResponseBodyIsInvalid() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withSuccess().body("test"));
+    var timeRightBeforeCreation = OffsetDateTime.now();
 
-        FetchResult result = parser.parse(HTTP_EXAMPLE_COM).orElseThrow(AssertionFailedError::new);
-        assertThat(result.getEntries(), hasSize(2));
-        assertThat(result.getResultSizePerFetch(), is(2));
+    try {
+      parser.parse(URL);
+      fail("expected exception not thrown");
+    } catch (FeedParseException exception) {
+      await()
+        .atMost(Duration.ofSeconds(10))
+        .until(() -> template.count(FetchError.class) > 0);
+
+      assertThat(template.findAll(FetchError.class).iterator().next())
+        .satisfies(event -> {
+          assertThat(event.getSubscriptionId()).isEqualTo(subscription.getId());
+          assertThat(event.getMessage()).startsWith("Could not extract response: no suitable HttpMessageConverter");
+          assertThat(event.getCreatedAt()).isCloseTo(timeRightBeforeCreation, within(2, ChronoUnit.SECONDS));
+        });
     }
+  }
 
-    @Test
-    public void testFeed2() {
-        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
+  @Test
+  void shouldProcessSyndicationWithCorrectCharset() throws IOException {
+    var classPathResource = new ClassPathResource("rss/feed8.xml");
+    var iso8859EncodedXml = IOUtils.toString(classPathResource.getInputStream(), StandardCharsets.UTF_8);
 
-        FetchResult result = parser.parse(HTTP_EXAMPLE_COM).orElseThrow(AssertionFailedError::new);
-        assertThat(result.getEntries(), hasItems(
-                hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217.html")),
-                hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue217b.html"))
-        ));
+    assertThat(iso8859EncodedXml)
+      .containsSequence("���");
+
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withSuccess(classPathResource, TEXT_HTML));
+
+    assertThat(parser.parse(URL).orElseThrow(AssertionFailedError::new))
+      .extracting("entries").asList()
+      .element(0)
+      .extracting("content").asString()
+      .containsSequence("feed8 content with umlaut äöü");
+  }
+
+  @Test
+  void shouldHandleResponseWithBOM() throws IOException {
+    var classPathResource = new ClassPathResource("rss/feed9.xml");
+
+    try (var xmlWithBOM = new BOMInputStream(classPathResource.getInputStream())) {
+      assertThat(xmlWithBOM.hasBOM())
+        .isTrue();
+
+      mockServer.expect(requestTo(URL)).andExpect(method(GET))
+        .andRespond(withSuccess(classPathResource, TEXT_HTML));
+
+      assertThat(parser.parse(URL).orElseThrow(AssertionFailedError::new))
+        .extracting("entries").asList()
+        .isNotEmpty();
     }
+  }
+  @Test
+  void shouldNotFailIfResponseBodyIsEmpty() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withSuccess());
 
-    @Test
-    public void testFeed3() {
-        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed3.xml"), TEXT_XML));
+    assertThat(parser.parse(URL))
+      .isNotPresent();
+  }
 
-        FetchResult result = parser.parse(HTTP_EXAMPLE_COM).orElseThrow(AssertionFailedError::new);
-        assertThat(result.getEntries(), hasItems(
-                hasProperty("url", is(HTTP_EXAMPLE_COM + "/12539.htm")),
-                hasProperty("url", is(HTTP_EXAMPLE_COM + "/12673.htm"))
-        ));
-    }
+  @Test
+  void shouldNotFailIfResponseIsEmptyString() {
+    mockServer.expect(requestTo(URL)).andExpect(method(GET))
+      .andRespond(withSuccess().body(""));
 
-    @Test
-    public void testFeed4() {
-        mockServer.expect(requestTo("https://github.com/ksokol.private.atom")).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed4.xml"), TEXT_XML));
-
-        FetchResult result = parser.parse("https://github.com/ksokol.private.atom")
-                .orElseThrow(AssertionFailedError::new);
-        assertThat(result.getEntries(), hasItem(
-                hasProperty("content", containsString(" Have a look through "))
-        ));
-    }
-
-    @Test
-    public void testFeed5() {
-        mockServer.expect(requestTo("http://neusprech.org/feed/")).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed5.xml"), TEXT_XML));
-
-        FetchResult result = parser.parse("http://neusprech.org/feed/")
-                .orElseThrow(AssertionFailedError::new);
-        assertThat(result.getEntries(), hasItem(
-                hasProperty("content", startsWith("<p><em>Ein Gastbeitrag von Erik W.</em></p>"))
-        ));
-    }
-
-    @Test
-    public void testFeed7() {
-        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed2.xml"), TEXT_XML));
-
-        FetchResult result = parser.parse(HTTP_EXAMPLE_COM).orElseThrow(AssertionFailedError::new);
-        assertThat(result.getEntries(), hasItem(
-                hasProperty("url", is("http://www.javaspecialists.eu/archive/Issue220b.html"))
-        ));
-    }
-
-    @Test
-    public void shouldReturnEmptyOptionalWhenResourceIsNotModified() {
-        mockServer.expect(requestTo("/irrelevant")).andExpect(method(GET))
-                .andExpect(header("If-Modified-Since", is("lastModified")))
-                .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
-
-        assertThat(parser.parse("/irrelevant", "lastModified").isPresent(), is(false));
-    }
-
-    @Test
-    public void testFeed9() {
-        mockServer.expect(requestTo("/irrelevant")).andExpect(method(GET))
-                .andExpect(header("User-Agent", startsWith("Mozilla")))
-                .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
-
-        parser.parse("/irrelevant", "lastModified");
-    }
-
-    @Test
-    public void testInvalidCharacter() {
-        // test [^\u0020-\uD7FF]+
-        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_XML));
-
-        FetchResult result = parser.parse(HTTP_EXAMPLE_COM).orElseThrow(AssertionFailedError::new);
-        assertThat(result.getEntries(), hasSize(6));
-    }
-
-    @Test
-    public void shouldExtractFromResponseWithTextPlainContentType() {
-        String url = "https://example.com/path-with-extension.rss";
-
-        mockServer.expect(requestTo(url)).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_PLAIN));
-
-        FetchResult result = parser.parse(url).orElseThrow(AssertionFailedError::new);
-
-        assertThat(result.getEntries(), hasSize(greaterThan(0)));
-    }
-
-    @Test
-    public void shouldExtractFromResponseWithTextXmlContentType() {
-        String url = "https://example.com/path-with-extension.rss";
-
-        mockServer.expect(requestTo(url)).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_XML));
-
-        FetchResult result = parser.parse(url).orElseThrow(AssertionFailedError::new);
-
-        assertThat(result.getEntries(), hasSize(greaterThan(0)));
-    }
-
-    @Test
-    public void shouldExtractFromResponseWithTextHtmlContentType() {
-        String url = "https://example.com/path-without-extension";
-
-        mockServer.expect(requestTo(url)).andExpect(method(GET))
-                .andRespond(withSuccess(new ClassPathResource("rss/feed7.xml"), TEXT_HTML));
-
-        FetchResult result = parser.parse(url).orElseThrow(AssertionFailedError::new);
-
-        assertThat(result.getEntries(), hasSize(greaterThan(0)));
-    }
-
-    @Test
-    public void testPublishFetchErrorEvent() {
-        mockServer.expect(requestTo(HTTP_EXAMPLE_COM)).andExpect(method(GET))
-                .andRespond(withServerError().body("test"));
-
-        try {
-            parser.parse(HTTP_EXAMPLE_COM);
-            fail("expected exception not thrown");
-        } catch (FeedParseException exception) {
-            verify(eventPublisher).publishEvent(MockitoHamcrest.argThat(
-                    allOf(
-                            hasProperty("source", is(HTTP_EXAMPLE_COM)),
-                            hasProperty("errorMessage", is("500 Internal Server Error: [no body]")),
-                            hasProperty("timestamp", is(greaterThan(0L)))
-                    )));
-        }
-    }
-
-    @Test
-    public void shouldReturnEmptyOptionalWhenResponseBodyIsEmpty() {
-        mockServer.expect(requestTo("/irrelevant")).andExpect(method(GET))
-                .andRespond(withSuccess());
-
-        assertThat(parser.parse("/irrelevant").isPresent(), is(false));
-    }
+      assertThat(parser.parse(URL))
+        .isNotPresent();
+  }
 }

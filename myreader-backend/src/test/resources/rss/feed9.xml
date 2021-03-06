@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>feed9</title>
+    <link>https://feed9.example.com</link>
+    <item>
+      <title>feed9 title</title>
+      <link>https://www.privacy-handbuch.de/handbuch_14.htm</link>
+      <description>feed9 content</description>
+      <pubDate>Wed, 03 Mar 2021 07:13:05 +0200</pubDate>
+      <guid>https://feed9.example.com/guid1</guid>
+    </item>
+  </channel>
+</rss>

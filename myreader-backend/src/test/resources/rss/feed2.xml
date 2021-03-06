@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
-
-
-
-
-
-
-
-
-
-
 <rss version="2.0">
   <channel>
     <title>The Java(tm) Specialists' Newsletter</title>
@@ -21,47 +10,6 @@ articles and tips surrounding the Java Programming Language</description>
     <managingEditor>Dr Heinz Kabutz</managingEditor>
     <webMaster>Dr Heinz Kabutz</webMaster>
     <ttl>1440</ttl>
-
-    <item>
-      <title>availableProcessors() Follow-up
-      </title>
-      <link>http://www.javaspecialists.eu/archive/Issue220b.html
-      </link>
-      <pubDate>Fri, 30 May 2014</pubDate>
-      <description>Whenever we have thread pools in our system, we need to make their size configurable.  In this follow-up, we continue looking at some issues with the common fork/join pool that is used in Java 8.
-      </description>
-    </item>
-
-    <item>
-      <title>Runtime.getRuntime().availableProcessors()
-      </title>
-      <link>http://www.javaspecialists.eu/archive/Issue220.html
-      </link>
-      <pubDate>Wed, 28 May 2014</pubDate>
-      <description>Java 8 magically makes all our code run in parallel.  If you believe that, I've got a tower in Paris that I'm trying to sell.  Really good price.  In this newsletter we look at how the parallism is determined and how we can influence it.
-      </description>
-    </item>
-
-    <item>
-      <title>Recent File List
-      </title>
-      <link>http://www.javaspecialists.eu/archive/Issue219.html
-      </link>
-      <pubDate>Wed, 30 Apr 2014</pubDate>
-      <description>The LinkedHashMap has a little known feature that can return elements in least recently accessed order, rather than insertion order.  In this newsletter we use this to construct a "Recently Used File" list.
-      </description>
-    </item>
-
-    <item>
-      <title>Thread Confinement
-      </title>
-      <link>http://www.javaspecialists.eu/archive/Issue218.html
-      </link>
-      <pubDate>Tue, 18 Feb 2014</pubDate>
-      <description>One of the techniques we use to ensure that a non-threadsafe class can still be used by multiple threads is to give each thread its own instance.  We call this "thread confinement".  In this newsletter we look at some of the issues that can happen when this instance leaks.
-      </description>
-    </item>
-
     <item>
       <title>Parallel Parking (Follow-up)
       </title>
@@ -71,7 +19,6 @@ articles and tips surrounding the Java Programming Language</description>
       <description>Heavily contended concurrent constructs may benefit from a small pause after a CAS failure, but this may lead to worse performance if we do more work in between each update attempt.  In this follow-up newsletter, we show how adding CPU consumption can change our performance characteristics.
       </description>
     </item>
-
     <item>
       <title>Parallel Parking
       </title>
@@ -81,7 +28,6 @@ articles and tips surrounding the Java Programming Language</description>
       <description>What is faster?  Synchronized or Atomic compare-and-set?  In this newsletter we look at some surprising results when we run Java on the new i7 chip.
       </description>
     </item>
-
   </channel>
 </rss>
 

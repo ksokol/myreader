@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>feed8</title>
+    <link>https://feed8.example.com</link>
+    <item>
+      <title>feed8 title with umlaut äöü</title>
+      <link>https://www.privacy-handbuch.de/handbuch_14.htm</link>
+      <description>feed8 content with umlaut äöü</description>
+      <pubDate>Wed, 03 Mar 2021 07:13:05 +0200</pubDate>
+      <guid>https://feed8.example.com/guid1</guid>
+    </item>
+  </channel>
+</rss>
