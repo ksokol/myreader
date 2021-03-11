@@ -15,39 +15,10 @@ export class SubscriptionApi extends Api {
     })
   }
 
-  deleteSubscription = uuid => {
-    return this.request({
-      url: `${SUBSCRIPTIONS}/${uuid}`,
-      method: 'DELETE',
-    })
-  }
-
-  saveSubscription = subscription => {
-    return this.request({
-      url: `${SUBSCRIPTIONS}/${subscription.uuid}`,
-      method: 'PATCH',
-      body: subscription,
-    })
-  }
-
-  fetchSubscription = uuid => {
-    return this.request({
-      url: `${SUBSCRIPTIONS}/${uuid}`,
-      method: 'GET',
-    })
-  }
-
   fetchSubscriptions = () => {
     return this.request({
       url: SUBSCRIPTIONS,
       method: 'GET',
     }).then(toSubscriptions)
-  }
-
-  fetchFeedFetchErrors = uuid => {
-    return this.request({
-      url: `${SUBSCRIPTIONS}/${uuid}/fetchError`,
-      method: 'GET'
-    })
   }
 }

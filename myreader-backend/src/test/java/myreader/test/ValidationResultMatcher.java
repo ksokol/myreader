@@ -1,10 +1,11 @@
 package myreader.test;
 
+import myreader.views.ValidationErrors;
 import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.BindException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -19,22 +20,29 @@ public class ValidationResultMatcher {
   }
 
   public ResultMatcher value(String value) {
-    return extractException(exception -> {
-      BindingResult bindingResult = exception.getBindingResult();
-      FieldError fieldError = bindingResult.getFieldError(field);
-
-      if (fieldError != null) {
-        assertEquals(fieldError.getDefaultMessage(), value, String.format("field %s", field));
+    return extractException(errors -> {
+      if (errors.containsKey(field)) {
+        assertEquals(errors.get(field), value, String.format("field %s", field));
       } else {
         throw new AssertionError(String.format("field %s not present", field));
       }
     });
   }
 
-  private static ResultMatcher extractException(Consumer<MethodArgumentNotValidException> consumer) {
+  private static ResultMatcher extractException(Consumer<Map<String, String>> consumer) {
     return result -> {
-      if (result.getResolvedException() instanceof MethodArgumentNotValidException) {
-        consumer.accept((MethodArgumentNotValidException) result.getResolvedException());
+      if (result.getResolvedException() instanceof BindException) {
+        var exception = (BindException) result.getResolvedException();
+        var errors = new HashMap<String, String>();
+        exception.getFieldErrors()
+          .forEach(fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
+        consumer.accept(errors);
+      } else if (result.getResolvedException() instanceof ValidationErrors.ValidationException) {
+        var exception = (ValidationErrors.ValidationException) result.getResolvedException();
+        var errors = new HashMap<String, String>();
+        exception.errors
+          .forEach(fieldError -> errors.put(fieldError.field, fieldError.defaultMessage));
+        consumer.accept(errors);
       } else {
         throw new AssertionError("validation messages not present");
       }

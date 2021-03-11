@@ -8,6 +8,22 @@ export class Api {
 
   removeInterceptor = interceptor => interceptors = interceptors.filter(it => it !== interceptor)
 
+  get = ({context = {}, ...incomingRequest}) => {
+    return this.request({context, ...incomingRequest, method: 'GET'})
+  }
+
+  post = ({context = {}, ...incomingRequest}) => {
+    return this.request({context, ...incomingRequest, method: 'POST'})
+  }
+
+  patch = ({context = {}, ...incomingRequest}) => {
+    return this.request({context, ...incomingRequest, method: 'PATCH'})
+  }
+
+  delete = ({context = {}, ...incomingRequest}) => {
+    return this.request({context, ...incomingRequest, method: 'DELETE'})
+  }
+
   request = ({context = {}, ...incomingRequest}) => {
     const request = {...incomingRequest, context}
 

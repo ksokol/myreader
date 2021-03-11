@@ -16,9 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Objects;
 
-import static myreader.config.UrlMappings.API_2;
-import static myreader.config.UrlMappings.LOGIN_PROCESSING;
-
 @Configuration
 public class SecurityConfig {
 
@@ -53,7 +50,7 @@ public class SecurityConfig {
     protected void configure(HttpSecurity http) throws Exception {
       http
         .formLogin().loginPage("/")
-        .loginProcessingUrl(LOGIN_PROCESSING.mapping()).permitAll()
+        .loginProcessingUrl("/check").permitAll()
         .successHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT))
         .failureHandler((request, response, exception) -> response.setStatus(HttpServletResponse.SC_BAD_REQUEST))
         .and()
@@ -76,7 +73,24 @@ public class SecurityConfig {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
       http
-        .antMatcher(API_2.mapping() + "/**")
+        .antMatcher("/api/2/**")
+        .authorizeRequests().anyRequest().authenticated()
+        .and()
+        .rememberMe().key(rememberMeKey)
+        .and()
+        .csrf().disable()
+        .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+    }
+  }
+
+  @Order(98)
+  @Configuration
+  class ViewsSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+      http
+        .antMatcher("/views/**")
         .authorizeRequests().anyRequest().authenticated()
         .and()
         .rememberMe().key(rememberMeKey)

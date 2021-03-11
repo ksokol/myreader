@@ -35,6 +35,7 @@ const ToastItem = ({notification, dispatch}) => {
 
   return (
     <div
+      key={notification.id}
       className={`my-toast__item ${typeClass}`}
       role={role}
       onClick={() => dispatch({type: 'remove', notification})}>
@@ -45,6 +46,7 @@ const ToastItem = ({notification, dispatch}) => {
 
 ToastItem.propTypes = {
   notification: PropTypes.shape({
+    id: PropTypes.number.isRequired,
     type: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
   }).isRequired,

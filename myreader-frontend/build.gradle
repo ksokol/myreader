@@ -8,7 +8,6 @@ idea.module {
   excludeDirs += [
     file('build'),
     file('dist'),
-    file('node_modules')
   ]
 }
 

@@ -26,6 +26,7 @@ import java.util.Optional;
 import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -197,10 +198,7 @@ class SubscriptionCollectionResourceTests {
       .andExpect(status().isOk())
       .andExpect(jsonPath("uuid").value(nextId));
 
-    mockMvc.perform(get("/api/2/subscriptions/{id}", nextId))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.uuid").value(nextId))
-      .andExpect(jsonPath("$.title").value(title))
-      .andExpect(jsonPath("$.origin").value(url));
+    assertThat(template.findById(nextId, Subscription.class))
+      .isNotNull();
   }
 }

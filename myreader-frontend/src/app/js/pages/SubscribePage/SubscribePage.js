@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react'
 import {SubscribeForm} from '../../components'
-import {SUBSCRIPTION_URL} from '../../constants'
+import {SUBSCRIPTION_PAGE_PATH} from '../../constants'
 import {subscriptionApi} from '../../api'
 import {toast} from '../../components/Toast'
 import {useHistory} from '../../hooks/router'
@@ -17,7 +17,7 @@ export function SubscribePage() {
     try {
       const {uuid} = await subscriptionApi.subscribe(subscription)
       toast('Subscribed')
-      replace({pathname: SUBSCRIPTION_URL, params: {uuid}})
+      replace({pathname: SUBSCRIPTION_PAGE_PATH, params: {uuid}})
     } catch (error) {
       setPending(false)
 

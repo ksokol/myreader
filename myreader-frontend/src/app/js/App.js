@@ -9,7 +9,7 @@ import {
   LOGOUT_URL,
   SETTINGS_URL,
   SUBSCRIPTION_ADD_URL,
-  SUBSCRIPTION_URL,
+  SUBSCRIPTION_PAGE_PATH,
   SUBSCRIPTIONS_URL
 } from './constants'
 import {SettingsPage} from './pages/SettingsPage/SettingsPage'
@@ -22,7 +22,7 @@ import {LoginPage} from './pages/LoginPage/LoginPage'
 import {LogoutPage} from './pages/LogoutPage/LogoutPage'
 import {BookmarkListPage} from './pages/BookmarkListPage/BookmarkListPage'
 import {SubscribePage} from './pages/SubscribePage/SubscribePage'
-import {SubscriptionEditPage} from './pages/SubscriptionEditPage/SubscriptionEditPage'
+import {SubscriptionPage} from './pages/SubscriptionPage/SubscriptionPage'
 import {Secured} from './components/Secured/Secured'
 
 const withSidenav = () => (
@@ -32,7 +32,7 @@ const withSidenav = () => (
         <Route exact={true} path={ENTRIES_URL} component={EntryStreamPage}/>
         <Route exact={true} path={BOOKMARK_URL} component={BookmarkListPage}/>
         <Route exact={true} path={SUBSCRIPTION_ADD_URL} component={SubscribePage}/>
-        <Route exact={true} path={SUBSCRIPTION_URL} component={SubscriptionEditPage}/>
+        <Route exact={true} path={SUBSCRIPTION_PAGE_PATH} component={SubscriptionPage}/>
         <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>
         <Route exact={true} path={SETTINGS_URL} component={SettingsPage}/>
       </Switch>

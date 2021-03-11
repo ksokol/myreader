@@ -1,8 +1,8 @@
 import React from 'react'
 import {shallow} from 'enzyme'
 import {SubscriptionColorPicker} from './SubscriptionColorPicker'
-import Dialog from '../../Dialog/Dialog'
-import ColorPicker from '../../ColorPicker/ColorPicker'
+import Dialog from '../../../../components/Dialog/Dialog'
+import ColorPicker from '../../../../components/ColorPicker/ColorPicker'
 
 class DialogPage {
 

@@ -149,7 +149,7 @@ module.exports = function(env) {
     stats: 'minimal',
     host: '0.0.0.0',
     proxy: [{
-      context: [`/${BACKEND_CONTEXT}`, '/info', '/api', '/check', '/logout'],
+      context: [`/${BACKEND_CONTEXT}`, '/info', '/api', '/views', '/check', '/logout'],
       target: `http://localhost:${BACKEND_PORT}`,
       pathRewrite: path => path.startsWith(`/${BACKEND_CONTEXT}`) ? path : `/${BACKEND_CONTEXT}/${path}`,
       onProxyRes: proxyRes => {

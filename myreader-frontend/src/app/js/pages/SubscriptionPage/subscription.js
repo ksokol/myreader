@@ -1,5 +1,5 @@
 import {useCallback, useReducer} from 'react'
-import {subscriptionApi, subscriptionTagsApi} from '../../api'
+import {api} from '../../api'
 
 function reducer(state, action) {
   switch(action.type) {
@@ -9,6 +9,8 @@ function reducer(state, action) {
       updated: false,
       subscription: action.subscription,
       subscriptionTags: action.subscriptionTags,
+      exclusionPatterns: action.exclusionPatterns,
+      fetchErrors: action.fetchErrors,
     }
   }
   case 'update_subscription': {
@@ -16,6 +18,13 @@ function reducer(state, action) {
       ...state,
       updated: true,
       subscription: action.subscription,
+    }
+  }
+  case 'update_exclusion_patterns': {
+    return {
+      ...state,
+      updated: true,
+      exclusionPatterns: action.exclusionPatterns,
     }
   }
   case 'delete_subscription': {
@@ -70,6 +79,8 @@ export function useSubscription() {
   const [state, dispatch] = useReducer(reducer, {
     subscription: null,
     subscriptionTags: [],
+    exclusionPatterns: [],
+    fetchErrors: [],
     validations: [],
     updated: false,
     deleted: false,
@@ -81,9 +92,10 @@ export function useSubscription() {
     dispatch({type: 'loading'})
 
     try {
-      const subscription = await subscriptionApi.fetchSubscription(uuid)
-      const subscriptionTags = await subscriptionTagsApi.fetchSubscriptionTags()
-      dispatch({type: 'set_subscription', subscription, subscriptionTags})
+      const {subscription, tags: subscriptionTags, exclusionPatterns, fetchErrors} = await api.get({
+        url: `views/SubscriptionPage/${uuid}`,
+      })
+      dispatch({type: 'set_subscription', subscription, subscriptionTags, exclusionPatterns, fetchErrors})
     } catch(error) {
       dispatch({type: 'error', error})
     } finally {
@@ -95,8 +107,12 @@ export function useSubscription() {
     dispatch({type: 'loading'})
 
     try {
-      const saved = await subscriptionApi.saveSubscription(subscription)
-      dispatch({type: 'update_subscription', subscription: saved})
+      const response = await api.patch({
+        url: `views/SubscriptionPage/${subscription.uuid}/subscription`,
+        method: 'PATCH',
+        body: subscription,
+      })
+      dispatch({type: 'update_subscription', subscription: response.subscription})
     } catch (error) {
       dispatch({type: 'error', error})
     } finally {
@@ -108,7 +124,9 @@ export function useSubscription() {
     dispatch({type: 'loading'})
 
     try {
-      await subscriptionApi.deleteSubscription(uuid)
+      await api.delete({
+        url: `views/SubscriptionPage/${uuid}/subscription`,
+      })
       dispatch({type: 'delete_subscription'})
     } catch (error) {
       dispatch({type: 'error', error})
@@ -117,9 +135,42 @@ export function useSubscription() {
     }
   }, [])
 
+  const addExclusionPattern = useCallback(async pattern => {
+    dispatch({type: 'loading'})
+
+    try {
+      const {exclusionPatterns} = await api.post({
+        url: `views/SubscriptionPage/${state.subscription.uuid}/exclusionPatterns`,
+        body: {pattern},
+      })
+      dispatch({type: 'update_exclusion_patterns', exclusionPatterns})
+    } catch (error) {
+      dispatch({type: 'error', error})
+    } finally {
+      dispatch({type: 'loaded'})
+    }
+  }, [state.subscription])
+
+  const removeExclusionPattern = useCallback(async uuid => {
+    dispatch({type: 'loading'})
+
+    try {
+      const {exclusionPatterns} = await api.delete({
+        url: `views/SubscriptionPage/${state.subscription.uuid}/exclusionPatterns/${uuid}`,
+      })
+      dispatch({type: 'update_exclusion_patterns', exclusionPatterns})
+    } catch (error) {
+      dispatch({type: 'error', error})
+    } finally {
+      dispatch({type: 'loaded'})
+    }
+  }, [state.subscription])
+
   return {
     subscription: state.subscription,
     subscriptionTags: state.subscriptionTags,
+    exclusionPatterns: state.exclusionPatterns,
+    fetchErrors: state.fetchErrors,
     loading: state.loading,
     updated: state.updated,
     deleted: state.deleted,
@@ -128,5 +179,7 @@ export function useSubscription() {
     loadSubscription,
     saveSubscription,
     deleteSubscription,
+    addExclusionPattern,
+    removeExclusionPattern,
   }
 }

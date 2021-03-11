@@ -13,12 +13,12 @@ import java.util.Optional;
 public interface ExclusionRepository extends PagingAndSortingRepository<ExclusionPattern, Long> {
 
   @Query("select * from exclusion_pattern where id = :id and subscription_id = :subscriptionId")
-  Optional<ExclusionPattern> findByIdAndSubscriptionId(@Param("id") Long id, @Param("subscriptionId") Long subscriptionId);
+  Optional<ExclusionPattern> findByIdAndSubscriptionId(@Param("id") Long patternId, @Param("subscriptionId") Long subscriptionId);
 
-  @Query("select * from exclusion_pattern where subscription_id = :subscriptionId and pattern = :pattern")
-  ExclusionPattern findBySubscriptionIdAndPattern(@Param("subscriptionId") Long subscriptionId, @Param("pattern") String pattern);
+  @Query("select case when count(*) > 0 then true else false end from exclusion_pattern where subscription_id = :subscriptionId and pattern = :pattern")
+  boolean existsBySubscriptionIdAndPattern(@Param("subscriptionId") Long subscriptionId, @Param("pattern") String pattern);
 
-  @Query("select * from exclusion_pattern where subscription_id = :subscriptionId")
+  @Query("select * from exclusion_pattern where subscription_id = :subscriptionId order by pattern asc")
   List<ExclusionPattern> findBySubscriptionId(@Param("subscriptionId") Long subscriptionId);
 
   @Transactional

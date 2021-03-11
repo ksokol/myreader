@@ -1,13 +1,12 @@
 import React, {useEffect} from 'react'
-import {useParams} from 'react-router-dom'
-import {SubscriptionEditForm} from '../../components'
+import {useParams, useHistory} from 'react-router-dom'
+import {SubscriptionEditForm} from './SubscriptionEditForm/SubscriptionEditForm'
 import {SUBSCRIPTIONS_URL} from '../../constants'
 import {toast} from '../../components/Toast'
 import {useSubscription} from './subscription'
-import {useHistory} from '../../hooks/router'
 import {useSubscriptions} from '../../hooks/subscriptions'
 
-export function SubscriptionEditPage() {
+export function SubscriptionPage() {
   const {uuid} = useParams()
   const {
     replace
@@ -16,6 +15,8 @@ export function SubscriptionEditPage() {
   const {
     subscription,
     subscriptionTags,
+    exclusionPatterns,
+    fetchErrors,
     loading,
     updated,
     deleted,
@@ -24,6 +25,8 @@ export function SubscriptionEditPage() {
     loadSubscription,
     saveSubscription,
     deleteSubscription,
+    addExclusionPattern,
+    removeExclusionPattern,
   } = useSubscription()
 
   const {
@@ -45,7 +48,7 @@ export function SubscriptionEditPage() {
   useEffect(() => {
     if (updated) {
       fetchSubscriptions()
-      toast('Subscription saved')
+      toast('Updated')
     }
   }, [fetchSubscriptions, updated])
 
@@ -53,7 +56,7 @@ export function SubscriptionEditPage() {
     if (deleted) {
       toast('Subscription deleted')
       fetchSubscriptions()
-      replace({pathname: SUBSCRIPTIONS_URL})
+      replace(SUBSCRIPTIONS_URL)
     }
   }, [deleted, fetchSubscriptions, replace])
 
@@ -61,10 +64,14 @@ export function SubscriptionEditPage() {
     <SubscriptionEditForm
       data={subscription}
       subscriptionTags={subscriptionTags}
+      exclusionPatterns={exclusionPatterns}
+      fetchErrors={fetchErrors}
       changePending={loading}
       validations={validations}
       saveSubscriptionEditForm={saveSubscription}
       deleteSubscription={deleteSubscription}
+      addExclusionPattern={addExclusionPattern}
+      removeExclusionPattern={removeExclusionPattern}
     />
   ) : null
 }

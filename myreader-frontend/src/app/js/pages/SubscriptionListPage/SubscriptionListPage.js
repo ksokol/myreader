@@ -6,7 +6,7 @@ import {SearchInput} from '../../components/SearchInput/SearchInput'
 import {IconButton} from '../../components/Buttons'
 import {useHistory, useSearchParams} from '../../hooks/router'
 import {Link} from 'react-router-dom'
-import {SUBSCRIPTION_URL} from '../../constants'
+import {SUBSCRIPTION_PAGE_PATH} from '../../constants'
 import {TimeAgo} from '../../components/TimeAgo/TimeAgo'
 import {Icon} from '../../components/Icon/Icon'
 import {useSubscriptions} from '../../hooks/subscriptions'
@@ -64,7 +64,7 @@ export const SubscriptionListPage = () => {
                 <Link
                   className='my-subscription-list-page__item-heading no-underline'
                   title={subscription.title}
-                  to={generatePath(SUBSCRIPTION_URL, {uuid: subscription.uuid})}
+                  to={generatePath(SUBSCRIPTION_PAGE_PATH, {uuid: subscription.uuid})}
                 >
                   {subscription.title}
                 </Link>

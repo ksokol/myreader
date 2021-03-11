@@ -61,26 +61,4 @@ describe('SubscriptionApi', () => {
       {uuid: '2', tag: 'tag2'}
     ])
   })
-
-  it('should GET feed errors for uuid1 with proper url derived from uuid', () => {
-    exchange.mockResolvedValueOnce({content: []})
-    subscriptionApi.fetchFeedFetchErrors('uuid1')
-
-    expect(exchange).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${SUBSCRIPTIONS}/uuid1/fetchError`
-    })
-  })
-
-  it('should return expected response when GET feeds error for uuid1 succeeded', async () => {
-    exchange.mockResolvedValueOnce([
-      {uuid: 'uuid1', message: 'message1', createdAt: 'createdAt1'},
-      {uuid: 'uuid2', message: 'message2', createdAt: 'createdAt2'},
-    ])
-
-    await expect(subscriptionApi.fetchFeedFetchErrors('uuid1')).resolves.toEqual([
-      {uuid: 'uuid1', message: 'message1', createdAt: 'createdAt1'},
-      {uuid: 'uuid2', message: 'message2', createdAt: 'createdAt2'}
-    ])
-  })
 })

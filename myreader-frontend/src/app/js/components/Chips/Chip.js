@@ -25,6 +25,7 @@ export function Chip(props) {
       className='my-chip__remove-button'
       type='times'
       disabled={props.disabled}
+      role='chip-remove-button'
       onClick={() => props.onRemove(props.value)}
     />
 
