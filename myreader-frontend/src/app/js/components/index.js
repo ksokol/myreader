@@ -3,5 +3,4 @@ export {default as IntersectionObserver} from './IntersectionObserver/Intersecti
 export {default as Badge} from './Badge/Badge'
 export {default as Option} from './Option/Option'
 export {Toast} from './Toast/Toast'
-export {default as LoginForm} from './LoginForm/LoginForm'
 export {default as SubscribeForm} from './SubscribeForm/SubscribeForm'

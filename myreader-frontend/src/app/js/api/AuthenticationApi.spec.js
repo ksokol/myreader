@@ -1,5 +1,5 @@
 import {AuthenticationApi} from './AuthenticationApi'
-import {LOGIN, LOGOUT} from '../constants'
+import {LOGOUT} from '../constants'
 import {exchange} from './exchange'
 
 jest.mock('./exchange', () => ({
@@ -29,21 +29,5 @@ describe('AuthenticationApi', () => {
     exchange.mockResolvedValueOnce(null)
 
     await expect(authenticationApi.logout()).resolves.toBeNull()
-  })
-
-  it('should call GET login endpoint', () => {
-    exchange.mockResolvedValueOnce({})
-    authenticationApi.login('expected password')
-
-    expect(exchange).toHaveBeenCalledWith(expect.objectContaining({
-      method: 'POST',
-      url: LOGIN,
-      'headers': {
-        'content-type': 'application/x-www-form-urlencoded'
-      }
-    }))
-    expect(exchange.mock.calls[0][0].body.toString()).toEqual(
-      'password=expected+password'
-    )
   })
 })
