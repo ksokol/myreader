@@ -1,4 +1,4 @@
-import {isBoolean, isDefined, isObject, isValidDate, isValuePresent, toArray} from './utils'
+import {isBoolean, isDefined, isObject, isValidDate, isValuePresent} from './utils'
 
 describe('shared utils', () => {
 
@@ -64,21 +64,6 @@ describe('shared utils', () => {
 
     it('true when parameter is of type boolean and value is false', () => {
       expect(isBoolean(false)).toBe(true)
-    })
-  })
-
-  describe('toArray', () => {
-
-    it('should return empty array when given value is undefined', () => {
-      expect(toArray()).toEqual([])
-    })
-
-    it('should return array with object when given value is an object', () => {
-      expect(toArray({a: 'b'})).toEqual([{a: 'b'}])
-    })
-
-    it('should return given array when', () => {
-      expect(toArray([1, 2])).toEqual([1, 2])
     })
   })
 

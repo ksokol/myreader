@@ -8,13 +8,6 @@ export const isBoolean = value => typeof value === 'boolean'
 
 const isDate = value => value instanceof Date
 
-export const toArray = value => {
-  if (value) {
-    return Array.isArray(value) ? value : [value]
-  }
-  return []
-}
-
 export const noop = () => {}
 
 export const isValidDate = value => {
@@ -29,7 +22,7 @@ export const isValidDate = value => {
   )
 }
 
-export function isNotNull(value) {
+function isNotNull(value) {
   return value !== null
 }
 
