@@ -1,11 +1,11 @@
 import './SubscriptionListPage.css'
 import React from 'react'
-import {generatePath} from 'react-router'
+import {generatePath, useHistory, useLocation} from 'react-router'
+import {Link} from 'react-router-dom'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
 import {SearchInput} from '../../components/SearchInput/SearchInput'
 import {IconButton} from '../../components/Buttons'
-import {useHistory, useSearchParams} from '../../hooks/router'
-import {Link} from 'react-router-dom'
+import {useSearchParams} from '../../hooks/router'
 import {SUBSCRIPTION_PAGE_PATH} from '../../constants'
 import {TimeAgo} from '../../components/TimeAgo/TimeAgo'
 import {Icon} from '../../components/Icon/Icon'
@@ -16,8 +16,9 @@ function filterSubscriptions({title}, q = '') {
 }
 
 export const SubscriptionListPage = () => {
+  const location = useLocation()
   const searchParams = useSearchParams()
-  const {push} = useHistory()
+  const history = useHistory()
 
   const {
     subscriptions,
@@ -25,10 +26,9 @@ export const SubscriptionListPage = () => {
   } = useSubscriptions()
 
   const onChange = q => {
-    push({
-      searchParams: {
-        q
-      }
+    history.push({
+      ...location,
+      search: q ? new URLSearchParams(`q=${q}`).toString() : ''
     })
   }
 
