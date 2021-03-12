@@ -138,14 +138,6 @@ class FetcherEntryTest {
   }
 
   @Test
-  void shouldReplaceTab() {
-    String raw = "test\ttest1";
-
-    assertThat(fetchEntryWithContent(raw).getContent())
-      .isEqualTo("test    test1");
-  }
-
-  @Test
   void shouldAllowStyling() {
     assertThat(fetchEntryWithContent("<h2 style=\"color:red\">1</h2><span style=\"color:red\">3</span><div style=\"color:red\">4</div>").getContent())
       .isEqualTo("<h2 style=\"color:red\">1</h2><span style=\"color:red\">3</span><div style=\"color:red\">4</div>");
@@ -173,12 +165,6 @@ class FetcherEntryTest {
   void shouldAppendLoadingAttributeToImgOnce() {
     assertThat(fetchEntryWithContent("<img loading=\"lazy\" src=\"https://example.com/test.html\">...</a>").getContent())
       .matches(".*(loading=\"lazy\"){1}.*");
-  }
-
-  @Test
-  void shouldReplaceLineBreaks() {
-    assertThat(fetchEntryWithContent("text\r\ntext1\n\ntext2\ntext2").getContent())
-      .isEqualTo("text<br>text1<br><br>text2<br>text2");
   }
 
   private static FetcherEntry fetchEntryWithTitle(String title) {

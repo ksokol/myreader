@@ -28,11 +28,7 @@ public final class HtmlSanitizer {
   }
 
   public static String sanitizeContent(String value) {
-    return CONTENT_POLICY
-      .sanitize(value)
-      .replace("\r\n", "<br>")
-      .replace("\n", "<br>")
-      .replace("\t", "    ");
+    return CONTENT_POLICY.sanitize(value);
   }
 
   private static String trim(String value) {
