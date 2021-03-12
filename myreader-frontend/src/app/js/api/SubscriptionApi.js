@@ -7,14 +7,6 @@ function toSubscriptions(raw = {}) {
 
 export class SubscriptionApi extends Api {
 
-  subscribe = body => {
-    return this.request({
-      url: SUBSCRIPTIONS,
-      method: 'POST',
-      body
-    })
-  }
-
   fetchSubscriptions = () => {
     return this.request({
       url: SUBSCRIPTIONS,

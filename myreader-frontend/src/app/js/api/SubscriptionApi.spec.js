@@ -15,29 +15,6 @@ describe('SubscriptionApi', () => {
     subscriptionApi = new SubscriptionApi()
   })
 
-  it('should call POST subscriptions endpoint', () => {
-    exchange.mockResolvedValueOnce({})
-    subscriptionApi.subscribe({a: 'b', c: 'd'})
-
-    expect(exchange).toHaveBeenCalledWith({
-      method: 'POST',
-      url: `${SUBSCRIPTIONS}`,
-      body: {
-        a: 'b',
-        c: 'd'
-      }
-    })
-  })
-
-  it('should return expected response when POST subscription succeeded', async () => {
-    exchange.mockResolvedValueOnce({a: 'b', c: 'd'})
-
-    await expect(subscriptionApi.subscribe({})).resolves.toEqual({
-      a: 'b',
-      c: 'd'
-    })
-  })
-
   it('should call GET subscriptions endpoint', () => {
     exchange.mockResolvedValueOnce({content: []})
     subscriptionApi.fetchSubscriptions()

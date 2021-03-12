@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {generatePath, useHistory as useRouterHistory, useLocation} from 'react-router'
+import {useHistory as useRouterHistory, useLocation} from 'react-router'
 
 function toSearchParams(search) {
   const query = {}
@@ -24,6 +24,9 @@ export function useSearchParams() {
   return useMemo(() => toSearchParams(search), [search])
 }
 
+/**
+ * @deprecated Use React Router's useHistory instead.
+ */
 export function useHistory() {
   const history = useRouterHistory()
   const location = useLocation()
@@ -35,14 +38,7 @@ export function useHistory() {
     })
   }
 
-  const replace = ({pathname, params}) => {
-    history.replace({
-      pathname: generatePath(pathname, {...params})
-    })
-  }
-
   return {
     push,
-    replace,
   }
 }

@@ -1,23 +1,28 @@
 import React, {useCallback, useState} from 'react'
+import {generatePath, useHistory} from 'react-router'
 import {SubscribeForm} from '../../components'
-import {SUBSCRIPTION_PAGE_PATH} from '../../constants'
-import {subscriptionApi} from '../../api'
+import {API_2, SUBSCRIPTION_PAGE_PATH} from '../../constants'
+import {api} from '../../api'
 import {toast} from '../../components/Toast'
-import {useHistory} from '../../hooks/router'
 
 export function SubscribePage() {
   const [pending, setPending] = useState(false)
   const [validations, setValidations] = useState([])
-  const {replace} = useHistory()
+  const history = useHistory()
 
   const onSaveNewSubscription = useCallback(async subscription => {
     setPending(true)
     setValidations([])
 
     try {
-      const {uuid} = await subscriptionApi.subscribe(subscription)
+      const {uuid} = await api.post({
+        url: `${API_2}/subscriptions`,
+        body: subscription
+      })
       toast('Subscribed')
-      replace({pathname: SUBSCRIPTION_PAGE_PATH, params: {uuid}})
+      history.replace({
+        pathname: generatePath(SUBSCRIPTION_PAGE_PATH, {uuid})
+      })
     } catch (error) {
       setPending(false)
 
@@ -29,7 +34,7 @@ export function SubscribePage() {
         toast(error.data, {error: true})
       }
     }
-  }, [replace])
+  }, [history])
 
   return (
     <SubscribeForm
