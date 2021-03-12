@@ -1,7 +1,7 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Redirect, useHistory} from 'react-router-dom'
-import {LOGIN_URL} from '../../constants'
-import {authenticationApi} from '../../api'
+import {LOGIN_PAGE_PATH} from '../../constants'
+import {api} from '../../api'
 import {toast} from '../../components/Toast'
 import {useSecurity} from '../../contexts/security'
 
@@ -10,20 +10,22 @@ export function LogoutPage() {
   const {doUnAuthorize} = useSecurity()
   const history = useHistory()
 
-  const logout = useCallback(async() => {
-    try {
-      await authenticationApi.logout()
-      doUnAuthorize()
-      setLoggedOut(true)
-    } catch {
-      history.goBack()
-      toast('Logout failed', {error: true})
-    }
-  }, [history, doUnAuthorize])
-
   useEffect(() => {
-    logout()
-  }, [logout])
+    const logout = async () => {
+      try {
+        await api.post({
+          url: 'logout',
+        })
+        doUnAuthorize()
+        setLoggedOut(true)
+      } catch {
+        history.goBack()
+        toast('Logout failed', {error: true})
+      }
+    }
 
-  return loggedOut ? <Redirect to={LOGIN_URL} /> : null
+    logout()
+  }, [doUnAuthorize, history])
+
+  return loggedOut ? <Redirect to={LOGIN_PAGE_PATH} /> : null
 }

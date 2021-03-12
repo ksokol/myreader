@@ -6,7 +6,7 @@ import NavigationItem from './NavigationItem'
 import {SubscriptionNavigationItem} from './SubscriptionNavigation/SubscriptionNavigationItem'
 import {
   BOOKMARK_URL,
-  LOGOUT_URL,
+  LOGOUT_PAGE_PATH,
   SETTINGS_URL,
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
@@ -74,7 +74,7 @@ export function Navigation(props) {
         key='logout'
         className='my-navigation__item--red'
         title='Logout'
-        to={LOGOUT_URL}
+        to={LOGOUT_PAGE_PATH}
         onClick={onClick}
       />
     </ul>

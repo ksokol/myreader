@@ -1,7 +1,7 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {Secured} from './Secured'
-import {LOGIN_URL} from '../../constants'
+import {LOGIN_PAGE_PATH} from '../../constants'
 import {useSecurity} from '../../contexts/security'
 
 /* eslint-disable react/prop-types, react/display-name */
@@ -30,6 +30,6 @@ describe('Secured', () => {
   it('should redirect if unauthorized', () => {
     const redirect = createWrapper(false).find('Redirect')
 
-    expect(redirect.prop('to')).toEqual(LOGIN_URL)
+    expect(redirect.prop('to')).toEqual(LOGIN_PAGE_PATH)
   })
 })

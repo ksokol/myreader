@@ -1,110 +1,76 @@
 import React from 'react'
-import {act} from 'react-dom/test-utils'
-import {useHistory} from 'react-router-dom'
-import {mount} from 'enzyme'
+import {Router} from 'react-router'
+import {createMemoryHistory} from 'history'
+import {act, render, screen} from '@testing-library/react'
 import {LogoutPage} from './LogoutPage'
-import {LOGIN_URL} from '../../constants'
-import {authenticationApi} from '../../api'
-import {toast} from '../../components/Toast'
-import {flushPromises, pending, rejected, resolved} from '../../shared/test-utils'
-import {useSecurity} from '../../contexts/security'
+import {SecurityProvider} from '../../contexts/security/SecurityProvider'
 
-/* eslint-disable react/prop-types */
-jest.mock('../../contexts/security', () => {
-  const doUnAuthorize = jest.fn()
-  return {
-    useSecurity: () => ({
-      doUnAuthorize
-    })
-  }
-})
-
-jest.mock('../../api', () => ({
-  authenticationApi: {}
-}))
-
-jest.mock('../../components/Toast', () => ({
-  toast: jest.fn()
-}))
-/* eslint-enable */
+jest.unmock('react-router')
+jest.unmock('react-router-dom')
 
 describe('LogoutPage', () => {
 
-  let props
+  let history
 
-  const createWrapper = async (onMount = resolved()) => {
-    authenticationApi.logout = onMount
-    const wrapper = mount(<LogoutPage {...props} />)
-    await flushPromises()
-    act(() => {
-      wrapper.update()
+  const renderComponent = async () => {
+    await act(async () => {
+      await render(
+        <Router history={history}>
+          <SecurityProvider>
+            <LogoutPage />
+          </SecurityProvider>
+        </Router>
+      )
     })
-    return wrapper
   }
 
   beforeEach(() => {
-    toast.mockClear()
-
-    props = {
-      doUnAuthorize: jest.fn(),
-    }
+    history = createMemoryHistory()
+    localStorage.setItem('myreader-security', '{"authorized":true}')
   })
 
-  it('should not redirect to login page when authenticationApi.logout is pending', async () => {
-    const wrapper = await createWrapper(pending())
-    expect(wrapper.find('Redirect').exists()).toEqual(false)
+  it('should not redirect to login page if logout is still pending', async () => {
+    fetch.responsePending()
+    await renderComponent()
+
+    expect(history.action).not.toEqual('REPLACE')
+    expect(history.location.pathname).toEqual('/')
   })
 
-  it('should redirect to login page when authenticationApi.logout succeeded', async () => {
-    let wrapper
+  it('should redirect to login page if logout succeeded', async () => {
+    await renderComponent()
 
-    await act(async () => {
-      wrapper = await createWrapper()
-    })
-    wrapper.mount()
-
-    expect(wrapper.find('Redirect').prop('to')).toEqual(LOGIN_URL)
+    expect(history.action).toEqual('REPLACE')
+    expect(history.location.pathname).toEqual('/app/login')
   })
 
-  it('should trigger prop function "doUnAuthorize" when authenticationApi.logout succeeded', async () => {
-    await act(async () => {
-      await createWrapper()
-    })
+  it('should set authorized state to false if logout succeeded', async () => {
+    localStorage.setItem('myreader-security', '{"authorized":true}')
 
-    expect(useSecurity().doUnAuthorize).toHaveBeenCalled()
+    await renderComponent()
+
+    expect(localStorage.getItem('myreader-security')).toEqual('{"authorized":false}')
   })
 
-  it('should not trigger prop function "doUnAuthorize" when authenticationApi.logout failed', async () => {
-    await createWrapper(rejected('some error'))
+  it('should not set authorized state to false if logout failed', async () => {
+    fetch.rejectResponse('some error')
+    await renderComponent()
 
-    expect(props.doUnAuthorize).not.toHaveBeenCalled()
+    expect(localStorage.getItem('myreader-security')).toEqual('{"authorized":true}')
   })
 
-  it('should not trigger toast when authenticationApi.logout succeeded', async () => {
-    await act(async () => {
-      await createWrapper()
-    })
+  it('should show message if logout failed', async () => {
+    fetch.rejectResponse('some error')
+    await renderComponent()
 
-    expect(toast).not.toHaveBeenCalled()
+    expect(screen.getByRole('dialog-error-message')).toHaveTextContent('Logout failed')
   })
 
-  it('should not trigger history.goBack when authenticationApi.logout succeeded', async () => {
-    await act(async () => {
-      await createWrapper()
-    })
+  it('should go back to previous page if logout failed', async () => {
+    fetch.rejectResponse('some error')
+    await renderComponent()
 
-    expect(useHistory().goBack).not.toHaveBeenCalled()
-  })
-
-  it('should trigger toast when authenticationApi.logout failed', async () => {
-    await createWrapper(rejected('some error'))
-
-    expect(toast).toHaveBeenCalledWith('Logout failed', {error: true})
-  })
-
-  it('should trigger history.goBack when authenticationApi.logout failed', async () => {
-    await createWrapper(rejected())
-
-    expect(useHistory().goBack).toHaveBeenCalled()
+    expect(history.action).toEqual('POP')
+    expect(history.location.pathname).toEqual('/')
   })
 })

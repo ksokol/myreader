@@ -1,8 +1,7 @@
 import React from 'react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
-import {render, screen, fireEvent} from '@testing-library/react'
-import {act} from 'react-dom/test-utils'
+import {render, screen, fireEvent, act} from '@testing-library/react'
 import {LoginPage} from './LoginPage'
 import {SecurityProvider} from '../../contexts/security/SecurityProvider'
 

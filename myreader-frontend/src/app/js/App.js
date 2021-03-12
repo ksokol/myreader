@@ -5,8 +5,8 @@ import {
   APP_URL,
   BOOKMARK_URL,
   ENTRIES_URL,
-  LOGIN_URL,
-  LOGOUT_URL,
+  LOGIN_PAGE_PATH,
+  LOGOUT_PAGE_PATH,
   SETTINGS_URL,
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTION_PAGE_PATH,
@@ -44,10 +44,10 @@ const App = () => {
   return (
     <React.Fragment>
       <Switch>
-        <Route exact={true} path={LOGIN_URL} component={LoginPage}/>
-        <Route exact={true} path={LOGOUT_URL} component={LogoutPage}/>
+        <Route exact={true} path={LOGIN_PAGE_PATH} component={LoginPage}/>
+        <Route exact={true} path={LOGOUT_PAGE_PATH} component={LogoutPage}/>
         <Route path={APP_URL} component={() => Secured(withSidenav)}/>
-        <Redirect to={LOGIN_URL} />
+        <Redirect to={LOGIN_PAGE_PATH} />
       </Switch>
       <LoadingBar />
     </React.Fragment>
