@@ -7,7 +7,6 @@ import {
   ENTRIES_URL,
   LOGIN_PAGE_PATH,
   LOGOUT_PAGE_PATH,
-  SUBSCRIPTION_ADD_URL,
   SUBSCRIPTION_PAGE_PATH,
   SUBSCRIPTIONS_URL
 } from './constants'
@@ -19,7 +18,6 @@ import {LoadingBar} from './components/LoadingBar/LoadingBar'
 import {LoginPage} from './pages/LoginPage/LoginPage'
 import {LogoutPage} from './pages/LogoutPage/LogoutPage'
 import {BookmarkListPage} from './pages/BookmarkListPage/BookmarkListPage'
-import {SubscribePage} from './pages/SubscribePage/SubscribePage'
 import {SubscriptionPage} from './pages/SubscriptionPage/SubscriptionPage'
 import {Secured} from './components/Secured/Secured'
 
@@ -29,7 +27,6 @@ const withSidenav = () => (
       <Switch>
         <Route exact={true} path={ENTRIES_URL} component={EntryStreamPage}/>
         <Route exact={true} path={BOOKMARK_PAGE_PATH} component={BookmarkListPage}/>
-        <Route exact={true} path={SUBSCRIPTION_ADD_URL} component={SubscribePage}/>
         <Route exact={true} path={SUBSCRIPTION_PAGE_PATH} component={SubscriptionPage}/>
         <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>
       </Switch>

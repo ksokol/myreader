@@ -94,18 +94,14 @@ describe('Navigation', () => {
     expect(history.location.search).toEqual('')
 
     fireEvent.click(screen.getByText('Settings'))
-
     fireEvent.click(screen.getByText('Add subscription'))
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual('/app/addSubscription')
-    expect(history.location.search).toEqual('')
 
     fireEvent.click(screen.getByText('Logout'))
     expect(history.action).toEqual('PUSH')
     expect(history.location.pathname).toEqual('/app/logout')
     expect(history.location.search).toEqual('')
 
-    expect(props.onClick).toHaveBeenCalledTimes(8)
+    expect(props.onClick).toHaveBeenCalledTimes(7)
   })
 
   it('should render navigation items with subscriptions.unseen > 0', async () => {

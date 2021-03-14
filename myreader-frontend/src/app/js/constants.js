@@ -5,7 +5,6 @@ export const ENTRIES_URL = `${APP_URL}/entries`
 export const BOOKMARK_PAGE_PATH = `${APP_URL}/bookmark`
 export const SUBSCRIPTION_PAGE_PATH = `${APP_URL}/subscriptions/:uuid`
 export const SUBSCRIPTIONS_URL = `${APP_URL}/subscriptions`
-export const SUBSCRIPTION_ADD_URL = `${APP_URL}/addSubscription`
 
 export const API_2 = 'api/2'
 export const SUBSCRIPTIONS = `${API_2}/subscriptions`

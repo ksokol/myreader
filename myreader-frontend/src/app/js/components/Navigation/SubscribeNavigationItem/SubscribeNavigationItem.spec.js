@@ -2,32 +2,38 @@ import React from 'react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
 import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
-import {SubscribePage} from './SubscribePage'
+import {SubscribeNavigationItem} from './SubscribeNavigationItem'
 
 jest.unmock('react-router')
+jest.unmock('react-router-dom')
 
 const expectedUrl = 'expected url'
 const expectedError = 'expected error'
 const dialogErrorMessageRole = 'dialog-error-message'
 
-describe('SubscribePage', () => {
+describe('SubscribeNavigationItem', () => {
 
-  let history
+  let props, history
 
   const renderComponent = () => {
     render(
       <Router history={history}>
-        <SubscribePage />
+        <SubscribeNavigationItem {...props} />
       </Router>
     )
   }
 
   beforeEach(() => {
     history = createMemoryHistory()
+
+    props = {
+      onClick: jest.fn()
+    }
   })
 
   it('should enable input and button when the page is presented', async () => {
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
 
     expect(screen.getByLabelText('Url')).toBeEnabled()
     expect(screen.getByRole('button')).toBeEnabled()
@@ -36,6 +42,7 @@ describe('SubscribePage', () => {
 
   it('should call api with entered url', async () => {
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
@@ -48,6 +55,7 @@ describe('SubscribePage', () => {
   it('should disable input and button when the call to the api is pending', async () => {
     fetch.responsePending()
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
     fireEvent.click(screen.getByRole('button'))
 
@@ -58,6 +66,7 @@ describe('SubscribePage', () => {
   it('should show an info message when the call to the api succeeded', async () => {
     fetch.jsonResponseOnce({uuid: 'uuid1'})
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
     fireEvent.click(screen.getByRole('button'))
 
@@ -67,6 +76,7 @@ describe('SubscribePage', () => {
   it('should redirect to the feed detail page when the call to the api succeeded', async () => {
     fetch.jsonResponseOnce({uuid: 'uuid1'})
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
     fireEvent.click(screen.getByRole('button'))
 
@@ -74,12 +84,14 @@ describe('SubscribePage', () => {
       expect(history.location).toEqual(expect.objectContaining({
         pathname: '/app/subscriptions/uuid1',
       }))
+      expect(props.onClick).toHaveBeenCalled()
     })
   })
 
   it('should present validation errors when the call to the api failed with an validation error', async () => {
     fetch.rejectResponse({status: 400, data: {errors: [{field: 'origin', defaultMessage: expectedError}]}})
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
@@ -90,6 +102,7 @@ describe('SubscribePage', () => {
   it('should not present any validation errors when subsequent call to the api succeeded', async () => {
     fetch.rejectResponse({status: 400, data: {errors: [{field: 'origin', defaultMessage: expectedError}]}})
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
@@ -103,6 +116,7 @@ describe('SubscribePage', () => {
   it('should not present any validation errors when the call to the api failed with some other error', async () => {
     fetch.rejectResponse({status: 401})
     await renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
@@ -112,6 +126,7 @@ describe('SubscribePage', () => {
   it('should enable input and button when the call to the api failed with a validation error', async () => {
     fetch.rejectResponse({status: 400, data: {errors: [{field: 'origin', defaultMessage: expectedError}]}})
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
     fireEvent.click(screen.getByRole('button'))
 
@@ -124,6 +139,7 @@ describe('SubscribePage', () => {
   it('should enable input and button when the call to the api failed with some other error', async () => {
     fetch.rejectResponse({data: expectedError})
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
     fireEvent.click(screen.getByRole('button'))
 
@@ -136,6 +152,7 @@ describe('SubscribePage', () => {
   it('should present an error message when the call to the api failed with some other error', async () => {
     fetch.rejectResponse({data: expectedError})
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
@@ -145,10 +162,18 @@ describe('SubscribePage', () => {
   it('should not present an error message when the call to the api failed with an validation error', async () => {
     fetch.rejectResponse({status: 400, data: {errors: [{field: 'origin', defaultMessage: expectedError}]}})
     renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
     await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
     expect(screen.getByRole('origin-validation')).toHaveTextContent(expectedError)
     await waitFor(() => expect(screen.queryByRole(dialogErrorMessageRole)).not.toBeInTheDocument())
+  })
+
+  it('should not trigger prop function "onClick" if item clicked', async () => {
+    renderComponent()
+    fireEvent.click(screen.getByText('Add subscription'))
+
+    expect(props.onClick).not.toHaveBeenCalled()
   })
 })
