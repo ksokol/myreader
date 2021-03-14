@@ -1,6 +1,5 @@
 export * from './Buttons'
 export {default as IntersectionObserver} from './IntersectionObserver/IntersectionObserver'
 export {default as Badge} from './Badge/Badge'
-export {default as Option} from './Option/Option'
 export {Toast} from './Toast/Toast'
 export {default as SubscribeForm} from './SubscribeForm/SubscribeForm'

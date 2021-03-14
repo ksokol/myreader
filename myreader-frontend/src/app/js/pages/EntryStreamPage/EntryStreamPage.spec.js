@@ -5,6 +5,7 @@ import {render, fireEvent, screen, act} from '@testing-library/react'
 import {EntryStreamPage} from './EntryStreamPage'
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
+import {useSettings} from '../../contexts/settings'
 
 jest.unmock('react-router')
 
@@ -76,6 +77,20 @@ const entry1Url = 'api/2/subscriptionEntries/1'
 const entry2Url = 'api/2/subscriptionEntries/2'
 const expectedError = 'expected error'
 
+function ToggleUnseenTestComponent() {
+  const {
+    showUnseenEntries,
+    setShowUnseenEntries,
+  } = useSettings()
+
+  return (
+    <button
+      data-testid='toggle-unseen'
+      onClick={() => setShowUnseenEntries(!showUnseenEntries)}
+    />
+  )
+}
+
 describe('EntryStreamPage', () => {
 
   let history
@@ -88,6 +103,7 @@ describe('EntryStreamPage', () => {
           <Router history={history}>
             <SubscriptionProvider>
               <SettingsProvider>
+                <ToggleUnseenTestComponent />
                 <EntryStreamPage/>
               </SettingsProvider>
             </SubscriptionProvider>
@@ -508,5 +524,25 @@ describe('EntryStreamPage', () => {
 
     expect(screen.getAllByRole('dialog-error-message')[0]).toHaveTextContent(expectedError)
     expect(screen.getAllByRole('dialog-error-message')[1]).toHaveTextContent(expectedError)
+  })
+
+  it('should refresh entries if "showUnseenEntries" changed', async () => {
+    await renderComponent()
+    fetch.resetMocks()
+
+    fetch.jsonResponse({
+      content: [{...entry3}, {...entry4}],
+    })
+
+    await act(async () => fireEvent.click(screen.getByTestId('toggle-unseen')))
+
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=false'
+    })
+
+    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('title3')).toBeInTheDocument()
+    expect(screen.queryByTitle('title4')).toBeInTheDocument()
   })
 })

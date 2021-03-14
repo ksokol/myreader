@@ -10,7 +10,7 @@ const DialogWrapper = React.forwardRef(({header, body, footer, onClickClose}, re
   return ReactDom.createPortal(
     <dialog ref={ref}>
       <div className='my-dialog'>
-        <IconButton className='my-dialog__close-button' onClick={onClickClose} type='times' />
+        <IconButton className='my-dialog__close-button' onClick={onClickClose} type='times' role='close-dialog' />
         {header && <div className='my-dialog__header'>{header}</div>}
         {body && <div className='my-dialog__body'>{body}</div>}
         {footer && <div className='my-dialog__footer'>{footer}</div>}

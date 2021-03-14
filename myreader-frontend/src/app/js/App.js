@@ -7,12 +7,10 @@ import {
   ENTRIES_URL,
   LOGIN_PAGE_PATH,
   LOGOUT_PAGE_PATH,
-  SETTINGS_URL,
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTION_PAGE_PATH,
   SUBSCRIPTIONS_URL
 } from './constants'
-import {SettingsPage} from './pages/SettingsPage/SettingsPage'
 import {EntryStreamPage} from './pages/EntryStreamPage/EntryStreamPage'
 import {SidenavLayout} from './components/SidenavLayout/SidenavLayout'
 import {SubscriptionProvider} from './contexts/subscription/SubscriptionProvider'
@@ -34,7 +32,6 @@ const withSidenav = () => (
         <Route exact={true} path={SUBSCRIPTION_ADD_URL} component={SubscribePage}/>
         <Route exact={true} path={SUBSCRIPTION_PAGE_PATH} component={SubscriptionPage}/>
         <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>
-        <Route exact={true} path={SETTINGS_URL} component={SettingsPage}/>
       </Switch>
     </SidenavLayout>
   </SubscriptionProvider>

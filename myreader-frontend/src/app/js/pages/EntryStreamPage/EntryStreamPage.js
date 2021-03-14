@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo} from 'react'
+import React, {useEffect, useState, useMemo} from 'react'
 import {useHotkeys} from 'react-hotkeys-hook'
 import {IconButton} from '../../components'
 import {useAutofocusEntry} from './useAutofocusEntry'
@@ -13,6 +13,7 @@ import {useSubscriptions} from '../../hooks/subscriptions'
 export function EntryStreamPage() {
   const {showUnseenEntries} = useSettings()
   const searchParams = useSearchParams()
+  const [showingUnseenEntries, setShowingUnseenEntries] = useState(showUnseenEntries)
 
   const query = useMemo(() => {
     const showAll = showUnseenEntries === true ? false : undefined
@@ -88,6 +89,13 @@ export function EntryStreamPage() {
       toast(lastError.data, {error: true})
     }
   }, [lastError])
+
+  useEffect(() => {
+    if (showUnseenEntries !== showingUnseenEntries) {
+      clearEntries()
+      setShowingUnseenEntries(showUnseenEntries)
+    }
+  }, [clearEntries, showUnseenEntries, showingUnseenEntries])
 
   return (
     <ListLayout

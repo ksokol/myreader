@@ -2,8 +2,6 @@ export const isDefined = value => typeof value !== 'undefined'
 
 const isString = value => value !== null && typeof value === 'string'
 
-export const isObject = value => value !== null && typeof value === 'object'
-
 export const isBoolean = value => typeof value === 'boolean'
 
 const isDate = value => value instanceof Date

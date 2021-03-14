@@ -6,13 +6,13 @@ import {NavigationItem} from './NavigationItem'
 import {SubscriptionNavigationItem} from './SubscriptionNavigation/SubscriptionNavigationItem'
 import {
   LOGOUT_PAGE_PATH,
-  SETTINGS_URL,
   SUBSCRIPTION_ADD_URL,
   SUBSCRIPTIONS_URL
 } from '../../constants'
 import {useSettings} from '../../contexts/settings'
 import {useSubscriptions} from '../../hooks/subscriptions'
 import {BookmarkNavigationItem} from './BookmarkNavigationItem/BookmarkNavigationItem'
+import {SettingsNavigationItem} from './SettingsNavigationItem/SettingsNavigationItem'
 
 export function Navigation({onClick}) {
   const {
@@ -48,9 +48,7 @@ export function Navigation({onClick}) {
         to={SUBSCRIPTIONS_URL}
         onClick={onClick}
       />
-      <NavigationItem
-        title='Settings'
-        to={SETTINGS_URL}
+      <SettingsNavigationItem
         onClick={onClick}
       />
       <NavigationItem
