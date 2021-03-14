@@ -5,6 +5,7 @@ import {act, fireEvent, render, screen} from '@testing-library/react'
 import {Navigation} from './Navigation'
 import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
+import {SecurityProvider} from '../../contexts/security/SecurityProvider'
 
 jest.unmock('react-router')
 jest.unmock('react-router-dom')
@@ -17,11 +18,13 @@ describe('Navigation', () => {
     return await act(async () => {
       return await render(
         <Router history={history}>
-          <SettingsProvider>
-            <SubscriptionProvider>
-              <Navigation {...props} />
-            </SubscriptionProvider>
-          </SettingsProvider>
+          <SecurityProvider>
+            <SettingsProvider>
+              <SubscriptionProvider>
+                <Navigation {...props} />
+              </SubscriptionProvider>
+            </SettingsProvider>
+          </SecurityProvider>
         </Router>
       )
     })
@@ -31,6 +34,7 @@ describe('Navigation', () => {
     history = createMemoryHistory()
 
     localStorage.setItem('myreader-settings', '{"showUnseenEntries": false}')
+    localStorage.setItem('myreader-security', '{"authorized":true}')
 
     props = {
       onClick: jest.fn()
@@ -95,13 +99,9 @@ describe('Navigation', () => {
 
     fireEvent.click(screen.getByText('Settings'))
     fireEvent.click(screen.getByText('Add subscription'))
-
     fireEvent.click(screen.getByText('Logout'))
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual('/app/logout')
-    expect(history.location.search).toEqual('')
 
-    expect(props.onClick).toHaveBeenCalledTimes(7)
+    expect(props.onClick).toHaveBeenCalledTimes(6)
   })
 
   it('should render navigation items with subscriptions.unseen > 0', async () => {

@@ -6,7 +6,6 @@ import {
   BOOKMARK_PAGE_PATH,
   ENTRIES_URL,
   LOGIN_PAGE_PATH,
-  LOGOUT_PAGE_PATH,
   SUBSCRIPTION_PAGE_PATH,
   SUBSCRIPTIONS_URL
 } from './constants'
@@ -16,7 +15,6 @@ import {SubscriptionProvider} from './contexts/subscription/SubscriptionProvider
 import {SubscriptionListPage} from './pages/SubscriptionListPage/SubscriptionListPage'
 import {LoadingBar} from './components/LoadingBar/LoadingBar'
 import {LoginPage} from './pages/LoginPage/LoginPage'
-import {LogoutPage} from './pages/LogoutPage/LogoutPage'
 import {BookmarkListPage} from './pages/BookmarkListPage/BookmarkListPage'
 import {SubscriptionPage} from './pages/SubscriptionPage/SubscriptionPage'
 import {Secured} from './components/Secured/Secured'
@@ -39,7 +37,6 @@ const App = () => {
     <React.Fragment>
       <Switch>
         <Route exact={true} path={LOGIN_PAGE_PATH} component={LoginPage}/>
-        <Route exact={true} path={LOGOUT_PAGE_PATH} component={LogoutPage}/>
         <Route path={APP_URL} component={() => Secured(withSidenav)}/>
         <Redirect to={LOGIN_PAGE_PATH} />
       </Switch>

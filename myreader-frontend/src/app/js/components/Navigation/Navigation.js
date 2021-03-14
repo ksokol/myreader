@@ -13,6 +13,7 @@ import {useSubscriptions} from '../../hooks/subscriptions'
 import {BookmarkNavigationItem} from './BookmarkNavigationItem/BookmarkNavigationItem'
 import {SettingsNavigationItem} from './SettingsNavigationItem/SettingsNavigationItem'
 import {SubscribeNavigationItem} from './SubscribeNavigationItem/SubscribeNavigationItem'
+import {LogoutNavigationItem} from './LogoutNavigationItem/LogoutNavigationItem'
 
 export function Navigation({onClick}) {
   const {
@@ -54,12 +55,7 @@ export function Navigation({onClick}) {
       <SubscribeNavigationItem
         onClick={onClick}
       />
-      <NavigationItem
-        className='my-navigation__item--red'
-        title='Logout'
-        to={LOGOUT_PAGE_PATH}
-        onClick={onClick}
-      />
+      <LogoutNavigationItem />
     </ul>
   )
 }
