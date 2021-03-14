@@ -1,7 +1,7 @@
 import React from 'react'
 import {SubscriptionNavigationItem} from './SubscriptionNavigationItem'
 import {mount} from 'enzyme'
-import {ENTRIES_URL} from '../../../constants'
+import {ENTRIES_PAGE_PATH} from '../../../constants'
 import {useSearchParams} from '../../../hooks/router'
 
 /* eslint-disable react/prop-types */
@@ -97,7 +97,7 @@ describe('SubscriptionNavigationItem', () => {
       title: itemTitle,
       badgeCount: 2,
       to: {
-        pathname: ENTRIES_URL,
+        pathname: ENTRIES_PAGE_PATH,
         search: '?feedTagEqual=tag&feedUuidEqual=uuid'
       }
     }))
@@ -203,7 +203,7 @@ describe('SubscriptionNavigationItem', () => {
       expect(createWrapper().itemProps()).toEqual(expect.objectContaining({
         title: itemTitle,
         to : {
-          pathname: ENTRIES_URL,
+          pathname: ENTRIES_PAGE_PATH,
           search: '?feedUuidEqual=uuid'
         }
       }))
@@ -215,7 +215,7 @@ describe('SubscriptionNavigationItem', () => {
       expect(createWrapper().itemProps()).toEqual(expect.objectContaining({
         title: itemTitle,
         to : {
-          pathname: ENTRIES_URL,
+          pathname: ENTRIES_PAGE_PATH,
           search: '?feedTagEqual=tag'
         }
       }))
@@ -228,7 +228,7 @@ describe('SubscriptionNavigationItem', () => {
       expect(createWrapper().itemProps()).toEqual(expect.objectContaining({
         title: itemTitle,
         to : {
-          pathname: ENTRIES_URL
+          pathname: ENTRIES_PAGE_PATH
         }
       }))
     })
@@ -240,7 +240,7 @@ describe('SubscriptionNavigationItem', () => {
         title: 'subscription 1',
         badgeCount: 1,
         to : {
-          pathname: ENTRIES_URL,
+          pathname: ENTRIES_PAGE_PATH,
           search: '?feedTagEqual=tag&feedUuidEqual=uuid1'
         }
       }))
@@ -248,7 +248,7 @@ describe('SubscriptionNavigationItem', () => {
         title: 'subscription 2',
         badgeCount: 0,
         to: {
-          pathname: ENTRIES_URL,
+          pathname: ENTRIES_PAGE_PATH,
           search: '?feedTagEqual=tag&feedUuidEqual=uuid2'
         }
       }))

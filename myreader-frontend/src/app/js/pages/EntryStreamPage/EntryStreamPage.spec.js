@@ -545,4 +545,17 @@ describe('EntryStreamPage', () => {
     expect(screen.queryByTitle('title3')).toBeInTheDocument()
     expect(screen.queryByTitle('title4')).toBeInTheDocument()
   })
+
+  it('should fetch all entries if "seenEqual" is set to "*"', async () => {
+    await act(async () => {
+      history.push({
+        search: 'seenEqual=*&entryTagEqual=a'
+      })
+    })
+    await renderComponent()
+
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'api/2/subscriptionEntries?entryTagEqual=a'
+    })
+  })
 })

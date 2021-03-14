@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {NavigationItem} from '../NavigationItem'
-import {ENTRIES_URL} from '../../../constants'
+import {ENTRIES_PAGE_PATH} from '../../../constants'
 import {useSearchParams} from '../../../hooks/router'
 
 function isOpen(searchParams, item) {
@@ -21,22 +21,22 @@ function isSelected(searchParams, tag, uuid) {
 function generateEntriesPath(feedTagEqual, feedUuidEqual) {
   if (feedTagEqual && feedUuidEqual) {
     return {
-      pathname: ENTRIES_URL,
+      pathname: ENTRIES_PAGE_PATH,
       search: `?feedTagEqual=${feedTagEqual}&feedUuidEqual=${feedUuidEqual}`,
     }
   } else if (feedTagEqual) {
     return {
-      pathname: ENTRIES_URL,
+      pathname: ENTRIES_PAGE_PATH,
       search: `?feedTagEqual=${feedTagEqual}`,
     }
   }
   else if (feedUuidEqual) {
     return {
-      pathname: ENTRIES_URL,
+      pathname: ENTRIES_PAGE_PATH,
       search: `?feedUuidEqual=${feedUuidEqual}`,
     }
   }
-  return {pathname: ENTRIES_URL}
+  return {pathname: ENTRIES_PAGE_PATH}
 }
 
 export function SubscriptionNavigationItem(props) {

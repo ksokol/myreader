@@ -1,24 +1,21 @@
 import React, {useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
-import {useRouteMatch} from 'react-router-dom'
 import {NavigationItem} from '../NavigationItem'
-import {BOOKMARK_PAGE_PATH} from '../../../constants'
+import {ENTRIES_PAGE_PATH} from '../../../constants'
 import {useEntryTags} from './entryTags'
 import {useSearchParams} from '../../../hooks/router'
 import {toast} from '../../Toast'
 
 export function BookmarkNavigationItem({onClick}) {
-  const match = useRouteMatch(BOOKMARK_PAGE_PATH)
   const searchParams = useSearchParams()
-  const [fetched, setFetched] = useState(false)
+  const [open, setOpen] = useState(false)
   const {entryTags, error, fetchEntryTags} = useEntryTags()
 
   useEffect(() => {
-    if (match && !fetched) {
-      setFetched(true)
+    if (open) {
       fetchEntryTags()
     }
-  }, [fetchEntryTags, fetched, match])
+  }, [fetchEntryTags, open])
 
   useEffect(() => {
     if (error) {
@@ -30,9 +27,13 @@ export function BookmarkNavigationItem({onClick}) {
     <NavigationItem
       key='bookmarks'
       title='Bookmarks'
-      to={BOOKMARK_PAGE_PATH}
+      to={{}}
+      onClick={event => {
+        event.preventDefault()
+        setOpen(!open)
+      }}
     />,
-    match && (
+    open && (
       <ul
         key='items'
       >
@@ -41,8 +42,8 @@ export function BookmarkNavigationItem({onClick}) {
             key={tag}
             selected={searchParams.entryTagEqual === tag}
             to={{
-              pathname: BOOKMARK_PAGE_PATH,
-              search: `?entryTagEqual=${tag}`
+              pathname: ENTRIES_PAGE_PATH,
+              search: `?seenEqual=*&entryTagEqual=${tag}`
             }}
             onClick={onClick}
             title={tag}

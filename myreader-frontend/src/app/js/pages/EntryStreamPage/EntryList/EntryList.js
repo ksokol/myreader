@@ -1,8 +1,8 @@
 import './EntryList.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Button} from '../Buttons'
-import IntersectionObserver from '../IntersectionObserver/IntersectionObserver'
+import {Button} from '../../../components/Buttons'
+import IntersectionObserver from '../../../components/IntersectionObserver/IntersectionObserver'
 import {EntryAutoFocus} from './Entry/EntryAutoFocus'
 
 const entry = (entryProps, props) => (

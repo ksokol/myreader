@@ -1,7 +1,7 @@
 import './EntryContent.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {useSettings} from '../../../../contexts/settings'
+import {useSettings} from '../../../../../contexts/settings'
 
 export function EntryContent({content, maybeVisible}) {
   const {showEntryDetails} = useSettings()

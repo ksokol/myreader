@@ -2,7 +2,7 @@ import './LoginPage.css'
 import React, {useEffect} from 'react'
 import {Redirect} from 'react-router-dom'
 import {LoginForm} from './LoginForm/LoginForm'
-import {ENTRIES_URL} from '../../constants'
+import {ENTRIES_PAGE_PATH} from '../../constants'
 import {useSecurity} from '../../contexts/security'
 import {useLogin} from './login'
 
@@ -22,7 +22,7 @@ export function LoginPage() {
 
   return authorized ? (
     <Redirect
-      to={ENTRIES_URL}
+      to={ENTRIES_PAGE_PATH}
     />
   ) : (
     <div className='login-page'>

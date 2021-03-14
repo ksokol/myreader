@@ -1,8 +1,8 @@
 import './EntryTitle.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Badge} from '../../..'
-import {TimeAgo} from '../../../TimeAgo/TimeAgo'
+import {Badge} from '../../../../../components'
+import {TimeAgo} from '../../../../../components/TimeAgo/TimeAgo'
 
 export const EntryTitle = props => {
   const {

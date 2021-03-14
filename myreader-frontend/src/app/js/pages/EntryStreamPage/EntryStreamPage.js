@@ -5,8 +5,8 @@ import {useAutofocusEntry} from './useAutofocusEntry'
 import {useSettings} from '../../contexts/settings'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
 import {useSearchParams} from '../../hooks/router'
-import {EntryList} from '../../components/EntryList/EntryList'
-import {useEntries} from '../../hooks/entries'
+import {EntryList} from './EntryList/EntryList'
+import {useEntries} from './entries'
 import {toast} from '../../components/Toast'
 import {useSubscriptions} from '../../hooks/subscriptions'
 
@@ -16,9 +16,15 @@ export function EntryStreamPage() {
   const [showingUnseenEntries, setShowingUnseenEntries] = useState(showUnseenEntries)
 
   const query = useMemo(() => {
-    const showAll = showUnseenEntries === true ? false : undefined
-    const seenEqual = searchParams.seenEqual === undefined ? showAll : searchParams.seenEqual
-    return {...searchParams, seenEqual}
+    const params = {...searchParams}
+    if (searchParams.seenEqual === '*') {
+      params.seenEqual = undefined
+    } else {
+      const showAll = showUnseenEntries === true ? false : undefined
+      params.seenEqual = searchParams.seenEqual === undefined ? showAll : searchParams.seenEqual
+    }
+
+    return params
   }, [searchParams, showUnseenEntries])
 
   const {

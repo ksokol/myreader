@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useReducer} from 'react'
-import {entryApi} from '../api'
+import {entryApi} from '../../api'
 
 function reducer(state, action) {
   switch(action.type) {

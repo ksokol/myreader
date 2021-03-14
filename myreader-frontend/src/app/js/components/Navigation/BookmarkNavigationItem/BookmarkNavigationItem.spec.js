@@ -33,16 +33,18 @@ describe('BookmarkNavigationItem', () => {
     fetch.jsonResponse(['tag1', 'tag2'])
   })
 
-  it('should render items if on bookmark route', async () => {
+  it('should render items', async () => {
     await renderComponent()
+    await act(async () => await fireEvent.click(screen.getByText('Bookmarks')))
 
     expect(screen.getByText('tag1')).toBeInTheDocument()
     expect(screen.getByText('tag2')).toBeInTheDocument()
   })
 
-  it('should not render items if on other route', async () => {
-    history.push('/other')
+  it('should render items', async () => {
     await renderComponent()
+    await act(async () => await fireEvent.click(screen.getByText('Bookmarks')))
+    await act(async () => await fireEvent.click(screen.getByText('Bookmarks')))
 
     expect(screen.queryByText('tag1')).not.toBeInTheDocument()
     expect(screen.queryByText('tag2')).not.toBeInTheDocument()
@@ -50,6 +52,7 @@ describe('BookmarkNavigationItem', () => {
 
   it('should fetch tags from endpoint if on bookmark route', async () => {
     await renderComponent()
+    await act(async () => await fireEvent.click(screen.getByText('Bookmarks')))
 
     expect(fetch.requestCount()).toEqual(1)
     expect(fetch.mostRecent()).toMatchGetRequest({
@@ -57,38 +60,21 @@ describe('BookmarkNavigationItem', () => {
     })
   })
 
-  it('should not fetch tags from endpoint if on other route', async () => {
-    history.push('/other')
-    await renderComponent()
-
-    expect(fetch.requestCount()).toEqual(0)
-  })
-
-  it('should navigate to bookmark route', async () => {
-    await renderComponent()
-
-    await act(async () => await fireEvent.click(screen.getByText('Bookmarks')))
-
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual('/app/bookmark')
-    expect(history.location.search).toEqual('')
-    expect(props.onClick).not.toHaveBeenCalled()
-  })
-
   it('should navigate to route if item clicked', async () => {
     await renderComponent()
-
+    await act(async () => await fireEvent.click(screen.getByText('Bookmarks')))
     await act(async () => await fireEvent.click(screen.getByText('tag1')))
 
     expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual('/app/bookmark')
-    expect(history.location.search).toEqual('?entryTagEqual=tag1')
+    expect(history.location.pathname).toEqual('/app/entries')
+    expect(history.location.search).toEqual('?seenEqual=*&entryTagEqual=tag1')
     expect(props.onClick).toHaveBeenCalled()
   })
 
   it('should show error message if tags could not be fetched', async () => {
     fetch.rejectResponse('expected error')
     await renderComponent()
+    await act(async () => await fireEvent.click(screen.getByText('Bookmarks')))
 
     expect(screen.getByRole('dialog-error-message')).toHaveTextContent('expected error')
   })
@@ -98,12 +84,14 @@ describe('BookmarkNavigationItem', () => {
       search: '?entryTagEqual=tag1'
     })
     await renderComponent()
+    await act(async () => await fireEvent.click(screen.getByText('Bookmarks')))
 
     expect(screen.queryByRole('selected-navigation-item')).toHaveTextContent('tag1')
   })
 
   it('should not select item', async () => {
     await renderComponent()
+    await act(async () => await fireEvent.click(screen.getByText('Bookmarks')))
 
     expect(screen.queryByRole('selected-navigation-item')).not.toBeInTheDocument()
   })

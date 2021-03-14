@@ -1,10 +1,10 @@
 import React from 'react'
 import {mount} from 'enzyme'
 import {EntryContent} from './EntryContent'
-import {useSettings} from '../../../../contexts/settings'
+import {useSettings} from '../../../../../contexts/settings'
 
 /* eslint-disable react/prop-types */
-jest.mock('../../../../contexts/settings', () => ({
+jest.mock('../../../../../contexts/settings', () => ({
   useSettings: jest.fn()
 }))
 /* eslint-enable */

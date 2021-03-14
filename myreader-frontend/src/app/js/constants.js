@@ -1,7 +1,6 @@
 export const APP_URL = '/app'
 export const LOGIN_PAGE_PATH = `${APP_URL}/login`
-export const ENTRIES_URL = `${APP_URL}/entries`
-export const BOOKMARK_PAGE_PATH = `${APP_URL}/bookmark`
+export const ENTRIES_PAGE_PATH = `${APP_URL}/entries`
 export const SUBSCRIPTION_PAGE_PATH = `${APP_URL}/subscriptions/:uuid`
 export const SUBSCRIPTIONS_URL = `${APP_URL}/subscriptions`
 
