@@ -40,7 +40,8 @@ describe('Navigation', () => {
       content: [
         {title: 'subscription 1', uuid: '1', tag: 'group 1', unseen: 2},
         {title: 'subscription 2', uuid: '2', tag: 'group 2', unseen: 0},
-        {title: 'subscription 3', uuid: '3', tag: null, unseen: 0}
+        {title: 'subscription 3', uuid: '3', tag: null, unseen: 0},
+        {title: 'subscription 4', uuid: '4', tag: null, unseen: 3}
       ]
     })
   })
@@ -52,6 +53,7 @@ describe('Navigation', () => {
     expect(screen.getByText('group 1')).toBeInTheDocument()
     expect(screen.getByText('group 2')).toBeInTheDocument()
     expect(screen.getByText('subscription 3')).toBeInTheDocument()
+    expect(screen.getByText('subscription 4')).toBeInTheDocument()
     expect(screen.getByText('Subscriptions')).toBeInTheDocument()
     expect(screen.getByText('Settings')).toBeInTheDocument()
     expect(screen.getByText('Add subscription')).toBeInTheDocument()
@@ -81,6 +83,11 @@ describe('Navigation', () => {
     expect(history.location.pathname).toEqual('/app/entries')
     expect(history.location.search).toEqual('?feedUuidEqual=3')
 
+    fireEvent.click(screen.getByText('subscription 4'))
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/app/entries')
+    expect(history.location.search).toEqual('?feedUuidEqual=4')
+
     fireEvent.click(screen.getByText('Subscriptions'))
     expect(history.action).toEqual('PUSH')
     expect(history.location.pathname).toEqual('/app/subscriptions')
@@ -101,7 +108,7 @@ describe('Navigation', () => {
     expect(history.location.pathname).toEqual('/app/logout')
     expect(history.location.search).toEqual('')
 
-    expect(props.onClick).toHaveBeenCalledTimes(8)
+    expect(props.onClick).toHaveBeenCalledTimes(9)
   })
 
   it('should render navigation items with subscriptions.unseen > 0', async () => {
@@ -113,9 +120,27 @@ describe('Navigation', () => {
     expect(screen.getByText('group 1')).toBeInTheDocument()
     expect(screen.queryByText('group 2')).not.toBeInTheDocument()
     expect(screen.queryByText('subscription 3')).not.toBeInTheDocument()
+    expect(screen.queryByText('subscription 4')).toBeInTheDocument()
     expect(screen.getByText('Subscriptions')).toBeInTheDocument()
     expect(screen.getByText('Settings')).toBeInTheDocument()
     expect(screen.getByText('Add subscription')).toBeInTheDocument()
     expect(screen.getByText('Logout')).toBeInTheDocument()
+  })
+
+  it('should render badge', async () => {
+    // eslint-disable-next-line unicorn/consistent-function-scoping
+    const byText = text => {
+      const sibling = screen.getByText(text).nextElementSibling
+      return sibling ? sibling.textContent : null
+    }
+
+    await renderComponent()
+
+    expect(byText('all')).toEqual('5')
+    expect(byText('group 1')).toEqual('2')
+    expect(byText('group 2')).toEqual('0')
+    expect(byText('subscription 3')).toEqual('0')
+    expect(byText('subscription 4')).toEqual('3')
+    expect(byText('Bookmarks')).toBeNull()
   })
 })

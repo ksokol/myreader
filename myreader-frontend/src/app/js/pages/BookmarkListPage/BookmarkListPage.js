@@ -1,10 +1,6 @@
-import './BookmarkListPage.css'
 import React, {useEffect, useMemo} from 'react'
-import {Link} from 'react-router-dom'
-import {Chips} from '../../components/Chips/Chips'
 import {EntryList} from '../../components/EntryList/EntryList'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
-import {BOOKMARK_URL} from '../../constants'
 import {toast} from '../../components/Toast'
 import IconButton from '../../components/Buttons/IconButton/IconButton'
 import {useSearchParams} from '../../hooks/router'
@@ -22,12 +18,10 @@ export function BookmarkListPage() {
 
   const {
     entries,
-    entryTags,
     links,
     loading,
     lastError,
     fetchEntries,
-    fetchEntryTags,
     changeEntry,
     clearEntries,
   } = useEntries()
@@ -39,15 +33,10 @@ export function BookmarkListPage() {
   const refresh = () => {
     if (!loading) {
       clearEntries()
-      fetchEntryTags()
       fetchEntries({query})
       fetchSubscriptions()
     }
   }
-
-  useEffect(() => {
-    fetchEntryTags()
-  }, [fetchEntryTags])
 
   useEffect(() => {
     fetchEntries({query})
@@ -74,27 +63,13 @@ export function BookmarkListPage() {
         />
       }
       listPanel={
-        <React.Fragment>
-          <Chips
-            keyFn={itemProps => itemProps}
-            className='my-bookmark-list__tags'
-            values={entryTags}
-            selected={searchParams.entryTagEqual}
-            renderItem={item => (
-              <Link
-                to={{pathname: BOOKMARK_URL, search: `?entryTagEqual=${item}`}}>
-                {item}
-              </Link>
-            )}
-          />
-          <EntryList
-            entries={entries}
-            links={links}
-            loading={loading}
-            onChangeEntry={changeEntry}
-            onLoadMore={fetchEntries}
-          />
-        </React.Fragment>
+        <EntryList
+          entries={entries}
+          links={links}
+          loading={loading}
+          onChangeEntry={changeEntry}
+          onLoadMore={fetchEntries}
+        />
       }
     />
   )

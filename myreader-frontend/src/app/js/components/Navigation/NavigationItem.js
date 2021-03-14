@@ -1,27 +1,27 @@
-import {Badge} from '..'
 import React from 'react'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
-import {isDefined} from '../../shared/utils'
 import {Link} from 'react-router-dom'
+import Badge from '../Badge/Badge'
 
-const NavigationItem = props => {
-  const classes = classNames(
-    'my-navigation__item',
-    {'my-navigation__item--selected': props.selected},
-    props.className
-  )
-
+export function NavigationItem({
+  className = '',
+  title,
+  selected,
+  to,
+  badgeCount,
+  onClick,
+}) {
   return (
     <li
-      className={classes}
+      className={`my-navigation__item ${className}`}
+      role={selected ? 'selected-navigation-item' : 'navigation-item'}
     >
       <Link
-        to={props.to}
-        onClick={props.onClick}
+        to={to}
+        onClick={event => onClick && onClick(event)}
       >
-        <span>{props.title}</span>
-        {isDefined(props.badgeCount) && <Badge text={props.badgeCount} />}
+        <span>{title}</span>
+        {badgeCount >= 0 && <Badge text={badgeCount} />}
       </Link>
     </li>
   )
@@ -33,7 +33,5 @@ NavigationItem.propTypes = {
   title: PropTypes.string.isRequired,
   badgeCount: PropTypes.number,
   selected: PropTypes.bool,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func
 }
-
-export default NavigationItem

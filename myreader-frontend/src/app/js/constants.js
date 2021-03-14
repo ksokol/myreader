@@ -2,14 +2,13 @@ export const APP_URL = '/app'
 export const LOGIN_PAGE_PATH = `${APP_URL}/login`
 export const LOGOUT_PAGE_PATH = `${APP_URL}/logout`
 export const ENTRIES_URL = `${APP_URL}/entries`
-export const BOOKMARK_URL = `${APP_URL}/bookmark`
+export const BOOKMARK_PAGE_PATH = `${APP_URL}/bookmark`
 export const SUBSCRIPTION_PAGE_PATH = `${APP_URL}/subscriptions/:uuid`
 export const SUBSCRIPTIONS_URL = `${APP_URL}/subscriptions`
 export const SUBSCRIPTION_ADD_URL = `${APP_URL}/addSubscription`
 export const SETTINGS_URL = `${APP_URL}/settings`
 
 export const API_2 = 'api/2'
-export const ENTRY_AVAILABLE_TAGS = `${API_2}/subscriptionEntries/availableTags`
 export const SUBSCRIPTIONS = `${API_2}/subscriptions`
 export const SUBSCRIPTION_ENTRIES = `${API_2}/subscriptionEntries`
 

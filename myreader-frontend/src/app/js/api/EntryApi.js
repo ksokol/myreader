@@ -1,4 +1,4 @@
-import {ENTRY_AVAILABLE_TAGS, SUBSCRIPTION_ENTRIES} from '../constants'
+import {SUBSCRIPTION_ENTRIES} from '../constants'
 import {toLink, toUrlString} from './links'
 import {Api} from './Api'
 
@@ -16,13 +16,6 @@ function toEntries(raw = {}) {
 }
 
 export class EntryApi extends Api {
-
-  fetchEntryTags = () => {
-    return this.request({
-      url: ENTRY_AVAILABLE_TAGS,
-      method: 'GET',
-    })
-  }
 
   fetchEntries = ({path = SUBSCRIPTION_ENTRIES, query}) => {
     return this.request({

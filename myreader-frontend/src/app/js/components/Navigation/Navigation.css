@@ -32,7 +32,7 @@
   background-color: rgba(158, 158, 158, 0.2);
 }
 
-.my-navigation__item--selected {
+.my-navigation__item[role="selected-navigation-item"] {
   background-color: #e5e5e5;
 }
 

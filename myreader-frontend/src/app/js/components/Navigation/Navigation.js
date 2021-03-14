@@ -2,10 +2,9 @@ import './Navigation.css'
 import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import createSubscriptionNavigation from './SubscriptionNavigation/createSubscriptionNavigation'
-import NavigationItem from './NavigationItem'
+import {NavigationItem} from './NavigationItem'
 import {SubscriptionNavigationItem} from './SubscriptionNavigation/SubscriptionNavigationItem'
 import {
-  BOOKMARK_URL,
   LOGOUT_PAGE_PATH,
   SETTINGS_URL,
   SUBSCRIPTION_ADD_URL,
@@ -13,12 +12,9 @@ import {
 } from '../../constants'
 import {useSettings} from '../../contexts/settings'
 import {useSubscriptions} from '../../hooks/subscriptions'
+import {BookmarkNavigationItem} from './BookmarkNavigationItem/BookmarkNavigationItem'
 
-export function Navigation(props) {
-  const {
-    onClick
-  } = props
-
+export function Navigation({onClick}) {
   const {
     subscriptions,
     fetchSubscriptions
@@ -29,7 +25,6 @@ export function Navigation(props) {
   }, [fetchSubscriptions])
 
   const {showUnseenEntries} = useSettings()
-
   const filteredSubscriptions = subscriptions.filter(it => showUnseenEntries ? it.unseen > 0 : true)
 
   return (
@@ -42,36 +37,29 @@ export function Navigation(props) {
               item={item}
               onClick={onClick}
             />
-          ),
-          <NavigationItem
-            key='subscriptions'
-            title='Subscriptions'
-            to={SUBSCRIPTIONS_URL}
-            onClick={onClick}
-          />,
-          <NavigationItem
-            key='bookmarks'
-            title='Bookmarks'
-            to={BOOKMARK_URL}
-            onClick={onClick}
-          />,
-          <NavigationItem
-            key='settings'
-            title='Settings'
-            to={SETTINGS_URL}
-            onClick={onClick}
-          />,
-          <NavigationItem
-            key='add subscription'
-            className='my-navigation__item--blue'
-            title='Add subscription'
-            to={SUBSCRIPTION_ADD_URL}
-            onClick={onClick}
-          />
+          )
         ]
       }
+      <BookmarkNavigationItem
+        onClick={onClick}
+      />
       <NavigationItem
-        key='logout'
+        title='Subscriptions'
+        to={SUBSCRIPTIONS_URL}
+        onClick={onClick}
+      />
+      <NavigationItem
+        title='Settings'
+        to={SETTINGS_URL}
+        onClick={onClick}
+      />
+      <NavigationItem
+        className='my-navigation__item--blue'
+        title='Add subscription'
+        to={SUBSCRIPTION_ADD_URL}
+        onClick={onClick}
+      />
+      <NavigationItem
         className='my-navigation__item--red'
         title='Logout'
         to={LOGOUT_PAGE_PATH}

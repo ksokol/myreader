@@ -1,5 +1,5 @@
 import {EntryApi} from './EntryApi'
-import {ENTRY_AVAILABLE_TAGS, SUBSCRIPTION_ENTRIES} from '../constants'
+import {SUBSCRIPTION_ENTRIES} from '../constants'
 import {exchange} from './exchange'
 
 jest.mock('./exchange', () => ({
@@ -13,22 +13,6 @@ describe('EntryApi', () => {
   beforeEach(() => {
     exchange.mockClear()
     entryApi = new EntryApi()
-  })
-
-  it('should call GET available tags endpoint', () => {
-    exchange.mockResolvedValueOnce({content: []})
-    entryApi.fetchEntryTags()
-
-    expect(exchange).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${ENTRY_AVAILABLE_TAGS}`
-    })
-  })
-
-  it('should return expected response when GET available tags succeeded', async () => {
-    exchange.mockResolvedValueOnce(['a', 'b'])
-
-    await expect(entryApi.fetchEntryTags()).resolves.toEqual(['a', 'b'])
   })
 
   it('should call GET subscription entry endpoint', () => {

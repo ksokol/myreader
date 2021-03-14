@@ -34,12 +34,6 @@ function reducer(state, action) {
       links: action.links
     }
   }
-  case 'add_entry_tags': {
-    return {
-      ...state,
-      entryTags: action.entryTags,
-    }
-  }
   case 'update_entry': {
     return {
       ...state,
@@ -50,7 +44,6 @@ function reducer(state, action) {
     return {
       ...state,
       entries: [],
-      entryTags: state.entryTags,
       links: {}
     }
   }
@@ -86,7 +79,6 @@ export function useEntries() {
     toggle: [],
     flag: [],
     entries: [],
-    entryTags: [],
     links: {},
   })
 
@@ -112,15 +104,6 @@ export function useEntries() {
       dispatch({type: 'error', error})
     }
   }, [state.entries])
-
-  const fetchEntryTags = useCallback(async () => {
-    try {
-      const entryTags = await entryApi.fetchEntryTags()
-      dispatch({type: 'add_entry_tags', entryTags})
-    } catch (error) {
-      dispatch({type: 'error', error})
-    }
-  }, [])
 
   useEffect(() => {
     async function run(entry) {
@@ -179,12 +162,10 @@ export function useEntries() {
 
   return {
     entries: state.entries,
-    entryTags: state.entryTags,
     links: state.links,
     loading: state.loading,
     lastError: state.lastError,
     fetchEntries,
-    fetchEntryTags,
     changeEntry,
     setSeenFlag,
     toggleSeenFlag,

@@ -1,7 +1,6 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {render, fireEvent, screen} from '@testing-library/react'
 import {Chips} from './Chips'
-import {Chip} from './Chip'
 
 const expectedValue = 'expected value'
 
@@ -9,113 +8,100 @@ describe('Chips', () => {
 
   let props
 
+  const renderComponent = () => {
+    return render(<Chips {...props} />)
+  }
+
   beforeEach(() => {
     props = {
       keyFn: value => `keyFn: ${value}`,
       values: ['value1', 'value2'],
-      selected: 'value2',
       placeholder: 'expected placeholder',
-      onSelect: jest.fn(),
+      onAdd: jest.fn(),
       onRemove: jest.fn(),
       renderItem: value => `rendered: ${value}`
     }
   })
 
-  const createComponent = () => shallow(<Chips {...props} />)
+  it('should render chips', () => {
+    renderComponent()
 
-  it('should create a chip component instance for every value in prop "values"', () => {
-    const children = createComponent().find(Chip)
-
-    expect(children.at(0).props()).toEqual(expect.objectContaining({
-      value: 'value1',
-      selected: 'value2',
-      disabled: false,
-      children: 'rendered: value1',
-      onSelect: props.onSelect,
-      onRemove: props.onRemove
-    }))
-
-    expect(children.at(1).props()).toEqual(expect.objectContaining({
-      value: 'value2',
-      selected: 'value2',
-      disabled: false,
-      children: 'rendered: value2',
-      onSelect: props.onSelect,
-      onRemove: props.onRemove
-    }))
+    expect(screen.getByText('rendered: value1')).toBeInTheDocument()
+    expect(screen.getAllByRole('chip-remove-button')[0]).toBeEnabled()
+    expect(screen.getByText('rendered: value2')).toBeInTheDocument()
+    expect(screen.getAllByRole('chip-remove-button')[1]).toBeEnabled()
   })
 
-  it('should return key from prop "keyFn" function for every chip component instance' , () => {
-    const children = createComponent().find(Chip)
+  it('should not render input if prop function "onAdd" is undefined', () => {
+    props.onAdd = undefined
+    renderComponent()
 
-    expect(children.at(0).key()).toEqual('keyFn: value1')
-    expect(children.at(1).key()).toEqual('keyFn: value2')
+    expect(screen.queryByPlaceholderText('expected placeholder')).not.toBeInTheDocument()
   })
 
-  it('should not render input component when prop "onAdd" function is undefined', () => {
-    const input = createComponent().find('Input')
+  it('should render input if prop function "onAdd" is defined', () => {
+    renderComponent()
 
-    expect(input.exists()).toEqual(false)
+    expect(screen.getByPlaceholderText('expected placeholder')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('expected placeholder')).toBeEnabled()
+    expect(screen.getByPlaceholderText('expected placeholder')).toHaveValue('')
   })
 
-  it('should render input component when prop "onAdd" function is defined', () => {
-    props.onAdd = jest.fn()
-    const input = createComponent().find('Input')
+  it('should trigger prop function "onAdd" if input value changed and enter key pressed', () => {
+    renderComponent()
 
-    expect(input.exists()).toEqual(true)
-  })
-
-  it('should pass expected props to input component', () => {
-    props.onAdd = jest.fn()
-    const input = createComponent().find('Input')
-
-    expect(input.props()).toContainObject({
-      disabled: false,
-      placeholder: 'expected placeholder',
-      value: ''
-    })
-  })
-
-  it('should trigger prop "onAdd" function when input value changed and enter key pressed', () => {
-    props.onAdd = jest.fn()
-    const wrapper = createComponent()
-    const input = wrapper.find('Input')
-
-    input.props().onChange({target: {value: expectedValue}})
-    input.invoke('onEnter')()
+    fireEvent.change(screen.getByPlaceholderText('expected placeholder'), {target: {value: expectedValue}})
+    fireEvent.keyUp(screen.getByPlaceholderText('expected placeholder'), {key: 'Enter', keyCode: 13})
 
     expect(props.onAdd).toHaveBeenCalledWith(expectedValue)
   })
 
-  it('should not trigger prop "onAdd" function when input value is an empty string and enter key pressed', () => {
-    props.onAdd = jest.fn()
-    const wrapper = createComponent()
-    const input = wrapper.find('Input')
+  it('should not trigger prop function "onAdd" if input value is an empty string and enter key pressed', () => {
+    renderComponent()
 
-    input.props().onChange({target: {value: ''}})
-    input.invoke('onEnter')()
+    fireEvent.change(screen.getByPlaceholderText('expected placeholder'), {target: {value: ''}})
+    fireEvent.keyUp(screen.getByPlaceholderText('expected placeholder'), {key: 'Enter', keyCode: 13})
 
     expect(props.onAdd).not.toHaveBeenCalled()
   })
 
-  it('should reset prop "value" of input component when input value changed and enter key pressed', () => {
-    props.onAdd = jest.fn()
-    const wrapper = createComponent()
-    const input = wrapper.find('Input')
+  it('should reset prop "value" of input if input value changed and enter key pressed', () => {
+    renderComponent()
 
-    input.props().onChange({target: {value: expectedValue}})
-    input.invoke('onEnter')()
+    fireEvent.change(screen.getByPlaceholderText('expected placeholder'), {target: {value: expectedValue}})
+    fireEvent.keyUp(screen.getByPlaceholderText('expected placeholder'), {key: 'Enter', keyCode: 13})
 
-    expect(wrapper.find('Input').prop('value')).toEqual('')
+    expect(screen.getByPlaceholderText('expected placeholder')).toHaveValue('')
   })
 
-  it('should not reset prop "value" of input component when input value changed but enter key not pressed', () => {
-    props.onAdd = jest.fn()
-    const wrapper = createComponent()
-    const input = wrapper.find('Input')
+  it('should not reset prop "value" of input if input value changed but enter key not pressed', () => {
+    renderComponent()
 
-    input.props().onChange({target: {value: expectedValue}})
+    fireEvent.change(screen.getByPlaceholderText('expected placeholder'), {target: {value: expectedValue}})
 
-    expect(wrapper.find('Input').prop('value')).toEqual(expectedValue)
+    expect(screen.getByPlaceholderText('expected placeholder')).toHaveValue(expectedValue)
+  })
+
+  it('should not render remove button if prop function "onRemove" function is undefined', () => {
+    props.onRemove = undefined
+    renderComponent()
+
+    expect(screen.queryByRole('chip-remove-button')).not.toBeInTheDocument()
+  })
+
+  it('should disable remove button if prop "disabled" is true', () => {
+    props.disabled = true
+    renderComponent()
+
+    expect(screen.getAllByRole('chip-remove-button')[0]).toBeDisabled()
+    expect(screen.getAllByRole('chip-remove-button')[1]).toBeDisabled()
+  })
+
+  it('should trigger prop function "onRemove" if remove button component clicked', () => {
+    renderComponent()
+
+    fireEvent.click(screen.getAllByRole('chip-remove-button')[0])
+
+    expect(props.onRemove).toHaveBeenCalledWith('value1')
   })
 })

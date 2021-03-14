@@ -3,7 +3,7 @@ import React from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import {
   APP_URL,
-  BOOKMARK_URL,
+  BOOKMARK_PAGE_PATH,
   ENTRIES_URL,
   LOGIN_PAGE_PATH,
   LOGOUT_PAGE_PATH,
@@ -30,7 +30,7 @@ const withSidenav = () => (
     <SidenavLayout>
       <Switch>
         <Route exact={true} path={ENTRIES_URL} component={EntryStreamPage}/>
-        <Route exact={true} path={BOOKMARK_URL} component={BookmarkListPage}/>
+        <Route exact={true} path={BOOKMARK_PAGE_PATH} component={BookmarkListPage}/>
         <Route exact={true} path={SUBSCRIPTION_ADD_URL} component={SubscribePage}/>
         <Route exact={true} path={SUBSCRIPTION_PAGE_PATH} component={SubscriptionPage}/>
         <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>

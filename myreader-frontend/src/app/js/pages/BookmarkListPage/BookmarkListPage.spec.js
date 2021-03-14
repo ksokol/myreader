@@ -81,38 +81,9 @@ describe('BookmarkListPage', () => {
 
     localStorage.setItem('myreader-settings', '{"showUnseenEntries": false}')
 
-    fetch.jsonResponseOnce(['expected tag1', 'expected tag2', 'expected tag3', 'expected tag4'])
     fetch.jsonResponseOnce({
       content: [{...entry1}, {...entry2}],
       next: 'http://localhost/test?nextpage',
-    })
-  })
-
-  it('should render expected entry tags as chips', async () => {
-    await renderComponent()
-
-    expect(screen.queryByText('expected tag1')).toBeInTheDocument()
-    expect(screen.queryByText('expected tag2')).toBeInTheDocument()
-    expect(screen.queryByText('expected tag3')).toBeInTheDocument()
-    expect(screen.queryByText('expected tag4')).toBeInTheDocument()
-  })
-
-  it('should render expected entry tag as selected chip', async () => {
-    history = createMemoryHistory()
-    await act(async () => {
-      history.push({search: 'entryTagEqual=expected tag2'})
-    })
-    await renderComponent()
-
-    expect(screen.getAllByRole('chip')[0]).not.toHaveClass('my-chip--selected')
-    expect(screen.getAllByRole('chip')[1]).toHaveClass('my-chip--selected')
-  })
-
-  it('should fetch entry tags', async () => {
-    await renderComponent()
-
-    expect(fetch.first()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries/availableTags'
     })
   })
 
@@ -141,17 +112,6 @@ describe('BookmarkListPage', () => {
     await renderComponent()
 
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
-  })
-
-  it('should fetch entries for selected entry tag', async () => {
-    fetch.jsonResponseOnce({content: [{...entry2}], next: null,})
-    await renderComponent()
-
-    await act(async () => fireEvent.click(screen.getByText('expected tag1')))
-
-    expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?entryTagEqual=expected tag1'
-    })
   })
 
   it('should load next page', async () => {
@@ -199,7 +159,6 @@ describe('BookmarkListPage', () => {
   it('should reload content on page when refresh icon button clicked', async () => {
     await renderComponent()
 
-    fetch.jsonResponseOnce(['expected tag5'])
     fetch.jsonResponseOnce({content: [{...entry2}, {...entry3}], next: null,})
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
@@ -212,11 +171,6 @@ describe('BookmarkListPage', () => {
     expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
     expect(screen.queryByTitle('title2')).toBeInTheDocument()
     expect(screen.queryByTitle('title3')).toBeInTheDocument()
-    expect(screen.queryByText('expected tag1')).not.toBeInTheDocument()
-    expect(screen.queryByText('expected tag2')).not.toBeInTheDocument()
-    expect(screen.queryByText('expected tag3')).not.toBeInTheDocument()
-    expect(screen.queryByText('expected tag4')).not.toBeInTheDocument()
-    expect(screen.queryByText('expected tag5')).toBeInTheDocument()
   })
 
   it('should reload content on page once if refresh icon button clicked twice', async () => {
@@ -231,15 +185,12 @@ describe('BookmarkListPage', () => {
       fireEvent.click(screen.getByRole('refresh'))
     })
 
-    expect(fetch.requestCount()).toEqual(3)
+    expect(fetch.requestCount()).toEqual(2)
     expect(fetch.mostRecent()).toMatchGetRequest({
       url: 'api/2/subscriptions'
     })
     expect(fetch.nthRequest(2)).toMatchGetRequest({
       url: 'api/2/subscriptionEntries?entryTagEqual=&seenEqual=true',
-    })
-    expect(fetch.nthRequest(3)).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries/availableTags',
     })
   })
 
@@ -261,7 +212,6 @@ describe('BookmarkListPage', () => {
 
   it('should show an error message if entries could not be fetched', async () => {
     fetch.mockReset()
-    fetch.jsonResponseOnce([])
     fetch.rejectResponse({data: `${expectedError}2`})
     await renderComponent()
 
