@@ -159,7 +159,7 @@ describe('SubscriptionNavigationItem', () => {
     expect(createWrapper().item().props()).toEqual(expect.objectContaining({selected: true}))
   })
 
-  it('should not flag navigation item as selected when "feedTagEqual" and "feedUuidEqual" are not set and uuid and tag are set to null', () => {
+  it('should flag navigation item as selected when "feedTagEqual" and "feedUuidEqual" are not set and uuid and tag are set to null', () => {
     props = {
       ...props,
       item: {
@@ -170,7 +170,7 @@ describe('SubscriptionNavigationItem', () => {
     }
     useSearchParams.mockReturnValue({})
 
-    expect(createWrapper().item().props()).toEqual(expect.objectContaining({selected: false}))
+    expect(createWrapper().item().props()).toEqual(expect.objectContaining({selected: true}))
   })
 
   describe('with feedTag set', () => {
