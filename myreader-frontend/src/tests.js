@@ -4,7 +4,6 @@ import {configure} from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
 import '../__mocks__/global/fetch'
 import {
-  toContainObject,
   toMatchGetRequest,
   toMatchPatchRequest,
   toMatchPostRequest,
@@ -25,7 +24,6 @@ afterEach(() => {
 })
 
 expect.extend({
-  toContainObject,
   toMatchPatchRequest,
   toMatchGetRequest,
   toMatchPostRequest,

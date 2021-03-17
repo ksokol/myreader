@@ -1,13 +1,12 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import {render, screen, fireEvent} from '@testing-library/react'
 import ConfirmButton from './ConfirmButton'
-import {Button} from '..'
+
+const expectButtonText = 'expect button text'
 
 describe('ConfirmButton', () => {
 
   let props
-
-  const createComponent = () => shallow(<ConfirmButton {...props}>expect button text</ConfirmButton>)
 
   beforeEach(() => {
     props = {
@@ -16,77 +15,71 @@ describe('ConfirmButton', () => {
   })
 
   it('should pass expected props to call to action button', () => {
-    expect(createComponent().find(Button).length).toEqual(1)
-    expect(createComponent().find(Button).props()).toContainObject({
-      disabled: false,
-      children: 'expect button text'
-    })
+    render(<ConfirmButton {...props}>{expectButtonText}</ConfirmButton>)
+
+    expect(screen.getByText(expectButtonText)).toBeVisible()
   })
 
   it('should disable call to action button when prop "disabled" is set to true', () => {
     props.disabled = true
+    render(<ConfirmButton {...props}>{expectButtonText}</ConfirmButton>)
 
-    expect(createComponent().find(Button).prop('disabled')).toEqual(true)
+    expect(screen.getByText(expectButtonText)).toBeDisabled()
   })
 
-  it('should pass additional props to call to action button', () => {
-    props.a = 'b'
-    props.c = 'd'
+  it('should pass additional prop to call to action button', () => {
+    props.type = 'submit'
+    render(<ConfirmButton {...props}>{expectButtonText}</ConfirmButton>)
 
-    expect(createComponent().find(Button).props()).toContainObject({
-      a: 'b',
-      c: 'd'
-    })
+    expect(screen.getByText(expectButtonText)).toHaveAttribute('type', 'submit')
   })
 
   it('should render confirm and reject button when call to action button clicked', () => {
-    const wrapper = createComponent()
-    wrapper.find(Button).props().onClick()
+    render(<ConfirmButton {...props}>{expectButtonText}</ConfirmButton>)
+    fireEvent.click(screen.getByText(expectButtonText))
 
-    expect(wrapper.find(Button).length).toEqual(2)
-    expect(wrapper.find(Button).at(0).prop('children')).toEqual('Yes')
-    expect(wrapper.find(Button).at(1).prop('children')).toEqual('No')
+    expect(screen.getByText('Yes')).toBeVisible()
+    expect(screen.getByText('No')).toBeVisible()
   })
 
   it('should disabled confirm and reject button when prop "disabled" is set to false', () => {
+    const {rerender} = render(<ConfirmButton {...props}>{expectButtonText}</ConfirmButton>)
+    fireEvent.click(screen.getByText(expectButtonText))
     props.disabled = true
-    const wrapper = createComponent()
-    wrapper.find(Button).props().onClick()
+    rerender(<ConfirmButton {...props}>expect button text</ConfirmButton>)
 
-    expect(wrapper.find(Button).length).toEqual(2)
-    expect(wrapper.find(Button).at(0).prop('disabled')).toEqual(true)
-    expect(wrapper.find(Button).at(1).prop('disabled')).toEqual(true)
+    expect(screen.getByText('Yes')).toBeDisabled()
+    expect(screen.getByText('No')).toBeDisabled()
   })
 
   it('should render call to action button again when reject button clicked', () => {
-    const wrapper = createComponent()
-    wrapper.find(Button).props().onClick()
-    wrapper.find(Button).at(1).props().onClick()
+    render(<ConfirmButton {...props}>{expectButtonText}</ConfirmButton>)
+    fireEvent.click(screen.getByText(expectButtonText))
+    fireEvent.click(screen.getByText('No'))
 
-    expect(wrapper.find(Button).length).toEqual(1)
-    expect(createComponent().find(Button).prop('children')).toEqual('expect button text')
+    expect(screen.getByText(expectButtonText)).toBeVisible()
   })
 
   it('should render call to action button again when confirm button clicked', () => {
-    const wrapper = createComponent()
-    wrapper.find(Button).props().onClick()
-    wrapper.find(Button).at(0).props().onClick()
+    render(<ConfirmButton {...props}>{expectButtonText}</ConfirmButton>)
+    fireEvent.click(screen.getByText(expectButtonText))
+    fireEvent.click(screen.getByText('Yes'))
 
-    expect(wrapper.find(Button).length).toEqual(1)
-    expect(createComponent().find(Button).prop('children')).toEqual('expect button text')
+    expect(screen.getByText(expectButtonText)).toBeVisible()
   })
 
   it('should not trigger prop function "onClick" when reject button clicked', () => {
-    const wrapper = createComponent()
-    wrapper.find(Button).props().onClick()
+    render(<ConfirmButton {...props}>{expectButtonText}</ConfirmButton>)
+    fireEvent.click(screen.getByText(expectButtonText))
+    fireEvent.click(screen.getByText('No'))
 
     expect(props.onClick).not.toHaveBeenCalled()
   })
 
   it('should trigger prop function "onClick" when confirm button clicked', () => {
-    const wrapper = createComponent()
-    wrapper.find(Button).props().onClick()
-    wrapper.find(Button).at(0).props().onClick()
+    render(<ConfirmButton {...props}>{expectButtonText}</ConfirmButton>)
+    fireEvent.click(screen.getByText(expectButtonText))
+    fireEvent.click(screen.getByText('Yes'))
 
     expect(props.onClick).toHaveBeenCalledWith()
   })

@@ -1,12 +1,4 @@
-import isMatch from 'lodash.ismatch'
 import isEqual from 'lodash.isequal'
-
-export function toContainObject(actual, expected) {
-  return {
-    pass: isMatch(actual, expected),
-    message: () => `Expected ${JSON.stringify(actual)} to contain ${JSON.stringify(expected)}`
-  }
-}
 
 function parseUrl(urlString) {
   const url = new URL(`http://localhost/${urlString}`)
