@@ -1,31 +1,29 @@
 import React from 'react'
+import {render, screen, fireEvent} from '@testing-library/react'
 import IconButton from './IconButton'
-import {shallow} from 'enzyme'
-import {Icon} from '../../Icon/Icon'
 
 describe('IconButton', () => {
 
   it('should contain expected props', () => {
-    const wrapper = shallow(<IconButton className='expected-className' type='close' disabled={true} />)
+    render(<IconButton className='expected-className' type='close' disabled={true} />)
 
-    expect(wrapper.props()).toContainObject({
-      className: 'my-icon-button expected-className',
-      type: 'button',
-      disabled: true
-    })
+    expect(screen.getByRole('close')).toHaveClass('my-icon-button expected-className')
+    expect(screen.getByRole('close')).toHaveAttribute('type', 'button')
+    expect(screen.getByRole('close')).toBeDisabled()
   })
 
   it('should pass expected props to Icon component', () => {
-    const wrapper = shallow(<IconButton type='close' inverse={true} />)
+    render(<IconButton type='close' inverse={true} />)
 
-    expect(wrapper.find(Icon).props()).toEqual({type: 'close', inverse: true})
+    expect(screen.getByRole('close')).toBeVisible()
+    expect(screen.getByRole('close').firstChild).toHaveStyle({'--color': '#FFFFFF'})
   })
 
   it('should trigger prop "onClick" function when clicked', () => {
     const onClick = jest.fn()
-    const wrapper = shallow(<IconButton type='close' onClick={onClick}/>)
+    render(<IconButton type='close' onClick={onClick}/>)
 
-    wrapper.find({onClick}).props().onClick()
+    fireEvent.click(screen.getByRole('close'))
     expect(onClick).toHaveBeenCalled()
   })
 })
