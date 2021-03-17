@@ -107,9 +107,7 @@ module.exports = function(env) {
 
       new MiniCssExtractPlugin({
         filename: 'app/[name].[contenthash].css',
-        disable: !isProd,
-        allChunks: true
-      })
+      }),
     )
   }
 
