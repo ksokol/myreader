@@ -53,16 +53,17 @@
     "unicorn/prevent-abbreviations": "off",
     "unicorn/catch-error-name": "warn",
     "unicorn/filename-case": "off",
-    "unicorn/prefer-query-selector": "error",
-    "unicorn/import-index": "error",
-    "unicorn/prefer-includes": "warn",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
     "unicorn/no-null":  "off",
-    "unicorn/no-fn-reference-in-iterator": "warn",
-    "unicorn/no-reduce": "off",
     "jest-dom/prefer-focus": "warn",
     "unicorn/consistent-function-scoping": "warn",
-    "unicorn/explicit-length-check": "warn"
+    "unicorn/explicit-length-check": "warn",
+    "unicorn/no-array-callback-reference": "warn",
+    "unicorn/no-array-reduce": "warn",
+    "unicorn/no-lonely-if": "warn",
+    "unicorn/prefer-spread": "warn",
+    "jest-dom/prefer-to-have-class": "warn",
+    "unicorn/no-array-for-each": "warn"
   }
 }
