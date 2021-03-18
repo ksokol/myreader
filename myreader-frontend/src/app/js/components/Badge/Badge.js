@@ -1,55 +1,37 @@
 import './Badge.css'
-import React from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
-import {isDefined} from '../../shared/utils'
 import determineRGB from './determineRGB'
 
-class Badge extends React.Component {
+export function Badge({text, color, role}) {
+  const badgeRef = useRef(null)
 
-  constructor(props) {
-    super(props)
+  const updateBadgeColor = useCallback(() => {
+    const rgb = determineRGB(color)
+    const current = badgeRef.current
 
-    this.badgeRef = React.createRef()
-    this.updateBadgeColor = this.updateBadgeColor.bind(this)
-  }
+    current.style.setProperty('--red', rgb.red)
+    current.style.setProperty('--green', rgb.green)
+    current.style.setProperty('--blue', rgb.blue)
+  }, [color])
 
-  componentDidMount() {
-    this.updateBadgeColor()
-  }
+  useEffect(() => {
+    updateBadgeColor()
+  }, [color, updateBadgeColor])
 
-  componentDidUpdate(prevProps) {
-    if (this.props.color !== prevProps.color) {
-      this.updateBadgeColor()
-    }
-  }
-
-  updateBadgeColor() {
-    const rgb = determineRGB(this.props.color)
-    const badgeRef = this.badgeRef.current
-
-    badgeRef.style.setProperty("--red", rgb.red)
-    badgeRef.style.setProperty("--green", rgb.green)
-    badgeRef.style.setProperty("--blue", rgb.blue)
-  }
-
-  render() {
-    const classes = classNames('my-badge', {'my-badge--clickable': isDefined(this.props.onClick)})
-
-    return (
-      <div className={classes}
-           onClick={this.props.onClick}
-           ref={this.badgeRef}>
-        <span>{this.props.text}</span>
-      </div>
-    )
-  }
+  return (
+    <div
+      className='my-badge'
+      role={role || 'badge'}
+      ref={badgeRef}
+    >
+      <span>{text}</span>
+    </div>
+  )
 }
 
 Badge.propTypes = {
   text: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   color: PropTypes.string,
-  onClick: PropTypes.func
+  role: PropTypes.string,
 }
-
-export default Badge

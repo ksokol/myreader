@@ -1,114 +1,101 @@
 import './Entry.css'
-import React, {Component} from 'react'
+import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import {EntryTitle} from './EntryTitle/EntryTitle'
-import {EntryActions} from './EntryActions/EntryActions'
+import {EntryActions} from './EntryActions'
 import {EntryContent} from './EntryContent/EntryContent'
 import {EntryTags} from './EntryTags/EntryTags'
+import {useSettings} from '../../../../contexts/settings'
 
-export class Entry extends Component {
+export function Entry(props) {
+  const {showEntryDetails} = useSettings()
+  const [showMore, setShowMore] = useState(false)
 
-  static propTypes = {
-    item: PropTypes.shape({
-      uuid: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      feedTitle: PropTypes.string.isRequired,
-      tags: PropTypes.arrayOf(
-        PropTypes.string
-      ).isRequired,
-      origin: PropTypes.string.isRequired,
-      seen: PropTypes.bool.isRequired,
-      createdAt: PropTypes.string.isRequired,
-      content: PropTypes.string
-    }).isRequired,
-    className: PropTypes.string,
-    role: PropTypes.string,
-    onChangeEntry: PropTypes.func.isRequired,
-    entryRef: PropTypes.func
+  const toggleMore = () => {
+    setShowMore(!showMore)
   }
 
-  static defaultProps = {
-    className: ''
-  }
-
-  state = {
-    showMore: false
-  }
-
-  toggleMore = () => {
-    this.setState({
-      showMore: !this.state.showMore
+  const toggleSeen = () => {
+    props.onChangeEntry({
+      ...props.item,
+      seen: !props.item.seen
     })
   }
 
-  toggleSeen = () => {
-    this.props.onChangeEntry({
-      ...this.props.item,
-      seen: !this.props.item.seen
-    })
-  }
-
-  onTagUpdate = tags => {
-    this.props.onChangeEntry({
-      uuid: this.props.item.uuid,
-      seen: this.props.item.seen,
+  const onTagUpdate = tags => {
+    props.onChangeEntry({
+      uuid: props.item.uuid,
+      seen: props.item.seen,
       tags
     })
   }
 
-  render() {
-    const {
-      item,
-      className,
-      role,
-      entryRef,
-    } = this.props
+  const {
+    item,
+    className = '',
+    role,
+    entryRef
+  } = props
 
-    const {
-      showMore,
-    } = this.state
-
-    return (
-      <article
-        className={`my-entry ${className}`}
-        role={role}
-        ref={entryRef}
+  return (
+    <article
+      className={`my-entry ${className}`}
+      role={role}
+      ref={entryRef}
+    >
+      <div
+        className='my-entry__header'
       >
         <div
-          className='my-entry__header'
+          className='my-entry__title'
+          title={item.title}
         >
-          <div
-            className='my-entry__title'
-            title={item.title}
-          >
-            <EntryTitle
-              entry={item}
-            />
-          </div>
-          <div
-            className='my-entry__actions'
-          >
-            <EntryActions
-              seen={item.seen}
-              showMore={showMore}
-              onToggleShowMore={this.toggleMore}
-              onToggleSeen={this.toggleSeen}
-            />
-          </div>
-        </div>
-
-        {showMore &&
-          <EntryTags
-            tags={item.tags}
-            onChange={this.onTagUpdate}
+          <EntryTitle
+            entry={item}
           />
-        }
+        </div>
+        <div
+          className='my-entry__actions'
+        >
+          <EntryActions
+            seen={item.seen}
+            showMore={showMore}
+            onToggleShowMore={toggleMore}
+            onToggleSeen={toggleSeen}
+          />
+        </div>
+      </div>
 
-        <EntryContent
-          maybeVisible={showMore}
-          content={item.content}
+      {showMore && (
+        <EntryTags
+          tags={item.tags}
+          onChange={onTagUpdate}
         />
-      </article>
-    )
-  }
+      )}
+
+      <EntryContent
+        visible={showEntryDetails || showMore}
+        content={item.content}
+      />
+    </article>
+  )
+}
+
+Entry.propTypes = {
+  item: PropTypes.shape({
+    uuid: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    feedTitle: PropTypes.string.isRequired,
+    tags: PropTypes.arrayOf(
+      PropTypes.string
+    ).isRequired,
+    origin: PropTypes.string.isRequired,
+    seen: PropTypes.bool.isRequired,
+    createdAt: PropTypes.string.isRequired,
+    content: PropTypes.string
+  }).isRequired,
+  className: PropTypes.string,
+  role: PropTypes.string,
+  onChangeEntry: PropTypes.func.isRequired,
+  entryRef: PropTypes.func
 }

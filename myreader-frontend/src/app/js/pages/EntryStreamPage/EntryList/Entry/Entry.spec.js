@@ -86,20 +86,6 @@ describe('Entry', () => {
     }))
   })
 
-  it('should pass expected prop "showMore" to entry actions', () => {
-    page.entryActions().props().onToggleShowMore()
-    expect(page.entryActions().props().showMore).toEqual(true)
-
-    page.entryActions().props().onToggleShowMore()
-    expect(page.entryActions().props().showMore).toEqual(false)
-  })
-
-  it('should trigger prop function "onChangeEntry" when entry actions prop function "onToggleSeen" called', () => {
-    page.entryActions().props().onToggleSeen()
-
-    expect(props.onChangeEntry).toHaveBeenCalledWith({...props.item, seen: !props.item.seen})
-  })
-
   it('should trigger prop function "onChangeEntry" when entry tags prop function "onChange" called', () => {
     page.entryActions().props().onToggleShowMore()
     page.entryTags().props().onChange(['tag1'])
@@ -130,23 +116,20 @@ describe('Entry', () => {
     mount(<Entry {...props} />)
   })
 
-  it('should not render tags and content component when mounted', () => {
+  it('should not render tags component when mounted', () => {
     expect(page.entryTags().exists()).toEqual(false)
-    expect(page.entryContent().prop('maybeVisible')).toEqual(false)
   })
 
-  it('should render tags and content component when show more toggle triggered', () => {
+  it('should render tags component when show more toggle triggered', () => {
     page.entryActions().props().onToggleShowMore()
 
     expect(page.entryTags().exists()).toEqual(true)
-    expect(page.entryContent().exists()).toEqual(true)
   })
 
-  it('should hide tags and content component when show more toggle triggered a second time', () => {
+  it('should hide tags component when show more toggle triggered a second time', () => {
     page.entryActions().props().onToggleShowMore()
     page.entryActions().props().onToggleShowMore()
 
     expect(page.entryTags().exists()).toEqual(false)
-    expect(page.entryContent().prop('maybeVisible')).toEqual(false)
   })
 })

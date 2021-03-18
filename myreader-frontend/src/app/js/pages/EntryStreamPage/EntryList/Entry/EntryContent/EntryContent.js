@@ -1,12 +1,9 @@
 import './EntryContent.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {useSettings} from '../../../../../contexts/settings'
 
-export function EntryContent({content, maybeVisible}) {
-  const {showEntryDetails} = useSettings()
-
-  return showEntryDetails || maybeVisible ? (
+export function EntryContent({content, visible}) {
+  return visible ? (
     <div
       className='my-entry-content'
       dangerouslySetInnerHTML={{__html: content}}
@@ -16,5 +13,5 @@ export function EntryContent({content, maybeVisible}) {
 
 EntryContent.propTypes = {
   content: PropTypes.string,
-  maybeVisible: PropTypes.bool
+  visible: PropTypes.bool
 }

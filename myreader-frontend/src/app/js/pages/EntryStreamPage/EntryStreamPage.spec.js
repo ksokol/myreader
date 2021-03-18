@@ -16,8 +16,8 @@ const entry1 = Object.freeze({
   tags: ['expected tag1'],
   origin: 'expected origin1',
   seen: false,
-  createdAt: 'expected createdAt',
-  content: 'expected content1',
+  createdAt: '2021-02-27T06:48:05.087+01:00',
+  content: 'expected content1'
 })
 
 const entry2 = Object.freeze({
@@ -27,8 +27,8 @@ const entry2 = Object.freeze({
   tags: ['expected tag2'],
   origin: 'expected origin2',
   seen: false,
-  createdAt: 'expected createdAt2',
-  content: 'expected content2',
+  createdAt: '2021-02-27T07:48:05.087+01:00',
+  content: 'expected content2'
 })
 
 const entry3 = Object.freeze({
@@ -38,8 +38,8 @@ const entry3 = Object.freeze({
   tags: ['expected tag3'],
   origin: 'expected origin3',
   seen: false,
-  createdAt: 'expected createdAt3',
-  content: 'expected content3',
+  createdAt: '2021-02-27T08:48:05.087+01:00',
+  content: 'expected content3'
 })
 
 const entry4 = Object.freeze({
@@ -49,8 +49,8 @@ const entry4 = Object.freeze({
   tags: ['expected tag4'],
   origin: 'expected origin4',
   seen: false,
-  createdAt: 'expected createdAt4',
-  content: 'expected content4',
+  createdAt: '2021-02-27T09:48:05.087+01:00',
+  content: 'expected content4'
 })
 
 async function clickButtonPrevious() {
@@ -77,17 +77,25 @@ const entry1Url = 'api/2/subscriptionEntries/1'
 const entry2Url = 'api/2/subscriptionEntries/2'
 const expectedError = 'expected error'
 
-function ToggleUnseenTestComponent() {
+function SettingsTestComponent() {
   const {
     showUnseenEntries,
     setShowUnseenEntries,
+    setShowEntryDetails,
+    showEntryDetails
   } = useSettings()
 
   return (
-    <button
-      data-testid='toggle-unseen'
-      onClick={() => setShowUnseenEntries(!showUnseenEntries)}
-    />
+    <>
+      <button
+        data-testid='toggle-unseen'
+        onClick={() => setShowUnseenEntries(!showUnseenEntries)}
+      />
+      <button
+        data-testid='toggle-details'
+        onClick={() => setShowEntryDetails(!showEntryDetails)}
+      />
+    </>
   )
 }
 
@@ -103,7 +111,7 @@ describe('EntryStreamPage', () => {
           <Router history={history}>
             <SubscriptionProvider>
               <SettingsProvider>
-                <ToggleUnseenTestComponent />
+                <SettingsTestComponent/>
                 <EntryStreamPage/>
               </SettingsProvider>
             </SubscriptionProvider>
@@ -122,7 +130,7 @@ describe('EntryStreamPage', () => {
       })
     })
 
-    localStorage.setItem('myreader-settings', '{"showUnseenEntries": false}')
+    localStorage.setItem('myreader-settings', '{"showUnseenEntries": false, "showEntryDetails": true}')
 
     fetch.jsonResponse({
       content: [{...entry1}, {...entry2}],
@@ -458,7 +466,7 @@ describe('EntryStreamPage', () => {
       url: 'api/2/subscriptions'
     })
     expect(fetch.nthRequest(2)).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?feedTagEqual=a',
+      url: 'api/2/subscriptionEntries?feedTagEqual=a'
     })
   })
 
@@ -500,13 +508,39 @@ describe('EntryStreamPage', () => {
     expect(screen.getByRole('dialog-error-message')).toHaveTextContent(expectedError)
   })
 
+  it('should toggle entry seen flag', async () => {
+    await renderComponent()
+
+    fetch.jsonResponse({...entry1, seen: true})
+    await act(async () => fireEvent.click(screen.getAllByRole('flag-as-seen')[0]))
+
+    expect(fetch.mostRecent()).toMatchPatchRequest({
+      url: 'api/2/subscriptionEntries/1',
+      body: {
+        seen: true,
+        tags: ['expected tag1']
+      }
+    })
+
+    fetch.jsonResponse({...entry1, seen: false})
+    await act(async () => fireEvent.click(screen.getAllByRole('flag-as-unseen')[0]))
+
+    expect(fetch.mostRecent()).toMatchPatchRequest({
+      url: 'api/2/subscriptionEntries/1',
+      body: {
+        seen: false,
+        tags: ['expected tag1']
+      }
+    })
+  })
+
   it('should show error messages if read flag could not be set for multiple entries', async () => {
     await renderComponent()
 
     fetch.rejectResponse({data: expectedError})
-    await act(async () => fireEvent.click(screen.getAllByRole('check')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole('flag-as-seen')[0]))
     fetch.rejectResponse({data: expectedError})
-    await act(async () => fireEvent.click(screen.getAllByRole('check')[1]))
+    await act(async () => fireEvent.click(screen.getAllByRole('flag-as-seen')[1]))
 
     expect(screen.getAllByRole('dialog-error-message')[0]).toHaveTextContent(expectedError)
     expect(screen.getAllByRole('dialog-error-message')[1]).toHaveTextContent(expectedError)
@@ -531,7 +565,7 @@ describe('EntryStreamPage', () => {
     fetch.resetMocks()
 
     fetch.jsonResponse({
-      content: [{...entry3}, {...entry4}],
+      content: [{...entry3}, {...entry4}]
     })
 
     await act(async () => fireEvent.click(screen.getByTestId('toggle-unseen')))
@@ -557,5 +591,75 @@ describe('EntryStreamPage', () => {
     expect(fetch.mostRecent()).toMatchGetRequest({
       url: 'api/2/subscriptionEntries?entryTagEqual=a'
     })
+  })
+
+  it('should render entry contents', async () => {
+    await renderComponent()
+
+    expect(screen.getByText(entry1.content)).toHaveTextContent('expected content1')
+    expect(screen.getByText(entry2.content)).toHaveTextContent('expected content2')
+  })
+
+  it('should not render entry contents if "showEntryDetails" setting is set to false', async () => {
+    await renderComponent()
+    await act(async () => fireEvent.click(screen.getByTestId('toggle-details')))
+
+    expect(screen.queryByText(entry1.content)).not.toBeInTheDocument()
+    expect(screen.queryByText(entry2.content)).not.toBeInTheDocument()
+  })
+
+  it('should render entry1 content if "showEntryDetails" setting is set to false and details toggle clicked', async () => {
+    await renderComponent()
+    await act(async () => fireEvent.click(screen.getByTestId('toggle-details')))
+    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+
+    expect(screen.getByText(entry1.content)).toHaveTextContent('expected content1')
+    expect(screen.queryByText(entry2.content)).not.toBeInTheDocument()
+  })
+
+  it('should hide entry1 content if "showEntryDetails" setting is set to false and details toggle clicked twice', async () => {
+    await renderComponent()
+    await act(async () => fireEvent.click(screen.getByTestId('toggle-details')))
+    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole('less-details')[0]))
+
+    expect(screen.queryByText(entry1.content)).not.toBeInTheDocument()
+    expect(screen.queryByText(entry2.content)).not.toBeInTheDocument()
+  })
+
+  it('should render entry title', async () => {
+    await renderComponent()
+
+    expect(screen.getByText(entry1.title)).toHaveTextContent('title1')
+    expect(screen.getByText(entry2.title)).toHaveTextContent('title2')
+  })
+
+  it('should open entry url in new window safely', async () => {
+    await renderComponent()
+
+    expect(screen.getByText(entry1.title)).toHaveAttribute('href', entry1.origin)
+    expect(screen.getByText(entry1.title)).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.getByText(entry1.title)).toHaveAttribute('target', '_blank')
+    expect(screen.getByText(entry2.title)).toHaveAttribute('href', entry2.origin)
+    expect(screen.getByText(entry2.title)).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.getByText(entry2.title)).toHaveAttribute('target', '_blank')
+  })
+
+  it('should render entry feedTag and feedTagColor', async () => {
+    jest.spyOn(Date, 'now').mockReturnValue(1614453487714)
+    fetch.resetMocks()
+    fetch.jsonResponse({
+      content: [{
+        ...entry1,
+        feedTag: 'expected tag',
+        feedTagColor: '#555555'
+      }]
+    })
+    await renderComponent()
+
+    expect(screen.getByText('13 hours ago on expected feedTitle1')).toBeInTheDocument()
+    expect(screen.getByRole('feed-badge')).toHaveTextContent('expected tag')
+    expect(screen.getByRole('feed-badge')).toHaveTextContent('expected tag')
+    expect(screen.getByRole('feed-badge')).toHaveStyle('--red: 85; --green: 85; --blue: 85;')
   })
 })

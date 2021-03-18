@@ -1,4 +1,4 @@
-export const isDefined = value => typeof value !== 'undefined'
+const isDefined = value => typeof value !== 'undefined'
 
 const isString = value => value !== null && typeof value === 'string'
 

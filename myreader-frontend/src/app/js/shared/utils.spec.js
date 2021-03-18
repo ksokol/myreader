@@ -1,21 +1,6 @@
-import {isBoolean, isDefined, isValidDate, isValuePresent} from './utils'
+import {isBoolean, isValidDate, isValuePresent} from './utils'
 
 describe('shared utils', () => {
-
-  describe('isDefined() should return', () => {
-
-    it('false when given parameter is undefined', () => {
-      expect(isDefined()).toEqual(false)
-    })
-
-    it('true when given parameter is a number', () => {
-      expect(isDefined(1)).toEqual(true)
-    })
-
-    it('true when given parameter is null', () => {
-      expect(isDefined(null)).toEqual(true)
-    })
-  })
 
   describe('isBoolean() should return', () => {
 
