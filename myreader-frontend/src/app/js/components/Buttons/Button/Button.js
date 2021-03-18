@@ -1,30 +1,32 @@
 import './Button.css'
 import React from 'react'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
 
-const Button = props => {
-  const {
-    type,
-    role,
-    primary,
-    disabled,
-    caution,
-    className,
-    onClick,
-    children,
-  } = props
+export function Button({
+  type,
+  role,
+  primary,
+  disabled,
+  caution,
+  className,
+  onClick,
+  children
+}) {
+  const classes = ['my-button']
 
-  const classes = classNames(
-    'my-button',
-    {'my-button--primary': primary},
-    {'my-button--caution': caution},
-    className
-  )
+  if (primary) {
+    classes.push('my-button--primary')
+  }
+  if (caution) {
+    classes.push('my-button--caution')
+  }
+  if (className) {
+    classes.push(className)
+  }
 
   return (
     <button
-      className={classes}
+      className={classes.join(' ')}
       type={type}
       role={role}
       onClick={onClick}
@@ -50,5 +52,3 @@ Button.defaultProps = {
   role: 'button',
   disabled: false
 }
-
-export default Button

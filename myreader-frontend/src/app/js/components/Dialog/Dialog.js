@@ -2,7 +2,7 @@ import './Dialog.css'
 import React from 'react'
 import * as ReactDom from 'react-dom'
 import PropTypes from 'prop-types'
-import {IconButton} from '..'
+import {IconButton} from '../Buttons'
 import withDialogLifecycle from './withDialogLifecycle'
 import withDialogPolyfill from './withDialogPolyfill'
 

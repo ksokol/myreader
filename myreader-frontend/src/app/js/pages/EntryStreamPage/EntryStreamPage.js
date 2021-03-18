@@ -1,6 +1,6 @@
 import React, {useEffect, useState, useMemo} from 'react'
 import {useHotkeys} from 'react-hotkeys-hook'
-import {IconButton} from '../../components'
+import {IconButton} from '../../components/Buttons'
 import {useAutofocusEntry} from './useAutofocusEntry'
 import {useSettings} from '../../contexts/settings'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
