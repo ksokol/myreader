@@ -1,86 +1,97 @@
 import './EntryList.css'
 import React from 'react'
 import PropTypes from 'prop-types'
+import {InView} from 'react-intersection-observer'
 import {Button} from '../../../components/Buttons'
-import IntersectionObserver from '../../../components/IntersectionObserver/IntersectionObserver'
 import {EntryAutoFocus} from './Entry/EntryAutoFocus'
 
-const entry = (entryProps, props) => (
-  <div className="my-entry-list__item" key={entryProps.uuid}>
-    <EntryAutoFocus {...{item: {...entryProps}, ...props}} />
-  </div>
-)
+function EntryListItem(props) {
+  const {onChangeEntry, focusUuid, ...rest} = props
 
-export class EntryList extends React.Component {
+  return (
+    <div className="my-entry-list__item" key={props.uuid}>
+      <EntryAutoFocus {...{item: rest}} onChangeEntry={onChangeEntry} focusUuid={focusUuid}/>
+    </div>
+  )
+}
 
-  static propTypes = {
-    links: PropTypes.shape({
-      next: PropTypes.any
-    }).isRequired,
-    entries: PropTypes.arrayOf(
-      PropTypes.shape({
-        uuid: PropTypes.string.isRequired
-      })
-    ),
-    entryInFocusUuid: PropTypes.string,
-    loading: PropTypes.bool.isRequired,
-    onChangeEntry: PropTypes.func.isRequired,
-    onLoadMore: PropTypes.func.isRequired
+EntryListItem.propTypes = {
+  uuid: PropTypes.string.isRequired,
+  focusUuid: PropTypes.string,
+  onChangeEntry: PropTypes.func.isRequired,
+}
+
+export function EntryList({
+  entries = [],
+  links = {},
+  onLoadMore,
+  entryInFocusUuid,
+  loading,
+  onChangeEntry
+}) {
+  const hasNextPage = () => {
+    return !!links.next
   }
 
-  static defaultProps = {
-    links: {},
-    entries: []
+  const loadMore = () => {
+    onLoadMore(links.next)
   }
 
-  hasNextPage = () => {
-    return !!this.props.links.next
+  const otherProps = {
+    onChangeEntry,
+    focusUuid: entryInFocusUuid
   }
 
-  loadMore = () => {
-    this.props.onLoadMore(this.props.links.next)
-  }
+  const entriesCopy = [...entries]
+  const lastEntry = entriesCopy.pop()
 
-  render() {
-    const {
-      entries,
-      entryInFocusUuid,
-      loading,
-      onChangeEntry
-    } = this.props
+  return (
+    <div
+      className='my-entry-list'
+    >
+      {entriesCopy.map(entryProps => (
+        <EntryListItem key={entryProps.uuid} {...entryProps} {...otherProps} />
+      ))}
 
-    const props = {
-      onChangeEntry,
-      focusUuid: entryInFocusUuid
-    }
+      {lastEntry && hasNextPage() ? (
+        <InView
+          skip={loading}
+          onChange={(inView) => {
+            if (inView) {
+              loadMore()
+            }
+          }}
+        >
+          <EntryListItem {...lastEntry} {...otherProps} />
+        </InView>
+      )
+        : lastEntry && <EntryListItem {...lastEntry} {...otherProps} />
+      }
 
-    const entriesCopy = [...entries]
-    const lastEntry = entriesCopy.pop()
+      {hasNextPage() && (
+        <Button
+          role='more'
+          className='my-button__load-more'
+          disabled={loading}
+          onClick={loadMore}
+        >Load More
+        </Button>
+      )}
+    </div>
+  )
+}
 
-    return (
-      <div
-        className='my-entry-list'
-      >
-        {entriesCopy.map(entryProps => entry(entryProps, props))}
-
-        {lastEntry && this.hasNextPage()
-          ? <IntersectionObserver
-            onIntersection={this.loadMore}
-          >{entry(lastEntry, props)}
-          </IntersectionObserver>
-          : lastEntry && entry(lastEntry, props)
-        }
-
-        {this.hasNextPage() &&
-          <Button
-            role='more'
-            className='my-button__load-more'
-            disabled={loading}
-            onClick={this.loadMore}
-          >Load More
-          </Button>
-        }
-      </div>
-    )
-  }
+EntryList.propTypes = {
+  links: PropTypes.shape({
+    next: PropTypes.any
+  }).isRequired,
+  entries: PropTypes.arrayOf(
+    PropTypes.shape({
+      uuid: PropTypes.string.isRequired
+    })
+  ),
+  entryInFocusUuid: PropTypes.string,
+  loading: PropTypes.bool.isRequired,
+  onChangeEntry: PropTypes.func.isRequired,
+  onLoadMore: PropTypes.func.isRequired
 }

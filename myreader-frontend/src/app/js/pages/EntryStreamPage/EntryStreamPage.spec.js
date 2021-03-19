@@ -2,6 +2,7 @@ import React from 'react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
 import {render, fireEvent, screen, act} from '@testing-library/react'
+import {mockAllIsIntersecting} from 'react-intersection-observer/test-utils'
 import {EntryStreamPage} from './EntryStreamPage'
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
@@ -434,7 +435,7 @@ describe('EntryStreamPage', () => {
   it('should hide more button if there are no more entries to fetch', async () => {
     fetch.resetMocks()
     fetch.jsonResponse({
-      content: [{...entry1}, {...entry2}],
+      content: [{...entry1}, {...entry2}]
     })
     await renderComponent()
 
@@ -694,7 +695,7 @@ describe('EntryStreamPage', () => {
       url: 'api/2/subscriptionEntries/1',
       body: {
         seen: false,
-        tags: null,
+        tags: null
       }
     })
   })
@@ -704,7 +705,7 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({
       content: [{
         ...entry1,
-        tags: ['tag1', 'tag2'],
+        tags: ['tag1', 'tag2']
       }]
     })
     await renderComponent()
@@ -716,7 +717,7 @@ describe('EntryStreamPage', () => {
       url: 'api/2/subscriptionEntries/1',
       body: {
         seen: false,
-        tags: ['tag1'],
+        tags: ['tag1']
       }
     })
   })
@@ -726,7 +727,7 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({
       content: [{
         ...entry1,
-        tags: [],
+        tags: []
       }]
     })
     await renderComponent()
@@ -739,7 +740,7 @@ describe('EntryStreamPage', () => {
       url: 'api/2/subscriptionEntries/1',
       body: {
         seen: false,
-        tags: ['first tag'],
+        tags: ['first tag']
       }
     })
   })
@@ -755,7 +756,7 @@ describe('EntryStreamPage', () => {
       url: 'api/2/subscriptionEntries/1',
       body: {
         seen: false,
-        tags: ['expected tag1', 'new tag'],
+        tags: ['expected tag1', 'new tag']
       }
     })
   })
@@ -769,5 +770,39 @@ describe('EntryStreamPage', () => {
     await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText('Enter a tag...'), {key: 'Enter', keyCode: 13}))
 
     expect(fetch.requestCount()).toEqual(0)
+  })
+
+  it('should fetch automatically next entries if last entry becomes visible', async () => {
+    fetch.resetMocks()
+    fetch.jsonResponse({content: [{...entry1}], next: 'http://localhost/test?next=2'})
+    await renderComponent()
+
+    expect(screen.queryByTitle('title1')).toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+
+    fetch.jsonResponse({content: [{...entry2}]})
+    await act(async () => mockAllIsIntersecting(true))
+
+    expect(fetch.mostRecent()).toMatchGetRequest({
+      url: 'http://localhost/test?next=2'
+    })
+
+    expect(screen.queryByTitle('title1')).toBeInTheDocument()
+    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+
+    fetch.resetMocks()
+    await act(async () => mockAllIsIntersecting(true))
+
+    expect(fetch.requestCount()).toEqual(0)
+  })
+
+  it('should not fetch any entries automatically if initial fetch returns no entries', async () => {
+    fetch.resetMocks()
+    fetch.jsonResponse({content: []})
+    await renderComponent()
+
+    await act(async () => mockAllIsIntersecting(true))
+
+    expect(fetch.requestCount()).toEqual(1)
   })
 })

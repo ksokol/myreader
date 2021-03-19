@@ -1,7 +1,0 @@
-.my-intersection-observer {
-    display: flex;
-}
-
-.my-intersection-observer > * {
-    flex-grow: 1;
-}
