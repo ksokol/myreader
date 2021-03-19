@@ -431,6 +431,16 @@ describe('EntryStreamPage', () => {
     expect(screen.queryByRole('more')).toBeEnabled()
   })
 
+  it('should hide more button if there are no more entries to fetch', async () => {
+    fetch.resetMocks()
+    fetch.jsonResponse({
+      content: [{...entry1}, {...entry2}],
+    })
+    await renderComponent()
+
+    expect(screen.queryByRole('more')).not.toBeInTheDocument()
+  })
+
   it('should reload content on page when refresh icon button clicked', async () => {
     await renderComponent()
 
@@ -661,5 +671,103 @@ describe('EntryStreamPage', () => {
     expect(screen.getByRole('feed-badge')).toHaveTextContent('expected tag')
     expect(screen.getByRole('feed-badge')).toHaveTextContent('expected tag')
     expect(screen.getByRole('feed-badge')).toHaveStyle('--red: 85; --green: 85; --blue: 85;')
+  })
+
+  it('should render tag input and tag for entry if etails toggle clicked', async () => {
+    await renderComponent()
+    expect(screen.queryByPlaceholderText('Enter a tag...')).not.toBeInTheDocument()
+
+    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+
+    expect(screen.getByPlaceholderText('Enter a tag...')).toBeInTheDocument()
+    expect(screen.getByText('expected tag1')).toBeInTheDocument()
+    expect(screen.queryByText('expected tag2')).not.toBeInTheDocument()
+  })
+
+  it('should remove last entry tag', async () => {
+    await renderComponent()
+    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+
+    await act(async () => await fireEvent.click(screen.getByRole('chip-remove-button')))
+
+    expect(fetch.mostRecent()).toMatchPatchRequest({
+      url: 'api/2/subscriptionEntries/1',
+      body: {
+        seen: false,
+        tags: null,
+      }
+    })
+  })
+
+  it('should remove second entry tag', async () => {
+    fetch.resetMocks()
+    fetch.jsonResponse({
+      content: [{
+        ...entry1,
+        tags: ['tag1', 'tag2'],
+      }]
+    })
+    await renderComponent()
+    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+
+    await act(async () => await fireEvent.click(screen.getAllByRole('chip-remove-button')[1]))
+
+    expect(fetch.mostRecent()).toMatchPatchRequest({
+      url: 'api/2/subscriptionEntries/1',
+      body: {
+        seen: false,
+        tags: ['tag1'],
+      }
+    })
+  })
+
+  it('should save first entry tag', async () => {
+    fetch.resetMocks()
+    fetch.jsonResponse({
+      content: [{
+        ...entry1,
+        tags: [],
+      }]
+    })
+    await renderComponent()
+    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+
+    await act(async () => await fireEvent.change(screen.getByPlaceholderText('Enter a tag...'), {target: {value: 'first tag'}}))
+    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText('Enter a tag...'), {key: 'Enter', keyCode: 13}))
+
+    expect(fetch.mostRecent()).toMatchPatchRequest({
+      url: 'api/2/subscriptionEntries/1',
+      body: {
+        seen: false,
+        tags: ['first tag'],
+      }
+    })
+  })
+
+  it('should save second entry tag', async () => {
+    await renderComponent()
+    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+
+    await act(async () => await fireEvent.change(screen.getByPlaceholderText('Enter a tag...'), {target: {value: 'new tag'}}))
+    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText('Enter a tag...'), {key: 'Enter', keyCode: 13}))
+
+    expect(fetch.mostRecent()).toMatchPatchRequest({
+      url: 'api/2/subscriptionEntries/1',
+      body: {
+        seen: false,
+        tags: ['expected tag1', 'new tag'],
+      }
+    })
+  })
+
+  it('should prevent duplicate entry tags', async () => {
+    await renderComponent()
+    fetch.resetMocks()
+    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+
+    await act(async () => await fireEvent.change(screen.getByPlaceholderText('Enter a tag...'), {target: {value: 'expected tag1'}}))
+    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText('Enter a tag...'), {key: 'Enter', keyCode: 13}))
+
+    expect(fetch.requestCount()).toEqual(0)
   })
 })

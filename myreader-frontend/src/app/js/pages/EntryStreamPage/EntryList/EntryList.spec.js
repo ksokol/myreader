@@ -3,7 +3,6 @@ import {shallow} from 'enzyme'
 import {EntryList} from './EntryList'
 
 const listItemSelector = '.my-entry-list__item'
-const loadMoreButtonSelector = '.my-button__load-more'
 
 describe('EntryList', () => {
 
@@ -48,17 +47,6 @@ describe('EntryList', () => {
   })
 
   const createWrapper = () => shallow(<EntryList {...props} />)
-
-  it('should render each item of prop "entries" in a wrapper node', () =>  {
-    expect(createWrapper().find(listItemSelector)).toHaveLength(2)
-  })
-
-  it('should set key on wrapper nodes', () =>  {
-    const items = createWrapper().find(listItemSelector)
-
-    expect(items.at(0).key()).toEqual(props.entries[0].uuid)
-    expect(items.at(1).key()).toEqual(props.entries[1].uuid)
-  })
 
   it('should pass each item of prop "entries" to an entry auto focus component', () =>  {
     const items = createWrapper().find(listItemSelector)
@@ -142,29 +130,5 @@ describe('EntryList', () => {
 
     expect(createWrapper().find('IntersectionObserver').exists()).toEqual(false)
     expect(createWrapper().find('.my-entry').children()).toHaveLength(0)
-  })
-
-  it('should render load more button when next link exists', () =>  {
-    expect(createWrapper().find(loadMoreButtonSelector).exists()).toEqual(true)
-  })
-
-  it('should not render load more button when next link does not exist', () =>  {
-    props.links = {}
-
-    expect(createWrapper().find(loadMoreButtonSelector).exists()).toEqual(false)
-  })
-
-  it('should pass expected props to button component', () =>  {
-    const loadMoreButton = createWrapper().find(loadMoreButtonSelector)
-
-    expect(loadMoreButton.props()).toEqual(expect.objectContaining({
-      disabled: props.disabled
-    }))
-  })
-
-  it('should trigger prop function "onLoadMore" when button load more clicked', () =>  {
-    createWrapper().find(loadMoreButtonSelector).props().onClick()
-
-    expect(props.onLoadMore).toHaveBeenCalledWith(props.links.next)
   })
 })

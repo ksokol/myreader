@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import {EntryTitle} from './EntryTitle/EntryTitle'
 import {EntryActions} from './EntryActions'
 import {EntryContent} from './EntryContent/EntryContent'
-import {EntryTags} from './EntryTags/EntryTags'
+import {EntryTags} from './EntryTags'
 import {useSettings} from '../../../../contexts/settings'
 
 export function Entry(props) {
