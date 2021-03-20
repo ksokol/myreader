@@ -7,7 +7,7 @@ import {Icon} from '../../../components/Icon/Icon'
 import {Input} from '../../../components/Input/Input'
 import {SubscriptionExclusions} from './SubscriptionExclusions'
 import {SubscriptionFetchErrors} from './SubscriptionFetchErrors/SubscriptionFetchErrors'
-import {SubscriptionColorPicker} from './SubscriptionColorPicker/SubscriptionColorPicker'
+import {SubscriptionColorPicker} from './SubscriptionColorPicker'
 
 export function SubscriptionEditForm(props) {
   const [state, setState] = useState({
