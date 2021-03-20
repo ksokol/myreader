@@ -1,25 +1,31 @@
 import React from 'react'
+import {render, screen} from '@testing-library/react'
 import {Icon} from './Icon'
-import {mount} from 'enzyme'
 
 describe('Icon', () => {
 
-  const createWrapper = (type, inverse = false) => mount(<Icon type={type} inverse={inverse} />)
-
   it('should set expected class for icon', () => {
-    expect(createWrapper('times').find('span').prop('className')).toEqual('my-icon my-icon__times')
+    render(<Icon type='icon1'/>)
+
+    expect(screen.getByRole('icon-icon1')).toHaveClass('my-icon')
+    expect(screen.getByRole('icon-icon1')).toHaveClass('my-icon__icon1')
+
+    render(<Icon type='icon2'/>)
+
+    expect(screen.getByRole('icon-icon2')).toHaveClass('my-icon')
+    expect(screen.getByRole('icon-icon2')).toHaveClass('my-icon__icon2')
   })
 
   it('should invert color when prop "inverse" ist set to true', () => {
     const spy = spyOn(CSSStyleDeclaration.prototype, 'setProperty')
-    createWrapper('times', true)
+    render(<Icon type='icon1' inverse={true}/>)
 
     expect(spy).toHaveBeenCalledWith('--color', '#FFFFFF')
   })
 
   it('should not invert color when prop "inverse" ist set to false', () => {
     const spy = spyOn(CSSStyleDeclaration.prototype, 'setProperty')
-    createWrapper('times')
+    render(<Icon type='icon1'/>)
 
     expect(spy).toHaveBeenCalledWith('--color', '#808080')
   })

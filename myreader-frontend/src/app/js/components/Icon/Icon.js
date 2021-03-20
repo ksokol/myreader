@@ -7,12 +7,17 @@ const defaultColor = '#808080'
 
 export const Icon = ({type, inverse}) => {
   const iconRef = useRef(null)
+
   useEffect(() => {
     iconRef.current.style.setProperty('--color', inverse ? inverseColor : defaultColor)
   })
 
   return (
-    <span ref={iconRef} className={`my-icon my-icon__${type}`} />
+    <span
+      ref={iconRef}
+      role={`icon-${type}`}
+      className={`my-icon my-icon__${type}`}
+    />
   )
 }
 

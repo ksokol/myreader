@@ -1,89 +1,84 @@
 .my-icon {
-    --color: #808080;
-    --height: 1em;
-    --width: 1em;
+  --color: #808080;
+  --height: 1em;
+  --width: 1em;
 
-    display: inline-block;
-    height: var(--height);
-    margin: 0 2px;
-    vertical-align: -2px;
-    width: var(--width);
+  display: inline-block;
+  height: var(--height);
+  margin: 0 2px;
+  vertical-align: -2px;
+  width: var(--width);
 }
 
-/*
- * TODO
- * -webkit-mask/-webkit-mask-size is supported by Firefox.
- * Change it to mask/mask-size as soon as WebKit/Blink browsers drop vendor prefixes.
- */
 .my-icon.my-icon__chevron-left {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/chevron-left.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/chevron-left.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
 
 .my-icon.my-icon__chevron-right {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/chevron-right.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/chevron-right.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
 
 .my-icon.my-icon__chevron-down {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/chevron-down.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/chevron-down.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
 
 .my-icon.my-icon__chevron-up {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/chevron-up.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/chevron-up.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
 
 .my-icon.my-icon__check {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/check.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/check.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
 
 .my-icon.my-icon__check-circle {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/check-circle.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/check-circle.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
 
 .my-icon.my-icon__redo {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/redo.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
-    content: ' ';
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/redo.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
+  content: ' ';
 }
 
 .my-icon.my-icon__search {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/search.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/search.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
 
 .my-icon.my-icon__times {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/times.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/times.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
 
 .my-icon.my-icon__bars {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/bars.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/bars.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
 
 .my-icon.my-icon__link {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/link.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/link.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
 
 .my-icon.my-icon__exclamation-triangle {
-    -webkit-mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/exclamation-triangle.svg') no-repeat center;
-    -webkit-mask-size: contain;
-    background-color: var(--color);
+  mask: url('../../../../../node_modules/@fortawesome/fontawesome-free/svgs/solid/exclamation-triangle.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--color);
 }
