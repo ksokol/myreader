@@ -1,7 +1,7 @@
 /*
  *  Thank you https://codepen.io/holdencreative/pen/vEVbwv
  */
-.my-loading-bar {
+[role="loading-indicator"] {
     position: absolute;
     height: 4px;
     width: 100%;
@@ -10,11 +10,11 @@
     z-index: 1050;
 }
 
-.my-loading-bar .my-loading-bar__indeterminate {
+[role="loading-indicator"] > div {
     background-color: rgb(170, 209, 249);
 }
 
-.my-loading-bar .my-loading-bar__indeterminate:before {
+[role="loading-indicator"] > div:before {
     content: '';
     position: absolute;
     background-color: inherit;
@@ -26,7 +26,7 @@
     animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
 }
 
-.my-loading-bar .my-loading-bar__indeterminate:after {
+[role="loading-indicator"] > div:after {
     content: '';
     position: absolute;
     background-color: inherit;

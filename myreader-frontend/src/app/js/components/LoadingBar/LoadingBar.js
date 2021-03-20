@@ -1,47 +1,29 @@
 import './LoadingBar.css'
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import {api} from '../../api'
 
-export class LoadingBar extends React.Component {
+export function LoadingBar() {
+  const [pendingCount, setPendingCount] = useState(0)
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      pendingCount: 0
+  useEffect(() => {
+    const interceptor = {
+      onBefore: () => setPendingCount(prevState => prevState + 1),
+      onFinally: () => setPendingCount(prevState => Math.max(prevState - 1, 0))
     }
-  }
 
-  componentDidMount() {
+    api.addInterceptor(interceptor)
+    return () => api.removeInterceptor(interceptor)
+  }, [])
 
-    api.addInterceptor(this)
-  }
-
-  componentWillUnmount() {
-    api.removeInterceptor(this)
-  }
-
-  onBefore = () => {
-    this.setState(prevState => ({
-      pendingCount: prevState.pendingCount + 1
-    }))
-  }
-
-  onFinally = () => {
-    this.setState(prevState => ({
-      pendingCount: prevState.pendingCount > 0 ? prevState.pendingCount - 1 : 0
-    }))
-  }
-
-  render() {
-    return (
-      this.state.pendingCount > 0 ? ReactDOM.createPortal(
-        <div className='my-loading-bar'>
-          <div className='my-loading-bar__indeterminate' />
-        </div>,
-        document.querySelector('body')
-      ) : null
-    )
-  }
+  return (
+    pendingCount > 0 ? ReactDOM.createPortal(
+      <div
+        role='loading-indicator'
+      >
+        <div />
+      </div>,
+      document.querySelector('body')
+    ) : null
+  )
 }

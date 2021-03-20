@@ -1,61 +1,53 @@
 import React from 'react'
-import {mount} from 'enzyme'
+import {render, screen, fireEvent, act} from '@testing-library/react'
 import {LoadingBar} from './LoadingBar'
 import {api} from '../../api'
 
-/* eslint-disable react/prop-types */
-jest.mock('../../api', () => ({
-  api: {
-    addInterceptor: jest.fn(),
-    removeInterceptor: jest.fn()
-  }
-}))
-/* eslint-enable */
-
-const CLASS_LOADING_BAR = '.my-loading-bar'
+function TestComponent() {
+  return (
+    <button
+      data-testid='fetch'
+      onClick={() => {
+        api.get('/test')
+      }}
+    />
+  )
+}
 
 describe('LoadingBar', () => {
 
-  const createWrapper = () => mount(<LoadingBar />)
+  const renderComponent = () => render(
+    <>
+      <TestComponent />
+      <LoadingBar />
+    </>
+  )
 
-  beforeEach(() => {
-    api.addInterceptor.mockClear()
+  it('should not render loading bar if there are no active requests', () => {
+    renderComponent()
+
+    expect(screen.queryByRole('loading-indicator')).not.toBeInTheDocument()
   })
 
-  it('should not render loading bar when state prop "pendingRequests" is equal to 0', () => {
-    expect(createWrapper().find(CLASS_LOADING_BAR).exists()).toEqual(false)
+  it('should render loading bar if there are active requests', async () => {
+    renderComponent()
+
+    expect(screen.queryByRole('loading-indicator')).not.toBeInTheDocument()
+
+    fetch.responsePending()
+    fireEvent.click(screen.getByTestId('fetch'))
+
+    expect(screen.queryByRole('loading-indicator')).toBeInTheDocument()
   })
 
-  it('should render loading bar when prop "pendingRequests" is greater than 0', done => {
-    jest.useRealTimers()
-    const wrapper = createWrapper()
-    api.addInterceptor.mock.calls[0][0].onBefore()
+  it('should not render loading bar if there are no active requests anymore', async () => {
+    renderComponent()
 
-    setTimeout(() => {
-      wrapper.update()
-      expect(wrapper.find(CLASS_LOADING_BAR).exists()).toEqual(true)
-      done()
-    })
-  })
+    expect(screen.queryByRole('loading-indicator')).not.toBeInTheDocument()
 
-  it('should not render loading bar when prop "pendingRequests" is equal to 0 again', done => {
-    const wrapper = createWrapper()
-    api.addInterceptor.mock.calls[0][0].onBefore()
-    wrapper.update()
-    api.addInterceptor.mock.calls[0][0].onFinally()
+    fetch.jsonResponse({})
+    await act(async () => await fireEvent.click(screen.getByTestId('fetch')))
 
-    setTimeout(() => {
-      wrapper.update()
-      expect(wrapper.find(CLASS_LOADING_BAR).exists()).toEqual(false)
-      done()
-    })
-  })
-
-  it('should remove component from api interceptors on unmount', () => {
-    const wrapper = createWrapper()
-    const instance = wrapper.instance()
-    wrapper.unmount()
-
-    expect(api.removeInterceptor).toHaveBeenCalledWith(instance)
+    expect(screen.queryByRole('loading-indicator')).not.toBeInTheDocument()
   })
 })
