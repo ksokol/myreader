@@ -45,32 +45,35 @@ describe('SubscriptionListPage', () => {
 
     fetch.jsonResponseOnce({
       content: [
-        {uuid: '1', title: 'title1', createdAt: 'createdAt1', fetchErrorCount: 42},
-        {uuid: '2', title: 'title2', createdAt: 'createdAt2', fetchErrorCount: 0},
+        {uuid: '1', title: 'title1', createdAt: '2021-02-27T06:48:05.087+01:00', fetchErrorCount: 42},
+        {uuid: '2', title: 'title2', createdAt: '2021-02-27T07:48:05.087+01:00', fetchErrorCount: 0},
       ]
     })
   })
 
   it('should present given subscriptions', async () => {
+    jest.spyOn(Date, 'now').mockReturnValue(1614453487714)
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchGetRequest({
       url: 'api/2/subscriptions',
     })
     await waitFor(() => {
-      expect(screen.queryByTitle('title1')).toBeInTheDocument()
-      expect(screen.queryByTitle('title2')).toBeInTheDocument()
+      expect(screen.queryByText('title1')).toBeInTheDocument()
+      expect(screen.queryByText('13 hours ago')).toBeInTheDocument()
+      expect(screen.queryByText('title2')).toBeInTheDocument()
+      expect(screen.queryByText('12 hours ago')).toBeInTheDocument()
     })
   })
 
   it('should navigate to subscription', async () => {
     await renderComponent()
 
-    await waitFor(() => fireEvent.click(screen.queryByTitle('title1')))
+    await waitFor(() => fireEvent.click(screen.queryByText('title1')))
     expect(history.action).toEqual('PUSH')
     expect(history.location.pathname).toEqual('/app/subscriptions/1')
 
-    await waitFor(() => fireEvent.click(screen.queryByTitle('title2')))
+    await waitFor(() => fireEvent.click(screen.queryByText('title2')))
     expect(history.action).toEqual('PUSH')
     expect(history.location.pathname).toEqual('/app/subscriptions/2')
   })
@@ -82,8 +85,8 @@ describe('SubscriptionListPage', () => {
 
     expect(screen.getByRole('search')).toHaveValue('title1')
     expect(history.location.search).toEqual('?q=title1')
-    expect(screen.queryByTitle('title1')).toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+    expect(screen.queryByText('title1')).toBeInTheDocument()
+    expect(screen.queryByText('title2')).not.toBeInTheDocument()
   })
 
   it('should filter subscriptions by title title2', async () => {
@@ -93,8 +96,8 @@ describe('SubscriptionListPage', () => {
 
     expect(screen.getByRole('search')).toHaveValue('title2')
     expect(history.location.search).toEqual('?q=title2')
-    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+    expect(screen.queryByText('title1')).not.toBeInTheDocument()
+    expect(screen.queryByText('title2')).toBeInTheDocument()
   })
 
   it('should filter subscriptions by title TITLE1', async () => {
@@ -104,8 +107,8 @@ describe('SubscriptionListPage', () => {
 
     expect(screen.getByRole('search')).toHaveValue('TITLE1')
     expect(history.location.search).toEqual('?q=TITLE1')
-    expect(screen.queryByTitle('title1')).toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+    expect(screen.queryByText('title1')).toBeInTheDocument()
+    expect(screen.queryByText('title2')).not.toBeInTheDocument()
   })
 
   it('should filter subscriptions by title titl', async () => {
@@ -115,8 +118,8 @@ describe('SubscriptionListPage', () => {
 
     expect(screen.getByRole('search')).toHaveValue('titl')
     expect(history.location.search).toEqual('?q=titl')
-    expect(screen.queryByTitle('title1')).toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+    expect(screen.queryByText('title1')).toBeInTheDocument()
+    expect(screen.queryByText('title2')).toBeInTheDocument()
   })
 
   it('should filter subscriptions by title other', async () => {
@@ -126,8 +129,8 @@ describe('SubscriptionListPage', () => {
 
     expect(screen.getByRole('search')).toHaveValue('other')
     expect(history.location.search).toEqual('?q=other')
-    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+    expect(screen.queryByText('title1')).not.toBeInTheDocument()
+    expect(screen.queryByText('title2')).not.toBeInTheDocument()
   })
 
   it('should reload subscription when refresh icon button clicked', async () => {
@@ -145,9 +148,9 @@ describe('SubscriptionListPage', () => {
     expect(fetch.mostRecent()).toMatchGetRequest({
       url: 'api/2/subscriptions',
     })
-    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).toBeInTheDocument()
-    expect(screen.queryByTitle('title3')).toBeInTheDocument()
+    expect(screen.queryByText('title1')).not.toBeInTheDocument()
+    expect(screen.queryByText('title2')).toBeInTheDocument()
+    expect(screen.queryByText('title3')).toBeInTheDocument()
   })
 
   it('should show filtered subscriptions if search query is set', async () => {
@@ -160,7 +163,7 @@ describe('SubscriptionListPage', () => {
     await renderComponent()
 
     expect(screen.getByRole('search')).toHaveValue('title1')
-    expect(screen.queryByTitle('title1')).toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+    expect(screen.queryByText('title1')).toBeInTheDocument()
+    expect(screen.queryByText('title2')).not.toBeInTheDocument()
   })
 })

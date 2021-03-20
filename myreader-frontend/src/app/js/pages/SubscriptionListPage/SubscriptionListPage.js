@@ -63,7 +63,6 @@ export const SubscriptionListPage = () => {
               >
                 <Link
                   className='my-subscription-list-page__item-heading no-underline'
-                  title={subscription.title}
                   to={generatePath(SUBSCRIPTION_PAGE_PATH, {uuid: subscription.uuid})}
                 >
                   {subscription.title}
