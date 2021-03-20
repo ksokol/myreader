@@ -2,16 +2,12 @@
     padding: 16px;
 }
 
-.my-entry--focus {
+.my-entry[role="entry-in-focus"] {
     background-color: rgba(158, 158, 158, 0.2);
 }
 
 .my-entry__header {
     display: flex;
-}
-
-.my-entry__header > .my-entry__title {
-    flex-grow: 1;
 }
 
 .my-entry__header > .my-entry__actions {

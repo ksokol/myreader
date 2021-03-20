@@ -14,7 +14,7 @@ export function EntryTitle(props) {
     feedTagColor
   } = props.entry
   return (
-    <>
+    <div className='my-entry-title'>
       <a
         className="my-entry-title__title"
         href={origin}
@@ -35,7 +35,7 @@ export function EntryTitle(props) {
           />
         )}
       </div>
-    </>
+    </div>
   )
 }
 

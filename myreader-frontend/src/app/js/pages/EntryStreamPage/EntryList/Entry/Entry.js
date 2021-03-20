@@ -46,24 +46,15 @@ export function Entry(props) {
       <div
         className='my-entry__header'
       >
-        <div
-          className='my-entry__title'
-          title={item.title}
-        >
-          <EntryTitle
-            entry={item}
-          />
-        </div>
-        <div
-          className='my-entry__actions'
-        >
-          <EntryActions
-            seen={item.seen}
-            showMore={showMore}
-            onToggleShowMore={toggleMore}
-            onToggleSeen={toggleSeen}
-          />
-        </div>
+        <EntryTitle
+          entry={item}
+        />
+        <EntryActions
+          seen={item.seen}
+          showMore={showMore}
+          onToggleShowMore={toggleMore}
+          onToggleSeen={toggleSeen}
+        />
       </div>
 
       {showMore && (

@@ -182,7 +182,7 @@ describe('EntryStreamPage', () => {
       fetch.jsonResponseOnce({...entry1, seen: true})
       await clickButtonNext()
 
-      expect(screen.getByRole('focus')).toHaveTextContent('title1')
+      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title1')
       expect(fetch.mostRecent()).toMatchPatchRequest({
         url: entry1Url,
         body: {
@@ -194,7 +194,7 @@ describe('EntryStreamPage', () => {
       fetch.jsonResponseOnce({...entry2, seen: true})
       await clickButtonNext()
 
-      expect(screen.getByRole('focus')).toHaveTextContent('title2')
+      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title2')
       expect(fetch.mostRecent()).toMatchPatchRequest({
         url: entry2Url,
         body: {
@@ -210,7 +210,7 @@ describe('EntryStreamPage', () => {
       fetch.jsonResponseOnce({...entry1, seen: true})
       await pressArrowRight()
 
-      expect(screen.getByRole('focus')).toHaveTextContent('title1')
+      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title1')
       expect(fetch.mostRecent()).toMatchPatchRequest({
         url: entry1Url,
         body: {
@@ -222,7 +222,7 @@ describe('EntryStreamPage', () => {
       fetch.jsonResponseOnce({...entry2, seen: true})
       await pressArrowRight()
 
-      expect(screen.getByRole('focus')).toHaveTextContent('title2')
+      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title2')
       expect(fetch.mostRecent()).toMatchPatchRequest({
         url: entry2Url,
         body: {
@@ -243,7 +243,7 @@ describe('EntryStreamPage', () => {
       await clickButtonNext()
       await clickButtonNext()
 
-      expect(screen.getByRole('focus')).toHaveTextContent('title2')
+      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title2')
       expect(fetch.requestCount()).toEqual(2)
     })
 
@@ -258,7 +258,7 @@ describe('EntryStreamPage', () => {
       await pressArrowRight()
       await pressArrowRight()
 
-      expect(screen.getByRole('focus')).toHaveTextContent('title2')
+      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title2')
       expect(fetch.requestCount()).toEqual(2)
     })
   })
@@ -271,7 +271,7 @@ describe('EntryStreamPage', () => {
 
       await clickButtonPrevious()
 
-      expect(screen.queryByRole('focus')).not.toBeInTheDocument()
+      expect(screen.queryByRole('entry-in-focus')).not.toBeInTheDocument()
       expect(fetch.requestCount()).toEqual(0)
     })
 
@@ -319,7 +319,7 @@ describe('EntryStreamPage', () => {
       await clickButtonNext()
       await clickButtonPrevious()
 
-      expect(screen.getByRole('focus')).toHaveTextContent('title1')
+      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title1')
       expect(fetch.mostRecent()).toMatchPatchRequest({
         url: entry2Url,
         body: {
@@ -339,7 +339,7 @@ describe('EntryStreamPage', () => {
       await pressArrowRight()
       await pressArrowLeft()
 
-      expect(screen.getByRole('focus')).toHaveTextContent('title1')
+      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title1')
       expect(fetch.mostRecent()).toMatchPatchRequest({
         url: entry2Url,
         body: {
@@ -397,10 +397,10 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null})
     await act(async () => fireEvent.click(screen.getByRole('more')))
 
-    expect(screen.queryByTitle('title1')).toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).toBeInTheDocument()
-    expect(screen.queryByTitle('title3')).toBeInTheDocument()
-    expect(screen.queryByTitle('title4')).toBeInTheDocument()
+    expect(screen.queryByText('title1')).toBeInTheDocument()
+    expect(screen.queryByText('title2')).toBeInTheDocument()
+    expect(screen.queryByText('title3')).toBeInTheDocument()
+    expect(screen.queryByText('title4')).toBeInTheDocument()
     expect(screen.queryByRole('more')).not.toBeInTheDocument()
   })
 
@@ -454,9 +454,9 @@ describe('EntryStreamPage', () => {
     expect(fetch.nthRequest(2)).toMatchGetRequest({
       url: 'api/2/subscriptionEntries?feedTagEqual=a'
     })
-    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).toBeInTheDocument()
-    expect(screen.queryByTitle('title3')).toBeInTheDocument()
+    expect(screen.queryByText('title1')).not.toBeInTheDocument()
+    expect(screen.queryByText('title2')).toBeInTheDocument()
+    expect(screen.queryByText('title3')).toBeInTheDocument()
     expect(screen.queryByRole('focus')).not.toBeInTheDocument()
   })
 
@@ -502,14 +502,20 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null})
     await act(async () => fireEvent.click(screen.getByRole('more')))
 
-    expect(screen.queryByRole('focus')).toHaveTextContent('title1')
+    expect(screen.queryByRole('entry-in-focus')).toHaveTextContent('title1')
   })
 
   it('should render entries', async () => {
     await renderComponent()
 
-    expect(screen.queryByTitle('title1')).toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+    expect(screen.queryByText('title1')).toBeInTheDocument()
+    expect(screen.queryByText('title1')).toHaveAttribute('href', 'expected origin1')
+    expect(screen.queryByText('title1')).toHaveAttribute('target', '_blank')
+    expect(screen.queryByText('title1')).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.queryByText('title2')).toBeInTheDocument()
+    expect(screen.queryByText('title2')).toHaveAttribute('href', 'expected origin2')
+    expect(screen.queryByText('title2')).toHaveAttribute('target', '_blank')
+    expect(screen.queryByText('title2')).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
   it('should show an error message if entries could not be fetched', async () => {
@@ -585,10 +591,10 @@ describe('EntryStreamPage', () => {
       url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=false'
     })
 
-    expect(screen.queryByTitle('title1')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
-    expect(screen.queryByTitle('title3')).toBeInTheDocument()
-    expect(screen.queryByTitle('title4')).toBeInTheDocument()
+    expect(screen.queryByText('title1')).not.toBeInTheDocument()
+    expect(screen.queryByText('title2')).not.toBeInTheDocument()
+    expect(screen.queryByText('title3')).toBeInTheDocument()
+    expect(screen.queryByText('title4')).toBeInTheDocument()
   })
 
   it('should fetch all entries if "seenEqual" is set to "*"', async () => {
@@ -674,7 +680,7 @@ describe('EntryStreamPage', () => {
     expect(screen.getByRole('feed-badge')).toHaveStyle('--red: 85; --green: 85; --blue: 85;')
   })
 
-  it('should render tag input and tag for entry if etails toggle clicked', async () => {
+  it('should render tag input and tag for entry if details toggle clicked', async () => {
     await renderComponent()
     expect(screen.queryByPlaceholderText('Enter a tag...')).not.toBeInTheDocument()
 
@@ -683,6 +689,17 @@ describe('EntryStreamPage', () => {
     expect(screen.getByPlaceholderText('Enter a tag...')).toBeInTheDocument()
     expect(screen.getByText('expected tag1')).toBeInTheDocument()
     expect(screen.queryByText('expected tag2')).not.toBeInTheDocument()
+  })
+
+  it('should hide tag input and tag for entry if details toggle clicked twice', async () => {
+    await renderComponent()
+    expect(screen.queryByPlaceholderText('Enter a tag...')).not.toBeInTheDocument()
+
+    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole('less-details')[0]))
+
+    expect(screen.queryByPlaceholderText('Enter a tag...')).not.toBeInTheDocument()
+    expect(screen.queryByText('expected tag1')).not.toBeInTheDocument()
   })
 
   it('should remove last entry tag', async () => {
@@ -777,8 +794,8 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({content: [{...entry1}], next: 'http://localhost/test?next=2'})
     await renderComponent()
 
-    expect(screen.queryByTitle('title1')).toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).not.toBeInTheDocument()
+    expect(screen.queryByText('title1')).toBeInTheDocument()
+    expect(screen.queryByText('title2')).not.toBeInTheDocument()
 
     fetch.jsonResponse({content: [{...entry2}]})
     await act(async () => mockAllIsIntersecting(true))
@@ -787,8 +804,8 @@ describe('EntryStreamPage', () => {
       url: 'http://localhost/test?next=2'
     })
 
-    expect(screen.queryByTitle('title1')).toBeInTheDocument()
-    expect(screen.queryByTitle('title2')).toBeInTheDocument()
+    expect(screen.queryByText('title1')).toBeInTheDocument()
+    expect(screen.queryByText('title2')).toBeInTheDocument()
 
     fetch.resetMocks()
     await act(async () => mockAllIsIntersecting(true))
@@ -804,5 +821,19 @@ describe('EntryStreamPage', () => {
     await act(async () => mockAllIsIntersecting(true))
 
     expect(fetch.requestCount()).toEqual(1)
+  })
+
+  it('should scroll entry into view if next button clicked', async () => {
+    await renderComponent()
+    await clickButtonNext()
+
+    expect(screen.getByRole('entry-in-focus').scrollIntoView).toHaveBeenCalled()
+  })
+
+  it('should scroll entry into view if hotkey pressed', async () => {
+    await renderComponent()
+    await pressArrowRight()
+
+    expect(screen.getByRole('entry-in-focus').scrollIntoView).toHaveBeenCalled()
   })
 })

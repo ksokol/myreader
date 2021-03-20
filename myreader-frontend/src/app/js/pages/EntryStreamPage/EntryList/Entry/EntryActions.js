@@ -4,7 +4,7 @@ import {IconButton} from '../../../../components/Buttons'
 
 export function EntryActions(props) {
   return (
-    <>
+    <div className='my-entry__actions'>
       <IconButton
         type={`chevron-${props.showMore ? 'up' : 'down'}`}
         role={props.showMore ? 'less-details' : 'more-details'}
@@ -15,7 +15,7 @@ export function EntryActions(props) {
         role={props.seen ? 'flag-as-unseen' : 'flag-as-seen'}
         onClick={props.onToggleSeen}
       />
-    </>
+    </div>
   )
 }
 

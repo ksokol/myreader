@@ -31,8 +31,7 @@ export class EntryAutoFocus extends Component {
     } = this.props
 
     if (this.state.focused) {
-      props.className = 'my-entry--focus'
-      props.role = 'focus'
+      props.role = 'entry-in-focus'
     }
 
     return (
