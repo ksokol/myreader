@@ -5,9 +5,6 @@ import {act, fireEvent, render, screen} from '@testing-library/react'
 import {BookmarkNavigationItem} from './BookmarkNavigationItem'
 import {BOOKMARK_PAGE_PATH} from '../../../constants'
 
-jest.unmock('react-router')
-jest.unmock('react-router-dom')
-
 describe('BookmarkNavigationItem', () => {
 
   let props, history

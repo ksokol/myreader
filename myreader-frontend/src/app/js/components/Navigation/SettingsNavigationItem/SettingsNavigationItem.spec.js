@@ -5,9 +5,6 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {SettingsProvider} from '../../../contexts/settings/SettingsProvider'
 import {SettingsNavigationItem} from './SettingsNavigationItem'
 
-jest.unmock('react-router')
-jest.unmock('react-router-dom')
-
 describe('SettingsNavigationItem', () => {
 
   let props, history

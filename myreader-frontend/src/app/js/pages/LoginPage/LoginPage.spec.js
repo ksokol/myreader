@@ -5,9 +5,6 @@ import {render, screen, fireEvent, act} from '@testing-library/react'
 import {LoginPage} from './LoginPage'
 import {SecurityProvider} from '../../contexts/security/SecurityProvider'
 
-jest.unmock('react-router')
-jest.unmock('react-router-dom')
-
 describe('LoginPage', () => {
 
   let history

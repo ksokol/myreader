@@ -6,9 +6,6 @@ import iro from '@jaames/iro'
 import {SubscriptionPage} from './SubscriptionPage'
 import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
 
-jest.unmock('react-router')
-jest.unmock('react-router-dom')
-
 const expectedError = 'expectedError'
 
 describe('SubscriptionPage', () => {

@@ -4,9 +4,6 @@ import {createMemoryHistory} from 'history'
 import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
 import {SubscribeNavigationItem} from './SubscribeNavigationItem'
 
-jest.unmock('react-router')
-jest.unmock('react-router-dom')
-
 const expectedUrl = 'expected url'
 const expectedError = 'expected error'
 const dialogErrorMessageRole = 'dialog-error-message'

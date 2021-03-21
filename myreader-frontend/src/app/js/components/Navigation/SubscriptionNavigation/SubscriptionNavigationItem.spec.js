@@ -1,82 +1,26 @@
 import React from 'react'
+import {Router} from 'react-router'
+import {createMemoryHistory} from 'history'
+import {render, screen, fireEvent} from '@testing-library/react'
 import {SubscriptionNavigationItem} from './SubscriptionNavigationItem'
-import {mount} from 'enzyme'
-import {ENTRIES_PAGE_PATH} from '../../../constants'
-import {useSearchParams} from '../../../hooks/router'
-
-/* eslint-disable react/prop-types */
-jest.mock('../../../hooks/router', () => ({
-  useSearchParams: jest.fn().mockReturnValue({})
-}))
-/* eslint-enable */
-
-class SubscriptionNavigationItemSubscriptionsWrapper {
-
-  constructor(wrapper) {
-    this.wrapper = wrapper
-  }
-
-  exists() {
-    return this.wrapper.exists()
-  }
-
-  items() {
-    return this.wrapper.find('NavigationItem')
-  }
-
-  itemAt(index) {
-    return this.items().at(index)
-  }
-
-  itemPropsAt(index) {
-    return this.itemAt(index).props()
-  }
-
-  itemKeyAt(index) {
-    return this.itemAt(index).key()
-  }
-
-  itemClickAt(index) {
-    this.itemPropsAt(index).onClick()
-  }
-}
-
-class SubscriptionNavigationItemWrapper {
-
-  constructor(props) {
-    this.wrapper = mount(<SubscriptionNavigationItem {...props} />)
-  }
-
-  item() {
-    return this.wrapper.first().find('NavigationItem').first()
-  }
-
-  subscriptions() {
-    return new SubscriptionNavigationItemSubscriptionsWrapper(this.wrapper.find('ul'))
-  }
-
-  itemProps() {
-    return this.item().props()
-  }
-
-  itemKey() {
-    return this.item().key()
-  }
-
-  itemClick() {
-    this.itemProps().onClick()
-  }
-}
 
 const itemTitle = 'itemTitle'
 
 describe('SubscriptionNavigationItem', () => {
 
-  let props, subscriptions1, subscriptions2
+  let history, props, subscriptions1, subscriptions2
 
-  const createWrapper = () => new SubscriptionNavigationItemWrapper(props)
+  const renderComponent = () => {
+    return render(
+      <Router history={history}>
+        <SubscriptionNavigationItem {...props} />
+      </Router>
+    )
+  }
 
   beforeEach(() => {
+    history = createMemoryHistory()
+
     subscriptions1 = {title: 'subscription 1', uuid: 'uuid1', unseen: 1, tag: 'tag'}
     subscriptions2 = {title: 'subscription 2', uuid: 'uuid2', unseen: 0, tag: 'tag'}
 
@@ -92,54 +36,60 @@ describe('SubscriptionNavigationItem', () => {
     }
   })
 
-  it('should pass expected props to navigation item', () => {
-    expect(createWrapper().itemProps()).toEqual(expect.objectContaining({
-      title: itemTitle,
-      badgeCount: 2,
-      to: {
-        pathname: ENTRIES_PAGE_PATH,
-        search: '?feedTagEqual=tag&feedUuidEqual=uuid'
-      }
-    }))
+  it('should render item', () => {
+    renderComponent()
+
+    expect(screen.getByText('itemTitle')).toBeInTheDocument()
+    expect(screen.getByRole('badge')).toHaveTextContent('2')
   })
 
-  it('should set key for navigation item', () => {
-    expect(createWrapper().itemKey()).toEqual(props.item.uuid)
+  it('should navigate if item clicked', () => {
+    renderComponent()
+    fireEvent.click(screen.getByText(itemTitle))
+
+    expect(history.action).toEqual('PUSH')
+    expect(history.location.pathname).toEqual('/app/entries')
+    expect(history.location.search).toEqual('?feedTagEqual=tag&feedUuidEqual=uuid')
   })
 
   it('should trigger prop function "onClick" when navigation item clicked', () => {
-    createWrapper().itemClick()
+    renderComponent()
+    fireEvent.click(screen.getByText(itemTitle))
 
     expect(props.onClick).toHaveBeenCalled()
   })
 
   it('should flag navigation item as selected when "feedUuidEqual" and "feedTagEqual" is not equal to item uuid and tag', () => {
-    expect(createWrapper().itemProps()).toEqual(expect.objectContaining({selected: false}))
+    renderComponent()
+
+    expect(screen.queryByRole('selected-navigation-item')).not.toBeInTheDocument()
   })
 
   it('should not flag navigation item as selected when "feedTagEqual" is not equal to item tag', () => {
     props.location = {
       search: `?feedUuidEqual=${props.item.uuid}`
     }
+    renderComponent()
 
-    expect(createWrapper().itemProps()).toEqual(expect.objectContaining({selected: false}))
+    expect(screen.queryByRole('selected-navigation-item')).not.toBeInTheDocument()
   })
 
   it('should not flag navigation item as selected when "feedUuidEqual" is not equal to item uuid', () => {
     props.location = {
       search: `?feedTagEqual=${props.item.tag}`
     }
+    renderComponent()
 
-    expect(createWrapper().itemProps()).toEqual(expect.objectContaining({selected: false}))
+    expect(screen.queryByRole('selected-navigation-item')).not.toBeInTheDocument()
   })
 
-  it('should flag navigation item as selected when "feedUuidEqual" and "querEqual" is equal to item uuid and tag', () => {
-    useSearchParams.mockReturnValue({
-      feedTagEqual: props.item.tag,
-      feedUuidEqual: props.item.uuid,
+  it('should flag navigation item as selected when "feedUuidEqual" and "queryEqual" is equal to item uuid and tag', () => {
+    history.push({
+      search: `?feedTagEqual=${props.item.tag}&feedUuidEqual=${props.item.uuid}`,
     })
+    renderComponent()
 
-    expect(createWrapper().itemProps()).toEqual(expect.objectContaining({selected: true}))
+    expect(screen.queryByRole('selected-navigation-item')).toHaveTextContent(/itemTitle/)
   })
 
   it('should flag navigation item as selected when "feedTagEqual" is equal to item tag and uuid is set to null', () => {
@@ -151,12 +101,12 @@ describe('SubscriptionNavigationItem', () => {
         uuid: null,
       },
     }
-
-    useSearchParams.mockReturnValue({
-      feedTagEqual: props.item.tag,
+    history.push({
+      search: `?feedTagEqual=${props.item.tag}`,
     })
+    renderComponent()
 
-    expect(createWrapper().item().props()).toEqual(expect.objectContaining({selected: true}))
+    expect(screen.queryByRole('selected-navigation-item')).toHaveTextContent(/itemTitle/)
   })
 
   it('should flag navigation item as selected when "feedTagEqual" and "feedUuidEqual" are not set and uuid and tag are set to null', () => {
@@ -168,136 +118,128 @@ describe('SubscriptionNavigationItem', () => {
         uuid: null,
       },
     }
-    useSearchParams.mockReturnValue({})
+    renderComponent()
 
-    expect(createWrapper().item().props()).toEqual(expect.objectContaining({selected: true}))
+    expect(screen.queryByRole('selected-navigation-item')).toHaveTextContent(/itemTitle/)
   })
 
   describe('with feedTag set', () => {
 
     beforeEach(() => {
-      useSearchParams.mockReturnValue({
-        feedTagEqual: props.item.tag
+      history.push({
+        search: `?feedTagEqual=${props.item.tag}`,
       })
     })
 
     it('should not render navigation subscriptions when "feedTagEqual" is not equal to item tag', () => {
-      useSearchParams.mockReturnValue({})
+      history.push({
+        search: '',
+      })
+      renderComponent()
 
-      expect(createWrapper().subscriptions().exists()).toEqual(false)
+      expect(screen.queryByText('subscription 1')).not.toBeInTheDocument()
+      expect(screen.queryByText('subscription 2')).not.toBeInTheDocument()
     })
 
     it('should not render navigation subscriptions when prop "item.subscriptions" is undefined', () => {
       props.item.subscriptions = null
+      renderComponent()
 
-      expect(createWrapper().subscriptions().exists()).toEqual(false)
+      expect(screen.queryByText('subscription 1')).not.toBeInTheDocument()
+      expect(screen.queryByText('subscription 2')).not.toBeInTheDocument()
     })
 
     it('should render navigation subscriptions when "feedTagEqual" is equal to item tag', () => {
-      expect(createWrapper().subscriptions().exists()).toEqual(true)
+      renderComponent()
+
+      expect(screen.queryByText('subscription 1')).toBeInTheDocument()
+      expect(screen.queryByText('subscription 2')).toBeInTheDocument()
     })
 
     it('should pass expected prop "to" with feedUuidEqual set', () => {
       props.item.tag = null
+      renderComponent()
 
-      expect(createWrapper().itemProps()).toEqual(expect.objectContaining({
-        title: itemTitle,
-        to : {
-          pathname: ENTRIES_PAGE_PATH,
-          search: '?feedUuidEqual=uuid'
-        }
-      }))
+      fireEvent.click(screen.getByText(itemTitle))
+
+      expect(history.action).toEqual('PUSH')
+      expect(history.location.pathname).toEqual('/app/entries')
+      expect(history.location.search).toEqual('?feedUuidEqual=uuid')
     })
 
     it('should pass expected prop "to" with feedTagEqual set', () => {
       props.item.uuid = ''
+      renderComponent()
 
-      expect(createWrapper().itemProps()).toEqual(expect.objectContaining({
-        title: itemTitle,
-        to : {
-          pathname: ENTRIES_PAGE_PATH,
-          search: '?feedTagEqual=tag'
-        }
-      }))
+      fireEvent.click(screen.getByText(itemTitle))
+
+      expect(history.action).toEqual('PUSH')
+      expect(history.location.pathname).toEqual('/app/entries')
+      expect(history.location.search).toEqual('?feedTagEqual=tag')
     })
 
     it('should pass expected prop "to" without search value set', () => {
       props.item.uuid = ''
       props.item.tag = null
+      renderComponent()
 
-      expect(createWrapper().itemProps()).toEqual(expect.objectContaining({
-        title: itemTitle,
-        to : {
-          pathname: ENTRIES_PAGE_PATH
-        }
-      }))
+      fireEvent.click(screen.getByText(itemTitle))
+
+      expect(history.action).toEqual('PUSH')
+      expect(history.location.pathname).toEqual('/app/entries')
+      expect(history.location.search).toEqual('')
     })
 
     it('should pass expected props to navigation subscription items', () => {
-      const subscriptions = createWrapper().subscriptions()
+      renderComponent()
 
-      expect(subscriptions.itemPropsAt(0)).toEqual(expect.objectContaining({
-        title: 'subscription 1',
-        badgeCount: 1,
-        to : {
-          pathname: ENTRIES_PAGE_PATH,
-          search: '?feedTagEqual=tag&feedUuidEqual=uuid1'
-        }
-      }))
-      expect(subscriptions.itemPropsAt(1)).toEqual(expect.objectContaining({
-        title: 'subscription 2',
-        badgeCount: 0,
-        to: {
-          pathname: ENTRIES_PAGE_PATH,
-          search: '?feedTagEqual=tag&feedUuidEqual=uuid2'
-        }
-      }))
-    })
+      fireEvent.click(screen.getByText('subscription 1'))
 
-    it('should set keys for navigation subscription items', () => {
-      const subscriptions = createWrapper().subscriptions()
+      expect(history.action).toEqual('PUSH')
+      expect(history.location.pathname).toEqual('/app/entries')
+      expect(history.location.search).toEqual('?feedTagEqual=tag&feedUuidEqual=uuid1')
 
-      expect(subscriptions.itemKeyAt(0)).toEqual('uuid1')
-      expect(subscriptions.itemKeyAt(1)).toEqual('uuid2')
+      fireEvent.click(screen.getByText('subscription 2'))
+
+      expect(history.action).toEqual('PUSH')
+      expect(history.location.pathname).toEqual('/app/entries')
+      expect(history.location.search).toEqual('?feedTagEqual=tag&feedUuidEqual=uuid2')
     })
 
     it('should not flag any navigation subscription item as selected when "feedUuidEqual" is not equal to a subscription uuid', () => {
-      const subscriptions = createWrapper().subscriptions()
+      renderComponent()
 
-      expect(subscriptions.itemPropsAt(0)).toEqual(expect.objectContaining({selected: false}))
-      expect(subscriptions.itemPropsAt(1)).toEqual(expect.objectContaining({selected: false}))
+      expect(screen.queryByRole('selected-navigation-item')).not.toBeInTheDocument()
     })
 
     it('should flag first navigation subscription item as selected when "feedUuidEqual" is equal to first subscription uuid', () => {
-      useSearchParams.mockReturnValue({
-        feedTagEqual: props.item.tag,
-        feedUuidEqual: props.item.subscriptions[0].uuid,
+      history.push({
+        search: `?feedTagEqual=${props.item.tag}&feedUuidEqual=${props.item.subscriptions[0].uuid}`,
       })
-      const subscriptions = createWrapper().subscriptions()
+      renderComponent()
 
-      expect(subscriptions.itemPropsAt(0)).toEqual(expect.objectContaining({selected: true}))
-      expect(subscriptions.itemPropsAt(1)).toEqual(expect.objectContaining({selected: false}))
+      expect(screen.queryByRole('selected-navigation-item')).toHaveTextContent(/subscription 1/)
     })
 
     it('should flag second navigation subscription item as selected when "feedUuidEqual" is equal to second subscription uuid', () => {
-      useSearchParams.mockReturnValue({
-        feedTagEqual: props.item.tag,
-        feedUuidEqual: props.item.subscriptions[1].uuid,
+      history.push({
+        search: `?feedTagEqual=${props.item.tag}&feedUuidEqual=${props.item.subscriptions[1].uuid}`,
       })
-      const subscriptions = createWrapper().subscriptions()
+      renderComponent()
 
-      expect(subscriptions.itemPropsAt(0)).toEqual(expect.objectContaining({selected: false}))
-      expect(subscriptions.itemPropsAt(1)).toEqual(expect.objectContaining({selected: true}))
+      expect(screen.queryByRole('selected-navigation-item')).toHaveTextContent(/subscription 2/)
     })
 
     it('should trigger prop function "onClick" when first subscription navigation item clicked', () => {
-      createWrapper().subscriptions().itemClickAt(0)
+      renderComponent()
+      fireEvent.click(screen.getByText('subscription 1'))
 
       expect(props.onClick).toHaveBeenCalled()
     })
 
     it('should trigger prop function "onClick" when second subscription navigation item clicked', () => {
-      createWrapper().subscriptions().itemClickAt(1)
+      renderComponent()
+      fireEvent.click(screen.getByText('subscription 2'))
 
       expect(props.onClick).toHaveBeenCalled()
     })

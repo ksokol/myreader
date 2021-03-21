@@ -8,8 +8,6 @@ import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
 import {useSettings} from '../../contexts/settings'
 
-jest.unmock('react-router')
-
 const entry1 = Object.freeze({
   uuid: '1',
   title: 'title1',

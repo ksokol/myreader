@@ -6,9 +6,6 @@ import {SubscriptionListPage} from './SubscriptionListPage'
 import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
 import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
 
-jest.unmock('react-router')
-jest.unmock('react-router-dom')
-
 function TestComponent({children}) {
   const {fetchSubscriptions} = useContext(SubscriptionContext)
 

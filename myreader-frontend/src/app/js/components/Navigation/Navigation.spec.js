@@ -7,9 +7,6 @@ import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProv
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 import {SecurityProvider} from '../../contexts/security/SecurityProvider'
 
-jest.unmock('react-router')
-jest.unmock('react-router-dom')
-
 describe('Navigation', () => {
 
   let props, history

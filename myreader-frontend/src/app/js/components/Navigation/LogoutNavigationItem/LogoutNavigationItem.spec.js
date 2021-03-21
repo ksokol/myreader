@@ -5,9 +5,6 @@ import {act, render, screen, fireEvent} from '@testing-library/react'
 import {SecurityProvider} from '../../../contexts/security/SecurityProvider'
 import {LogoutNavigationItem} from './LogoutNavigationItem'
 
-jest.unmock('react-router')
-jest.unmock('react-router-dom')
-
 describe('LogoutNavigationItem', () => {
 
   let history

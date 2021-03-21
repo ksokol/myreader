@@ -5,9 +5,6 @@ import {render, screen} from '@testing-library/react'
 import {Secured} from './Secured'
 import {SecurityProvider} from '../../contexts/security/SecurityProvider'
 
-jest.unmock('react-router')
-jest.unmock('react-router-dom')
-
 function TestComponent() {
   return Secured(() => 'expected text')
 }
