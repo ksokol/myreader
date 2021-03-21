@@ -1,35 +1,47 @@
 import React from 'react'
-import {mount} from 'enzyme'
+import {Router} from 'react-router'
+import {createMemoryHistory} from 'history'
+import {render, screen} from '@testing-library/react'
 import {Secured} from './Secured'
-import {LOGIN_PAGE_PATH} from '../../constants'
-import {useSecurity} from '../../contexts/security'
+import {SecurityProvider} from '../../contexts/security/SecurityProvider'
 
-/* eslint-disable react/prop-types, react/display-name */
-jest.mock('../../contexts/security', () => ({
-  useSecurity: jest.fn().mockReturnValue({
-    roles: []
-  })
-}))
-/* eslint-enable */
+jest.unmock('react-router')
+jest.unmock('react-router-dom')
 
-const wrappedComponent = 'wrapped component'
+function TestComponent() {
+  return Secured(() => 'expected text')
+}
 
 describe('Secured', () => {
 
-  const createWrapper = (authorized) => {
-    useSecurity.mockReturnValueOnce({authorized})
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    const Wrapped = () => Secured(() => <p>{wrappedComponent}</p>)
-    return mount(<Wrapped />)
+  let history
+
+  const renderComponent = () => {
+    render(
+      <Router history={history}>
+        <SecurityProvider>
+          <TestComponent />
+        </SecurityProvider>
+      </Router>
+    )
   }
 
+  beforeEach(() => {
+    history = createMemoryHistory()
+    localStorage.setItem('myreader-security', '{"authorized":true}')
+  })
+
   it('should render component if authorized', () => {
-    expect(createWrapper(true).text()).toEqual(wrappedComponent)
+    renderComponent()
+
+    expect(screen.getByText('expected text')).toBeInTheDocument()
   })
 
   it('should redirect if unauthorized', () => {
-    const redirect = createWrapper(false).find('Redirect')
+    localStorage.setItem('myreader-security', '{"authorized":false}')
+    renderComponent()
 
-    expect(redirect.prop('to')).toEqual(LOGIN_PAGE_PATH)
+    expect(history.action).toEqual('REPLACE')
+    expect(history.location.pathname).toEqual('/app/login')
   })
 })
