@@ -3,7 +3,7 @@ import React, {useEffect, useReducer} from 'react'
 import PropTypes from 'prop-types'
 import {IconButton} from '../Buttons'
 import {Navigation} from '../Navigation/Navigation'
-import {Backdrop} from '../Backdrop/Backdrop'
+import {Backdrop} from './Backdrop/Backdrop'
 import {useMediaBreakpoint} from './mediaBreakpoint'
 
 function reducer(state, action) {
