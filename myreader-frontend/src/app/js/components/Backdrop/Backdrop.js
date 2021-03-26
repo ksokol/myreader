@@ -61,6 +61,7 @@ export class Backdrop extends React.Component {
       ReactDom.createPortal(
         <div
           className={classes.join(' ')}
+          role='backdrop'
           onClick={this.props.onClick}
         />,
         document.body

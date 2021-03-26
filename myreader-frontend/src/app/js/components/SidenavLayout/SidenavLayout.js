@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import {IconButton} from '../Buttons'
 import {Navigation} from '../Navigation/Navigation'
 import {Backdrop} from '../Backdrop/Backdrop'
-import {useMediaBreakpoint} from '../../contexts/mediaBreakpoint'
+import {useMediaBreakpoint} from './mediaBreakpoint'
 
 function reducer(state, action) {
   let newState = state
@@ -84,6 +84,7 @@ export function SidenavLayout({children}) {
         {!isDesktop && (
           <IconButton
             type='bars'
+            role='navigation-menu-button'
             onClick={() => dispatch({type: 'toggle'})}
             inverse
           />

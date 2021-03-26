@@ -13,8 +13,7 @@ export const STORAGE_SECURITY_KEY = 'myreader-security'
 
 export const supportedBreakpoints = () => {
   return {
-    phone: '(max-width: 599px)',
-    tablet: '(min-width: 600px) and (max-width: 1279px)',
+    phone: '(max-width: 1179px)',
     desktop: '(min-width: 1280px)'
   }
 }
