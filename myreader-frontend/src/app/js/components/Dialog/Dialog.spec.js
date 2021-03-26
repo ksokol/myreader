@@ -1,12 +1,10 @@
 import React from 'react'
-import {mount} from 'enzyme'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import Dialog from './Dialog'
 
 describe('Dialog', () => {
 
   let props
-
-  const mountComponent = () => mount(<Dialog {...props} />)
 
   beforeAll(() => {
     window.HTMLDialogElement = undefined
@@ -22,40 +20,41 @@ describe('Dialog', () => {
   })
 
   it('should render dialog header, body and footer', () => {
-    const wrapper = mountComponent()
-    expect(wrapper.find('[className="my-dialog__header"]').text()).toEqual('expected header')
-    expect(wrapper.find('[className="my-dialog__body"]').text()).toEqual('expected body')
-    expect(wrapper.find('[className="my-dialog__footer"]').text()).toEqual('expected footer')
+    render(<Dialog {...props} />)
+
+    expect(screen.getByRole('dialog').querySelector('[class="my-dialog__header"]'))
+      .toHaveTextContent('expected header')
+    expect(screen.getByRole('dialog').querySelector('[class="my-dialog__body"]'))
+      .toHaveTextContent('expected body')
+    expect(screen.getByRole('dialog').querySelector('[class="my-dialog__footer"]'))
+      .toHaveTextContent('expected footer')
   })
 
   it('should not render dialog header, body and footer when undefined', () => {
     props = {}
+    render(<Dialog />)
 
-    const wrapper = mountComponent()
-    expect(wrapper.find('[className="my-dialog__header"]').exists()).toEqual(false)
-    expect(wrapper.find('[className="my-dialog__body"]').exists()).toEqual(false)
-    expect(wrapper.find('[className="my-dialog__footer"]').exists()).toEqual(false)
+    expect(screen.getByRole('dialog').querySelector('[class="my-dialog__header"]'))
+      .not.toBeInTheDocument()
+    expect(screen.getByRole('dialog').querySelector('[class="my-dialog__body"]'))
+      .not.toBeInTheDocument()
+    expect(screen.getByRole('dialog').querySelector('[class="my-dialog__footer"]'))
+      .not.toBeInTheDocument()
   })
 
-  it('should trigger prop function "onClickClose" when dialog close button clicked', () => {
-    const wrapper = mountComponent()
-    wrapper.find('[className="my-dialog__close-button"]').simulate('click')
+  it('should trigger prop function "onClickClose" when dialog close button clicked', async () => {
+    render(<Dialog {...props} />)
 
-    expect(props.onClickClose).toHaveBeenCalled()
-  })
+    fireEvent.click(screen.getByRole('close-dialog'))
 
-  it('should show dialog when mounted', () => {
-    let spy
-    mount(<Dialog dialogRef={el => spy = jest.spyOn(el, 'showModal')} />)
-
-    expect(spy).toHaveBeenCalled()
+    await waitFor(() => expect(props.onClickClose).toHaveBeenCalled())
   })
 
   it('should close dialog when unmounted', () => {
-    let spy
-    const wrapper = mount(<Dialog dialogRef={el => spy = jest.spyOn(el, 'close')} />)
-    wrapper.unmount()
+    let spy = {current: null}
+    const {unmount} = render(<Dialog dialogRef={el => spy.current = jest.spyOn(el, 'close')} />)
+    unmount()
 
-    expect(spy).toHaveBeenCalled()
+    expect(spy.current).toHaveBeenCalled()
   })
 })
