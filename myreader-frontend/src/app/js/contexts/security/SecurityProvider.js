@@ -1,69 +1,51 @@
-import React from 'react'
+import React, {useState, useEffect, useCallback} from 'react'
 import PropTypes from 'prop-types'
 import SecurityContext from './SecurityContext'
 import {getLastSecurityState, setLastSecurityState} from './security'
 import {api} from '../../api'
 
-export class SecurityProvider extends React.Component {
+export function SecurityProvider({children}) {
+  const [authorized, setAuthorized] = useState(getLastSecurityState().authorized)
 
-  static propTypes = {
-    children: PropTypes.any
+  const updateStateAndLocalStorage = (value) => {
+    setLastSecurityState({authorized: value})
+    setAuthorized(value)
   }
 
-  constructor(props) {
-    super(props)
+  const doAuthorize = useCallback(() => {
+    updateStateAndLocalStorage(true)
+  }, [])
 
-    this.state = this.deriveStateFromRoles(getLastSecurityState())
-  }
+  const doUnAuthorize = useCallback(() => {
+    updateStateAndLocalStorage(false)
+  }, [])
 
-  componentDidMount() {
-    api.addInterceptor(this)
-  }
-
-  componentWillUnmount() {
-    api.removeInterceptor(this)
-  }
-
-  doAuthorize = () => this.updateStateAndLocalStorage({authorized: true})
-
-  doUnAuthorize = () => this.updateStateAndLocalStorage({authorized: false})
-
-  onError = (request, error) => {
-    if (error.status === 401) {
-      this.doUnAuthorize()
+  useEffect(() => {
+    const interceptor = {
+      onError: (request, error) => {
+        if (error.status === 401) {
+          doUnAuthorize()
+        }
+      }
     }
-  }
 
-  updateStateAndLocalStorage = ({authorized}) => {
-    setLastSecurityState({authorized})
-    this.setState(this.deriveStateFromRoles({authorized}))
-  }
+    api.addInterceptor(interceptor)
+    return () => api.removeInterceptor(interceptor)
+  }, [doUnAuthorize])
 
-  deriveStateFromRoles = ({authorized}) => {
-    return {
-      authorized,
-    }
-  }
+  return (
+    <SecurityContext.Provider
+      value={{
+        authorized,
+        doAuthorize: doAuthorize,
+        doUnAuthorize: doUnAuthorize
+      }}
+    >
+      {children}
+    </SecurityContext.Provider>
+  )
+}
 
-  render() {
-    const {
-      children
-    } = this.props
-
-    const {
-      authorized
-    } = this.state
-
-    return (
-      <SecurityContext.Provider
-        value={{
-          authorized,
-          doAuthorize: this.doAuthorize,
-          doUnAuthorize: this.doUnAuthorize
-        }}
-      >
-        {children}
-      </SecurityContext.Provider>
-    )
-  }
+SecurityProvider.propTypes = {
+  children: PropTypes.any
 }
