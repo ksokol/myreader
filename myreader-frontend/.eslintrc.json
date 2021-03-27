@@ -10,7 +10,8 @@
     "plugin:react/recommended",
     "plugin:unicorn/recommended",
     "plugin:jest-dom/recommended",
-    "plugin:testing-library/recommended"
+    "plugin:testing-library/recommended",
+    "plugin:sonarjs/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": 2018,
@@ -26,7 +27,8 @@
   },
   "plugins": [
     "jest",
-    "react-hooks"
+    "react-hooks",
+    "sonarjs"
   ],
   "rules": {
     "indent": [
@@ -64,6 +66,10 @@
     "unicorn/no-lonely-if": "warn",
     "unicorn/prefer-spread": "warn",
     "jest-dom/prefer-to-have-class": "warn",
-    "unicorn/no-array-for-each": "warn"
+    "unicorn/no-array-for-each": "warn",
+    "sonarjs/no-duplicate-string": "warn",
+    "sonarjs/cognitive-complexity": "warn",
+    "sonarjs/no-collapsible-if": "warn",
+    "sonarjs/no-identical-functions": "warn"
   }
 }
