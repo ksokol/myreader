@@ -1,31 +1,35 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import PropTypes from 'prop-types'
 import {Input} from '../Input/Input'
 
-export const AutocompleteInput = props => {
-  const {
-    value,
-    values,
-    onSelect,
-    ...inputProps
-  } = props
-
-  const dataListId = `my-autocomplete-input__datalist-${Date.now()}`
+export function AutocompleteInput({
+  value: inputValue,
+  values,
+  onSelect,
+  ...inputProps
+}) {
+  const dataListId = useMemo(() => `my-autocomplete-input__datalist-${Date.now()}`, [])
 
   return (
-    <React.Fragment>
+    <>
       <Input
         {...inputProps}
-        value={value ? value : ''}
+        value={inputValue ? inputValue : ''}
         onChange={({target: {value}}) => onSelect(value.length > 0 ? value : null)}
-        autoComplete='on'
         list={dataListId}
       />
 
-      <datalist id={dataListId}>
-        {values.map(value => <option key={value} value={value} />)}
+      <datalist
+        id={dataListId}
+      >
+        {values.map(value => (
+          <option
+            key={value}
+            value={value}
+          />
+        ))}
       </datalist>
-    </React.Fragment>
+    </>
   )
 }
 

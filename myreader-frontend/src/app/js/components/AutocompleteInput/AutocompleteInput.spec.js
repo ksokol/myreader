@@ -1,12 +1,10 @@
 import React from 'react'
-import {mount} from 'enzyme'
+import {fireEvent, render, screen} from '@testing-library/react'
 import {AutocompleteInput} from './AutocompleteInput'
 
 describe('AutocompleteInput', () => {
 
   let props
-
-  const createWrapper = () => mount(<AutocompleteInput {...props} />)
 
   beforeEach(() => {
     props = {
@@ -22,41 +20,44 @@ describe('AutocompleteInput', () => {
 
   it('should pass expected props to input component', () => {
     props.disabled = true
+    render(<AutocompleteInput {...props} />)
 
-    expect(createWrapper().find('Input').props()).toEqual(expect.objectContaining({
-      id: 'expected-id',
-      name: 'expected-name',
-      value: 'expected value',
-      placeholder: 'expected placeholder',
-      disabled: true
-    }))
+    expect(screen.getByPlaceholderText('expected placeholder')).toHaveAttribute('id', 'expected-id')
+    expect(screen.getByPlaceholderText('expected placeholder')).toHaveAttribute('name', 'expected-name')
+    expect(screen.getByPlaceholderText('expected placeholder')).toHaveValue('expected value')
+    expect(screen.getByPlaceholderText('expected placeholder')).toBeDisabled()
+    expect(screen.getByPlaceholderText('expected placeholder')).toBeInTheDocument()
   })
 
   it('should trigger prop function "onSelect" when input value changed', () => {
-    const wrapper = createWrapper()
+    render(<AutocompleteInput {...props} />)
 
-    wrapper.find('input').simulate('change', {target: {value: 't'}})
+    fireEvent.change(screen.getByPlaceholderText('expected placeholder'), {target: {value: 't'}})
     expect(props.onSelect).toHaveBeenCalledWith('t')
 
-    wrapper.find('input').simulate('change', {target: {value: 'ta'}})
+    fireEvent.change(screen.getByPlaceholderText('expected placeholder'), {target: {value: 'ta'}})
     expect(props.onSelect).toHaveBeenCalledWith('ta')
 
-    wrapper.find('input').simulate('change', {target: {value: ''}})
+    fireEvent.change(screen.getByPlaceholderText('expected placeholder'), {target: {value: ''}})
     expect(props.onSelect).toHaveBeenCalledWith(null)
   })
 
   it('should connect datalist to input', () => {
-    const wrapper = createWrapper()
-    const input = wrapper.find('input')
-    const datalist = wrapper.find('datalist')
+    const {container} = render(<AutocompleteInput {...props} />)
+    const datalistId = container.querySelector('datalist').id
 
-    expect(input.prop('list')).toBeTruthy()
-    expect(input.prop('list')).toEqual(datalist.prop('id'))
+    expect(datalistId).toMatch(/^my-autocomplete-input__datalist-\d+$/)
+    expect(screen.getByPlaceholderText('expected placeholder')).toHaveAttribute('list', datalistId)
   })
 
   it('should render prop "values" as datalist options', () => {
-    const options = createWrapper().find('datalist > option').map(option => option.prop('value'))
+    const {container} = render(<AutocompleteInput {...props} />)
 
-    expect(options).toEqual(['tag1', 'tag2', 'other'])
+    const optionValues = []
+    for (const child of container.querySelector('datalist').children) {
+      optionValues.push(child.value)
+    }
+
+    expect(optionValues).toEqual(['tag1', 'tag2', 'other'])
   })
 })
