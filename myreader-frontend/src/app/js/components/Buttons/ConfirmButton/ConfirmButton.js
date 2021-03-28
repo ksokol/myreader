@@ -1,60 +1,42 @@
 import './ConfirmButton.css'
-import React from 'react'
+import {useState} from 'react'
 import PropTypes from 'prop-types'
 import {Button} from '..'
 
-class ConfirmButton extends React.Component {
+export function ConfirmButton({
+  disabled = false,
+  children,
+  onClick,
+  ...buttonProps
+}) {
+  const [presentConfirmation, setPresentConfirmation] = useState(false)
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      presentConfirmation: false
-    }
-
-    this.onClickButton = this.onClickButton.bind(this)
-    this.onClickConfirm = this.onClickConfirm.bind(this)
-    this.onClickReject = this.onClickReject.bind(this)
-  }
-
-  onClickButton() {
-    this.setState({presentConfirmation: true})
-  }
-
-  onClickConfirm() {
-    this.setState({presentConfirmation: false})
-    this.props.onClick()
-  }
-
-  onClickReject() {
-    this.setState({presentConfirmation: false})
-  }
-
-  render() {
-    const {
-      disabled,
-      children,
-      ...buttonProps
-    } = this.props
-
-    return this.state.presentConfirmation ?
-      <React.Fragment>
-        <Button className='my-confirm-button__confirm'
-                onClick={this.onClickConfirm}
-                disabled={disabled}
-                caution>Yes
-        </Button>
-        <Button className='my-confirm-button__reject'
-                onClick={this.onClickReject}
-                disabled={disabled}
-                primary>No
-        </Button>
-      </React.Fragment> :
-      <Button {...buttonProps}
-              disabled={disabled}
-              onClick={this.onClickButton}>{children}
+  return presentConfirmation ?
+    <>
+      <Button
+        className='my-confirm-button__confirm'
+        onClick={() => {
+          setPresentConfirmation(false)
+          onClick()}
+        }
+        disabled={disabled}
+        caution
+      >Yes
       </Button>
-  }
+      <Button
+        className='my-confirm-button__reject'
+        onClick={() => setPresentConfirmation(false)}
+        disabled={disabled}
+        primary
+      >No
+      </Button>
+    </> :
+    <Button
+      {...buttonProps}
+      disabled={disabled}
+      onClick={() => setPresentConfirmation(true)}
+    >{children}
+    </Button>
 }
 
 ConfirmButton.propTypes = {
@@ -62,9 +44,3 @@ ConfirmButton.propTypes = {
   onClick: PropTypes.func.isRequired,
   children: PropTypes.any
 }
-
-ConfirmButton.defaultProps = {
-  disabled: false
-}
-
-export default ConfirmButton

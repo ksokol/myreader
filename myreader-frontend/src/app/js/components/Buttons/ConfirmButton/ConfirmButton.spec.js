@@ -1,6 +1,5 @@
-import React from 'react'
 import {render, screen, fireEvent} from '@testing-library/react'
-import ConfirmButton from './ConfirmButton'
+import {ConfirmButton} from './ConfirmButton'
 
 const expectButtonText = 'expect button text'
 
