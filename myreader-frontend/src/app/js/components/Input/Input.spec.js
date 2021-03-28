@@ -1,6 +1,47 @@
-import React from 'react'
-import {mount} from 'enzyme'
+import React, {useState} from 'react'
+import PropTypes from 'prop-types'
+import {fireEvent, render, screen} from '@testing-library/react'
 import {Input} from './Input'
+
+function TestComponent({
+  withOnChange = true,
+  withOnFocus = true,
+  withOnBlur = true,
+  withOnEnter = true,
+  ...inputProps
+}) {
+  const [onChangeValue, setOnChangeValue] = useState('')
+  const [onFocus, setOnFocus] = useState('no focus')
+  const [onBlur, setOnBlur] = useState('no blur')
+  const [onEnter, setOnEnter] = useState('no enter')
+
+  return (
+    <>
+      <span role='on-change'>{onChangeValue}</span>
+      <span role='on-focus'>{onFocus}</span>
+      <span role='on-blur'>{onBlur}</span>
+      <span role='on-enter'>{onEnter}</span>
+      <Input
+        {...inputProps}
+        onChange={event => withOnChange && setOnChangeValue(event.target.value)}
+        onFocus={() => withOnFocus && setOnFocus('focused')}
+        onBlur={() => withOnBlur && setOnBlur('blurred')}
+        onEnter={() => withOnEnter && setOnEnter('enter pressed')}
+      />
+    </>
+  )
+}
+
+TestComponent.propTypes = {
+  withOnChange: PropTypes.bool,
+  withOnFocus: PropTypes.bool,
+  withOnBlur: PropTypes.bool,
+  withOnEnter: PropTypes.bool,
+}
+
+const expectedPlaceholder = 'expected placeholder'
+const inputErrorClass = 'my-input--error'
+const expectedIdValidation = 'expectedId-validation'
 
 describe('Input', () => {
 
@@ -9,244 +50,201 @@ describe('Input', () => {
   beforeEach(() => {
     props = {
       id: 'expectedId',
-      type: 'expectedType',
+      type: 'text',
       label: 'expectedLabel',
       name: 'expectedName',
       role: 'expectedRole',
       value: 'expectedValue',
-      placeholder: 'expected placeholder',
+      placeholder: expectedPlaceholder,
       autoComplete: 'expectedAutocomplete',
       disabled: false,
       validations: [
         {field: 'expectedName', defaultMessage: 'expectedMessage1'},
         {field: 'expectedName', defaultMessage: 'expectedMessage2'}
       ],
-      onChange: jest.fn(),
-      onFocus: jest.fn(),
-      onBlur: jest.fn(),
-      onEnter: jest.fn(),
-      onKeyUp: jest.fn(),
-      a: 'b',
-      c: 'd',
     }
   })
 
-  const createComponent = () => mount(<Input  {...props} />)
-
   it('should render label when prop "label" is defined', () => {
-    const wrapper = createComponent()
+    render(<Input {...props} />)
 
-    expect(wrapper.find('label').exists()).toEqual(true)
-    expect(wrapper.find('input').exists()).toEqual(true)
+    expect(screen.getByLabelText('expectedLabel')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('expectedValue')).toBeInTheDocument()
   })
 
   it('should not render label when prop "label" is undefined', () => {
     delete props.label
-    const wrapper = createComponent()
+    render(<Input {...props} />)
 
-    expect(wrapper.find('label').exists()).toEqual(false)
-    expect(wrapper.find('input').exists()).toEqual(true)
-  })
-
-  it('should pass expected props to label when prop "id" is defined', () => {
-    expect(createComponent().find('label').props()).toEqual({
-      htmlFor: 'expectedId',
-      children: 'expectedLabel'
-    })
+    expect(screen.queryByLabelText('expectedLabel')).not.toBeInTheDocument()
+    expect(screen.getByDisplayValue('expectedValue')).toBeInTheDocument()
   })
 
   it('should pass expected props to label when prop "id" is undefined', () => {
     props.id = undefined
+    render(<Input {...props} />)
 
-    expect(createComponent().find('label').props()).toEqual({
-      htmlFor: 'expectedName',
-      children: 'expectedLabel'
-    })
-  })
-
-  it('should pass expected props to input', () => {
-    const {onChange, onBlur, onKeyUp, onFocus, ...props} = createComponent().find('input').props()
-
-    expect(onChange).toBeDefined()
-    expect(onBlur).toBeDefined()
-    expect(onKeyUp).toBeDefined()
-    expect(onFocus).toBeDefined()
-
-    expect(props).toEqual(expect.objectContaining({
-      type: 'expectedType',
-      id: 'expectedId',
-      name: 'expectedName',
-      role: 'expectedRole',
-      value: 'expectedValue',
-      placeholder: 'expected placeholder',
-      autoComplete: 'expectedAutocomplete',
-      disabled: false,
-      a: 'b',
-      c: 'd'
-    }))
-  })
-
-  it('should pass expected props to input when prop "id" is undefined', () => {
-    props.id = undefined
-
-    expect(createComponent().find('input').prop('id')).toEqual('expectedName')
+    expect(screen.getByLabelText('expectedLabel')).toBeInTheDocument()
   })
 
   it('should disable input when prop "disabled" is true', () => {
     props.disabled = true
+    render(<Input {...props} />)
 
-    expect(createComponent().find('input').prop('disabled')).toEqual(true)
+    expect(screen.getByDisplayValue('expectedValue')).toBeDisabled()
   })
 
   it('should not disable input when prop "disabled" is false', () => {
     props.disabled = false
+    render(<Input {...props} />)
 
-    expect(createComponent().find('input').prop('disabled')).toEqual(false)
+    expect(screen.getByDisplayValue('expectedValue')).toBeEnabled()
   })
 
   it('should trigger prop "onChange" function', () => {
-    createComponent().find('input').props().onChange({target: {value: 'new value'}})
+    render(<TestComponent {...props} />)
+    fireEvent.change(screen.getByPlaceholderText(expectedPlaceholder), {target: {value: 'new value'}})
 
-    expect(props.onChange).toHaveBeenCalledWith({target: {value: 'new value'}})
+    expect(screen.getByRole('on-change')).toHaveTextContent('new value')
   })
 
   it('should not throw error when prop "onChange" function is undefined', () => {
-    delete props.onChange
+    render(<TestComponent {...props} withOnChange={false} />)
 
-    createComponent().find('input').props().onChange({target: {value: 'new value'}})
+    expect(screen.getByRole('on-change')).toHaveTextContent('')
   })
 
   it('should merge prop "className"', () => {
     props.className = 'expected-class'
+    const {container} = render(<Input {...props} />)
 
-    expect(createComponent().find('.my-input').prop('className')).toContain('expected-class')
+    expect(container.firstChild).toHaveClass('expected-class')
   })
 
   it('should not focus input field after mount', () => {
-    const wrapper = createComponent()
+    render(<Input {...props} />)
 
-    expect(document.activeElement).not.toEqual(wrapper.instance())
+    expect(screen.getByLabelText('expectedLabel')).not.toHaveFocus()
   })
 
   it('should focus input field', () => {
-    const wrapper = createComponent()
-    const {inputRef} = wrapper.instance()
-    jest.spyOn(inputRef.current, 'focus')
+    render(<Input {...props} />)
 
-    expect(inputRef.current.focus).not.toHaveBeenCalled()
+    expect(screen.getByLabelText('expectedLabel')).not.toHaveFocus()
+    fireEvent.focus(screen.getByLabelText('expectedLabel'))
 
-    wrapper.find('input').simulate('focus')
-    expect(inputRef.current.focus).toHaveBeenCalledTimes(1)
+    expect(screen.getByLabelText('expectedLabel')).toHaveFocus()
   })
 
   it('should restore focus when prop "disabled" changed back to true and input field was focused before', () => {
     props.disabled = true
-    const wrapper = createComponent()
-    const input = wrapper.find('input')
-    const focusSpy = jest.spyOn(input.instance(), 'focus')
+    const {rerender} = render(<Input {...props} />)
 
-    input.simulate('focus')
-    expect(focusSpy).not.toHaveBeenCalled()
+    fireEvent.focus(screen.getByLabelText('expectedLabel'))
+    expect(screen.getByLabelText('expectedLabel')).not.toHaveFocus()
 
-    focusSpy.mockReset()
-    wrapper.setProps({disabled: false})
-    expect(focusSpy).toHaveBeenCalled()
+    props.disabled = false
+    rerender(<Input {...props} />)
+
+    fireEvent.focus(screen.getByLabelText('expectedLabel'))
+    expect(screen.getByLabelText('expectedLabel')).toHaveFocus()
   })
 
-  it('should set input type value to "some-type"', () => {
-    props.type = 'some-type'
+  it('should set input type to "number"', () => {
+    props.type = 'number'
+    render(<Input {...props} />)
 
-    expect(createComponent().find('input').prop('type')).toEqual('some-type')
+    expect(screen.getByLabelText('expectedLabel')).toHaveAttribute('type', 'number')
   })
 
   it('should set input autocomplete value to "some-autocomplete"', () => {
     props.autoComplete = 'some-autocomplete'
+    render(<Input {...props} />)
 
-    expect(createComponent().find('input').prop('autoComplete')).toEqual('some-autocomplete')
+    expect(screen.getByLabelText('expectedLabel')).toHaveAttribute('autoComplete', 'some-autocomplete')
+  })
+
+  it('should set additional input props', () => {
+    props['aria-label'] = 'some aria label'
+    render(<Input {...props} />)
+
+    expect(screen.getByLabelText('expectedLabel')).toHaveAttribute('aria-label', 'some aria label')
   })
 
   it('should trigger prop "onFocus" function when input focused', () => {
-    createComponent().find('input').simulate('focus')
+    render(<TestComponent {...props} />)
+    fireEvent.focus(screen.getByLabelText('expectedLabel'))
 
-    expect(props.onFocus).toHaveBeenCalled()
+    expect(screen.getByRole('on-focus')).toHaveTextContent('focused')
   })
 
   it('should not throw an error when prop "onFocus" function is undefined', () => {
-    delete props.onFocus
+    render(<TestComponent {...props} withOnFocus={false} />)
+    fireEvent.focus(screen.getByLabelText('expectedLabel'))
 
-    createComponent().find('input').simulate('focus')
+    expect(screen.getByRole('on-focus')).toHaveTextContent('no focus')
   })
 
   it('should trigger prop "onBlur" function when input leaved', () => {
-    const input = createComponent().find('input')
-    input.simulate('focus')
-    input.simulate('blur')
+    render(<TestComponent {...props} />)
+    fireEvent.blur(screen.getByLabelText('expectedLabel'))
 
-    expect(props.onBlur).toHaveBeenCalled()
+    expect(screen.getByRole('on-blur')).toHaveTextContent('blurred')
   })
 
   it('should not throw an error when prop "onBlur" function is undefined', () => {
-    delete props.onBlur
-    const input = createComponent().find('input')
+    render(<TestComponent {...props} withOnBlur={false} />)
+    fireEvent.blur(screen.getByLabelText('expectedLabel'))
 
-    input.simulate('focus')
-    input.simulate('blur')
-  })
-
-  it('should link label with input based on prop "name" when prop "id" is not present', () => {
-    props.id = undefined
-    const wrapper = createComponent()
-
-    expect(wrapper.find('label').prop('htmlFor')).toEqual('expectedName')
-    expect(wrapper.find('input').prop('id')).toEqual('expectedName')
-  })
-
-  it('should link label with input based on prop "id"', () => {
-    const expectedId = 'expected id'
-    props.id = expectedId
-    const wrapper = createComponent()
-
-    expect(wrapper.find('label').prop('htmlFor')).toEqual(expectedId)
-    expect(wrapper.find('input').prop('id')).toEqual(expectedId)
-  })
-
-  it('should not throw an exception when enter key pressed and prop function "onEnter" is undefined', () => {
-    delete props.onEnter
-
-    expect(() => createComponent().find('input').simulate('keyUp', {key: 'Enter'})).not.toThrow()
+    expect(screen.getByRole('on-blur')).toHaveTextContent('no blur')
   })
 
   it('should trigger prop function "onEnter" when enter key pressed', () => {
-    createComponent().find('input').simulate('keyUp', {key: 'Enter', a: 'b'})
+    render(<TestComponent {...props} />)
+    fireEvent.keyUp(screen.getByLabelText('expectedLabel'), {key: 'Enter', keyCode: 13})
 
-    expect(props.onEnter).toHaveBeenCalledWith(expect.objectContaining({key: 'Enter', a: 'b'}))
+    expect(screen.getByRole('on-enter')).toHaveTextContent('enter pressed')
+  })
+
+  it('should not throw an exception when enter key pressed and prop function "onEnter" is undefined', () => {
+    render(<TestComponent {...props} withOnEnter={false} />)
+    fireEvent.keyUp(screen.getByLabelText('expectedLabel'), {key: 'Enter', keyCode: 13})
+
+    expect(screen.getByRole('on-enter')).toHaveTextContent('no enter')
   })
 
   it('should not trigger prop function "onEnter" when esc key pressed', () => {
-    createComponent().find('input').simulate('keyUp', {key: 'Esc'})
+    render(<TestComponent {...props} />)
+    fireEvent.keyUp(screen.getByLabelText('expectedLabel'), {key: 'Escape', keyCode: 27})
 
-    expect(props.onEnter).not.toHaveBeenCalled()
+    expect(screen.getByRole('on-enter')).toHaveTextContent('no enter')
   })
 
   it('should add error class when prop "validations" contains error for prop "name"', () => {
-    expect(createComponent().children().prop('className')).toContain('my-input--error')
+    const {container} = render(<Input {...props} />)
+
+    expect(container.firstChild).toHaveClass(inputErrorClass)
   })
 
   it('should not add error class when prop "validations" is undefined', () => {
     props.validations = undefined
+    const {container} = render(<Input {...props} />)
 
-    expect(createComponent().children().prop('className')).not.toContain('my-input--error')
+    expect(container.firstChild).not.toHaveClass(inputErrorClass)
   })
 
   it('should render last validation for prop "name"', () => {
-    expect(createComponent().find('.my-input__validations').html())
-      .toEqual('<div class="my-input__validations" role="expectedId-validation"><span>expectedMessage2</span></div>')
+    render(<Input {...props} />)
+
+    expect(screen.getByRole(expectedIdValidation)).not.toHaveTextContent('expectedMessage1')
+    expect(screen.getByRole(expectedIdValidation)).toHaveTextContent('expectedMessage2')
   })
 
   it('should not render last validation when prop "validations" is undefined', () => {
     props.validations = undefined
+    render(<Input {...props} />)
 
-    expect(createComponent().find('.my-input__validations').exists()).toBe(false)
+    expect(screen.queryByRole(expectedIdValidation)).not.toBeInTheDocument()
   })
 
   it('should render last validation belonging to the same prop "name"', () => {
@@ -254,39 +252,32 @@ describe('Input', () => {
       {field: 'expectedName', defaultMessage: 'expectedMessage1'},
       {field: 'otherName', defaultMessage: 'expectedMessage2'}
     ]
+    render(<Input {...props} />)
 
-    expect(createComponent().find('.my-input__validations').html())
-      .toEqual('<div class="my-input__validations" role="expectedId-validation"><span>expectedMessage1</span></div>')
+    expect(screen.getByRole(expectedIdValidation)).toHaveTextContent('expectedMessage1')
+    expect(screen.getByRole(expectedIdValidation)).not.toHaveTextContent('expectedMessage2')
   })
 
   it('should clear validations when input changed', () => {
-    const wrapper = createComponent()
-    wrapper.find('input').simulate('change', {target: {value: 't'}})
+    render(<Input {...props} />)
+    fireEvent.change(screen.getByPlaceholderText(expectedPlaceholder), {target: {value: 't'}})
 
-    expect(wrapper.find('.my-input__validations').exists()).toBe(false)
+    expect(screen.queryByRole(expectedIdValidation)).not.toBeInTheDocument()
   })
 
   it('should remove error class when input changed', () => {
-    const wrapper = createComponent()
-    wrapper.find('input').simulate('change', {target: {value: 't'}})
+    const {container} = render(<Input {...props} />)
+    fireEvent.change(screen.getByPlaceholderText(expectedPlaceholder), {target: {value: 't'}})
 
-    expect(wrapper.children().prop('className')).not.toContain('my-input--error')
-  })
-
-  it('should not render last validation when prop "value" changed', () => {
-    const wrapper = createComponent()
-    wrapper.find('input').simulate('change', {target: {value: 't'}})
-    wrapper.setProps({value: 't'})
-
-    expect(wrapper.find('.my-input__validations').exists()).toBe(false)
+    expect(container.firstChild).not.toHaveClass(inputErrorClass)
   })
 
   it('should render last validation when prop "validations" changed although the values stays the same', () => {
-    const wrapper = createComponent()
-    wrapper.find('input').simulate('change', {target: {value: 't'}})
-    wrapper.setProps({validations: [...props.validations]})
+    const {rerender} = render(<Input {...props} />)
+    fireEvent.change(screen.getByPlaceholderText(expectedPlaceholder), {target: {value: 't'}})
+    rerender(<Input {...props} validations={[...props.validations]} />)
 
-    expect(wrapper.find('.my-input__validations').html())
-      .toEqual('<div class="my-input__validations" role="expectedId-validation"><span>expectedMessage2</span></div>')
+    expect(screen.getByRole(expectedIdValidation)).not.toHaveTextContent('expectedMessage1')
+    expect(screen.getByRole(expectedIdValidation)).toHaveTextContent('expectedMessage2')
   })
 })

@@ -1,7 +1,5 @@
 import '@testing-library/jest-dom/extend-expect'
 import {act} from '@testing-library/react'
-import {configure} from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
 import '../__mocks__/global/fetch'
 import {
   toMatchGetRequest,
@@ -10,8 +8,6 @@ import {
   toMatchDeleteRequest,
   toMatchPutRequest,
 } from './app/js/shared/custom-matcher'
-
-configure({adapter: new Adapter()})
 
 beforeAll(() => {
   window.HTMLDialogElement = undefined
