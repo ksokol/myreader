@@ -1,8 +1,8 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import PropTypes from 'prop-types'
 import {Button} from '../../../components/Buttons'
 import {ColorPicker} from '../../../components/ColorPicker/ColorPicker'
-import Dialog from '../../../components/Dialog/Dialog'
+import {Dialog} from '../../../components/Dialog/Dialog'
 
 export function SubscriptionColorPicker({color, onSelect, onClose}) {
   const [currentColor, setCurrentColor] = useState(color)

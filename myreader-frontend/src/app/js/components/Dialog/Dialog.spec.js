@@ -1,6 +1,5 @@
-import React from 'react'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
-import Dialog from './Dialog'
+import {Dialog} from './Dialog'
 
 describe('Dialog', () => {
 
@@ -48,13 +47,5 @@ describe('Dialog', () => {
     fireEvent.click(screen.getByRole('close-dialog'))
 
     await waitFor(() => expect(props.onClickClose).toHaveBeenCalled())
-  })
-
-  it('should close dialog when unmounted', () => {
-    let spy = {current: null}
-    const {unmount} = render(<Dialog dialogRef={el => spy.current = jest.spyOn(el, 'close')} />)
-    unmount()
-
-    expect(spy.current).toHaveBeenCalled()
   })
 })

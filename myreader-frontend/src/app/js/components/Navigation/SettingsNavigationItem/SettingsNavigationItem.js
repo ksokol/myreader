@@ -1,8 +1,8 @@
 import './SettingsNavigationItem.css'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import PropTypes from 'prop-types'
 import {NavigationItem} from '../NavigationItem'
-import Dialog from '../../Dialog/Dialog'
+import {Dialog} from '../../Dialog/Dialog'
 import {useSettings} from '../../../contexts/settings'
 
 function Toggle({

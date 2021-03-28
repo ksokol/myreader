@@ -6,8 +6,6 @@ export const isBoolean = value => typeof value === 'boolean'
 
 const isDate = value => value instanceof Date
 
-export const noop = () => {}
-
 export const isValidDate = value => {
   if (!isString(value) && !isDate(value)) {
     return false
