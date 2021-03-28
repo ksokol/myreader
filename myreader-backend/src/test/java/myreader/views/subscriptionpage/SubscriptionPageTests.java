@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
-import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -157,8 +156,10 @@ class SubscriptionPageTests {
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
       .with(jsonBody("{'feedTag': {}}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("title").value("may not be empty"))
-      .andExpect(validation().onField("origin").value("invalid syndication feed"));
+      .andExpect(jsonPath("errors.[0].field").value("title"))
+      .andExpect(jsonPath("errors.[0].defaultMessage").value("may not be empty"))
+      .andExpect(jsonPath("errors.[1].field").value("origin"))
+      .andExpect(jsonPath("errors.[1].defaultMessage").value("invalid syndication feed"));
   }
 
   @Test
@@ -166,7 +167,8 @@ class SubscriptionPageTests {
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
       .with(jsonBody("{'title': ' ', 'origin': 'http://example.com'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("title").value("may not be empty"));
+      .andExpect(jsonPath("errors.[0].field").value("title"))
+      .andExpect(jsonPath("errors.[0].defaultMessage").value("may not be empty"));
   }
 
   @Test
@@ -174,7 +176,8 @@ class SubscriptionPageTests {
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
       .with(jsonBody("{'title': 'some title'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("origin").value("invalid syndication feed"));
+      .andExpect(jsonPath("errors.[0].field").value("origin"))
+      .andExpect(jsonPath("errors.[0].defaultMessage").value("invalid syndication feed"));
   }
 
   @Test
@@ -185,15 +188,17 @@ class SubscriptionPageTests {
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
       .with(jsonBody("{'title': 'some title', 'origin': 'http://example.local'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("origin").value("invalid syndication feed"));
+      .andExpect(jsonPath("errors.[0].field").value("origin"))
+      .andExpect(jsonPath("errors.[0].defaultMessage").value("invalid syndication feed"));
   }
 
   @Test
   void shouldValidatePatchRequestInvalidColor() throws Exception {
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
-      .with(jsonBody("{'title': 'some title', 'origin': 'http://example.local', 'color': 'invalid'}")))
+      .with(jsonBody("{'title': 'some title', 'origin': 'http://example.com', 'color': 'invalid'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("color").value("not a RGB hex code"));
+      .andExpect(jsonPath("errors.[0].field").value("color"))
+      .andExpect(jsonPath("errors.[0].defaultMessage").value("not a RGB hex code"));
   }
 
   @Test
@@ -241,7 +246,8 @@ class SubscriptionPageTests {
     mockMvc.perform(post("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns", subscription.getId())
       .with(jsonBody("{}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("pattern").value("invalid regular expression"));
+      .andExpect(jsonPath("errors.[0].field").value("pattern"))
+      .andExpect(jsonPath("errors.[0].defaultMessage").value("invalid regular expression"));
   }
 
   @Test
@@ -249,7 +255,8 @@ class SubscriptionPageTests {
     mockMvc.perform(post("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns", subscription.getId())
       .with(jsonBody("{'pattern': ''}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("pattern").value("invalid regular expression"));
+      .andExpect(jsonPath("errors.[0].field").value("pattern"))
+      .andExpect(jsonPath("errors.[0].defaultMessage").value("invalid regular expression"));
   }
 
   @Test
@@ -257,6 +264,7 @@ class SubscriptionPageTests {
     mockMvc.perform(post("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns/", subscription.getId())
       .with(jsonBody("{'pattern': '\\\\k'}")))
       .andExpect(status().isBadRequest())
-      .andExpect(validation().onField("pattern").value("invalid regular expression"));
+      .andExpect(jsonPath("errors.[0].field").value("pattern"))
+      .andExpect(jsonPath("errors.[0].defaultMessage").value("invalid regular expression"));
   }
 }

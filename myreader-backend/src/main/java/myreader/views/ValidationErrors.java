@@ -1,8 +1,5 @@
 package myreader.views;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +28,6 @@ public class ValidationErrors {
     }
   }
 
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public static class ValidationException extends RuntimeException {
 
     static final long serialVersionUID = 1L;
