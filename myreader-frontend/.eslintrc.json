@@ -70,6 +70,8 @@
     "sonarjs/no-duplicate-string": "warn",
     "sonarjs/cognitive-complexity": "warn",
     "sonarjs/no-collapsible-if": "warn",
-    "sonarjs/no-identical-functions": "warn"
+    "sonarjs/no-identical-functions": "warn",
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off"
   }
 }
