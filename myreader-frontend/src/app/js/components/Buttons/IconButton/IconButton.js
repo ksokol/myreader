@@ -1,20 +1,29 @@
 import './IconButton.css'
-import React from 'react'
 import PropTypes from 'prop-types'
 import {Icon} from '../../Icon/Icon'
-import {noop} from '../../../shared/utils'
 
-const IconButton = props =>
-  <button type='button'
-    className={`my-icon-button ${props.className || ''}`}
-    role={props.role || props.type}
-    disabled={props.disabled}
-    onClick={props.onClick}>
-    <Icon
-      type={props.type}
-      inverse={props.inverse}
-    />
-  </button>
+export function IconButton({
+  className = '',
+  type,
+  role,
+  disabled = false,
+  inverse,
+  onClick
+}) {
+  return (
+    <button
+      type='button'
+      className={`my-icon-button ${className}`}
+      role={role || type}
+      disabled={disabled}
+      onClick={event => onClick && onClick(event)}>
+      <Icon
+        type={type}
+        inverse={inverse}
+      />
+    </button>
+  )
+}
 
 IconButton.propTypes = {
   className: PropTypes.string,
@@ -24,10 +33,3 @@ IconButton.propTypes = {
   inverse: PropTypes.bool,
   onClick: PropTypes.func
 }
-
-IconButton.defaultProps = {
-  disabled: false,
-  onClick: noop
-}
-
-export default IconButton

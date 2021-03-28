@@ -1,8 +1,8 @@
 import './Chips.css'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import PropTypes from 'prop-types'
 import {Input} from '../Input/Input'
-import IconButton from '../Buttons/IconButton/IconButton'
+import {IconButton} from '../Buttons'
 
 function Chip({
   disabled = false,
