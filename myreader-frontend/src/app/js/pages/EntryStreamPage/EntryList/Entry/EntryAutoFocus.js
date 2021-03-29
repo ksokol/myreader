@@ -1,44 +1,50 @@
-import React, {Component} from 'react'
+import {useEffect, useState, useRef} from 'react'
 import PropTypes from 'prop-types'
 import {Entry} from './Entry'
 
-export class EntryAutoFocus extends Component {
+export function EntryAutoFocus({
+  item,
+  focusUuid,
+  ...entryProps
+}) {
+  const [state, setState] = useState({
+    shouldScroll: false,
+    focused: false,
+    lastFocusUuid: undefined
+  })
+  let entryRef = useRef()
 
-  static propTypes = {
-    focusUuid: PropTypes.string
-  }
-
-  state = {}
-
-  static getDerivedStateFromProps(props, state) {
-    return {
-      shouldScroll: props.item.uuid === props.focusUuid && state.lastFocusUuid !== props.focusUuid,
-      focused: props.item.uuid === props.focusUuid,
-      lastFocusUuid: props.focusUuid
+  useEffect(() => {
+    setState({
+      shouldScroll: item.uuid === focusUuid && state.lastFocusUuid !== focusUuid,
+      focused: item.uuid === focusUuid,
+      lastFocusUuid: focusUuid
     }
-  }
-
-  componentDidUpdate() {
-    if (this.state.shouldScroll) {
-      this.entryRef.scrollIntoView({block: 'start', behavior: 'smooth'})
-    }
-  }
-
-  render() {
-    const {
-      focusUuid,
-      ...props
-    } = this.props
-
-    if (this.state.focused) {
-      props.role = 'entry-in-focus'
-    }
-
-    return (
-      <Entry
-        entryRef={el => this.entryRef = el}
-        {...props}
-      />
     )
+  }, [focusUuid, item.uuid, state.lastFocusUuid])
+
+  useEffect(() => {
+    if (state.shouldScroll) {
+      entryRef.scrollIntoView({block: 'start', behavior: 'smooth'})
+    }
+  }, [state.shouldScroll])
+
+  if (state.focused) {
+    entryProps.role = 'entry-in-focus'
   }
+
+  return (
+    <Entry
+      entryRef={el => entryRef = el}
+      item={item}
+      {...entryProps}
+    />
+  )
+}
+
+EntryAutoFocus.propTypes = {
+  item: PropTypes.shape({
+    uuid: PropTypes.string.required,
+  }),
+  focusUuid: PropTypes.string
 }
