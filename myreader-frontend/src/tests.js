@@ -2,11 +2,7 @@ import '@testing-library/jest-dom/extend-expect'
 import {act} from '@testing-library/react'
 import '../__mocks__/global/fetch'
 import {
-  toMatchGetRequest,
-  toMatchPatchRequest,
-  toMatchPostRequest,
-  toMatchDeleteRequest,
-  toMatchPutRequest,
+  toMatchRequest,
 } from './app/js/shared/custom-matcher'
 
 beforeAll(() => {
@@ -20,11 +16,7 @@ afterEach(() => {
 })
 
 expect.extend({
-  toMatchPatchRequest,
-  toMatchGetRequest,
-  toMatchPostRequest,
-  toMatchDeleteRequest,
-  toMatchPutRequest,
+  toMatchRequest,
 })
 
 Element.prototype.scrollIntoView = jest.fn()

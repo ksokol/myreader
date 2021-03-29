@@ -15,17 +15,15 @@ function parseUrl(urlString) {
   }
 }
 
-function toMatchRequest(actual, expected) {
+export function toMatchRequest(actual, expected) {
   let pass = true
   const expectedValues = {}
   const actualValues = {}
 
-  if ('method' in expected) {
-    if (expected.method !== actual.method) {
-      actualValues.method = actual.method
-      expectedValues.method = expected.method
-      pass = false
-    }
+  if (expected.method !== actual.method) {
+    actualValues.method = actual.method
+    expectedValues.method = expected.method
+    pass = false
   }
 
   if ('url' in expected) {
@@ -52,18 +50,6 @@ function toMatchRequest(actual, expected) {
     }
   }
 
-  if ('headers' in expected) {
-    const expectedHeaders = expected.headers
-
-    const actualHeaders = actual.headers
-    if (!isEqual(actual.headers, expectedHeaders)) {
-      actualValues.headers = actualHeaders
-      expectedValues.headers = expectedHeaders
-      pass = false
-    }
-
-  }
-
   return {
     pass,
     message: () => {
@@ -76,24 +62,4 @@ function toMatchRequest(actual, expected) {
       ].join('\n\n')
     },
   }
-}
-
-export function toMatchGetRequest(actual, expected) {
-  return toMatchRequest.bind(this)(actual, {...expected, method: 'GET'})
-}
-
-export function toMatchPatchRequest(actual, expected) {
-  return toMatchRequest.bind(this)(actual, {...expected, method: 'PATCH'})
-}
-
-export function toMatchPostRequest(actual, expected) {
-  return toMatchRequest.bind(this)(actual, {...expected, method: 'POST'})
-}
-
-export function toMatchDeleteRequest(actual, expected) {
-  return toMatchRequest.bind(this)(actual, {...expected, method: 'DELETE'})
-}
-
-export function toMatchPutRequest(actual, expected) {
-  return toMatchRequest.bind(this)(actual, {...expected, method: 'PUT'})
 }

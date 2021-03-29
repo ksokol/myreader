@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react'
+import {useContext, useEffect} from 'react'
 import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
@@ -52,7 +52,8 @@ describe('SubscriptionListPage', () => {
     jest.spyOn(Date, 'now').mockReturnValue(1614453487714)
     await renderComponent()
 
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptions',
     })
     await waitFor(() => {
@@ -142,7 +143,8 @@ describe('SubscriptionListPage', () => {
 
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptions',
     })
     expect(screen.queryByText('title1')).not.toBeInTheDocument()

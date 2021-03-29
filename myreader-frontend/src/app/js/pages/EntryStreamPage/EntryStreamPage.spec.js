@@ -1,4 +1,3 @@
-import React from 'react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
 import {render, fireEvent, screen, act} from '@testing-library/react'
@@ -8,15 +7,31 @@ import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
 import {useSettings} from '../../contexts/settings'
 
+const expectedTag1 = 'expected tag1'
+const expectedContent1 = 'expected content1'
+const api2SubscriptionEntries1 = 'api/2/subscriptionEntries/1'
+const entry2Url = 'api/2/subscriptionEntries/2'
+const expectedError = 'expected error'
+const api2SubscriptionEntriesFeedTagEqualA = 'api/2/subscriptionEntries?feedTagEqual=a'
+const roleEntryInFocus = 'entry-in-focus'
+const noopenerNoreferrer = 'noopener noreferrer'
+const roleDialogErrorMessage = 'dialog-error-message'
+const roleFlagAsSeen = 'flag-as-seen'
+const testIdToggleDetails = 'toggle-details'
+const roleMoreDetails = 'more-details'
+const expectedTag = 'expected tag'
+const roleFeedBadge = 'feed-badge'
+const placeholderEnterATag = 'Enter a tag...'
+
 const entry1 = Object.freeze({
   uuid: '1',
   title: 'title1',
   feedTitle: 'expected feedTitle1',
-  tags: ['expected tag1'],
+  tags: [expectedTag1],
   origin: 'expected origin1',
   seen: false,
   createdAt: '2021-02-27T06:48:05.087+01:00',
-  content: 'expected content1'
+  content: expectedContent1
 })
 
 const entry2 = Object.freeze({
@@ -71,10 +86,6 @@ async function pressArrowLeft() {
 async function pressArrowRight() {
   return act(async () => fireEvent.keyDown(document, {key: 'ArrowRight', keyCode: 39}))
 }
-
-const entry1Url = 'api/2/subscriptionEntries/1'
-const entry2Url = 'api/2/subscriptionEntries/2'
-const expectedError = 'expected error'
 
 function SettingsTestComponent() {
   const {
@@ -140,8 +151,9 @@ describe('EntryStreamPage', () => {
   it('should fetch entries without seenEqual if showUnseenEntries is set to false', async () => {
     await renderComponent()
 
-    expect(fetch.mostRecent()).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?feedTagEqual=a'
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
+      url: api2SubscriptionEntriesFeedTagEqualA
     })
   })
 
@@ -154,7 +166,8 @@ describe('EntryStreamPage', () => {
     })
     await renderComponent()
 
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptionEntries?seenEqual=true'
     })
   })
@@ -167,7 +180,8 @@ describe('EntryStreamPage', () => {
       })
     })
 
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=true'
     })
   })
@@ -180,9 +194,10 @@ describe('EntryStreamPage', () => {
       fetch.jsonResponseOnce({...entry1, seen: true})
       await clickButtonNext()
 
-      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title1')
-      expect(fetch.mostRecent()).toMatchPatchRequest({
-        url: entry1Url,
+      expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title1')
+      expect(fetch.mostRecent()).toMatchRequest({
+        method: 'PATCH',
+        url: api2SubscriptionEntries1,
         body: {
           seen: true,
           tags: entry1.tags
@@ -192,8 +207,9 @@ describe('EntryStreamPage', () => {
       fetch.jsonResponseOnce({...entry2, seen: true})
       await clickButtonNext()
 
-      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title2')
-      expect(fetch.mostRecent()).toMatchPatchRequest({
+      expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title2')
+      expect(fetch.mostRecent()).toMatchRequest({
+        method: 'PATCH',
         url: entry2Url,
         body: {
           seen: true,
@@ -208,9 +224,10 @@ describe('EntryStreamPage', () => {
       fetch.jsonResponseOnce({...entry1, seen: true})
       await pressArrowRight()
 
-      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title1')
-      expect(fetch.mostRecent()).toMatchPatchRequest({
-        url: entry1Url,
+      expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title1')
+      expect(fetch.mostRecent()).toMatchRequest({
+        method: 'PATCH',
+        url: api2SubscriptionEntries1,
         body: {
           seen: true,
           tags: entry1.tags
@@ -220,8 +237,9 @@ describe('EntryStreamPage', () => {
       fetch.jsonResponseOnce({...entry2, seen: true})
       await pressArrowRight()
 
-      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title2')
-      expect(fetch.mostRecent()).toMatchPatchRequest({
+      expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title2')
+      expect(fetch.mostRecent()).toMatchRequest({
+        method: 'PATCH',
         url: entry2Url,
         body: {
           seen: true,
@@ -241,7 +259,7 @@ describe('EntryStreamPage', () => {
       await clickButtonNext()
       await clickButtonNext()
 
-      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title2')
+      expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title2')
       expect(fetch.requestCount()).toEqual(2)
     })
 
@@ -256,7 +274,7 @@ describe('EntryStreamPage', () => {
       await pressArrowRight()
       await pressArrowRight()
 
-      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title2')
+      expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title2')
       expect(fetch.requestCount()).toEqual(2)
     })
   })
@@ -269,7 +287,7 @@ describe('EntryStreamPage', () => {
 
       await clickButtonPrevious()
 
-      expect(screen.queryByRole('entry-in-focus')).not.toBeInTheDocument()
+      expect(screen.queryByRole(roleEntryInFocus)).not.toBeInTheDocument()
       expect(fetch.requestCount()).toEqual(0)
     })
 
@@ -317,8 +335,9 @@ describe('EntryStreamPage', () => {
       await clickButtonNext()
       await clickButtonPrevious()
 
-      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title1')
-      expect(fetch.mostRecent()).toMatchPatchRequest({
+      expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title1')
+      expect(fetch.mostRecent()).toMatchRequest({
+        method: 'PATCH',
         url: entry2Url,
         body: {
           seen: true,
@@ -337,8 +356,9 @@ describe('EntryStreamPage', () => {
       await pressArrowRight()
       await pressArrowLeft()
 
-      expect(screen.getByRole('entry-in-focus')).toHaveTextContent('title1')
-      expect(fetch.mostRecent()).toMatchPatchRequest({
+      expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title1')
+      expect(fetch.mostRecent()).toMatchRequest({
+        method: 'PATCH',
         url: entry2Url,
         body: {
           seen: true,
@@ -368,22 +388,24 @@ describe('EntryStreamPage', () => {
       fetch.jsonResponseOnce({...entry1, seen: false})
       await pressEscape()
 
-      expect(fetch.mostRecent()).toMatchPatchRequest({
-        url: entry1Url,
+      expect(fetch.mostRecent()).toMatchRequest({
+        method: 'PATCH',
+        url: api2SubscriptionEntries1,
         body: {
           seen: false,
-          tags: ['expected tag1']
+          tags: [expectedTag1]
         }
       })
 
       fetch.jsonResponseOnce({...entry1, seen: true})
       await pressEscape()
 
-      expect(fetch.mostRecent()).toMatchPatchRequest({
-        url: entry1Url,
+      expect(fetch.mostRecent()).toMatchRequest({
+        method: 'PATCH',
+        url: api2SubscriptionEntries1,
         body: {
           seen: true,
-          tags: ['expected tag1']
+          tags: [expectedTag1]
         }
       })
     })
@@ -446,11 +468,13 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({content: [{...entry2}, {...entry3}], next: null})
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptions'
     })
-    expect(fetch.nthRequest(2)).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?feedTagEqual=a'
+    expect(fetch.nthRequest(2)).toMatchRequest({
+      method: 'GET',
+      url: api2SubscriptionEntriesFeedTagEqualA
     })
     expect(screen.queryByText('title1')).not.toBeInTheDocument()
     expect(screen.queryByText('title2')).toBeInTheDocument()
@@ -471,11 +495,13 @@ describe('EntryStreamPage', () => {
     })
 
     expect(fetch.requestCount()).toEqual(2)
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptions'
     })
-    expect(fetch.nthRequest(2)).toMatchGetRequest({
-      url: 'api/2/subscriptionEntries?feedTagEqual=a'
+    expect(fetch.nthRequest(2)).toMatchRequest({
+      method: 'GET',
+      url: api2SubscriptionEntriesFeedTagEqualA
     })
   })
 
@@ -500,7 +526,7 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null})
     await act(async () => fireEvent.click(screen.getByRole('more')))
 
-    expect(screen.queryByRole('entry-in-focus')).toHaveTextContent('title1')
+    expect(screen.queryByRole(roleEntryInFocus)).toHaveTextContent('title1')
   })
 
   it('should render entries', async () => {
@@ -509,42 +535,44 @@ describe('EntryStreamPage', () => {
     expect(screen.queryByText('title1')).toBeInTheDocument()
     expect(screen.queryByText('title1')).toHaveAttribute('href', 'expected origin1')
     expect(screen.queryByText('title1')).toHaveAttribute('target', '_blank')
-    expect(screen.queryByText('title1')).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.queryByText('title1')).toHaveAttribute('rel', noopenerNoreferrer)
     expect(screen.queryByText('title2')).toBeInTheDocument()
     expect(screen.queryByText('title2')).toHaveAttribute('href', 'expected origin2')
     expect(screen.queryByText('title2')).toHaveAttribute('target', '_blank')
-    expect(screen.queryByText('title2')).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.queryByText('title2')).toHaveAttribute('rel', noopenerNoreferrer)
   })
 
   it('should show an error message if entries could not be fetched', async () => {
     fetch.rejectResponse({data: expectedError})
     await renderComponent()
 
-    expect(screen.getByRole('dialog-error-message')).toHaveTextContent(expectedError)
+    expect(screen.getByRole(roleDialogErrorMessage)).toHaveTextContent(expectedError)
   })
 
   it('should toggle entry seen flag', async () => {
     await renderComponent()
 
     fetch.jsonResponse({...entry1, seen: true})
-    await act(async () => fireEvent.click(screen.getAllByRole('flag-as-seen')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleFlagAsSeen)[0]))
 
-    expect(fetch.mostRecent()).toMatchPatchRequest({
-      url: 'api/2/subscriptionEntries/1',
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'PATCH',
+      url: api2SubscriptionEntries1,
       body: {
         seen: true,
-        tags: ['expected tag1']
+        tags: [expectedTag1]
       }
     })
 
     fetch.jsonResponse({...entry1, seen: false})
     await act(async () => fireEvent.click(screen.getAllByRole('flag-as-unseen')[0]))
 
-    expect(fetch.mostRecent()).toMatchPatchRequest({
-      url: 'api/2/subscriptionEntries/1',
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'PATCH',
+      url: api2SubscriptionEntries1,
       body: {
         seen: false,
-        tags: ['expected tag1']
+        tags: [expectedTag1]
       }
     })
   })
@@ -553,12 +581,12 @@ describe('EntryStreamPage', () => {
     await renderComponent()
 
     fetch.rejectResponse({data: expectedError})
-    await act(async () => fireEvent.click(screen.getAllByRole('flag-as-seen')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleFlagAsSeen)[0]))
     fetch.rejectResponse({data: expectedError})
-    await act(async () => fireEvent.click(screen.getAllByRole('flag-as-seen')[1]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleFlagAsSeen)[1]))
 
-    expect(screen.getAllByRole('dialog-error-message')[0]).toHaveTextContent(expectedError)
-    expect(screen.getAllByRole('dialog-error-message')[1]).toHaveTextContent(expectedError)
+    expect(screen.getAllByRole(roleDialogErrorMessage)[0]).toHaveTextContent(expectedError)
+    expect(screen.getAllByRole(roleDialogErrorMessage)[1]).toHaveTextContent(expectedError)
   })
 
   it('should show error messages if read flag could not be toggled for multiple entries', async () => {
@@ -571,8 +599,8 @@ describe('EntryStreamPage', () => {
     fetch.rejectResponse({data: expectedError})
     await pressEscape()
 
-    expect(screen.getAllByRole('dialog-error-message')[0]).toHaveTextContent(expectedError)
-    expect(screen.getAllByRole('dialog-error-message')[1]).toHaveTextContent(expectedError)
+    expect(screen.getAllByRole(roleDialogErrorMessage)[0]).toHaveTextContent(expectedError)
+    expect(screen.getAllByRole(roleDialogErrorMessage)[1]).toHaveTextContent(expectedError)
   })
 
   it('should refresh entries if "showUnseenEntries" changed', async () => {
@@ -585,7 +613,8 @@ describe('EntryStreamPage', () => {
 
     await act(async () => fireEvent.click(screen.getByTestId('toggle-unseen')))
 
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=false'
     })
 
@@ -603,7 +632,8 @@ describe('EntryStreamPage', () => {
     })
     await renderComponent()
 
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptionEntries?entryTagEqual=a'
     })
   })
@@ -611,13 +641,13 @@ describe('EntryStreamPage', () => {
   it('should render entry contents', async () => {
     await renderComponent()
 
-    expect(screen.getByText(entry1.content)).toHaveTextContent('expected content1')
+    expect(screen.getByText(entry1.content)).toHaveTextContent(expectedContent1)
     expect(screen.getByText(entry2.content)).toHaveTextContent('expected content2')
   })
 
   it('should not render entry contents if "showEntryDetails" setting is set to false', async () => {
     await renderComponent()
-    await act(async () => fireEvent.click(screen.getByTestId('toggle-details')))
+    await act(async () => fireEvent.click(screen.getByTestId(testIdToggleDetails)))
 
     expect(screen.queryByText(entry1.content)).not.toBeInTheDocument()
     expect(screen.queryByText(entry2.content)).not.toBeInTheDocument()
@@ -625,17 +655,17 @@ describe('EntryStreamPage', () => {
 
   it('should render entry1 content if "showEntryDetails" setting is set to false and details toggle clicked', async () => {
     await renderComponent()
-    await act(async () => fireEvent.click(screen.getByTestId('toggle-details')))
-    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getByTestId(testIdToggleDetails)))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
 
-    expect(screen.getByText(entry1.content)).toHaveTextContent('expected content1')
+    expect(screen.getByText(entry1.content)).toHaveTextContent(expectedContent1)
     expect(screen.queryByText(entry2.content)).not.toBeInTheDocument()
   })
 
   it('should hide entry1 content if "showEntryDetails" setting is set to false and details toggle clicked twice', async () => {
     await renderComponent()
-    await act(async () => fireEvent.click(screen.getByTestId('toggle-details')))
-    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getByTestId(testIdToggleDetails)))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
     await act(async () => fireEvent.click(screen.getAllByRole('less-details')[0]))
 
     expect(screen.queryByText(entry1.content)).not.toBeInTheDocument()
@@ -653,10 +683,10 @@ describe('EntryStreamPage', () => {
     await renderComponent()
 
     expect(screen.getByText(entry1.title)).toHaveAttribute('href', entry1.origin)
-    expect(screen.getByText(entry1.title)).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.getByText(entry1.title)).toHaveAttribute('rel', noopenerNoreferrer)
     expect(screen.getByText(entry1.title)).toHaveAttribute('target', '_blank')
     expect(screen.getByText(entry2.title)).toHaveAttribute('href', entry2.origin)
-    expect(screen.getByText(entry2.title)).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.getByText(entry2.title)).toHaveAttribute('rel', noopenerNoreferrer)
     expect(screen.getByText(entry2.title)).toHaveAttribute('target', '_blank')
   })
 
@@ -666,48 +696,49 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({
       content: [{
         ...entry1,
-        feedTag: 'expected tag',
+        feedTag: expectedTag,
         feedTagColor: '#555555'
       }]
     })
     await renderComponent()
 
     expect(screen.getByText('13 hours ago on expected feedTitle1')).toBeInTheDocument()
-    expect(screen.getByRole('feed-badge')).toHaveTextContent('expected tag')
-    expect(screen.getByRole('feed-badge')).toHaveTextContent('expected tag')
-    expect(screen.getByRole('feed-badge')).toHaveStyle('--red: 85; --green: 85; --blue: 85;')
+    expect(screen.getByRole(roleFeedBadge)).toHaveTextContent(expectedTag)
+    expect(screen.getByRole(roleFeedBadge)).toHaveTextContent(expectedTag)
+    expect(screen.getByRole(roleFeedBadge)).toHaveStyle('--red: 85; --green: 85; --blue: 85;')
   })
 
   it('should render tag input and tag for entry if details toggle clicked', async () => {
     await renderComponent()
-    expect(screen.queryByPlaceholderText('Enter a tag...')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText(placeholderEnterATag)).not.toBeInTheDocument()
 
-    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
 
-    expect(screen.getByPlaceholderText('Enter a tag...')).toBeInTheDocument()
-    expect(screen.getByText('expected tag1')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(placeholderEnterATag)).toBeInTheDocument()
+    expect(screen.getByText(expectedTag1)).toBeInTheDocument()
     expect(screen.queryByText('expected tag2')).not.toBeInTheDocument()
   })
 
   it('should hide tag input and tag for entry if details toggle clicked twice', async () => {
     await renderComponent()
-    expect(screen.queryByPlaceholderText('Enter a tag...')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText(placeholderEnterATag)).not.toBeInTheDocument()
 
-    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
     await act(async () => fireEvent.click(screen.getAllByRole('less-details')[0]))
 
-    expect(screen.queryByPlaceholderText('Enter a tag...')).not.toBeInTheDocument()
-    expect(screen.queryByText('expected tag1')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText(placeholderEnterATag)).not.toBeInTheDocument()
+    expect(screen.queryByText(expectedTag1)).not.toBeInTheDocument()
   })
 
   it('should remove last entry tag', async () => {
     await renderComponent()
-    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
 
     await act(async () => await fireEvent.click(screen.getByRole('chip-remove-button')))
 
-    expect(fetch.mostRecent()).toMatchPatchRequest({
-      url: 'api/2/subscriptionEntries/1',
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'PATCH',
+      url: api2SubscriptionEntries1,
       body: {
         seen: false,
         tags: null
@@ -724,12 +755,13 @@ describe('EntryStreamPage', () => {
       }]
     })
     await renderComponent()
-    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
 
     await act(async () => await fireEvent.click(screen.getAllByRole('chip-remove-button')[1]))
 
-    expect(fetch.mostRecent()).toMatchPatchRequest({
-      url: 'api/2/subscriptionEntries/1',
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'PATCH',
+      url: api2SubscriptionEntries1,
       body: {
         seen: false,
         tags: ['tag1']
@@ -746,13 +778,14 @@ describe('EntryStreamPage', () => {
       }]
     })
     await renderComponent()
-    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
 
-    await act(async () => await fireEvent.change(screen.getByPlaceholderText('Enter a tag...'), {target: {value: 'first tag'}}))
-    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText('Enter a tag...'), {key: 'Enter', keyCode: 13}))
+    await act(async () => await fireEvent.change(screen.getByPlaceholderText(placeholderEnterATag), {target: {value: 'first tag'}}))
+    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText(placeholderEnterATag), {key: 'Enter', keyCode: 13}))
 
-    expect(fetch.mostRecent()).toMatchPatchRequest({
-      url: 'api/2/subscriptionEntries/1',
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'PATCH',
+      url: api2SubscriptionEntries1,
       body: {
         seen: false,
         tags: ['first tag']
@@ -762,16 +795,17 @@ describe('EntryStreamPage', () => {
 
   it('should save second entry tag', async () => {
     await renderComponent()
-    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
 
-    await act(async () => await fireEvent.change(screen.getByPlaceholderText('Enter a tag...'), {target: {value: 'new tag'}}))
-    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText('Enter a tag...'), {key: 'Enter', keyCode: 13}))
+    await act(async () => await fireEvent.change(screen.getByPlaceholderText(placeholderEnterATag), {target: {value: 'new tag'}}))
+    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText(placeholderEnterATag), {key: 'Enter', keyCode: 13}))
 
-    expect(fetch.mostRecent()).toMatchPatchRequest({
-      url: 'api/2/subscriptionEntries/1',
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'PATCH',
+      url: api2SubscriptionEntries1,
       body: {
         seen: false,
-        tags: ['expected tag1', 'new tag']
+        tags: [expectedTag1, 'new tag']
       }
     })
   })
@@ -779,10 +813,10 @@ describe('EntryStreamPage', () => {
   it('should prevent duplicate entry tags', async () => {
     await renderComponent()
     fetch.resetMocks()
-    await act(async () => fireEvent.click(screen.getAllByRole('more-details')[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
 
-    await act(async () => await fireEvent.change(screen.getByPlaceholderText('Enter a tag...'), {target: {value: 'expected tag1'}}))
-    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText('Enter a tag...'), {key: 'Enter', keyCode: 13}))
+    await act(async () => await fireEvent.change(screen.getByPlaceholderText(placeholderEnterATag), {target: {value: expectedTag1}}))
+    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText(placeholderEnterATag), {key: 'Enter', keyCode: 13}))
 
     expect(fetch.requestCount()).toEqual(0)
   })
@@ -798,7 +832,8 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({content: [{...entry2}]})
     await act(async () => mockAllIsIntersecting(true))
 
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'http://localhost/test?next=2'
     })
 
@@ -825,13 +860,13 @@ describe('EntryStreamPage', () => {
     await renderComponent()
     await clickButtonNext()
 
-    expect(screen.getByRole('entry-in-focus').scrollIntoView).toHaveBeenCalled()
+    expect(screen.getByRole(roleEntryInFocus).scrollIntoView).toHaveBeenCalled()
   })
 
   it('should scroll entry into view if hotkey pressed', async () => {
     await renderComponent()
     await pressArrowRight()
 
-    expect(screen.getByRole('entry-in-focus').scrollIntoView).toHaveBeenCalled()
+    expect(screen.getByRole(roleEntryInFocus).scrollIntoView).toHaveBeenCalled()
   })
 })

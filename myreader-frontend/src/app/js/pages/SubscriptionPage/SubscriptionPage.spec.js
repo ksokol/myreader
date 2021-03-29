@@ -1,4 +1,3 @@
-import React from 'react'
 import {render, fireEvent, screen, act} from '@testing-library/react'
 import {Router, Route, Switch} from 'react-router-dom'
 import {createMemoryHistory} from 'history'
@@ -7,6 +6,13 @@ import {SubscriptionPage} from './SubscriptionPage'
 import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
 
 const expectedError = 'expectedError'
+const expectedTitle = 'expected title'
+const expectedOrigin = 'http://example.com'
+const roleTitleValidation = 'title-validation'
+const roleChipRemoveButton = 'chip-remove-button'
+const roleDialogErrorMessage = 'dialog-error-message'
+const placeholderExclusionPatternInput = 'Enter an exclusion pattern'
+const viewsSubscriptionPage1Subscription = 'views/SubscriptionPage/1/subscription'
 
 describe('SubscriptionPage', () => {
 
@@ -36,8 +42,8 @@ describe('SubscriptionPage', () => {
     response = {
       subscription: {
         uuid: '1',
-        title: 'expected title',
-        origin: 'http://example.com',
+        title: expectedTitle,
+        origin: expectedOrigin,
         tag: 'tag1',
         color: '#FF11FF',
       },
@@ -73,7 +79,8 @@ describe('SubscriptionPage', () => {
   it('should call endpoint for given id', async () => {
     await renderComponent()
 
-    expect(fetch.first()).toMatchGetRequest({
+    expect(fetch.first()).toMatchRequest({
+      method: 'GET',
       url: 'views/SubscriptionPage/1'
     })
   })
@@ -82,8 +89,8 @@ describe('SubscriptionPage', () => {
     jest.spyOn(Date, 'now').mockReturnValue(1614453487714)
     await renderComponent()
 
-    expect(screen.queryByDisplayValue('expected title')).toBeVisible()
-    expect(screen.queryByDisplayValue('http://example.com')).toBeVisible()
+    expect(screen.queryByDisplayValue(expectedTitle)).toBeVisible()
+    expect(screen.queryByDisplayValue(expectedOrigin)).toBeVisible()
     expect(screen.queryByDisplayValue('tag1')).toBeVisible()
     expect(screen.getByText('Save')).toBeEnabled()
     expect(screen.getByText('Delete')).toBeEnabled()
@@ -91,7 +98,7 @@ describe('SubscriptionPage', () => {
     expect(screen.getByText('pattern1')).toBeVisible()
     expect(screen.getByText('pattern2')).toBeVisible()
     expect(screen.getByText('pattern3')).toBeVisible()
-    expect(screen.queryByRole('title-validation')).not.toBeInTheDocument()
+    expect(screen.queryByRole(roleTitleValidation)).not.toBeInTheDocument()
     expect(screen.getByText('Fetch errors')).toBeVisible()
     expect(screen.getByText('message 1')).toBeVisible()
     expect(screen.getByText('13 hours ago')).toBeVisible()
@@ -113,8 +120,8 @@ describe('SubscriptionPage', () => {
   it('should save subscription', async () => {
     await renderComponent()
 
-    fireEvent.change(screen.queryByDisplayValue('expected title'), {target: {value: 'changed title'}})
-    fireEvent.change(screen.queryByDisplayValue('http://example.com'), {target: {value: 'changed origin'}})
+    fireEvent.change(screen.queryByDisplayValue(expectedTitle), {target: {value: 'changed title'}})
+    fireEvent.change(screen.queryByDisplayValue(expectedOrigin), {target: {value: 'changed origin'}})
     fireEvent.change(screen.queryByDisplayValue('tag1'), {target: {value: 'changed tag'}})
 
     fireEvent.click(screen.queryByRole('color-picker-button'))
@@ -125,8 +132,9 @@ describe('SubscriptionPage', () => {
 
     await act(async () => await fireEvent.click(screen.getByText('Save')))
 
-    expect(fetch.nthRequest(2)).toMatchPatchRequest({
-      url: 'views/SubscriptionPage/1/subscription',
+    expect(fetch.nthRequest(2)).toMatchRequest({
+      method: 'PATCH',
+      url: viewsSubscriptionPage1Subscription,
       body: {
         uuid: '1',
         title: 'changed title',
@@ -146,10 +154,10 @@ describe('SubscriptionPage', () => {
     expect(screen.getByText('Save')).toBeDisabled()
     expect(screen.getByText('Delete')).toBeDisabled()
 
-    expect(screen.getAllByRole('chip-remove-button')).toHaveLength(3)
-    expect(screen.getAllByRole('chip-remove-button')[0]).toBeDisabled()
-    expect(screen.getAllByRole('chip-remove-button')[1]).toBeDisabled()
-    expect(screen.getAllByRole('chip-remove-button')[2]).toBeDisabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)).toHaveLength(3)
+    expect(screen.getAllByRole(roleChipRemoveButton)[0]).toBeDisabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)[1]).toBeDisabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)[2]).toBeDisabled()
   })
 
   it('should enable save and delete buttons if subscription is saved', async () => {
@@ -162,7 +170,8 @@ describe('SubscriptionPage', () => {
     expect(screen.getByText('Save')).toBeEnabled()
     expect(screen.getByText('Delete')).toBeEnabled()
     expect(screen.queryByRole('dialog-info-message')).toHaveTextContent('Updated')
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptions'
     })
   })
@@ -173,7 +182,7 @@ describe('SubscriptionPage', () => {
     fetch.rejectResponse({status: 400, data: {errors: [{field: 'title', defaultMessage: expectedError}]}})
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(screen.queryByRole('title-validation')).toHaveTextContent(expectedError)
+    expect(screen.queryByRole(roleTitleValidation)).toHaveTextContent(expectedError)
   })
 
   it('should show origin validation message', async() => {
@@ -193,7 +202,7 @@ describe('SubscriptionPage', () => {
     fetch.responsePending()
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(screen.queryByRole('title-validation')).not.toBeInTheDocument()
+    expect(screen.queryByRole(roleTitleValidation)).not.toBeInTheDocument()
   })
 
   it('should show message if subscription could not be saved', async() => {
@@ -202,8 +211,8 @@ describe('SubscriptionPage', () => {
     fetch.rejectResponse({status: 500, data: expectedError})
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(screen.queryByRole('title-validation')).not.toBeInTheDocument()
-    expect(screen.queryByRole('dialog-error-message')).toHaveTextContent(expectedError)
+    expect(screen.queryByRole(roleTitleValidation)).not.toBeInTheDocument()
+    expect(screen.queryByRole(roleDialogErrorMessage)).toHaveTextContent(expectedError)
   })
 
   it('should remove subscription', async () => {
@@ -214,8 +223,9 @@ describe('SubscriptionPage', () => {
     await act(async () => fireEvent.click(screen.getByText('Delete')))
     await act(async () => fireEvent.click(screen.getByText('Yes')))
 
-    expect(fetch.first()).toMatchDeleteRequest({
-      url: 'views/SubscriptionPage/1/subscription'
+    expect(fetch.first()).toMatchRequest({
+      method: 'DELETE',
+      url: viewsSubscriptionPage1Subscription
     })
   })
 
@@ -226,7 +236,8 @@ describe('SubscriptionPage', () => {
     await act(async () => fireEvent.click(screen.getByText('Delete')))
     await act(async () => fireEvent.click(screen.getByText('Yes')))
 
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptions'
     })
   })
@@ -279,7 +290,7 @@ describe('SubscriptionPage', () => {
     fetch.rejectResponse({status: 500, data: expectedError})
     await renderComponent()
 
-    expect(screen.queryByRole('dialog-error-message')).toHaveTextContent(expectedError)
+    expect(screen.queryByRole(roleDialogErrorMessage)).toHaveTextContent(expectedError)
   })
 
   it('should remove subscription color', async () => {
@@ -293,12 +304,13 @@ describe('SubscriptionPage', () => {
 
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(fetch.nthRequest(2)).toMatchPatchRequest({
-      url: 'views/SubscriptionPage/1/subscription',
+    expect(fetch.nthRequest(2)).toMatchRequest({
+      method: 'PATCH',
+      url: viewsSubscriptionPage1Subscription,
       body: {
         uuid: '1',
-        title: 'expected title',
-        origin: 'http://example.com',
+        title: expectedTitle,
+        origin: expectedOrigin,
         tag: 'tag1',
         color: null,
       },
@@ -309,10 +321,11 @@ describe('SubscriptionPage', () => {
     await renderComponent()
 
     fetch.responsePending()
-    fireEvent.change(screen.getByPlaceholderText('Enter an exclusion pattern'), {target: {value: 'anPattern'}})
+    fireEvent.change(screen.getByPlaceholderText(placeholderExclusionPatternInput), {target: {value: 'anPattern'}})
     fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13})
 
-    expect(fetch.mostRecent()).toMatchPostRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'POST',
       url: 'views/SubscriptionPage/1/exclusionPatterns',
       body: {
         pattern: 'anPattern'
@@ -324,14 +337,14 @@ describe('SubscriptionPage', () => {
     await renderComponent()
 
     fetch.responsePending()
-    fireEvent.change(screen.getByPlaceholderText('Enter an exclusion pattern'), {target: {value: 'anPattern'}})
+    fireEvent.change(screen.getByPlaceholderText(placeholderExclusionPatternInput), {target: {value: 'anPattern'}})
     fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13})
 
-    expect(screen.getByPlaceholderText('Enter an exclusion pattern')).toBeDisabled()
-    expect(screen.getAllByRole('chip-remove-button')).toHaveLength(3)
-    expect(screen.getAllByRole('chip-remove-button')[0]).toBeDisabled()
-    expect(screen.getAllByRole('chip-remove-button')[1]).toBeDisabled()
-    expect(screen.getAllByRole('chip-remove-button')[2]).toBeDisabled()
+    expect(screen.getByPlaceholderText(placeholderExclusionPatternInput)).toBeDisabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)).toHaveLength(3)
+    expect(screen.getAllByRole(roleChipRemoveButton)[0]).toBeDisabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)[1]).toBeDisabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)[2]).toBeDisabled()
   })
 
   it('should enable all exclusion pattern delete buttons if exclusion pattern has been saved', async () => {
@@ -345,25 +358,25 @@ describe('SubscriptionPage', () => {
         {uuid: '400', pattern: 'anPattern', hitCount: 0}
       ]
     })
-    fireEvent.change(screen.getByPlaceholderText('Enter an exclusion pattern'), {target: {value: 'anPattern'}})
+    fireEvent.change(screen.getByPlaceholderText(placeholderExclusionPatternInput), {target: {value: 'anPattern'}})
     await act(async () => await fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13}))
 
-    expect(screen.getByPlaceholderText('Enter an exclusion pattern')).toBeEnabled()
-    expect(screen.getAllByRole('chip-remove-button')).toHaveLength(4)
-    expect(screen.getAllByRole('chip-remove-button')[0]).toBeEnabled()
-    expect(screen.getAllByRole('chip-remove-button')[1]).toBeEnabled()
-    expect(screen.getAllByRole('chip-remove-button')[2]).toBeEnabled()
-    expect(screen.getAllByRole('chip-remove-button')[3]).toBeEnabled()
+    expect(screen.getByPlaceholderText(placeholderExclusionPatternInput)).toBeEnabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)).toHaveLength(4)
+    expect(screen.getAllByRole(roleChipRemoveButton)[0]).toBeEnabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)[1]).toBeEnabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)[2]).toBeEnabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)[3]).toBeEnabled()
   })
 
   it('should show message if new exclusion pattern could not be saved', async () => {
     await renderComponent()
 
     fetch.rejectResponse({data: expectedError})
-    fireEvent.change(screen.getByPlaceholderText('Enter an exclusion pattern'), {target: {value: 'anPattern'}})
+    fireEvent.change(screen.getByPlaceholderText(placeholderExclusionPatternInput), {target: {value: 'anPattern'}})
     await act(async () => await fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13}))
 
-    expect(screen.getByRole('dialog-error-message')).toHaveTextContent(expectedError)
+    expect(screen.getByRole(roleDialogErrorMessage)).toHaveTextContent(expectedError)
   })
 
   it('should show exclusion pattern after new exclusion pattern has been saved', async () => {
@@ -375,10 +388,10 @@ describe('SubscriptionPage', () => {
         {uuid: '400', pattern: 'anPattern', hitCount: 0}
       ]
     })
-    fireEvent.change(screen.getByPlaceholderText('Enter an exclusion pattern'), {target: {value: 'anPattern'}})
+    fireEvent.change(screen.getByPlaceholderText(placeholderExclusionPatternInput), {target: {value: 'anPattern'}})
     await act(async () => await fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13}))
 
-    expect(screen.getByPlaceholderText('Enter an exclusion pattern')).toBeEnabled()
+    expect(screen.getByPlaceholderText(placeholderExclusionPatternInput)).toBeEnabled()
     expect(screen.getByText('c')).toBeVisible()
     expect(screen.getByText('anPattern')).toBeVisible()
   })
@@ -387,13 +400,13 @@ describe('SubscriptionPage', () => {
     await renderComponent()
 
     fetch.responsePending()
-    fireEvent.click(screen.getAllByRole('chip-remove-button')[0])
+    fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0])
 
-    expect(screen.getByPlaceholderText('Enter an exclusion pattern')).toBeDisabled()
-    expect(screen.getAllByRole('chip-remove-button')).toHaveLength(3)
-    expect(screen.getAllByRole('chip-remove-button')[0]).toBeDisabled()
-    expect(screen.getAllByRole('chip-remove-button')[1]).toBeDisabled()
-    expect(screen.getAllByRole('chip-remove-button')[2]).toBeDisabled()
+    expect(screen.getByPlaceholderText(placeholderExclusionPatternInput)).toBeDisabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)).toHaveLength(3)
+    expect(screen.getAllByRole(roleChipRemoveButton)[0]).toBeDisabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)[1]).toBeDisabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)[2]).toBeDisabled()
   })
 
   it('should enable all exclusion pattern delete buttons if exclusion pattern has been deleted', async () => {
@@ -405,30 +418,31 @@ describe('SubscriptionPage', () => {
         {uuid: '400', pattern: 'anPattern', hitCount: 0}
       ]
     })
-    await (act(async() => await fireEvent.click(screen.getAllByRole('chip-remove-button')[0])))
+    await (act(async() => await fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0])))
 
-    expect(screen.getByPlaceholderText('Enter an exclusion pattern')).toBeEnabled()
-    expect(screen.getAllByRole('chip-remove-button')).toHaveLength(2)
-    expect(screen.getAllByRole('chip-remove-button')[0]).toBeEnabled()
-    expect(screen.getAllByRole('chip-remove-button')[1]).toBeEnabled()
+    expect(screen.getByPlaceholderText(placeholderExclusionPatternInput)).toBeEnabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)).toHaveLength(2)
+    expect(screen.getAllByRole(roleChipRemoveButton)[0]).toBeEnabled()
+    expect(screen.getAllByRole(roleChipRemoveButton)[1]).toBeEnabled()
   })
 
   it('should show message if exclusion pattern could not be deleted', async () => {
     await renderComponent()
 
     fetch.rejectResponse({data: expectedError})
-    await act(async () => await fireEvent.click(screen.getAllByRole('chip-remove-button')[0]))
+    await act(async () => await fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0]))
 
-    expect(screen.getByRole('dialog-error-message')).toHaveTextContent(expectedError)
+    expect(screen.getByRole(roleDialogErrorMessage)).toHaveTextContent(expectedError)
   })
 
   it('should delete exclusion pattern', async () => {
     await renderComponent()
 
     fetch.rejectResponse({data: expectedError})
-    await act(async () => await fireEvent.click(screen.getAllByRole('chip-remove-button')[0]))
+    await act(async () => await fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0]))
 
-    expect(fetch.mostRecent()).toMatchDeleteRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'DELETE',
       url: 'views/SubscriptionPage/1/exclusionPatterns/100',
     })
   })

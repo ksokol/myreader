@@ -1,9 +1,7 @@
-import React from 'react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
 import {act, fireEvent, render, screen} from '@testing-library/react'
 import {BookmarkNavigationItem} from './BookmarkNavigationItem'
-import {BOOKMARK_PAGE_PATH} from '../../../constants'
 
 describe('BookmarkNavigationItem', () => {
 
@@ -21,7 +19,6 @@ describe('BookmarkNavigationItem', () => {
 
   beforeEach(() => {
     history = createMemoryHistory()
-    history.push(BOOKMARK_PAGE_PATH)
 
     props = {
       onClick: jest.fn()
@@ -52,7 +49,8 @@ describe('BookmarkNavigationItem', () => {
     await act(async () => await fireEvent.click(screen.getByText('Bookmarks')))
 
     expect(fetch.requestCount()).toEqual(1)
-    expect(fetch.mostRecent()).toMatchGetRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
       url: 'api/2/subscriptionEntries/availableTags'
     })
   })

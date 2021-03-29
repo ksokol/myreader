@@ -1,9 +1,10 @@
-import React from 'react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
 import {render, screen, fireEvent, act} from '@testing-library/react'
 import {LoginPage} from './LoginPage'
 import {SecurityProvider} from '../../contexts/security/SecurityProvider'
+
+const expectedPassword = 'expected password'
 
 describe('LoginPage', () => {
 
@@ -26,23 +27,25 @@ describe('LoginPage', () => {
   it('should call authentication endpoint with given password', async () => {
     renderComponent()
 
-    fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
+    fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
 
-    expect(fetch.mostRecent()).toMatchPostRequest({
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'POST',
       url: 'check',
       body: 'password=expected+password',
-      headers: new Headers({
-        'content-type': 'application/x-www-form-urlencoded',
-        'x-requested-with': 'XMLHttpRequest'
-      })
     })
+    expect(fetch.mostRecent().headers).toEqual(new Headers({
+      'content-type': 'application/x-www-form-urlencoded',
+      'x-requested-with': 'XMLHttpRequest'
+    })
+    )
   })
 
   it('should redirect if successfully authenticated', async () => {
     renderComponent()
 
-    fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
+    fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
 
     expect(history.action).toEqual('REPLACE')
@@ -61,7 +64,7 @@ describe('LoginPage', () => {
     fetch.responsePending()
     renderComponent()
 
-    fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
+    fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
 
     expect(screen.getByLabelText('Password')).toBeDisabled()
@@ -72,7 +75,7 @@ describe('LoginPage', () => {
     fetch.rejectResponse()
     renderComponent()
 
-    fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
+    fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
 
     expect(screen.getByText('password wrong')).toBeInTheDocument()
@@ -82,7 +85,7 @@ describe('LoginPage', () => {
     fetch.rejectResponse()
     renderComponent()
 
-    fireEvent.change(screen.getByLabelText('Password'), {target: {value: 'expected password'}})
+    fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
 
     expect(screen.getByLabelText('Password')).toBeEnabled()
