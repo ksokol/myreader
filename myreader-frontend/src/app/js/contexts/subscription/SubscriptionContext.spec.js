@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import {useContext} from 'react'
 import {act, fireEvent, render, screen} from '@testing-library/react'
 import {SubscriptionProvider} from './SubscriptionProvider'
 import {api} from '../../api'
@@ -17,6 +17,7 @@ function TestComponent() {
 }
 
 const expectedError = 'expected error'
+const expectedResponse = 'subscriptions: [{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]'
 
 describe('subscription context', () => {
 
@@ -45,14 +46,14 @@ describe('subscription context', () => {
     expect(screen.getByText('subscriptions: []')).toBeInTheDocument()
   })
 
-  it('should contain expected context values in child component when subscriptionApi.fetchSubscriptions succeeded', async () => {
+  it('should contain expected context values in child component if fetch call succeeded', async () => {
     renderComponent()
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
+    expect(screen.getByText(expectedResponse)).toBeInTheDocument()
   })
 
-  it('should replace subscriptions if fethSubscriptions called again', async () => {
+  it('should replace subscriptions if fetch called again', async () => {
     renderComponent()
 
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
@@ -67,7 +68,7 @@ describe('subscription context', () => {
     expect(screen.getByText('subscriptions: [{"uuid":"3","unseen":4}]')).toBeInTheDocument()
   })
 
-  it('should contain empty context value in child component when subscriptionApi.fetchSubscriptions succeeded', async () => {
+  it('should contain empty context value in child component if fetch succeeded', async () => {
     fetch.rejectResponse({data: expectedError})
 
     renderComponent()
@@ -76,14 +77,14 @@ describe('subscription context', () => {
     expect(screen.getByRole('dialog-error-message')).toHaveTextContent(expectedError)
   })
 
-  it('should contain expected context values in child component when prop "locationStateStamp" changed and subscriptionApi.fetchSubscriptions failed', async () => {
+  it('should contain expected context values in child component if fetch failed', async () => {
     renderComponent()
 
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
     fetch.rejectResponse({data: expectedError})
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
+    expect(screen.getByText(expectedResponse)).toBeInTheDocument()
   })
 
   it('should decrease subscription unseen count', async () => {
@@ -142,12 +143,12 @@ describe('subscription context', () => {
     expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":4},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
   })
 
-  it('should do nothing when seen flag does not changed', async () => {
+  it('should do nothing if seen flag does not changed', async () => {
     renderComponent()
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
     fetch.jsonResponse({
-      uuid: '1',
+      uuid: '2',
       feedUuid: '1',
       seen: false
     })
@@ -160,17 +161,17 @@ describe('subscription context', () => {
         context: {
           oldValue: {
             uuid: '10',
-            feedUuid: '1',
+            feedUuid: '2',
             seen: false
           }
         }
       })
     })
 
-    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
+    expect(screen.getByText(expectedResponse)).toBeInTheDocument()
   })
 
-  it('should do nothing when subscription is not available', async () => {
+  it('should do nothing if subscription is not available', async () => {
     renderComponent()
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
@@ -195,6 +196,6 @@ describe('subscription context', () => {
       })
     })
 
-    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
+    expect(screen.getByText(expectedResponse)).toBeInTheDocument()
   })
 })

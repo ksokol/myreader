@@ -1,16 +1,20 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
 import SubscriptionContext from './SubscriptionContext'
-import {subscriptionApi} from '../../api'
+import {api} from '../../api'
 import {toast} from '../../components/Toast'
-import {SubscriptionProviderInterceptor} from './SubscriptionProviderInterceptor'
+import {SUBSCRIPTION_ENTRIES, SUBSCRIPTIONS} from '../../constants'
+
+const urlPattern = new RegExp(`[.*/]?${SUBSCRIPTION_ENTRIES}/[a-z0-9\\-].*$`)
 
 export function SubscriptionProvider({children}) {
   const [subscriptions, setSubscriptions] = useState([])
 
   const fetchSubscriptions = useCallback(async () => {
     try {
-      setSubscriptions(await subscriptionApi.fetchSubscriptions())
+      setSubscriptions(await api.get({
+        url: SUBSCRIPTIONS,
+      }).then(response => response.content))
     } catch (error) {
       toast(error.data, {error: true})
     }
@@ -30,10 +34,17 @@ export function SubscriptionProvider({children}) {
   }, [subscriptions])
 
   useEffect(() => {
-    const interceptor = new SubscriptionProviderInterceptor((newEntry, oldEntry) => entryChanged(newEntry, oldEntry))
+    const interceptor = {
+      onThen: (request, response) => {
+        if (request.method === 'PATCH' && urlPattern.test(request.url)) {
+          entryChanged(response, request.context.oldValue)
+        }
+      }
+    }
 
-    subscriptionApi.addInterceptor(interceptor)
-    return () => subscriptionApi.removeInterceptor(interceptor)
+    api.addInterceptor(interceptor)
+    return () => api.removeInterceptor(interceptor)
+
   }, [entryChanged])
 
   return (
