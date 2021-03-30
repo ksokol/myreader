@@ -13,12 +13,7 @@ import java.util.Set;
 
 public interface SubscriptionRepository extends CrudRepository<Subscription, Long> {
 
-  @Query(value =
-    "select s.* from subscription s where " +
-      "(select count(1) from subscription_entry se where se.subscription_id = s.id and se.seen = false) > :unseenCount " +
-      "order by s.created_at desc"
-  )
-  List<Subscription> findAllByUnseenGreaterThan(@Param("unseenCount") long unseenCount);
+  List<Subscription> findAllByOrderByCreatedAtDesc();
 
   Optional<Subscription> findByUrl(String url);
 
