@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useReducer} from 'react'
-import {api, entryApi} from '../../api'
+import {api} from '../../api'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
 
 function reducer(state, action) {
@@ -111,7 +111,11 @@ export function useEntries() {
   const changeEntry = useCallback(async entry => {
     try {
       const oldValue = state.entries.find(it => it.uuid === entry.uuid)
-      const newEntry = await entryApi.updateEntry({...entry, context: {oldValue}})
+      const newEntry = await api.patch({
+        url: `${SUBSCRIPTION_ENTRIES}/${entry.uuid}`,
+        body: {seen: entry.seen, tags: entry.tags},
+        context: {oldValue}
+      })
       dispatch({type: 'update_entry', entry: newEntry})
     } catch (error) {
       dispatch({type: 'error', error})
@@ -122,7 +126,11 @@ export function useEntries() {
     async function run(entry) {
       try {
         const oldValue = state.entries.find(it => it.uuid === entry.uuid)
-        const newEntry = await entryApi.updateEntry({...entry, seen: !entry.seen, context: {oldValue}})
+        const newEntry = await api.patch({
+          url: `${SUBSCRIPTION_ENTRIES}/${uuid}`,
+          body: {seen: !entry.seen, tags: entry.tags},
+          context: {oldValue}
+        })
         dispatch({type: 'update_entry', entry: newEntry})
       } catch (error) {
         dispatch({type: 'error', error})
@@ -144,7 +152,11 @@ export function useEntries() {
     async function run(entry) {
       try {
         const oldValue = state.entries.find(it => it.uuid === entry.uuid)
-        const newEntry = await entryApi.updateEntry({...entry, context: {oldValue}})
+        const newEntry = await api.patch({
+          url: `${SUBSCRIPTION_ENTRIES}/${entry.uuid}`,
+          body: {seen: entry.seen, tags: entry.tags},
+          context: {oldValue}
+        })
         dispatch({type: 'update_entry', entry: newEntry})
       } catch (error) {
         dispatch({type: 'error', error})
