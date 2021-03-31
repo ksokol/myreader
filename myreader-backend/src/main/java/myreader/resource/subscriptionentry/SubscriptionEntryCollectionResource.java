@@ -36,22 +36,28 @@ public class SubscriptionEntryCollectionResource {
       searchRequest.getFeedTagEqual(),
       searchRequest.getEntryTagEqual(),
       searchRequest.getSeenEqual(),
-      searchRequest.getNext()
+      searchRequest.getUuid()
     ).map(assembler::toModel);
 
-    var builder = ServletUriComponentsBuilder
-      .fromCurrentRequest()
-      .replaceQueryParam("next", List.of());
-
-    String nextUrl = null;
+    var nextPage = new TreeMap<>();
+    Map<String, Object> response = new TreeMap<>();
 
     if (slicedEntries.hasNext()) {
+      var builder = ServletUriComponentsBuilder
+        .fromCurrentRequest()
+        .replaceQueryParam("uuid", List.of());
       var last = slicedEntries.getContent().get(slicedEntries.getSize() - 1);
-      nextUrl = builder.queryParam("next", last.getUuid()).toUriString();
+
+      nextPage.put("uuid", last.getUuid());
+
+      for (Map.Entry<String, List<String>> entry : builder.build().getQueryParams().entrySet()) {
+        entry.getValue().stream()
+          .findFirst()
+          .ifPresent(value -> nextPage.put(entry.getKey(), value));
+      }
+      response.put("nextPage", nextPage);
     }
 
-    Map<String, Object> response = new TreeMap<>();
-    response.put("next", nextUrl);
     response.put("content", slicedEntries.getContent());
 
     return response;

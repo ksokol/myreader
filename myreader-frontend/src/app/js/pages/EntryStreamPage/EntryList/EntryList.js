@@ -1,5 +1,4 @@
 import './EntryList.css'
-import React from 'react'
 import PropTypes from 'prop-types'
 import {InView} from 'react-intersection-observer'
 import {Button} from '../../../components/Buttons'
@@ -23,18 +22,18 @@ EntryListItem.propTypes = {
 
 export function EntryList({
   entries = [],
-  links = {},
+  nextPage = null,
   onLoadMore,
   entryInFocusUuid,
   loading,
-  onChangeEntry
+  onChangeEntry,
 }) {
   const hasNextPage = () => {
-    return !!links.next
+    return nextPage !== null
   }
 
   const loadMore = () => {
-    onLoadMore(links.next)
+    onLoadMore(nextPage)
   }
 
   const otherProps = {
@@ -82,9 +81,7 @@ export function EntryList({
 }
 
 EntryList.propTypes = {
-  links: PropTypes.shape({
-    next: PropTypes.any
-  }).isRequired,
+  nextPage: PropTypes.object,
   entries: PropTypes.arrayOf(
     PropTypes.shape({
       uuid: PropTypes.string.isRequired

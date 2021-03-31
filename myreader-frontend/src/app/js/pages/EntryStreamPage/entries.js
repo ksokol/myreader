@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useReducer} from 'react'
-import {entryApi} from '../../api'
+import {api, entryApi} from '../../api'
+import {SUBSCRIPTION_ENTRIES} from '../../constants'
 
 function reducer(state, action) {
   switch(action.type) {
@@ -30,8 +31,8 @@ function reducer(state, action) {
   case 'add_entries': {
     return {
       ...state,
-      entries: state.entries.concat(action.entries),
-      links: action.links
+      entries: [...state.entries, ...action.entries],
+      nextPage: action.nextPage,
     }
   }
   case 'update_entry': {
@@ -44,7 +45,7 @@ function reducer(state, action) {
     return {
       ...state,
       entries: [],
-      links: {}
+      nextPage: null
     }
   }
   case 'loading': {
@@ -79,14 +80,26 @@ export function useEntries() {
     toggle: [],
     flag: [],
     entries: [],
-    links: {},
+    nextPage: null,
   })
 
-  const fetchEntries = useCallback(async link => {
+  const fetchEntries = useCallback(async query => {
     dispatch({type: 'loading'})
 
     try {
-      const response = await entryApi.fetchEntries(link)
+      const queryParams = new URLSearchParams()
+      for (const [key, value] of Object.entries(query || {})) {
+        if (value !== undefined && value !== null) {
+          queryParams.set(key, value)
+        }
+      }
+
+      const response = await api.get({
+        url: `${SUBSCRIPTION_ENTRIES}?${queryParams}`,
+      }).then(raw => ({
+        entries: raw.content,
+        nextPage: raw.nextPage,
+      }))
       dispatch({type: 'add_entries', ...response})
     } catch (error) {
       dispatch({type: 'error', error})
@@ -162,7 +175,7 @@ export function useEntries() {
 
   return {
     entries: state.entries,
-    links: state.links,
+    nextPage: state.nextPage,
     loading: state.loading,
     lastError: state.lastError,
     fetchEntries,

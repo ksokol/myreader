@@ -6,7 +6,7 @@ public class SearchRequest {
   private Boolean seenEqual;
   private String feedTagEqual;
   private String entryTagEqual;
-  private Long next;
+  private Long uuid;
 
   public String getFeedUuidEqual() {
     return feedUuidEqual;
@@ -40,11 +40,11 @@ public class SearchRequest {
     this.entryTagEqual = entryTagEqual;
   }
 
-  public Long getNext() {
-    return next;
+  public Long getUuid() {
+    return uuid;
   }
 
-  public void setNext(Long next) {
-    this.next = next;
+  public void setUuid(Long uuid) {
+    this.uuid = uuid;
   }
 }

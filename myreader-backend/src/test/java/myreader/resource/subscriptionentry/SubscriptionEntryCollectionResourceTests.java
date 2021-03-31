@@ -119,7 +119,7 @@ class SubscriptionEntryCollectionResourceTests {
   void shouldReturnEntries() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries"))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.next").value("http://localhost/api/2/subscriptionEntries?next=" + subscriptionEntry2.getId()))
+      .andExpect(jsonPath("$.nextPage.uuid").value(subscriptionEntry2.getId()))
       .andExpect(jsonPath("$.content.length()").value(10))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
       .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry11.getId().toString()))
@@ -147,14 +147,14 @@ class SubscriptionEntryCollectionResourceTests {
   @Test
   void shouldPaginate() throws Exception {
     var firstResponse = mockMvc.perform(get("/api/2/subscriptionEntries"))
-      .andExpect(jsonPath("next").value("http://localhost/api/2/subscriptionEntries?next=" + subscriptionEntry2.getId()))
+      .andExpect(jsonPath("nextPage.uuid").value(subscriptionEntry2.getId()))
       .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry12.getId().toString()))
       .andExpect(jsonPath("content[9].uuid").value(subscriptionEntry2.getId().toString()))
       .andReturn();
 
     mockMvc.perform(get(nextPage(firstResponse)))
       .andExpect(jsonPath("$.content.length()").value(1))
-      .andExpect(jsonPath("links[?(@.rel=='self')].next").doesNotExist())
+      .andExpect(jsonPath("nextPage").doesNotExist())
       .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry1.getId().toString()));
   }
 
@@ -173,6 +173,7 @@ class SubscriptionEntryCollectionResourceTests {
 
     mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag2-tag3"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
   }
@@ -185,6 +186,7 @@ class SubscriptionEntryCollectionResourceTests {
 
     mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag4 tag5"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
   }
@@ -193,10 +195,12 @@ class SubscriptionEntryCollectionResourceTests {
   void shouldFilterByEntryTag6AndTag7() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag6"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(0));
 
     mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag6,tag7"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
   }
@@ -205,10 +209,12 @@ class SubscriptionEntryCollectionResourceTests {
   void shouldFilterByEntryTag8AndTag9() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag8"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(0));
 
     mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag8Tag9"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
   }
@@ -217,6 +223,7 @@ class SubscriptionEntryCollectionResourceTests {
   void feedUuidEqualSubscription2() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?feedUuidEqual={id}", subscription2.getId()))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
   }
@@ -225,6 +232,7 @@ class SubscriptionEntryCollectionResourceTests {
   void seenEqualsTrue() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=true"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry1.getId().toString()));
   }
@@ -233,9 +241,20 @@ class SubscriptionEntryCollectionResourceTests {
   void seenEqualsFalse() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(10))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
       .andExpect(jsonPath("$.content[9].uuid").value(subscriptionEntry2.getId().toString()));
+  }
+
+  @Test
+  void shouldReturnNextPageForGivenParameters() throws Exception {
+    createEntry(subscription1);
+
+    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage.uuid").value(subscriptionEntry3.getId().toString()))
+      .andExpect(jsonPath("$.nextPage.seenEqual").value("false"));
   }
 
   @Test
@@ -252,6 +271,7 @@ class SubscriptionEntryCollectionResourceTests {
   void feedTagEqual() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?feedTagEqual=subscription tag"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
   }
@@ -260,6 +280,7 @@ class SubscriptionEntryCollectionResourceTests {
   void feedTagEqualUnknown() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?feedTagEqual=unknown"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(0));
   }
 
@@ -267,6 +288,8 @@ class SubscriptionEntryCollectionResourceTests {
   void shouldPaginateWithChangingSeenValues() throws Exception {
     mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage.uuid").doesNotExist())
+      .andExpect(jsonPath("$.nextPage.seenEqual").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(10))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
       .andExpect(jsonPath("$.content[0].seen").value(false))
@@ -279,6 +302,7 @@ class SubscriptionEntryCollectionResourceTests {
 
     mockMvc.perform(get("/api/2/subscriptionEntries"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage.uuid").value(subscriptionEntry2.getId()))
       .andExpect(jsonPath("$.content.length()").value(10))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
       .andExpect(jsonPath("$.content[0].seen").value(false))
@@ -289,8 +313,9 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content[9].uuid").value(subscriptionEntry2.getId().toString()))
       .andExpect(jsonPath("$.content[9].seen").value(false));
 
-    mockMvc.perform(get("/api/2/subscriptionEntries?next={id}&seenEqual=false", subscriptionEntry4.getId()))
+    mockMvc.perform(get("/api/2/subscriptionEntries?uuid={id}&seenEqual=false", subscriptionEntry4.getId()))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(2))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry3.getId().toString()))
       .andExpect(jsonPath("$.content[1].uuid").value(subscriptionEntry2.getId().toString()));
@@ -299,6 +324,7 @@ class SubscriptionEntryCollectionResourceTests {
 
     mockMvc.perform(get("/api/2/subscriptionEntries"))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage.uuid").value(subscriptionEntry2.getId().toString()))
       .andExpect(jsonPath("$.content.length()").value(10))
       .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry12.getId().toString()))
       .andExpect(jsonPath("$.content[0].seen").value(false))
@@ -309,8 +335,9 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content[9].uuid").value(subscriptionEntry2.getId().toString()))
       .andExpect(jsonPath("$.content[9].seen").value(true));
 
-    mockMvc.perform(get("/api/2/subscriptionEntries?next={id}&seenEqual=false", subscriptionEntry2.getId()))
+    mockMvc.perform(get("/api/2/subscriptionEntries?uuid={id}&seenEqual=false", subscriptionEntry2.getId()))
       .andExpect(status().isOk())
+      .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(0));
   }
 
@@ -334,11 +361,14 @@ class SubscriptionEntryCollectionResourceTests {
   }
 
   private String nextPage(MvcResult mvcResult) throws IOException {
-    String nextHref = JsonPath.read(mvcResult.getResponse().getContentAsString(), "next");
-    if (nextHref == null) {
-      throw new AssertionError("next not found");
+    Map<String, String> nextPage = JsonPath.read(mvcResult.getResponse().getContentAsString(), "nextPage");
+
+    StringBuilder queryParams = new StringBuilder();
+    for (Map.Entry<String, String> entry : nextPage.entrySet()) {
+      queryParams.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
     }
-    return nextHref;
+
+    return "/api/2/subscriptionEntries?" + queryParams;
   }
 
   private List<String> list(String... values) {

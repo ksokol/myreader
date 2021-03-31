@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo} from 'react'
+import {useEffect, useState, useMemo} from 'react'
 import {useHotkeys} from 'react-hotkeys-hook'
 import {IconButton} from '../../components/Buttons'
 import {useAutofocusEntry} from './useAutofocusEntry'
@@ -29,7 +29,7 @@ export function EntryStreamPage() {
 
   const {
     entries,
-    links,
+    nextPage,
     loading,
     lastError,
     fetchEntries,
@@ -53,7 +53,7 @@ export function EntryStreamPage() {
   const refresh = () => {
     if (!loading) {
       clearEntries()
-      fetchEntries({query})
+      fetchEntries(query)
       fetchSubscriptions()
     }
   }
@@ -73,7 +73,7 @@ export function EntryStreamPage() {
   }, [entryInFocusUuid])
 
   useEffect(() => {
-    fetchEntries({query})
+    fetchEntries(query)
   }, [fetchEntries, query])
 
   useEffect(() => {
@@ -132,7 +132,7 @@ export function EntryStreamPage() {
       listPanel={
         <EntryList
           entries={entries}
-          links={links}
+          nextPage={nextPage}
           loading={loading}
           entryInFocusUuid={entryInFocusUuid}
           onChangeEntry={changeEntry}

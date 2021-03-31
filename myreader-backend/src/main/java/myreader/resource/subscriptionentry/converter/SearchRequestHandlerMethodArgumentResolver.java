@@ -38,9 +38,9 @@ public class SearchRequestHandlerMethodArgumentResolver implements HandlerMethod
       throw new ServletRequestBindingException("seenEqual is not of type boolean");
     }
 
-    var nextParam = webRequest.getParameter("next");
-    if (nextParam != null && nextParam.matches("\\d+")) {
-      searchRequest.setNext(Long.parseLong(nextParam));
+    var uuidParam = webRequest.getParameter("uuid");
+    if (uuidParam != null && uuidParam.matches("\\d+")) {
+      searchRequest.setUuid(Long.parseLong(uuidParam));
     }
 
     return searchRequest;

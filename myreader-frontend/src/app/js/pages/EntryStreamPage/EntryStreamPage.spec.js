@@ -144,7 +144,9 @@ describe('EntryStreamPage', () => {
 
     fetch.jsonResponse({
       content: [{...entry1}, {...entry2}],
-      next: 'http://localhost/test?nextpage'
+      nextPage: {
+        uuid: 3
+      },
     })
   })
 
@@ -414,7 +416,7 @@ describe('EntryStreamPage', () => {
   it('should load next page', async () => {
     await renderComponent()
 
-    fetch.jsonResponse({content: [{...entry3}, {...entry4}], next: null})
+    fetch.jsonResponse({content: [{...entry3}, {...entry4}]})
     await act(async () => fireEvent.click(screen.getByRole('more')))
 
     expect(screen.queryByText('title1')).toBeInTheDocument()
@@ -823,7 +825,7 @@ describe('EntryStreamPage', () => {
 
   it('should fetch automatically next entries if last entry becomes visible', async () => {
     fetch.resetMocks()
-    fetch.jsonResponse({content: [{...entry1}], next: 'http://localhost/test?next=2'})
+    fetch.jsonResponse({content: [{...entry1}], nextPage: {uuid: 2}})
     await renderComponent()
 
     expect(screen.queryByText('title1')).toBeInTheDocument()
@@ -834,7 +836,7 @@ describe('EntryStreamPage', () => {
 
     expect(fetch.mostRecent()).toMatchRequest({
       method: 'GET',
-      url: 'http://localhost/test?next=2'
+      url: 'api/2/subscriptionEntries?uuid=2'
     })
 
     expect(screen.queryByText('title1')).toBeInTheDocument()
