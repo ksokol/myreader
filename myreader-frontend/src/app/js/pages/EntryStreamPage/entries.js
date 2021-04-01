@@ -4,18 +4,6 @@ import {SUBSCRIPTION_ENTRIES} from '../../constants'
 
 function reducer(state, action) {
   switch(action.type) {
-  case 'add_toggle': {
-    return {
-      ...state,
-      toggle: [...state.toggle, action.uuid],
-    }
-  }
-  case 'remove_toggle': {
-    return {
-      ...state,
-      toggle: state.toggle.filter(it => it !== action.uuid),
-    }
-  }
   case 'add_flag': {
     return {
       ...state,
@@ -77,7 +65,6 @@ export function useEntries() {
   const [state, dispatch] = useReducer(reducer, {
     loading: false,
     lastError: null,
-    toggle: [],
     flag: [],
     entries: [],
     nextPage: null,
@@ -127,32 +114,6 @@ export function useEntries() {
       try {
         const oldValue = state.entries.find(it => it.uuid === entry.uuid)
         const newEntry = await api.patch({
-          url: `${SUBSCRIPTION_ENTRIES}/${uuid}`,
-          body: {seen: !entry.seen, tags: entry.tags},
-          context: {oldValue}
-        })
-        dispatch({type: 'update_entry', entry: newEntry})
-      } catch (error) {
-        dispatch({type: 'error', error})
-      }
-    }
-
-    const uuid = state.toggle[0]
-    if (uuid) {
-      const entry = state.entries.find(it => it.uuid === uuid)
-      if (entry) {
-        run(entry)
-      }
-      dispatch({type: 'remove_toggle', uuid})
-    }
-
-  }, [state.entries, state.toggle])
-
-  useEffect(() => {
-    async function run(entry) {
-      try {
-        const oldValue = state.entries.find(it => it.uuid === entry.uuid)
-        const newEntry = await api.patch({
           url: `${SUBSCRIPTION_ENTRIES}/${entry.uuid}`,
           body: {seen: entry.seen, tags: entry.tags},
           context: {oldValue}
@@ -177,10 +138,6 @@ export function useEntries() {
     dispatch({type: 'add_flag', uuid: entryUuid})
   }, [])
 
-  const toggleSeenFlag = useCallback(async entryUuid => {
-    dispatch({type: 'add_toggle', uuid: entryUuid})
-  }, [dispatch])
-
   const clearEntries = useCallback(() => {
     dispatch({type: 'clear_entries'})
   }, [])
@@ -193,7 +150,6 @@ export function useEntries() {
     fetchEntries,
     changeEntry,
     setSeenFlag,
-    toggleSeenFlag,
     clearEntries,
   }
 }

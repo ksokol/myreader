@@ -35,7 +35,6 @@ export function EntryStreamPage() {
     fetchEntries,
     changeEntry,
     setSeenFlag,
-    toggleSeenFlag,
     clearEntries
   } = useEntries()
 
@@ -65,12 +64,6 @@ export function EntryStreamPage() {
   useHotkeys('left' ,() => {
     focusPrevious()
   })
-
-  useHotkeys('escape' ,() => {
-    if (entryInFocusUuid) {
-      toggleSeenFlag(entryInFocusUuid)
-    }
-  }, [entryInFocusUuid])
 
   useEffect(() => {
     fetchEntries(query)

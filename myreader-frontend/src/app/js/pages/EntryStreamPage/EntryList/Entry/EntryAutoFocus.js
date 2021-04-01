@@ -1,10 +1,12 @@
 import {useEffect, useState, useRef} from 'react'
+import {useHotkeys} from 'react-hotkeys-hook'
 import PropTypes from 'prop-types'
 import {Entry} from './Entry'
 
 export function EntryAutoFocus({
   item,
   focusUuid,
+  onChangeEntry,
   ...entryProps
 }) {
   const [state, setState] = useState({
@@ -29,6 +31,15 @@ export function EntryAutoFocus({
     }
   }, [state.shouldScroll])
 
+  useHotkeys('escape' ,() => {
+    if (state.focused) {
+      onChangeEntry({
+        ...item,
+        seen: !item.seen,
+      })
+    }
+  }, [state.focused, item])
+
   if (state.focused) {
     entryProps.role = 'entry-in-focus'
   }
@@ -37,6 +48,7 @@ export function EntryAutoFocus({
     <Entry
       entryRef={el => entryRef = el}
       item={item}
+      onChangeEntry={onChangeEntry}
       {...entryProps}
     />
   )
@@ -45,6 +57,8 @@ export function EntryAutoFocus({
 EntryAutoFocus.propTypes = {
   item: PropTypes.shape({
     uuid: PropTypes.string.required,
+    seen: PropTypes.bool.required,
   }),
-  focusUuid: PropTypes.string
+  focusUuid: PropTypes.string,
+  onChangeEntry: PropTypes.func.isRequired,
 }
