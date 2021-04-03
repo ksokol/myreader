@@ -10,35 +10,58 @@ export function EntryAutoFocus({
   ...entryProps
 }) {
   const [state, setState] = useState({
-    shouldScroll: false,
     focused: false,
-    lastFocusUuid: undefined
+    lastFocusUuid: undefined,
   })
+  const [flag, setFlag] = useState([])
+  const itemRef = useRef(item)
   let entryRef = useRef()
 
   useEffect(() => {
+    itemRef.current = item
+  }, [item])
+
+  useEffect(() => {
     setState({
-      shouldScroll: item.uuid === focusUuid && state.lastFocusUuid !== focusUuid,
       focused: item.uuid === focusUuid,
-      lastFocusUuid: focusUuid
+      lastFocusUuid: focusUuid,
+    })
+  }, [item, focusUuid, item.uuid, state.lastFocusUuid])
+
+  useEffect(() => {
+    if (item.uuid === focusUuid && state.lastFocusUuid !== focusUuid) {
+      entryRef.scrollIntoView({block: 'start', behavior: 'smooth'})
     }
-    )
   }, [focusUuid, item.uuid, state.lastFocusUuid])
 
   useEffect(() => {
-    if (state.shouldScroll) {
-      entryRef.scrollIntoView({block: 'start', behavior: 'smooth'})
+    if (flag[0]) {
+      onChangeEntry(flag[0])
+      setFlag(current => current.splice(1))
     }
-  }, [state.shouldScroll])
+  }, [flag, onChangeEntry])
+
+  useEffect(() => {
+    if (state.focused && itemRef.current.seen === false) {
+      setFlag(current => [
+        ...current, {
+          ...itemRef.current,
+          seen: true,
+        }]
+      )
+    }
+  }, [state.focused])
 
   useHotkeys('escape' ,() => {
     if (state.focused) {
-      onChangeEntry({
-        ...item,
-        seen: !item.seen,
-      })
+      setFlag(current => [
+        ...current, {
+          ...itemRef.current,
+          seen: !itemRef.current.seen,
+        }]
+      )
     }
-  }, [state.focused, item])
+  }, [state.focused])
 
   if (state.focused) {
     entryProps.role = 'entry-in-focus'
@@ -48,7 +71,13 @@ export function EntryAutoFocus({
     <Entry
       entryRef={el => entryRef = el}
       item={item}
-      onChangeEntry={onChangeEntry}
+      onChangeEntry={entry => {
+        setFlag(current => [
+          ...current, {
+            ...entry
+          }]
+        )
+      }}
       {...entryProps}
     />
   )
@@ -58,6 +87,9 @@ EntryAutoFocus.propTypes = {
   item: PropTypes.shape({
     uuid: PropTypes.string.required,
     seen: PropTypes.bool.required,
+    tags: PropTypes.arrayOf(
+      PropTypes.string
+    ).isRequired,
   }),
   focusUuid: PropTypes.string,
   onChangeEntry: PropTypes.func.isRequired,

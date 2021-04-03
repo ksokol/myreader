@@ -34,7 +34,6 @@ export function EntryStreamPage() {
     lastError,
     fetchEntries,
     changeEntry,
-    setSeenFlag,
     clearEntries
   } = useEntries()
 
@@ -72,12 +71,6 @@ export function EntryStreamPage() {
   useEffect(() => {
     setEntries(entries)
   }, [entries, setEntries])
-
-  useEffect(() => {
-    if (entryInFocusUuid) {
-      setSeenFlag(entryInFocusUuid)
-    }
-  }, [entryInFocusUuid, setSeenFlag])
 
   useEffect(() => {
     clearEntries()
