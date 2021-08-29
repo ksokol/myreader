@@ -1,6 +1,6 @@
 plugins {
   id "jacoco"
-  id "org.springframework.boot" version "2.4.5"
+  id "org.springframework.boot" version "2.4.10"
   id "org.owasp.dependencycheck" version "5.3.2.1"
   id "com.github.psxpaul.execfork" version "0.1.13"
   id "com.github.spotbugs" version "4.4.4"
@@ -16,22 +16,24 @@ repositories {
 }
 
 def javaLangVersion = JavaVersion.VERSION_11
-def romeToolsVersion = '1.12.0'
+def romeToolsVersion = '1.16.0'
 def commonsLang3Version = '3.8.1'
 def commonsIoVersion = '2.6'
 def commonsTextVersion = '1.6'
-def htmlSanitizerVersion = '20190610.1'
+def htmlSanitizerVersion = '20200713.1'
 def awaitilityVersion = '4.0.3'
 
 dependencies {
-  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation('org.springframework.boot:spring-boot-starter-web') {
+    exclude group: 'org.apache.tomcat.embed', module: 'tomcat-embed-websocket'
+  }
   implementation 'org.springframework.boot:spring-boot-starter-security'
   implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
   implementation 'org.springframework:spring-aspects'
   compile group: 'org.hsqldb', name: 'hsqldb'
   compile group: 'org.flywaydb', name: 'flyway-core'
-  compile group: 'com.rometools', name: 'rome', version: romeToolsVersion
-  compile group: 'com.rometools', name: 'rome-modules', version: romeToolsVersion
+  implementation "com.rometools:rome:${romeToolsVersion}"
+  implementation "com.rometools:rome-modules:${romeToolsVersion}"
   compile group: 'org.apache.commons', name: 'commons-lang3', version: commonsLang3Version
   compile group: 'commons-io', name: 'commons-io', version: commonsIoVersion
   implementation "org.apache.commons:commons-text:${commonsTextVersion}"
