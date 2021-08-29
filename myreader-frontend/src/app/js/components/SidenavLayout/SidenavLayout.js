@@ -1,6 +1,7 @@
 import './SidenavLayout.css'
-import React, {useEffect, useReducer} from 'react'
+import {useEffect, useReducer, useRef, useLayoutEffect} from 'react'
 import PropTypes from 'prop-types'
+import {useLocation} from 'react-router'
 import {IconButton} from '../Buttons'
 import {Navigation} from '../Navigation/Navigation'
 import {Backdrop} from './Backdrop/Backdrop'
@@ -55,6 +56,8 @@ function reducer(state, action) {
 }
 
 export function SidenavLayout({children}) {
+  const mainRef = useRef()
+  const location = useLocation()
   const {mediaBreakpoint, isDesktop} = useMediaBreakpoint()
 
   const [state, dispatch] = useReducer(reducer, {
@@ -67,6 +70,12 @@ export function SidenavLayout({children}) {
   useEffect(() => {
     dispatch({type: 'change', mediaBreakpoint, isDesktop})
   },[mediaBreakpoint, isDesktop])
+
+  useLayoutEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTo(0, 0)
+    }
+  }, [location.pathname, mainRef])
 
   const classes = [
     'my-sidenav-layout__nav',
@@ -102,6 +111,7 @@ export function SidenavLayout({children}) {
 
       <main
         className='my-sidenav-layout__main'
+        ref={mainRef}
       >{children}
       </main>
 

@@ -20,6 +20,7 @@ expect.extend({
 })
 
 Element.prototype.scrollIntoView = jest.fn()
+Element.prototype.scrollTo = jest.fn()
 
 window.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
