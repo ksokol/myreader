@@ -44,28 +44,19 @@ input {
 }
 
 @media (max-width: 599px) {
-    .hidden-phone {
-        display: none;
-    }
+  .hidden-phone {
+    display: none;
+  }
 }
 
 @media (min-width: 600px) and (max-width: 1279px) {
-    .hidden-tablet {
-        display: none;
-    }
+  .hidden-tablet {
+    display: none;
+  }
 }
 
-/*
- Reference: https://tailwindcss.com/docs
- */
-.flex {
-  display: flex;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-.no-underline {
-  text-decoration: none;
+@media (prefers-color-scheme: dark) {
+  * {
+    color: rgb(186, 186, 185);
+  }
 }

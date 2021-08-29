@@ -64,3 +64,14 @@
   display: flex;
   padding: 10px;
 }
+
+@media (prefers-color-scheme: dark) {
+  .my-sidenav-layout__header {
+    background-color: rgb(85, 85, 85);
+  }
+
+  .my-sidenav-layout__main,
+  .my-sidenav-layout__nav {
+    background-color: rgb(43, 43, 43);
+  }
+}

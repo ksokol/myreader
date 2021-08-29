@@ -1,34 +1,41 @@
 .my-toast {
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    z-index: 1031;
-    max-width: calc(50% - 20px);
-    right: 15px;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  z-index: 1031;
+  max-width: calc(50% - 20px);
+  right: 15px;
 }
 
 @media only screen and (max-width: 1280px) {
-    .my-toast {
-        margin-left: auto;
-        margin-right: auto;
-        left: 0;
-        right: 0;
-        bottom: 15px;
-        max-width: fit-content;
-    }
+  .my-toast {
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    bottom: 15px;
+    max-width: fit-content;
+  }
 }
 
 .my-toast__item {
-    padding: 12px 20px;
-    color: #fff;
-    display: inline-block;
-    box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.12), 0 10px 36px -4px rgba(160, 160, 160, 0.3);
-    background-color: #333;
-    margin-top: 20px;
-    border-radius: 2px;
-    cursor: pointer;
+  padding: 12px 20px;
+  color: #fff;
+  display: inline-block;
+  box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.12), 0 10px 36px -4px rgba(160, 160, 160, 0.3);
+  background-color: #333;
+  margin-top: 20px;
+  border-radius: 2px;
+  cursor: pointer;
 }
 
 .my-toast__item--error {
-    background-color: #ff7373;
+  background-color: #ff7373;
+}
+
+@media (prefers-color-scheme: dark) {
+  .my-toast__item {
+    color: rgb(43, 43, 43);
+    background-color: rgb(217, 217, 217)
+  }
 }

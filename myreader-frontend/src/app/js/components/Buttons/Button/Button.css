@@ -1,41 +1,60 @@
 .my-button {
-    cursor: pointer;
-    min-height: 36px;
-    min-width: 88px;
-    line-height: 36px;
-    letter-spacing: 0.01em;
-    vertical-align: middle;
-    align-items: center;
-    text-align: center;
-    border-radius: 2px;
-    user-select: none;
-    outline: none;
-    border: 0;
-    padding: 0 6px;
-    margin: 6px 8px;
-    background: transparent;
-    color: rgba(0, 0, 0, 0.87);
-    white-space: nowrap;
-    text-transform: uppercase;
-    font-weight: 500;
-    font-size: 14px;
+  cursor: pointer;
+  min-height: 36px;
+  min-width: 88px;
+  line-height: 36px;
+  letter-spacing: 0.01em;
+  vertical-align: middle;
+  align-items: center;
+  text-align: center;
+  border-radius: 2px;
+  user-select: none;
+  outline: none;
+  border: 0;
+  padding: 0 6px;
+  margin: 6px 8px;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.87);
+  white-space: nowrap;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 14px;
 }
 
 .my-button:not([disabled]) {
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
 .my-button.my-button--primary {
-    color: rgba(255, 255, 255, 0.87);
-    background-color: rgb(63, 81, 181);
+  color: rgba(255, 255, 255, 0.87);
+  background-color: rgb(63, 81, 181);
 }
 
 .my-button.my-button--caution {
-    color: rgba(255, 255, 255, 0.87);
-    background-color: rgb(255, 87, 34);
+  color: rgba(255, 255, 255, 0.87);
+  background-color: rgb(255, 87, 34);
 }
 
 .my-button[disabled] {
-    cursor: default;
-    background-color: rgba(0, 0, 0, 0.12);
+  cursor: default;
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  .my-button {
+    color: rgba(255, 255, 255, 0.87);
+    background-color: rgb(136, 136, 136);
+  }
+
+  .my-button.my-button--primary {
+    background-color: rgb(55, 89, 128);
+  }
+
+  .my-button.my-button--caution {
+    background-color: rgb(151, 43, 7);
+  }
+
+  .my-button[disabled] {
+    background-color: rgba(187, 184, 184, 0.12);
+  }
 }

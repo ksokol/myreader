@@ -3,30 +3,37 @@
 }
 
 .my-entry-title__title {
-    color: rgba(0, 0, 0, 0.87);
-    display: block;
-    font-size: 16px;
-    font-weight: 400;
-    letter-spacing: 0.01em;
-    margin: 0 0 6px;
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-    word-break: break-word;
+  color: rgba(0, 0, 0, 0.87);
+  display: block;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  margin: 0 0 6px;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  word-break: break-word;
 }
 
 .my-entry-title__title:active {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .my-entry-title__subtitle {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  letter-spacing: 0.01em;
 }
 
 @media (max-width: 599px) {
-    .my-entry-title__subtitle > span {
-        flex-grow: 1;
-    }
+  .my-entry-title__subtitle > span {
+    flex-grow: 1;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .my-entry-title__title,
+  .my-entry-title__subtitle {
+    color: rgb(186, 186, 185);
+  }
 }

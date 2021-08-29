@@ -76,3 +76,33 @@
   padding-left: 6px;
   text-transform: none;
 }
+
+@media (prefers-color-scheme: dark) {
+  .my-navigation {
+    background-color: rgb(60, 63, 65);
+  }
+
+  .my-navigation > :not(li:first-child) {
+    border-top: 1px solid rgb(186, 186, 185);
+  }
+
+  .my-navigation__item[role="selected-navigation-item"] {
+    background-color: #0D293E;
+  }
+
+  .my-navigation__item--blue {
+    background-color: rgb(55, 89, 128);
+  }
+
+  .my-navigation__item--blue:hover {
+    background-color: rgba(55, 89, 128, 0.55);
+  }
+
+  .my-navigation__item--red {
+    background-color: rgb(151, 43, 7);
+  }
+
+  .my-navigation__item--red:hover {
+    background-color: rgba(151, 43, 7, 0.55);
+  }
+}

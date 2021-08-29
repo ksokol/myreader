@@ -25,3 +25,9 @@ dialog {
 .my-dialog__close-button {
   margin-left: auto;
 }
+
+@media (prefers-color-scheme: dark) {
+  .my-dialog {
+    background-color: rgb(85, 85, 85);
+  }
+}

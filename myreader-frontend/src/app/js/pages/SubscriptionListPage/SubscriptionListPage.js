@@ -59,10 +59,10 @@ export const SubscriptionListPage = () => {
             .map(subscription => (
               <div
                 key={subscription.uuid}
-                className='my-subscription-list-page__item flex flex-col'
+                className='my-subscription-list-page__item'
               >
                 <Link
-                  className='my-subscription-list-page__item-heading no-underline'
+                  className='my-subscription-list-page__item-heading'
                   to={generatePath(SUBSCRIPTION_PAGE_PATH, {uuid: subscription.uuid})}
                 >
                   {subscription.title}

@@ -14,3 +14,9 @@
 .login-page__application-info > span + span:before {
   content: ' | ';
 }
+
+@media (prefers-color-scheme: dark) {
+  .login-page {
+    background-color: rgb(43, 43, 43);
+  }
+}

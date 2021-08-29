@@ -1,20 +1,31 @@
 .my-entry-content {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 .my-entry-content img {
-    max-width: 100%;
+  max-width: 100%;
 }
 
 .my-entry-content pre {
-    max-width: 100%;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    background-color: #ebece4;
+  max-width: 100%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background-color: #ebece4;
 }
 
 .my-entry-content table {
-    width: 100%;
-    table-layout: fixed;
-    word-break: break-word;
+  width: 100%;
+  table-layout: fixed;
+  word-break: break-word;
+}
+
+@media (prefers-color-scheme: dark) {
+  .my-entry-content *:link,
+  .my-entry-content *:visited {
+    color: rgb(125, 125, 125);
+  }
+
+  .my-entry-content pre {
+    background-color: #484848;
+  }
 }
