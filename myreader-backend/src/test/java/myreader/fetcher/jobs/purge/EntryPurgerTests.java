@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
-import java.util.Date;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,7 +67,7 @@ class EntryPurgerTests {
     createEntry(ofEpochMilli(1000));
     createEntry(ofEpochMilli(2000));
 
-    purger.purge(subscription1.getId(), new Date(5000));
+    purger.purge(subscription1.getId(), ofEpochMilli(5000));
 
     assertThat(template.count(SubscriptionEntry.class))
       .isEqualTo(2);
@@ -86,7 +85,7 @@ class EntryPurgerTests {
     subscriptionEntry2.setTags(Collections.singleton("not null"));
     template.save(subscriptionEntry2);
 
-    purger.purge(subscription1.getId(), new Date(5000));
+    purger.purge(subscription1.getId(), ofEpochMilli(5000));
 
     assertThat(template.count(SubscriptionEntry.class))
       .isEqualTo(2);
@@ -102,7 +101,7 @@ class EntryPurgerTests {
     subscriptionEntry2.setTags(Collections.singleton("not null"));
     template.save(subscriptionEntry2);
 
-    purger.purge(subscription1.getId(), new Date(5000));
+    purger.purge(subscription1.getId(), ofEpochMilli(5000));
 
     assertThat(template.count(SubscriptionEntry.class))
       .isEqualTo(2);
@@ -118,7 +117,7 @@ class EntryPurgerTests {
     subscriptionEntry2.setSeen(true);
     template.save(subscriptionEntry2);
 
-    purger.purge(subscription1.getId(), new Date(5000));
+    purger.purge(subscription1.getId(), ofEpochMilli(5000));
 
     assertThat(template.count(SubscriptionEntry.class))
       .isEqualTo(2L);
@@ -134,7 +133,7 @@ class EntryPurgerTests {
     subscriptionEntry2.setSeen(true);
     template.save(subscriptionEntry2);
 
-    purger.purge(subscription1.getId(), new Date(5000));
+    purger.purge(subscription1.getId(), ofEpochMilli(5000));
 
     assertThat(template.findAll(SubscriptionEntry.class))
       .hasSize(1)

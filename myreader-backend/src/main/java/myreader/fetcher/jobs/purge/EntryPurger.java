@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Component
@@ -19,7 +19,7 @@ public class EntryPurger {
     this.subscriptionEntryRepository = Objects.requireNonNull(subscriptionEntryRepository, "subscriptionEntryRepository is null");
   }
 
-  public void purge(Long subscriptionId, Date retainAfterDate) {
+  public void purge(Long subscriptionId, OffsetDateTime retainAfterDate) {
     log.info("retaining feed entries after {} for feed {}", retainAfterDate, subscriptionId);
 
     var entries = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAtIsLowerThan(

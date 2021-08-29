@@ -11,14 +11,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Date;
 import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -37,13 +36,21 @@ class EntryPurgeJobTests {
   @Mock
   private SubscriptionRepository subscriptionRepository;
 
-  private Date retainDate;
   private Subscription subscription;
 
   @BeforeEach
   void setUp() {
-    retainDate = new Date();
-    subscription = new Subscription("url", "title", null, null, 0, null, 0, null, ofEpochMilli(1000));
+    subscription = new Subscription(
+      "url",
+      "title",
+      null,
+      null,
+      0,
+      null,
+      0,
+      null,
+      ofEpochMilli(1000)
+    );
     subscription.setId(1L);
   }
 
@@ -60,10 +67,10 @@ class EntryPurgeJobTests {
   @Test
   void shouldCallEntryPurgerWhenRetainDateDetermined() {
     given(subscriptionRepository.findAll()).willReturn(singletonList(subscription));
-    given(determiner.determine(subscription)).willReturn(Optional.of(retainDate));
+    given(determiner.determine(subscription)).willReturn(Optional.of(ofEpochMilli(1000)));
 
     job.work();
 
-    verify(entryPurger).purge(1L, retainDate);
+    verify(entryPurger).purge(1L, ofEpochMilli(1000));
   }
 }

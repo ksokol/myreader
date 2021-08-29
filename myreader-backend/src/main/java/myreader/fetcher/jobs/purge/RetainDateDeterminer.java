@@ -7,7 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ public class RetainDateDeterminer {
     this.minFeedThreshold = minFeedThreshold;
   }
 
-  public Optional<Date> determine(Subscription subscription) {
+  public Optional<OffsetDateTime> determine(Subscription subscription) {
     var entryCount = subscriptionEntryRepository.countBySubscriptionId(subscription.getId());
     var feedThreshold = Math.max(subscription.getResultSizePerFetch(), minFeedThreshold);
 
@@ -52,6 +53,10 @@ public class RetainDateDeterminer {
     }
 
     var lastFeedEntry = entries.get(entries.size() - 1);
-    return Optional.of(new Date(lastFeedEntry.getCreatedAt().toInstant().toEpochMilli()));
+    var retainDate = lastFeedEntry.getCreatedAt()
+      .toInstant()
+      .atZone(ZoneOffset.UTC)
+      .toOffsetDateTime();
+    return Optional.of(retainDate);
   }
 }

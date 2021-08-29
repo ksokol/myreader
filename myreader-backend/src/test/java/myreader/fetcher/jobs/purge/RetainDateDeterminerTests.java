@@ -13,8 +13,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -84,7 +82,7 @@ class RetainDateDeterminerTests {
 
     assertThat(determiner.determine(subscription1))
       .isPresent()
-      .hasValue(new Date(9000L));
+      .hasValue(ofEpochMilli(9000));
   }
 
   @Test
@@ -94,7 +92,7 @@ class RetainDateDeterminerTests {
 
     assertThat(determiner.determine(subscription2))
       .isPresent()
-      .hasValue(new Date(11000L));
+      .hasValue(ofEpochMilli(11000));
   }
 
   private void createEntries(Subscription subscription, int index) {
