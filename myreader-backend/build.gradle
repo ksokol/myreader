@@ -21,7 +21,6 @@ def commonsLang3Version = '3.8.1'
 def commonsIoVersion = '2.6'
 def commonsTextVersion = '1.6'
 def htmlSanitizerVersion = '20200713.1'
-def awaitilityVersion = '4.0.3'
 
 dependencies {
   implementation('org.springframework.boot:spring-boot-starter-web') {
@@ -45,7 +44,6 @@ dependencies {
   testImplementation('org.junit.vintage:junit-vintage-engine') {
     exclude group: 'org.hamcrest', module: 'hamcrest-core'
   }
-  testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
 }
 
 spotbugs {

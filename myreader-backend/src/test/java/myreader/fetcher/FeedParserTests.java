@@ -1,19 +1,15 @@
 package myreader.fetcher;
 
 import junit.framework.AssertionFailedError;
-import myreader.entity.FetchError;
-import myreader.entity.Subscription;
 import myreader.test.WithTestProperties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -21,17 +17,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 
-import static junit.framework.TestCase.fail;
-import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -53,36 +43,14 @@ class FeedParserTests {
   private MockRestServiceServer mockServer;
 
   @Autowired
-  private JdbcAggregateOperations template;
-
-  @Autowired
   private RestTemplate syndicationRestTemplate;
 
   @Autowired
   private FeedParser parser;
 
-  private Subscription subscription;
-
   @BeforeEach
   void setUp() {
-    template.deleteAll(Subscription.class);
     mockServer = MockRestServiceServer.createServer(syndicationRestTemplate);
-    subscription = template.save(new Subscription(
-      URL,
-      "title",
-      null,
-      null,
-      0,
-      null,
-      0,
-      null,
-      ofEpochMilli(1000)
-    ));
-  }
-
-  @AfterEach
-  public void cleanUp() {
-    template.deleteAll(Subscription.class);
   }
 
   @Test
@@ -169,6 +137,7 @@ class FeedParserTests {
   void shouldFilterInvalidCharacters() throws IOException {
     var classPathResource = new ClassPathResource("rss/feed7.xml");
     var invalidXml = IOUtils.toString(classPathResource.getInputStream(), StandardCharsets.UTF_8);
+
     assertThat(invalidXml)
       .containsSequence("");
 
@@ -215,49 +184,31 @@ class FeedParserTests {
   }
 
   @Test
-  void shouldPublishEventIfServerRespondedWithError() {
+  void shouldThrowExceptionWhenServerRespondedWithError() {
     mockServer.expect(requestTo(URL)).andExpect(method(GET))
       .andRespond(withServerError().body("test"));
-    var timeRightBeforeCreation = OffsetDateTime.now();
 
-    try {
-      parser.parse(URL);
-      fail("expected exception not thrown");
-    } catch (FeedParseException exception) {
-      await()
-        .atMost(Duration.ofSeconds(10))
-        .until(() -> template.count(FetchError.class) > 0);
+    var thrown = assertThrows(
+      FeedParseException.class,
+      () -> parser.parse(URL),
+      "expected exception not thrown"
+    );
 
-      assertThat(template.findAll(FetchError.class).iterator().next())
-        .satisfies(event -> {
-          assertThat(event.getSubscriptionId()).isEqualTo(subscription.getId());
-          assertThat(event.getMessage()).startsWith("500 Internal Server Error: [test]");
-          assertThat(event.getCreatedAt()).isCloseTo(timeRightBeforeCreation, within(2, ChronoUnit.SECONDS));
-        });
-    }
+    assertThat(thrown.getMessage()).isEqualTo("500 Internal Server Error: [test]");
   }
 
   @Test
-  void shouldPublishEventIfResponseBodyIsInvalid() {
+  void shouldThrowExceptionWhenResponseBodyIsInvalid() {
     mockServer.expect(requestTo(URL)).andExpect(method(GET))
       .andRespond(withSuccess().body("test"));
-    var timeRightBeforeCreation = OffsetDateTime.now();
 
-    try {
-      parser.parse(URL);
-      fail("expected exception not thrown");
-    } catch (FeedParseException exception) {
-      await()
-        .atMost(Duration.ofSeconds(10))
-        .until(() -> template.count(FetchError.class) > 0);
+    var thrown = assertThrows(
+      FeedParseException.class,
+      () -> parser.parse(URL),
+      "expected exception not thrown"
+    );
 
-      assertThat(template.findAll(FetchError.class).iterator().next())
-        .satisfies(event -> {
-          assertThat(event.getSubscriptionId()).isEqualTo(subscription.getId());
-          assertThat(event.getMessage()).startsWith("Could not extract response: no suitable HttpMessageConverter");
-          assertThat(event.getCreatedAt()).isCloseTo(timeRightBeforeCreation, within(2, ChronoUnit.SECONDS));
-        });
-    }
+    assertThat(thrown.getMessage()).startsWith("Could not extract response: no suitable HttpMessageConverter");
   }
 
   @Test
@@ -294,6 +245,7 @@ class FeedParserTests {
         .isNotEmpty();
     }
   }
+
   @Test
   void shouldNotFailIfResponseBodyIsEmpty() {
     mockServer.expect(requestTo(URL)).andExpect(method(GET))
@@ -308,7 +260,7 @@ class FeedParserTests {
     mockServer.expect(requestTo(URL)).andExpect(method(GET))
       .andRespond(withSuccess().body(""));
 
-      assertThat(parser.parse(URL))
-        .isNotPresent();
+    assertThat(parser.parse(URL))
+      .isNotPresent();
   }
 }

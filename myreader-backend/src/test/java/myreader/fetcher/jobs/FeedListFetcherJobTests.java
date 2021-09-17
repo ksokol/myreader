@@ -1,21 +1,26 @@
 package myreader.fetcher.jobs;
 
+import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.persistence.FetchResult;
+import myreader.repository.FetchErrorRepository;
 import myreader.repository.SubscriptionRepository;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -25,7 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class FeedListFetcherJobTests {
+class FeedListFetcherJobTests {
 
   private static final String LAST_MODIFIED = "lastModified";
   private static final String URL = "url";
@@ -33,18 +38,20 @@ public class FeedListFetcherJobTests {
   private FeedListFetcherJob job;
   private FeedQueue queueMock;
   private SubscriptionRepository subscriptionRepositoryMock;
+  private FetchErrorRepository fetchErrorRepositoryMock;
   private FeedParser feedParser;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     queueMock = mock(FeedQueue.class);
     subscriptionRepositoryMock = mock(SubscriptionRepository.class);
+    fetchErrorRepositoryMock = mock(FetchErrorRepository.class);
     feedParser = mock(FeedParser.class);
-    job = new FeedListFetcherJob(queueMock, subscriptionRepositoryMock, feedParser);
+    job = new FeedListFetcherJob(queueMock, subscriptionRepositoryMock, feedParser, fetchErrorRepositoryMock);
   }
 
   @Test
-  public void whenQueueNotEmptyThenAbort() {
+  void whenQueueNotEmptyThenAbort() {
     when(queueMock.getSize()).thenReturn(1);
 
     job.run();
@@ -53,7 +60,7 @@ public class FeedListFetcherJobTests {
   }
 
   @Test
-  public void whenApplicationContextClosedEventThenAbort() {
+  void whenApplicationContextClosedEventShouldAbort() {
     when(queueMock.getSize()).thenReturn(0);
     when(subscriptionRepositoryMock.findAll()).thenReturn(singletonList(new Subscription(
       "url",
@@ -70,11 +77,12 @@ public class FeedListFetcherJobTests {
     job.onApplicationEvent(new ContextClosedEvent(mock(ApplicationContext.class)));
     job.run();
 
-    verify(feedParser, never()).parse(anyString(), anyString());
+    verify(feedParser, never())
+      .parse(anyString(), anyString());
   }
 
   @Test
-  public void whenReturnsNoResultThenNeverAddToQueue() {
+  void whenReturnsNoResultShouldNotAddToQueue() {
     var feed = new Subscription(URL, null, null, null, 0, LAST_MODIFIED, 0, null, ofEpochMilli(1000));
     var fetchResult = new FetchResult(URL);
 
@@ -88,8 +96,8 @@ public class FeedListFetcherJobTests {
   }
 
   @Test
-  public void whenReturnsResultThenAddToQueue() {
-    Subscription feed = new Subscription(URL, null, null, null, 0, LAST_MODIFIED, 0, null, ofEpochMilli(1000));
+  void whenReturnsResultShouldnAddToQueue() {
+    var feed = new Subscription(URL, null, null, null, 0, LAST_MODIFIED, 0, null, ofEpochMilli(1000));
     var fetchResult = new FetchResult(null);
 
     when(queueMock.getSize()).thenReturn(0);
@@ -103,7 +111,7 @@ public class FeedListFetcherJobTests {
   }
 
   @Test
-  public void whenReturnsExceptionThenAddOneToQueue() {
+  void whenThrowsExceptionShouldNotAddToQueue() {
     var feedMock1 = mock(Subscription.class);
     var feedMock2 = mock(Subscription.class);
     FetchResult fetchResult = new FetchResult(null);
@@ -116,5 +124,26 @@ public class FeedListFetcherJobTests {
 
     verify(feedParser, times(2)).parse(any(), any());
     verify(queueMock, times(1)).add(fetchResult);
+  }
+
+  @Test
+  void whenThrowsExceptionShouldPersistError() {
+    var subscription = new Subscription("irrelevant", null, null, null, 0, null, 0, 0, OffsetDateTime.now());
+    subscription.setId(1L);
+    var captor = ArgumentCaptor.forClass(FetchError.class);
+
+    when(queueMock.getSize()).thenReturn(0);
+    when(subscriptionRepositoryMock.findAll()).thenReturn(singletonList(subscription));
+    when(feedParser.parse(subscription.getUrl(), subscription.getLastModified()))
+      .thenThrow(new FeedParseException("expected exception", null));
+
+    job.run();
+
+    verify(queueMock, never()).add(any());
+    verify(fetchErrorRepositoryMock, times(1)).save(captor.capture());
+
+    assertThat(captor.getValue())
+      .hasFieldOrPropertyWithValue("subscriptionId", subscription.getId())
+      .hasFieldOrPropertyWithValue("message", "expected exception");
   }
 }
