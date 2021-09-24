@@ -8,11 +8,12 @@ import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Component;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -88,12 +89,14 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
 
   @Override
   public Set<String> findDistinctTags() {
-    var ids = jdbcTemplate.queryForList("select distinct id from subscription_entry where tags is not null", Map.of(), Long.class);
+    Set<String> distinctTags = new TreeSet<>();
 
-    Set<String> tags = new TreeSet<>();
-    template.findAllById(ids, SubscriptionEntry.class).iterator()
-      .forEachRemaining(se -> tags.addAll(se.getTags()));
+    jdbcTemplate.query("select distinct tags from subscription_entry where tags is not null", (ResultSet rs) ->
+      Arrays.stream((Object[]) rs.getArray(1).getArray())
+        .map(Object::toString)
+        .forEach(distinctTags::add)
+    );
 
-    return tags;
+    return distinctTags;
   }
 }
