@@ -1,47 +1,42 @@
 package myreader.fetcher.jobs;
 
 import myreader.repository.FetchErrorRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(MockitoJUnitRunner.class)
-public class FetchErrorCleanerJobTests {
+class FetchErrorCleanerJobTests {
 
-    private FetchErrorCleanerJob job;
+  private FetchErrorCleanerJob job;
 
-    private Clock clock = Clock.fixed(LocalDateTime.of(2016, 9, 7, 0, 0).toInstant(ZoneOffset.UTC), ZoneId.of("UTC"));
-    private int retainDays = 7;
-    private FetchErrorRepository fetchErrorRepository;
+  private static final int retainDays = 7;
+  private FetchErrorRepository fetchErrorRepository;
 
-    @Before
-    public void setUp() {
-        fetchErrorRepository = mock(FetchErrorRepository.class);
+  @BeforeEach
+  void setUp() {
+    fetchErrorRepository = mock(FetchErrorRepository.class);
 
-        job = new FetchErrorCleanerJob(clock, retainDays, fetchErrorRepository);
-    }
+    job = new FetchErrorCleanerJob(retainDays, fetchErrorRepository);
+  }
 
-    @Test
-    public void shouldRetainEntriesWithGivenDate() {
-        LocalDate localDate = LocalDate.now(clock).minusDays(retainDays);
-        Date retainDate = Date.from(localDate.atStartOfDay().toInstant(ZoneOffset.UTC));
+  @Test
+  void shouldRetainEntriesWithGivenDate() {
+    var localDate = LocalDate.now().minusDays(retainDays);
+    var retainDate = Date.from(localDate.atStartOfDay().toInstant(ZoneOffset.UTC));
 
-        job.work();
+    /*
+     * TODO fails when LocalDate.now() runs before midnight and job.work() after midnight
+     *  waiting for https://github.com/junit-team/junit5/issues/1558
+     */
+    job.work();
 
-        verify(fetchErrorRepository).retainFetchErrorBefore(retainDate);
-    }
+    verify(fetchErrorRepository).retainFetchErrorBefore(retainDate);
+
+  }
 }
