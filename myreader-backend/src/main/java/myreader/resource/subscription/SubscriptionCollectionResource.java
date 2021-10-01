@@ -1,6 +1,7 @@
 package myreader.resource.subscription;
 
 import myreader.repository.SubscriptionRepository;
+import myreader.repository.SubscriptionViewRepository;
 import myreader.resource.ResourceConstants;
 import myreader.resource.subscription.assembler.SubscriptionGetResponseAssembler;
 import myreader.resource.subscription.beans.SubscribePostRequest;
@@ -24,17 +25,20 @@ public class SubscriptionCollectionResource {
 
   private final SubscriptionService subscriptionService;
   private final SubscriptionRepository subscriptionRepository;
+  private final SubscriptionViewRepository subscriptionViewRepository;
   private final SubscriptionGetResponseAssembler assembler;
 
   @Autowired
   public SubscriptionCollectionResource(
     SubscriptionGetResponseAssembler assembler,
     SubscriptionService subscriptionService,
-    SubscriptionRepository subscriptionRepository
+    SubscriptionRepository subscriptionRepository,
+    SubscriptionViewRepository subscriptionViewRepository
   ) {
     this.assembler = assembler;
     this.subscriptionService = subscriptionService;
     this.subscriptionRepository = subscriptionRepository;
+    this.subscriptionViewRepository = subscriptionViewRepository;
   }
 
   @InitBinder
@@ -54,10 +58,9 @@ public class SubscriptionCollectionResource {
 
   @GetMapping(ResourceConstants.SUBSCRIPTIONS)
   public Map<String, Object> get() {
-    var target = subscriptionRepository.findAllByOrderByCreatedAtDesc().stream()
+    var target = subscriptionViewRepository.findAllByOrderByCreatedAtDesc().stream()
       .map(assembler::toModel)
       .collect(Collectors.toList());
-
     var body = new HashMap<String, Object>(2);
     body.put("content", target);
     return body;
