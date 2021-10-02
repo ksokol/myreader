@@ -20,9 +20,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -156,12 +153,6 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("nextPage").doesNotExist())
       .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry1.getId().toString()));
-  }
-
-  @Test
-  void shouldFindTags() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries/availableTags"))
-      .andExpect(jsonPath("$").value(list("tag1", "tag2", "tag2-tag3", "tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9")));
   }
 
   @Test
@@ -369,11 +360,5 @@ class SubscriptionEntryCollectionResourceTests {
     }
 
     return "/api/2/subscriptionEntries?" + queryParams;
-  }
-
-  private List<String> list(String... values) {
-    List<String> valueList = new ArrayList<>();
-    Collections.addAll(valueList, values);
-    return valueList;
   }
 }

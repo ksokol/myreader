@@ -13,6 +13,5 @@ public final class ResourceConstants {
   public static final String SUBSCRIPTIONS = API + "/subscriptions";
 
   public static final String SUBSCRIPTION_ENTRIES = API + "/subscriptionEntries";
-  public static final String SUBSCRIPTION_ENTRIES_AVAILABLE_TAGS = SUBSCRIPTION_ENTRIES + "/availableTags";
   public static final String SUBSCRIPTION_ENTRY = SUBSCRIPTION_ENTRIES + "/" + ID_VARIABLE;
 }

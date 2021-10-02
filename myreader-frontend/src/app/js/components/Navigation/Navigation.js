@@ -1,16 +1,13 @@
 import './Navigation.css'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import createSubscriptionNavigation from './SubscriptionNavigation/createSubscriptionNavigation'
 import {NavigationItem} from './NavigationItem'
 import {SubscriptionNavigationItem} from './SubscriptionNavigation/SubscriptionNavigationItem'
-import {
-  LOGOUT_PAGE_PATH,
-  SUBSCRIPTIONS_URL
-} from '../../constants'
+import {SUBSCRIPTIONS_URL} from '../../constants'
 import {useSettings} from '../../contexts/settings'
-import {useSubscriptions} from '../../hooks/subscriptions'
-import {BookmarkNavigationItem} from './BookmarkNavigationItem/BookmarkNavigationItem'
+import {useNavigation} from '../../hooks/navigation'
+import {BookmarkNavigationItem} from './BookmarkNavigationItem'
 import {SettingsNavigationItem} from './SettingsNavigationItem/SettingsNavigationItem'
 import {SubscribeNavigationItem} from './SubscribeNavigationItem/SubscribeNavigationItem'
 import {LogoutNavigationItem} from './LogoutNavigationItem/LogoutNavigationItem'
@@ -18,12 +15,13 @@ import {LogoutNavigationItem} from './LogoutNavigationItem/LogoutNavigationItem'
 export function Navigation({onClick}) {
   const {
     subscriptions,
-    fetchSubscriptions
-  } = useSubscriptions()
+    fetchData,
+    subscriptionEntryTags
+  } = useNavigation()
 
   useEffect(() => {
-    fetchSubscriptions()
-  }, [fetchSubscriptions])
+    fetchData()
+  }, [fetchData])
 
   const {showUnseenEntries} = useSettings()
   const filteredSubscriptions = subscriptions.filter(it => showUnseenEntries ? it.unseen > 0 : true)
@@ -43,6 +41,7 @@ export function Navigation({onClick}) {
       }
       <BookmarkNavigationItem
         onClick={onClick}
+        subscriptionEntryTags={subscriptionEntryTags}
       />
       <NavigationItem
         title='Subscriptions'

@@ -4,7 +4,7 @@ import {render, fireEvent, screen, act} from '@testing-library/react'
 import {mockAllIsIntersecting} from 'react-intersection-observer/test-utils'
 import {EntryStreamPage} from './EntryStreamPage'
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
-import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
+import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
 import {useSettings} from '../../contexts/settings'
 
 const expectedTag1 = 'expected tag1'
@@ -119,12 +119,12 @@ describe('EntryStreamPage', () => {
         <>
           <div id='portal-header'/>
           <Router history={history}>
-            <SubscriptionProvider>
+            <NavigationProvider>
               <SettingsProvider>
                 <SettingsTestComponent/>
                 <EntryStreamPage/>
               </SettingsProvider>
-            </SubscriptionProvider>
+            </NavigationProvider>
           </Router>
         </>
       )
@@ -472,7 +472,7 @@ describe('EntryStreamPage', () => {
 
     expect(fetch.mostRecent()).toMatchRequest({
       method: 'GET',
-      url: 'api/2/subscriptions'
+      url: 'views/NavigationView'
     })
     expect(fetch.nthRequest(2)).toMatchRequest({
       method: 'GET',
@@ -499,7 +499,7 @@ describe('EntryStreamPage', () => {
     expect(fetch.requestCount()).toEqual(2)
     expect(fetch.mostRecent()).toMatchRequest({
       method: 'GET',
-      url: 'api/2/subscriptions'
+      url: 'views/NavigationView'
     })
     expect(fetch.nthRequest(2)).toMatchRequest({
       method: 'GET',

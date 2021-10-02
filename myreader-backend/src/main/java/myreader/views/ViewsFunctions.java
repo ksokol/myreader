@@ -1,5 +1,6 @@
 package myreader.views;
 
+import myreader.views.navigation.NavigationView;
 import myreader.views.subscriptionpage.SubscriptionPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,9 +19,11 @@ import static org.springframework.web.servlet.function.RouterFunctions.route;
 public class ViewsFunctions {
 
   private final SubscriptionPage subscriptionPage;
+  private final NavigationView navigationView;
 
-  public ViewsFunctions(SubscriptionPage subscriptionPage) {
+  public ViewsFunctions(SubscriptionPage subscriptionPage, NavigationView navigationView) {
     this.subscriptionPage = Objects.requireNonNull(subscriptionPage, "subscriptionPage is null");
+    this.navigationView = Objects.requireNonNull(navigationView, "navigationView is null");
   }
 
   @Bean
@@ -31,6 +34,7 @@ public class ViewsFunctions {
       .DELETE("/views/SubscriptionPage/{id}/subscription", accept(APPLICATION_JSON), subscriptionPage::deleteSubscription)
       .POST("/views/SubscriptionPage/{id}/exclusionPatterns", accept(APPLICATION_JSON), subscriptionPage::saveExclusionPattern)
       .DELETE("/views/SubscriptionPage/{id}/exclusionPatterns/{patternId}", accept(APPLICATION_JSON), subscriptionPage::deleteExclusionPattern)
+      .GET("/views/NavigationView", accept(APPLICATION_JSON), navigationView::getData)
       .onError(ValidationErrors.ValidationException.class, ViewsFunctions::onValidationError)
       .build();
   }

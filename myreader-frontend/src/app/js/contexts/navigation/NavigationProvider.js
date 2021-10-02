@@ -1,27 +1,35 @@
 import {useCallback, useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
-import SubscriptionContext from './SubscriptionContext'
+import NavigationContext from './NavigationContext'
 import {api} from '../../api'
 import {toast} from '../../components/Toast'
-import {SUBSCRIPTION_ENTRIES, SUBSCRIPTIONS} from '../../constants'
+import {SUBSCRIPTION_ENTRIES} from '../../constants'
 
 const urlPattern = new RegExp(`[.*/]?${SUBSCRIPTION_ENTRIES}/[a-z0-9\\-].*$`)
 
-export function SubscriptionProvider({children}) {
-  const [subscriptions, setSubscriptions] = useState([])
+export function NavigationProvider({children}) {
+  const [state, setState] = useState({
+    subscriptions: [],
+    subscriptionEntryTags: [],
+  })
 
-  const fetchSubscriptions = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
-      setSubscriptions(await api.get({
-        url: SUBSCRIPTIONS,
-      }).then(response => response.content))
+      const {subscriptions, subscriptionEntryTags} = await api.get({
+        url: 'views/NavigationView',
+      })
+
+      setState({
+        subscriptions,
+        subscriptionEntryTags
+      })
     } catch (error) {
       toast(error.data, {error: true})
     }
   }, [])
 
   const entryChanged = useCallback((newEntry, oldEntry) => {
-    const updatedSubscriptions = subscriptions.map(it => {
+    const updatedSubscriptions = state.subscriptions.map(it => {
       const unseenChanged = it.uuid === newEntry.feedUuid && newEntry.seen !== oldEntry.seen
 
       return unseenChanged ? {
@@ -30,8 +38,11 @@ export function SubscriptionProvider({children}) {
       } : it
     })
 
-    setSubscriptions(updatedSubscriptions)
-  }, [subscriptions])
+    setState((current) => ({
+      ...current,
+      subscriptions: updatedSubscriptions,
+    }))
+  }, [state.subscriptions])
 
   useEffect(() => {
     const interceptor = {
@@ -48,17 +59,18 @@ export function SubscriptionProvider({children}) {
   }, [entryChanged])
 
   return (
-    <SubscriptionContext.Provider
+    <NavigationContext.Provider
       value={{
-        subscriptions,
-        fetchSubscriptions
+        subscriptions: state.subscriptions,
+        subscriptionEntryTags: state.subscriptionEntryTags,
+        fetchData,
       }}
     >
       {children}
-    </SubscriptionContext.Provider>
+    </NavigationContext.Provider>
   )
 }
 
-SubscriptionProvider.propTypes = {
+NavigationProvider.propTypes = {
   children: PropTypes.any
 }

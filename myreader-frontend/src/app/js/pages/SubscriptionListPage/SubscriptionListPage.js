@@ -1,5 +1,4 @@
 import './SubscriptionListPage.css'
-import React from 'react'
 import {generatePath, useHistory, useLocation} from 'react-router'
 import {Link} from 'react-router-dom'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
@@ -9,7 +8,7 @@ import {useSearchParams} from '../../hooks/router'
 import {SUBSCRIPTION_PAGE_PATH} from '../../constants'
 import {TimeAgo} from '../../components/TimeAgo/TimeAgo'
 import {Icon} from '../../components/Icon/Icon'
-import {useSubscriptions} from '../../hooks/subscriptions'
+import {useNavigation} from '../../hooks/navigation'
 
 function filterSubscriptions({title}, q = '') {
   return title.toLowerCase().includes(q.toLowerCase())
@@ -22,8 +21,8 @@ export const SubscriptionListPage = () => {
 
   const {
     subscriptions,
-    fetchSubscriptions
-  } = useSubscriptions()
+    fetchData
+  } = useNavigation()
 
   const onChange = q => {
     history.push({
@@ -46,7 +45,7 @@ export const SubscriptionListPage = () => {
             type='redo'
             role='refresh'
             inverse={true}
-            onClick={fetchSubscriptions}
+            onClick={fetchData}
           />
         </>
       }

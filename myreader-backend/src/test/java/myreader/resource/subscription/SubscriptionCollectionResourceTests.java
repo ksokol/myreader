@@ -1,8 +1,6 @@
 package myreader.resource.subscription;
 
-import myreader.entity.FetchError;
 import myreader.entity.Subscription;
-import myreader.entity.SubscriptionEntry;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.persistence.FetchResult;
@@ -51,7 +49,6 @@ class SubscriptionCollectionResourceTests {
   private FeedParser feedParser;
 
   private Subscription subscription1;
-  private Subscription subscription2;
 
   @BeforeEach
   void setUp() {
@@ -66,67 +63,6 @@ class SubscriptionCollectionResourceTests {
       null,
       ofEpochMilli(2000)
     ));
-
-    template.save(new FetchError(subscription1.getId(), "message 1", ofEpochMilli(1000)));
-    template.save(new FetchError(subscription1.getId(), "message 2", ofEpochMilli(2000)));
-
-    subscription2 = template.save(new Subscription(
-      "http://feed2",
-      "user102_subscription2",
-      "tag2",
-      "#111111",
-      20,
-      null,
-      0,
-      null,
-      ofEpochMilli(4000)
-    ));
-
-    template.save(new SubscriptionEntry(
-      null,
-      null,
-      "url",
-      null,
-      false,
-      false,
-      null,
-      subscription2.getId(),
-      ofEpochMilli(1000)
-    ));
-  }
-
-  @Test
-  void shouldReturnExpectedJsonStructure() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptions"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(2))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscription2.getId().toString()))
-      .andExpect(jsonPath("$.content[0].title").value("user102_subscription2"))
-      .andExpect(jsonPath("$.content[0].sum").value(20))
-      .andExpect(jsonPath("$.content[0].unseen").value(1))
-      .andExpect(jsonPath("$.content[0].origin").value("http://feed2"))
-      .andExpect(jsonPath("$.content[0].fetchErrorCount").value(0))
-      .andExpect(jsonPath("$.content[0].tag").value("tag2"))
-      .andExpect(jsonPath("$.content[0].color").value("#111111"))
-      .andExpect(jsonPath("$.content[0].createdAt").value("1970-01-01T00:00:04Z"))
-      .andExpect(jsonPath("$.content[1].uuid").value(subscription1.getId().toString()))
-      .andExpect(jsonPath("$.content[1].title").value("user102_subscription1"))
-      .andExpect(jsonPath("$.content[1].sum").value(10))
-      .andExpect(jsonPath("$.content[1].unseen").value(0))
-      .andExpect(jsonPath("$.content[1].origin").value("http://feed1"))
-      .andExpect(jsonPath("$.content[1].fetchErrorCount").value(2))
-      .andExpect(jsonPath("$.content[1].tag").value("tag1"))
-      .andExpect(jsonPath("$.content[1].color").isEmpty())
-      .andExpect(jsonPath("$.content[1].createdAt").value("1970-01-01T00:00:02Z"));
-  }
-
-  @Test
-  void shouldFindAnySubscriptionsWithUnseenGreaterThanMinusOne() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptions?unseenGreaterThan=-1"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(2))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscription2.getId().toString()))
-      .andExpect(jsonPath("$.content[1].uuid").value(subscription1.getId().toString()));
   }
 
   @Test
@@ -170,7 +106,7 @@ class SubscriptionCollectionResourceTests {
   void shouldCreateNewSubscriptionForOrigin() throws Exception {
     var url = "http://feed3";
     var title = "expected title";
-    var nextId = subscription2.getId() + 1;
+    var nextId = subscription1.getId() + 1;
 
     given(feedParser.parse(url))
       .willReturn(Optional.of(new FetchResult(List.of(), null, title, url, 10)));

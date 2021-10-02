@@ -1,10 +1,10 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useParams, useHistory} from 'react-router-dom'
 import {SubscriptionEditForm} from './SubscriptionEditForm/SubscriptionEditForm'
 import {SUBSCRIPTIONS_URL} from '../../constants'
 import {toast} from '../../components/Toast'
 import {useSubscription} from './subscription'
-import {useSubscriptions} from '../../hooks/subscriptions'
+import {useNavigation} from '../../hooks/navigation'
 
 export function SubscriptionPage() {
   const {uuid} = useParams()
@@ -30,8 +30,8 @@ export function SubscriptionPage() {
   } = useSubscription()
 
   const {
-    fetchSubscriptions
-  } = useSubscriptions()
+    fetchData
+  } = useNavigation()
 
   useEffect(() => {
     if (uuid) {
@@ -47,18 +47,18 @@ export function SubscriptionPage() {
 
   useEffect(() => {
     if (updated) {
-      fetchSubscriptions()
+      fetchData()
       toast('Updated')
     }
-  }, [fetchSubscriptions, updated])
+  }, [fetchData, updated])
 
   useEffect(() => {
     if (deleted) {
       toast('Subscription deleted')
-      fetchSubscriptions()
+      fetchData()
       replace(SUBSCRIPTIONS_URL)
     }
-  }, [deleted, fetchSubscriptions, replace])
+  }, [deleted, fetchData, replace])
 
   return subscription ? (
     <SubscriptionEditForm

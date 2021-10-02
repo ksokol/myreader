@@ -3,15 +3,15 @@ import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
 import {SubscriptionListPage} from './SubscriptionListPage'
-import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
-import SubscriptionContext from '../../contexts/subscription/SubscriptionContext'
+import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
+import NavigationContext from '../../contexts/navigation/NavigationContext'
 
 function TestComponent({children}) {
-  const {fetchSubscriptions} = useContext(SubscriptionContext)
+  const {fetchData} = useContext(NavigationContext)
 
   useEffect(() => {
-    fetchSubscriptions()
-  }, [fetchSubscriptions])
+    fetchData()
+  }, [fetchData])
 
   return children
 }
@@ -26,11 +26,11 @@ describe('SubscriptionListPage', () => {
         <>
           <div id='portal-header' />
           <Router history={history}>
-            <SubscriptionProvider>
+            <NavigationProvider>
               <TestComponent>
                 <SubscriptionListPage />
               </TestComponent>
-            </SubscriptionProvider>
+            </NavigationProvider>
           </Router>
         </>
       )
@@ -41,7 +41,7 @@ describe('SubscriptionListPage', () => {
     history = createMemoryHistory()
 
     fetch.jsonResponseOnce({
-      content: [
+      subscriptions: [
         {uuid: '1', title: 'title1', createdAt: '2021-02-27T06:48:05.087+01:00', fetchErrorCount: 42},
         {uuid: '2', title: 'title2', createdAt: '2021-02-27T07:48:05.087+01:00', fetchErrorCount: 0},
       ]
@@ -54,7 +54,7 @@ describe('SubscriptionListPage', () => {
 
     expect(fetch.mostRecent()).toMatchRequest({
       method: 'GET',
-      url: 'api/2/subscriptions',
+      url: 'views/NavigationView',
     })
     await waitFor(() => {
       expect(screen.queryByText('title1')).toBeInTheDocument()
@@ -135,7 +135,7 @@ describe('SubscriptionListPage', () => {
     await renderComponent()
 
     fetch.jsonResponseOnce({
-      content: [
+      subscriptions: [
         {uuid: '2', title: 'title2', createdAt: 'createdAt2'},
         {uuid: '3', title: 'title3', createdAt: 'createdAt3'},
       ],
@@ -145,7 +145,7 @@ describe('SubscriptionListPage', () => {
 
     expect(fetch.mostRecent()).toMatchRequest({
       method: 'GET',
-      url: 'api/2/subscriptions',
+      url: 'views/NavigationView',
     })
     expect(screen.queryByText('title1')).not.toBeInTheDocument()
     expect(screen.queryByText('title2')).toBeInTheDocument()

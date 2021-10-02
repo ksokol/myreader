@@ -9,11 +9,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import static myreader.resource.ResourceConstants.SUBSCRIPTION_ENTRIES;
-import static myreader.resource.ResourceConstants.SUBSCRIPTION_ENTRIES_AVAILABLE_TAGS;
 
 @RestController
 public class SubscriptionEntryCollectionResource {
@@ -61,10 +59,5 @@ public class SubscriptionEntryCollectionResource {
     response.put("content", slicedEntries.getContent());
 
     return response;
-  }
-
-  @GetMapping(SUBSCRIPTION_ENTRIES_AVAILABLE_TAGS)
-  public Set<String> tags() {
-    return subscriptionEntryRepository.findDistinctTags();
   }
 }

@@ -8,7 +8,7 @@ import {useSearchParams} from '../../hooks/router'
 import {EntryList} from './EntryList/EntryList'
 import {useEntries} from './entries'
 import {toast} from '../../components/Toast'
-import {useSubscriptions} from '../../hooks/subscriptions'
+import {useNavigation} from '../../hooks/navigation'
 
 export function EntryStreamPage() {
   const {showUnseenEntries} = useSettings()
@@ -38,8 +38,8 @@ export function EntryStreamPage() {
   } = useEntries()
 
   const {
-    fetchSubscriptions
-  } = useSubscriptions()
+    fetchData
+  } = useNavigation()
 
   const {
     entryInFocusUuid,
@@ -52,7 +52,7 @@ export function EntryStreamPage() {
     if (!loading) {
       clearEntries()
       fetchEntries(query)
-      fetchSubscriptions()
+      fetchData()
     }
   }
 

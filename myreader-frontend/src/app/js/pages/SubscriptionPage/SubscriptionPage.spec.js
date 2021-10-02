@@ -3,7 +3,7 @@ import {Router, Route, Switch} from 'react-router-dom'
 import {createMemoryHistory} from 'history'
 import iro from '@jaames/iro'
 import {SubscriptionPage} from './SubscriptionPage'
-import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
+import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
 
 const expectedError = 'expectedError'
 const expectedTitle = 'expected title'
@@ -22,7 +22,7 @@ describe('SubscriptionPage', () => {
     await act(async () => {
       render(
         <Router history={history}>
-          <SubscriptionProvider>
+          <NavigationProvider>
             <Switch>
               <Route
                 exact={true}
@@ -30,7 +30,7 @@ describe('SubscriptionPage', () => {
                 component={SubscriptionPage}
               />
             </Switch>
-          </SubscriptionProvider>
+          </NavigationProvider>
         </Router>
       )
     })
@@ -172,7 +172,7 @@ describe('SubscriptionPage', () => {
     expect(screen.queryByRole('dialog-info-message')).toHaveTextContent('Updated')
     expect(fetch.mostRecent()).toMatchRequest({
       method: 'GET',
-      url: 'api/2/subscriptions'
+      url: 'views/NavigationView'
     })
   })
 
@@ -238,7 +238,7 @@ describe('SubscriptionPage', () => {
 
     expect(fetch.mostRecent()).toMatchRequest({
       method: 'GET',
-      url: 'api/2/subscriptions'
+      url: 'views/NavigationView'
     })
   })
 

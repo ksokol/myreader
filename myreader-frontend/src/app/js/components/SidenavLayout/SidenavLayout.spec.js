@@ -1,9 +1,11 @@
-import React from 'react'
 import {Router} from 'react-router'
 import {createMemoryHistory} from 'history'
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {SidenavLayout} from './SidenavLayout'
-import {SubscriptionProvider} from '../../contexts/subscription/SubscriptionProvider'
+import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
+
+const sidenavLayoutNavOpenClass = 'my-sidenav-layout__nav--open'
+const navigationMenuButtonClass = 'navigation-menu-button'
 
 describe('SidenavLayout', () => {
 
@@ -13,9 +15,9 @@ describe('SidenavLayout', () => {
     await act(async () => {
       await render(
         <Router history={history}>
-          <SubscriptionProvider>
+          <NavigationProvider>
             <SidenavLayout>expected child</SidenavLayout>
-          </SubscriptionProvider>
+          </NavigationProvider>
         </Router>
       )
     })
@@ -34,7 +36,7 @@ describe('SidenavLayout', () => {
     })
 
     fetch.jsonResponse({
-      content: []
+      subscriptions: []
     })
   })
 
@@ -60,20 +62,20 @@ describe('SidenavLayout', () => {
     await renderComponent()
     await act(async () => await capturedListener[0]())
 
-    expect(screen.getByRole('navigation')).not.toHaveClass('my-sidenav-layout__nav--open')
+    expect(screen.getByRole('navigation')).not.toHaveClass(sidenavLayoutNavOpenClass)
 
-    fireEvent.click(screen.getByRole('navigation-menu-button'))
-    expect(screen.getByRole('navigation')).toHaveClass('my-sidenav-layout__nav--open')
+    fireEvent.click(screen.getByRole(navigationMenuButtonClass))
+    expect(screen.getByRole('navigation')).toHaveClass(sidenavLayoutNavOpenClass)
   })
 
   it('should not show hamburger menu on phones and tablets', async () => {
     await renderComponent()
     await act(async () => await capturedListener[1]())
 
-    expect(screen.queryByRole('navigation-menu-button')).not.toBeInTheDocument()
+    expect(screen.queryByRole(navigationMenuButtonClass)).not.toBeInTheDocument()
 
     await act(async () => await capturedListener[0]())
-    expect(screen.queryByRole('navigation-menu-button')).toBeInTheDocument()
+    expect(screen.queryByRole(navigationMenuButtonClass)).toBeInTheDocument()
   })
 
   it('should toggle navigation when hamburger menu and backdrop clicked', async () => {
@@ -81,11 +83,11 @@ describe('SidenavLayout', () => {
     await act(async () => await capturedListener[0]())
 
     expect(screen.queryByRole('backdrop')).not.toBeInTheDocument()
-    fireEvent.click(screen.getByRole('navigation-menu-button'))
-    expect(screen.getByRole('navigation')).toHaveClass('my-sidenav-layout__nav--open')
+    fireEvent.click(screen.getByRole(navigationMenuButtonClass))
+    expect(screen.getByRole('navigation')).toHaveClass(sidenavLayoutNavOpenClass)
     fireEvent.click(screen.getByRole('backdrop'))
 
-    expect(screen.getByRole('navigation')).not.toHaveClass('my-sidenav-layout__nav--open')
+    expect(screen.getByRole('navigation')).not.toHaveClass(sidenavLayoutNavOpenClass)
     await waitFor(() => expect(screen.queryByRole('backdrop')).not.toBeInTheDocument())
   })
 
@@ -93,10 +95,10 @@ describe('SidenavLayout', () => {
     await renderComponent()
     await act(async () => await capturedListener[0]())
 
-    fireEvent.click(screen.getByRole('navigation-menu-button'))
+    fireEvent.click(screen.getByRole(navigationMenuButtonClass))
     fireEvent.click(screen.getByText('all'))
 
-    expect(screen.getByRole('navigation')).not.toHaveClass('my-sidenav-layout__nav--open')
+    expect(screen.getByRole('navigation')).not.toHaveClass(sidenavLayoutNavOpenClass)
     await waitFor(() => expect(screen.queryByRole('backdrop')).not.toBeInTheDocument())
   })
 
@@ -105,28 +107,28 @@ describe('SidenavLayout', () => {
     await act(async () => await capturedListener[0]())
 
     expect(screen.queryByRole('backdrop')).not.toBeInTheDocument()
-    expect(screen.getByRole('navigation')).not.toHaveClass('my-sidenav-layout__nav--open')
+    expect(screen.getByRole('navigation')).not.toHaveClass(sidenavLayoutNavOpenClass)
 
     await act(async () => await capturedListener[1]())
 
     expect(screen.queryByRole('backdrop')).not.toBeInTheDocument()
-    expect(screen.getByRole('navigation')).not.toHaveClass('my-sidenav-layout__nav--open')
+    expect(screen.getByRole('navigation')).not.toHaveClass(sidenavLayoutNavOpenClass)
   })
 
   it('should pin navigation when on desktop', async () => {
     await renderComponent()
     await act(async () => await capturedListener[0]())
 
-    fireEvent.click(screen.getByRole('navigation-menu-button'))
+    fireEvent.click(screen.getByRole(navigationMenuButtonClass))
 
     expect(screen.queryByRole('backdrop')).toBeInTheDocument()
-    expect(screen.getByRole('navigation')).toHaveClass('my-sidenav-layout__nav--open')
+    expect(screen.getByRole('navigation')).toHaveClass(sidenavLayoutNavOpenClass)
 
     await act(async () => await capturedListener[1]())
 
     await waitFor(() => {
       expect(screen.queryByRole('backdrop')).not.toBeInTheDocument()
-      expect(screen.getByRole('navigation')).not.toHaveClass('my-sidenav-layout__nav--open')
+      expect(screen.getByRole('navigation')).not.toHaveClass(sidenavLayoutNavOpenClass)
     })
   })
 
@@ -135,13 +137,13 @@ describe('SidenavLayout', () => {
     await act(async () => await capturedListener[1]())
 
     expect(screen.queryByRole('backdrop')).not.toBeInTheDocument()
-    expect(screen.getByRole('navigation')).not.toHaveClass('my-sidenav-layout__nav--open')
+    expect(screen.getByRole('navigation')).not.toHaveClass(sidenavLayoutNavOpenClass)
 
     await act(async () => await capturedListener[0]())
-    fireEvent.click(screen.getByRole('navigation-menu-button'))
+    fireEvent.click(screen.getByRole(navigationMenuButtonClass))
 
     expect(screen.queryByRole('backdrop')).toBeInTheDocument()
-    expect(screen.getByRole('navigation')).toHaveClass('my-sidenav-layout__nav--open')
+    expect(screen.getByRole('navigation')).toHaveClass(sidenavLayoutNavOpenClass)
   })
 
   it('should not show backdrop when navigation clicked and media breakpoint is set to desktop', async () => {
@@ -151,6 +153,6 @@ describe('SidenavLayout', () => {
     fireEvent.click(screen.getByText('all'))
 
     expect(screen.queryByRole('backdrop')).not.toBeInTheDocument()
-    expect(screen.getByRole('navigation')).not.toHaveClass('my-sidenav-layout__nav--open')
+    expect(screen.getByRole('navigation')).not.toHaveClass(sidenavLayoutNavOpenClass)
   })
 })

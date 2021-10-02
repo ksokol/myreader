@@ -1,80 +1,88 @@
 import {useContext} from 'react'
 import {act, fireEvent, render, screen} from '@testing-library/react'
-import {SubscriptionProvider} from './SubscriptionProvider'
+import {NavigationProvider} from './NavigationProvider'
 import {api} from '../../api'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
-import SubscriptionContext from './SubscriptionContext'
+import NavigationContext from './NavigationContext'
 
 function TestComponent() {
-  const {subscriptions, fetchSubscriptions} = useContext(SubscriptionContext)
+  const {subscriptions, subscriptionEntryTags, fetchData} = useContext(NavigationContext)
 
   return (
     <>
-      <div role='fetch' onClick={fetchSubscriptions}/>
-      subscriptions: {JSON.stringify(subscriptions)}
+      <div role='fetch' onClick={fetchData}/>
+      <div role='subscriptions'>{JSON.stringify(subscriptions)}</div>
+      <div role='subscriptionEntryTags'>{JSON.stringify(subscriptionEntryTags)}</div>
     </>
   )
 }
 
 const expectedError = 'expected error'
-const expectedResponse = 'subscriptions: [{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]'
+const expectedInitialSubscriptions = '[{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]'
+const expectedInitialTags = '["tag1","tag2"]'
 
-describe('subscription context', () => {
+describe('navigation context', () => {
 
   let props
 
   const renderComponent = () => {
     return render(
-      <SubscriptionProvider {...props}>
+      <NavigationProvider {...props}>
         <TestComponent/>
-      </SubscriptionProvider>
+      </NavigationProvider>
     )
   }
 
   beforeEach(() => {
     fetch.jsonResponse({
-      content: [
+      subscriptions: [
         {uuid: '1', unseen: 3},
         {uuid: '2', unseen: 2}
-      ]
+      ],
+      subscriptionEntryTags: ['tag1', 'tag2']
     })
   })
 
   it('should render children', async () => {
     renderComponent()
 
-    expect(screen.getByText('subscriptions: []')).toBeInTheDocument()
+    expect(screen.getByRole('subscriptions')).toHaveTextContent('[]')
+    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent('[]')
   })
 
   it('should contain expected context values in child component if fetch call succeeded', async () => {
     renderComponent()
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(screen.getByText(expectedResponse)).toBeInTheDocument()
+    expect(screen.getByRole('subscriptions')).toHaveTextContent(expectedInitialSubscriptions)
+    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 
-  it('should replace subscriptions if fetch called again', async () => {
+  it('should replace subscriptions and tags if fetch called again', async () => {
     renderComponent()
 
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
     fetch.jsonResponse({
-      content: [
+      subscriptions: [
         {uuid: '3', unseen: 4}
-      ]
+      ],
+      subscriptionEntryTags: ['tag3', 'tag4']
     })
 
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(screen.getByText('subscriptions: [{"uuid":"3","unseen":4}]')).toBeInTheDocument()
+    expect(screen.getByRole('subscriptions')).toHaveTextContent('[{"uuid":"3","unseen":4}]')
+    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent('["tag3","tag4"]')
   })
 
-  it('should contain empty context value in child component if fetch succeeded', async () => {
+  it('should contain empty context value in child component fetch succeeded', async () => {
     fetch.rejectResponse({data: expectedError})
 
     renderComponent()
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(screen.getByRole('dialog-error-message')).toHaveTextContent(expectedError)
+    expect(screen.getByRole('subscriptions')).toHaveTextContent('[]')
+    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent('[]')
   })
 
   it('should contain expected context values in child component if fetch failed', async () => {
@@ -84,7 +92,8 @@ describe('subscription context', () => {
     fetch.rejectResponse({data: expectedError})
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
-    expect(screen.getByText(expectedResponse)).toBeInTheDocument()
+    expect(screen.getByRole('subscriptions')).toHaveTextContent(expectedInitialSubscriptions)
+    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 
   it('should decrease subscription unseen count', async () => {
@@ -112,7 +121,8 @@ describe('subscription context', () => {
       })
     })
 
-    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":2},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
+    expect(screen.getByRole('subscriptions')).toHaveTextContent('[{"uuid":"1","unseen":2},{"uuid":"2","unseen":2}]')
+    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 
   it('should increase subscription unseen count', async () => {
@@ -140,7 +150,8 @@ describe('subscription context', () => {
       })
     })
 
-    expect(screen.getByText('subscriptions: [{"uuid":"1","unseen":4},{"uuid":"2","unseen":2}]')).toBeInTheDocument()
+    expect(screen.getByRole('subscriptions')).toHaveTextContent('[{"uuid":"1","unseen":4},{"uuid":"2","unseen":2}]')
+    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 
   it('should do nothing if seen flag does not changed', async () => {
@@ -168,7 +179,8 @@ describe('subscription context', () => {
       })
     })
 
-    expect(screen.getByText(expectedResponse)).toBeInTheDocument()
+    expect(screen.getByRole('subscriptions')).toHaveTextContent(expectedInitialSubscriptions)
+    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 
   it('should do nothing if subscription is not available', async () => {
@@ -196,6 +208,7 @@ describe('subscription context', () => {
       })
     })
 
-    expect(screen.getByText(expectedResponse)).toBeInTheDocument()
+    expect(screen.getByRole('subscriptions')).toHaveTextContent(expectedInitialSubscriptions)
+    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 })

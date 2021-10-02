@@ -1,5 +1,4 @@
 import './App.css'
-import React from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import {
   APP_URL,
@@ -10,7 +9,7 @@ import {
 } from './constants'
 import {EntryStreamPage} from './pages/EntryStreamPage/EntryStreamPage'
 import {SidenavLayout} from './components/SidenavLayout/SidenavLayout'
-import {SubscriptionProvider} from './contexts/subscription/SubscriptionProvider'
+import {NavigationProvider} from './contexts/navigation/NavigationProvider'
 import {SubscriptionListPage} from './pages/SubscriptionListPage/SubscriptionListPage'
 import {LoadingBar} from './components/LoadingBar/LoadingBar'
 import {LoginPage} from './pages/LoginPage/LoginPage'
@@ -18,7 +17,7 @@ import {SubscriptionPage} from './pages/SubscriptionPage/SubscriptionPage'
 import {Secured} from './components/Secured/Secured'
 
 const withSidenav = () => (
-  <SubscriptionProvider>
+  <NavigationProvider>
     <SidenavLayout>
       <Switch>
         <Route exact={true} path={ENTRIES_PAGE_PATH} component={EntryStreamPage}/>
@@ -26,19 +25,19 @@ const withSidenav = () => (
         <Route exact={true} path={SUBSCRIPTIONS_URL} component={SubscriptionListPage}/>
       </Switch>
     </SidenavLayout>
-  </SubscriptionProvider>
+  </NavigationProvider>
 )
 
 const App = () => {
   return (
-    <React.Fragment>
+    <>
       <Switch>
         <Route exact={true} path={LOGIN_PAGE_PATH} component={LoginPage}/>
         <Route path={APP_URL} component={() => Secured(withSidenav)}/>
         <Redirect to={LOGIN_PAGE_PATH} />
       </Switch>
       <LoadingBar />
-    </React.Fragment>
+    </>
   )
 }
 
