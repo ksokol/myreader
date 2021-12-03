@@ -1,4 +1,3 @@
-import React from 'react'
 import {render, screen} from '@testing-library/react'
 import {Icon} from './Icon'
 
@@ -17,14 +16,14 @@ describe('Icon', () => {
   })
 
   it('should invert color when prop "inverse" ist set to true', () => {
-    const spy = spyOn(CSSStyleDeclaration.prototype, 'setProperty')
+    const spy = jest.spyOn(CSSStyleDeclaration.prototype, 'setProperty')
     render(<Icon type='icon1' inverse={true}/>)
 
     expect(spy).toHaveBeenCalledWith('--color', '#FFFFFF')
   })
 
   it('should not invert color when prop "inverse" ist set to false', () => {
-    const spy = spyOn(CSSStyleDeclaration.prototype, 'setProperty')
+    const spy = jest.spyOn(CSSStyleDeclaration.prototype, 'setProperty')
     render(<Icon type='icon1'/>)
 
     expect(spy).toHaveBeenCalledWith('--color', '#808080')

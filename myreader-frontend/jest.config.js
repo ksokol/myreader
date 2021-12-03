@@ -23,4 +23,5 @@ module.exports = {
   testResultsProcessor: 'jest-sonar-reporter',
   timers: 'fake',
   testURL: 'http://localhost:8080',
+  testEnvironment: 'jsdom',
 }

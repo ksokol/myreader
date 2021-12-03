@@ -24,22 +24,28 @@ export class Api {
     return this.request({context, ...incomingRequest, method: 'DELETE'})
   }
 
-  request = ({context = {}, ...incomingRequest}) => {
+  request = async ({context = {}, ...incomingRequest}) => {
     const request = {...incomingRequest, context}
 
-    return new Promise((resolve, reject) => {
-      this.findFn('onBefore').forEach(fn => fn(request))
-
-      exchange(incomingRequest).then(response => {
-        this.findFn('onThen').forEach(fn => fn(request, response))
-        resolve(response)
-      }).catch(error => {
-        this.findFn('onError').forEach(fn => fn(request, error))
-        reject(error)
-      }).finally(() => {
-        this.findFn('onFinally').forEach(fn => fn())
-      })
-    })
+    try {
+      for (const fn of this.findFn('onBefore')) {
+        fn(request)
+      }
+      const response = await exchange(incomingRequest)
+      for (const fn of this.findFn('onThen')) {
+        fn(request, response)
+      }
+      return response
+    } catch (error) {
+      for (const fn of this.findFn('onError')) {
+        fn(request, error)
+      }
+      throw error
+    } finally {
+      for (const fn of this.findFn('onFinally')) {
+        fn()
+      }
+    }
   }
 
   findFn = fn => {

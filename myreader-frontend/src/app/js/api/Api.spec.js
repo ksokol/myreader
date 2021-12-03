@@ -1,6 +1,5 @@
 import {Api} from './Api'
 import {exchange} from './exchange'
-import {flushPromises} from '../shared/test-utils'
 
 jest.mock('./exchange', () => ({
   exchange: jest.fn()
@@ -85,24 +84,27 @@ describe('Api', () => {
     })
   })
 
-  it('should trigger interceptors with function "onFinally"', async done => {
+  it('should trigger interceptors with function "onFinally"', async () => {
     const interceptor1 = onFinallyInterceptor(jest.fn())
     const interceptor2 = onFinallyInterceptor(jest.fn())
 
     api.addInterceptor(interceptor1)
     api.addInterceptor(interceptor2)
 
-    const promise = api.request({})
-    await flushPromises()
+    exchange.mockImplementationOnce(() => Promise.reject(expectedError))
 
-    promise.finally(() => {
-      expect(interceptor1.onFinally).toHaveBeenCalled()
-      expect(interceptor2.onFinally).toHaveBeenCalled()
-      done()
+    const promise = api.request({a: 'b'})
+
+    promise.catch(async () => {
+      // catches ERR_UNHANDLED_REJECTION
     })
+
+    await Promise.resolve()
+    expect(interceptor1.onFinally).toHaveBeenCalled()
+    expect(interceptor2.onFinally).toHaveBeenCalled()
   })
 
-  it('should not trigger removed interceptor', async done => {
+  it('should not trigger removed interceptor', done => {
     const interceptor1 = onThenInterceptor(jest.fn())
     const interceptor2 = onThenInterceptor(jest.fn())
 
