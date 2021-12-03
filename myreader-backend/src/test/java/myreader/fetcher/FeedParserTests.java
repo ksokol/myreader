@@ -194,7 +194,7 @@ class FeedParserTests {
       "expected exception not thrown"
     );
 
-    assertThat(thrown.getMessage()).isEqualTo("500 Internal Server Error: [test]");
+    assertThat(thrown.getMessage()).isEqualTo("500 Internal Server Error: \"test\"");
   }
 
   @Test
