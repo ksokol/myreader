@@ -2,16 +2,11 @@ package myreader.fetcher.jobs;
 
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.SubscriptionBatch;
-import myreader.fetcher.persistence.FetchResult;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- * @author Kamill Sokol
- */
 @ConditionalOnTaskEnabled
 @Component
 public class SyndFetcherJob extends BaseJob {
@@ -26,16 +21,15 @@ public class SyndFetcherJob extends BaseJob {
     }
 
     @Scheduled(fixedRate = 300000)
-    @Transactional
     @Override
     public void work() {
-        FetchResult fetchResult = feedQueue.take();
+        var fetchResult = feedQueue.take();
 
         while (fetchResult != null && isAlive()) {
             try {
                 subscriptionBatchService.update(fetchResult);
-            } catch(Exception e) {
-                getLog().error("error during subscription update for {}", fetchResult.getUrl(), e);
+            } catch(Exception exception) {
+                getLog().error("error during subscription update for {}", fetchResult.getUrl(), exception);
             }
             fetchResult = feedQueue.take();
         }
