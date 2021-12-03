@@ -693,7 +693,7 @@ describe('EntryStreamPage', () => {
   })
 
   it('should render entry feedTag and feedTagColor', async () => {
-    jest.spyOn(Date, 'now').mockReturnValue(1614453487714)
+    jest.spyOn(Date, 'now').mockReturnValue(1_614_453_487_714)
     fetch.resetMocks()
     fetch.jsonResponse({
       content: [{
