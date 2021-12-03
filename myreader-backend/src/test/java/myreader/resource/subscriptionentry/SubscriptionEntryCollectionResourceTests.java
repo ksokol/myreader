@@ -354,9 +354,9 @@ class SubscriptionEntryCollectionResourceTests {
   private String nextPage(MvcResult mvcResult) throws IOException {
     Map<String, String> nextPage = JsonPath.read(mvcResult.getResponse().getContentAsString(), "nextPage");
 
-    StringBuilder queryParams = new StringBuilder();
-    for (Map.Entry<String, String> entry : nextPage.entrySet()) {
-      queryParams.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+    var queryParams = new StringBuilder();
+    for (var entry : nextPage.entrySet()) {
+      queryParams.append(entry.getKey()).append('=').append(entry.getValue()).append('&');
     }
 
     return "/api/2/subscriptionEntries?" + queryParams;
