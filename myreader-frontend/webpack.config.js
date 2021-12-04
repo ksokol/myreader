@@ -2,7 +2,7 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const TerserPlugin = require('terser-webpack-plugin')
 const WorkboxPlugin = require('workbox-webpack-plugin')
@@ -20,14 +20,7 @@ module.exports = function(env) {
   const config = {}
 
   config.mode = isProd ? 'production' : 'development'
-
   config.stats = 'verbose'
-
-  /**
-   * Reference: http://webpack.github.io/docs/configuration.html#entry
-   * Should be an empty object if it's generating a test build
-   * Karma will set this when it's a test build
-   */
   config.entry = isTest ? void 0 : {
     app: './src/app/js/index.js'
   }
@@ -50,10 +43,7 @@ module.exports = function(env) {
           ecma: 6
         }
       }),
-      new OptimizeCssAssetsPlugin({
-        assetNameRegExp: /\.css$/g,
-        cssProcessor: require('cssnano')
-      })
+      new CssMinimizerPlugin()
     ],
     splitChunks: {
       chunks: 'all'
@@ -143,8 +133,12 @@ module.exports = function(env) {
   }
 
   config.devServer = {
-    contentBase: './src',
-    stats: 'minimal',
+    static : {
+      directory: './src',
+    },
+    devMiddleware: {
+      stats: 'minimal',
+    },
     host: '0.0.0.0',
     proxy: [{
       context: [`/${BACKEND_CONTEXT}`, '/info', '/api', '/views', '/check', '/logout'],
