@@ -63,7 +63,7 @@ module.exports = function(env) {
       ]
     }, {
       test: /\.svg$/,
-      loader: 'svg-url-loader'
+      type: 'asset/inline',
     }, {
       test: /\.js$/,
       exclude: /node_modules/,

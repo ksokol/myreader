@@ -52,7 +52,6 @@
     "mini-css-extract-plugin": "2.4.5",
     "raw-loader": "4.0.2",
     "register-service-worker": "1.7.2",
-    "svg-url-loader": "7.1.1",
     "terser-webpack-plugin": "5.2.5",
     "webpack": "5.64.4",
     "webpack-bundle-analyzer": "4.5.0",
