@@ -4,28 +4,28 @@ import {IconButton} from '../../components/Buttons'
 import {useAutofocusEntry} from './useAutofocusEntry'
 import {useSettings} from '../../contexts/settings'
 import {ListLayout} from '../../components/ListLayout/ListLayout'
-import {useSearchParams} from '../../hooks/router'
 import {EntryList} from './EntryList/EntryList'
 import {useEntries} from './entries'
 import {toast} from '../../components/Toast'
 import {useNavigation} from '../../hooks/navigation'
+import {useRouter} from '../../contexts/router'
 
 export function EntryStreamPage() {
   const {showUnseenEntries} = useSettings()
-  const searchParams = useSearchParams()
+  const {route} = useRouter()
   const [showingUnseenEntries, setShowingUnseenEntries] = useState(showUnseenEntries)
 
   const query = useMemo(() => {
-    const params = {...searchParams}
-    if (searchParams.seenEqual === '*') {
+    const params = {...route.searchParams}
+    if (route.searchParams.seenEqual === '*') {
       params.seenEqual = undefined
     } else {
       const showAll = showUnseenEntries === true ? false : undefined
-      params.seenEqual = searchParams.seenEqual === undefined ? showAll : searchParams.seenEqual
+      params.seenEqual = route.searchParams.seenEqual === undefined ? showAll : route.searchParams.seenEqual
     }
 
     return params
-  }, [searchParams, showUnseenEntries])
+  }, [route.searchParams, showUnseenEntries])
 
   const {
     entries,
@@ -74,7 +74,7 @@ export function EntryStreamPage() {
 
   useEffect(() => {
     clearEntries()
-  }, [clearEntries, searchParams])
+  }, [clearEntries, route.searchParams])
 
   useEffect(() => {
     if (lastError) {

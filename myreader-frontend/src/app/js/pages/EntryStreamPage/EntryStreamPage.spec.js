@@ -1,11 +1,10 @@
-import {Router} from 'react-router'
-import {createMemoryHistory} from 'history'
-import {render, fireEvent, screen, act} from '@testing-library/react'
+import {render, fireEvent, screen, act, waitFor} from '@testing-library/react'
 import {mockAllIsIntersecting} from 'react-intersection-observer/test-utils'
 import {EntryStreamPage} from './EntryStreamPage'
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
 import {useSettings} from '../../contexts/settings'
+import {RouterProvider} from '../../contexts/router'
 
 const expectedTag1 = 'expected tag1'
 const expectedContent1 = 'expected content1'
@@ -109,36 +108,28 @@ function SettingsTestComponent() {
   )
 }
 
+const renderComponent = async () => {
+  await act(async () =>
+    await render(
+      <>
+        <div id='portal-header'/>
+        <RouterProvider>
+          <NavigationProvider>
+            <SettingsProvider>
+              <SettingsTestComponent/>
+              <EntryStreamPage/>
+            </SettingsProvider>
+          </NavigationProvider>
+        </RouterProvider>
+      </>
+    )
+  )
+}
+
 describe('EntryStreamPage', () => {
 
-  let history
-
-  const renderComponent = async () => {
-    await act(async () => {
-      render(
-        <>
-          <div id='portal-header'/>
-          <Router history={history}>
-            <NavigationProvider>
-              <SettingsProvider>
-                <SettingsTestComponent/>
-                <EntryStreamPage/>
-              </SettingsProvider>
-            </NavigationProvider>
-          </Router>
-        </>
-      )
-    })
-  }
-
   beforeEach(async () => {
-    history = createMemoryHistory()
-
-    await act(async () => {
-      history.push({
-        search: 'feedTagEqual=a'
-      })
-    })
+    history.pushState(null, null, '#!/app/subscriptions?feedTagEqual=a')
 
     localStorage.setItem('myreader-settings', '{"showUnseenEntries": false, "showEntryDetails": true}')
 
@@ -160,12 +151,7 @@ describe('EntryStreamPage', () => {
   })
 
   it('should fetch entries with seenEqual set to true and prop "searchParams.seenEqual" set to true', async () => {
-    history = createMemoryHistory()
-    await act(async () => {
-      history.push({
-        search: 'seenEqual=true'
-      })
-    })
+    history.pushState(null, null, '#!/app/subscriptions?seenEqual=true')
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchRequest({
@@ -176,15 +162,17 @@ describe('EntryStreamPage', () => {
 
   it('should fetch entries when search query changed', async () => {
     await renderComponent()
-    await act(async () => {
-      history.push({
-        search: 'seenEqual=true&feedTagEqual=a'
-      })
+
+    act(() => {
+      history.pushState(null, null, '#!/app/entries?seenEqual=true&feedTagEqual=a')
+      window.dispatchEvent(new Event('popstate'))
     })
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=true'
+    await waitFor(() => {
+      expect(fetch.mostRecent()).toMatchRequest({
+        method: 'GET',
+        url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=true'
+      })
     })
   })
 
@@ -452,6 +440,7 @@ describe('EntryStreamPage', () => {
     await act(async () => fireEvent.click(screen.getByRole('more')))
 
     expect(screen.queryByRole('more')).toBeEnabled()
+    fireEvent.click(screen.getByRole(roleDialogErrorMessage))
   })
 
   it('should hide more button if there are no more entries to fetch', async () => {
@@ -488,6 +477,7 @@ describe('EntryStreamPage', () => {
     await renderComponent()
     fetch.resetMocks()
 
+    fetch.responsePending()
     fetch.responsePending()
     act(() => {
       fireEvent.click(screen.getByRole('refresh'))
@@ -549,6 +539,7 @@ describe('EntryStreamPage', () => {
     await renderComponent()
 
     expect(screen.getByRole(roleDialogErrorMessage)).toHaveTextContent(expectedError)
+    fireEvent.click(screen.getByRole(roleDialogErrorMessage))
   })
 
   it('should toggle entry seen flag', async () => {
@@ -627,11 +618,7 @@ describe('EntryStreamPage', () => {
   })
 
   it('should fetch all entries if "seenEqual" is set to "*"', async () => {
-    await act(async () => {
-      history.push({
-        search: 'seenEqual=*&entryTagEqual=a'
-      })
-    })
+    history.pushState(null, null, '#!/app/entries?seenEqual=*&entryTagEqual=a')
     await renderComponent()
 
     expect(fetch.mostRecent()).toMatchRequest({

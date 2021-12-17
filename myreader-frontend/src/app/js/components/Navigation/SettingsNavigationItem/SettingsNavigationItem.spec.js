@@ -1,27 +1,20 @@
-import React from 'react'
-import {Router} from 'react-router'
-import {createMemoryHistory} from 'history'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {SettingsProvider} from '../../../contexts/settings/SettingsProvider'
 import {SettingsNavigationItem} from './SettingsNavigationItem'
 
 describe('SettingsNavigationItem', () => {
 
-  let props, history
+  let props
 
   const renderComponent = async () => {
     render(
-      <Router history={history}>
-        <SettingsProvider>
-          <SettingsNavigationItem {...props} />
-        </SettingsProvider>
-      </Router>
+      <SettingsProvider>
+        <SettingsNavigationItem {...props} />
+      </SettingsProvider>
     )
   }
 
   beforeEach(() => {
-    history = createMemoryHistory()
-
     localStorage.setItem('myreader-settings', '{"showUnseenEntries":false, "showEntryDetails":true}')
 
     props = {

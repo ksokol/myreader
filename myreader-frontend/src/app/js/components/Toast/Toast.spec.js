@@ -1,5 +1,5 @@
 import {toast} from '.'
-import { act } from 'react-dom/test-utils'
+import {act} from 'react-dom/test-utils'
 
 const errorClass = 'my-toast__item--error'
 const expectedText = 'expected text'
@@ -8,8 +8,13 @@ const notifications = () => document.querySelectorAll('.my-toast__item')
 
 describe('Toast', () => {
 
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
   afterEach(() =>  {
     act(() => jest.runAllTimers())
+    act(() => jest.runOnlyPendingTimers())
   })
 
   it('should not render any toast message when mounted', () => {

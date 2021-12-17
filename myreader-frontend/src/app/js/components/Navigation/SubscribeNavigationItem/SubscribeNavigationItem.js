@@ -1,7 +1,6 @@
 import './SubscribeNavigationItem.css'
 import {useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
-import {generatePath, useHistory} from 'react-router'
 import {NavigationItem} from '../NavigationItem'
 import {Dialog} from '../../Dialog/Dialog'
 import {SUBSCRIPTION_PAGE_PATH} from '../../../constants'
@@ -9,10 +8,11 @@ import {toast} from '../../Toast'
 import {Button} from '../../Buttons'
 import {Input} from '../../Input/Input'
 import {useSubscribe} from './subscribe'
+import {useRouter} from '../../../contexts/router'
 
 function SubscribeDialog({onClose}) {
   const [origin, setOrigin] = useState('')
-  const history = useHistory()
+  const {replaceRoute} = useRouter()
   const {pending, error, uuid, validations, subscribe} = useSubscribe()
 
   useEffect(() => {
@@ -24,13 +24,14 @@ function SubscribeDialog({onClose}) {
   useEffect(() => {
     if (uuid) {
       toast('Subscribed')
-      history.replace({
-        pathname: generatePath(SUBSCRIPTION_PAGE_PATH, {uuid})
+      replaceRoute({
+        pathname: SUBSCRIPTION_PAGE_PATH,
+        search: `uuid=${uuid}`
       })
       onClose()
 
     }
-  }, [history, onClose, uuid])
+  }, [replaceRoute, onClose, uuid])
 
   const body = (
     <form

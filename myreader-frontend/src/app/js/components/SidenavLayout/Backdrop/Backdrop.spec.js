@@ -1,4 +1,3 @@
-import React from 'react'
 import {act, fireEvent, render, screen} from '@testing-library/react'
 import {Backdrop} from './Backdrop'
 
@@ -7,10 +6,16 @@ describe('Backdrop', () => {
   let props
 
   beforeEach(() => {
+    jest.useFakeTimers()
+
     props = {
       maybeVisible: false,
       onClick: jest.fn()
     }
+  })
+
+  afterEach(() =>  {
+    act(() => jest.runOnlyPendingTimers())
   })
 
   it('should not show backdrop when mounted', () => {

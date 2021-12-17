@@ -1,31 +1,30 @@
-import {Router} from 'react-router'
-import {createMemoryHistory} from 'history'
-import {render, screen, fireEvent, act} from '@testing-library/react'
+import {render, screen, fireEvent, act, waitFor} from '@testing-library/react'
 import {LoginPage} from './LoginPage'
 import {SecurityProvider} from '../../contexts/security/SecurityProvider'
+import {RouterProvider} from '../../contexts/router'
 
 const expectedPassword = 'expected password'
 
-describe('LoginPage', () => {
-
-  let history
-
-  const renderComponent = () => {
-    render(
-      <Router history={history}>
+const renderComponent = async () => {
+  await act(async () =>
+    await render(
+      <RouterProvider>
         <SecurityProvider>
           <LoginPage />
         </SecurityProvider>
-      </Router>
+      </RouterProvider>
     )
-  }
+  )
+}
+
+describe('LoginPage', () => {
 
   beforeEach(() => {
-    history = createMemoryHistory()
+    history.pushState(null, null, '#!/app/login')
   })
 
   it('should call authentication endpoint with given password', async () => {
-    renderComponent()
+    await renderComponent()
 
     fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
@@ -43,26 +42,32 @@ describe('LoginPage', () => {
   })
 
   it('should redirect if successfully authenticated', async () => {
-    renderComponent()
+    const currentHistoryLength = history.length
+    await renderComponent()
 
     fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
 
-    expect(history.action).toEqual('REPLACE')
-    expect(history.location.pathname).toEqual('/app/entries')
+    await waitFor(() => {
+      expect(history.length).toEqual(currentHistoryLength) // replace
+      expect(document.location.href).toMatch(/\/app\/entries$/)
+    })
   })
 
   it('should redirect if user is already authorized', async () => {
+    const currentHistoryLength = history.length
     localStorage.setItem('myreader-security', '{"authorized": true}')
-    renderComponent()
+    await renderComponent()
 
-    expect(history.action).toEqual('REPLACE')
-    expect(history.location.pathname).toEqual('/app/entries')
+    await waitFor(() => {
+      expect(history.length).toEqual(currentHistoryLength) // replace
+      expect(document.location.href).toMatch(/\/app\/entries$/)
+    })
   })
 
   it('should disabled password input and login button if authentication request is still pending', async () => {
     fetch.responsePending()
-    renderComponent()
+    await renderComponent()
 
     fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
@@ -73,7 +78,7 @@ describe('LoginPage', () => {
 
   it('should show error message if password is wrong', async () => {
     fetch.rejectResponse()
-    renderComponent()
+    await renderComponent()
 
     fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
@@ -83,7 +88,7 @@ describe('LoginPage', () => {
 
   it('should enable password input and login button if authentication request failed', async () => {
     fetch.rejectResponse()
-    renderComponent()
+    await renderComponent()
 
     fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
@@ -92,11 +97,11 @@ describe('LoginPage', () => {
     expect(screen.getByText('Login')).toBeEnabled()
   })
 
-  it('should show version and commit id', () => {
+  it('should show version and commit id', async () => {
     document.head.dataset.buildVersion = 'expected version'
     document.head.dataset.buildCommitId = 'expected commit id'
 
-    renderComponent()
+    await renderComponent()
 
     expect(screen.getByText('expected version')).toBeInTheDocument()
     expect(screen.getByText('expected commit id')).toBeInTheDocument()

@@ -1,12 +1,16 @@
-import React from 'react'
-import {Redirect} from 'react-router-dom'
 import {LOGIN_PAGE_PATH} from '../../constants'
 import {useSecurity} from '../../contexts/security'
+import {Redirect} from '../router'
+import PropTypes from 'prop-types'
 
-export function Secured(WrappedComponent) {
+export function Secured({children}) {
   const {authorized} = useSecurity()
 
   return authorized
-    ? <WrappedComponent />
-    : <Redirect to={LOGIN_PAGE_PATH}/>
+    ? children
+    : <Redirect pathname={LOGIN_PAGE_PATH}/>
+}
+
+Secured.propTypes = {
+  children: PropTypes.any
 }

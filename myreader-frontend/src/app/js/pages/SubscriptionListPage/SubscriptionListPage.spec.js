@@ -1,10 +1,9 @@
 import {useContext, useEffect} from 'react'
 import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
-import {Router} from 'react-router'
-import {createMemoryHistory} from 'history'
 import {SubscriptionListPage} from './SubscriptionListPage'
 import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
 import NavigationContext from '../../contexts/navigation/NavigationContext'
+import {RouterProvider} from '../../contexts/router'
 
 function TestComponent({children}) {
   const {fetchData} = useContext(NavigationContext)
@@ -16,29 +15,27 @@ function TestComponent({children}) {
   return children
 }
 
+const renderComponent = async () => {
+  await act(async () =>
+    await render(
+      <>
+        <div id='portal-header' />
+        <RouterProvider>
+          <NavigationProvider>
+            <TestComponent>
+              <SubscriptionListPage />
+            </TestComponent>
+          </NavigationProvider>
+        </RouterProvider>
+      </>
+    )
+  )
+}
+
 describe('SubscriptionListPage', () => {
 
-  let history
-
-  const renderComponent = async () => {
-    await act(async () => {
-      render(
-        <>
-          <div id='portal-header' />
-          <Router history={history}>
-            <NavigationProvider>
-              <TestComponent>
-                <SubscriptionListPage />
-              </TestComponent>
-            </NavigationProvider>
-          </Router>
-        </>
-      )
-    })
-  }
-
   beforeEach(() => {
-    history = createMemoryHistory()
+    history.pushState(null, null, '#!/app/subscriptions')
 
     fetch.jsonResponseOnce({
       subscriptions: [
@@ -66,67 +63,87 @@ describe('SubscriptionListPage', () => {
 
   it('should navigate to subscription', async () => {
     await renderComponent()
+    const currentHistoryLength = history.length
 
-    await waitFor(() => fireEvent.click(screen.queryByText('title1')))
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual('/app/subscriptions/1')
+    await waitFor(async () => fireEvent.click(screen.queryByText('title1')))
 
-    await waitFor(() => fireEvent.click(screen.queryByText('title2')))
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual('/app/subscriptions/2')
+    await waitFor(() => {
+      expect(history.length).toEqual(currentHistoryLength + 1) // push
+      expect(document.location.href).toMatch(/\/app\/subscription\?uuid=1$/)
+    })
   })
 
   it('should filter subscriptions by title title1', async () => {
     await renderComponent()
+    const currentHistoryLength = history.length
 
     fireEvent.change(screen.getByRole('search'), {target: {value: 'title1'}})
 
     expect(screen.getByRole('search')).toHaveValue('title1')
-    expect(history.location.search).toEqual('?q=title1')
+    await waitFor(() => {
+      expect(history.length).toEqual(currentHistoryLength) // replace
+      expect(document.location.href).toMatch(/\/app\/subscriptions\?q=title1$/)
+    })
     expect(screen.queryByText('title1')).toBeInTheDocument()
     expect(screen.queryByText('title2')).not.toBeInTheDocument()
   })
 
   it('should filter subscriptions by title title2', async () => {
     await renderComponent()
+    const currentHistoryLength = history.length
 
     fireEvent.change(screen.getByRole('search'), {target: {value: 'title2'}})
 
     expect(screen.getByRole('search')).toHaveValue('title2')
-    expect(history.location.search).toEqual('?q=title2')
+    await waitFor(() => {
+      expect(history.length).toEqual(currentHistoryLength) // replace
+      expect(document.location.href).toMatch(/\/app\/subscriptions\?q=title2$/)
+    })
     expect(screen.queryByText('title1')).not.toBeInTheDocument()
     expect(screen.queryByText('title2')).toBeInTheDocument()
   })
 
   it('should filter subscriptions by title TITLE1', async () => {
     await renderComponent()
+    const currentHistoryLength = history.length
 
     fireEvent.change(screen.getByRole('search'), {target: {value: 'TITLE1'}})
 
     expect(screen.getByRole('search')).toHaveValue('TITLE1')
-    expect(history.location.search).toEqual('?q=TITLE1')
+    await waitFor(() => {
+      expect(history.length).toEqual(currentHistoryLength) // replace
+      expect(document.location.href).toMatch(/\/app\/subscriptions\?q=TITLE1$/)
+    })
     expect(screen.queryByText('title1')).toBeInTheDocument()
     expect(screen.queryByText('title2')).not.toBeInTheDocument()
   })
 
   it('should filter subscriptions by title titl', async () => {
     await renderComponent()
+    const currentHistoryLength = history.length
 
     fireEvent.change(screen.getByRole('search'), {target: {value: 'titl'}})
 
     expect(screen.getByRole('search')).toHaveValue('titl')
-    expect(history.location.search).toEqual('?q=titl')
+    await waitFor(() => {
+      expect(history.length).toEqual(currentHistoryLength) // replace
+      expect(document.location.href).toMatch(/\/app\/subscriptions\?q=titl$/)
+    })
     expect(screen.queryByText('title1')).toBeInTheDocument()
     expect(screen.queryByText('title2')).toBeInTheDocument()
   })
 
   it('should filter subscriptions by title other', async () => {
     await renderComponent()
+    const currentHistoryLength = history.length
 
     fireEvent.change(screen.getByRole('search'), {target: {value: 'other'}})
 
     expect(screen.getByRole('search')).toHaveValue('other')
-    expect(history.location.search).toEqual('?q=other')
+    await waitFor(() => {
+      expect(history.length).toEqual(currentHistoryLength) // replace
+      expect(document.location.href).toMatch(/\/app\/subscriptions\?q=other$/)
+    })
     expect(screen.queryByText('title1')).not.toBeInTheDocument()
     expect(screen.queryByText('title2')).not.toBeInTheDocument()
   })
@@ -153,12 +170,7 @@ describe('SubscriptionListPage', () => {
   })
 
   it('should show filtered subscriptions if search query is set', async () => {
-    await act(async () => {
-      history.push({
-        search: 'q=title1'
-      })
-    })
-
+    history.pushState(null, null, '#!/app/subscriptions?q=title1')
     await renderComponent()
 
     expect(screen.getByRole('search')).toHaveValue('title1')

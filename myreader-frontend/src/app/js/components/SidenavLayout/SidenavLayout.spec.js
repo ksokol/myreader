@@ -1,30 +1,29 @@
-import {Router} from 'react-router'
-import {createMemoryHistory} from 'history'
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {SidenavLayout} from './SidenavLayout'
 import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
+import {RouterProvider} from '../../contexts/router'
 
 const sidenavLayoutNavOpenClass = 'my-sidenav-layout__nav--open'
 const navigationMenuButtonClass = 'navigation-menu-button'
 
+const renderComponent = async () => {
+  await act(async () =>
+    await render(
+      <RouterProvider>
+        <NavigationProvider>
+          <SidenavLayout>expected child</SidenavLayout>
+        </NavigationProvider>
+      </RouterProvider>
+    )
+  )
+}
+
 describe('SidenavLayout', () => {
 
-  let history, capturedListener
-
-  const renderComponent = async () => {
-    await act(async () => {
-      await render(
-        <Router history={history}>
-          <NavigationProvider>
-            <SidenavLayout>expected child</SidenavLayout>
-          </NavigationProvider>
-        </Router>
-      )
-    })
-  }
+  let capturedListener
 
   beforeEach(() => {
-    history = createMemoryHistory()
+    history.pushState(null, null, '#!/app/irrelevant')
     capturedListener = []
 
     window.matchMedia = media => ({

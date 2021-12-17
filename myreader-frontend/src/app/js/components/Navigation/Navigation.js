@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import createSubscriptionNavigation from './SubscriptionNavigation/createSubscriptionNavigation'
 import {NavigationItem} from './NavigationItem'
 import {SubscriptionNavigationItem} from './SubscriptionNavigation/SubscriptionNavigationItem'
-import {SUBSCRIPTIONS_URL} from '../../constants'
+import {SUBSCRIPTIONS_PAGE_PATH} from '../../constants'
 import {useSettings} from '../../contexts/settings'
 import {useNavigation} from '../../hooks/navigation'
 import {BookmarkNavigationItem} from './BookmarkNavigationItem'
@@ -45,7 +45,7 @@ export function Navigation({onClick}) {
       />
       <NavigationItem
         title='Subscriptions'
-        to={SUBSCRIPTIONS_URL}
+        to={{pathname: SUBSCRIPTIONS_PAGE_PATH}}
         onClick={onClick}
       />
       <SettingsNavigationItem

@@ -1,9 +1,8 @@
 import {render, fireEvent, screen, act} from '@testing-library/react'
-import {Router, Route, Switch} from 'react-router-dom'
-import {createMemoryHistory} from 'history'
 import iro from '@jaames/iro'
 import {SubscriptionPage} from './SubscriptionPage'
 import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
+import {RouterProvider} from '../../contexts/router'
 
 const expectedError = 'expectedError'
 const expectedTitle = 'expected title'
@@ -11,30 +10,24 @@ const expectedOrigin = 'http://example.com'
 const roleTitleValidation = 'title-validation'
 const roleChipRemoveButton = 'chip-remove-button'
 const roleDialogErrorMessage = 'dialog-error-message'
+const roleDialogInfoMessage = 'dialog-info-message'
 const placeholderExclusionPatternInput = 'Enter an exclusion pattern'
 const viewsSubscriptionPage1Subscription = 'views/SubscriptionPage/1/subscription'
+const viewsNavigationView = 'views/NavigationView'
+
+const renderComponent = async () => {
+  await act(async () => {
+    render(
+      <RouterProvider>
+        <NavigationProvider>
+          <SubscriptionPage />
+        </NavigationProvider>
+      </RouterProvider>
+    )
+  })
+}
 
 describe('SubscriptionPage', () => {
-
-  let history, subscription
-
-  const renderComponent = async () => {
-    await act(async () => {
-      render(
-        <Router history={history}>
-          <NavigationProvider>
-            <Switch>
-              <Route
-                exact={true}
-                path='/:uuid'
-                component={SubscriptionPage}
-              />
-            </Switch>
-          </NavigationProvider>
-        </Router>
-      )
-    })
-  }
 
   let response
 
@@ -59,8 +52,7 @@ describe('SubscriptionPage', () => {
       ]
     }
 
-    history = createMemoryHistory()
-    history.push({pathname: '1'})
+    history.pushState(null, null, '#!/app/subscription?uuid=1')
 
     fetch.jsonResponseOnce(response)
   })
@@ -130,7 +122,9 @@ describe('SubscriptionPage', () => {
     fireEvent.click(screen.getByText('use'))
     expect(screen.queryByText('use')).not.toBeInTheDocument()
 
-    await act(async () => await fireEvent.click(screen.getByText('Save')))
+    fetch.jsonResponseOnce({subscription: response.subscription})
+    fetch.jsonResponseOnce({content: []})
+    await act(async () => fireEvent.click(screen.getByText('Save')))
 
     expect(fetch.nthRequest(2)).toMatchRequest({
       method: 'PATCH',
@@ -143,6 +137,8 @@ describe('SubscriptionPage', () => {
         color: '#DDDDDD',
       },
     })
+
+    fireEvent.click(screen.getByText('Updated'))
   })
 
   it('should disable save and delete buttons if subscription is still saving', async () => {
@@ -165,15 +161,17 @@ describe('SubscriptionPage', () => {
 
     fetch.jsonResponseOnce({subscription: response.subscription})
     fetch.jsonResponseOnce({content: []})
-    await act(async () => await fireEvent.click(screen.getByText('Save')))
+    await act(async () => fireEvent.click(screen.getByText('Save')))
 
     expect(screen.getByText('Save')).toBeEnabled()
     expect(screen.getByText('Delete')).toBeEnabled()
-    expect(screen.queryByRole('dialog-info-message')).toHaveTextContent('Updated')
+    expect(screen.queryByRole(roleDialogInfoMessage)).toHaveTextContent('Updated')
     expect(fetch.mostRecent()).toMatchRequest({
       method: 'GET',
-      url: 'views/NavigationView'
+      url: viewsNavigationView
     })
+
+    fireEvent.click(screen.getByText('Updated'))
   })
 
   it('should show url validation message', async() => {
@@ -197,7 +195,7 @@ describe('SubscriptionPage', () => {
   it('should remove validation message if subscription should be saved again', async () => {
     await renderComponent()
 
-    fetch.jsonResponseOnce(subscription)
+    fetch.rejectResponse({status: 400, data: {errors: [{field: 'origin', defaultMessage: expectedError}]}})
     await act(async () => fireEvent.click(screen.getByText('Save')))
     fetch.responsePending()
     await act(async () => fireEvent.click(screen.getByText('Save')))
@@ -213,13 +211,15 @@ describe('SubscriptionPage', () => {
 
     expect(screen.queryByRole(roleTitleValidation)).not.toBeInTheDocument()
     expect(screen.queryByRole(roleDialogErrorMessage)).toHaveTextContent(expectedError)
+    fireEvent.click(screen.queryByRole(roleDialogErrorMessage))
   })
 
   it('should remove subscription', async () => {
     await renderComponent()
     fetch.resetMocks()
 
-    fetch.jsonResponseOnce({status: 204})
+    fetch.jsonResponse({status: 204})
+    fetch.jsonResponse({status: 200, subscriptions: [], subscriptionEntryTags: []})
     await act(async () => fireEvent.click(screen.getByText('Delete')))
     await act(async () => fireEvent.click(screen.getByText('Yes')))
 
@@ -227,6 +227,12 @@ describe('SubscriptionPage', () => {
       method: 'DELETE',
       url: viewsSubscriptionPage1Subscription
     })
+    expect(fetch.nthRequest(1)).toMatchRequest({
+      method: 'GET',
+      url: viewsNavigationView
+    })
+
+    fireEvent.click(screen.queryByRole(roleDialogInfoMessage))
   })
 
   it('should fetch subscriptions if subscription has been removed', async() => {
@@ -238,8 +244,10 @@ describe('SubscriptionPage', () => {
 
     expect(fetch.mostRecent()).toMatchRequest({
       method: 'GET',
-      url: 'views/NavigationView'
+      url: viewsNavigationView
     })
+
+    fireEvent.click(screen.queryByRole(roleDialogInfoMessage))
   })
 
   it('should disable save and delete buttons if subscription is still removing', async () => {
@@ -262,27 +270,23 @@ describe('SubscriptionPage', () => {
 
     expect(screen.getByText('Save')).toBeEnabled()
     expect(screen.getByText('Delete')).toBeEnabled()
+
+    fireEvent.click(screen.queryByRole(roleDialogErrorMessage))
   })
 
   it('should redirect to subscription list page if subscription has been removed', async () => {
+    const currentHistoryLength = history.length
     await renderComponent()
 
     fetch.jsonResponseOnce({status: 204})
     await act(async () => fireEvent.click(screen.getByText('Delete')))
     await act(async () => fireEvent.click(screen.getByText('Yes')))
 
-    expect(history.action).toEqual('REPLACE')
-    expect(history.location.pathname).toEqual('/app/subscriptions')
-  })
+    expect(history.length).toEqual(currentHistoryLength) // replace
+    expect(document.location.href).toMatch(/\/app\/subscriptions$/)
 
-  it('should show message if subscription has been deleted', async () => {
-    await renderComponent()
-
-    fetch.jsonResponseOnce({status: 204})
-    await act(async () => fireEvent.click(screen.getByText('Delete')))
-    await act(async () => fireEvent.click(screen.getByText('Yes')))
-
-    expect(screen.queryByRole('dialog-info-message')).toHaveTextContent('Subscription deleted')
+    expect(screen.queryByRole(roleDialogInfoMessage)).toHaveTextContent('Subscription deleted')
+    fireEvent.click(screen.queryByRole(roleDialogInfoMessage))
   })
 
   it('should show message if subscription could not be fetched', async () => {
@@ -291,6 +295,7 @@ describe('SubscriptionPage', () => {
     await renderComponent()
 
     expect(screen.queryByRole(roleDialogErrorMessage)).toHaveTextContent(expectedError)
+    fireEvent.click(screen.queryByRole(roleDialogErrorMessage))
   })
 
   it('should remove subscription color', async () => {
@@ -359,7 +364,7 @@ describe('SubscriptionPage', () => {
       ]
     })
     fireEvent.change(screen.getByPlaceholderText(placeholderExclusionPatternInput), {target: {value: 'anPattern'}})
-    await act(async () => await fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13}))
+    await act(async () => fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13}))
 
     expect(screen.getByPlaceholderText(placeholderExclusionPatternInput)).toBeEnabled()
     expect(screen.getAllByRole(roleChipRemoveButton)).toHaveLength(4)
@@ -374,9 +379,10 @@ describe('SubscriptionPage', () => {
 
     fetch.rejectResponse({data: expectedError})
     fireEvent.change(screen.getByPlaceholderText(placeholderExclusionPatternInput), {target: {value: 'anPattern'}})
-    await act(async () => await fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13}))
+    await act(async () => fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13}))
 
     expect(screen.getByRole(roleDialogErrorMessage)).toHaveTextContent(expectedError)
+    fireEvent.click(screen.queryByRole(roleDialogErrorMessage))
   })
 
   it('should show exclusion pattern after new exclusion pattern has been saved', async () => {
@@ -389,7 +395,7 @@ describe('SubscriptionPage', () => {
       ]
     })
     fireEvent.change(screen.getByPlaceholderText(placeholderExclusionPatternInput), {target: {value: 'anPattern'}})
-    await act(async () => await fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13}))
+    await act(async () => fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13}))
 
     expect(screen.getByPlaceholderText(placeholderExclusionPatternInput)).toBeEnabled()
     expect(screen.getByText('c')).toBeVisible()
@@ -418,7 +424,7 @@ describe('SubscriptionPage', () => {
         {uuid: '400', pattern: 'anPattern', hitCount: 0}
       ]
     })
-    await (act(async() => await fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0])))
+    await (act(async() => fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0])))
 
     expect(screen.getByPlaceholderText(placeholderExclusionPatternInput)).toBeEnabled()
     expect(screen.getAllByRole(roleChipRemoveButton)).toHaveLength(2)
@@ -430,16 +436,17 @@ describe('SubscriptionPage', () => {
     await renderComponent()
 
     fetch.rejectResponse({data: expectedError})
-    await act(async () => await fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0]))
 
     expect(screen.getByRole(roleDialogErrorMessage)).toHaveTextContent(expectedError)
+    fireEvent.click(screen.queryByRole(roleDialogErrorMessage))
   })
 
   it('should delete exclusion pattern', async () => {
     await renderComponent()
 
     fetch.rejectResponse({data: expectedError})
-    await act(async () => await fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0]))
+    await act(async () => fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0]))
 
     expect(fetch.mostRecent()).toMatchRequest({
       method: 'DELETE',

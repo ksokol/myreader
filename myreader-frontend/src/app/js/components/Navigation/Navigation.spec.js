@@ -1,36 +1,39 @@
-import {Router} from 'react-router'
-import {createMemoryHistory} from 'history'
-import {act, fireEvent, render, screen} from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {Navigation} from './Navigation'
 import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 import {SecurityProvider} from '../../contexts/security/SecurityProvider'
+import {RouterProvider} from '../../contexts/router'
 
-const appEntries = '/app/entries'
 const selectedNavigationItemClass = 'selected-navigation-item'
+
+const renderComponent = async (props) => {
+  return await act(async () =>
+    await render(
+      <RouterProvider>
+        <SecurityProvider>
+          <SettingsProvider>
+            <NavigationProvider>
+              <Navigation {...props} />
+            </NavigationProvider>
+          </SettingsProvider>
+        </SecurityProvider>
+      </RouterProvider>
+    )
+  )
+}
+
+const byText = text => {
+  const sibling = screen.getByText(text).nextElementSibling
+  return sibling ? sibling.textContent : null
+}
 
 describe('Navigation', () => {
 
-  let props, history
-
-  const renderComponent = async () => {
-    return await act(async () => {
-      return await render(
-        <Router history={history}>
-          <SecurityProvider>
-            <SettingsProvider>
-              <NavigationProvider>
-                <Navigation {...props} />
-              </NavigationProvider>
-            </SettingsProvider>
-          </SecurityProvider>
-        </Router>
-      )
-    })
-  }
+  let props
 
   beforeEach(() => {
-    history = createMemoryHistory()
+    history.pushState(null, null, '#!/app/entries')
 
     localStorage.setItem('myreader-settings', '{"showUnseenEntries": false}')
     localStorage.setItem('myreader-security', '{"authorized":true}')
@@ -51,7 +54,7 @@ describe('Navigation', () => {
   })
 
   it('should render navigation labels', async () => {
-    await renderComponent()
+    await renderComponent(props)
 
     expect(screen.getByText('all')).toBeInTheDocument()
     expect(screen.getByText('group 1')).toBeInTheDocument()
@@ -65,41 +68,54 @@ describe('Navigation', () => {
   })
 
   it('should navigate to route if clicked on navigation item', async () => {
-    await renderComponent()
+    let currentHistoryLength = history.length
+    await renderComponent(props)
 
-    fireEvent.click(screen.getByText('all'))
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual(appEntries)
-    expect(history.location.search).toEqual('')
+    await act(async () => fireEvent.click(screen.getByText('all')))
+    await waitFor(() => {
+      expect(history.length).toEqual(currentHistoryLength) // push
+      expect(document.location.href).toMatch(/\/app\/entries$/)
+    })
+    currentHistoryLength = history.length
 
-    fireEvent.click(screen.getByText('group 1'))
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual(appEntries)
-    expect(history.location.search).toEqual('?feedTagEqual=group 1')
+    await act(async () => fireEvent.click(screen.getByText('group 1')))
+    await waitFor(() => {
+      expect(history.length).toBeGreaterThan(currentHistoryLength) // push
+      expect(document.location.href).toMatch(/\/app\/entries\?feedTagEqual=group%201$/)
+    })
+    currentHistoryLength = history.length
 
-    fireEvent.click(screen.getByText('group 2'))
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual(appEntries)
-    expect(history.location.search).toEqual('?feedTagEqual=group 2')
+    await act(async () => fireEvent.click(screen.getByText('group 2')))
+    await waitFor(() => {
+      expect(history.length).toBeGreaterThan(currentHistoryLength) // push
+      expect(document.location.href).toMatch(/\/app\/entries\?feedTagEqual=group%202$/)
+    })
+    currentHistoryLength = history.length
 
-    fireEvent.click(screen.getByText('subscription 3'))
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual(appEntries)
-    expect(history.location.search).toEqual('?feedUuidEqual=3')
+    await act(async () => fireEvent.click(screen.getByText('subscription 3')))
+    await waitFor(() => {
+      expect(history.length).toBeGreaterThan(currentHistoryLength) // push
+      expect(document.location.href).toMatch(/\/app\/entries\?feedUuidEqual=3$/)
+    })
+    currentHistoryLength = history.length
 
-    fireEvent.click(screen.getByText('subscription 4'))
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual(appEntries)
-    expect(history.location.search).toEqual('?feedUuidEqual=4')
+    await act(async () => fireEvent.click(screen.getByText('subscription 4')))
+    await waitFor(() => {
+      expect(history.length).toBeGreaterThan(currentHistoryLength) // push
+      expect(document.location.href).toMatch(/\/app\/entries\?feedUuidEqual=4$/)
+    })
+    currentHistoryLength = history.length
 
-    fireEvent.click(screen.getByText('Subscriptions'))
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual('/app/subscriptions')
-    expect(history.location.search).toEqual('')
+    await act(async () => fireEvent.click(screen.getByText('Subscriptions')))
+    await waitFor(() => {
+      expect(history.length).toBeGreaterThan(currentHistoryLength) // push
+      expect(document.location.href).toMatch(/\/app\/subscriptions$/)
+    })
+    currentHistoryLength = history.length
 
     fireEvent.click(screen.getByText('Settings'))
     fireEvent.click(screen.getByText('Add subscription'))
-    await act(async () => await fireEvent.click(screen.getByText('Logout')))
+    await act(async () => fireEvent.click(screen.getByText('Logout')))
 
     expect(props.onClick).toHaveBeenCalledTimes(6)
   })
@@ -107,7 +123,7 @@ describe('Navigation', () => {
   it('should render navigation items with subscriptions.unseen > 0', async () => {
     localStorage.setItem('myreader-settings', '{"showUnseenEntries": true}')
 
-    await renderComponent()
+    await renderComponent(props)
 
     expect(screen.getByText('all')).toBeInTheDocument()
     expect(screen.getByText('group 1')).toBeInTheDocument()
@@ -121,13 +137,7 @@ describe('Navigation', () => {
   })
 
   it('should render badge', async () => {
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    const byText = text => {
-      const sibling = screen.getByText(text).nextElementSibling
-      return sibling ? sibling.textContent : null
-    }
-
-    await renderComponent()
+    await renderComponent(props)
 
     expect(byText('all')).toEqual('5')
     expect(byText('group 1')).toEqual('2')
@@ -138,7 +148,7 @@ describe('Navigation', () => {
   })
 
   it('should render bookmark items', async () => {
-    await renderComponent()
+    await renderComponent(props)
 
     fireEvent.click(screen.getByText('Bookmarks'))
 
@@ -147,7 +157,7 @@ describe('Navigation', () => {
   })
 
   it('should hide bookmark items', async () => {
-    await renderComponent()
+    await renderComponent(props)
 
     fireEvent.click(screen.getByText('Bookmarks'))
     fireEvent.click(screen.getByText('Bookmarks'))
@@ -157,22 +167,26 @@ describe('Navigation', () => {
   })
 
   it('should navigate to route if bookmark item clicked', async () => {
-    await renderComponent()
+    let currentHistoryLength = history.length
+    await renderComponent(props)
 
-    fireEvent.click(screen.getByText('Bookmarks'))
-    fireEvent.click(screen.getByText('tag1'))
+    await act(async () => fireEvent.click(screen.getByText('Bookmarks')))
+    await act(async () => {
+      fireEvent.click(screen.getByText('tag1'))
+      window.dispatchEvent(new Event('popstate'))
+    })
 
-    expect(history.action).toEqual('PUSH')
-    expect(history.location.pathname).toEqual(appEntries)
-    expect(history.location.search).toEqual('?seenEqual=*&entryTagEqual=tag1')
+    await waitFor(() => {
+      expect(history.length).toBeGreaterThan(currentHistoryLength) // push
+      expect(document.location.href).toMatch(/\/app\/entries\?seenEqual=\*&entryTagEqual=tag1$/)
+    })
+
     expect(props.onClick).toHaveBeenCalled()
   })
 
   it('should select bookmark item', async () => {
-    history.push({
-      search: '?entryTagEqual=tag1'
-    })
-    await renderComponent()
+    history.pushState(null, null, '#!/app/entries?entryTagEqual=tag1')
+    await renderComponent(props)
 
     fireEvent.click(screen.getByText('Bookmarks'))
 
@@ -181,7 +195,7 @@ describe('Navigation', () => {
   })
 
   it('should not select bookmark item', async () => {
-    await renderComponent()
+    await renderComponent(props)
 
     fireEvent.click(screen.getByText('Bookmarks'))
 

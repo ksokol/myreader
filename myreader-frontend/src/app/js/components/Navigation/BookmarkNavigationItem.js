@@ -2,10 +2,10 @@ import {useState} from 'react'
 import PropTypes from 'prop-types'
 import {NavigationItem} from './NavigationItem'
 import {ENTRIES_PAGE_PATH} from '../../constants'
-import {useSearchParams} from '../../hooks/router'
+import {useRouter} from '../../contexts/router'
 
 export function BookmarkNavigationItem({onClick, subscriptionEntryTags}) {
-  const searchParams = useSearchParams()
+  const {route} = useRouter()
   const [open, setOpen] = useState(false)
 
   return (
@@ -26,7 +26,7 @@ export function BookmarkNavigationItem({onClick, subscriptionEntryTags}) {
           {subscriptionEntryTags.map(tag => (
             <NavigationItem
               key={tag}
-              selected={searchParams.entryTagEqual === tag}
+              selected={route.searchParams.entryTagEqual === tag}
               to={{
                 pathname: ENTRIES_PAGE_PATH,
                 search: `?seenEqual=*&entryTagEqual=${tag}`

@@ -1,8 +1,7 @@
-import React from 'react'
 import PropTypes from 'prop-types'
 import {NavigationItem} from '../NavigationItem'
 import {ENTRIES_PAGE_PATH} from '../../../constants'
-import {useSearchParams} from '../../../hooks/router'
+import {useRouter} from '../../../contexts/router'
 
 function isOpen(searchParams, item) {
   return searchParams.feedTagEqual === item.tag
@@ -40,25 +39,25 @@ function generateEntriesPath(feedTagEqual, feedUuidEqual) {
 }
 
 export function SubscriptionNavigationItem(props) {
-  const searchParams = useSearchParams()
+  const {route} = useRouter()
   const {item, onClick} = props
 
   return [
     <NavigationItem
-      selected={isSelected(searchParams, item.tag, item.uuid)}
+      selected={isSelected(route.searchParams, item.tag, item.uuid)}
       to={generateEntriesPath(item.tag, item.uuid)}
       onClick={onClick}
       key={item.uuid}
       title={item.title}
       badgeCount={item.unseen}
     />,
-    isVisible(searchParams, item) && (
+    isVisible(route.searchParams, item) && (
       <ul
         key='subscriptions'
       >
         {item.subscriptions.map(subscription => (
           <NavigationItem
-            selected={isSelected(searchParams, subscription.tag, subscription.uuid)}
+            selected={isSelected(route.searchParams, subscription.tag, subscription.uuid)}
             to={generateEntriesPath(subscription.tag, subscription.uuid)}
             onClick={onClick}
             key={subscription.uuid}

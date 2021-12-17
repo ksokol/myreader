@@ -1,7 +1,6 @@
-import React from 'react'
 import PropTypes from 'prop-types'
-import {Link} from 'react-router-dom'
 import {Badge} from '../Badge/Badge'
+import {Link} from '../router'
 
 export function NavigationItem({
   className = '',
@@ -29,7 +28,10 @@ export function NavigationItem({
 
 NavigationItem.propTypes = {
   className: PropTypes.string,
-  to: PropTypes.any.isRequired,
+  to: PropTypes.shape({
+    pathname: PropTypes.string,
+    search: PropTypes.string,
+  }),
   title: PropTypes.string.isRequired,
   badgeCount: PropTypes.number,
   selected: PropTypes.bool,

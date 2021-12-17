@@ -1,10 +1,10 @@
 import './LoginPage.css'
-import React, {useEffect} from 'react'
-import {Redirect} from 'react-router-dom'
+import {useEffect} from 'react'
 import {LoginForm} from './LoginForm/LoginForm'
 import {ENTRIES_PAGE_PATH} from '../../constants'
 import {useSecurity} from '../../contexts/security'
 import {useLogin} from './login'
+import {Redirect} from '../../components/router'
 
 function getAttribute(name) {
   return document.querySelector('head').getAttribute(name)
@@ -22,7 +22,7 @@ export function LoginPage() {
 
   return authorized ? (
     <Redirect
-      to={ENTRIES_PAGE_PATH}
+      pathname={ENTRIES_PAGE_PATH}
     />
   ) : (
     <div className='login-page'>
