@@ -4,7 +4,7 @@
   "scripts": {
     "build": "export NODE_ENV=production && webpack --bail --progress --profile",
     "test": "export NODE_ENV=test && jest --coverage --ci --silent",
-    "start": "export NODE_ENV=development && webpack serve  --history-api-fallback --progress",
+    "start": "export NODE_ENV=development && webpack serve --history-api-fallback --progress",
     "report": "export NODE_ENV=production && webpack --bail --progress --profile && webpack-bundle-analyzer dist/stats.json",
     "lint": "npm run lint:js-report && npm run lint:lockfile",
     "lint:js-report": "eslint -f json -o build/reports/eslint.json src/app/js",
@@ -44,7 +44,6 @@
     "eslint-plugin-unicorn": "39.0.0",
     "html-webpack-plugin": "5.5.0",
     "jest": "27.4.3",
-    "jest-sonar-reporter": "2.0.0",
     "lockfile-lint": "4.6.2",
     "lodash.isequal": "4.5.0",
     "mini-css-extract-plugin": "2.4.5",
@@ -60,9 +59,5 @@
   },
   "directories": {
     "test": "test"
-  },
-  "jestSonar": {
-    "reportPath": "build",
-    "reportFile": "TESTS.xml"
   }
 }

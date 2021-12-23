@@ -1,7 +1,3 @@
-plugins {
-  id "org.sonarqube" version "3.0"
-}
-
 configure(allprojects) {
   apply plugin: 'idea'
 
@@ -32,29 +28,3 @@ task copyFrontend(type: Sync, dependsOn: ':myreader-frontend:build') {
 
 task testBackend(dependsOn: ':myreader-backend:test')
 task testFrontend(dependsOn: ':myreader-frontend:test')
-
-sonarqube {
-  properties {
-    property "sonar.projectName", "MyReader"
-    property "sonar.projectDescription", "MyReader is a rss reader written in Java."
-    property "sonar.projectKey", "MyReader:MyReader"
-    property "sonar.links.homepage", "https://github.com/ksokol/myreader"
-    property "sonar.links.ci", "https://travis-ci.org/ksokol/myreader"
-    property "sonar.links.issue", "https://github.com/ksokol/myreader/issues"
-    property "sonar.links.scm", "https://github.com/ksokol/myreader"
-    property "sonar.links.scm_dev", "scm:git:git@github.com:ksokol/myreader.git"
-    property "sonar.testExecutionReportPaths", ["${project(':myreader-frontend').buildDir}/TESTS.xml"]
-  }
-}
-
-project(':myreader-frontend') {
-  sonarqube {
-    properties {
-      property "sonar.sources", "${projectDir}/src/app/js"
-      property "sonar.tests", ["${projectDir}/src/app/js"]
-      property "sonar.test.inclusions", ["**/*.spec.js"]
-      property "sonar.javascript.lcov.reportPaths", "${buildDir}/reports/coverage/lcov.info"
-      property "sonar.eslint.reportPaths", "${buildDir}/reports/eslint.json"
-    }
-  }
-}

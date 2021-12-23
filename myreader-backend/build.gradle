@@ -91,7 +91,6 @@ springBoot {
 
 dependencyCheck {
   failBuildOnCVSS = 7
-  suppressionFile = "${projectDir}/owasp/cve_suppress.xml"
   analyzers {
     jarEnabled = false
   }
