@@ -1,5 +1,4 @@
 import {render, fireEvent, screen, act} from '@testing-library/react'
-import iro from '@jaames/iro'
 import {SubscriptionPage} from './SubscriptionPage'
 import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
 import {RouterProvider} from '../../contexts/router'
@@ -118,7 +117,7 @@ describe('SubscriptionPage', () => {
 
     fireEvent.click(screen.queryByRole('color-picker-button'))
     expect(screen.getByText('use')).toBeInTheDocument()
-    act(() => iro.mock.onChange('#DDDDDD'))
+    fireEvent.change(screen.getByRole('color-picker'), {target: {value: '#DDDDDD'}})
     fireEvent.click(screen.getByText('use'))
     expect(screen.queryByText('use')).not.toBeInTheDocument()
 
@@ -134,7 +133,7 @@ describe('SubscriptionPage', () => {
         title: 'changed title',
         origin: 'changed origin',
         tag: 'changed tag',
-        color: '#DDDDDD',
+        color: '#dddddd',
       },
     })
 

@@ -1,16 +1,20 @@
 import {useState} from 'react'
 import PropTypes from 'prop-types'
 import {Button} from '../../../components/Buttons'
-import {ColorPicker} from '../../../components/ColorPicker/ColorPicker'
 import {Dialog} from '../../../components/Dialog/Dialog'
 
 export function SubscriptionColorPicker({color, onSelect, onClose}) {
   const [currentColor, setCurrentColor] = useState(color)
 
   const body =
-    <ColorPicker
-      color={currentColor}
-      onChange={setCurrentColor}
+    <input
+      type='color'
+      role='color-picker'
+      className='my-subscription-edit-form__color-dialog'
+      value={currentColor || '#FFFFFF'}
+      onChange={(event) => {
+        setCurrentColor(event.target.value)
+      }}
     />
 
   const footer =
