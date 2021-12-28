@@ -32,7 +32,6 @@ module.exports = function(env) {
   }
 
   config.optimization = {
-    runtimeChunk: true,
     noEmitOnErrors: true,
     concatenateModules: true,
     minimizer: [
