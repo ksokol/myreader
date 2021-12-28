@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,6 +40,12 @@ public class SecurityConfig {
       auth
         .userDetailsService(username -> new User("user", userPassword, true, true, true, true, Collections.emptyList()))
         .passwordEncoder(new BCryptPasswordEncoder());
+    }
+
+    @Override
+    public void configure(WebSecurity web) {
+      web.ignoring()
+        .antMatchers("index.html", "/app/**");
     }
   }
 

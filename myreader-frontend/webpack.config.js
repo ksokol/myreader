@@ -1,11 +1,10 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const WebpackPwaManifest = require('webpack-pwa-manifest')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const TerserPlugin = require('terser-webpack-plugin')
-const WorkboxPlugin = require('workbox-webpack-plugin')
+const CopyPlugin = require("copy-webpack-plugin")
 
 const ENV = process.env.npm_lifecycle_event
 const isTest = ENV === 'test' || ENV === 'test-watch'
@@ -83,9 +82,9 @@ module.exports = function(env) {
   if (!isTest) {
     config.plugins.push(
       new HtmlWebpackPlugin({
-        template: './src/index.html',
+        template: './public/index.html',
         inject: 'body',
-        favicon: './src/app/img/favicon.ico',
+        //favicon: './public/favicon.ico',
         minify: {
           collapseWhitespace: true
         },
@@ -94,40 +93,19 @@ module.exports = function(env) {
           'commit': env?.commitId || 'unknown',
         },
       }),
-
       new MiniCssExtractPlugin({
         filename: 'app/[name].[contenthash].css',
       }),
-    )
-  }
-
-  if (isProd) {
-    config.plugins.push(
-      new WebpackPwaManifest({
-        filename: 'manifest.[hash].json',
-        includeDirectory: true,
-        name: 'MyReader',
-        short_name: 'MyReader',
-        lang: 'en-US',
-        background_color: '#fff',
-        theme_color: '#3f51b5',
-        orientation: 'any',
-        display: 'standalone',
-        icons: [
+      new CopyPlugin({
+        patterns: [
           {
-            src: path.resolve('./src/app/img/favicon.png'),
-            destination: 'assets',
-            sizes: [36, 48, 72, 96, 128, 192, 256, 384, 512],
-            type: 'image/png'
-          }
-        ]
-      }),
-      new WorkboxPlugin.GenerateSW({
-        clientsClaim: true,
-        skipWaiting: true,
-        inlineWorkboxRuntime: false,
-        cleanupOutdatedCaches: true,
-        offlineGoogleAnalytics: false,
+            from: 'public',
+            to: path.resolve('./dist'),
+            globOptions: {
+              ignore: ['**/index.html'],
+            },
+          },
+        ],
       })
     )
   }
