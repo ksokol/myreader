@@ -1,4 +1,4 @@
-import {useCallback, useReducer} from 'react'
+import {useCallback, useEffect, useReducer} from 'react'
 import {api} from '../../api'
 import {SUBSCRIPTION_ENTRIES} from '../../constants'
 
@@ -9,6 +9,7 @@ function reducer(state, action) {
       ...state,
       entries: [...state.entries, ...action.entries],
       nextPage: action.nextPage,
+      loadNextPage: false,
     }
   }
   case 'update_entry': {
@@ -22,6 +23,12 @@ function reducer(state, action) {
       ...state,
       entries: [],
       nextPage: null
+    }
+  }
+  case 'load_next_page': {
+    return {
+      ...state,
+      loadNextPage: true,
     }
   }
   case 'loading': {
@@ -55,6 +62,7 @@ export function useEntries() {
     lastError: null,
     entries: [],
     nextPage: null,
+    loadNextPage: false,
   })
 
   const fetchEntries = useCallback(async query => {
@@ -100,13 +108,24 @@ export function useEntries() {
     dispatch({type: 'clear_entries'})
   }, [])
 
+  const loadNextPage = useCallback(() => {
+    dispatch({type: 'load_next_page'})
+  }, [])
+
+  useEffect(() => {
+    if (state.loadNextPage) {
+      fetchEntries(state.nextPage)
+    }
+  }, [fetchEntries, state.loadNextPage, state.nextPage])
+
   return {
     entries: state.entries,
-    nextPage: state.nextPage,
+    hasNextPage: !!state.nextPage,
     loading: state.loading,
     lastError: state.lastError,
     fetchEntries,
     changeEntry,
     clearEntries,
+    loadNextPage,
   }
 }

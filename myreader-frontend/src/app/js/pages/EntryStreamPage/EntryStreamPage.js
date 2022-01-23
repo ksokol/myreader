@@ -29,12 +29,13 @@ export function EntryStreamPage() {
 
   const {
     entries,
-    nextPage,
+    hasNextPage,
     loading,
     lastError,
     fetchEntries,
     changeEntry,
-    clearEntries
+    clearEntries,
+    loadNextPage,
   } = useEntries()
 
   const {
@@ -118,11 +119,11 @@ export function EntryStreamPage() {
       listPanel={
         <EntryList
           entries={entries}
-          nextPage={nextPage}
+          hasNextPage={hasNextPage}
           loading={loading}
           entryInFocusUuid={entryInFocusUuid}
           onChangeEntry={changeEntry}
-          onLoadMore={fetchEntries}
+          onLoadMore={loadNextPage}
         />
       }
     />

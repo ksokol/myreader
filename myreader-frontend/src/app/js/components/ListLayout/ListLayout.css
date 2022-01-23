@@ -3,6 +3,11 @@
   flex-direction: column;
 }
 
+.my-list-layout__list-content {
+  display: flex;
+  flex-direction: column;
+}
+
 @media (min-width: 1280px) {
   .my-list-layout__list-panel {
     height: 100%;
