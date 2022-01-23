@@ -1,17 +1,21 @@
 import {render, fireEvent, waitFor, screen, act} from '@testing-library/react'
 import {SubscribeNavigationItem} from './SubscribeNavigationItem'
 import {RouterProvider} from '../../../contexts/router'
+import {NavigationProvider} from '../../../contexts/navigation/NavigationProvider'
 
 const expectedUrl = 'expected url'
 const expectedError = 'expected error'
 const dialogErrorMessageRole = 'dialog-error-message'
 const textAddSubscription = 'Add subscription'
+const roleDialogInfoMessage = 'dialog-info-message'
 
 const renderComponent = async (props) => {
   return await act(async () =>
     await render(
       <RouterProvider>
-        <SubscribeNavigationItem {...props} />
+        <NavigationProvider>
+          <SubscribeNavigationItem {...props} />
+        </NavigationProvider>
       </RouterProvider>
     )
   )
@@ -69,11 +73,27 @@ describe('SubscribeNavigationItem', () => {
     fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(screen.getByRole('dialog-info-message')).toHaveTextContent('Subscribed')
-    fireEvent.click(screen.getByRole('dialog-info-message'))
+    expect(screen.getByRole(roleDialogInfoMessage)).toHaveTextContent('Subscribed')
+    fireEvent.click(screen.getByRole(roleDialogInfoMessage))
+  })
+
+  it('should fetch navigation data when the call to the api succeeded', async () => {
+    fetch.jsonResponse({subscriptions: []})
+    fetch.jsonResponseOnce({uuid: 'uuid1'})
+    await renderComponent(props)
+    fireEvent.click(screen.getByText(textAddSubscription))
+    fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
+    await act(async () => fireEvent.click(screen.getByRole('button')))
+
+    expect(fetch.mostRecent()).toMatchRequest({
+      method: 'GET',
+      url: 'views/NavigationView',
+    })
+    fireEvent.click(screen.getByText('Subscribed'))
   })
 
   it('should redirect to the feed detail page when the call to the api succeeded', async () => {
+    fetch.jsonResponse({subscriptions: []})
     const currentHistoryLength = history.length
     fetch.jsonResponseOnce({uuid: 'uuid1'})
     await renderComponent(props)
@@ -86,7 +106,6 @@ describe('SubscribeNavigationItem', () => {
       expect(document.location.href).toMatch(/\/app\/subscription\?uuid=uuid1$/)
       expect(props.onClick).toHaveBeenCalled()
     })
-    fireEvent.click(screen.getByRole('dialog-info-message'))
   })
 
   it('should present validation errors when the call to the api failed with an validation error', async () => {

@@ -9,11 +9,13 @@ import {Button} from '../../Buttons'
 import {Input} from '../../Input/Input'
 import {useSubscribe} from './subscribe'
 import {useRouter} from '../../../contexts/router'
+import {useNavigation} from '../../../hooks/navigation'
 
 function SubscribeDialog({onClose}) {
-  const [origin, setOrigin] = useState('')
   const {replaceRoute} = useRouter()
   const {pending, error, uuid, validations, subscribe} = useSubscribe()
+  const {fetchData} = useNavigation()
+  const [origin, setOrigin] = useState('')
 
   useEffect(() => {
     if (error) {
@@ -24,14 +26,14 @@ function SubscribeDialog({onClose}) {
   useEffect(() => {
     if (uuid) {
       toast('Subscribed')
+      fetchData()
       replaceRoute({
         pathname: SUBSCRIPTION_PAGE_PATH,
         search: `uuid=${uuid}`
       })
       onClose()
-
     }
-  }, [replaceRoute, onClose, uuid])
+  }, [replaceRoute, onClose, uuid, fetchData])
 
   const body = (
     <form
