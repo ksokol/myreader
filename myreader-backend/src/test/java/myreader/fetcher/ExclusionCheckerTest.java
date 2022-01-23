@@ -9,50 +9,62 @@ class ExclusionCheckerTest {
   private static final ExclusionChecker exclusionChecker = new ExclusionChecker();
 
   @Test
-  void shouldExcludeKeywordInParam1() {
-    var param1 = "Free and Open Source PHP Wiki Scripts";
-    var param2 = "Unlike many of the Wiki software listed on this page, Dokuwiki does not require you to ...";
-
-    assertThat(exclusionChecker.isExcluded(".*php.*", param1, param2))
+  void shouldExcludeKeywordInParam() {
+    assertThat(exclusionChecker.isExcluded("word2", "word1 word2 word3", "word4 word5 word6"))
       .isTrue();
-  }
 
-  @Test
-  void shouldExcludeKeywordInParam2() {
-    var param1 = "Free and Open Source Wiki Scripts";
-    var param2 = "Unlike many of the PHP Wiki software listed on this page, Dokuwiki does not require you to ...";
-
-    assertThat(exclusionChecker.isExcluded(".*php.*", param1, param2))
+    assertThat(exclusionChecker.isExcluded("word5", "word1 word2 word3", "word4 word5 word6"))
       .isTrue();
   }
 
   @Test
   void shouldExcludeWithWhitespace() {
-    assertThat(exclusionChecker.isExcluded(".*windows 8.*", "Windows 8: Making VirtualBox and Hyper-V Play Nice"))
+    assertThat(exclusionChecker.isExcluded("word 1", "word 1 word 2"))
       .isTrue();
 
-    assertThat(exclusionChecker.isExcluded(".*windows\\ 8.*", "Windows 8: Making VirtualBox and Hyper-V Play Nice"))
+    assertThat(exclusionChecker.isExcluded("word 3", "word 1 word 2"))
+      .isFalse();
+  }
+
+  @Test
+  void shouldExcludeWithBackslash() {
+    assertThat(exclusionChecker.isExcluded("word\\ 1", "word\\ 1"))
       .isTrue();
+
+    assertThat(exclusionChecker.isExcluded("word\\ 1", "word\\\\ 1"))
+      .isFalse();
+  }
+
+  @Test
+  void shouldExcludeWithRegexCharacters() {
+    assertThat(exclusionChecker.isExcluded("word ? 1", "word ? 1"))
+      .isTrue();
+
+    assertThat(exclusionChecker.isExcluded("word ? 1", "word a 1"))
+      .isFalse();
   }
 
   @Test
   void shouldNotExcludeKeywordWithWhitespace() {
-    assertThat(exclusionChecker.isExcluded(".*windows phone.*", "Simple Reverse Geocoding - Windows and MVVMLight Phone"))
+    assertThat(exclusionChecker.isExcluded("word 1", "word 3 word 4"))
       .isFalse();
+
+    assertThat(exclusionChecker.isExcluded("word 1", "word 1 word 2"))
+      .isTrue();
   }
 
   @Test
   void shouldNotFailOnNullParams() {
-    assertThat(exclusionChecker.isExcluded(".*windows phone.*"))
+    assertThat(exclusionChecker.isExcluded("word1"))
       .isFalse();
 
-    assertThat(exclusionChecker.isExcluded(".*windows phone.*", null, null))
+    assertThat(exclusionChecker.isExcluded("word1", null, null))
       .isFalse();
   }
 
   @Test
   void shouldExcludeKeywordInMultilineString() {
-    assertThat(exclusionChecker.isExcluded(".*keyword.*", "line1 \r\nline2 keyword text\nline3"))
+    assertThat(exclusionChecker.isExcluded("word1", "line1 \r\nline2 word1 text\nline3"))
       .isTrue();
   }
 }

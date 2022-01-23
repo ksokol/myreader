@@ -99,7 +99,7 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionExclusionsWhenExcludedPatternInTitleFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setTitle("fetcher title entry");
-    var exclusionPattern = template.save(new ExclusionPattern(".*title.*", subscription1.getId(), 0, OffsetDateTime.now()));
+    var exclusionPattern = template.save(new ExclusionPattern("title", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
 
@@ -111,7 +111,7 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionExclusionsWhenExcludedPatternInUrlFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setUrl("fetcher url entry");
-    var exclusionPattern = template.save(new ExclusionPattern(".*url.*", subscription1.getId(), 0, OffsetDateTime.now()));
+    var exclusionPattern = template.save(new ExclusionPattern("url", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
 
@@ -123,7 +123,7 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionExclusionsWhenExcludedPatternInContentFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setContent("fetcher content entry");
-    var exclusionPattern = template.save(new ExclusionPattern(".*content.*", subscription1.getId(), 0, OffsetDateTime.now()));
+    var exclusionPattern = template.save(new ExclusionPattern("content", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
 
@@ -135,7 +135,7 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionWhenExcludedPatternInTitleFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setTitle("fetcher title entry");
-    template.save(new ExclusionPattern(".*title.*", subscription1.getId(), 0, OffsetDateTime.now()));
+    template.save(new ExclusionPattern("title", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
 
@@ -149,7 +149,7 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionWhenExcludedPatternInContentFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setTitle("fetcher content entry");
-    template.save(new ExclusionPattern(".*content.*", subscription1.getId(), 0, OffsetDateTime.now()));
+    template.save(new ExclusionPattern("content", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
 
@@ -163,7 +163,7 @@ class SubscriptionEntryBatchTests {
   void shouldUpdateSubscriptionWhenExcludedPatternInUrlFound() {
     var fetcherEntry = fetcherEntry();
     fetcherEntry.setUrl("fetcher url entry");
-    template.save(new ExclusionPattern(".*url.*", subscription1.getId(), 0, OffsetDateTime.now()));
+    template.save(new ExclusionPattern("url", subscription1.getId(), 0, OffsetDateTime.now()));
 
     subscriptionEntryBatch.update(subscription1, fetcherEntry);
 
