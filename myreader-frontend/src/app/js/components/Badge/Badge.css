@@ -1,7 +1,7 @@
 .my-badge {
-    --red: 200;
-    --green: 60;
-    --blue: 255;
+    --red: 186;
+    --green: 186;
+    --blue: 185;
     --threshold: 0.6;
 
     display: inline-block;
