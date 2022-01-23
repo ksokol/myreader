@@ -85,8 +85,8 @@ export function EntryAutoFocus({
 
 EntryAutoFocus.propTypes = {
   item: PropTypes.shape({
-    uuid: PropTypes.string.required,
-    seen: PropTypes.bool.required,
+    uuid: PropTypes.string.isRequired,
+    seen: PropTypes.bool.isRequired,
     tags: PropTypes.arrayOf(
       PropTypes.string
     ).isRequired,
