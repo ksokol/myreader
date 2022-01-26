@@ -1,70 +1,60 @@
 package myreader.fetcher.converter;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.OK;
-
 import com.rometools.rome.feed.atom.Content;
 import com.rometools.rome.feed.atom.Entry;
 import com.rometools.rome.feed.atom.Feed;
-import myreader.fetcher.persistence.FetchResult;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-/**
- * @author Kamill Sokol
- */
-public class AtomConverterTests {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpStatus.OK;
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+@ExtendWith(MockitoExtension.class)
+class AtomConverterTests {
 
-    @Test
-    public void noContent() throws Exception {
-        final Feed feed = mock(Feed.class, RETURNS_DEEP_STUBS);
-        final Entry entry = mock(Entry.class, RETURNS_DEEP_STUBS);
+  @Mock
+  private Feed feed;
 
-        when(entry.getAlternateLinks().get(0).getHref()).thenReturn("http://localhost");
-        when(feed.getEntries()).thenReturn(Collections.singletonList(entry));
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private Entry entry;
 
-        final Content content = mock(Content.class);
+  @Mock
+  private Content content;
 
-        when(entry.getContents()).thenReturn(Collections.singletonList(content));
-        when(content.getValue()).thenReturn(null);
+  @Test
+  void noContent() {
+    given(entry.getAlternateLinks().get(0).getHref()).willReturn("http://localhost");
+    given(feed.getEntries()).willReturn(Collections.singletonList(entry));
 
-        final FetchResult actual = new AtomConverter(10).convert("http://localhost", new ResponseEntity<>(feed, OK));
+    given(entry.getContents()).willReturn(Collections.singletonList(content));
+    given(content.getValue()).willReturn(null);
 
-        assertThat(actual.getEntries().get(0).getContent(), is(EMPTY));
-    }
+    var actual = new AtomConverter(10).convert("http://localhost", new ResponseEntity<>(feed, OK));
 
-    @Test
-    public void invalidConstructorArgument() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("maxSize has to be greater than 0");
+    assertThat(actual.getEntries().get(0).getContent(false)).isEmpty();
+  }
 
-        new AtomConverter(-1);
-    }
+  @Test
+  void invalidConstructorArgument() {
+    assertThrows(IllegalArgumentException.class, () -> new AtomConverter(-1), "maxSize has to be greater than 0");
+  }
 
-    @Test
-    public void maxSize() {
-        final Feed feed = mock(Feed.class, RETURNS_DEEP_STUBS);
-        final Entry entry = mock(Entry.class, RETURNS_DEEP_STUBS);
+  @Test
+  void maxSize() {
+    given(feed.getEntries()).willReturn(Arrays.asList(entry, entry));
 
-        when(feed.getEntries()).thenReturn(Arrays.asList(entry, entry));
+    var actual = new AtomConverter(1).convert("", new ResponseEntity<>(feed, OK));
 
-        final FetchResult actual = new AtomConverter(1).convert("", new ResponseEntity<>(feed, OK));
-
-        assertThat(actual.getEntries(), hasSize(1));
-        assertThat(actual.getResultSizePerFetch(), is(2));
-    }
+    assertThat(actual.getEntries()).hasSize(1);
+    assertThat(actual.getResultSizePerFetch()).isEqualTo(2);
+  }
 }

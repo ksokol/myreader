@@ -1,66 +1,54 @@
 package myreader.fetcher.converter;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.OK;
-
 import com.rometools.rome.feed.rss.Channel;
 import com.rometools.rome.feed.rss.Item;
-import myreader.fetcher.persistence.FetchResult;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-/**
- * @author Kamill Sokol
- */
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpStatus.OK;
+
+@ExtendWith(MockitoExtension.class)
 public class ChannelConverterTests {
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+  @Mock
+  private Item item;
 
-    @Test
-    public void noDescription() throws Exception {
-        final Channel channel = mock(Channel.class, RETURNS_DEEP_STUBS);
-        final Item item = mock(Item.class, RETURNS_DEEP_STUBS);
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private Channel channel;
 
-        when(item.getLink()).thenReturn("http://localhost");
-        when(channel.getItems()).thenReturn(Collections.singletonList(item));
-        when(item.getDescription()).thenReturn(null);
+  @Test
+  void noDescription() {
+    given(item.getLink()).willReturn("http://localhost");
+    given(channel.getItems()).willReturn(Collections.singletonList(item));
+    given(item.getDescription()).willReturn(null);
 
-        final FetchResult actual = new ChannelConverter(10).convert("http://localhost", new ResponseEntity<>(channel, OK));
+    var actual = new ChannelConverter(10).convert("http://localhost", new ResponseEntity<>(channel, OK));
 
-        assertThat(actual.getEntries().get(0).getContent(), is(EMPTY));
-    }
+    assertThat(actual.getEntries().get(0).getContent(false)).isEmpty();
+  }
 
-    @Test
-    public void invalidConstructorArgument() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("maxSize has to be greater than 0");
+  @Test
+  void invalidConstructorArgument() {
+    assertThrows(IllegalArgumentException.class, () -> new ChannelConverter(-1), "maxSize has to be greater than 0");
+  }
 
-        new ChannelConverter(-1);
-    }
+  @Test
+  void maxSize() {
+    given(channel.getItems()).willReturn(Arrays.asList(item, item));
 
-    @Test
-    public void maxSize() {
-        final Channel channel = mock(Channel.class, RETURNS_DEEP_STUBS);
-        final Item item = mock(Item.class, RETURNS_DEEP_STUBS);
+    var actual = new ChannelConverter(1).convert("http://localhost", new ResponseEntity<>(channel, OK));
 
-        when(channel.getItems()).thenReturn(Arrays.asList(item, item));
-
-        final FetchResult actual = new ChannelConverter(1).convert("http://localhost", new ResponseEntity<>(channel, OK));
-
-        assertThat(actual.getEntries(), hasSize(1));
-        assertThat(actual.getResultSizePerFetch(), is(2));
-    }
-
+    assertThat(actual.getEntries()).hasSize(1);
+    assertThat(actual.getResultSizePerFetch()).isEqualTo(2);
+  }
 }

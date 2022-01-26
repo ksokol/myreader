@@ -13,6 +13,7 @@ const roleDialogInfoMessage = 'dialog-info-message'
 const placeholderExclusionPatternInput = 'Enter an exclusion pattern'
 const viewsSubscriptionPage1Subscription = 'views/SubscriptionPage/1/subscription'
 const viewsNavigationView = 'views/NavigationView'
+const stripImages = 'strip images'
 
 const renderComponent = async () => {
   await act(async () => {
@@ -38,6 +39,7 @@ describe('SubscriptionPage', () => {
         origin: expectedOrigin,
         tag: 'tag1',
         color: '#FF11FF',
+        stripImages: true,
       },
       tags: ['tag1', 'tag2'],
       exclusionPatterns: [
@@ -65,6 +67,7 @@ describe('SubscriptionPage', () => {
     expect(screen.queryByText('Save')).not.toBeInTheDocument()
     expect(screen.queryByText('Delete')).not.toBeInTheDocument()
     expect(screen.queryByRole('validations')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(stripImages)).not.toBeInTheDocument()
   })
 
   it('should call endpoint for given id', async () => {
@@ -83,6 +86,7 @@ describe('SubscriptionPage', () => {
     expect(screen.queryByDisplayValue(expectedTitle)).toBeVisible()
     expect(screen.queryByDisplayValue(expectedOrigin)).toBeVisible()
     expect(screen.queryByDisplayValue('tag1')).toBeVisible()
+    expect(screen.getByLabelText(stripImages)).toBeVisible()
     expect(screen.getByText('Save')).toBeEnabled()
     expect(screen.getByText('Delete')).toBeEnabled()
     expect(screen.getByText('Delete')).toBeEnabled()
@@ -114,6 +118,7 @@ describe('SubscriptionPage', () => {
     fireEvent.change(screen.queryByDisplayValue(expectedTitle), {target: {value: 'changed title'}})
     fireEvent.change(screen.queryByDisplayValue(expectedOrigin), {target: {value: 'changed origin'}})
     fireEvent.change(screen.queryByDisplayValue('tag1'), {target: {value: 'changed tag'}})
+    fireEvent.click(screen.getByLabelText(stripImages))
 
     fireEvent.click(screen.queryByRole('color-picker-button'))
     expect(screen.getByText('use')).toBeInTheDocument()
@@ -134,6 +139,7 @@ describe('SubscriptionPage', () => {
         origin: 'changed origin',
         tag: 'changed tag',
         color: '#dddddd',
+        stripImages: false,
       },
     })
 
@@ -317,6 +323,7 @@ describe('SubscriptionPage', () => {
         origin: expectedOrigin,
         tag: 'tag1',
         color: null,
+        stripImages: true,
       },
     })
   })

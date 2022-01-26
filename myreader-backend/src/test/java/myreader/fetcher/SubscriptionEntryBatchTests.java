@@ -51,6 +51,7 @@ class SubscriptionEntryBatchTests {
       null,
       0,
       null,
+      false,
       ofEpochMilli(1000)
     ));
     subscription2 = template.save(new Subscription(
@@ -62,6 +63,7 @@ class SubscriptionEntryBatchTests {
       null,
       0,
       null,
+      false,
       ofEpochMilli(1000)
     ));
   }

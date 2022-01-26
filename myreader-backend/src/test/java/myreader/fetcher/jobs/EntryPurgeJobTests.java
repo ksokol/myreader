@@ -49,6 +49,7 @@ class EntryPurgeJobTests {
       null,
       0,
       null,
+      false,
       ofEpochMilli(1000)
     );
     subscription.setId(1L);

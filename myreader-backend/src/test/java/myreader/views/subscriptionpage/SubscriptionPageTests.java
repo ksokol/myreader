@@ -66,6 +66,7 @@ class SubscriptionPageTests {
       null,
       0,
       null,
+      false,
       ofEpochMilli(2000)
     ));
 
@@ -95,11 +96,12 @@ class SubscriptionPageTests {
   void shouldReturnResponse() throws Exception {
     mockMvc.perform(get("/views/SubscriptionPage/{id}", subscription.getId()))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.subscription.uuid").value(subscription.getId().toString()))
-      .andExpect(jsonPath("$.subscription.title").value("expected title"))
-      .andExpect(jsonPath("$.subscription.origin").value("http://example.com"))
-      .andExpect(jsonPath("$.subscription.tag").value("subscriptiontag name"))
-      .andExpect(jsonPath("$.subscription.color").value("#111111"))
+      .andExpect(jsonPath("subscription.uuid").value(subscription.getId().toString()))
+      .andExpect(jsonPath("subscription.title").value("expected title"))
+      .andExpect(jsonPath("subscription.origin").value("http://example.com"))
+      .andExpect(jsonPath("subscription.tag").value("subscriptiontag name"))
+      .andExpect(jsonPath("subscription.color").value("#111111"))
+      .andExpect(jsonPath("subscription.stripImages").value(false))
       .andExpect(jsonPath("exclusionPatterns[0].uuid").value(exclusionPattern1.getId()))
       .andExpect(jsonPath("exclusionPatterns[0].hitCount").value(10))
       .andExpect(jsonPath("exclusionPatterns[0].pattern").value("pattern1"))
@@ -143,12 +145,13 @@ class SubscriptionPageTests {
       .willReturn(true);
 
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
-      .with(jsonBody("{'title': 'changed title', 'origin': 'http://other.com', 'tag': 'subscriptiontag name', 'color': '#222222'}")))
+      .with(jsonBody("{'title': 'changed title', 'origin': 'http://other.com', 'tag': 'subscriptiontag name', 'color': '#222222', 'stripImages': true}")))
       .andExpect(status().isOk())
       .andExpect(jsonPath("subscription.title").value("changed title"))
       .andExpect(jsonPath("subscription.origin").value("http://other.com"))
       .andExpect(jsonPath("subscription.tag").value("subscriptiontag name"))
-      .andExpect(jsonPath("subscription.color").value("#222222"));
+      .andExpect(jsonPath("subscription.color").value("#222222"))
+      .andExpect(jsonPath("subscription.stripImages").value(true));
   }
 
   @Test
@@ -199,6 +202,15 @@ class SubscriptionPageTests {
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("color"))
       .andExpect(jsonPath("errors.[0].defaultMessage").value("not a RGB hex code"));
+  }
+
+  @Test
+  void shouldValidatePatchRequestStripImages() throws Exception {
+    mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
+        .with(jsonBody("{'title': 'some title', 'origin': 'http://example.com', 'stripImages': 'invalid'}")))
+      .andExpect(status().isBadRequest())
+      .andExpect(jsonPath("errors.[0].field").value("stripImages"))
+      .andExpect(jsonPath("errors.[0].defaultMessage").value("not a boolean value"));
   }
 
   @Test

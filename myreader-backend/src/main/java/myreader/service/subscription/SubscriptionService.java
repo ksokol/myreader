@@ -39,7 +39,18 @@ public class SubscriptionService {
     var parseResult = feedParser.parse(url).orElseThrow(IllegalArgumentException::new);
 
     return subscriptionRepository.save(
-      new Subscription(url, parseResult.getTitle(), null, null, 0, null, 0, null, OffsetDateTime.now())
+      new Subscription(
+        url,
+        parseResult.getTitle(),
+        null,
+        null,
+        0,
+        null,
+        0,
+        null,
+        false,
+        OffsetDateTime.now()
+      )
     );
   }
 

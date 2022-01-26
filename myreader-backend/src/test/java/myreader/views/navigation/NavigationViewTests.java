@@ -54,6 +54,7 @@ class NavigationViewTests {
       null,
       0,
       null,
+      false,
       ofEpochMilli(2000)
     ));
 
@@ -81,6 +82,7 @@ class NavigationViewTests {
       null,
       0,
       null,
+      true,
       ofEpochMilli(4000)
     ));
 

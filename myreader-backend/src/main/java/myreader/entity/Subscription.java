@@ -14,6 +14,7 @@ public class Subscription {
   private String url;
   private String tag;
   private String color;
+  private boolean stripImages;
   private int acceptedFetchCount;
   private String lastModified;
   private int overallFetchCount;
@@ -29,6 +30,7 @@ public class Subscription {
     String lastModified,
     Integer overallFetchCount,
     Integer resultSizePerFetch,
+    boolean stripImages,
     OffsetDateTime createdAt
   ) {
     this.url = Objects.requireNonNull(url, "url is null");
@@ -39,6 +41,7 @@ public class Subscription {
     this.lastModified = lastModified;
     this.overallFetchCount = Objects.requireNonNull(overallFetchCount, "overallFetchCount is null");
     this.resultSizePerFetch = resultSizePerFetch;
+    this.stripImages = stripImages;
     this.createdAt = Objects.requireNonNull(createdAt, " is null");
   }
 
@@ -113,6 +116,14 @@ public class Subscription {
 
   public void setColor(String color) {
     this.color = color;
+  }
+
+  public boolean isStripImages() {
+    return stripImages;
+  }
+
+  public void setStripImages(boolean stripImages) {
+    this.stripImages = stripImages;
   }
 
   public OffsetDateTime getCreatedAt() {

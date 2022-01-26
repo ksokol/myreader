@@ -83,6 +83,11 @@ public class SubscriptionPage {
     subscription.setUrl((String) body.get("origin"));
     subscription.setTag((String) body.get("tag"));
     subscription.setColor((String) body.get("color"));
+
+    if (body.get("stripImages") != null) {
+      subscription.setStripImages((Boolean) body.get("stripImages"));
+    }
+
     subscription = subscriptionRepository.save(subscription);
 
     return ServerResponse.ok().body(

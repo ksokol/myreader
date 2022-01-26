@@ -39,7 +39,7 @@ public class SubscriptionEntryBatch {
       excluded = exclusionChecker.isExcluded(
         exclusionPattern.getPattern(),
         fetcherEntry.getTitle(),
-        fetcherEntry.getContent(),
+        fetcherEntry.getContent(subscription.isStripImages()),
         fetcherEntry.getUrl()
       );
 
@@ -53,7 +53,7 @@ public class SubscriptionEntryBatch {
       fetcherEntry.getTitle(),
       fetcherEntry.getGuid(),
       fetcherEntry.getUrl(),
-      fetcherEntry.getContent(),
+      fetcherEntry.getContent(subscription.isStripImages()),
       false,
       excluded,
       null,

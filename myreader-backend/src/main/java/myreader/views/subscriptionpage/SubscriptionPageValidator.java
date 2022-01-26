@@ -50,6 +50,11 @@ class SubscriptionPageValidator {
       errors.rejectValue("color", "not a RGB hex code");
     }
 
+    var stripImages = body.get("stripImages");
+    if (stripImages != null && !(stripImages instanceof Boolean)) {
+      errors.rejectValue("stripImages", "not a boolean value");
+    }
+
     errors.throwIfContainsError();
   }
 }

@@ -1,5 +1,5 @@
 import './SubscriptionEditForm.css'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import PropTypes from 'prop-types'
 import {AutocompleteInput} from '../../../components/AutocompleteInput/AutocompleteInput'
 import {Button, ConfirmButton} from '../../../components/Buttons'
@@ -8,6 +8,7 @@ import {Input} from '../../../components/Input/Input'
 import {SubscriptionExclusions} from './SubscriptionExclusions'
 import {SubscriptionFetchErrors} from './SubscriptionFetchErrors/SubscriptionFetchErrors'
 import {SubscriptionColorPicker} from './SubscriptionColorPicker'
+import {Checkbox} from '../../../components/Checkbox/Checkbox'
 
 export function SubscriptionEditForm(props) {
   const [state, setState] = useState({
@@ -15,6 +16,7 @@ export function SubscriptionEditForm(props) {
     origin: props.data.origin,
     tag: props.data.tag,
     color: props.data.color,
+    stripImages: props.data.stripImages,
     showDialog: false,
   })
 
@@ -25,6 +27,7 @@ export function SubscriptionEditForm(props) {
       origin: state.origin,
       tag: state.tag,
       color: state.color,
+      stripImages: state.stripImages,
     })
   }
 
@@ -104,6 +107,19 @@ export function SubscriptionEditForm(props) {
           )}
         </div>
 
+        <div
+          className='my-subscription-edit-form__row'
+        >
+          <Checkbox
+            name='stripImages'
+            value={state.stripImages}
+            disabled={changePending}
+            onChange={() => setState(current => ({...current, stripImages: !current.stripImages}))}
+          >
+            strip images
+          </Checkbox>
+        </div>
+
         <h2
           className='my-subscription-edit-form__pattern-title'>
           Patterns to ignore
@@ -148,6 +164,7 @@ SubscriptionEditForm.propTypes = {
     origin: PropTypes.string.isRequired,
     tag: PropTypes.string,
     color: PropTypes.string,
+    stripImages: PropTypes.bool.isRequired,
   }),
   subscriptionTags: PropTypes.arrayOf(
     PropTypes.string

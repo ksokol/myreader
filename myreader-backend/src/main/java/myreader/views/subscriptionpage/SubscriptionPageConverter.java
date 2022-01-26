@@ -21,7 +21,8 @@ class SubscriptionPageConverter {
     target.put("origin", source.getUrl());
     target.put("tag", source.getTag());
     target.put("color", source.getColor());
-    
+    target.put("stripImages", source.isStripImages());
+
     return target;
   }
 

@@ -3,9 +3,6 @@ package myreader.fetcher.persistence;
 import myreader.fetcher.sanitizer.EntryLinkSanitizer;
 import myreader.fetcher.sanitizer.HtmlSanitizer;
 
-/**
- * @author Kamill Sokol
- */
 public class FetcherEntry {
 
     private String title;
@@ -18,7 +15,7 @@ public class FetcherEntry {
     private String contentSanitized;
 
     public String getTitle() {
-        if(titleSanitized == null) {
+        if (titleSanitized == null) {
             titleSanitized = HtmlSanitizer.sanitizeTitle(title);
         }
         return titleSanitized;
@@ -37,7 +34,7 @@ public class FetcherEntry {
     }
 
     public String getUrl() {
-        if(urlSanitized == null) {
+        if (urlSanitized == null) {
             urlSanitized = EntryLinkSanitizer.sanitize(url, feedUrl);
         }
         return urlSanitized;
@@ -51,9 +48,9 @@ public class FetcherEntry {
         this.feedUrl = feedUrl;
     }
 
-    public String getContent() {
-        if(contentSanitized == null) {
-            contentSanitized = HtmlSanitizer.sanitizeContent(content);
+    public String getContent(boolean stripImages) {
+        if (contentSanitized == null) {
+            contentSanitized = HtmlSanitizer.sanitizeContent(content, stripImages);
         }
         return contentSanitized;
     }
