@@ -1,108 +1,120 @@
 package myreader.fetcher.sanitizer;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.jupiter.api.Test;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * @author Kamill Sokol
- */
-public class EntryLinkSanitizerTest {
+class EntryLinkSanitizerTest {
 
-    private static String HTTP_URL = "http://localhost";
-    private static String HTTPS_URL = "https://localhost";
+  private static final String HTTP_URL = "http://localhost";
+  private static final String HTTPS_URL = "https://localhost";
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-    @Test
-    public void test1() {
-        String sanitized = new EntryLinkSanitizer().sanitize("/test", HTTP_URL);
-        assertThat(sanitized, is(HTTP_URL + "/test"));
-    }
+  @Test
+  void test1() {
+    var sanitized = EntryLinkSanitizer.sanitize("/test", HTTP_URL);
 
-    @Test
-    public void test2() {
-        String sanitized = EntryLinkSanitizer.sanitize(HTTP_URL + "/test", HTTP_URL);
-        assertThat(sanitized, is(HTTP_URL + "/test"));
-    }
+    assertThat(sanitized)
+      .isEqualTo(HTTP_URL + "/test");
+  }
 
-    @Test
-    public void test3() {
-        String sanitized = EntryLinkSanitizer.sanitize("test", HTTP_URL);
-        assertThat(sanitized, is(HTTP_URL + "/test"));
-    }
+  @Test
+  void test2() {
+    var sanitized = EntryLinkSanitizer.sanitize(HTTP_URL + "/test", HTTP_URL);
 
-    @Test
-    public void test4() {
-        String sanitized = EntryLinkSanitizer.sanitize(HTTPS_URL + "/test", HTTPS_URL);
-        assertThat(sanitized, is(HTTPS_URL + "/test"));
-    }
+    assertThat(sanitized)
+      .isEqualTo(HTTP_URL + "/test");
+  }
 
-    @Test
-    public void test5() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("entryLink is null");
+  @Test
+  void test3() {
+    var sanitized = EntryLinkSanitizer.sanitize("test", HTTP_URL);
 
-        EntryLinkSanitizer.sanitize(null, null);
-    }
+    assertThat(sanitized)
+      .isEqualTo(HTTP_URL + "/test");
+  }
 
-    @Test
-    public void test6() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("feedLink is null");
+  @Test
+  void test4() {
+    var sanitized = EntryLinkSanitizer.sanitize(HTTPS_URL + "/test", HTTPS_URL);
 
-        EntryLinkSanitizer.sanitize(HTTPS_URL + "/test", null);
-    }
+    assertThat(sanitized)
+      .isEqualTo(HTTPS_URL + "/test");
+  }
 
-    @Test
-    public void test7() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("entryLink is null");
+  @Test
+  void test5() {
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> EntryLinkSanitizer.sanitize(null, null),
+      "entryLink is null"
+    );
+  }
 
-        String sanitized = EntryLinkSanitizer.sanitize(null, HTTPS_URL);
-        assertThat(sanitized, is(StringUtils.EMPTY));
-    }
+  @Test
+  void test6() {
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> EntryLinkSanitizer.sanitize(HTTPS_URL + "/test", null),
+      "feedLink is null"
+    );
+  }
 
-    @Test
-    public void test8() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("feedLink must start with http(s)?://");
+  @Test
+  void test7() {
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> EntryLinkSanitizer.sanitize(null, HTTPS_URL),
+      "entryLink is null"
+    );
+  }
 
-        EntryLinkSanitizer.sanitize("/test", "test");
-    }
+  @Test
+  void test8() {
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> EntryLinkSanitizer.sanitize("/test", "test"),
+      "feedLink must start with http(s)?://"
+    );
+  }
 
-    @Test
-    public void test9() {
-        String sanitized = EntryLinkSanitizer.sanitize("test", HTTP_URL);
-        assertThat(sanitized, is(HTTP_URL + "/test"));
-    }
+  @Test
+  void test9() {
+    var sanitized = EntryLinkSanitizer.sanitize("test", HTTP_URL);
 
-    @Test
-    public void test10() {
-        String sanitized = EntryLinkSanitizer.sanitize("/test", HTTP_URL);
-        assertThat(sanitized, is(HTTP_URL + "/test"));
-    }
+    assertThat(sanitized)
+      .isEqualTo(HTTP_URL + "/test");
+  }
 
-    @Test
-    public void test11() {
-        String sanitized = EntryLinkSanitizer.sanitize("test", HTTP_URL);
-        assertThat(sanitized, is(HTTP_URL + "/test"));
-    }
+  @Test
+  void test10() {
+    var sanitized = EntryLinkSanitizer.sanitize("/test", HTTP_URL);
 
-    @Test
-    public void test12() {
-        String sanitized = EntryLinkSanitizer.sanitize("/test", HTTP_URL);
-        assertThat(sanitized, is(HTTP_URL + "/test"));
-    }
+    assertThat(sanitized)
+      .isEqualTo(HTTP_URL + "/test");
+  }
 
-    @Test
-    public void test13() throws Exception {
-        String sanitized = EntryLinkSanitizer.sanitize("//sub.example.com/relative", "http://sub.example.com/");
-        assertThat(sanitized, is("http://sub.example.com/relative"));
+  @Test
+  void test11() {
+    var sanitized = EntryLinkSanitizer.sanitize("test", HTTP_URL);
 
-    }
+    assertThat(sanitized)
+      .isEqualTo(HTTP_URL + "/test");
+  }
+
+  @Test
+  void test12() {
+    var sanitized = EntryLinkSanitizer.sanitize("/test", HTTP_URL);
+
+    assertThat(sanitized)
+      .isEqualTo(HTTP_URL + "/test");
+  }
+
+  @Test
+  void test13() {
+    var sanitized = EntryLinkSanitizer.sanitize("//sub.example.com/relative", "http://sub.example.com/");
+
+    assertThat(sanitized)
+      .isEqualTo("http://sub.example.com/relative");
+  }
 }

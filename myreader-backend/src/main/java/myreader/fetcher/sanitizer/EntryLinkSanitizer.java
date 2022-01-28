@@ -1,53 +1,57 @@
 package myreader.fetcher.sanitizer;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.regex.Pattern;
 
-/**
- * @author Kamill Sokol
- */
 public final class EntryLinkSanitizer {
 
-    private static final Pattern PATTERN = Pattern.compile("^http(s)?://.*");
+  private static final Pattern PATTERN = Pattern.compile("^http(s)?://.*");
 
-    public static String sanitize(final String entryLink, final String feedLink) {
-        Assert.notNull(entryLink, "entryLink is null");
-        Assert.notNull(feedLink, "feedLink is null");
-        Assert.isTrue(PATTERN.matcher(feedLink).matches(), "feedLink must start with http(s)?://");
+  private EntryLinkSanitizer() {
+    // prevent instantiation
+  }
 
-        String entryUrl = entryLink.replace("\n", "").trim();
-
-        if (PATTERN.matcher(entryUrl).matches()) {
-            return entryUrl;
-        }
-
-        UriComponents uriComponents = UriComponentsBuilder.fromUriString(feedLink).build();
-        String scheme = uriComponents.getScheme();
-
-        if(isSchemeRelative(entryUrl)) {
-            return String.format("%s:%s", scheme, entryUrl);
-        }
-
-        String host = uriComponents.getHost();
-        String baseUrl = String.format("%s://%s", scheme, host);
-        String sep = StringUtils.EMPTY;
-
-        if(isRelative(entryUrl)) {
-            sep = "/";
-        }
-
-        return String.format("%s%s%s", baseUrl, sep, entryUrl);
+  public static String sanitize(String entryLink, String feedLink) {
+    if (entryLink == null) {
+      throw new IllegalArgumentException("entryLink is null");
+    }
+    if (feedLink == null) {
+      throw new IllegalArgumentException("feedLink is null");
+    }
+    if (!PATTERN.matcher(feedLink).matches()) {
+      throw new IllegalArgumentException("feedLink must start with http(s)?://");
     }
 
-    private static boolean isRelative(String tmp) {
-        return tmp.charAt(0) != '/';
+    var entryUrl = entryLink.replace("\n", "").trim();
+
+    if (PATTERN.matcher(entryUrl).matches()) {
+      return entryUrl;
     }
 
-    private static boolean isSchemeRelative(String url) {
-        return url.startsWith("//");
+    var uriComponents = UriComponentsBuilder.fromUriString(feedLink).build();
+    var scheme = uriComponents.getScheme();
+
+    if (isSchemeRelative(entryUrl)) {
+      return String.format("%s:%s", scheme, entryUrl);
     }
+
+    var host = uriComponents.getHost();
+    var baseUrl = String.format("%s://%s", scheme, host);
+    var sep = "";
+
+    if (isRelative(entryUrl)) {
+      sep = "/";
+    }
+
+    return String.format("%s%s%s", baseUrl, sep, entryUrl);
+  }
+
+  private static boolean isRelative(String url) {
+    return url.charAt(0) != '/';
+  }
+
+  private static boolean isSchemeRelative(String url) {
+    return url.startsWith("//");
+  }
 }

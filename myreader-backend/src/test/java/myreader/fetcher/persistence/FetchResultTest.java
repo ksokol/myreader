@@ -1,83 +1,80 @@
 package myreader.fetcher.persistence;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-/**
- * @author Kamill Sokol
- */
-public class FetchResultTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    @Test
-    public void testEquals() {
-        final FetchResult first = new FetchResult("irrelevant");
+class FetchResultTest {
 
-        assertThat(first.equals(new Object()), is(false));
-    }
+  @Test
+  void testEquals() {
+    assertThat(new FetchResult("irrelevant"))
+      .isNotEqualTo(new Object());
+  }
 
-    @Test
-    public void testEquals1() {
-        final FetchResult first = new FetchResult("irrelevant");
+  @Test
+  void testEquals1() {
+    var first = new FetchResult("irrelevant");
 
-        assertThat(first.equals(first), is(true));
-    }
+    assertThat(new FetchResult("irrelevant"))
+      .isEqualTo(first);
+  }
 
-    @Test
-    public void testEquals3() {
-        final FetchResult first = new FetchResult("irrelevant");
-        final Object other = null;
+  @Test
+  void testEquals3() {
+    assertThat(new FetchResult("irrelevant"))
+      .isNotEqualTo(null);
+  }
 
-        assertThat(first.equals(other), is(false));
-    }
+  @Test
+  void testHashCode() {
+    assertThat(new FetchResult("irrelevant").hashCode())
+      .isEqualTo(new FetchResult("irrelevant").hashCode());
+  }
 
-    @Test
-    public void testHashCode() {
-        final FetchResult first = new FetchResult("irrelevant");
-        final FetchResult second = new FetchResult("irrelevant");
+  @Test
+  void shouldTrimLeadingAndTrailingWhitespaces() {
+    assertThat(fetchResultWithTitle(" text text ").getTitle())
+      .isEqualTo("text text");
+  }
 
-        assertThat(first.hashCode(), is(second.hashCode()));
-    }
+  @Test
+  void shouldReplaceWhitespacesWithSingleBlank() {
+    assertThat(fetchResultWithTitle("1  2 \n 3 \r\n 4 \t 5").getTitle())
+      .isEqualTo("1 2 3 4 5");
+  }
 
-    @Test
-    public void shouldTrimLeadingAndTrailingWhitespaces() {
-        assertThat(fetchResultWithTitle(" text text ").getTitle(), is("text text"));
-    }
+  @Test
+  void shouldUnescapeHtmlEntities() {
+    assertThat(fetchResultWithTitle("&amp; &gt; &lt;").getTitle())
+      .isEqualTo("& > <");
+  }
 
-    @Test
-    public void shouldReplaceWhitespacesWithSingleBlank() {
-        assertThat(fetchResultWithTitle("1  2 \n 3 \r\n 4 \t 5").getTitle(), is("1 2 3 4 5"));
-    }
+  @Test
+  void shouldRemoveHtmlElements() {
+    assertThat(fetchResultWithTitle("<div><strong>1</strong><b>2</b></div>").getTitle())
+      .isEqualTo("12");
+  }
 
-    @Test
-    public void shouldUnescapeHtmlEntities() {
-        assertThat(fetchResultWithTitle("&amp; &gt; &lt;").getTitle(), is("& > <"));
-    }
+  @Test
+  void shouldRemoveXhtmlElements() {
+    var raw = "<xhtml:div xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n" +
+      "      Less: <xhtml:em> &lt; </xhtml:em>\n" +
+      "    </xhtml:div>";
 
-    @Test
-    public void shouldRemoveHtmlElements() {
-        assertThat(fetchResultWithTitle("<div><strong>1</strong><b>2</b></div>").getTitle(), is("12"));
-    }
+    assertThat(fetchResultWithTitle(raw).getTitle())
+      .isEqualTo("Less: <");
+  }
 
-    @Test
-    public void shouldRemoveXhtmlElements() {
-        String raw = "<xhtml:div xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n" +
-                "      Less: <xhtml:em> &lt; </xhtml:em>\n" +
-                "    </xhtml:div>";
+  @Test
+  void shouldReturnEmptyWhenValueIsNull() {
+    assertThat(fetchResultWithTitle(null).getTitle())
+      .isEmpty();
+  }
 
-        assertThat(fetchResultWithTitle(raw).getTitle(), is("Less: <"));
-    }
-
-    @Test
-    public void shouldReturnEmptyWhenValueIsNull() {
-        assertThat(fetchResultWithTitle(null).getTitle(), is(EMPTY));
-    }
-
-    private static FetchResult fetchResultWithTitle(String title) {
-        return new FetchResult(Collections.emptyList(), null, title, null, 0);
-    }
+  private static FetchResult fetchResultWithTitle(String title) {
+    return new FetchResult(Collections.emptyList(), null, title, null, 0);
+  }
 }

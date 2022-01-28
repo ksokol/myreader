@@ -17,7 +17,6 @@ repositories {
 
 def javaLangVersion = JavaVersion.VERSION_11
 def romeToolsVersion = '1.16.0'
-def commonsLang3Version = '3.8.1'
 def commonsIoVersion = '2.6'
 def commonsTextVersion = '1.6'
 def htmlSanitizerVersion = '20211018.2'
@@ -33,7 +32,6 @@ dependencies {
   implementation 'org.flywaydb:flyway-core'
   implementation "com.rometools:rome:${romeToolsVersion}"
   implementation "com.rometools:rome-modules:${romeToolsVersion}"
-  implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
   implementation "commons-io:commons-io:${commonsIoVersion}"
   implementation "org.apache.commons:commons-text:${commonsTextVersion}"
   implementation "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:${htmlSanitizerVersion}"
