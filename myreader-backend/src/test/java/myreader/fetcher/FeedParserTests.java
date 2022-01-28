@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.TEXT_HTML;
@@ -117,7 +115,7 @@ class FeedParserTests {
   @Test
   void shouldReturnEmptyOptionalWhenResourceIsNotModified() {
     mockServer.expect(requestTo(URL)).andExpect(method(GET))
-      .andExpect(header("If-Modified-Since", is("lastModified")))
+      .andExpect(header("If-Modified-Since", "lastModified"))
       .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
 
     assertThat(parser.parse(URL, "lastModified"))
@@ -127,7 +125,7 @@ class FeedParserTests {
   @Test
   void shouldFakeUserAgent() {
     mockServer.expect(requestTo(URL)).andExpect(method(GET))
-      .andExpect(header("User-Agent", startsWith("Mozilla")))
+      .andExpect(header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20100101 Firefox/14.0.1"))
       .andRespond(withStatus(HttpStatus.NOT_MODIFIED));
 
     parser.parse(URL, "lastModified");
