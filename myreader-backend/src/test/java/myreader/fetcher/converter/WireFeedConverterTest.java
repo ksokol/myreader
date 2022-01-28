@@ -1,30 +1,26 @@
 package myreader.fetcher.converter;
 
 import com.rometools.rome.feed.WireFeed;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-/**
- * @author Kamill Sokol
- */
-public class WireFeedConverterTest {
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-    private WireFeedConverter wireFeedConverter = new WireFeedConverter();
+class WireFeedConverterTest {
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+  private final WireFeedConverter wireFeedConverter = new WireFeedConverter();
 
-    @Test
-    public void testConvert() throws Exception {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("no converter for class myreader.fetcher.converter.WireFeedConverterTest$MockWireFeed");
-        wireFeedConverter.convert("", new ResponseEntity<>(new MockWireFeed(), HttpStatus.OK));
-    }
+  @Test
+  void testConvert() {
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> wireFeedConverter.convert("", new ResponseEntity<>(new MockWireFeed(), HttpStatus.OK)),
+      "no converter for class myreader.fetcher.converter.WireFeedConverterTest$MockWireFeed"
+    );
+  }
 
-    static class MockWireFeed extends WireFeed {
-        private static final long serialVersionUID = 1;
-    }
+  static class MockWireFeed extends WireFeed {
+    private static final long serialVersionUID = 1;
+  }
 }

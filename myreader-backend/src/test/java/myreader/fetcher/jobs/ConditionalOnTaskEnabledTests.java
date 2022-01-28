@@ -1,54 +1,57 @@
 package myreader.fetcher.jobs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.stereotype.Component;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ConditionalOnTaskEnabledTests {
+class ConditionalOnTaskEnabledTests {
 
-    protected static final String BEAN_NAME = "testBean";
+  protected static final String BEAN_NAME = "testBean";
 
-    @Test
-    public void shouldNotContainBeanWhenTaskEnabledIsNotSet() {
-        try (var applicationContext = new AnnotationConfigApplicationContext()) {
-            applicationContext.register(TestBean.class);
+  @Test
+  void shouldNotContainBeanWhenTaskEnabledIsNotSet() {
+    try (var applicationContext = new AnnotationConfigApplicationContext()) {
+      applicationContext.register(TestBean.class);
 
-            assertFalse(applicationContext.containsBean(BEAN_NAME));
-        }
+      assertThat(applicationContext.containsBean(BEAN_NAME))
+        .isFalse();
     }
+  }
 
-    @Test
-    public void shouldNotContainBeanWhenTaskEnabledIsSetToFalse() {
-        var environment = new MockEnvironment();
-        environment.setProperty("task.enabled", "false");
+  @Test
+  void shouldNotContainBeanWhenTaskEnabledIsSetToFalse() {
+    var environment = new MockEnvironment();
+    environment.setProperty("task.enabled", "false");
 
-        try (var applicationContext = new AnnotationConfigApplicationContext()) {
-            applicationContext.setEnvironment(environment);
-            applicationContext.register(TestBean.class);
+    try (var applicationContext = new AnnotationConfigApplicationContext()) {
+      applicationContext.setEnvironment(environment);
+      applicationContext.register(TestBean.class);
 
-            assertFalse(applicationContext.containsBean(BEAN_NAME));
-        }
+      assertThat(applicationContext.containsBean(BEAN_NAME))
+        .isFalse();
     }
+  }
 
-    @Test
-    public void shouldContainBeanWhenTaskEnabledIsSetToTrue() {
-        var environment = new MockEnvironment();
-        environment.setProperty("task.enabled", "true");
+  @Test
+  void shouldContainBeanWhenTaskEnabledIsSetToTrue() {
+    var environment = new MockEnvironment();
+    environment.setProperty("task.enabled", "true");
 
-        try (var applicationContext = new AnnotationConfigApplicationContext()) {
-            applicationContext.setEnvironment(environment);
-            applicationContext.register(TestBean.class);
+    try (var applicationContext = new AnnotationConfigApplicationContext()) {
+      applicationContext.setEnvironment(environment);
+      applicationContext.register(TestBean.class);
 
-            assertTrue(applicationContext.containsBean(BEAN_NAME));
-        }
+      assertThat(applicationContext.containsBean(BEAN_NAME))
+        .isTrue();
     }
+  }
 
-    @Component(BEAN_NAME)
-    @ConditionalOnTaskEnabled
-    private static class TestBean {}
+  @Component(BEAN_NAME)
+  @ConditionalOnTaskEnabled
+  private static class TestBean {
+  }
 }
 

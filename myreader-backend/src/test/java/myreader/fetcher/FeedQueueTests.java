@@ -1,42 +1,44 @@
 package myreader.fetcher;
 
 import myreader.fetcher.persistence.FetchResult;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author Kamill Sokol
- */
-public class FeedQueueTests {
+class FeedQueueTests {
 
-    private FeedQueue queue;
+  private FeedQueue queue;
 
-    @Before
-    public void setUp() {
-        queue = new FeedQueue();
-    }
+  @BeforeEach
+  void setUp() {
+    queue = new FeedQueue();
+  }
 
-    @Test
-    public void add() {
-        queue.add(new FetchResult("url"));
-        assertThat(queue.getSize(), is(1));
-    }
+  @Test
+  void add() {
+    queue.add(new FetchResult("url"));
 
-    @Test
-    public void addDuplicate() {
-        queue.add(new FetchResult("url"));
-        queue.add(new FetchResult("url"));
-        assertThat(queue.getSize(), is(1));
-    }
+    assertThat(queue.getSize())
+      .isEqualTo(1);
+  }
 
-    @Test
-    public void take() {
-        queue.add(new FetchResult("url"));
-        assertThat(queue.take(), is(new FetchResult("url")));
-        assertThat(queue.take(), is(nullValue()));
-    }
+  @Test
+  void addDuplicate() {
+    queue.add(new FetchResult("url"));
+    queue.add(new FetchResult("url"));
+
+    assertThat(queue.getSize())
+      .isEqualTo(1);
+  }
+
+  @Test
+  void take() {
+    queue.add(new FetchResult("url"));
+
+    assertThat(queue.take())
+      .isEqualTo(new FetchResult("url"));
+    assertThat(queue.take())
+      .isNull();
+  }
 }
