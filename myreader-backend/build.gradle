@@ -27,7 +27,6 @@ dependencies {
   }
   implementation 'org.springframework.boot:spring-boot-starter-security'
   implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-  implementation 'org.springframework:spring-aspects'
   implementation 'org.hsqldb:hsqldb'
   implementation 'org.flywaydb:flyway-core'
   implementation "com.rometools:rome:${romeToolsVersion}"
