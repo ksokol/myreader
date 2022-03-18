@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.INFO;
 import static java.util.Objects.requireNonNull;
 
 @Component
@@ -41,17 +44,17 @@ public class FeedListFetcherJob extends BaseJob {
     var feeds = subscriptionRepository.findAll();
     var iterator = feeds.iterator();
     var size = Iterators.size(feeds.iterator());
-    getLog().info("checking {} subscriptions", size);
+    getLogger().log(INFO, "checking {0} subscriptions", size);
 
     for (var i = 0; i < size && isAlive(); i++) {
       var subscription = iterator.next();
 
       try {
         feedParser.parse(subscription.getUrl(), subscription.getLastModified()).ifPresent(feedQueue::add);
-        getLog().debug("{}/{} lastModified: {}, url: {}", i + 1, size, subscription.getLastModified(), subscription.getUrl());
+        getLogger().log(DEBUG, "{0}/{1} lastModified: {2}, url: {3}", i + 1, size, subscription.getLastModified(), subscription.getUrl());
       } catch (Exception exception) {
         fetchErrorRepository.save(new FetchError(subscription.getId(), exception.getMessage(), OffsetDateTime.now()));
-        getLog().error("url: {}, message: {}", subscription.getUrl(), exception.getMessage());
+        getLogger().log(ERROR, "url: {0}, message: {1}", subscription.getUrl(), exception.getMessage());
       }
     }
   }

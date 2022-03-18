@@ -6,6 +6,8 @@ import myreader.repository.SubscriptionRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import static java.lang.System.Logger.Level.INFO;
+
 @Component
 @ConditionalOnTaskEnabled
 public class EntryPurgeJob extends BaseJob {
@@ -27,9 +29,9 @@ public class EntryPurgeJob extends BaseJob {
     var subscriptions = subscriptionRepository.findAll();
 
     for (var subscription : subscriptions) {
-      getLog().info("start cleaning old entries from feed '{} ({})'", subscription.getTitle(), subscription.getId());
+      getLogger().log(INFO, "start cleaning old entries from feed '{0} ({1})'", subscription.getTitle(), subscription.getId());
       determiner.determine(subscription).ifPresent(retainDate -> entryPurger.purge(subscription.getId(), retainDate));
-      getLog().info("finished cleaning old entries from feed '{} ({})'", subscription.getTitle(), subscription.getId());
+      getLogger().log(INFO, "finished cleaning old entries from feed '{0} ({1})'", subscription.getTitle(), subscription.getId());
     }
   }
 }

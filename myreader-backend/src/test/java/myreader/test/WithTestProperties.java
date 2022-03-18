@@ -12,7 +12,9 @@ import java.lang.annotation.Target;
 @TestPropertySource(properties = {
   "spring.datasource.url=jdbc:hsqldb:mem:test",
   "spring.flyway.baseline-on-migrate=false",
-  "task.enabled=false"
+  "task.enabled=false",
+  "logging.level.org.springframework.web=OFF",
+  "logging.level.root=OFF",
 })
 public @interface WithTestProperties {
 }

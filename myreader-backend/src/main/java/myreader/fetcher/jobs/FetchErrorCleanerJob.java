@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Date;
 
+import static java.lang.System.Logger.Level.INFO;
 import static java.util.Objects.requireNonNull;
 
 @Component
@@ -33,6 +34,6 @@ public class FetchErrorCleanerJob extends BaseJob {
     var retainDate = Date.from(localDate.atStartOfDay().toInstant(ZoneOffset.UTC));
 
     var deleteCount = fetchErrorRepository.retainFetchErrorBefore(retainDate);
-    getLog().info("deleted {} entries that are older than {}", deleteCount, retainDate);
+    getLogger().log(INFO, "deleted {0} entries that are older than {1}", deleteCount, retainDate);
   }
 }
