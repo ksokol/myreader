@@ -36,7 +36,7 @@ public class RetainDateDeterminer {
     if (feedThreshold >= entryCount) {
       logger.log(
         INFO,
-        "skipping. threshold of {0} entries not reached for feed '{1} ({2})' (actual {3})",
+        "skipping. threshold of {0} entries not reached for feed {1} ({2}) (actual {3})",
         feedThreshold,
         subscription.getTitle(),
         subscription.getId(),
