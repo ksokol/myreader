@@ -1,8 +1,6 @@
 import './Dialog.css'
-import 'dialog-polyfill/dialog-polyfill.css'
 import {useEffect, useRef} from 'react'
 import * as ReactDom from 'react-dom'
-import dialogPolyfill from 'dialog-polyfill'
 import PropTypes from 'prop-types'
 import {IconButton} from '../Buttons'
 
@@ -11,7 +9,6 @@ export function Dialog({header, body, footer, onClickClose}) {
 
   useEffect(() => {
     const current = dialogRef.current
-    dialogPolyfill.registerDialog(current)
     current.showModal()
     return () => current.close()
   }, [])

@@ -5,7 +5,12 @@ import {
 } from './app/js/shared/custom-matcher'
 
 beforeAll(() => {
-  window.HTMLDialogElement = undefined
+  window.HTMLDialogElement.prototype.showModal = function() {
+    this.setAttribute('open', '')
+  }
+  window.HTMLDialogElement.prototype.close = function() {
+    this.removeAttribute('open')
+  }
 })
 
 afterEach(() => {

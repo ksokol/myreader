@@ -5,10 +5,6 @@ describe('Dialog', () => {
 
   let props
 
-  beforeAll(() => {
-    window.HTMLDialogElement = undefined
-  })
-
   beforeEach(() => {
     props = {
       header: 'expected header',
