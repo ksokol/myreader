@@ -8,9 +8,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    "plugin:unicorn/recommended",
-    "plugin:jest-dom/recommended",
-    "plugin:sonarjs/recommended"
+    "plugin:jest-dom/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": 2018,
@@ -27,7 +25,6 @@
   "plugins": [
     "jest",
     "react-hooks",
-    "sonarjs",
     "testing-library"
   ],
   "rules": {
@@ -52,27 +49,11 @@
     "jest/no-focused-tests": "error",
     "jest/valid-expect": "error",
     "react/display-name": "warn",
-    "unicorn/prevent-abbreviations": "off",
-    "unicorn/catch-error-name": "warn",
-    "unicorn/filename-case": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
-    "unicorn/no-null":  "off",
     "jest-dom/prefer-focus": "warn",
-    "unicorn/consistent-function-scoping": "warn",
-    "unicorn/explicit-length-check": "warn",
-    "unicorn/no-array-callback-reference": "warn",
-    "unicorn/no-array-reduce": "warn",
-    "unicorn/no-lonely-if": "warn",
-    "unicorn/prefer-spread": "warn",
     "jest-dom/prefer-to-have-class": "warn",
-    "unicorn/no-array-for-each": "warn",
-    "sonarjs/no-duplicate-string": "warn",
-    "sonarjs/cognitive-complexity": "warn",
-    "sonarjs/no-collapsible-if": "warn",
-    "sonarjs/no-identical-functions": "warn",
     "react/jsx-uses-react": "off",
-    "react/react-in-jsx-scope": "off",
-    "unicorn/prefer-object-from-entries": "warn"
+    "react/react-in-jsx-scope": "off"
   }
 }
