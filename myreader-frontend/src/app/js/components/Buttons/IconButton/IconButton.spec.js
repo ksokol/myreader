@@ -4,25 +4,25 @@ import {IconButton} from './IconButton'
 describe('IconButton', () => {
 
   it('should contain expected props', () => {
-    render(<IconButton className='expected-className' type='close' disabled={true} />)
+    render(<IconButton className='expected-className' type='chevron-right' disabled={true} />)
 
-    expect(screen.getByRole('close')).toHaveClass('my-icon-button expected-className')
-    expect(screen.getByRole('close')).toHaveAttribute('type', 'button')
-    expect(screen.getByRole('close')).toBeDisabled()
+    expect(screen.getByRole('button-chevron-right')).toHaveClass('my-icon-button expected-className')
+    expect(screen.getByRole('button-chevron-right')).toHaveAttribute('type', 'button')
+    expect(screen.getByRole('button-chevron-right')).toBeDisabled()
   })
 
   it('should pass expected props to Icon component', () => {
-    render(<IconButton type='close' inverse={true} />)
+    render(<IconButton type='chevron-right' inverse={true} />)
 
-    expect(screen.getByRole('close')).toBeVisible()
-    expect(screen.getByRole('close').firstChild).toHaveStyle({'--color': '#FFFFFF'})
+    expect(screen.getByRole('button-chevron-right')).toBeVisible()
+    expect(screen.getByRole('icon-chevron-right')).toHaveAttribute('fill', '#FFFFFF')
   })
 
   it('should trigger prop "onClick" function when clicked', () => {
     const onClick = jest.fn()
-    render(<IconButton type='close' onClick={onClick}/>)
+    render(<IconButton type='chevron-right' onClick={onClick}/>)
 
-    fireEvent.click(screen.getByRole('close'))
+    fireEvent.click(screen.getByRole('button-chevron-right'))
     expect(onClick).toHaveBeenCalled()
   })
 })

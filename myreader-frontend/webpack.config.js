@@ -52,9 +52,6 @@ module.exports = function(env) {
         'css-loader'
       ]
     }, {
-      test: /\.svg$/,
-      type: 'asset/inline',
-    }, {
       test: /\.js$/,
       exclude: /node_modules/,
       use: {

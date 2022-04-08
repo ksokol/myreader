@@ -14,7 +14,7 @@ export function IconButton({
     <button
       type='button'
       className={`my-icon-button ${className}`}
-      role={role || type}
+      role={role || `button-${type}`}
       disabled={disabled}
       onClick={event => onClick && onClick(event)}>
       <Icon

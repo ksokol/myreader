@@ -3,29 +3,29 @@ import {Icon} from './Icon'
 
 describe('Icon', () => {
 
-  it('should set expected class for icon', () => {
-    render(<Icon type='icon1'/>)
+  it('should render icon', () => {
+    render(<Icon type='chevron-right'/>)
 
-    expect(screen.getByRole('icon-icon1')).toHaveClass('my-icon')
-    expect(screen.getByRole('icon-icon1')).toHaveClass('my-icon__icon1')
+    expect(screen.getByRole('icon-chevron-right')).toBeVisible()
+    expect(screen.getByRole('icon-chevron-right')).toHaveAttribute('viewBox', '0 0 320 512')
+    expect(screen.getByRole('icon-chevron-right').querySelector('path')).toHaveAttribute('d', expect.stringContaining('M285.476 272'))
 
-    render(<Icon type='icon2'/>)
+    render(<Icon type='chevron-down'/>)
 
-    expect(screen.getByRole('icon-icon2')).toHaveClass('my-icon')
-    expect(screen.getByRole('icon-icon2')).toHaveClass('my-icon__icon2')
+    expect(screen.getByRole('icon-chevron-down')).toBeVisible()
+    expect(screen.getByRole('icon-chevron-down')).toHaveAttribute('viewBox', '0 0 448 512')
+    expect(screen.getByRole('icon-chevron-down').querySelector('path')).toHaveAttribute('d', expect.stringContaining('M207.029 381'))
   })
 
-  it('should invert color when prop "inverse" ist set to true', () => {
-    const spy = jest.spyOn(CSSStyleDeclaration.prototype, 'setProperty')
-    render(<Icon type='icon1' inverse={true}/>)
+  it('should render icon in white color', () => {
+    render(<Icon type='chevron-right' inverse={true}/>)
 
-    expect(spy).toHaveBeenCalledWith('--color', '#FFFFFF')
+    expect(screen.getByRole('icon-chevron-right')).toHaveAttribute('fill', '#FFFFFF')
   })
 
-  it('should not invert color when prop "inverse" ist set to false', () => {
-    const spy = jest.spyOn(CSSStyleDeclaration.prototype, 'setProperty')
-    render(<Icon type='icon1'/>)
+  it('should render icon in gray color', () => {
+    render(<Icon type='chevron-right'/>)
 
-    expect(spy).toHaveBeenCalledWith('--color', '#808080')
+    expect(screen.getByRole('icon-chevron-right')).toHaveAttribute('fill', '#808080')
   })
 })
