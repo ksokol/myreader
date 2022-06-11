@@ -1,5 +1,4 @@
 import './ListLayout.css'
-import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 
@@ -10,6 +9,10 @@ function ActionPanelPortal({children}) {
     children,
     portal
   ) : null
+}
+
+ActionPanelPortal.propTypes = {
+  children: PropTypes.node,
 }
 
 export function ListLayout({
