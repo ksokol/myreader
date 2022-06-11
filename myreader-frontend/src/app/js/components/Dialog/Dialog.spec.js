@@ -44,4 +44,12 @@ describe('Dialog', () => {
 
     await waitFor(() => expect(props.onClickClose).toHaveBeenCalled())
   })
+
+  it('should trigger prop function "onClickClose" when dialog closed with escape key', async () => {
+    render(<Dialog {...props} />)
+
+    document.querySelector('dialog').dispatchEvent(new Event('close'))
+
+    await waitFor(() => expect(props.onClickClose).toHaveBeenCalled())
+  })
 })

@@ -9,9 +9,14 @@ export function Dialog({header, body, footer, onClickClose}) {
 
   useEffect(() => {
     const current = dialogRef.current
+    const listener = current.addEventListener('close', onClickClose)
     current.showModal()
-    return () => current.close()
-  }, [])
+
+    return () => {
+      current.removeEventListener('close', listener)
+      current.close()
+    }
+  }, [onClickClose])
 
   return ReactDom.createPortal(
     <dialog
@@ -20,7 +25,7 @@ export function Dialog({header, body, footer, onClickClose}) {
       <div className='my-dialog'>
         <IconButton
           className='my-dialog__close-button'
-          onClick={onClickClose}
+          onClick={() => dialogRef.current.close()}
           type='times'
           role='close-dialog'
         />
