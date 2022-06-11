@@ -20,6 +20,8 @@ module.exports = {
     }
   },
   coverageReporters: ['html'],
-  testURL: 'http://localhost:8080',
+  testEnvironmentOptions: {
+    url: 'http://localhost:8080'
+  },
   testEnvironment: 'jsdom',
 }
