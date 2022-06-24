@@ -1,18 +1,18 @@
-import React from 'react'
-import {render} from 'react-dom'
+import {createRoot} from 'react-dom/client'
 import {Toast} from './Toast'
 
-let containerDomNode
+let root
 
 function showToasts(notification) {
-  if (!containerDomNode) {
-    containerDomNode = document.createElement('div')
+  if (!root) {
+    const containerDomNode = document.createElement('div')
     containerDomNode.classList.add('my-toast')
     containerDomNode.setAttribute('role', 'dialog')
     document.body.append(containerDomNode)
+    root = createRoot(containerDomNode)
   }
 
-  render(<Toast notification={notification} />, containerDomNode)
+  root.render(<Toast notification={notification} />)
 }
 
 export function toast(message = 'something went wrong', options) {

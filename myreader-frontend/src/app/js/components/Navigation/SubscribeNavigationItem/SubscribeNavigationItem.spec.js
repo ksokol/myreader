@@ -9,15 +9,13 @@ const dialogErrorMessageRole = 'dialog-error-message'
 const textAddSubscription = 'Add subscription'
 const roleDialogInfoMessage = 'dialog-info-message'
 
-const renderComponent = async (props) => {
-  return await act(async () =>
-    await render(
-      <RouterProvider>
-        <NavigationProvider>
-          <SubscribeNavigationItem {...props} />
-        </NavigationProvider>
-      </RouterProvider>
-    )
+const renderComponent = (props) => {
+  return render(
+    <RouterProvider>
+      <NavigationProvider>
+        <SubscribeNavigationItem {...props} />
+      </NavigationProvider>
+    </RouterProvider>
   )
 }
 

@@ -8,15 +8,13 @@ const storageSecurityValue = '{"authorized":true}'
 const someError = 'some error'
 const roleDialogErrorMessage = 'dialog-error-message'
 
-const renderComponent = async () => {
-  await act(async () =>
-    await render(
-      <RouterProvider>
-        <SecurityProvider>
-          <LogoutNavigationItem />
-        </SecurityProvider>
-      </RouterProvider>
-    )
+const renderComponent = () => {
+  return render(
+    <RouterProvider>
+      <SecurityProvider>
+        <LogoutNavigationItem/>
+      </SecurityProvider>
+    </RouterProvider>
   )
 }
 
@@ -30,8 +28,8 @@ describe('LogoutNavigationItem', () => {
   it('should not redirect to login page if logout is still pending', async () => {
     const currentHistoryLength = history.length
     fetch.responsePending()
-    await renderComponent()
-    await act(async() => fireEvent.click(screen.getByText('Logout')))
+    renderComponent()
+    await act(() => fireEvent.click(screen.getByText('Logout')))
 
     expect(history.length).toEqual(currentHistoryLength) // replace
     expect(document.location.href).toMatch(/\/app\/irrelevant$/)
@@ -39,8 +37,8 @@ describe('LogoutNavigationItem', () => {
 
   it('should redirect to login page if logout succeeded', async () => {
     const currentHistoryLength = history.length
-    await renderComponent()
-    await act(async() => fireEvent.click(screen.getByText('Logout')))
+    renderComponent()
+    await act(() => fireEvent.click(screen.getByText('Logout')))
 
     expect(history.length).toEqual(currentHistoryLength) // replace
     expect(document.location.href).toMatch(/\/app\/login$/)
@@ -48,17 +46,16 @@ describe('LogoutNavigationItem', () => {
 
   it('should set authorized state to false if logout succeeded', async () => {
     localStorage.setItem(storageSecurityKey, storageSecurityValue)
-
-    await renderComponent()
-    await act(async() => fireEvent.click(screen.getByText('Logout')))
+    renderComponent()
+    await act(() => fireEvent.click(screen.getByText('Logout')))
 
     expect(localStorage.getItem(storageSecurityKey)).toEqual('{"authorized":false}')
   })
 
   it('should not set authorized state to false if logout failed', async () => {
     fetch.rejectResponse(someError)
-    await renderComponent()
-    await act(async() => fireEvent.click(screen.getByText('Logout')))
+    renderComponent()
+    await act(() => fireEvent.click(screen.getByText('Logout')))
 
     expect(localStorage.getItem(storageSecurityKey)).toEqual(storageSecurityValue)
     fireEvent.click(screen.getByRole(roleDialogErrorMessage))
@@ -66,8 +63,8 @@ describe('LogoutNavigationItem', () => {
 
   it('should show message if logout failed', async () => {
     fetch.rejectResponse(someError)
-    await renderComponent()
-    await act(async() => fireEvent.click(screen.getByText('Logout')))
+    renderComponent()
+    await act(() => fireEvent.click(screen.getByText('Logout')))
 
     expect(screen.getByRole(roleDialogErrorMessage)).toHaveTextContent('Logout failed')
     fireEvent.click(screen.getByRole(roleDialogErrorMessage))
@@ -76,8 +73,8 @@ describe('LogoutNavigationItem', () => {
   it('should go back to previous page if logout failed', async () => {
     const currentHistoryLength = history.length
     fetch.rejectResponse(someError)
-    await renderComponent()
-    await act(async() => fireEvent.click(screen.getByText('Logout')))
+    renderComponent()
+    await act(() => fireEvent.click(screen.getByText('Logout')))
 
     expect(history.length).toEqual(currentHistoryLength) // pop
     expect(document.location.href).toMatch(/\/app\/irrelevant$/)

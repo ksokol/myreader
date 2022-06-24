@@ -2,6 +2,8 @@ import {render, fireEvent, screen, act} from '@testing-library/react'
 import {SubscriptionPage} from './SubscriptionPage'
 import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
 import {RouterProvider} from '../../contexts/router'
+import {Route, Switch} from '../../components/router'
+import {SUBSCRIPTION_PAGE_PATH, SUBSCRIPTIONS_PAGE_PATH} from '../../constants'
 
 const expectedError = 'expectedError'
 const expectedTitle = 'expected title'
@@ -15,12 +17,18 @@ const viewsSubscriptionPage1Subscription = 'views/SubscriptionPage/1/subscriptio
 const viewsNavigationView = 'views/NavigationView'
 const stripImages = 'strip images'
 
-const renderComponent = async () => {
-  await act(async () => {
+const renderComponent = () => {
+  return act(() => {
     render(
       <RouterProvider>
         <NavigationProvider>
-          <SubscriptionPage />
+          <Switch onNotFound={() => null}>
+            <Route path={SUBSCRIPTIONS_PAGE_PATH}>
+            </Route>
+            <Route path={SUBSCRIPTION_PAGE_PATH}>
+              <SubscriptionPage />
+            </Route>
+          </Switch>
         </NavigationProvider>
       </RouterProvider>
     )

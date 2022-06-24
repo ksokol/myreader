@@ -1,4 +1,3 @@
-import React from 'react'
 import {render, screen, act} from '@testing-library/react'
 import {SecurityProvider} from './SecurityProvider'
 import {api} from '../../api'
@@ -29,12 +28,8 @@ describe('security context', () => {
   it('should set prop "authorized" to false if status is 401', async () => {
     renderComponent()
 
-    try {
-      fetch.rejectResponse({status: 401})
-      await act(async () => api.get('irrelevant'))
-    } catch {
-      // ignore it
-    }
+    fetch.rejectResponse({status: 401})
+    await act(() => api.get('irrelevant').catch(() => {/*ignore it */}))
 
     expect(screen.getByRole('security')).toHaveTextContent(JSON.stringify({
       authorized: false,
