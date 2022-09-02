@@ -12,13 +12,14 @@ import static java.lang.System.Logger.Level.WARNING;
 
 public abstract class BaseJob implements Runnable, ApplicationListener<ContextClosedEvent> {
 
-  private final Logger logger;
+  protected final Logger logger;
   private volatile boolean alive = true;
 
   protected BaseJob(final String jobName) {
     logger = System.getLogger(jobName);
   }
 
+  @Deprecated
   public Logger getLogger() {
     return logger;
   }

@@ -21,14 +21,14 @@ public class EntryPurger {
   }
 
   public void purge(Long subscriptionId, OffsetDateTime retainAfterDate) {
-    logger.log(INFO, "retaining feed entries after {0} for feed {1}", retainAfterDate, subscriptionId);
+    logger.log(INFO, "retaining feed entries after {0} for feed {1}", retainAfterDate, subscriptionId.toString());
 
     var entries = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAtIsLowerThan(
       subscriptionId,
       retainAfterDate
     );
 
-    logger.log(INFO, "deleting {0} entries from subscription {1}", entries.size(), subscriptionId);
+    logger.log(INFO, "deleting {0} entries from subscription {1}", entries.size(), subscriptionId.toString());
 
     for (var feedEntry : entries) {
       subscriptionEntryRepository.deleteById(feedEntry);

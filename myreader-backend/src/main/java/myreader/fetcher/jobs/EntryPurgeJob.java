@@ -29,9 +29,9 @@ public class EntryPurgeJob extends BaseJob {
     var subscriptions = subscriptionRepository.findAll();
 
     for (var subscription : subscriptions) {
-      getLogger().log(INFO, "start cleaning old entries from feed '{0} ({1})'", subscription.getTitle(), subscription.getId());
+      logger.log(INFO, "start cleaning old entries from feed {0}", subscription.getId().toString());
       determiner.determine(subscription).ifPresent(retainDate -> entryPurger.purge(subscription.getId(), retainDate));
-      getLogger().log(INFO, "finished cleaning old entries from feed '{0} ({1})'", subscription.getTitle(), subscription.getId());
+      logger.log(INFO, "finished cleaning old entries from feed {0}", subscription.getId().toString());
     }
   }
 }

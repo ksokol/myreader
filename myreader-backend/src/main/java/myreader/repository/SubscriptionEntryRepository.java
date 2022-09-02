@@ -28,7 +28,7 @@ public interface SubscriptionEntryRepository extends CrudRepository<Subscription
   @Query("select * from subscription_entry where subscription_id = :subscriptionId order by created_at desc limit :limit")
   List<SubscriptionEntry> findAllBySubscriptionIdOrderByCreatedAtDesc(@Param("subscriptionId") Long subscriptionId, @Param("limit") int limit);
 
-  @Query("select id from subscription_entry where subscription_id = :subscriptionId and tags is null and seen = true and created_at < :retainDate")
+  @Query("select id from subscription_entry where subscription_id = :subscriptionId and (tags is null or cardinality(tags) = 0) and created_at < :retainDate and (seen is true or excluded is true)")
   List<Long> findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAtIsLowerThan(@Param("subscriptionId") Long id, @Param("retainDate") OffsetDateTime retainDate);
 
   @Query("select count(*) from subscription_entry where subscription_id = :id and seen = false and excluded = false")
