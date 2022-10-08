@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 class ExclusionChecker {
 
-  private static final int PATTERN_FLAGS = Pattern.CASE_INSENSITIVE | Pattern.DOTALL;
+  private static final int PATTERN_FLAGS = Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE;
   private static final int MAX_ENTRIES = 1000;
 
   private static final Map<String, Pattern> PATTERN_CACHE = Collections.synchronizedMap(new LinkedHashMap<>(MAX_ENTRIES + 1, .75F, true) {

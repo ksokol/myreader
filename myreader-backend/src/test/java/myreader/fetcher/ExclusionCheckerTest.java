@@ -67,4 +67,10 @@ class ExclusionCheckerTest {
     assertThat(exclusionChecker.isExcluded("word1", "line1 \r\nline2 word1 text\nline3"))
       .isTrue();
   }
+
+  @Test
+  void shouldExcludeUmlautCaseInsensitive() {
+    assertThat(exclusionChecker.isExcluded("ümlaut", "Ümlaut"))
+      .isTrue();
+  }
 }
