@@ -29,11 +29,9 @@ describe('LoginPage', () => {
     fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'POST',
-      url: 'check',
-      body: 'password=expected+password',
-    })
+    expect(fetch.mostRecent().url).toEqual('check')
+    expect(fetch.mostRecent().method).toEqual('POST')
+    expect(fetch.mostRecent().body.toString()).toEqual('password=expected+password')
     expect(fetch.mostRecent().headers).toEqual(new Headers({
       'content-type': 'application/x-www-form-urlencoded',
       'x-requested-with': 'XMLHttpRequest'

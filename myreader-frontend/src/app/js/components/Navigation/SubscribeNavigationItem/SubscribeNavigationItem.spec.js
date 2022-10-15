@@ -46,11 +46,11 @@ describe('SubscribeNavigationItem', () => {
     await act(async () => fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}}))
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'POST',
-      url: 'api/2/subscriptions',
-      origin: expectedUrl,
-    })
+    expect(fetch.mostRecent().url).toEqual('api/2/subscriptions')
+    expect(fetch.mostRecent().method).toEqual('POST')
+    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+      origin: expectedUrl
+    }))
   })
 
   it('should disable input and button when the call to the api is pending', async () => {
@@ -83,10 +83,8 @@ describe('SubscribeNavigationItem', () => {
     fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: 'views/NavigationView',
-    })
+    expect(fetch.mostRecent().url).toEqual('views/NavigationView')
+    expect(fetch.mostRecent().method).toEqual('GET')
     fireEvent.click(screen.getByText('Subscribed'))
   })
 

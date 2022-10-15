@@ -81,10 +81,8 @@ describe('SubscriptionPage', () => {
   it('should call endpoint for given id', async () => {
     await renderComponent()
 
-    expect(fetch.first()).toMatchRequest({
-      method: 'GET',
-      url: 'views/SubscriptionPage/1'
-    })
+    expect(fetch.first().url).toEqual('views/SubscriptionPage/1')
+    expect(fetch.first().method).toEqual('GET')
   })
 
   it('should render page', async () => {
@@ -138,18 +136,16 @@ describe('SubscriptionPage', () => {
     fetch.jsonResponseOnce({content: []})
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(fetch.nthRequest(2)).toMatchRequest({
-      method: 'PATCH',
-      url: viewsSubscriptionPage1Subscription,
-      body: {
-        uuid: '1',
-        title: 'changed title',
-        origin: 'changed origin',
-        tag: 'changed tag',
-        color: '#dddddd',
-        stripImages: false,
-      },
-    })
+    expect(fetch.nthRequest(2).url).toEqual(viewsSubscriptionPage1Subscription)
+    expect(fetch.nthRequest(2).method).toEqual('PATCH')
+    expect(fetch.nthRequest(2).body).toEqual(JSON.stringify({
+      uuid: '1',
+      title: 'changed title',
+      origin: 'changed origin',
+      tag: 'changed tag',
+      color: '#dddddd',
+      stripImages: false,
+    }))
 
     fireEvent.click(screen.getByText('Updated'))
   })
@@ -179,10 +175,8 @@ describe('SubscriptionPage', () => {
     expect(screen.getByText('Save')).toBeEnabled()
     expect(screen.getByText('Delete')).toBeEnabled()
     expect(screen.queryByRole(roleDialogInfoMessage)).toHaveTextContent('Updated')
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: viewsNavigationView
-    })
+    expect(fetch.mostRecent().url).toEqual(viewsNavigationView)
+    expect(fetch.mostRecent().method).toEqual('GET')
 
     fireEvent.click(screen.getByText('Updated'))
   })
@@ -236,14 +230,10 @@ describe('SubscriptionPage', () => {
     await act(async () => fireEvent.click(screen.getByText('Delete')))
     await act(async () => fireEvent.click(screen.getByText('Yes')))
 
-    expect(fetch.first()).toMatchRequest({
-      method: 'DELETE',
-      url: viewsSubscriptionPage1Subscription
-    })
-    expect(fetch.nthRequest(1)).toMatchRequest({
-      method: 'GET',
-      url: viewsNavigationView
-    })
+    expect(fetch.first().url).toEqual(viewsSubscriptionPage1Subscription)
+    expect(fetch.first().method).toEqual('DELETE')
+    expect(fetch.nthRequest(1).url).toEqual(viewsNavigationView)
+    expect(fetch.nthRequest(1).method).toEqual('GET')
 
     fireEvent.click(screen.queryByRole(roleDialogInfoMessage))
   })
@@ -255,10 +245,8 @@ describe('SubscriptionPage', () => {
     await act(async () => fireEvent.click(screen.getByText('Delete')))
     await act(async () => fireEvent.click(screen.getByText('Yes')))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: viewsNavigationView
-    })
+    expect(fetch.mostRecent().url).toEqual(viewsNavigationView)
+    expect(fetch.mostRecent().method).toEqual('GET')
 
     fireEvent.click(screen.queryByRole(roleDialogInfoMessage))
   })
@@ -322,18 +310,16 @@ describe('SubscriptionPage', () => {
 
     await act(async () => fireEvent.click(screen.getByText('Save')))
 
-    expect(fetch.nthRequest(2)).toMatchRequest({
-      method: 'PATCH',
-      url: viewsSubscriptionPage1Subscription,
-      body: {
-        uuid: '1',
-        title: expectedTitle,
-        origin: expectedOrigin,
-        tag: 'tag1',
-        color: null,
-        stripImages: true,
-      },
-    })
+    expect(fetch.nthRequest(2).url).toEqual(viewsSubscriptionPage1Subscription)
+    expect(fetch.nthRequest(2).method).toEqual('PATCH')
+    expect(fetch.nthRequest(2).body).toEqual(JSON.stringify({
+      uuid: '1',
+      title: expectedTitle,
+      origin: expectedOrigin,
+      tag: 'tag1',
+      color: null,
+      stripImages: true,
+    }))
   })
 
   it('should save exclusion pattern', async () => {
@@ -343,13 +329,11 @@ describe('SubscriptionPage', () => {
     fireEvent.change(screen.getByPlaceholderText(placeholderExclusionPatternInput), {target: {value: 'anPattern'}})
     fireEvent.keyUp(screen.getByDisplayValue('anPattern'), {key: 'Enter', keyCode: 13})
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'POST',
-      url: 'views/SubscriptionPage/1/exclusionPatterns',
-      body: {
-        pattern: 'anPattern'
-      }
-    })
+    expect(fetch.mostRecent().url).toEqual('views/SubscriptionPage/1/exclusionPatterns')
+    expect(fetch.mostRecent().method).toEqual('POST')
+    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+      pattern: 'anPattern'
+    }))
   })
 
   it('should disable all exclusion pattern delete buttons if exclusion pattern is still saving', async () => {
@@ -462,9 +446,7 @@ describe('SubscriptionPage', () => {
     fetch.rejectResponse({data: expectedError})
     await act(async () => fireEvent.click(screen.getAllByRole(roleChipRemoveButton)[0]))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'DELETE',
-      url: 'views/SubscriptionPage/1/exclusionPatterns/100',
-    })
+    expect(fetch.mostRecent().url).toEqual('views/SubscriptionPage/1/exclusionPatterns/100')
+    expect(fetch.mostRecent().method).toEqual('DELETE')
   })
 })

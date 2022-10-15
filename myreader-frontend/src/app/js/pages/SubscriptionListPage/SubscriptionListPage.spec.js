@@ -49,10 +49,8 @@ describe('SubscriptionListPage', () => {
     jest.spyOn(Date, 'now').mockReturnValue(1_614_453_487_714)
     await renderComponent()
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: 'views/NavigationView',
-    })
+    expect(fetch.mostRecent().url).toEqual('views/NavigationView')
+    expect(fetch.mostRecent().method).toEqual('GET')
     await waitFor(() => {
       expect(screen.queryByText('title1')).toBeInTheDocument()
       expect(screen.queryByText('13 hours ago')).toBeInTheDocument()
@@ -160,10 +158,8 @@ describe('SubscriptionListPage', () => {
 
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: 'views/NavigationView',
-    })
+    expect(fetch.mostRecent().url).toEqual('views/NavigationView')
+    expect(fetch.mostRecent().method).toEqual('GET')
     expect(screen.queryByText('title1')).not.toBeInTheDocument()
     expect(screen.queryByText('title2')).toBeInTheDocument()
     expect(screen.queryByText('title3')).toBeInTheDocument()

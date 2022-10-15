@@ -1,16 +1,9 @@
 import '@testing-library/jest-dom/extend-expect'
 import '../__mocks__/global/fetch'
-import {
-  toMatchRequest,
-} from './app/js/shared/custom-matcher'
 
 afterEach(() => {
   localStorage.clear()
   jest.restoreAllMocks()
-})
-
-expect.extend({
-  toMatchRequest,
 })
 
 Element.prototype.scrollIntoView = jest.fn()

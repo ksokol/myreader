@@ -144,20 +144,16 @@ describe('EntryStreamPage', () => {
   it('should fetch entries without seenEqual if showUnseenEntries is set to false', async () => {
     await renderComponent()
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: api2SubscriptionEntriesFeedTagEqualA
-    })
+    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntriesFeedTagEqualA)
+    expect(fetch.mostRecent().method).toEqual('GET')
   })
 
   it('should fetch entries with seenEqual set to true and prop "searchParams.seenEqual" set to true', async () => {
     history.pushState(null, null, '#!/app/subscriptions?seenEqual=true')
     await renderComponent()
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: 'api/2/subscriptionEntries?seenEqual=true'
-    })
+    expect(fetch.mostRecent().url).toEqual('api/2/subscriptionEntries?seenEqual=true')
+    expect(fetch.mostRecent().method).toEqual('GET')
   })
 
   it('should fetch entries when search query changed', async () => {
@@ -169,10 +165,8 @@ describe('EntryStreamPage', () => {
     })
 
     await waitFor(() => {
-      expect(fetch.mostRecent()).toMatchRequest({
-        method: 'GET',
-        url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=true'
-      })
+      expect(fetch.mostRecent().url).toEqual('api/2/subscriptionEntries?seenEqual=true&feedTagEqual=a')
+      expect(fetch.mostRecent().method).toEqual('GET')
     })
   })
 
@@ -185,27 +179,23 @@ describe('EntryStreamPage', () => {
       await clickButtonNext()
 
       expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title1')
-      expect(fetch.mostRecent()).toMatchRequest({
-        method: 'PATCH',
-        url: api2SubscriptionEntries1,
-        body: {
-          seen: true,
-          tags: entry1.tags
-        }
-      })
+      expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
+      expect(fetch.mostRecent().method).toEqual('PATCH')
+      expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+        seen: true,
+        tags: entry1.tags
+      }))
 
       fetch.jsonResponseOnce({...entry2, seen: true})
       await clickButtonNext()
 
       expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title2')
-      expect(fetch.mostRecent()).toMatchRequest({
-        method: 'PATCH',
-        url: entry2Url,
-        body: {
-          seen: true,
-          tags: entry2.tags
-        }
-      })
+      expect(fetch.mostRecent().url).toEqual(entry2Url)
+      expect(fetch.mostRecent().method).toEqual('PATCH')
+      expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+        seen: true,
+        tags: entry2.tags
+      }))
     })
 
     it('should focus and update entry when hotkey pressed', async () => {
@@ -215,27 +205,23 @@ describe('EntryStreamPage', () => {
       await pressArrowRight()
 
       expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title1')
-      expect(fetch.mostRecent()).toMatchRequest({
-        method: 'PATCH',
-        url: api2SubscriptionEntries1,
-        body: {
-          seen: true,
-          tags: entry1.tags
-        }
-      })
+      expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
+      expect(fetch.mostRecent().method).toEqual('PATCH')
+      expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+        seen: true,
+        tags: entry1.tags
+      }))
 
       fetch.jsonResponseOnce({...entry2, seen: true})
       await pressArrowRight()
 
       expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title2')
-      expect(fetch.mostRecent()).toMatchRequest({
-        method: 'PATCH',
-        url: entry2Url,
-        body: {
-          seen: true,
-          tags: entry2.tags
-        }
-      })
+      expect(fetch.mostRecent().url).toEqual(entry2Url)
+      expect(fetch.mostRecent().method).toEqual('PATCH')
+      expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+        seen: true,
+        tags: entry2.tags
+      }))
     })
 
     it('should focus last entry when button clicked', async () => {
@@ -326,14 +312,12 @@ describe('EntryStreamPage', () => {
       await clickButtonPrevious()
 
       expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title1')
-      expect(fetch.mostRecent()).toMatchRequest({
-        method: 'PATCH',
-        url: entry2Url,
-        body: {
-          seen: true,
-          tags: entry2.tags
-        }
-      })
+      expect(fetch.mostRecent().url).toEqual(entry2Url)
+      expect(fetch.mostRecent().method).toEqual('PATCH')
+      expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+        seen: true,
+        tags: entry2.tags
+      }))
     })
 
     it('should focus and update entry when hotkey clicked', async () => {
@@ -347,14 +331,12 @@ describe('EntryStreamPage', () => {
       await pressArrowLeft()
 
       expect(screen.getByRole(roleEntryInFocus)).toHaveTextContent('title1')
-      expect(fetch.mostRecent()).toMatchRequest({
-        method: 'PATCH',
-        url: entry2Url,
-        body: {
-          seen: true,
-          tags: entry2.tags
-        }
-      })
+      expect(fetch.mostRecent().url).toEqual(entry2Url)
+      expect(fetch.mostRecent().method).toEqual('PATCH')
+      expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+        seen: true,
+        tags: entry2.tags
+      }))
     })
   })
 
@@ -378,26 +360,22 @@ describe('EntryStreamPage', () => {
       fetch.jsonResponseOnce({...entry1, seen: false})
       await pressEscape()
 
-      expect(fetch.mostRecent()).toMatchRequest({
-        method: 'PATCH',
-        url: api2SubscriptionEntries1,
-        body: {
-          seen: false,
-          tags: [expectedTag1]
-        }
-      })
+      expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
+      expect(fetch.mostRecent().method).toEqual('PATCH')
+      expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+        seen: false,
+        tags: [expectedTag1]
+      }))
 
       fetch.jsonResponseOnce({...entry1, seen: true})
       await pressEscape()
 
-      expect(fetch.mostRecent()).toMatchRequest({
-        method: 'PATCH',
-        url: api2SubscriptionEntries1,
-        body: {
-          seen: true,
-          tags: [expectedTag1]
-        }
-      })
+      expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
+      expect(fetch.mostRecent().method).toEqual('PATCH')
+      expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+        seen: true,
+        tags: [expectedTag1]
+      }))
     })
   })
 
@@ -459,14 +437,10 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({content: [{...entry2}, {...entry3}], next: null})
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: 'views/NavigationView'
-    })
-    expect(fetch.nthRequest(2)).toMatchRequest({
-      method: 'GET',
-      url: api2SubscriptionEntriesFeedTagEqualA
-    })
+    expect(fetch.mostRecent().url).toEqual('views/NavigationView')
+    expect(fetch.mostRecent().method).toEqual('GET')
+    expect(fetch.nthRequest(2).url).toEqual(api2SubscriptionEntriesFeedTagEqualA)
+    expect(fetch.nthRequest(2).method).toEqual('GET')
     expect(screen.queryByText('title1')).not.toBeInTheDocument()
     expect(screen.queryByText('title2')).toBeInTheDocument()
     expect(screen.queryByText('title3')).toBeInTheDocument()
@@ -487,14 +461,10 @@ describe('EntryStreamPage', () => {
     })
 
     expect(fetch.requestCount()).toEqual(2)
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: 'views/NavigationView'
-    })
-    expect(fetch.nthRequest(2)).toMatchRequest({
-      method: 'GET',
-      url: api2SubscriptionEntriesFeedTagEqualA
-    })
+    expect(fetch.mostRecent().url).toEqual('views/NavigationView')
+    expect(fetch.mostRecent().method).toEqual('GET')
+    expect(fetch.nthRequest(2).url).toEqual(api2SubscriptionEntriesFeedTagEqualA)
+    expect(fetch.nthRequest(2).method).toEqual('GET')
   })
 
   it('should reset focus when refreshing entries', async () => {
@@ -548,26 +518,22 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({...entry1, seen: true})
     await act(async () => fireEvent.click(screen.getAllByRole(roleFlagAsSeen)[0]))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'PATCH',
-      url: api2SubscriptionEntries1,
-      body: {
-        seen: true,
-        tags: [expectedTag1]
-      }
-    })
+    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
+    expect(fetch.mostRecent().method).toEqual('PATCH')
+    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+      seen: true,
+      tags: [expectedTag1]
+    }))
 
     fetch.jsonResponse({...entry1, seen: false})
     await act(async () => fireEvent.click(screen.getAllByRole('flag-as-unseen')[0]))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'PATCH',
-      url: api2SubscriptionEntries1,
-      body: {
-        seen: false,
-        tags: [expectedTag1]
-      }
-    })
+    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
+    expect(fetch.mostRecent().method).toEqual('PATCH')
+    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+      seen: false,
+      tags: [expectedTag1]
+    }))
   })
 
   it('should show error messages if read flag could not be set for multiple entries', async () => {
@@ -606,10 +572,8 @@ describe('EntryStreamPage', () => {
 
     await act(async () => fireEvent.click(screen.getByTestId('toggle-unseen')))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: 'api/2/subscriptionEntries?feedTagEqual=a&seenEqual=false'
-    })
+    expect(fetch.mostRecent().url).toEqual('api/2/subscriptionEntries?feedTagEqual=a&seenEqual=false')
+    expect(fetch.mostRecent().method).toEqual('GET')
 
     expect(screen.queryByText('title1')).not.toBeInTheDocument()
     expect(screen.queryByText('title2')).not.toBeInTheDocument()
@@ -621,10 +585,8 @@ describe('EntryStreamPage', () => {
     history.pushState(null, null, '#!/app/entries?seenEqual=*&entryTagEqual=a')
     await renderComponent()
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: 'api/2/subscriptionEntries?entryTagEqual=a'
-    })
+    expect(fetch.mostRecent().url).toEqual('api/2/subscriptionEntries?entryTagEqual=a')
+    expect(fetch.mostRecent().method).toEqual('GET')
   })
 
   it('should render entry contents', async () => {
@@ -725,14 +687,12 @@ describe('EntryStreamPage', () => {
 
     await act(async () => await fireEvent.click(screen.getByRole('chip-remove-button')))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'PATCH',
-      url: api2SubscriptionEntries1,
-      body: {
-        seen: false,
-        tags: null
-      }
-    })
+    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
+    expect(fetch.mostRecent().method).toEqual('PATCH')
+    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+      seen: false,
+      tags: null
+    }))
   })
 
   it('should remove second entry tag', async () => {
@@ -748,14 +708,12 @@ describe('EntryStreamPage', () => {
 
     await act(async () => await fireEvent.click(screen.getAllByRole('chip-remove-button')[1]))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'PATCH',
-      url: api2SubscriptionEntries1,
-      body: {
-        seen: false,
-        tags: ['tag1']
-      }
-    })
+    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
+    expect(fetch.mostRecent().method).toEqual('PATCH')
+    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+      seen: false,
+      tags: ['tag1']
+    }))
   })
 
   it('should save first entry tag', async () => {
@@ -772,14 +730,12 @@ describe('EntryStreamPage', () => {
     await act(async () => await fireEvent.change(screen.getByPlaceholderText(placeholderEnterATag), {target: {value: 'first tag'}}))
     await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText(placeholderEnterATag), {key: 'Enter', keyCode: 13}))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'PATCH',
-      url: api2SubscriptionEntries1,
-      body: {
-        seen: false,
-        tags: ['first tag']
-      }
-    })
+    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
+    expect(fetch.mostRecent().method).toEqual('PATCH')
+    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+      seen: false,
+      tags: ['first tag']
+    }))
   })
 
   it('should save second entry tag', async () => {
@@ -789,14 +745,12 @@ describe('EntryStreamPage', () => {
     await act(async () => await fireEvent.change(screen.getByPlaceholderText(placeholderEnterATag), {target: {value: 'new tag'}}))
     await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText(placeholderEnterATag), {key: 'Enter', keyCode: 13}))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'PATCH',
-      url: api2SubscriptionEntries1,
-      body: {
-        seen: false,
-        tags: [expectedTag1, 'new tag']
-      }
-    })
+    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
+    expect(fetch.mostRecent().method).toEqual('PATCH')
+    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
+      seen: false,
+      tags: [expectedTag1, 'new tag']
+    }))
   })
 
   it('should prevent duplicate entry tags', async () => {
@@ -821,10 +775,8 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({content: [{...entry2}]})
     await act(async () => mockAllIsIntersecting(true))
 
-    expect(fetch.mostRecent()).toMatchRequest({
-      method: 'GET',
-      url: 'api/2/subscriptionEntries?uuid=2'
-    })
+    expect(fetch.mostRecent().url).toEqual('api/2/subscriptionEntries?uuid=2')
+    expect(fetch.mostRecent().method).toEqual('GET')
 
     expect(screen.queryByText('title1')).toBeInTheDocument()
     expect(screen.queryByText('title2')).toBeInTheDocument()
