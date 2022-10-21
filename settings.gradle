@@ -1,3 +1,10 @@
+pluginManagement {
+  repositories {
+    maven { url 'https://repo.spring.io/milestone' }
+    gradlePluginPortal()
+  }
+}
+
 rootProject.name = 'myreader'
 
 include 'myreader-backend', 'myreader-frontend'
