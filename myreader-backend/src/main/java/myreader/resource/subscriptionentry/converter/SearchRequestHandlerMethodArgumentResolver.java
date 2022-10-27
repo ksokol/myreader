@@ -27,7 +27,6 @@ public class SearchRequestHandlerMethodArgumentResolver implements HandlerMethod
   ) throws ServletRequestBindingException {
     var searchRequest = new SearchRequest();
 
-    searchRequest.setEntryTagEqual(webRequest.getParameter("entryTagEqual"));
     searchRequest.setFeedTagEqual(webRequest.getParameter("feedTagEqual"));
     searchRequest.setFeedUuidEqual(webRequest.getParameter("feedUuidEqual"));
 

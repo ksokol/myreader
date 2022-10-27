@@ -6,20 +6,18 @@ import {SUBSCRIPTION_ENTRIES} from '../../constants'
 import NavigationContext from './NavigationContext'
 
 function TestComponent() {
-  const {subscriptions, subscriptionEntryTags, fetchData} = useContext(NavigationContext)
+  const {subscriptions, fetchData} = useContext(NavigationContext)
 
   return (
     <>
       <div role='fetch' onClick={fetchData}/>
       <div role='subscriptions'>{JSON.stringify(subscriptions)}</div>
-      <div role='subscriptionEntryTags'>{JSON.stringify(subscriptionEntryTags)}</div>
     </>
   )
 }
 
 const expectedError = 'expected error'
 const expectedInitialSubscriptions = '[{"uuid":"1","unseen":3},{"uuid":"2","unseen":2}]'
-const expectedInitialTags = '["tag1","tag2"]'
 
 describe('navigation context', () => {
 
@@ -38,8 +36,7 @@ describe('navigation context', () => {
       subscriptions: [
         {uuid: '1', unseen: 3},
         {uuid: '2', unseen: 2}
-      ],
-      subscriptionEntryTags: ['tag1', 'tag2']
+      ]
     })
   })
 
@@ -47,7 +44,6 @@ describe('navigation context', () => {
     renderComponent()
 
     expect(screen.getByRole('subscriptions')).toHaveTextContent('[]')
-    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent('[]')
   })
 
   it('should contain expected context values in child component if fetch call succeeded', async () => {
@@ -55,10 +51,9 @@ describe('navigation context', () => {
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
     expect(screen.getByRole('subscriptions')).toHaveTextContent(expectedInitialSubscriptions)
-    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 
-  it('should replace subscriptions and tags if fetch called again', async () => {
+  it('should replace subscriptions if fetch called again', async () => {
     renderComponent()
 
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
@@ -66,13 +61,11 @@ describe('navigation context', () => {
       subscriptions: [
         {uuid: '3', unseen: 4}
       ],
-      subscriptionEntryTags: ['tag3', 'tag4']
     })
 
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
     expect(screen.getByRole('subscriptions')).toHaveTextContent('[{"uuid":"3","unseen":4}]')
-    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent('["tag3","tag4"]')
   })
 
   it('should contain empty context value in child component fetch succeeded', async () => {
@@ -82,7 +75,6 @@ describe('navigation context', () => {
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
     expect(screen.getByRole('subscriptions')).toHaveTextContent('[]')
-    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent('[]')
   })
 
   it('should contain expected context values in child component if fetch failed', async () => {
@@ -93,7 +85,6 @@ describe('navigation context', () => {
     await act(async () => fireEvent.click(screen.getByRole('fetch')))
 
     expect(screen.getByRole('subscriptions')).toHaveTextContent(expectedInitialSubscriptions)
-    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 
   it('should decrease subscription unseen count', async () => {
@@ -122,7 +113,6 @@ describe('navigation context', () => {
     })
 
     expect(screen.getByRole('subscriptions')).toHaveTextContent('[{"uuid":"1","unseen":2},{"uuid":"2","unseen":2}]')
-    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 
   it('should increase subscription unseen count', async () => {
@@ -151,7 +141,6 @@ describe('navigation context', () => {
     })
 
     expect(screen.getByRole('subscriptions')).toHaveTextContent('[{"uuid":"1","unseen":4},{"uuid":"2","unseen":2}]')
-    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 
   it('should do nothing if seen flag does not changed', async () => {
@@ -180,7 +169,6 @@ describe('navigation context', () => {
     })
 
     expect(screen.getByRole('subscriptions')).toHaveTextContent(expectedInitialSubscriptions)
-    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 
   it('should do nothing if subscription is not available', async () => {
@@ -209,6 +197,5 @@ describe('navigation context', () => {
     })
 
     expect(screen.getByRole('subscriptions')).toHaveTextContent(expectedInitialSubscriptions)
-    expect(screen.getByRole('subscriptionEntryTags')).toHaveTextContent(expectedInitialTags)
   })
 })

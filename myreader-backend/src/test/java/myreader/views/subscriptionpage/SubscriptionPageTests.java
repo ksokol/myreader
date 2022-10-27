@@ -83,7 +83,6 @@ class SubscriptionPageTests {
       null,
       false,
       false,
-      Set.of("tag1", "tag2"),
       subscription.getId(),
       ofEpochMilli(1000)
     ));

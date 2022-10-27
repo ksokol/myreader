@@ -6,8 +6,6 @@ import myreader.resource.subscriptionentry.beans.SubscriptionEntryGetResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 
 @Component
 public class SubscriptionEntryGetResponseConverter {
@@ -22,13 +20,6 @@ public class SubscriptionEntryGetResponseConverter {
     var target = new SubscriptionEntryGetResponse();
 
     target.setUuid(source.getId().toString());
-
-    if (source.getTags() != null) {
-      target.setTags(new TreeSet<>(source.getTags()));
-    } else {
-      target.setTags(Set.of());
-    }
-
     target.setCreatedAt(source.getCreatedAt());
     target.setSeen(source.isSeen());
     target.setOrigin(source.getUrl());

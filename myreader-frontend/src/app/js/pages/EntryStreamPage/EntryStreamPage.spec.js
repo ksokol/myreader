@@ -6,7 +6,6 @@ import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
 import {useSettings} from '../../contexts/settings'
 import {RouterProvider} from '../../contexts/router'
 
-const expectedTag1 = 'expected tag1'
 const expectedContent1 = 'expected content1'
 const api2SubscriptionEntries1 = 'api/2/subscriptionEntries/1'
 const entry2Url = 'api/2/subscriptionEntries/2'
@@ -20,13 +19,11 @@ const testIdToggleDetails = 'toggle-details'
 const roleMoreDetails = 'more-details'
 const expectedTag = 'expected tag'
 const roleFeedBadge = 'feed-badge'
-const placeholderEnterATag = 'Enter a tag...'
 
 const entry1 = Object.freeze({
   uuid: '1',
   title: 'title1',
   feedTitle: 'expected feedTitle1',
-  tags: [expectedTag1],
   origin: 'expected origin1',
   seen: false,
   createdAt: '2021-02-27T06:48:05.087+01:00',
@@ -37,7 +34,6 @@ const entry2 = Object.freeze({
   uuid: '2',
   title: 'title2',
   feedTitle: 'expected feedTitle2',
-  tags: ['expected tag2'],
   origin: 'expected origin2',
   seen: false,
   createdAt: '2021-02-27T07:48:05.087+01:00',
@@ -48,7 +44,6 @@ const entry3 = Object.freeze({
   uuid: '3',
   title: 'title3',
   feedTitle: 'expected feedTitle3',
-  tags: ['expected tag3'],
   origin: 'expected origin3',
   seen: false,
   createdAt: '2021-02-27T08:48:05.087+01:00',
@@ -59,7 +54,6 @@ const entry4 = Object.freeze({
   uuid: '4',
   title: 'title4',
   feedTitle: 'expected feedTitle4',
-  tags: ['expected tag4'],
   origin: 'expected origin4',
   seen: false,
   createdAt: '2021-02-27T09:48:05.087+01:00',
@@ -183,7 +177,6 @@ describe('EntryStreamPage', () => {
       expect(fetch.mostRecent().method).toEqual('PATCH')
       expect(fetch.mostRecent().body).toEqual(JSON.stringify({
         seen: true,
-        tags: entry1.tags
       }))
 
       fetch.jsonResponseOnce({...entry2, seen: true})
@@ -194,7 +187,6 @@ describe('EntryStreamPage', () => {
       expect(fetch.mostRecent().method).toEqual('PATCH')
       expect(fetch.mostRecent().body).toEqual(JSON.stringify({
         seen: true,
-        tags: entry2.tags
       }))
     })
 
@@ -209,7 +201,6 @@ describe('EntryStreamPage', () => {
       expect(fetch.mostRecent().method).toEqual('PATCH')
       expect(fetch.mostRecent().body).toEqual(JSON.stringify({
         seen: true,
-        tags: entry1.tags
       }))
 
       fetch.jsonResponseOnce({...entry2, seen: true})
@@ -220,7 +211,6 @@ describe('EntryStreamPage', () => {
       expect(fetch.mostRecent().method).toEqual('PATCH')
       expect(fetch.mostRecent().body).toEqual(JSON.stringify({
         seen: true,
-        tags: entry2.tags
       }))
     })
 
@@ -316,7 +306,6 @@ describe('EntryStreamPage', () => {
       expect(fetch.mostRecent().method).toEqual('PATCH')
       expect(fetch.mostRecent().body).toEqual(JSON.stringify({
         seen: true,
-        tags: entry2.tags
       }))
     })
 
@@ -335,7 +324,6 @@ describe('EntryStreamPage', () => {
       expect(fetch.mostRecent().method).toEqual('PATCH')
       expect(fetch.mostRecent().body).toEqual(JSON.stringify({
         seen: true,
-        tags: entry2.tags
       }))
     })
   })
@@ -362,20 +350,14 @@ describe('EntryStreamPage', () => {
 
       expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
       expect(fetch.mostRecent().method).toEqual('PATCH')
-      expect(fetch.mostRecent().body).toEqual(JSON.stringify({
-        seen: false,
-        tags: [expectedTag1]
-      }))
+      expect(fetch.mostRecent().body).toEqual(JSON.stringify({seen: false}))
 
       fetch.jsonResponseOnce({...entry1, seen: true})
       await pressEscape()
 
       expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
       expect(fetch.mostRecent().method).toEqual('PATCH')
-      expect(fetch.mostRecent().body).toEqual(JSON.stringify({
-        seen: true,
-        tags: [expectedTag1]
-      }))
+      expect(fetch.mostRecent().body).toEqual(JSON.stringify({seen: true}))
     })
   })
 
@@ -520,20 +502,14 @@ describe('EntryStreamPage', () => {
 
     expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
     expect(fetch.mostRecent().method).toEqual('PATCH')
-    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
-      seen: true,
-      tags: [expectedTag1]
-    }))
+    expect(fetch.mostRecent().body).toEqual(JSON.stringify({seen: true}))
 
     fetch.jsonResponse({...entry1, seen: false})
     await act(async () => fireEvent.click(screen.getAllByRole('flag-as-unseen')[0]))
 
     expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
     expect(fetch.mostRecent().method).toEqual('PATCH')
-    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
-      seen: false,
-      tags: [expectedTag1]
-    }))
+    expect(fetch.mostRecent().body).toEqual(JSON.stringify({seen: false}))
   })
 
   it('should show error messages if read flag could not be set for multiple entries', async () => {
@@ -623,6 +599,20 @@ describe('EntryStreamPage', () => {
     expect(screen.queryByText(entry2.content)).not.toBeInTheDocument()
   })
 
+  it('should not render more toggle if "showEntryDetails" setting is set to false', async () => {
+    await renderComponent()
+    await act(async () => fireEvent.click(screen.getByTestId(testIdToggleDetails)))
+
+    expect(screen.queryAllByRole('more-details').length).toEqual(2)
+  })
+
+  it('should not render more toggle if "showEntryDetails" setting is set to true', async () => {
+    await renderComponent()
+
+    expect(screen.queryAllByRole('less-details').length).toEqual(0)
+    expect(screen.queryAllByRole('more-details').length).toEqual(0)
+  })
+
   it('should render entry title', async () => {
     await renderComponent()
 
@@ -657,111 +647,6 @@ describe('EntryStreamPage', () => {
     expect(screen.getByRole(roleFeedBadge)).toHaveTextContent(expectedTag)
     expect(screen.getByRole(roleFeedBadge)).toHaveTextContent(expectedTag)
     expect(screen.getByRole(roleFeedBadge)).toHaveStyle('--red: 85; --green: 85; --blue: 85;')
-  })
-
-  it('should render tag input and tag for entry if details toggle clicked', async () => {
-    await renderComponent()
-    expect(screen.queryByPlaceholderText(placeholderEnterATag)).not.toBeInTheDocument()
-
-    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
-
-    expect(screen.getByPlaceholderText(placeholderEnterATag)).toBeInTheDocument()
-    expect(screen.getByText(expectedTag1)).toBeInTheDocument()
-    expect(screen.queryByText('expected tag2')).not.toBeInTheDocument()
-  })
-
-  it('should hide tag input and tag for entry if details toggle clicked twice', async () => {
-    await renderComponent()
-    expect(screen.queryByPlaceholderText(placeholderEnterATag)).not.toBeInTheDocument()
-
-    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
-    await act(async () => fireEvent.click(screen.getAllByRole('less-details')[0]))
-
-    expect(screen.queryByPlaceholderText(placeholderEnterATag)).not.toBeInTheDocument()
-    expect(screen.queryByText(expectedTag1)).not.toBeInTheDocument()
-  })
-
-  it('should remove last entry tag', async () => {
-    await renderComponent()
-    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
-
-    await act(async () => await fireEvent.click(screen.getByRole('chip-remove-button')))
-
-    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
-    expect(fetch.mostRecent().method).toEqual('PATCH')
-    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
-      seen: false,
-      tags: null
-    }))
-  })
-
-  it('should remove second entry tag', async () => {
-    fetch.resetMocks()
-    fetch.jsonResponse({
-      content: [{
-        ...entry1,
-        tags: ['tag1', 'tag2']
-      }]
-    })
-    await renderComponent()
-    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
-
-    await act(async () => await fireEvent.click(screen.getAllByRole('chip-remove-button')[1]))
-
-    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
-    expect(fetch.mostRecent().method).toEqual('PATCH')
-    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
-      seen: false,
-      tags: ['tag1']
-    }))
-  })
-
-  it('should save first entry tag', async () => {
-    fetch.resetMocks()
-    fetch.jsonResponse({
-      content: [{
-        ...entry1,
-        tags: []
-      }]
-    })
-    await renderComponent()
-    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
-
-    await act(async () => await fireEvent.change(screen.getByPlaceholderText(placeholderEnterATag), {target: {value: 'first tag'}}))
-    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText(placeholderEnterATag), {key: 'Enter', keyCode: 13}))
-
-    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
-    expect(fetch.mostRecent().method).toEqual('PATCH')
-    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
-      seen: false,
-      tags: ['first tag']
-    }))
-  })
-
-  it('should save second entry tag', async () => {
-    await renderComponent()
-    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
-
-    await act(async () => await fireEvent.change(screen.getByPlaceholderText(placeholderEnterATag), {target: {value: 'new tag'}}))
-    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText(placeholderEnterATag), {key: 'Enter', keyCode: 13}))
-
-    expect(fetch.mostRecent().url).toEqual(api2SubscriptionEntries1)
-    expect(fetch.mostRecent().method).toEqual('PATCH')
-    expect(fetch.mostRecent().body).toEqual(JSON.stringify({
-      seen: false,
-      tags: [expectedTag1, 'new tag']
-    }))
-  })
-
-  it('should prevent duplicate entry tags', async () => {
-    await renderComponent()
-    fetch.resetMocks()
-    await act(async () => fireEvent.click(screen.getAllByRole(roleMoreDetails)[0]))
-
-    await act(async () => await fireEvent.change(screen.getByPlaceholderText(placeholderEnterATag), {target: {value: expectedTag1}}))
-    await act(async () => await fireEvent.keyUp(screen.getByPlaceholderText(placeholderEnterATag), {key: 'Enter', keyCode: 13}))
-
-    expect(fetch.requestCount()).toEqual(0)
   })
 
   it('should fetch automatically next entries if last entry becomes visible', async () => {

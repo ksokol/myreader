@@ -9,7 +9,6 @@ public class SubscriptionEntryGetResponse {
     private String title;
     private String feedTitle;
     private String feedUuid;
-    private Set<String> tags;
     private String content;
     private boolean seen;
     private String origin;
@@ -47,14 +46,6 @@ public class SubscriptionEntryGetResponse {
 
     public void setFeedUuid(String feedUuid) {
         this.feedUuid = feedUuid;
-    }
-
-    public Set<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<String> tags) {
-        this.tags = tags;
     }
 
     public String getContent() {

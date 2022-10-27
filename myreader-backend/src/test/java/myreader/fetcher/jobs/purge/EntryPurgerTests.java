@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,40 +75,6 @@ class EntryPurgerTests {
   }
 
   @Test
-  void shouldNotDeleteEntriesIfTaggedAndSeen() {
-    var subscriptionEntry1 = createEntry(ofEpochMilli(1000));
-    subscriptionEntry1.setSeen(true);
-    subscriptionEntry1.setTags(Collections.singleton("not null"));
-    template.save(subscriptionEntry1);
-
-    var subscriptionEntry2 = createEntry(ofEpochMilli(2000));
-    subscriptionEntry2.setSeen(true);
-    subscriptionEntry2.setTags(Collections.singleton("not null"));
-    template.save(subscriptionEntry2);
-
-    purger.purge(subscription1.getId(), ofEpochMilli(5000));
-
-    assertThat(template.count(SubscriptionEntry.class))
-      .isEqualTo(2);
-  }
-
-  @Test
-  void shouldNotDeleteEntriesIfTagged() {
-    var subscriptionEntry1 = createEntry(ofEpochMilli(1000));
-    subscriptionEntry1.setTags(Collections.singleton("not null"));
-    template.save(subscriptionEntry1);
-
-    var subscriptionEntry2 = createEntry(ofEpochMilli(2000));
-    subscriptionEntry2.setTags(Collections.singleton("not null"));
-    template.save(subscriptionEntry2);
-
-    purger.purge(subscription1.getId(), ofEpochMilli(5000));
-
-    assertThat(template.count(SubscriptionEntry.class))
-      .isEqualTo(2);
-  }
-
-  @Test
   void shouldNotDeleteEntriesFromSubscriptionIfRetainDateNotReached() {
     var subscriptionEntry1 = createEntry(ofEpochMilli(10000));
     subscriptionEntry1.setSeen(true);
@@ -155,7 +120,6 @@ class EntryPurgerTests {
       null,
       false,
       false,
-      null,
       Subscription.getId(),
       createdAt
     );

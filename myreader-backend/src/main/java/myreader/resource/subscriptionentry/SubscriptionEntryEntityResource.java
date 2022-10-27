@@ -41,7 +41,6 @@ public class SubscriptionEntryEntityResource {
       subscriptionEntry.setSeen(request.getSeen());
     }
 
-    subscriptionEntry.setTags(request.getTags());
     subscriptionEntry = subscriptionEntryRepository.save(subscriptionEntry);
 
     return assembler.toModel(subscriptionEntry);

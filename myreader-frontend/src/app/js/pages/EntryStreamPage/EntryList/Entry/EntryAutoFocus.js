@@ -87,9 +87,6 @@ EntryAutoFocus.propTypes = {
   item: PropTypes.shape({
     uuid: PropTypes.string.isRequired,
     seen: PropTypes.bool.isRequired,
-    tags: PropTypes.arrayOf(
-      PropTypes.string
-    ).isRequired,
   }),
   focusUuid: PropTypes.string,
   onChangeEntry: PropTypes.func.isRequired,

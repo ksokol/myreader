@@ -15,8 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
-
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,43 +61,19 @@ class SubscriptionEntryEntityResourceTests {
       "content",
       true,
       false,
-      Set.of("tag3"),
       subscription.getId(),
       ofEpochMilli(1000)
     ));
   }
 
   @Test
-  void shouldOnlyChangeTag() throws Exception {
+  void shouldChangeSeenFlag() throws Exception {
     mockMvc.perform(patch("/api/2/subscriptionEntries/{id}", subscriptionEntry.getId())
-      .with(jsonBody("{'tags': ['tag-patched']}")))
+        .with(jsonBody("{'seen': false}")))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.uuid").value(subscriptionEntry.getId().toString()))
       .andExpect(jsonPath("$.title").value("Bliki: TellDontAsk"))
       .andExpect(jsonPath("$.feedTitle").value("user112_subscription1"))
-      .andExpect(jsonPath("$.tags").value("tag-patched"))
-      .andExpect(jsonPath("$.content").value("content"))
-      .andExpect(jsonPath("$.seen").value(true))
-      .andExpect(jsonPath("$.feedTag").value("tag1"))
-      .andExpect(jsonPath("$.feedTagColor").value("#777"))
-      .andExpect(jsonPath("$.feedUuid").value(subscription.getId().toString()))
-      .andExpect(jsonPath("$.origin").value("http://martinfowler.com/bliki/TellDontAsk.html"))
-      .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:01Z"));
-
-    assertThat(template.findById(subscriptionEntry.getId(), SubscriptionEntry.class))
-      .hasFieldOrPropertyWithValue("seen", true)
-      .hasFieldOrPropertyWithValue("tags", Set.of("tag-patched"));
-  }
-
-  @Test
-  void shouldChangeTagAndSeenFlag() throws Exception {
-    mockMvc.perform(patch("/api/2/subscriptionEntries/{id}", subscriptionEntry.getId())
-      .with(jsonBody("{'tags': ['tag-patched'], 'seen': false}")))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.uuid").value(subscriptionEntry.getId().toString()))
-      .andExpect(jsonPath("$.title").value("Bliki: TellDontAsk"))
-      .andExpect(jsonPath("$.feedTitle").value("user112_subscription1"))
-      .andExpect(jsonPath("$.tags").value("tag-patched"))
       .andExpect(jsonPath("$.content").value("content"))
       .andExpect(jsonPath("$.seen").value(false))
       .andExpect(jsonPath("$.feedTag").value("tag1"))
@@ -109,7 +83,6 @@ class SubscriptionEntryEntityResourceTests {
       .andExpect(jsonPath("$.createdAt").value("1970-01-01T00:00:01Z"));
 
     assertThat(template.findById(subscriptionEntry.getId(), SubscriptionEntry.class))
-      .hasFieldOrPropertyWithValue("seen", false)
-      .hasFieldOrPropertyWithValue("tags", Set.of("tag-patched"));
+      .hasFieldOrPropertyWithValue("seen", false);
   }
 }

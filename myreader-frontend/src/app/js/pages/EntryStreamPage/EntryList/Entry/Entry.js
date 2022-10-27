@@ -1,11 +1,10 @@
 import './Entry.css'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import PropTypes from 'prop-types'
 import {EntryTitle} from './EntryTitle/EntryTitle'
-import {EntryActions} from './EntryActions'
 import {EntryContent} from './EntryContent/EntryContent'
-import {EntryTags} from './EntryTags'
 import {useSettings} from '../../../../contexts/settings'
+import {IconButton} from '../../../../components/Buttons'
 
 export function Entry(props) {
   const {showEntryDetails} = useSettings()
@@ -19,14 +18,6 @@ export function Entry(props) {
     props.onChangeEntry({
       ...props.item,
       seen: !props.item.seen
-    })
-  }
-
-  const onTagUpdate = tags => {
-    props.onChangeEntry({
-      uuid: props.item.uuid,
-      seen: props.item.seen,
-      tags
     })
   }
 
@@ -49,20 +40,19 @@ export function Entry(props) {
         <EntryTitle
           entry={item}
         />
-        <EntryActions
-          seen={item.seen}
-          showMore={showMore}
-          onToggleShowMore={toggleMore}
-          onToggleSeen={toggleSeen}
-        />
+        <div className='my-entry__actions'>
+          {!showEntryDetails && <IconButton
+            type={`chevron-${showMore ? 'up' : 'down'}`}
+            role={showMore ? 'less-details' : 'more-details'}
+            onClick={toggleMore}
+          />}
+          <IconButton
+            type={`check${item.seen ? '-circle' : ''}`}
+            role={item.seen ? 'flag-as-unseen' : 'flag-as-seen'}
+            onClick={toggleSeen}
+          />
+        </div>
       </div>
-
-      {showMore && (
-        <EntryTags
-          tags={item.tags}
-          onChange={onTagUpdate}
-        />
-      )}
 
       <EntryContent
         visible={showEntryDetails || showMore}
@@ -77,9 +67,6 @@ Entry.propTypes = {
     uuid: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     feedTitle: PropTypes.string.isRequired,
-    tags: PropTypes.arrayOf(
-      PropTypes.string
-    ).isRequired,
     origin: PropTypes.string.isRequired,
     seen: PropTypes.bool.isRequired,
     createdAt: PropTypes.string.isRequired,

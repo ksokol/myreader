@@ -10,18 +10,16 @@ const urlPattern = new RegExp(`[.*/]?${SUBSCRIPTION_ENTRIES}/[a-z0-9\\-].*$`)
 export function NavigationProvider({children}) {
   const [state, setState] = useState({
     subscriptions: [],
-    subscriptionEntryTags: [],
   })
 
   const fetchData = useCallback(async () => {
     try {
-      const {subscriptions, subscriptionEntryTags} = await api.get({
+      const {subscriptions} = await api.get({
         url: 'views/NavigationView',
       })
 
       setState({
         subscriptions,
-        subscriptionEntryTags
       })
     } catch (error) {
       toast(error.data, {error: true})
@@ -62,7 +60,6 @@ export function NavigationProvider({children}) {
     <NavigationContext.Provider
       value={{
         subscriptions: state.subscriptions,
-        subscriptionEntryTags: state.subscriptionEntryTags,
         fetchData,
       }}
     >

@@ -56,7 +56,6 @@ public class SubscriptionEntryBatch {
       fetcherEntry.getContent(subscription.isStripImages()),
       false,
       excluded,
-      null,
       subscription.getId(),
       OffsetDateTime.now()
     );

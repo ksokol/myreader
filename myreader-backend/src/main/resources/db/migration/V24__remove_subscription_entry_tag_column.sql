@@ -1,0 +1,2 @@
+drop index SUBSCRIPTION_ENTRY_TAGS_IDX;
+alter table SUBSCRIPTION_ENTRY drop column TAGS;

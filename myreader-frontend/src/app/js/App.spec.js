@@ -8,7 +8,6 @@ const entry = Object.freeze({
   uuid: '1',
   title: 'expected title',
   feedTitle: 'expected feedTitle',
-  tags: [],
   origin: 'expected origin',
   seen: false,
   createdAt: '2021-02-27T06:48:05.087+01:00',
@@ -19,7 +18,6 @@ const navigationViewResponse = {
   subscriptions: [
     {title: 'subscription 1', uuid: '1', tag: 'group 1', unseen: 2},
   ],
-  subscriptionEntryTags: ['tag1']
 }
 
 const renderComponent = async () => {

@@ -5,7 +5,6 @@ public class SearchRequest {
   private String feedUuidEqual;
   private Boolean seenEqual;
   private String feedTagEqual;
-  private String entryTagEqual;
   private Long uuid;
 
   public String getFeedUuidEqual() {
@@ -32,13 +31,6 @@ public class SearchRequest {
     this.feedTagEqual = feedTagEqual;
   }
 
-  public String getEntryTagEqual() {
-    return entryTagEqual;
-  }
-
-  public void setEntryTagEqual(String entryTagEqual) {
-    this.entryTagEqual = entryTagEqual;
-  }
 
   public Long getUuid() {
     return uuid;

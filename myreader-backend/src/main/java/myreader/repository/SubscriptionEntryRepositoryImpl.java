@@ -8,15 +8,11 @@ import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Component;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,18 +29,13 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
   }
 
   @Override
-  public Slice<SubscriptionEntry> findBy(String feedId, String feedTagEqual, String entryTagEqual, Boolean seen, Long next) {
+  public Slice<SubscriptionEntry> findBy(String feedId, String feedTagEqual, Boolean seen, Long next) {
     var sizePlusOne = DEFAULT_SIZE + 1;
     var predicates = new ArrayList<String>();
     var params = new HashMap<String, Object>();
 
     var sql = new StringBuilder(300);
     sql.append("select se.id from subscription_entry se join subscription s on s.id = se.subscription_id");
-
-    if (entryTagEqual != null) {
-      predicates.add("position_array(:entryTagEqual in se.tags) > 0");
-      params.put("entryTagEqual", entryTagEqual);
-    }
 
     if (feedId != null) {
       predicates.add("se.subscription_id = :feedId");
@@ -85,18 +76,5 @@ public class SubscriptionEntryRepositoryImpl implements SubscriptionEntryReposit
       .collect(Collectors.toList());
 
     return new SliceImpl<>(limit, Pageable.unpaged(), resultList.size() == sizePlusOne);
-  }
-
-  @Override
-  public Set<String> findDistinctTags() {
-    Set<String> distinctTags = new TreeSet<>();
-
-    jdbcTemplate.query("select distinct tags from subscription_entry where tags is not null", (ResultSet rs) ->
-      Arrays.stream((Object[]) rs.getArray(1).getArray())
-        .map(Object::toString)
-        .forEach(distinctTags::add)
-    );
-
-    return distinctTags;
   }
 }

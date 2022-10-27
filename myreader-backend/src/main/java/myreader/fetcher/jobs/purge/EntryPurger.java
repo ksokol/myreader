@@ -23,7 +23,7 @@ public class EntryPurger {
   public void purge(Long subscriptionId, OffsetDateTime retainAfterDate) {
     logger.log(INFO, "retaining feed entries after {0} for feed {1}", retainAfterDate, subscriptionId.toString());
 
-    var entries = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndTagsIsEmptyAndCreatedAtIsLowerThan(
+    var entries = subscriptionEntryRepository.findAllIdsBySubscriptionIdAndCreatedAtIsLowerThan(
       subscriptionId,
       retainAfterDate
     );

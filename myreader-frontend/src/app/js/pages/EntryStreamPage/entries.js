@@ -95,7 +95,7 @@ export function useEntries() {
       const oldValue = state.entries.find(it => it.uuid === entry.uuid)
       const newEntry = await api.patch({
         url: `${SUBSCRIPTION_ENTRIES}/${entry.uuid}`,
-        body: {seen: entry.seen, tags: entry.tags},
+        body: {seen: entry.seen},
         context: {oldValue}
       })
       dispatch({type: 'update_entry', entry: newEntry})

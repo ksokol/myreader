@@ -5,7 +5,6 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.Set;
 
 @Table("SUBSCRIPTION_ENTRY")
 public class SubscriptionEntry {
@@ -17,7 +16,6 @@ public class SubscriptionEntry {
   private final String content;
   private boolean seen;
   private final boolean excluded;
-  private Set<String> tags;
   private final Long subscriptionId;
   private final OffsetDateTime createdAt;
 
@@ -28,7 +26,6 @@ public class SubscriptionEntry {
     String content,
     boolean seen,
     boolean excluded,
-    Set<String> tags,
     Long subscriptionId,
     OffsetDateTime createdAt
   ) {
@@ -38,7 +35,6 @@ public class SubscriptionEntry {
     this.content = content;
     this.seen = seen;
     this.excluded = excluded;
-    this.tags = tags != null ? Set.copyOf(tags) : null;
     this.subscriptionId = Objects.requireNonNull(subscriptionId, "subscriptionId is null");
     this.createdAt = Objects.requireNonNull(createdAt, "createdAt is null");
   }
@@ -78,14 +74,6 @@ public class SubscriptionEntry {
 
   public boolean isExcluded() {
     return excluded;
-  }
-
-  public Set<String> getTags() {
-    return tags;
-  }
-
-  public void setTags(Set<String> tags) {
-    this.tags = tags != null ? Set.copyOf(tags) : null;
   }
 
   public Long getSubscriptionId() {

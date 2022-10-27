@@ -5,8 +5,6 @@ import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 import {SecurityProvider} from '../../contexts/security/SecurityProvider'
 import {RouterProvider} from '../../contexts/router'
 
-const selectedNavigationItemClass = 'selected-navigation-item'
-
 const renderComponent = async (props) => {
   return await act(async () =>
     await render(
@@ -49,7 +47,6 @@ describe('Navigation', () => {
         {title: 'subscription 3', uuid: '3', tag: null, unseen: 0},
         {title: 'subscription 4', uuid: '4', tag: null, unseen: 3}
       ],
-      subscriptionEntryTags: ['tag1', 'tag2']
     })
   })
 
@@ -144,61 +141,5 @@ describe('Navigation', () => {
     expect(byText('group 2')).toEqual('0')
     expect(byText('subscription 3')).toEqual('0')
     expect(byText('subscription 4')).toEqual('3')
-    expect(byText('Bookmarks')).toBeNull()
-  })
-
-  it('should render bookmark items', async () => {
-    await renderComponent(props)
-
-    fireEvent.click(screen.getByText('Bookmarks'))
-
-    expect(screen.getByText('tag1')).toBeInTheDocument()
-    expect(screen.getByText('tag2')).toBeInTheDocument()
-  })
-
-  it('should hide bookmark items', async () => {
-    await renderComponent(props)
-
-    fireEvent.click(screen.getByText('Bookmarks'))
-    fireEvent.click(screen.getByText('Bookmarks'))
-
-    expect(screen.queryByText('tag1')).not.toBeInTheDocument()
-    expect(screen.queryByText('tag2')).not.toBeInTheDocument()
-  })
-
-  it('should navigate to route if bookmark item clicked', async () => {
-    let currentHistoryLength = history.length
-    await renderComponent(props)
-
-    await act(async () => fireEvent.click(screen.getByText('Bookmarks')))
-    await act(async () => {
-      fireEvent.click(screen.getByText('tag1'))
-      window.dispatchEvent(new Event('popstate'))
-    })
-
-    await waitFor(() => {
-      expect(history.length).toBeGreaterThan(currentHistoryLength) // push
-      expect(document.location.href).toMatch(/\/app\/entries\?seenEqual=\*&entryTagEqual=tag1$/)
-    })
-
-    expect(props.onClick).toHaveBeenCalled()
-  })
-
-  it('should select bookmark item', async () => {
-    history.pushState(null, null, '#!/app/entries?entryTagEqual=tag1')
-    await renderComponent(props)
-
-    fireEvent.click(screen.getByText('Bookmarks'))
-
-    expect(screen.queryAllByRole(selectedNavigationItemClass)[0]).toHaveTextContent(/all/)
-    expect(screen.queryAllByRole(selectedNavigationItemClass)[1]).toHaveTextContent('tag1')
-  })
-
-  it('should not select bookmark item', async () => {
-    await renderComponent(props)
-
-    fireEvent.click(screen.getByText('Bookmarks'))
-
-    expect(screen.queryByRole(selectedNavigationItemClass)).toHaveTextContent(/all/)
   })
 })

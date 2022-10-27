@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -68,7 +67,6 @@ class NavigationViewTests {
       null,
       false,
       false,
-      Set.of("tag3", "tag4"),
       subscription1.getId(),
       ofEpochMilli(1000)
     ));
@@ -93,7 +91,6 @@ class NavigationViewTests {
       null,
       false,
       false,
-      Set.of("tag5", "tag6"),
       subscription2.getId(),
       ofEpochMilli(1000)
     ));
@@ -105,7 +102,6 @@ class NavigationViewTests {
       null,
       false,
       false,
-      Set.of("tag7"),
       subscription2.getId(),
       ofEpochMilli(1000)
     ));
@@ -143,12 +139,6 @@ class NavigationViewTests {
       .andExpect(jsonPath("$.subscriptions.length()").value(2))
       .andExpect(jsonPath("$.subscriptions[0].uuid").value(subscription2.getId().toString()))
       .andExpect(jsonPath("$.subscriptions[1].uuid").value(subscription1.getId().toString()));
-  }
-
-  @Test
-  void shouldFindTags() throws Exception {
-    mockMvc.perform(get("/views/NavigationView"))
-      .andExpect(jsonPath("$.subscriptionEntryTags").value(list("tag3","tag4","tag5","tag6","tag7")));
   }
 
   private List<String> list(String... values) {

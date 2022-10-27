@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -92,12 +91,10 @@ class SubscriptionEntryCollectionResourceTests {
     ));
 
     subscriptionEntry1 = createEntry(subscription1);
-    subscriptionEntry1.setTags(Set.of("tag1", "tag2", "tag3"));
     subscriptionEntry1.setSeen(true);
     subscriptionEntry1 = template.save(subscriptionEntry1);
 
     subscriptionEntry2 = createEntry(subscription2);
-    subscriptionEntry2.setTags(Set.of("tag2-tag3", "tag4 tag5", "tag6,tag7", "tag8Tag9"));
     subscriptionEntry2 = template.save(subscriptionEntry2);
 
     subscriptionEntry3 = createEntry(subscription1);
@@ -131,7 +128,6 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content[7].uuid").value(subscriptionEntry4.getId().toString()))
       .andExpect(jsonPath("$.content[7].title").value("some entry4 title"))
       .andExpect(jsonPath("$.content[7].feedTitle").value("user1 subscription1"))
-      .andExpect(jsonPath("$.content[7].tags").isEmpty())
       .andExpect(jsonPath("$.content[7].content").value("some entry4 content"))
       .andExpect(jsonPath("$.content[7].seen").value(false))
       .andExpect(jsonPath("$.content[7].feedTag").isEmpty())
@@ -155,61 +151,6 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("nextPage").doesNotExist())
       .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry1.getId().toString()));
-  }
-
-  @Test
-  void shouldFilterByEntryTags2AndTag3() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag2"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(1))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry1.getId().toString()));
-
-    mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag2-tag3"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.nextPage").doesNotExist())
-      .andExpect(jsonPath("$.content.length()").value(1))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
-  }
-
-  @Test
-  void shouldFilterByEntryTag4() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag4"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.content.length()").value(0));
-
-    mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag4 tag5"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.nextPage").doesNotExist())
-      .andExpect(jsonPath("$.content.length()").value(1))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
-  }
-
-  @Test
-  void shouldFilterByEntryTag6AndTag7() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag6"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.nextPage").doesNotExist())
-      .andExpect(jsonPath("$.content.length()").value(0));
-
-    mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag6,tag7"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.nextPage").doesNotExist())
-      .andExpect(jsonPath("$.content.length()").value(1))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
-  }
-
-  @Test
-  void shouldFilterByEntryTag8AndTag9() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag8"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.nextPage").doesNotExist())
-      .andExpect(jsonPath("$.content.length()").value(0));
-
-    mockMvc.perform(get("/api/2/subscriptionEntries?entryTagEqual=tag8Tag9"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.nextPage").doesNotExist())
-      .andExpect(jsonPath("$.content.length()").value(1))
-      .andExpect(jsonPath("$.content[0].uuid").value(subscriptionEntry2.getId().toString()));
   }
 
   @Test
@@ -252,12 +193,12 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void shouldValidateSeenEqual() throws Exception {
-      mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=invalid"))
-        .andExpect(status().isBadRequest())
-        .andExpect(result -> {
-          String actual = Optional.ofNullable(result.getResolvedException()).orElseThrow(AssertionFailedError::new).getMessage();
-          assertEquals("seenEqual is not of type boolean", actual);
-        });
+    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=invalid"))
+      .andExpect(status().isBadRequest())
+      .andExpect(result -> {
+        String actual = Optional.ofNullable(result.getResolvedException()).orElseThrow(AssertionFailedError::new).getMessage();
+        assertEquals("seenEqual is not of type boolean", actual);
+      });
   }
 
   @Test
@@ -347,7 +288,6 @@ class SubscriptionEntryCollectionResourceTests {
       String.format("some entry%d content", counter),
       false,
       excluded,
-      null,
       subscription.getId(),
       ofEpochMilli(counter * 1000L)
     ));

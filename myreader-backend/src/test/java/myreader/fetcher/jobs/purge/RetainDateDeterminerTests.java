@@ -106,7 +106,6 @@ class RetainDateDeterminerTests {
         null,
         false,
         false,
-        null,
         subscription.getId(),
         ofEpochMilli(index * 1000L)
         ));

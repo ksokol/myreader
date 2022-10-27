@@ -62,7 +62,6 @@ class SubscriptionBatchTests {
       null,
       false,
       false,
-      null,
       subscription1.getId(),
       ofEpochMilli(1000)
     ));
@@ -87,7 +86,6 @@ class SubscriptionBatchTests {
       null,
       false,
       false,
-      null,
       subscription2.getId(),
       ofEpochMilli(1000)
     ));

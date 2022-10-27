@@ -32,7 +32,6 @@ public class SubscriptionEntryCollectionResource {
     var slicedEntries = subscriptionEntryRepository.findBy(
       searchRequest.getFeedUuidEqual(),
       searchRequest.getFeedTagEqual(),
-      searchRequest.getEntryTagEqual(),
       searchRequest.getSeenEqual(),
       searchRequest.getUuid()
     ).map(assembler::toModel);
