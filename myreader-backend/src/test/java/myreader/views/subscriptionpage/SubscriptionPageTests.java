@@ -19,8 +19,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
-
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -272,7 +270,7 @@ class SubscriptionPageTests {
 
   @Test
   void shouldRejectInvalidPattern() throws Exception {
-    mockMvc.perform(post("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns/", subscription.getId())
+    mockMvc.perform(post("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns", subscription.getId())
       .with(jsonBody("{'pattern': '\\\\k'}")))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("pattern"))

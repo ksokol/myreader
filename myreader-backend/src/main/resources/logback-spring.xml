@@ -2,7 +2,7 @@
   <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
   <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
-  <logger name="org.apache.http.client.protocol.ResponseProcessCookies" level="OFF" />
+  <logger name="org.apache.hc.client5.http.protocol.ResponseProcessCookies" level="OFF" />
 
   <root level="INFO">
     <appender-ref ref="CONSOLE" />

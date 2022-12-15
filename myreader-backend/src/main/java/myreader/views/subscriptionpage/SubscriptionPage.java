@@ -1,5 +1,6 @@
 package myreader.views.subscriptionpage;
 
+import jakarta.servlet.ServletException;
 import myreader.entity.ExclusionPattern;
 import myreader.repository.ExclusionRepository;
 import myreader.repository.FetchErrorRepository;
@@ -12,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -127,7 +127,7 @@ public class SubscriptionPage {
 
     var exclusionPatterns = exclusionRepository.findBySubscriptionId(id).stream()
       .map(SubscriptionPageConverter::convertExclusionPattern)
-      .collect(toList());
+      .toList();
 
     return ServerResponse.ok().body(
       Map.of(
@@ -149,7 +149,7 @@ public class SubscriptionPage {
     var source = exclusionRepository.findBySubscriptionId(id);
     var exclusionPatterns = source.stream()
       .map(SubscriptionPageConverter::convertExclusionPattern)
-      .collect(toList());
+      .toList();
 
     return ServerResponse.ok().body(
       Map.of(

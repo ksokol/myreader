@@ -3,6 +3,7 @@ package myreader.repository;
 import myreader.entity.ExclusionPattern;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public interface ExclusionRepository extends PagingAndSortingRepository<ExclusionPattern, Long> {
+public interface ExclusionRepository extends PagingAndSortingRepository<ExclusionPattern, Long>, CrudRepository<ExclusionPattern, Long> {
 
   @Query("select * from exclusion_pattern where id = :id and subscription_id = :subscriptionId")
   Optional<ExclusionPattern> findByIdAndSubscriptionId(@Param("id") Long patternId, @Param("subscriptionId") Long subscriptionId);

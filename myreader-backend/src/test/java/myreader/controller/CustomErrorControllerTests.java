@@ -1,5 +1,6 @@
 package myreader.controller;
 
+import jakarta.servlet.RequestDispatcher;
 import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class CustomErrorControllerTests {
 
   @Test
   void shouldForwardToIndexPageOn404() {
-    request.setAttribute("javax.servlet.error.status_code", NOT_FOUND.value());
+    request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, NOT_FOUND.value());
 
     var modelAndView = errorController.errorHtml(request, response);
 

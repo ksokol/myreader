@@ -1,19 +1,19 @@
 package myreader.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -31,79 +31,40 @@ public class SecurityConfig {
     this.userPassword = Objects.requireNonNull(userPassword, "userPassword is null");
   }
 
-  @Order(101)
-  @Configuration
-  class DefaultSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-      auth
-        .userDetailsService(username -> new User("user", userPassword, true, true, true, true, Collections.emptyList()))
-        .passwordEncoder(new BCryptPasswordEncoder());
-    }
-
-    @Override
-    public void configure(WebSecurity web) {
-      web.ignoring()
-        .antMatchers("index.html", "/app/**");
-    }
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() {
+    return (web) -> web.ignoring()
+      .requestMatchers("/", "/index.html", "/app/**", "/favicon.ico", "/favicon.png");
   }
 
-  @Order(100)
-  @Configuration
-  class LoginSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-      http
-        .formLogin().loginPage("/")
-        .loginProcessingUrl("/check").permitAll()
-        .successHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT))
-        .failureHandler((request, response, exception) -> response.setStatus(HttpServletResponse.SC_BAD_REQUEST))
-        .and()
-        .rememberMe().key(rememberMeKey).alwaysRemember(true)
-        .and()
-        .logout().logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT))
-        .permitAll()
-        .and()
-        .authorizeRequests().antMatchers("/**").permitAll()
-        .and()
-        .csrf().disable()
-        .headers().frameOptions().disable();
-    }
+  @Bean
+  public UserDetailsService userDetailsService() {
+    return username -> new User("user", userPassword, true, true, true, true, Collections.emptyList());
   }
 
-  @Order(99)
-  @Configuration
-  class ApiSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-      http
-        .antMatcher("/api/2/**")
-        .authorizeRequests().anyRequest().authenticated()
-        .and()
-        .rememberMe().key(rememberMeKey)
-        .and()
-        .csrf().disable()
-        .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 
-  @Order(98)
-  @Configuration
-  class ViewsSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-      http
-        .antMatcher("/views/**")
-        .authorizeRequests().anyRequest().authenticated()
-        .and()
-        .rememberMe().key(rememberMeKey)
-        .and()
-        .csrf().disable()
-        .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-    }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http
+      .formLogin().loginPage("/")
+      .loginProcessingUrl("/check")
+      .successHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT))
+      .failureHandler((request, response, exception) -> response.setStatus(HttpServletResponse.SC_BAD_REQUEST))
+      .and()
+      .rememberMe().key(rememberMeKey).alwaysRemember(true)
+      .and()
+      .logout().logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT))
+      .and()
+      .authorizeHttpRequests().requestMatchers("/**").authenticated()
+      .and()
+      .csrf().disable()
+      .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+      .and()
+      .headers().frameOptions().disable()
+      .and().build();
   }
 }
