@@ -13,6 +13,7 @@ const isServed = ENV === 'server'
 
 const BACKEND_PORT = 19340
 const BACKEND_CONTEXT = 'myreader'
+const DIST_DIR = './target/classes/static'
 
 module.exports = function(env) {
   const config = {}
@@ -24,7 +25,7 @@ module.exports = function(env) {
   }
 
   config.output = isTest ? {} : {
-    path: path.resolve('./dist'),
+    path: path.resolve(DIST_DIR),
     filename: isProd ? 'app/[name].[contenthash].js' : '[name].bundle.js',
     chunkFilename: isProd ? 'app/[name].[contenthash].js' : '[name].bundle.js',
     publicPath: ''
@@ -87,7 +88,7 @@ module.exports = function(env) {
         patterns: [
           {
             from: 'public',
-            to: path.resolve('./dist'),
+            to: path.resolve(DIST_DIR),
             globOptions: {
               ignore: ['**/index.html'],
             },

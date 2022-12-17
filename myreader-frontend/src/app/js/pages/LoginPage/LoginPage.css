@@ -4,17 +4,6 @@
   width: 100%;
 }
 
-.login-page__application-info {
-  align-self: center;
-  color: rgba(0, 0, 0, 0.54);
-  font-size: 0.75rem;
-  margin: 2rem 0;
-}
-
-.login-page__application-info > span + span:before {
-  content: ' | ';
-}
-
 @media (prefers-color-scheme: dark) {
   .login-page {
     background-color: rgb(43, 43, 43);

@@ -94,14 +94,4 @@ describe('LoginPage', () => {
     expect(screen.getByLabelText('Password')).toBeEnabled()
     expect(screen.getByText('Login')).toBeEnabled()
   })
-
-  it('should show version and commit id', async () => {
-    document.head.dataset.buildVersion = 'expected version'
-    document.head.dataset.buildCommitId = 'expected commit id'
-
-    await renderComponent()
-
-    expect(screen.getByText('expected version')).toBeInTheDocument()
-    expect(screen.getByText('expected commit id')).toBeInTheDocument()
-  })
 })

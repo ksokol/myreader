@@ -6,10 +6,6 @@ import {useSecurity} from '../../contexts/security'
 import {useLogin} from './login'
 import {Redirect} from '../../components/router'
 
-function getAttribute(name) {
-  return document.querySelector('head').getAttribute(name)
-}
-
 export function LoginPage() {
   const {pending, failed, loggedIn, login} = useLogin()
   const {doAuthorize, authorized} = useSecurity()
@@ -31,10 +27,6 @@ export function LoginPage() {
         loginFailed={failed}
         onLogin={password => login(password)}
       />
-      <div className='login-page__application-info'>
-        <span>{getAttribute('data-build-commit-id')}</span>
-        <span>{getAttribute('data-build-version')}</span>
-      </div>
     </div>
   )
 }
