@@ -24,6 +24,14 @@ module.exports = function(env) {
     app: './src/app/js/index.js'
   }
 
+  config.resolve = {
+    'alias': {
+      'react': 'preact/compat',
+      'react-dom': 'preact/compat',
+      'react/jsx-runtime': 'preact/jsx-runtime'
+    }
+  }
+
   config.output = isTest ? {} : {
     path: path.resolve(DIST_DIR),
     filename: isProd ? 'app/[name].[contenthash].js' : '[name].bundle.js',
