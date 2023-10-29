@@ -1,5 +1,4 @@
 import React, {useState} from 'react'
-import PropTypes from 'prop-types'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {Input} from './Input'
 
@@ -30,13 +29,6 @@ function TestComponent({
       />
     </>
   )
-}
-
-TestComponent.propTypes = {
-  withOnChange: PropTypes.bool,
-  withOnFocus: PropTypes.bool,
-  withOnBlur: PropTypes.bool,
-  withOnEnter: PropTypes.bool,
 }
 
 const expectedPlaceholder = 'expected placeholder'

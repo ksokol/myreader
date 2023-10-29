@@ -1,5 +1,4 @@
 import {useCallback, useEffect, useState} from 'react'
-import PropTypes from 'prop-types'
 import NavigationContext from './NavigationContext'
 import {api} from '../../api'
 import {toast} from '../../components/Toast'
@@ -66,8 +65,4 @@ export function NavigationProvider({children}) {
       {children}
     </NavigationContext.Provider>
   )
-}
-
-NavigationProvider.propTypes = {
-  children: PropTypes.any
 }

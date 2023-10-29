@@ -64,10 +64,7 @@ module.exports = function(env) {
       test: /\.js$/,
       exclude: /node_modules/,
       use: {
-        loader: 'babel-loader',
-        options: {
-          plugins: isProd ? ['transform-react-remove-prop-types'] : []
-        }
+        loader: 'babel-loader'
       }
     }]
   }

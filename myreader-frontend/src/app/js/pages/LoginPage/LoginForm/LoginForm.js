@@ -1,17 +1,14 @@
 import './LoginForm.css'
 import React, {useState} from 'react'
-import PropTypes from 'prop-types'
 import {Button} from '../../../components/Buttons'
 import {Input} from '../../../components/Input/Input'
 
-export function LoginForm(props) {
+export function LoginForm({
+  loginPending = false,
+  loginFailed = false,
+  onLogin
+}) {
   const [password, setPassword] = useState('')
-
-  const {
-    loginPending,
-    loginFailed,
-    onLogin
-  } = props
 
   return (
     <form
@@ -44,15 +41,4 @@ export function LoginForm(props) {
       </Button>
     </form>
   )
-}
-
-LoginForm.propTypes = {
-  loginPending: PropTypes.bool,
-  loginFailed: PropTypes.bool,
-  onLogin: PropTypes.func.isRequired,
-}
-
-LoginForm.defaultProps = {
-  loginPending: false,
-  loginFailed: false
 }

@@ -1,6 +1,5 @@
 import './SearchInput.css'
 import React from 'react'
-import PropTypes from 'prop-types'
 import {Icon} from '../Icon/Icon'
 import {Input} from '../Input/Input'
 import {isValuePresent} from '../../shared/utils'
@@ -29,11 +28,4 @@ export function SearchInput(props) {
 
 SearchInput.defaultProps = {
   className: '',
-}
-
-SearchInput.propTypes = {
-  className: PropTypes.string,
-  value: PropTypes.string,
-  inverse: PropTypes.bool,
-  onChange: PropTypes.func,
 }

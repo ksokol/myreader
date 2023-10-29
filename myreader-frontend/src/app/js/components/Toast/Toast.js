@@ -1,6 +1,5 @@
 import './Toast.css'
 import React, {useEffect, useReducer, useCallback} from 'react'
-import PropTypes from 'prop-types'
 
 const dismissTimeout = 3000
 
@@ -44,15 +43,6 @@ const ToastItem = ({notification, dispatch}) => {
   )
 }
 
-ToastItem.propTypes = {
-  notification: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    type: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
-  }).isRequired,
-  dispatch: PropTypes.func.isRequired
-}
-
 export const Toast = ({notification}) => {
   const [state, dispatch] = useReducer(reducer, [])
 
@@ -65,12 +55,4 @@ export const Toast = ({notification}) => {
       dispatch={dispatch}
     />
   )
-}
-
-Toast.propTypes = {
-  notification: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    type: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
-  }).isRequired
 }

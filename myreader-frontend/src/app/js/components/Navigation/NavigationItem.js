@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import {Badge} from '../Badge/Badge'
 import {Link} from '../router'
 
@@ -24,16 +23,4 @@ export function NavigationItem({
       </Link>
     </li>
   )
-}
-
-NavigationItem.propTypes = {
-  className: PropTypes.string,
-  to: PropTypes.shape({
-    pathname: PropTypes.string,
-    search: PropTypes.string,
-  }),
-  title: PropTypes.string.isRequired,
-  badgeCount: PropTypes.number,
-  selected: PropTypes.bool,
-  onClick: PropTypes.func
 }

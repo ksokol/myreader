@@ -1,5 +1,4 @@
 import {useState} from 'react'
-import PropTypes from 'prop-types'
 import {Button} from '../../../components/Buttons'
 import {Dialog} from '../../../components/Dialog/Dialog'
 
@@ -45,10 +44,4 @@ export function SubscriptionColorPicker({color, onSelect, onClose}) {
     >
     </Dialog>
   )
-}
-
-SubscriptionColorPicker.propTypes = {
-  color: PropTypes.string,
-  onSelect: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
 }

@@ -1,5 +1,4 @@
 import './Checkbox.css'
-import PropTypes from 'prop-types'
 
 export function Checkbox({
   name,
@@ -20,12 +19,4 @@ export function Checkbox({
       <span>{children}</span>
     </label>
   )
-}
-
-Checkbox.propTypes = {
-  name: PropTypes.string.isRequired,
-  value: PropTypes.bool.isRequired,
-  disabled: PropTypes.bool,
-  onChange: PropTypes.func.isRequired,
-  children: PropTypes.any,
 }

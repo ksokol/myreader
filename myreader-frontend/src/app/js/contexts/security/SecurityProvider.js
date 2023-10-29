@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useCallback} from 'react'
-import PropTypes from 'prop-types'
 import SecurityContext from './SecurityContext'
 import {getLastSecurityState, setLastSecurityState} from './security'
 import {api} from '../../api'
@@ -44,8 +43,4 @@ export function SecurityProvider({children}) {
       {children}
     </SecurityContext.Provider>
   )
-}
-
-SecurityProvider.propTypes = {
-  children: PropTypes.any
 }

@@ -1,12 +1,11 @@
 import './Button.css'
 import React from 'react'
-import PropTypes from 'prop-types'
 
 export function Button({
-  type,
-  role,
+  type = 'button',
+  role = 'button',
   primary,
-  disabled,
+  disabled = false,
   caution,
   className,
   onClick,
@@ -34,21 +33,4 @@ export function Button({
     >{children}
     </button>
   )
-}
-
-Button.propTypes = {
-  type: PropTypes.string,
-  role: PropTypes.string,
-  primary: PropTypes.bool,
-  caution: PropTypes.bool,
-  disabled: PropTypes.bool,
-  className: PropTypes.string,
-  onClick: PropTypes.func,
-  children: PropTypes.node
-}
-
-Button.defaultProps = {
-  type: 'button',
-  role: 'button',
-  disabled: false
 }

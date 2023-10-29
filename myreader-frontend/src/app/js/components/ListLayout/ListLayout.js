@@ -1,6 +1,5 @@
 import './ListLayout.css'
 import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
 
 function ActionPanelPortal({children}) {
   const portal = document.querySelector('#portal-header')
@@ -9,10 +8,6 @@ function ActionPanelPortal({children}) {
     children,
     portal
   ) : null
-}
-
-ActionPanelPortal.propTypes = {
-  children: PropTypes.node,
 }
 
 export function ListLayout({
@@ -36,10 +31,4 @@ export function ListLayout({
       </div>
     </div>
   )
-}
-
-ListLayout.propTypes = {
-  className: PropTypes.string,
-  actionPanel: PropTypes.node,
-  listPanel: PropTypes.node,
 }

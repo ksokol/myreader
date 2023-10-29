@@ -1,6 +1,5 @@
 import React from 'react'
 import {Chips} from '../../../components/Chips/Chips'
-import PropTypes from 'prop-types'
 
 export function SubscriptionExclusions({
   disabled,
@@ -25,17 +24,4 @@ export function SubscriptionExclusions({
       onRemove={({uuid}) => removeExclusionPattern(uuid)}
     />
   )
-}
-
-SubscriptionExclusions.propTypes = {
-  disabled: PropTypes.bool.isRequired,
-  exclusionPatterns: PropTypes.arrayOf(
-    PropTypes.shape({
-      uuid: PropTypes.string.isRequired,
-      pattern: PropTypes.string.isRequired,
-      hitCount: PropTypes.number.isRequired,
-    })
-  ).isRequired,
-  addExclusionPattern: PropTypes.func.isRequired,
-  removeExclusionPattern: PropTypes.func.isRequired
 }

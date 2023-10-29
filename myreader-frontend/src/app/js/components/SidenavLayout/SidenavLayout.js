@@ -1,6 +1,5 @@
 import './SidenavLayout.css'
 import {useEffect, useReducer, useRef, useLayoutEffect} from 'react'
-import PropTypes from 'prop-types'
 import {IconButton} from '../Buttons'
 import {Navigation} from '../Navigation/Navigation'
 import {Backdrop} from './Backdrop/Backdrop'
@@ -121,8 +120,4 @@ export function SidenavLayout({children}) {
       />
     </div>
   )
-}
-
-SidenavLayout.propTypes = {
-  children: PropTypes.any
 }

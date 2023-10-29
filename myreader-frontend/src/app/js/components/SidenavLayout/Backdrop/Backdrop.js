@@ -1,6 +1,5 @@
 import './Backdrop.css'
 import React, {useState, useRef, useEffect} from 'react'
-import PropTypes from 'prop-types'
 import ReactDom from 'react-dom'
 
 export function Backdrop(props) {
@@ -63,9 +62,4 @@ export function Backdrop(props) {
       document.body
     )
   ) : null
-}
-
-Backdrop.propTypes = {
-  maybeVisible: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired
 }

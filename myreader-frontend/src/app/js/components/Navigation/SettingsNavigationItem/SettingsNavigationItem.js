@@ -1,6 +1,5 @@
 import './SettingsNavigationItem.css'
 import {useState} from 'react'
-import PropTypes from 'prop-types'
 import {NavigationItem} from '../NavigationItem'
 import {Dialog} from '../../Dialog/Dialog'
 import {useSettings} from '../../../contexts/settings'
@@ -32,12 +31,6 @@ function Toggle({
       </div>
     </>
   )
-}
-
-Toggle.propTypes = {
-  label: PropTypes.string.isRequired,
-  checked: PropTypes.bool.isRequired,
-  onChange: PropTypes.func.isRequired,
 }
 
 function SettingsDialog({onClose}) {
@@ -83,10 +76,6 @@ function SettingsDialog({onClose}) {
   )
 }
 
-SettingsDialog.propTypes = {
-  onClose: PropTypes.func.isRequired,
-}
-
 export function SettingsNavigationItem({onClick}) {
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -108,8 +97,4 @@ export function SettingsNavigationItem({onClick}) {
       />
     </>
   )
-}
-
-SettingsNavigationItem.propTypes = {
-  onClick: PropTypes.func.isRequired
 }

@@ -1,6 +1,5 @@
 import './EntryList.css'
 import {useEffect, useCallback} from 'react'
-import PropTypes from 'prop-types'
 import {useInView} from 'react-intersection-observer'
 import {Button} from '../../../components/Buttons'
 import {EntryAutoFocus} from './Entry/EntryAutoFocus'
@@ -58,17 +57,4 @@ export function EntryList({
       )}
     </>
   )
-}
-
-EntryList.propTypes = {
-  hasNextPage: PropTypes.bool.isRequired,
-  entries: PropTypes.arrayOf(
-    PropTypes.shape({
-      uuid: PropTypes.string.isRequired
-    })
-  ),
-  entryInFocusUuid: PropTypes.string,
-  loading: PropTypes.bool.isRequired,
-  onChangeEntry: PropTypes.func.isRequired,
-  onLoadMore: PropTypes.func.isRequired
 }

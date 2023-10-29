@@ -1,6 +1,5 @@
 import './ConfirmButton.css'
 import {useState} from 'react'
-import PropTypes from 'prop-types'
 import {Button} from '..'
 
 export function ConfirmButton({
@@ -37,10 +36,4 @@ export function ConfirmButton({
       onClick={() => setPresentConfirmation(true)}
     >{children}
     </Button>
-}
-
-ConfirmButton.propTypes = {
-  disabled: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
-  children: PropTypes.any
 }

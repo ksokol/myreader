@@ -1,6 +1,5 @@
 import './SubscriptionEditForm.css'
 import {useState} from 'react'
-import PropTypes from 'prop-types'
 import {AutocompleteInput} from '../../../components/AutocompleteInput/AutocompleteInput'
 import {Button, ConfirmButton} from '../../../components/Buttons'
 import {Icon} from '../../../components/Icon/Icon'
@@ -155,26 +154,4 @@ export function SubscriptionEditForm(props) {
       />
     </>
   )
-}
-
-SubscriptionEditForm.propTypes = {
-  data: PropTypes.shape({
-    uuid: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    origin: PropTypes.string.isRequired,
-    tag: PropTypes.string,
-    color: PropTypes.string,
-    stripImages: PropTypes.bool.isRequired,
-  }),
-  subscriptionTags: PropTypes.arrayOf(
-    PropTypes.string
-  ).isRequired,
-  exclusionPatterns: PropTypes.array.isRequired,
-  fetchErrors: PropTypes.array.isRequired,
-  validations: PropTypes.any,
-  changePending: PropTypes.bool.isRequired,
-  saveSubscriptionEditForm: PropTypes.func.isRequired,
-  deleteSubscription: PropTypes.func.isRequired,
-  addExclusionPattern: PropTypes.func.isRequired,
-  removeExclusionPattern: PropTypes.func.isRequired,
 }

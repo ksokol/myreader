@@ -1,6 +1,5 @@
 import './SubscriptionFetchErrors.css'
 import React from 'react'
-import PropTypes from 'prop-types'
 import {TimeAgo} from '../../../../components/TimeAgo/TimeAgo'
 
 export function SubscriptionFetchErrors({fetchErrors}) {
@@ -19,14 +18,4 @@ export function SubscriptionFetchErrors({fetchErrors}) {
       </div>
     </>
   ) : null
-}
-
-SubscriptionFetchErrors.propTypes = {
-  fetchErrors: PropTypes.arrayOf(
-    PropTypes.shape({
-      uuid: PropTypes.string,
-      message: PropTypes.string,
-      createdAt: PropTypes.string
-    })
-  ).isRequired
 }

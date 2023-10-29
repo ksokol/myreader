@@ -1,7 +1,6 @@
 import './Dialog.css'
 import {useEffect, useRef} from 'react'
 import * as ReactDom from 'react-dom'
-import PropTypes from 'prop-types'
 import {IconButton} from '../Buttons'
 
 export function Dialog({header, body, footer, onClickClose}) {
@@ -42,11 +41,4 @@ export function Dialog({header, body, footer, onClickClose}) {
     </dialog>,
     document.body
   )
-}
-
-Dialog.propTypes = {
-  header: PropTypes.node,
-  body: PropTypes.node,
-  footer: PropTypes.node,
-  onClickClose: PropTypes.func
 }

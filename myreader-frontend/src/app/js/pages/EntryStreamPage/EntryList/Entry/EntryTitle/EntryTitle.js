@@ -1,6 +1,5 @@
 import './EntryTitle.css'
 import React from 'react'
-import PropTypes from 'prop-types'
 import {Badge} from '../../../../../components/Badge/Badge'
 import {TimeAgo} from '../../../../../components/TimeAgo/TimeAgo'
 
@@ -37,15 +36,4 @@ export function EntryTitle(props) {
       </div>
     </div>
   )
-}
-
-EntryTitle.propTypes = {
-  entry: PropTypes.shape({
-    origin: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    feedTitle: PropTypes.string.isRequired,
-    createdAt: PropTypes.string.isRequired,
-    feedTag: PropTypes.string,
-    feedTagColor: PropTypes.string
-  })
 }

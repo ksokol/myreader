@@ -1,6 +1,5 @@
 import './Badge.css'
 import {useMemo} from 'react'
-import PropTypes from 'prop-types'
 import determineRGB from './determineRGB'
 
 export function Badge({text, color, role}) {
@@ -21,10 +20,4 @@ export function Badge({text, color, role}) {
       <span>{text}</span>
     </div>
   )
-}
-
-Badge.propTypes = {
-  text: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  color: PropTypes.string,
-  role: PropTypes.string,
 }

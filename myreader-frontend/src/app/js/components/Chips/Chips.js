@@ -1,6 +1,5 @@
 import './Chips.css'
 import {useState} from 'react'
-import PropTypes from 'prop-types'
 import {Input} from '../Input/Input'
 import {IconButton} from '../Buttons'
 
@@ -29,13 +28,6 @@ function Chip({
       {removeButton}
     </div>
   )
-}
-
-Chip.propTypes = {
-  value: PropTypes.any.isRequired,
-  disabled: PropTypes.bool,
-  onRemove: PropTypes.func,
-  children: PropTypes.node
 }
 
 export function Chips({
@@ -86,15 +78,4 @@ export function Chips({
       }
     </div>
   )
-}
-
-Chips.propTypes = {
-  className: PropTypes.string,
-  keyFn: PropTypes.func.isRequired,
-  values: PropTypes.arrayOf(PropTypes.any),
-  placeholder: PropTypes.string,
-  disabled: PropTypes.bool,
-  onAdd: PropTypes.func,
-  onRemove: PropTypes.func,
-  renderItem: PropTypes.func.isRequired
 }

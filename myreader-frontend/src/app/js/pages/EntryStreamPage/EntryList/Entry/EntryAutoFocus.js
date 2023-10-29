@@ -1,6 +1,5 @@
 import {useEffect, useState, useRef} from 'react'
 import {useHotkeys} from 'react-hotkeys-hook'
-import PropTypes from 'prop-types'
 import {Entry} from './Entry'
 
 export function EntryAutoFocus({
@@ -81,13 +80,4 @@ export function EntryAutoFocus({
       {...entryProps}
     />
   )
-}
-
-EntryAutoFocus.propTypes = {
-  item: PropTypes.shape({
-    uuid: PropTypes.string.isRequired,
-    seen: PropTypes.bool.isRequired,
-  }),
-  focusUuid: PropTypes.string,
-  onChangeEntry: PropTypes.func.isRequired,
 }

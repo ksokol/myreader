@@ -1,5 +1,4 @@
 import {useState} from 'react'
-import PropTypes from 'prop-types'
 import SettingsContext from './SettingsContext'
 import {setShowEntryDetails, setShowUnseenEntries, settings} from './settings'
 
@@ -28,8 +27,4 @@ export function SettingsProvider({children}) {
     >{children}
     </SettingsContext.Provider>
   )
-}
-
-SettingsProvider.propTypes = {
-  children: PropTypes.any
 }

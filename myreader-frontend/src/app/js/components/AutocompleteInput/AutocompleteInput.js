@@ -1,5 +1,4 @@
 import React, {useMemo} from 'react'
-import PropTypes from 'prop-types'
 import {Input} from '../Input/Input'
 
 export function AutocompleteInput({
@@ -31,12 +30,4 @@ export function AutocompleteInput({
       </datalist>
     </>
   )
-}
-
-AutocompleteInput.propTypes = {
-  name: PropTypes.string.isRequired,
-  value: PropTypes.string,
-  values: PropTypes.arrayOf(PropTypes.string),
-  disabled: PropTypes.bool,
-  onSelect: PropTypes.func.isRequired
 }

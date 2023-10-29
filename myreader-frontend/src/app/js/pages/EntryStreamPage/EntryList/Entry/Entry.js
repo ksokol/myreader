@@ -1,6 +1,5 @@
 import './Entry.css'
 import {useState} from 'react'
-import PropTypes from 'prop-types'
 import {EntryTitle} from './EntryTitle/EntryTitle'
 import {EntryContent} from './EntryContent/EntryContent'
 import {useSettings} from '../../../../contexts/settings'
@@ -60,20 +59,4 @@ export function Entry(props) {
       />
     </article>
   )
-}
-
-Entry.propTypes = {
-  item: PropTypes.shape({
-    uuid: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    feedTitle: PropTypes.string.isRequired,
-    origin: PropTypes.string.isRequired,
-    seen: PropTypes.bool.isRequired,
-    createdAt: PropTypes.string.isRequired,
-    content: PropTypes.string
-  }).isRequired,
-  className: PropTypes.string,
-  role: PropTypes.string,
-  onChangeEntry: PropTypes.func.isRequired,
-  entryRef: PropTypes.func
 }

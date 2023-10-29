@@ -1,5 +1,4 @@
 import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react'
-import PropTypes from 'prop-types'
 
 export const hashPrefix = '#!'
 
@@ -52,10 +51,6 @@ export function RouterProvider({children}) {
       {children}
     </RouterContext.Provider>
   ) : null
-}
-
-RouterProvider.propTypes = {
-  children: PropTypes.any
 }
 
 function getCurrentRoute() {

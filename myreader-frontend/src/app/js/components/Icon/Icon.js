@@ -1,5 +1,4 @@
 import './Icon.css'
-import PropTypes from 'prop-types'
 
 /*
  * see: https://github.com/FortAwesome/Font-Awesome/tree/7d3d774145ac38663f6d1effc6def0334b68ab7e
@@ -75,15 +74,4 @@ export function Icon({type, inverse}) {
       <path d={icon.d} />
     </svg>
   )
-}
-
-Icon.propTypes = {
-  type: (props, propName, componentName) => {
-    if (!icons[props.type]) {
-      return new Error(
-        `Invalid prop '${propName}' supplied to ${componentName}`
-      )
-    }
-  },
-  inverse: PropTypes.bool
 }

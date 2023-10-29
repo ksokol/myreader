@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react'
 import {hashPrefix, useRouter} from '../contexts/router'
-import PropTypes from 'prop-types'
 
 export function Switch({children, onNotFound}) {
   const {route} = useRouter()
@@ -21,20 +20,9 @@ export function Switch({children, onNotFound}) {
     : onNotFound()
 }
 
-Switch.propTypes = {
-  onNotFound: PropTypes.any.isRequired,
-  children: PropTypes.arrayOf(PropTypes.any).isRequired,
-}
-
 export function Route({path, partial, children}) {
   const {route} = useRouter()
   return matchesRoute(route.pathname, path, partial) ? children : null
-}
-
-Route.propTypes = {
-  path: PropTypes.string.isRequired,
-  partial: PropTypes.bool,
-  children: PropTypes.any,
 }
 
 export function Redirect({pathname, search = ''}) {
@@ -45,11 +33,6 @@ export function Redirect({pathname, search = ''}) {
   }, [pathname, replaceRoute, search])
 
   return null
-}
-
-Redirect.propTypes = {
-  pathname: PropTypes.string.isRequired,
-  search: PropTypes.string,
 }
 
 export function Link({to = {}, className, onClick, children}) {
@@ -69,16 +52,6 @@ export function Link({to = {}, className, onClick, children}) {
       {children}
     </a>
   )
-}
-
-Link.propTypes = {
-  to: PropTypes.shape({
-    pathname: PropTypes.string,
-    search: PropTypes.string,
-  }),
-  className: PropTypes.string,
-  onClick: PropTypes.func,
-  children: PropTypes.any,
 }
 
 function matchesRoute(currentPathname, newPathname, partial) {

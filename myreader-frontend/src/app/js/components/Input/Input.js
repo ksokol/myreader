@@ -1,6 +1,5 @@
 import './Input.css'
 import React, {useEffect, useState, useRef} from 'react'
-import PropTypes from 'prop-types'
 
 const KEY_CODE = 'Enter'
 
@@ -11,11 +10,22 @@ function retrieveValidationForField(name, validations) {
     .pop()
 }
 
+Input.defaultProps = {
+  type: 'text',
+  role: 'input',
+  disabled: false,
+  autoComplete: 'off',
+}
+
 export function Input({
   className = '',
   label,
   validations = [],
   onEnter,
+  type = 'text',
+  role = 'input',
+  disabled = false,
+  autoComplete = 'off',
   ...props
 }) {
   const [state, setState] = useState({
@@ -31,10 +41,10 @@ export function Input({
   }
 
   useEffect(() => {
-    if (state.focused && !props.disabled) {
+    if (state.focused && !disabled) {
       inputRef.current.focus()
     }
-  }, [props.disabled, state.focused])
+  }, [disabled, state.focused])
 
   const onChange = event => {
     setState({
@@ -83,6 +93,10 @@ export function Input({
 
       <input
         {...props}
+        type={type}
+        role={role}
+        disabled={disabled}
+        autoComplete={autoComplete}
         ref={inputRef}
         id={id()}
         onChange={onChange}
@@ -105,34 +119,4 @@ export function Input({
       ) : null}
     </div>
   )
-}
-
-Input.propTypes = {
-  id: PropTypes.string,
-  className: PropTypes.string,
-  type: PropTypes.string,
-  label: PropTypes.string,
-  role: PropTypes.string,
-  name: PropTypes.string.isRequired,
-  value: PropTypes.string,
-  placeholder: PropTypes.string,
-  autoComplete: PropTypes.string,
-  disabled: PropTypes.bool,
-  onChange: PropTypes.func,
-  onFocus: PropTypes.func,
-  onBlur: PropTypes.func,
-  onEnter: PropTypes.func,
-  validations: PropTypes.arrayOf(
-    PropTypes.shape({
-      field: PropTypes.string.isRequired,
-      defaultMessage: PropTypes.string.isRequired
-    })
-  )
-}
-
-Input.defaultProps = {
-  type: 'text',
-  role: 'input',
-  disabled: false,
-  autoComplete: 'off',
 }

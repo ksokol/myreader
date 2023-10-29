@@ -1,7 +1,6 @@
 
 import './Navigation.css'
 import {useEffect} from 'react'
-import PropTypes from 'prop-types'
 import createSubscriptionNavigation from './SubscriptionNavigation/createSubscriptionNavigation'
 import {NavigationItem} from './NavigationItem'
 import {SubscriptionNavigationItem} from './SubscriptionNavigation/SubscriptionNavigationItem'
@@ -52,8 +51,4 @@ export function Navigation({onClick}) {
       <LogoutNavigationItem />
     </ul>
   )
-}
-
-Navigation.propTypes = {
-  onClick: PropTypes.func.isRequired
 }

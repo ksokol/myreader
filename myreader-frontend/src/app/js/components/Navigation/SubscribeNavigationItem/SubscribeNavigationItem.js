@@ -1,6 +1,5 @@
 import './SubscribeNavigationItem.css'
 import {useEffect, useState} from 'react'
-import PropTypes from 'prop-types'
 import {NavigationItem} from '../NavigationItem'
 import {Dialog} from '../../Dialog/Dialog'
 import {SUBSCRIPTION_PAGE_PATH} from '../../../constants'
@@ -68,10 +67,6 @@ function SubscribeDialog({onClose}) {
   )
 }
 
-SubscribeDialog.propTypes = {
-  onClose: PropTypes.func.isRequired
-}
-
 export function SubscribeNavigationItem({onClick}) {
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -94,8 +89,4 @@ export function SubscribeNavigationItem({onClick}) {
       />
     </>
   )
-}
-
-SubscribeNavigationItem.propTypes = {
-  onClick: PropTypes.func.isRequired
 }

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import {NavigationItem} from '../NavigationItem'
 import {ENTRIES_PAGE_PATH} from '../../../constants'
 import {useRouter} from '../../../contexts/router'
@@ -68,21 +67,4 @@ export function SubscriptionNavigationItem(props) {
       </ul>
     )
   ]
-}
-
-SubscriptionNavigationItem.propTypes = {
-  item: PropTypes.shape({
-    uuid: PropTypes.string,
-    title: PropTypes.string.isRequired,
-    unseen: PropTypes.number.isRequired,
-    tag: PropTypes.string,
-    subscriptions: PropTypes.arrayOf(
-      PropTypes.shape({
-        uuid: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
-        tag: PropTypes.string,
-      }).isRequired
-    )
-  }).isRequired,
-  onClick: PropTypes.func.isRequired
 }
