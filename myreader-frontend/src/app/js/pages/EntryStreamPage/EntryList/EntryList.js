@@ -1,6 +1,6 @@
 import './EntryList.css'
-import {useEffect, useCallback} from 'react'
-import {useInView} from 'react-intersection-observer'
+import {useEffect} from 'react'
+import {useInView} from './useInView'
 import {Button} from '../../../components/Buttons'
 import {EntryAutoFocus} from './Entry/EntryAutoFocus'
 
@@ -16,15 +16,11 @@ export function EntryList({
     skip: loading,
   })
 
-  const loadMore = useCallback(() => {
-    onLoadMore()
-  }, [onLoadMore])
-
   useEffect(() => {
     if (inView) {
-      loadMore()
+      onLoadMore()
     }
-  }, [inView, loadMore])
+  }, [inView, onLoadMore])
 
   return (
     <>
@@ -51,7 +47,7 @@ export function EntryList({
         <Button
           role='more'
           disabled={loading}
-          onClick={loadMore}
+          onClick={onLoadMore}
         >Load More
         </Button>
       )}

@@ -47,6 +47,7 @@ function reducer(state, action) {
   case 'error': {
     return {
       ...state,
+      loadNextPage: false,
       lastError: action.error,
     }
   }

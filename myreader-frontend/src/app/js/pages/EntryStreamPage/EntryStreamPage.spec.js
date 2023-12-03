@@ -1,5 +1,4 @@
 import {render, fireEvent, screen, act, waitFor} from '@testing-library/react'
-import {mockAllIsIntersecting} from 'react-intersection-observer/test-utils'
 import {EntryStreamPage} from './EntryStreamPage'
 import {SettingsProvider} from '../../contexts/settings/SettingsProvider'
 import {NavigationProvider} from '../../contexts/navigation/NavigationProvider'
@@ -122,6 +121,8 @@ const renderComponent = async () => {
 
 describe('EntryStreamPage', () => {
 
+  let mockIntersecting = null;
+
   beforeEach(async () => {
     history.pushState(null, null, '#!/app/subscriptions?feedTagEqual=a')
 
@@ -132,6 +133,14 @@ describe('EntryStreamPage', () => {
       nextPage: {
         uuid: 3
       },
+    })
+
+    jest.spyOn(window, 'IntersectionObserver').mockImplementationOnce((fn) => {
+      mockIntersecting = fn
+      return {
+        observe: jest.fn(),
+        disconnect: jest.fn()
+      }
     })
   })
 
@@ -658,7 +667,7 @@ describe('EntryStreamPage', () => {
     expect(screen.queryByText('title2')).not.toBeInTheDocument()
 
     fetch.jsonResponse({content: [{...entry2}]})
-    await act(async () => mockAllIsIntersecting(true))
+    await act(async () => mockIntersecting([{isIntersecting: true}]))
 
     expect(fetch.mostRecent().url).toEqual('api/2/subscriptionEntries?uuid=2')
     expect(fetch.mostRecent().method).toEqual('GET')
@@ -667,7 +676,7 @@ describe('EntryStreamPage', () => {
     expect(screen.queryByText('title2')).toBeInTheDocument()
 
     fetch.resetMocks()
-    await act(async () => mockAllIsIntersecting(true))
+    await act(async () => mockIntersecting([{isIntersecting: true}]))
 
     expect(fetch.requestCount()).toEqual(0)
   })
@@ -677,7 +686,7 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({content: []})
     await renderComponent()
 
-    await act(async () => mockAllIsIntersecting(true))
+    await act(async () => mockIntersecting([{isIntersecting: true}]))
 
     expect(fetch.requestCount()).toEqual(1)
   })
