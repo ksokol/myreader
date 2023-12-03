@@ -1,23 +1,13 @@
 {
   "presets": [
     [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "browsers": [
-            "Firefox >= 75",
-            "FirefoxAndroid >= 68",
-            "Chrome >= 81",
-            "ChromeAndroid >= 81"
-          ]
-        }
-      }
-    ],
-    [
       "@babel/preset-react",
       {
         "runtime": "automatic"
       }
     ]
+  ],
+  "plugins": [
+    "@babel/plugin-transform-modules-commonjs"
   ]
 }
