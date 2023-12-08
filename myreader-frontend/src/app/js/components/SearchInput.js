@@ -1,8 +1,7 @@
-import './SearchInput.css'
 import React from 'react'
-import {Icon} from '../Icon/Icon'
-import {Input} from '../Input/Input'
-import {isValuePresent} from '../../shared/utils'
+import {Icon} from './Icon/Icon'
+import {Input} from './Input/Input'
+import {isValuePresent} from '../shared/utils'
 
 export function SearchInput(props) {
   return (

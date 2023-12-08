@@ -1,5 +1,4 @@
 
-import './Navigation.css'
 import {useEffect} from 'react'
 import createSubscriptionNavigation from './SubscriptionNavigation/createSubscriptionNavigation'
 import {NavigationItem} from './NavigationItem'

@@ -1,7 +1,5 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const CopyPlugin = require('copy-webpack-plugin')
 
@@ -40,10 +38,6 @@ module.exports = function(env) {
   }
 
   config.optimization = {
-    minimizer: [
-      '...',
-      new CssMinimizerPlugin()
-    ],
     splitChunks: {
       chunks: 'all'
     }
@@ -55,12 +49,6 @@ module.exports = function(env) {
 
   config.module = {
     rules: [{
-      test: /\.css$/,
-      use: [
-        MiniCssExtractPlugin.loader,
-        'css-loader'
-      ]
-    }, {
       test: /\.js$/,
       exclude: /node_modules/,
       use: {
@@ -85,9 +73,6 @@ module.exports = function(env) {
           'version': env?.version || 'unknown',
           'commit': env?.commitId || 'unknown',
         },
-      }),
-      new MiniCssExtractPlugin({
-        filename: 'app/[name].[contenthash].css',
       }),
       new CopyPlugin({
         patterns: [

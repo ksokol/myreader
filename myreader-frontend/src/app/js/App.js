@@ -1,4 +1,3 @@
-import './App.css'
 import {
   APP_URL,
   ENTRIES_PAGE_PATH,

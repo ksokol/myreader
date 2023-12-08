@@ -1,4 +1,3 @@
-import './SubscriptionEditForm.css'
 import {useState} from 'react'
 import {AutocompleteInput} from '../../../components/AutocompleteInput/AutocompleteInput'
 import {Button, ConfirmButton} from '../../../components/Buttons'
@@ -7,7 +6,7 @@ import {Input} from '../../../components/Input/Input'
 import {SubscriptionExclusions} from './SubscriptionExclusions'
 import {SubscriptionFetchErrors} from './SubscriptionFetchErrors/SubscriptionFetchErrors'
 import {SubscriptionColorPicker} from './SubscriptionColorPicker'
-import {Checkbox} from '../../../components/Checkbox/Checkbox'
+import {Checkbox} from '../../../components/Checkbox'
 
 export function SubscriptionEditForm(props) {
   const [state, setState] = useState({

@@ -1,7 +1,6 @@
-import './LoginForm.css'
 import React, {useState} from 'react'
-import {Button} from '../../../components/Buttons'
-import {Input} from '../../../components/Input/Input'
+import {Button} from '../../components/Buttons'
+import {Input} from '../../components/Input/Input'
 
 export function LoginForm({
   loginPending = false,

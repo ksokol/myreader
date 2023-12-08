@@ -1,4 +1,3 @@
-import './Input.css'
 import React, {useEffect, useState, useRef} from 'react'
 
 const KEY_CODE = 'Enter'

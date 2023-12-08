@@ -1,4 +1,3 @@
-import './SettingsNavigationItem.css'
 import {useState} from 'react'
 import {NavigationItem} from '../NavigationItem'
 import {Dialog} from '../../Dialog/Dialog'

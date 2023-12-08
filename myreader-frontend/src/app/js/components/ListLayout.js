@@ -1,4 +1,3 @@
-import './ListLayout.css'
 import ReactDOM from 'react-dom'
 
 function ActionPanelPortal({children}) {

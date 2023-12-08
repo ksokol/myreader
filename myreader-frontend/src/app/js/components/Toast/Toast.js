@@ -1,4 +1,3 @@
-import './Toast.css'
 import React, {useEffect, useReducer, useCallback} from 'react'
 
 const dismissTimeout = 3000

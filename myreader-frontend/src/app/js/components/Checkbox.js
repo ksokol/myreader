@@ -1,5 +1,3 @@
-import './Checkbox.css'
-
 export function Checkbox({
   name,
   value,

@@ -1,4 +1,3 @@
-import './Entry.css'
 import {useState} from 'react'
 import {EntryTitle} from './EntryTitle/EntryTitle'
 import {EntryContent} from './EntryContent/EntryContent'

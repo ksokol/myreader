@@ -1,4 +1,3 @@
-import './SidenavLayout.css'
 import {useEffect, useReducer, useRef, useLayoutEffect} from 'react'
 import {IconButton} from '../Buttons'
 import {Navigation} from '../Navigation/Navigation'

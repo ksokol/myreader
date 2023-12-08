@@ -1,4 +1,3 @@
-import './EntryContent.css'
 import React from 'react'
 
 export function EntryContent({content, visible}) {

@@ -1,4 +1,3 @@
-import './SubscribeNavigationItem.css'
 import {useEffect, useState} from 'react'
 import {NavigationItem} from '../NavigationItem'
 import {Dialog} from '../../Dialog/Dialog'

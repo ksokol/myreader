@@ -1,5 +1,3 @@
-import './Icon.css'
-
 /*
  * see: https://github.com/FortAwesome/Font-Awesome/tree/7d3d774145ac38663f6d1effc6def0334b68ab7e
  *

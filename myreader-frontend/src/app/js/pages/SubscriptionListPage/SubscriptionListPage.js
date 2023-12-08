@@ -1,6 +1,5 @@
-import './SubscriptionListPage.css'
-import {ListLayout} from '../../components/ListLayout/ListLayout'
-import {SearchInput} from '../../components/SearchInput/SearchInput'
+import {ListLayout} from '../../components/ListLayout'
+import {SearchInput} from '../../components/SearchInput'
 import {IconButton} from '../../components/Buttons'
 import {SUBSCRIPTION_PAGE_PATH} from '../../constants'
 import {TimeAgo} from '../../components/TimeAgo/TimeAgo'

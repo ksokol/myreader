@@ -1,7 +1,6 @@
 module.exports = {
   transform: {
-    '^.+\\.js$': 'babel-jest',
-    '^.+\\.css$': '<rootDir>/__mocks__/styleMock.js',
+    '^.+\\.js$': 'babel-jest'
   },
   transformIgnorePatterns: [
     '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$',

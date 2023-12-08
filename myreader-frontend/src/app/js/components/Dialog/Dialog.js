@@ -1,4 +1,3 @@
-import './Dialog.css'
 import {useEffect, useRef} from 'react'
 import * as ReactDom from 'react-dom'
 import {IconButton} from '../Buttons'

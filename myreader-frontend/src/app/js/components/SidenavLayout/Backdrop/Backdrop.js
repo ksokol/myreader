@@ -1,4 +1,3 @@
-import './Backdrop.css'
 import React, {useState, useRef, useEffect} from 'react'
 import ReactDom from 'react-dom'
 

@@ -1,4 +1,3 @@
-import './LoadingBar.css'
 import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import {api} from '../../api'

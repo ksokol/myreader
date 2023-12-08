@@ -1,4 +1,3 @@
-import './SubscriptionFetchErrors.css'
 import React from 'react'
 import {TimeAgo} from '../../../../components/TimeAgo/TimeAgo'
 

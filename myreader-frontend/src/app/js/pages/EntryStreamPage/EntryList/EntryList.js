@@ -1,4 +1,3 @@
-import './EntryList.css'
 import {useEffect} from 'react'
 import {useInView} from './useInView'
 import {Button} from '../../../components/Buttons'

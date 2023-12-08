@@ -1,4 +1,3 @@
-import './EntryTitle.css'
 import React from 'react'
 import {Badge} from '../../../../../components/Badge/Badge'
 import {TimeAgo} from '../../../../../components/TimeAgo/TimeAgo'

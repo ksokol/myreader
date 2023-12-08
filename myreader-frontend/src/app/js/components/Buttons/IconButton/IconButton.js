@@ -1,4 +1,3 @@
-import './IconButton.css'
 import {Icon} from '../../Icon/Icon'
 
 export function IconButton({

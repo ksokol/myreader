@@ -1,4 +1,3 @@
-import './Chips.css'
 import {useState} from 'react'
 import {Input} from '../Input/Input'
 import {IconButton} from '../Buttons'

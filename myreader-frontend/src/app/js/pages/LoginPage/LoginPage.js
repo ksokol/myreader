@@ -1,6 +1,5 @@
-import './LoginPage.css'
 import {useEffect} from 'react'
-import {LoginForm} from './LoginForm/LoginForm'
+import {LoginForm} from './LoginForm'
 import {ENTRIES_PAGE_PATH} from '../../constants'
 import {useSecurity} from '../../contexts/security'
 import {useLogin} from './login'

@@ -1,4 +1,3 @@
-import './Badge.css'
 import {useMemo} from 'react'
 import determineRGB from './determineRGB'
 
