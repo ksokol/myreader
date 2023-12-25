@@ -1,0 +1,15 @@
+{
+    "name": "MyReader",
+    "short_name": "MyReader",
+    "scope" : "/myreader/",
+    "icons": [
+        {
+            "src": "android-icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#3f51b5",
+    "background_color": "#ffffff",
+    "display": "standalone"
+}
