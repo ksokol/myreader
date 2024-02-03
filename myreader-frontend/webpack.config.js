@@ -68,11 +68,7 @@ module.exports = function(env) {
         inject: 'body',
         minify: {
           collapseWhitespace: true
-        },
-        templateParameters: {
-          'version': env?.version || 'unknown',
-          'commit': env?.commitId || 'unknown',
-        },
+        }
       }),
       new CopyPlugin({
         patterns: [
