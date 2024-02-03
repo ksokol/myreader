@@ -31,5 +31,18 @@
   },
   "directories": {
     "test": "test"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-react",
+        {
+          "runtime": "automatic"
+        }
+      ]
+    ],
+    "plugins": [
+      "@babel/plugin-transform-modules-commonjs"
+    ]
   }
 }
