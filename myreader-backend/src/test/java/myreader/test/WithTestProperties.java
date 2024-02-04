@@ -14,7 +14,10 @@ import java.lang.annotation.Target;
   "spring.flyway.baseline-on-migrate=false",
   "task.enabled=false",
   "logging.level.org.springframework.web=OFF",
+  "user.password.sha512=" + WithTestProperties.PASSWORD,
   "logging.level.root=OFF",
 })
 public @interface WithTestProperties {
+
+  String PASSWORD = "bogus";
 }

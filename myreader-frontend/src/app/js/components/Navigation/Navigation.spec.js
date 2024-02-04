@@ -8,15 +8,15 @@ import {RouterProvider} from '../../contexts/router'
 const renderComponent = async (props) => {
   return await act(async () =>
     await render(
-      <RouterProvider>
-        <SecurityProvider>
+      <SecurityProvider>
+        <RouterProvider>
           <SettingsProvider>
             <NavigationProvider>
               <Navigation {...props} />
             </NavigationProvider>
           </SettingsProvider>
-        </SecurityProvider>
-      </RouterProvider>
+        </RouterProvider>
+      </SecurityProvider>
     )
   )
 }
@@ -34,7 +34,7 @@ describe('Navigation', () => {
     history.pushState(null, null, '#!/app/entries')
 
     localStorage.setItem('myreader-settings', '{"showUnseenEntries": false}')
-    localStorage.setItem('myreader-security', '{"authorized":true}')
+    localStorage.setItem('myreader-security', '{"passwordHash":"bogus"}')
 
     props = {
       onClick: jest.fn()

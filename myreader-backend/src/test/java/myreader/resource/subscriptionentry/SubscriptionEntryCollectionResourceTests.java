@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
+import static myreader.test.request.AuthorizationPostProcessors.authorization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @SpringBootTest
-@WithMockUser
 @WithTestProperties
 class SubscriptionEntryCollectionResourceTests {
 
@@ -113,7 +112,8 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void shouldReturnEntries() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries"))
+    mockMvc.perform(get("/api/2/subscriptionEntries")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage.uuid").value(subscriptionEntry2.getId()))
       .andExpect(jsonPath("$.content.length()").value(10))
@@ -141,13 +141,15 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void shouldPaginate() throws Exception {
-    var firstResponse = mockMvc.perform(get("/api/2/subscriptionEntries"))
+    var firstResponse = mockMvc.perform(get("/api/2/subscriptionEntries")
+        .with(authorization()))
       .andExpect(jsonPath("nextPage.uuid").value(subscriptionEntry2.getId()))
       .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry12.getId().toString()))
       .andExpect(jsonPath("content[9].uuid").value(subscriptionEntry2.getId().toString()))
       .andReturn();
 
-    mockMvc.perform(get(nextPage(firstResponse)))
+    mockMvc.perform(get(nextPage(firstResponse))
+        .with(authorization()))
       .andExpect(jsonPath("$.content.length()").value(1))
       .andExpect(jsonPath("nextPage").doesNotExist())
       .andExpect(jsonPath("content[0].uuid").value(subscriptionEntry1.getId().toString()));
@@ -155,7 +157,8 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void feedUuidEqualSubscription2() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?feedUuidEqual={id}", subscription2.getId()))
+    mockMvc.perform(get("/api/2/subscriptionEntries?feedUuidEqual={id}", subscription2.getId())
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(1))
@@ -164,7 +167,8 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void seenEqualsTrue() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=true"))
+    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=true")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(1))
@@ -173,7 +177,8 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void seenEqualsFalse() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false"))
+    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(10))
@@ -185,7 +190,8 @@ class SubscriptionEntryCollectionResourceTests {
   void shouldReturnNextPageForGivenParameters() throws Exception {
     createEntry(subscription1);
 
-    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false"))
+    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage.uuid").value(subscriptionEntry3.getId().toString()))
       .andExpect(jsonPath("$.nextPage.seenEqual").value("false"));
@@ -193,7 +199,8 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void shouldValidateSeenEqual() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=invalid"))
+    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=invalid")
+        .with(authorization()))
       .andExpect(status().isBadRequest())
       .andExpect(result -> {
         String actual = Optional.ofNullable(result.getResolvedException()).orElseThrow(AssertionFailedError::new).getMessage();
@@ -203,7 +210,8 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void feedTagEqual() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?feedTagEqual=subscription tag"))
+    mockMvc.perform(get("/api/2/subscriptionEntries?feedTagEqual=subscription tag")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(1))
@@ -212,7 +220,8 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void feedTagEqualUnknown() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?feedTagEqual=unknown"))
+    mockMvc.perform(get("/api/2/subscriptionEntries?feedTagEqual=unknown")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(0));
@@ -220,7 +229,8 @@ class SubscriptionEntryCollectionResourceTests {
 
   @Test
   void shouldPaginateWithChangingSeenValues() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false"))
+    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=false")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage.uuid").doesNotExist())
       .andExpect(jsonPath("$.nextPage.seenEqual").doesNotExist())
@@ -234,7 +244,8 @@ class SubscriptionEntryCollectionResourceTests {
 
     jdbcTemplate.update("update subscription_entry set seen = true where id = :id", Map.of("id", subscriptionEntry4.getId()));
 
-    mockMvc.perform(get("/api/2/subscriptionEntries"))
+    mockMvc.perform(get("/api/2/subscriptionEntries")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage.uuid").value(subscriptionEntry2.getId()))
       .andExpect(jsonPath("$.content.length()").value(10))
@@ -247,7 +258,8 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content[9].uuid").value(subscriptionEntry2.getId().toString()))
       .andExpect(jsonPath("$.content[9].seen").value(false));
 
-    mockMvc.perform(get("/api/2/subscriptionEntries?uuid={id}&seenEqual=false", subscriptionEntry4.getId()))
+    mockMvc.perform(get("/api/2/subscriptionEntries?uuid={id}&seenEqual=false", subscriptionEntry4.getId())
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(2))
@@ -256,7 +268,8 @@ class SubscriptionEntryCollectionResourceTests {
 
     jdbcTemplate.update("update subscription_entry set seen = true where id = :id", Map.of("id", subscriptionEntry2.getId()));
 
-    mockMvc.perform(get("/api/2/subscriptionEntries"))
+    mockMvc.perform(get("/api/2/subscriptionEntries")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage.uuid").value(subscriptionEntry2.getId().toString()))
       .andExpect(jsonPath("$.content.length()").value(10))
@@ -269,7 +282,8 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(jsonPath("$.content[9].uuid").value(subscriptionEntry2.getId().toString()))
       .andExpect(jsonPath("$.content[9].seen").value(true));
 
-    mockMvc.perform(get("/api/2/subscriptionEntries?uuid={id}&seenEqual=false", subscriptionEntry2.getId()))
+    mockMvc.perform(get("/api/2/subscriptionEntries?uuid={id}&seenEqual=false", subscriptionEntry2.getId())
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage").doesNotExist())
       .andExpect(jsonPath("$.content.length()").value(0));

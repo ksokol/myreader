@@ -20,30 +20,30 @@ import {SettingsProvider} from './contexts/settings/SettingsProvider'
 
 export function App() {
   return (
-    <RouterProvider>
-      <SecurityProvider>
+    <SecurityProvider>
+      <RouterProvider>
         <SettingsProvider>
           <Switch
-            onNotFound={() => <Redirect pathname={LOGIN_PAGE_PATH} />}
+            onNotFound={() => <Redirect pathname={LOGIN_PAGE_PATH}/>}
           >
             <Route path={LOGIN_PAGE_PATH}>
-              <LoginPage />
+              <LoginPage/>
             </Route>
             <Route partial={true} path={APP_URL}>
               <Secured>
                 <NavigationProvider>
                   <SidenavLayout>
                     <Switch
-                      onNotFound={() => <Redirect pathname={LOGIN_PAGE_PATH} />}
+                      onNotFound={() => <Redirect pathname={LOGIN_PAGE_PATH}/>}
                     >
                       <Route path={ENTRIES_PAGE_PATH}>
-                        <EntryStreamPage />
+                        <EntryStreamPage/>
                       </Route>
                       <Route path={SUBSCRIPTION_PAGE_PATH}>
-                        <SubscriptionPage />
+                        <SubscriptionPage/>
                       </Route>
                       <Route path={SUBSCRIPTIONS_PAGE_PATH}>
-                        <SubscriptionListPage />
+                        <SubscriptionListPage/>
                       </Route>
                     </Switch>
                   </SidenavLayout>
@@ -51,9 +51,9 @@ export function App() {
               </Secured>
             </Route>
           </Switch>
-          <LoadingBar />
+          <LoadingBar/>
         </SettingsProvider>
-      </SecurityProvider>
-    </RouterProvider>
+      </RouterProvider>
+    </SecurityProvider>
   )
 }

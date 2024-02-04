@@ -9,24 +9,18 @@ describe('security', () => {
   })
 
   it('should read last security state from storage', () => {
-    localStorage.setItem(key, '{"a": "b", "authorized": true}')
+    localStorage.setItem(key, '{"a": "b", "passwordHash": "bogus"}')
 
-    expect(getLastSecurityState()).toEqual({authorized: true})
-  })
-
-  it('should return default last security state from storage when roles data is not of type array', () => {
-    localStorage.setItem(key, '{"authorized": "not a boolean"}')
-
-    expect(getLastSecurityState()).toEqual({authorized: false})
+    expect(getLastSecurityState()).toEqual({passwordHash: "bogus"})
   })
 
   it('should return default last security state from storage when state is not available', () => {
-    expect(getLastSecurityState()).toEqual({authorized: false})
+    expect(getLastSecurityState()).toEqual({passwordHash: null})
   })
 
   it('should write last security state to storage', () => {
-    setLastSecurityState({authorized: false})
+    setLastSecurityState({passwordHash: null})
 
-    expect(JSON.parse(localStorage.getItem(key))).toEqual({authorized: false})
+    expect(JSON.parse(localStorage.getItem(key))).toEqual({passwordHash: null})
   })
 })

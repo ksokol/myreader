@@ -4,12 +4,12 @@ import {readFromStorage, writeToStorage} from '../../shared/storage-util'
 const key = STORAGE_SECURITY_KEY
 
 export function getLastSecurityState() {
-  const {authorized} = readFromStorage(key)
+  const {passwordHash} = readFromStorage(key)
   return {
-    authorized: typeof authorized === 'boolean' ? authorized : false
+    passwordHash: passwordHash ?? null
   }
 }
 
-export function setLastSecurityState({authorized}) {
-  writeToStorage(key, {authorized})
+export function setLastSecurityState({passwordHash}) {
+  writeToStorage(key, {passwordHash})
 }

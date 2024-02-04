@@ -10,12 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static myreader.test.request.AuthorizationPostProcessors.authorization;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -26,29 +25,35 @@ class ApiSecurityTests {
 
   private static final String API_2 = "/api/2";
   private static final String VIEWS = "/views";
-  private static final String CHECK = "/check";
-  private static final String PASSWORD = "user";
 
   @Autowired
   private MockMvc mockMvc;
 
   @Test
-  void testApiUnauthorizedWithRequestWithAjax() throws Exception {
-    mockMvc.perform(get(API_2 + "/sub")
-      .with(xmlHttpRequest()))
-      .andExpect(status().isUnauthorized());
+  void testPublicUrls() throws Exception {
+    mockMvc.perform(get("/"))
+      .andExpect(status().isOk());
+
+    mockMvc.perform(get("/index.html"))
+      .andExpect(status().isOk());
+
+    mockMvc.perform(get("/static/1"))
+      .andExpect(status().isOk());
+    mockMvc.perform(get("/static/2"))
+      .andExpect(status().isOk());
+
+    mockMvc.perform(get("/app/1"))
+      .andExpect(status().isOk());
+    mockMvc.perform(get("/app/2"))
+      .andExpect(status().isOk());
+
+    mockMvc.perform(get("/favicon.ico"))
+      .andExpect(status().isOk());
   }
 
   @Test
   void testApiUnauthorized() throws Exception {
     mockMvc.perform(get(API_2 + "/sub"))
-      .andExpect(status().isUnauthorized());
-  }
-
-  @Test
-  void testViewsUnauthorizedWithRequestWithAjax() throws Exception {
-    mockMvc.perform(get(VIEWS + "/sub")
-      .with(xmlHttpRequest()))
       .andExpect(status().isUnauthorized());
   }
 
@@ -59,70 +64,16 @@ class ApiSecurityTests {
   }
 
   @Test
-  void testSuccessfulUserAuthorization() throws Exception {
-    mockMvc.perform(post(CHECK)
-      .param("password", PASSWORD))
-      .andExpect(status().isNoContent());
-  }
-
-  @Test
-  void testUnsuccessfulAuthorization() throws Exception {
-    mockMvc.perform(post(CHECK)
-      .param("password", "wrong"))
-      .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void testApiRememberMeWithBrowser() throws Exception {
-    var rememberMeCookie = mockMvc.perform(post(CHECK)
-      .param("password", PASSWORD))
-      .andExpect(status().isNoContent())
-      .andReturn()
-      .getResponse().getCookie("remember-me");
-
+  void testApiAuthorized() throws Exception {
     mockMvc.perform(get(API_2 + "/sub")
-      .cookie(rememberMeCookie))
+        .with(authorization()))
       .andExpect(status().isOk());
   }
 
   @Test
-  void testApiRememberMeWithAjax() throws Exception {
-    var rememberMeCookie = mockMvc.perform(post(CHECK)
-      .with(xmlHttpRequest())
-      .param("password", PASSWORD))
-      .andExpect(status().isNoContent())
-      .andReturn()
-      .getResponse().getCookie("remember-me");
-
-    mockMvc.perform(get(API_2 + "/sub")
-      .cookie(rememberMeCookie))
-      .andExpect(status().isOk());
-  }
-
-  @Test
-  void testViewsRememberMeWithBrowser() throws Exception {
-    var rememberMeCookie = mockMvc.perform(post(CHECK)
-      .param("password", PASSWORD))
-      .andExpect(status().isNoContent())
-      .andReturn()
-      .getResponse().getCookie("remember-me");
-
+  void testViewsAuthorized() throws Exception {
     mockMvc.perform(get(VIEWS + "/sub")
-      .cookie(rememberMeCookie))
-      .andExpect(status().isOk());
-  }
-
-  @Test
-  void testViewsRememberMeWithAjax() throws Exception {
-    var rememberMeCookie = mockMvc.perform(post(CHECK)
-      .with(xmlHttpRequest())
-      .param("password", PASSWORD))
-      .andExpect(status().isNoContent())
-      .andReturn()
-      .getResponse().getCookie("remember-me");
-
-    mockMvc.perform(get(VIEWS + "/sub")
-      .cookie(rememberMeCookie))
+        .with(authorization()))
       .andExpect(status().isOk());
   }
 
@@ -131,21 +82,10 @@ class ApiSecurityTests {
 
     @RestController
     static class TestController {
-      @RequestMapping(API_2 + "/sub")
-      public void api() {
-        //returns 200
-      }
-      @RequestMapping(VIEWS + "/sub")
-      public void views() {
+      @RequestMapping("/**")
+      public void catchAll() {
         //returns 200
       }
     }
-  }
-
-  private static RequestPostProcessor xmlHttpRequest() {
-    return request -> {
-      request.addHeader("X-Requested-With", "XMLHttpRequest");
-      return request;
-    };
   }
 }

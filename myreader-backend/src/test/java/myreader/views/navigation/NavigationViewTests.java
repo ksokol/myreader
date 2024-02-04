@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
+import static myreader.test.request.AuthorizationPostProcessors.authorization;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @SpringBootTest
-@WithMockUser
 @WithTestProperties
 class NavigationViewTests {
 
@@ -109,7 +108,8 @@ class NavigationViewTests {
 
   @Test
   void shouldReturnExpectedJsonStructure() throws Exception {
-    mockMvc.perform(get("/views/NavigationView"))
+    mockMvc.perform(get("/views/NavigationView")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.subscriptions.length()").value(2))
       .andExpect(jsonPath("$.subscriptions[0].uuid").value(subscription2.getId().toString()))
@@ -134,7 +134,8 @@ class NavigationViewTests {
 
   @Test
   void shouldFindAnySubscriptionsWithUnseenGreaterThanMinusOne() throws Exception {
-    mockMvc.perform(get("/views/NavigationView?unseenGreaterThan=-1"))
+    mockMvc.perform(get("/views/NavigationView?unseenGreaterThan=-1")
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.subscriptions.length()").value(2))
       .andExpect(jsonPath("$.subscriptions[0].uuid").value(subscription2.getId().toString()))

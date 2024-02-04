@@ -1,7 +1,5 @@
 import React from 'react'
 
-const SecurityContext = React.createContext({
-  roles: []
-})
+const SecurityContext = React.createContext({})
 
 export default SecurityContext

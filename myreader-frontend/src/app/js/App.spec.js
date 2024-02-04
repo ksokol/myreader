@@ -2,7 +2,7 @@ import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {App} from './App'
 
 const storageSecurityKey = 'myreader-security'
-const storageSecurityValue = '{"authorized": true}'
+const storageSecurityValue = '{"passwordHash": "bogus"}'
 
 const entry = Object.freeze({
   uuid: '1',

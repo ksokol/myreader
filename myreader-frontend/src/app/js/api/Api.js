@@ -31,7 +31,7 @@ export class Api {
       for (const fn of this.findFn('onBefore')) {
         fn(request)
       }
-      const response = await exchange(incomingRequest)
+      const response = await exchange(request)
       for (const fn of this.findFn('onThen')) {
         fn(request, response)
       }

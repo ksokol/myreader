@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
+import static myreader.test.request.AuthorizationPostProcessors.authorization;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @SpringBootTest
-@WithMockUser
 @WithTestProperties
 class SubscriptionEntryEntityResourceTests {
 
@@ -69,6 +68,7 @@ class SubscriptionEntryEntityResourceTests {
   @Test
   void shouldChangeSeenFlag() throws Exception {
     mockMvc.perform(patch("/api/2/subscriptionEntries/{id}", subscriptionEntry.getId())
+        .with(authorization())
         .with(jsonBody("{'seen': false}")))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.uuid").value(subscriptionEntry.getId().toString()))

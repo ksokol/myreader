@@ -14,12 +14,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
+import static myreader.test.request.AuthorizationPostProcessors.authorization;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -34,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @SpringBootTest
-@WithMockUser
 @WithTestProperties
 class SubscriptionPageTests {
 
@@ -91,7 +90,8 @@ class SubscriptionPageTests {
 
   @Test
   void shouldReturnResponse() throws Exception {
-    mockMvc.perform(get("/views/SubscriptionPage/{id}", subscription.getId()))
+    mockMvc.perform(get("/views/SubscriptionPage/{id}", subscription.getId())
+        .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("subscription.uuid").value(subscription.getId().toString()))
       .andExpect(jsonPath("subscription.title").value("expected title"))
@@ -116,7 +116,8 @@ class SubscriptionPageTests {
 
   @Test
   void shouldDeleteSubscription() throws Exception {
-    mockMvc.perform(delete("/views/SubscriptionPage/{id}/subscription", subscription.getId()))
+    mockMvc.perform(delete("/views/SubscriptionPage/{id}/subscription", subscription.getId())
+        .with(authorization()))
       .andExpect(status().isNoContent());
 
     assertThat(template.findById(subscription.getId(), Subscription.class))
@@ -125,14 +126,16 @@ class SubscriptionPageTests {
 
   @Test
   void shouldReturnNotFoundWhenTryingToDeleteUnknownSubscription() throws Exception {
-    mockMvc.perform(delete("/views/SubscriptionPage/9999/subscription"))
+    mockMvc.perform(delete("/views/SubscriptionPage/9999/subscription")
+        .with(authorization()))
       .andExpect(status().isNotFound());
   }
 
   @Test
   void shouldReturnNotFoundWhenTryingToUpdateUnknownSubscription() throws Exception {
     mockMvc.perform(patch("/views/SubscriptionPage/9999/subscription")
-      .with(jsonBody("{'title': 'irrelevant', 'origin': 'http://example.com', 'tag' : 'irrelevant'}")))
+        .with(authorization())
+        .with(jsonBody("{'title': 'irrelevant', 'origin': 'http://example.com', 'tag' : 'irrelevant'}")))
       .andExpect(status().isNotFound());
   }
 
@@ -142,7 +145,8 @@ class SubscriptionPageTests {
       .willReturn(true);
 
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
-      .with(jsonBody("{'title': 'changed title', 'origin': 'http://other.com', 'tag': 'subscriptiontag name', 'color': '#222222', 'stripImages': true}")))
+        .with(authorization())
+        .with(jsonBody("{'title': 'changed title', 'origin': 'http://other.com', 'tag': 'subscriptiontag name', 'color': '#222222', 'stripImages': true}")))
       .andExpect(status().isOk())
       .andExpect(jsonPath("subscription.title").value("changed title"))
       .andExpect(jsonPath("subscription.origin").value("http://other.com"))
@@ -154,7 +158,8 @@ class SubscriptionPageTests {
   @Test
   void shouldRejectPatchRequestWhenTitleAndOriginPropertiesAreAbsent() throws Exception {
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
-      .with(jsonBody("{'feedTag': {}}")))
+        .with(authorization())
+        .with(jsonBody("{'feedTag': {}}")))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("title"))
       .andExpect(jsonPath("errors.[0].defaultMessage").value("may not be empty"))
@@ -165,7 +170,8 @@ class SubscriptionPageTests {
   @Test
   void shouldValidateSubscriptionTitle() throws Exception {
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
-      .with(jsonBody("{'title': ' ', 'origin': 'http://example.com'}")))
+        .with(authorization())
+        .with(jsonBody("{'title': ' ', 'origin': 'http://example.com'}")))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("title"))
       .andExpect(jsonPath("errors.[0].defaultMessage").value("may not be empty"));
@@ -174,7 +180,8 @@ class SubscriptionPageTests {
   @Test
   void shouldValidatePatchRequestAbsentOriginProperty() throws Exception {
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
-      .with(jsonBody("{'title': 'some title'}")))
+        .with(authorization())
+        .with(jsonBody("{'title': 'some title'}")))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("origin"))
       .andExpect(jsonPath("errors.[0].defaultMessage").value("invalid syndication feed"));
@@ -186,7 +193,8 @@ class SubscriptionPageTests {
       .willReturn(false);
 
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
-      .with(jsonBody("{'title': 'some title', 'origin': 'http://example.local'}")))
+        .with(authorization())
+        .with(jsonBody("{'title': 'some title', 'origin': 'http://example.local'}")))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("origin"))
       .andExpect(jsonPath("errors.[0].defaultMessage").value("invalid syndication feed"));
@@ -195,7 +203,8 @@ class SubscriptionPageTests {
   @Test
   void shouldValidatePatchRequestInvalidColor() throws Exception {
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
-      .with(jsonBody("{'title': 'some title', 'origin': 'http://example.com', 'color': 'invalid'}")))
+        .with(authorization())
+        .with(jsonBody("{'title': 'some title', 'origin': 'http://example.com', 'color': 'invalid'}")))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("color"))
       .andExpect(jsonPath("errors.[0].defaultMessage").value("not a RGB hex code"));
@@ -204,6 +213,7 @@ class SubscriptionPageTests {
   @Test
   void shouldValidatePatchRequestStripImages() throws Exception {
     mockMvc.perform(patch("/views/SubscriptionPage/{id}/subscription", subscription.getId())
+        .with(authorization())
         .with(jsonBody("{'title': 'some title', 'origin': 'http://example.com', 'stripImages': 'invalid'}")))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("stripImages"))
@@ -212,7 +222,8 @@ class SubscriptionPageTests {
 
   @Test
   void shouldDeleteExclusionPattern() throws Exception {
-    mockMvc.perform(delete("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns/{patternId}", subscription.getId(), exclusionPattern1.getId()))
+    mockMvc.perform(delete("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns/{patternId}", subscription.getId(), exclusionPattern1.getId())
+        .with(authorization()))
       .andExpect(status().isOk());
 
     assertThat(template.findById(exclusionPattern1.getId(), ExclusionPattern.class))
@@ -221,7 +232,8 @@ class SubscriptionPageTests {
 
   @Test
   void shouldReturnNotFoundIfTryingToDeleteUnknownExclusionPattern() throws Exception {
-    mockMvc.perform(delete("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns/{patternId}", subscription.getId(), 999L))
+    mockMvc.perform(delete("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns/{patternId}", subscription.getId(), 999L)
+        .with(authorization()))
       .andExpect(status().isNotFound());
 
     assertThat(template.findAll(ExclusionPattern.class))
@@ -233,7 +245,8 @@ class SubscriptionPageTests {
     var nextExclusionPatternId = exclusionPattern2.getId() + 1;
 
     mockMvc.perform(post("/views/SubscriptionPage/{id}/exclusionPatterns", subscription.getId())
-      .with(jsonBody("{'pattern': 'test'}")))
+        .with(authorization())
+        .with(jsonBody("{'pattern': 'test'}")))
       .andExpect(status().isOk())
       .andExpect(jsonPath("exclusionPatterns[0].uuid").value(exclusionPattern1.getId()))
       .andExpect(jsonPath("exclusionPatterns[0].hitCount").value(10))
@@ -253,7 +266,8 @@ class SubscriptionPageTests {
   @Test
   void shouldRejectMissingPatternProperty() throws Exception {
     mockMvc.perform(post("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns", subscription.getId())
-      .with(jsonBody("{}")))
+        .with(authorization())
+        .with(jsonBody("{}")))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("pattern"))
       .andExpect(jsonPath("errors.[0].defaultMessage").value("invalid regular expression"));
@@ -262,7 +276,8 @@ class SubscriptionPageTests {
   @Test
   void shouldRejectEmptyPattern() throws Exception {
     mockMvc.perform(post("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns", subscription.getId())
-      .with(jsonBody("{'pattern': ''}")))
+        .with(authorization())
+        .with(jsonBody("{'pattern': ''}")))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("pattern"))
       .andExpect(jsonPath("errors.[0].defaultMessage").value("invalid regular expression"));
@@ -271,7 +286,8 @@ class SubscriptionPageTests {
   @Test
   void shouldRejectInvalidPattern() throws Exception {
     mockMvc.perform(post("/views/SubscriptionPage/{subscriptionId}/exclusionPatterns", subscription.getId())
-      .with(jsonBody("{'pattern': '\\\\k'}")))
+        .with(authorization())
+        .with(jsonBody("{'pattern': '\\\\k'}")))
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("errors.[0].field").value("pattern"))
       .andExpect(jsonPath("errors.[0].defaultMessage").value("invalid regular expression"));

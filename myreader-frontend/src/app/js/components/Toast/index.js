@@ -2,6 +2,7 @@ import {createRoot} from 'react-dom/client'
 import {Toast} from './Toast'
 
 let root
+let counter = 0
 
 function showToasts(notification) {
   if (!root) {
@@ -17,7 +18,7 @@ function showToasts(notification) {
 
 export function toast(message = 'something went wrong', options) {
   showToasts({
-    id: Date.now(),
+    id: `${Date.now()} ${++counter}`,
     text: typeof message === 'string' ? message : JSON.stringify(message),
     type: options && options.error ? 'error' : 'success'
   })

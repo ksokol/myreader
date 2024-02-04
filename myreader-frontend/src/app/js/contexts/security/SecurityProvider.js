@@ -4,38 +4,53 @@ import {getLastSecurityState, setLastSecurityState} from './security'
 import {api} from '../../api'
 
 export function SecurityProvider({children}) {
-  const [authorized, setAuthorized] = useState(getLastSecurityState().authorized)
+  const [passwordHash, setPasswordHash] = useState(getLastSecurityState().passwordHash)
 
-  const updateStateAndLocalStorage = (value) => {
-    setLastSecurityState({authorized: value})
-    setAuthorized(value)
+  const updateStateAndLocalStorage = (passwordHash) => {
+    setLastSecurityState({passwordHash})
+    setPasswordHash(passwordHash)
   }
 
-  const doAuthorize = useCallback(() => {
-    updateStateAndLocalStorage(true)
+  const doAuthorize = useCallback((passwordHash) => {
+    updateStateAndLocalStorage(passwordHash)
   }, [])
 
   const doUnAuthorize = useCallback(() => {
-    updateStateAndLocalStorage(false)
+    updateStateAndLocalStorage(null)
   }, [])
 
   useEffect(() => {
-    const interceptor = {
+    const errorInterceptor = {
       onError: (request, error) => {
         if (error.status === 401) {
           doUnAuthorize()
         }
       }
     }
+    api.addInterceptor(errorInterceptor)
 
-    api.addInterceptor(interceptor)
-    return () => api.removeInterceptor(interceptor)
-  }, [doUnAuthorize])
+    const onBeforeInterceptor = {
+      onBefore: (request) => {
+        if (passwordHash) {
+          request.headers = {
+            Authorization: `Bearer ${passwordHash}`
+          }
+        }
+      }
+    }
+    api.addInterceptor(onBeforeInterceptor)
+
+    return () => {
+      api.removeInterceptor(errorInterceptor)
+      api.removeInterceptor(onBeforeInterceptor)
+    }
+
+  }, [doUnAuthorize, passwordHash])
 
   return (
     <SecurityContext.Provider
       value={{
-        authorized,
+        authorized: !!passwordHash,
         doAuthorize: doAuthorize,
         doUnAuthorize: doUnAuthorize
       }}

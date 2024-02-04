@@ -1,5 +1,5 @@
 import {toast} from '.'
-import {act} from 'react-dom/test-utils'
+import {act} from '@testing-library/react'
 
 const errorClass = 'my-toast__item--error'
 const expectedText = 'expected text'
@@ -12,7 +12,7 @@ describe('Toast', () => {
     jest.useFakeTimers()
   })
 
-  afterEach(() =>  {
+  afterEach(() => {
     act(() => jest.runAllTimers())
     act(() => jest.runOnlyPendingTimers())
   })

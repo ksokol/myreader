@@ -22,7 +22,7 @@ describe('security context', () => {
   }
 
   beforeEach(() => {
-    localStorage.setItem('myreader-security', '{"authorized": true}')
+    localStorage.setItem('myreader-security', '{"passwordHash": "bogus"}')
   })
 
   it('should set prop "authorized" to false if status is 401', async () => {
@@ -45,5 +45,19 @@ describe('security context', () => {
     expect(screen.getByRole('security')).toHaveTextContent(JSON.stringify({
       authorized: true,
     }))
+  })
+
+  it('should append authorization header', async () => {
+    renderComponent()
+
+    fetch.mockResponseOnce({status: 200})
+    await api.get('irrelevant')
+
+    expect(fetch.mostRecent().headers).toEqual(new Headers({
+        'content-type': 'application/json',
+        'x-requested-with': 'XMLHttpRequest',
+        'authorization': `Bearer bogus`,
+      })
+    )
   })
 })

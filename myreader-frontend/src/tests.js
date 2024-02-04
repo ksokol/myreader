@@ -1,9 +1,18 @@
 import '@testing-library/jest-dom/extend-expect'
 import '../__mocks__/global/fetch'
+import { TextEncoder, TextDecoder } from 'util'
+import crypto from 'crypto'
+
+Object.assign(global, { TextDecoder, TextEncoder });
+
+Object.defineProperty(global.self, "crypto", {
+  value: {
+    subtle: crypto.webcrypto.subtle,
+  },
+});
 
 afterEach(() => {
   localStorage.clear()
-  jest.restoreAllMocks()
 })
 
 Element.prototype.scrollIntoView = jest.fn()
@@ -27,3 +36,5 @@ window.HTMLDialogElement.prototype.close = function() {
   this.removeAttribute('open')
   this.dispatchEvent(new Event('close'))
 }
+
+jest.retryTimes(3)

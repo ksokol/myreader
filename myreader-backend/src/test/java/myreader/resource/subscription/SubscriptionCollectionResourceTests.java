@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +22,7 @@ import java.util.Optional;
 
 import static myreader.test.CustomMockMvcResultMatchers.validation;
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
+import static myreader.test.request.AuthorizationPostProcessors.authorization;
 import static myreader.test.request.JsonRequestPostProcessors.jsonBody;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -35,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @SpringBootTest
-@WithMockUser
 @WithTestProperties
 class SubscriptionCollectionResourceTests {
 
@@ -69,7 +68,8 @@ class SubscriptionCollectionResourceTests {
   @Test
   void shouldRejectPostRequestWhenOriginIsMissing() throws Exception {
     mockMvc.perform(post("/api/2/subscriptions")
-      .with(jsonBody("{}")))
+        .with(authorization())
+        .with(jsonBody("{}")))
       .andExpect(status().isBadRequest())
       .andExpect(validation().onField("origin").value("invalid syndication feed"));
   }
@@ -77,7 +77,8 @@ class SubscriptionCollectionResourceTests {
   @Test
   void shouldRejectPostRequestWhenOriginContainsAnInvalidUrl() throws Exception {
     mockMvc.perform(post("/api/2/subscriptions")
-      .with(jsonBody("{'url':'invalid url'}")))
+        .with(authorization())
+        .with(jsonBody("{'url':'invalid url'}")))
       .andExpect(status().isBadRequest())
       .andExpect(validation().onField("origin").value("invalid syndication feed"));
   }
@@ -85,7 +86,8 @@ class SubscriptionCollectionResourceTests {
   @Test
   void shouldRejectPostRequestWhenSubscriptionAlreadyExistsForGivenOrigin() throws Exception {
     mockMvc.perform(post("/api/2/subscriptions")
-      .with(jsonBody("{'origin' : 'http://feed1'}")))
+        .with(authorization())
+        .with(jsonBody("{'origin' : 'http://feed1'}")))
       .andExpect(status().isBadRequest())
       .andExpect(validation().onField("origin").value("subscription exists"));
   }
@@ -98,7 +100,8 @@ class SubscriptionCollectionResourceTests {
       .willThrow(new FeedParseException());
 
     mockMvc.perform(post("/api/2/subscriptions")
-      .with(jsonBody("{'origin' : '" + url + "'}")))
+        .with(authorization())
+        .with(jsonBody("{'origin' : '" + url + "'}")))
       .andExpect(status().isBadRequest())
       .andExpect(validation().onField("origin").value("invalid syndication feed"));
   }
@@ -112,11 +115,13 @@ class SubscriptionCollectionResourceTests {
     given(feedParser.parse(url))
       .willReturn(Optional.of(new FetchResult(List.of(), null, title, url, 10)));
 
-    mockMvc.perform(get("/api/2/subscriptions/{id}", nextId))
+    mockMvc.perform(get("/api/2/subscriptions/{id}", nextId)
+        .with(authorization()))
       .andExpect(status().isNotFound());
 
     mockMvc.perform(post("/api/2/subscriptions")
-      .with(jsonBody("{'origin': '" + url + "'}")))
+        .with(authorization())
+        .with(jsonBody("{'origin': '" + url + "'}")))
       .andExpect(status().isOk())
       .andExpect(jsonPath("uuid").value(nextId));
 

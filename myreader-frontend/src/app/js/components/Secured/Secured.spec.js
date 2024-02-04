@@ -10,11 +10,11 @@ function TestComponent() {
 const renderComponent = async () => {
   await act(async () =>
     await render(
-      <RouterProvider>
-        <SecurityProvider>
-          <TestComponent />
-        </SecurityProvider>
-      </RouterProvider>
+      <SecurityProvider>
+        <RouterProvider>
+          <TestComponent/>
+        </RouterProvider>
+      </SecurityProvider>
     )
   )
 }
@@ -23,7 +23,7 @@ describe('Secured', () => {
 
   beforeEach(() => {
     history.pushState(null, null, '#!/app/irrelevant')
-    localStorage.setItem('myreader-security', '{"authorized":true}')
+    localStorage.setItem('myreader-security', '{"passwordHash":"bogus"}')
   })
 
   it('should render component if authorized', async () => {

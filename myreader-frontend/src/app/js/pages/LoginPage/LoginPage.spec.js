@@ -8,11 +8,11 @@ const expectedPassword = 'expected password'
 const renderComponent = async () => {
   await act(async () =>
     await render(
-      <RouterProvider>
-        <SecurityProvider>
-          <LoginPage />
-        </SecurityProvider>
-      </RouterProvider>
+      <SecurityProvider>
+        <RouterProvider>
+          <LoginPage/>
+        </RouterProvider>
+      </SecurityProvider>
     )
   )
 }
@@ -23,19 +23,21 @@ describe('LoginPage', () => {
     history.pushState(null, null, '#!/app/login')
   })
 
-  it('should call authentication endpoint with given password', async () => {
+  it('should call authentication endpoint with given password hash', async () => {
+    fetch.jsonResponseOnce()
+
     await renderComponent()
 
     fireEvent.change(screen.getByLabelText('Password'), {target: {value: expectedPassword}})
     await act(async () => fireEvent.click(screen.getByText('Login')))
 
-    expect(fetch.mostRecent().url).toEqual('check')
-    expect(fetch.mostRecent().method).toEqual('POST')
-    expect(fetch.mostRecent().body.toString()).toEqual('password=expected+password')
+    expect(fetch.mostRecent().url).toEqual('api/2/subscriptionEntries?feedTagEqual=')
+    expect(fetch.mostRecent().method).toEqual('GET')
     expect(fetch.mostRecent().headers).toEqual(new Headers({
-      'content-type': 'application/x-www-form-urlencoded',
-      'x-requested-with': 'XMLHttpRequest'
-    })
+        'content-type': 'application/json',
+        'x-requested-with': 'XMLHttpRequest',
+        'authorization': `Bearer 0da7dc387915aff0fef81a05a8606b8ad5bf20324dcdd4c14603956342d5bcc950ffdbb782e97c87d182c9506b1eadb2918a3a1194730ce4e5024cffc888d43a`,
+      })
     )
   })
 
@@ -54,7 +56,7 @@ describe('LoginPage', () => {
 
   it('should redirect if user is already authorized', async () => {
     const currentHistoryLength = history.length
-    localStorage.setItem('myreader-security', '{"authorized": true}')
+    localStorage.setItem('myreader-security', '{"passwordHash": "bogus"}')
     await renderComponent()
 
     await waitFor(() => {

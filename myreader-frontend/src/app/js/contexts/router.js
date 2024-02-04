@@ -17,7 +17,8 @@ export function RouterProvider({children}) {
     const listener = () => setRouterState(getCurrentRoute())
     window.addEventListener('popstate', listener)
 
-    return () => window.removeEventListener('popstate', listener)  }, [])
+    return () => window.removeEventListener('popstate', listener)
+  }, [])
 
   const replaceRoute = useCallback(({pathname = '', search = ''}) => {
     if (pathname !== routerState.pathname || search !== routerState.search) {
@@ -32,10 +33,6 @@ export function RouterProvider({children}) {
     }
   }, [routerState])
 
-  const goBack = useCallback(() => {
-    history.back()
-  }, [])
-
   const route = useMemo(() => ({
     pathname: routerState.pathname,
     search: routerState.search,
@@ -45,7 +42,7 @@ export function RouterProvider({children}) {
   return !routerState.init ? (
     <RouterContext.Provider
       value={
-        {route, replaceRoute, goBack, hashPrefix}
+        {route, replaceRoute, hashPrefix}
       }
     >
       {children}
