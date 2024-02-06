@@ -1,8 +1,9 @@
 package myreader.resource.subscriptionentry;
 
+import jakarta.servlet.http.HttpServletRequest;
 import myreader.repository.SubscriptionEntryRepository;
-import myreader.resource.subscriptionentry.beans.SearchRequest;
 import myreader.resource.subscriptionentry.converter.SubscriptionEntryGetResponseConverter;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import static myreader.resource.ResourceConstants.SUBSCRIPTION_ENTRIES;
 
@@ -28,12 +30,12 @@ public class SubscriptionEntryCollectionResource {
   }
 
   @GetMapping(SUBSCRIPTION_ENTRIES)
-  public Map<String, Object> get(SearchRequest searchRequest) {
+  public Map<String, Object> get(HttpServletRequest httpServletRequest) throws ServletRequestBindingException {
     var slicedEntries = subscriptionEntryRepository.findBy(
-      searchRequest.getFeedUuidEqual(),
-      searchRequest.getFeedTagEqual(),
-      searchRequest.getSeenEqual(),
-      searchRequest.getUuid()
+      httpServletRequest.getParameter("feedUuidEqual"),
+      httpServletRequest.getParameter("feedTagEqual"),
+      getSeenEqual(httpServletRequest),
+      getUUid(httpServletRequest)
     ).map(assembler::toModel);
 
     var nextPage = new TreeMap<>();
@@ -58,5 +60,23 @@ public class SubscriptionEntryCollectionResource {
     response.put("content", slicedEntries.getContent());
 
     return response;
+  }
+
+  private static Boolean getSeenEqual(HttpServletRequest httpServletRequest) {
+    var seenEqual = httpServletRequest.getParameter("seenEqual");
+    if ("true".equalsIgnoreCase(seenEqual) || "false".equalsIgnoreCase(seenEqual)) {
+      return Boolean.parseBoolean(seenEqual);
+    }
+    return null;
+  }
+
+  private static final Pattern pattern = Pattern.compile("\\d+");
+
+  private static Long getUUid(HttpServletRequest httpServletRequest) {
+    var uuidParam = httpServletRequest.getParameter("uuid");
+    if (uuidParam != null && pattern.matcher(uuidParam).matches()) {
+      return Long.parseLong(uuidParam);
+    }
+    return null;
   }
 }

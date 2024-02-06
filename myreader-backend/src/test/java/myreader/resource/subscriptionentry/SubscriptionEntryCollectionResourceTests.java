@@ -7,7 +7,6 @@ import myreader.test.WithTestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,11 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.AuthorizationPostProcessors.authorization;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -195,17 +192,6 @@ class SubscriptionEntryCollectionResourceTests {
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.nextPage.uuid").value(subscriptionEntry3.getId().toString()))
       .andExpect(jsonPath("$.nextPage.seenEqual").value("false"));
-  }
-
-  @Test
-  void shouldValidateSeenEqual() throws Exception {
-    mockMvc.perform(get("/api/2/subscriptionEntries?seenEqual=invalid")
-        .with(authorization()))
-      .andExpect(status().isBadRequest())
-      .andExpect(result -> {
-        String actual = Optional.ofNullable(result.getResolvedException()).orElseThrow(AssertionFailedError::new).getMessage();
-        assertEquals("seenEqual is not of type boolean", actual);
-      });
   }
 
   @Test
