@@ -428,7 +428,7 @@ describe('EntryStreamPage', () => {
     fetch.jsonResponse({content: [{...entry2}, {...entry3}], next: null})
     await act(async () => fireEvent.click(screen.getByRole('refresh')))
 
-    expect(fetch.mostRecent().url).toEqual('views/NavigationView')
+    expect(fetch.mostRecent().url).toEqual('views/NavigationFragment')
     expect(fetch.mostRecent().method).toEqual('GET')
     expect(fetch.nthRequest(2).url).toEqual(api2SubscriptionEntriesFeedTagEqualA)
     expect(fetch.nthRequest(2).method).toEqual('GET')
@@ -452,7 +452,7 @@ describe('EntryStreamPage', () => {
     })
 
     expect(fetch.requestCount()).toEqual(2)
-    expect(fetch.mostRecent().url).toEqual('views/NavigationView')
+    expect(fetch.mostRecent().url).toEqual('views/NavigationFragment')
     expect(fetch.mostRecent().method).toEqual('GET')
     expect(fetch.nthRequest(2).url).toEqual(api2SubscriptionEntriesFeedTagEqualA)
     expect(fetch.nthRequest(2).method).toEqual('GET')

@@ -14,7 +14,7 @@ const roleDialogErrorMessage = 'dialog-error-message'
 const roleDialogInfoMessage = 'dialog-info-message'
 const placeholderExclusionPatternInput = 'Enter an exclusion pattern'
 const viewsSubscriptionPage1Subscription = 'views/SubscriptionPage/1/subscription'
-const viewsNavigationView = 'views/NavigationView'
+const viewsNavigationFragment = 'views/NavigationFragment'
 const stripImages = 'strip images'
 
 const renderComponent = () => {
@@ -175,7 +175,7 @@ describe('SubscriptionPage', () => {
     expect(screen.getByText('Save')).toBeEnabled()
     expect(screen.getByText('Delete')).toBeEnabled()
     expect(screen.queryByRole(roleDialogInfoMessage)).toHaveTextContent('Updated')
-    expect(fetch.mostRecent().url).toEqual(viewsNavigationView)
+    expect(fetch.mostRecent().url).toEqual(viewsNavigationFragment)
     expect(fetch.mostRecent().method).toEqual('GET')
 
     fireEvent.click(screen.getByText('Updated'))
@@ -232,7 +232,7 @@ describe('SubscriptionPage', () => {
 
     expect(fetch.first().url).toEqual(viewsSubscriptionPage1Subscription)
     expect(fetch.first().method).toEqual('DELETE')
-    expect(fetch.nthRequest(1).url).toEqual(viewsNavigationView)
+    expect(fetch.nthRequest(1).url).toEqual(viewsNavigationFragment)
     expect(fetch.nthRequest(1).method).toEqual('GET')
 
     fireEvent.click(screen.queryByRole(roleDialogInfoMessage))
@@ -245,7 +245,7 @@ describe('SubscriptionPage', () => {
     await act(async () => fireEvent.click(screen.getByText('Delete')))
     await act(async () => fireEvent.click(screen.getByText('Yes')))
 
-    expect(fetch.mostRecent().url).toEqual(viewsNavigationView)
+    expect(fetch.mostRecent().url).toEqual(viewsNavigationFragment)
     expect(fetch.mostRecent().method).toEqual('GET')
 
     fireEvent.click(screen.queryByRole(roleDialogInfoMessage))

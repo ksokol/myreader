@@ -83,7 +83,7 @@ describe('SubscribeNavigationItem', () => {
     fireEvent.change(screen.getByLabelText('Url'), {target: {value: expectedUrl}})
     await act(async () => fireEvent.click(screen.getByRole('button')))
 
-    expect(fetch.mostRecent().url).toEqual('views/NavigationView')
+    expect(fetch.mostRecent().url).toEqual('views/NavigationFragment')
     expect(fetch.mostRecent().method).toEqual('GET')
     fireEvent.click(screen.getByText('Subscribed'))
   })

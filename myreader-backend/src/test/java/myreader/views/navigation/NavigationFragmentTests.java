@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @SpringBootTest
 @WithTestProperties
-class NavigationViewTests {
+class NavigationFragmentTests {
 
   @Autowired
   private MockMvc mockMvc;
@@ -108,7 +108,7 @@ class NavigationViewTests {
 
   @Test
   void shouldReturnExpectedJsonStructure() throws Exception {
-    mockMvc.perform(get("/views/NavigationView")
+    mockMvc.perform(get("/views/NavigationFragment")
         .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.subscriptions.length()").value(2))
@@ -134,7 +134,7 @@ class NavigationViewTests {
 
   @Test
   void shouldFindAnySubscriptionsWithUnseenGreaterThanMinusOne() throws Exception {
-    mockMvc.perform(get("/views/NavigationView?unseenGreaterThan=-1")
+    mockMvc.perform(get("/views/NavigationFragment?unseenGreaterThan=-1")
         .with(authorization()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.subscriptions.length()").value(2))

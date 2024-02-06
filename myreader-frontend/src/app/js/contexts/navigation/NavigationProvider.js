@@ -14,7 +14,7 @@ export function NavigationProvider({children}) {
   const fetchData = useCallback(async () => {
     try {
       const {subscriptions} = await api.get({
-        url: 'views/NavigationView',
+        url: 'views/NavigationFragment',
       })
 
       setState({

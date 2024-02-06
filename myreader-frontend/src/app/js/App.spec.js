@@ -14,7 +14,7 @@ const entry = Object.freeze({
   content: 'expected entry content'
 })
 
-const navigationViewResponse = {
+const navigationFragmentResponse = {
   subscriptions: [
     {title: 'subscription 1', uuid: '1', tag: 'group 1', unseen: 2},
   ],
@@ -41,7 +41,7 @@ describe('App', () => {
 
   it('should redirect to entries page when logged in', async () => {
     localStorage.setItem(storageSecurityKey, storageSecurityValue)
-    fetch.jsonResponseOnce(navigationViewResponse)
+    fetch.jsonResponseOnce(navigationFragmentResponse)
     fetch.jsonResponseOnce({content: [entry]})
     await renderComponent()
 
@@ -55,7 +55,7 @@ describe('App', () => {
 
   it('should redirect to login page when logged out', async () => {
     localStorage.setItem(storageSecurityKey, storageSecurityValue)
-    fetch.jsonResponseOnce(navigationViewResponse)
+    fetch.jsonResponseOnce(navigationFragmentResponse)
     fetch.jsonResponseOnce({content: [entry]})
     await renderComponent()
 
@@ -69,10 +69,10 @@ describe('App', () => {
 
   it('should redirect to entries page when app path not matched', async () => {
     localStorage.setItem(storageSecurityKey, storageSecurityValue)
-    fetch.jsonResponseOnce(navigationViewResponse)
+    fetch.jsonResponseOnce(navigationFragmentResponse)
     fetch.jsonResponseOnce({content: [entry]})
     await renderComponent()
-    fetch.jsonResponseOnce(navigationViewResponse)
+    fetch.jsonResponseOnce(navigationFragmentResponse)
     fetch.jsonResponseOnce({content: [entry]})
 
     act(() => {
@@ -90,10 +90,10 @@ describe('App', () => {
 
   it('should redirect to entries page when child path not matched', async () => {
     localStorage.setItem(storageSecurityKey, storageSecurityValue)
-    fetch.jsonResponseOnce(navigationViewResponse)
+    fetch.jsonResponseOnce(navigationFragmentResponse)
     fetch.jsonResponseOnce({content: [entry]})
     await renderComponent()
-    fetch.jsonResponseOnce(navigationViewResponse)
+    fetch.jsonResponseOnce(navigationFragmentResponse)
     fetch.jsonResponseOnce({content: [entry]})
 
     act(() => {
@@ -110,7 +110,7 @@ describe('App', () => {
 
   it('should render stream page with filter', async () => {
     localStorage.setItem(storageSecurityKey, storageSecurityValue)
-    fetch.jsonResponseOnce(navigationViewResponse)
+    fetch.jsonResponseOnce(navigationFragmentResponse)
     fetch.jsonResponseOnce({content: [entry]})
     await renderComponent()
     fetch.jsonResponseOnce({content: [{
@@ -129,7 +129,7 @@ describe('App', () => {
 
   it('should render subscription list page and subscription page', async () => {
     localStorage.setItem(storageSecurityKey, storageSecurityValue)
-    fetch.jsonResponseOnce(navigationViewResponse)
+    fetch.jsonResponseOnce(navigationFragmentResponse)
     fetch.jsonResponseOnce({content: [entry]})
     await renderComponent()
 
