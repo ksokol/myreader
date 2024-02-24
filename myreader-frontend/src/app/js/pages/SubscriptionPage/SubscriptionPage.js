@@ -5,6 +5,7 @@ import {toast} from '../../components/Toast'
 import {useSubscription} from './subscription'
 import {useNavigation} from '../../hooks/navigation'
 import {useRouter} from '../../contexts/router'
+import {TimeAgo} from '../../components/TimeAgo/TimeAgo'
 
 export function SubscriptionPage() {
   const {route, replaceRoute} = useRouter()
@@ -13,7 +14,6 @@ export function SubscriptionPage() {
     subscription,
     subscriptionTags,
     exclusionPatterns,
-    fetchErrors,
     loading,
     updated,
     deleted,
@@ -58,17 +58,23 @@ export function SubscriptionPage() {
   }, [deleted, fetchData, replaceRoute])
 
   return subscription ? (
-    <SubscriptionEditForm
-      data={subscription}
-      subscriptionTags={subscriptionTags}
-      exclusionPatterns={exclusionPatterns}
-      fetchErrors={fetchErrors}
-      changePending={loading}
-      validations={validations}
-      saveSubscriptionEditForm={saveSubscription}
-      deleteSubscription={deleteSubscription}
-      addExclusionPattern={addExclusionPattern}
-      removeExclusionPattern={removeExclusionPattern}
-    />
+    <>
+      <SubscriptionEditForm
+        data={subscription}
+        subscriptionTags={subscriptionTags}
+        exclusionPatterns={exclusionPatterns}
+        changePending={loading}
+        validations={validations}
+        saveSubscriptionEditForm={saveSubscription}
+        deleteSubscription={deleteSubscription}
+        addExclusionPattern={addExclusionPattern}
+        removeExclusionPattern={removeExclusionPattern}
+      />
+      <section>
+        <h2>Last fetch error</h2>
+        <span>{subscription.lastErrorMessage ?? 'n/a'}</span><br />
+        {subscription.lastErrorMessageDatetime && <span><TimeAgo date={subscription.lastErrorMessageDatetime}/></span>}
+      </section>
+    </>
   ) : null
 }

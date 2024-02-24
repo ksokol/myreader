@@ -19,6 +19,8 @@ public class Subscription {
   private String lastModified;
   private int overallFetchCount;
   private Integer resultSizePerFetch;
+  private final String lastErrorMessage;
+  private final OffsetDateTime lastErrorMessageDatetime;
   private final OffsetDateTime createdAt;
 
   public Subscription(
@@ -31,6 +33,8 @@ public class Subscription {
     Integer overallFetchCount,
     Integer resultSizePerFetch,
     boolean stripImages,
+    String lastErrorMessage,
+    OffsetDateTime lastErrorMessageDatetime,
     OffsetDateTime createdAt
   ) {
     this.url = Objects.requireNonNull(url, "url is null");
@@ -42,6 +46,8 @@ public class Subscription {
     this.overallFetchCount = Objects.requireNonNull(overallFetchCount, "overallFetchCount is null");
     this.resultSizePerFetch = resultSizePerFetch;
     this.stripImages = stripImages;
+    this.lastErrorMessage = lastErrorMessage;
+    this.lastErrorMessageDatetime = lastErrorMessageDatetime;
     this.createdAt = Objects.requireNonNull(createdAt, " is null");
   }
 
@@ -124,6 +130,14 @@ public class Subscription {
 
   public void setStripImages(boolean stripImages) {
     this.stripImages = stripImages;
+  }
+
+  public String getLastErrorMessage() {
+    return lastErrorMessage;
+  }
+
+  public OffsetDateTime getLastErrorMessageDatetime() {
+    return lastErrorMessageDatetime;
   }
 
   public OffsetDateTime getCreatedAt() {

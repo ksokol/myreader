@@ -39,8 +39,8 @@ describe('SubscriptionListPage', () => {
 
     fetch.jsonResponseOnce({
       subscriptions: [
-        {uuid: '1', title: 'title1', createdAt: '2021-02-27T06:48:05.087+01:00', fetchErrorCount: 42},
-        {uuid: '2', title: 'title2', createdAt: '2021-02-27T07:48:05.087+01:00', fetchErrorCount: 0},
+        {uuid: '1', title: 'title1', createdAt: '2021-02-27T06:48:05.087+01:00', lastErrorMessageDatetime: '2021-02-27T06:48:05.087+01:00'},
+        {uuid: '2', title: 'title2', createdAt: '2021-02-27T07:48:05.087+01:00', lastErrorMessageDatetime: null},
       ]
     })
   })
@@ -56,6 +56,25 @@ describe('SubscriptionListPage', () => {
       expect(screen.queryByText('13 hours ago')).toBeInTheDocument()
       expect(screen.queryByText('title2')).toBeInTheDocument()
       expect(screen.queryByText('12 hours ago')).toBeInTheDocument()
+      expect(screen.queryByRole('icon-exclamation-triangle')).not.toBeInTheDocument()
+    })
+  })
+
+  it('should present exclamation mark when last error message is up to date', async () => {
+    fetch.resetMocks()
+    fetch.jsonResponseOnce({
+      subscriptions: [
+        {uuid: '1', title: 'title1', createdAt: '2021-02-27T06:48:05.087+01:00', lastErrorMessageDatetime: '2021-02-27T20:18:05.087+01:00'},
+      ]
+    })
+
+    jest.spyOn(Date, 'now').mockReturnValue(1_614_453_487_714)
+    await renderComponent()
+
+    expect(fetch.mostRecent().url).toEqual('views/NavigationFragment')
+    expect(fetch.mostRecent().method).toEqual('GET')
+    await waitFor(() => {
+      expect(screen.queryByRole('icon-exclamation-triangle')).toBeInTheDocument()
     })
   })
 

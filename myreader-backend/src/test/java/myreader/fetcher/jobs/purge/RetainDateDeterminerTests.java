@@ -44,6 +44,8 @@ class RetainDateDeterminerTests {
       0,
       5,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     ));
 
@@ -57,6 +59,8 @@ class RetainDateDeterminerTests {
       0,
       5,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     ));
   }

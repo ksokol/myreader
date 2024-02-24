@@ -1,6 +1,5 @@
 package myreader.views.navigation;
 
-import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.test.WithTestProperties;
@@ -14,10 +13,6 @@ import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static myreader.test.OffsetDateTimes.ofEpochMilli;
 import static myreader.test.request.AuthorizationPostProcessors.authorization;
@@ -53,11 +48,10 @@ class NavigationFragmentTests {
       0,
       null,
       false,
+      "expected last error message1",
+      ofEpochMilli(3000),
       ofEpochMilli(2000)
     ));
-
-    template.save(new FetchError(subscription1.getId(), "message 1", ofEpochMilli(1000)));
-    template.save(new FetchError(subscription1.getId(), "message 2", ofEpochMilli(2000)));
 
     template.save(new SubscriptionEntry(
       null,
@@ -80,6 +74,8 @@ class NavigationFragmentTests {
       0,
       null,
       true,
+      "expected last error message2",
+      ofEpochMilli(5000),
       ofEpochMilli(4000)
     ));
 
@@ -117,7 +113,7 @@ class NavigationFragmentTests {
       .andExpect(jsonPath("$.subscriptions[0].sum").value(20))
       .andExpect(jsonPath("$.subscriptions[0].unseen").value(2))
       .andExpect(jsonPath("$.subscriptions[0].origin").value("http://feed2"))
-      .andExpect(jsonPath("$.subscriptions[0].fetchErrorCount").value(0))
+      .andExpect(jsonPath("$.subscriptions[0].lastErrorMessageDatetime").value(ofEpochMilli(5000).toString()))
       .andExpect(jsonPath("$.subscriptions[0].tag").value("tag2"))
       .andExpect(jsonPath("$.subscriptions[0].color").value("#111111"))
       .andExpect(jsonPath("$.subscriptions[0].createdAt").value("1970-01-01T00:00:04Z"))
@@ -126,7 +122,7 @@ class NavigationFragmentTests {
       .andExpect(jsonPath("$.subscriptions[1].sum").value(10))
       .andExpect(jsonPath("$.subscriptions[1].unseen").value(1))
       .andExpect(jsonPath("$.subscriptions[1].origin").value("http://feed1"))
-      .andExpect(jsonPath("$.subscriptions[1].fetchErrorCount").value(2))
+      .andExpect(jsonPath("$.subscriptions[1].lastErrorMessageDatetime").value(ofEpochMilli(3000).toString()))
       .andExpect(jsonPath("$.subscriptions[1].tag").value("tag1"))
       .andExpect(jsonPath("$.subscriptions[1].color").isEmpty())
       .andExpect(jsonPath("$.subscriptions[1].createdAt").value("1970-01-01T00:00:02Z"));
@@ -140,11 +136,5 @@ class NavigationFragmentTests {
       .andExpect(jsonPath("$.subscriptions.length()").value(2))
       .andExpect(jsonPath("$.subscriptions[0].uuid").value(subscription2.getId().toString()))
       .andExpect(jsonPath("$.subscriptions[1].uuid").value(subscription1.getId().toString()));
-  }
-
-  private List<String> list(String... values) {
-    List<String> valueList = new ArrayList<>();
-    Collections.addAll(valueList, values);
-    return valueList;
   }
 }

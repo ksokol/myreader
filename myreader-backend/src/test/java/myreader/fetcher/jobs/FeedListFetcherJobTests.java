@@ -1,12 +1,10 @@
 package myreader.fetcher.jobs;
 
-import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 import myreader.fetcher.FeedParseException;
 import myreader.fetcher.FeedParser;
 import myreader.fetcher.FeedQueue;
 import myreader.fetcher.persistence.FetchResult;
-import myreader.repository.FetchErrorRepository;
 import myreader.repository.SubscriptionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,16 +36,14 @@ class FeedListFetcherJobTests {
   private FeedListFetcherJob job;
   private FeedQueue queueMock;
   private SubscriptionRepository subscriptionRepositoryMock;
-  private FetchErrorRepository fetchErrorRepositoryMock;
   private FeedParser feedParser;
 
   @BeforeEach
   public void setUp() {
     queueMock = mock(FeedQueue.class);
     subscriptionRepositoryMock = mock(SubscriptionRepository.class);
-    fetchErrorRepositoryMock = mock(FetchErrorRepository.class);
     feedParser = mock(FeedParser.class);
-    job = new FeedListFetcherJob(queueMock, subscriptionRepositoryMock, feedParser, fetchErrorRepositoryMock);
+    job = new FeedListFetcherJob(queueMock, subscriptionRepositoryMock, feedParser);
   }
 
   @Test
@@ -72,6 +68,8 @@ class FeedListFetcherJobTests {
       0,
       null,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     )));
 
@@ -94,6 +92,8 @@ class FeedListFetcherJobTests {
       0,
       null,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     );
     var fetchResult = new FetchResult(URL);
@@ -119,6 +119,8 @@ class FeedListFetcherJobTests {
       0,
       null,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     );
     var fetchResult = new FetchResult(null);
@@ -164,23 +166,28 @@ class FeedListFetcherJobTests {
       0,
       0,
       false,
+      null,
+      null,
       OffsetDateTime.now()
     );
     subscription.setId(1L);
-    var captor = ArgumentCaptor.forClass(FetchError.class);
+    var idCaptor = ArgumentCaptor.forClass(Long.class);
+    var messageCaptor = ArgumentCaptor.forClass(String.class);
+    var datetimeCaptor = ArgumentCaptor.forClass(OffsetDateTime.class);
 
     given(queueMock.getSize()).willReturn(0);
     given(subscriptionRepositoryMock.findAll()).willReturn(singletonList(subscription));
     given(feedParser.parse(subscription.getUrl(), subscription.getLastModified()))
       .willThrow(new FeedParseException("expected exception", null));
 
+    var now = OffsetDateTime.now();
     job.run();
 
     verify(queueMock, never()).add(any());
-    verify(fetchErrorRepositoryMock, times(1)).save(captor.capture());
+    verify(subscriptionRepositoryMock, times(1)).saveLastErrorMessage(idCaptor.capture(), messageCaptor.capture(), datetimeCaptor.capture());
 
-    assertThat(captor.getValue())
-      .hasFieldOrPropertyWithValue("subscriptionId", subscription.getId())
-      .hasFieldOrPropertyWithValue("message", "expected exception");
+    assertThat(idCaptor.getValue()).isEqualTo(1L);
+    assertThat(messageCaptor.getValue()).isEqualTo("expected exception");
+    assertThat(datetimeCaptor.getValue()).isStrictlyBetween(now.minusSeconds(2), now.plusSeconds(2));
   }
 }

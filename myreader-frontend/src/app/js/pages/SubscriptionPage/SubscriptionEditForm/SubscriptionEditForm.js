@@ -4,7 +4,6 @@ import {Button, ConfirmButton} from '../../../components/Buttons'
 import {Icon} from '../../../components/Icon/Icon'
 import {Input} from '../../../components/Input/Input'
 import {SubscriptionExclusions} from './SubscriptionExclusions'
-import {SubscriptionFetchErrors} from './SubscriptionFetchErrors/SubscriptionFetchErrors'
 import {SubscriptionColorPicker} from './SubscriptionColorPicker'
 import {Checkbox} from '../../../components/Checkbox'
 
@@ -33,7 +32,6 @@ export function SubscriptionEditForm(props) {
     data,
     subscriptionTags,
     exclusionPatterns,
-    fetchErrors,
     validations,
     changePending,
     deleteSubscription,
@@ -42,115 +40,110 @@ export function SubscriptionEditForm(props) {
   } = props
 
   return (
-    <>
-      <form
-        className='my-subscription-edit-form'
+    <form
+      className='my-subscription-edit-form'
+    >
+      <Input
+        name='title'
+        value={state.title}
+        label='Title'
+        disabled={changePending}
+        validations={validations}
+        onChange={({target: {value}}) => setState(currentState => ({...currentState, title: value}))}
+      />
+
+      <div
+        className='my-subscription-edit-form__row'
       >
         <Input
-          name='title'
-          value={state.title}
-          label='Title'
+          name='origin'
+          value={state.origin}
+          label='Url'
           disabled={changePending}
           validations={validations}
-          onChange={({target: {value}}) => setState(currentState => ({...currentState, title: value}))}
+          onChange={({target: {value}}) => setState(currentState => ({...currentState, origin: value}))}
         />
 
-        <div
-          className='my-subscription-edit-form__row'
+        <a
+          href={state.origin}
+          target='_blank'
+          rel='noopener noreferrer'
         >
-          <Input
-            name='origin'
-            value={state.origin}
-            label='Url'
-            disabled={changePending}
-            validations={validations}
-            onChange={({target: {value}}) => setState(currentState => ({...currentState, origin: value}))}
+          <Icon
+            type='link'
           />
+        </a>
+      </div>
 
-          <a
-            href={state.origin}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            <Icon
-              type='link'
-            />
-          </a>
-        </div>
-
-        <div
-          className='my-subscription-edit-form__row'
-        >
-          <AutocompleteInput
-            name='tag'
-            label='Tag'
-            disabled={changePending}
-            value={state.tag}
-            values={subscriptionTags}
-            onSelect={selectedTag => setState(currentState => ({...currentState, tag: selectedTag}))}
-          />
-          <button
-            className='my-subscription-edit-form__color'
-            style={{backgroundColor: state.color}}
-            type='button'
-            role='color-picker-button'
-            onClick={() => setState(currentState => ({...currentState, showDialog: true}))}
-          />
-          {state.showDialog && (
-            <SubscriptionColorPicker
-              color={state.color}
-              onSelect={selectedColor => setState(currentState => ({...currentState, color: selectedColor}))}
-              onClose={() => setState(currentState => ({...currentState, showDialog: false}))}
-            />
-          )}
-        </div>
-
-        <div
-          className='my-subscription-edit-form__row'
-        >
-          <Checkbox
-            name='stripImages'
-            value={state.stripImages}
-            disabled={changePending}
-            onChange={() => setState(current => ({...current, stripImages: !current.stripImages}))}
-          >
-            strip images
-          </Checkbox>
-        </div>
-
-        <h2
-          className='my-subscription-edit-form__pattern-title'>
-          Patterns to ignore
-        </h2>
-
-        <SubscriptionExclusions
+      <div
+        className='my-subscription-edit-form__row'
+      >
+        <AutocompleteInput
+          name='tag'
+          label='Tag'
           disabled={changePending}
-          exclusionPatterns={exclusionPatterns}
-          addExclusionPattern={addExclusionPattern}
-          removeExclusionPattern={removeExclusionPattern}
+          value={state.tag}
+          values={subscriptionTags}
+          onSelect={selectedTag => setState(currentState => ({...currentState, tag: selectedTag}))}
         />
+        <button
+          className='my-subscription-edit-form__color'
+          style={{backgroundColor: state.color}}
+          type='button'
+          role='color-picker-button'
+          onClick={() => setState(currentState => ({...currentState, showDialog: true}))}
+        />
+        {state.showDialog && (
+          <SubscriptionColorPicker
+            color={state.color}
+            onSelect={selectedColor => setState(currentState => ({...currentState, color: selectedColor}))}
+            onClose={() => setState(currentState => ({...currentState, showDialog: false}))}
+          />
+        )}
+      </div>
 
-        <div
-          className='my-subscription-edit-form__buttons'
+      <div
+        className='my-subscription-edit-form__row'
+      >
+        <Checkbox
+          name='stripImages'
+          value={state.stripImages}
+          disabled={changePending}
+          onChange={() => setState(current => ({...current, stripImages: !current.stripImages}))}
         >
-          <Button
-            disabled={changePending}
-            onClick={onSaveSubscription}
-            primary>
-            Save
-          </Button>
+          strip images
+        </Checkbox>
+      </div>
 
-          <ConfirmButton
-            disabled={changePending}
-            onClick={() => deleteSubscription(data.uuid)}
-            caution>
-            Delete
-          </ConfirmButton>
-        </div>
-      </form>
-      <SubscriptionFetchErrors
-        fetchErrors={fetchErrors}
+      <h2
+        className='my-subscription-edit-form__pattern-title'>
+        Patterns to ignore
+      </h2>
+
+      <SubscriptionExclusions
+        disabled={changePending}
+        exclusionPatterns={exclusionPatterns}
+        addExclusionPattern={addExclusionPattern}
+        removeExclusionPattern={removeExclusionPattern}
       />
-    </>
+
+      <div
+        className='my-subscription-edit-form__buttons'
+      >
+        <Button
+          disabled={changePending}
+          onClick={onSaveSubscription}
+          primary>
+          Save
+        </Button>
+
+        <ConfirmButton
+          disabled={changePending}
+          onClick={() => deleteSubscription(data.uuid)}
+          caution>
+          Delete
+        </ConfirmButton>
+      </div>
+    </form>
   )
 }

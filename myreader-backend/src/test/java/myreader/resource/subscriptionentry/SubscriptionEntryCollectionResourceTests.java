@@ -70,6 +70,8 @@ class SubscriptionEntryCollectionResourceTests {
       0,
       null,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     ));
 
@@ -83,6 +85,8 @@ class SubscriptionEntryCollectionResourceTests {
       0,
       null,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     ));
 

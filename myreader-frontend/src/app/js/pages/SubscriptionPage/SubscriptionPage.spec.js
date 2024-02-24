@@ -48,16 +48,14 @@ describe('SubscriptionPage', () => {
         tag: 'tag1',
         color: '#FF11FF',
         stripImages: true,
+        lastErrorMessage: 'expected last error message',
+        lastErrorMessageDatetime: '2021-02-27T06:48:05.087+01:00',
       },
       tags: ['tag1', 'tag2'],
       exclusionPatterns: [
         {uuid: '100', pattern: 'pattern1', hitCount: 1},
         {uuid: '200', pattern: 'pattern2', hitCount: 2},
         {uuid: '300', pattern: 'pattern3', hitCount: 3}
-      ],
-      fetchErrors: [
-        {uuid: '10', message: 'message 1', createdAt: '2021-02-27T06:48:05.087+01:00'},
-        {uuid: '20', message: 'message 2', createdAt: '2021-02-27T07:48:05.087+01:00'}
       ]
     }
 
@@ -100,11 +98,9 @@ describe('SubscriptionPage', () => {
     expect(screen.getByText('pattern2')).toBeVisible()
     expect(screen.getByText('pattern3')).toBeVisible()
     expect(screen.queryByRole(roleTitleValidation)).not.toBeInTheDocument()
-    expect(screen.getByText('Fetch errors')).toBeVisible()
-    expect(screen.getByText('message 1')).toBeVisible()
+    expect(screen.getByText('Last fetch error')).toBeVisible()
+    expect(screen.getByText('expected last error message')).toBeVisible()
     expect(screen.getByText('13 hours ago')).toBeVisible()
-    expect(screen.getByText('message 2')).toBeVisible()
-    expect(screen.getByText('12 hours ago')).toBeVisible()
   })
 
   it('not should render fetch errors if no errors present', async () => {
@@ -145,6 +141,8 @@ describe('SubscriptionPage', () => {
       tag: 'changed tag',
       color: '#dddddd',
       stripImages: false,
+      lastErrorMessage: 'expected last error message',
+      lastErrorMessageDatetime: '2021-02-27T06:48:05.087+01:00'
     }))
 
     fireEvent.click(screen.getByText('Updated'))
@@ -319,6 +317,8 @@ describe('SubscriptionPage', () => {
       tag: 'tag1',
       color: null,
       stripImages: true,
+      lastErrorMessage: 'expected last error message',
+      lastErrorMessageDatetime: '2021-02-27T06:48:05.087+01:00'
     }))
   })
 

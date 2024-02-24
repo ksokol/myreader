@@ -1,7 +1,6 @@
 package myreader.views.subscriptionpage;
 
 import myreader.entity.ExclusionPattern;
-import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 
 import java.util.HashMap;
@@ -22,6 +21,8 @@ class SubscriptionPageConverter {
     target.put("tag", source.getTag());
     target.put("color", source.getColor());
     target.put("stripImages", source.isStripImages());
+    target.put("lastErrorMessage", source.getLastErrorMessage());
+    target.put("lastErrorMessageDatetime", source.getLastErrorMessageDatetime());
 
     return target;
   }
@@ -31,14 +32,6 @@ class SubscriptionPageConverter {
       "uuid", source.getId().toString(),
       "pattern", source.getPattern(),
       "hitCount", source.getHitCount()
-    );
-  }
-
-  static Map<String, Object> convertFetchError(FetchError source) {
-    return Map.of(
-      "uuid", source.getId().toString(),
-      "message", source.getMessage(),
-      "createdAt", source.getCreatedAt()
     );
   }
 }

@@ -10,7 +10,6 @@ function reducer(state, action) {
       subscription: action.subscription,
       subscriptionTags: action.subscriptionTags,
       exclusionPatterns: action.exclusionPatterns,
-      fetchErrors: action.fetchErrors,
     }
   }
   case 'update_subscription': {
@@ -80,7 +79,6 @@ export function useSubscription() {
     subscription: null,
     subscriptionTags: [],
     exclusionPatterns: [],
-    fetchErrors: [],
     validations: [],
     updated: false,
     deleted: false,
@@ -92,10 +90,10 @@ export function useSubscription() {
     dispatch({type: 'loading'})
 
     try {
-      const {subscription, tags: subscriptionTags, exclusionPatterns, fetchErrors} = await api.get({
+      const {subscription, tags: subscriptionTags, exclusionPatterns} = await api.get({
         url: `views/SubscriptionPage/${uuid}`,
       })
-      dispatch({type: 'set_subscription', subscription, subscriptionTags, exclusionPatterns, fetchErrors})
+      dispatch({type: 'set_subscription', subscription, subscriptionTags, exclusionPatterns})
     } catch(error) {
       dispatch({type: 'error', error})
     } finally {
@@ -170,7 +168,6 @@ export function useSubscription() {
     subscription: state.subscription,
     subscriptionTags: state.subscriptionTags,
     exclusionPatterns: state.exclusionPatterns,
-    fetchErrors: state.fetchErrors,
     loading: state.loading,
     updated: state.updated,
     deleted: state.deleted,

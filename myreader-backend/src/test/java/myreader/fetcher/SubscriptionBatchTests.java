@@ -52,6 +52,8 @@ class SubscriptionBatchTests {
       1,
       null,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     ));
 
@@ -76,6 +78,8 @@ class SubscriptionBatchTests {
       1,
       null,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     ));
 

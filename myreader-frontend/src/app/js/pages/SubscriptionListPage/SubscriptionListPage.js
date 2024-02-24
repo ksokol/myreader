@@ -66,7 +66,7 @@ export const SubscriptionListPage = () => {
                   {subscription.title}
                 </Link>
                 <span>
-                  {subscription.fetchErrorCount > 0 && <Icon type='exclamation-triangle'/>}
+                  {isErrorUpToDate(subscription.lastErrorMessageDatetime) && <Icon type='exclamation-triangle'/>}
                   <TimeAgo
                     date={subscription.createdAt}
                   />
@@ -80,3 +80,13 @@ export const SubscriptionListPage = () => {
   )
 }
 
+function isErrorUpToDate(datetime) {
+  if (!datetime) {
+    return false;
+  }
+
+  const now = Date.now();
+  const diff = (now - new Date(datetime).getTime()) / 1000;
+
+  return diff < 60 * 60;
+}

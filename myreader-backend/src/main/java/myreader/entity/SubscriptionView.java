@@ -6,67 +6,18 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.time.OffsetDateTime;
 
 @Table("SUBSCRIPTION_VIEW")
-public class SubscriptionView {
+public record SubscriptionView (
+  @Id Long id,
+  String title,
+  String url,
+  String tag,
+  String color,
+  int acceptedFetchCount,
+  String lastModified,
+  int overallFetchCount,
+  Integer resultSizePerFetch,
+  long unseen,
+  OffsetDateTime lastErrorMessageDatetime,
+  OffsetDateTime createdAt
+) {}
 
-  private Long id;
-  private String title;
-  private String url;
-  private String tag;
-  private String color;
-  private int acceptedFetchCount;
-  private String lastModified;
-  private int overallFetchCount;
-  private Integer resultSizePerFetch;
-  private long unseen;
-  private long fetchErrorCount;
-  private OffsetDateTime createdAt;
-
-  @Id
-  public Long getId() {
-    return id;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public String getUrl() {
-    return url;
-  }
-
-  public int getAcceptedFetchCount() {
-    return acceptedFetchCount;
-  }
-
-  public String getLastModified() {
-    return lastModified;
-  }
-
-  public Integer getOverallFetchCount() {
-    return overallFetchCount;
-  }
-
-  public Integer getResultSizePerFetch() {
-    return resultSizePerFetch;
-  }
-
-  public String getTag() {
-    return tag;
-  }
-
-  public String getColor() {
-    return color;
-  }
-
-  public long getUnseen() {
-    return unseen;
-  }
-
-  public long getFetchErrorCount() {
-    return fetchErrorCount;
-  }
-
-  public OffsetDateTime getCreatedAt() {
-    return createdAt;
-  }
-}

@@ -3,7 +3,6 @@ package myreader.views.subscriptionpage;
 import jakarta.servlet.ServletException;
 import myreader.entity.ExclusionPattern;
 import myreader.repository.ExclusionRepository;
-import myreader.repository.FetchErrorRepository;
 import myreader.repository.SubscriptionRepository;
 import myreader.service.subscription.SubscriptionService;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,25 +17,20 @@ import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Objects;
 
-import static java.util.stream.Collectors.toList;
-
 @Component
 public class SubscriptionPage {
 
   private final SubscriptionRepository subscriptionRepository;
   private final ExclusionRepository exclusionRepository;
-  private final FetchErrorRepository fetchErrorRepository;
   private final SubscriptionService subscriptionService;
 
   public SubscriptionPage(
     SubscriptionRepository subscriptionRepository,
     ExclusionRepository exclusionRepository,
-    FetchErrorRepository fetchErrorRepository,
     SubscriptionService subscriptionService
   ) {
     this.subscriptionRepository = Objects.requireNonNull(subscriptionRepository, "subscriptionRepository is null");
     this.exclusionRepository = Objects.requireNonNull(exclusionRepository, "exclusionRepository is null");
-    this.fetchErrorRepository = Objects.requireNonNull(fetchErrorRepository, "fetchErrorRepository is null");
     this.subscriptionService = Objects.requireNonNull(subscriptionService, "subscriptionService is null");
   }
 
@@ -52,18 +46,13 @@ public class SubscriptionPage {
 
     var exclusionPatterns = exclusionRepository.findBySubscriptionId(id).stream()
       .map(SubscriptionPageConverter::convertExclusionPattern)
-      .collect(toList());
-
-    var fetchErrors = fetchErrorRepository.findAllBySubscriptionIdOrderByCreatedAtDesc(id).stream()
-      .map(SubscriptionPageConverter::convertFetchError)
-      .collect(toList());
+      .toList();
 
     return ServerResponse.ok().body(
       Map.of(
         "subscription", subscription,
         "tags", tags,
-        "exclusionPatterns", exclusionPatterns,
-        "fetchErrors", fetchErrors
+        "exclusionPatterns", exclusionPatterns
       )
     );
   }

@@ -61,6 +61,8 @@ class SubscriptionCollectionResourceTests {
       0,
       null,
       false,
+      null,
+      null,
       ofEpochMilli(2000)
     ));
   }

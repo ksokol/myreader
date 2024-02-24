@@ -1,7 +1,6 @@
 package myreader.views.subscriptionpage;
 
 import myreader.entity.ExclusionPattern;
-import myreader.entity.FetchError;
 import myreader.entity.Subscription;
 import myreader.entity.SubscriptionEntry;
 import myreader.service.subscription.SubscriptionService;
@@ -49,8 +48,6 @@ class SubscriptionPageTests {
   private Subscription subscription;
   private ExclusionPattern exclusionPattern1;
   private ExclusionPattern exclusionPattern2;
-  private FetchError fetchError1;
-  private FetchError fetchError2;
 
   @BeforeEach
   void setUp() {
@@ -64,14 +61,13 @@ class SubscriptionPageTests {
       0,
       null,
       false,
+      "expected last error message",
+      ofEpochMilli(3000),
       ofEpochMilli(2000)
     ));
 
     exclusionPattern1 = template.save(new ExclusionPattern("pattern1", subscription.getId(), 10, ofEpochMilli(1000)));
     exclusionPattern2 = template.save(new ExclusionPattern("pattern2", subscription.getId(), 20, ofEpochMilli(1000)));
-
-    fetchError1 = template.save(new FetchError(subscription.getId(), "message 1", ofEpochMilli(1000)));
-    fetchError2 = template.save(new FetchError(subscription.getId(), "message 2", ofEpochMilli(2000)));
 
     template.save(new SubscriptionEntry(
       null,
@@ -99,19 +95,14 @@ class SubscriptionPageTests {
       .andExpect(jsonPath("subscription.tag").value("subscriptiontag name"))
       .andExpect(jsonPath("subscription.color").value("#111111"))
       .andExpect(jsonPath("subscription.stripImages").value(false))
+      .andExpect(jsonPath("subscription.lastErrorMessage").value("expected last error message"))
+      .andExpect(jsonPath("subscription.lastErrorMessageDatetime").value(ofEpochMilli(3000).toString()))
       .andExpect(jsonPath("exclusionPatterns[0].uuid").value(exclusionPattern1.getId()))
       .andExpect(jsonPath("exclusionPatterns[0].hitCount").value(10))
       .andExpect(jsonPath("exclusionPatterns[0].pattern").value("pattern1"))
       .andExpect(jsonPath("exclusionPatterns[1].uuid").value(exclusionPattern2.getId()))
       .andExpect(jsonPath("exclusionPatterns[1].hitCount").value(20))
-      .andExpect(jsonPath("exclusionPatterns[1].pattern").value("pattern2"))
-      .andExpect(jsonPath("fetchErrors.length()").value(2))
-      .andExpect(jsonPath("fetchErrors.[0].uuid").value(fetchError2.getId()))
-      .andExpect(jsonPath("fetchErrors.[0].message").value("message 2"))
-      .andExpect(jsonPath("fetchErrors.[0].createdAt").value("1970-01-01T00:00:02Z"))
-      .andExpect(jsonPath("fetchErrors.[1].uuid").value(fetchError1.getId()))
-      .andExpect(jsonPath("fetchErrors.[1].message").value("message 1"))
-      .andExpect(jsonPath("fetchErrors.[1].createdAt").value("1970-01-01T00:00:01Z"));
+      .andExpect(jsonPath("exclusionPatterns[1].pattern").value("pattern2"));
   }
 
   @Test

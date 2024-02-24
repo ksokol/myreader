@@ -50,6 +50,8 @@ class SubscriptionEntryEntityResourceTests {
       0,
       null,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     ));
 

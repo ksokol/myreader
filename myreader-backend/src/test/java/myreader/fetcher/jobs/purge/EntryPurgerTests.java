@@ -46,6 +46,8 @@ class EntryPurgerTests {
       0,
       5,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     ));
 
@@ -59,6 +61,8 @@ class EntryPurgerTests {
       0,
       5,
       false,
+      null,
+      null,
       ofEpochMilli(1000)
     ));
   }

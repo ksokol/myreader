@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,4 +22,9 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
 
   @Query("select distinct tag from subscription where tag is not null")
   Set<String> findDistinctTags();
+
+  @Transactional
+  @Modifying
+  @Query("update subscription set last_error_message = :message, last_error_message_datetime = :dateTime where id = :id")
+  void saveLastErrorMessage(@Param("id") Long id, @Param("message") String message, @Param("dateTime") OffsetDateTime dateTime);
 }
